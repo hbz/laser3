@@ -18,3 +18,12 @@ You can create the initial KB+ index with
 
 curl -X PUT "http://localhost:9200/kbplus"
 
+
+
+curl \-XPUT 'localhost:9200/kbplus?pretty' \-d'
+{
+"settings": {
+        "number_of_shards" :   1,
+        "number_of_replicas" : 0
+    }
+}'
