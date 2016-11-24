@@ -1,10 +1,10 @@
 
-<%@ page import="com.k_int.kbplus.Group" %>
+<%@ page import="com.k_int.kbplus.Cluster" %>
 <!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="mmbootstrap">
-		<g:set var="entityName" value="${message(code: 'group.label', default: 'Group')}" />
+		<g:set var="entityName" value="${message(code: 'cluster.label', default: 'Cluster')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -44,38 +44,38 @@
 					<thead>
 						<tr>
 						
-							<th class="header"><g:message code="group.owner.label" default="Owner" /></th>
+							<th class="header"><g:message code="cluster.owner.label" default="Owner" /></th>
 						
-							<g:sortableColumn property="definition" title="${message(code: 'group.definition.label', default: 'Definition')}" />
+							<g:sortableColumn property="definition" title="${message(code: 'cluster.definition.label', default: 'Definition')}" />
 						
-							<g:sortableColumn property="name" title="${message(code: 'group.name.label', default: 'Name')}" />
+							<g:sortableColumn property="name" title="${message(code: 'cluster.name.label', default: 'Name')}" />
 						
-							<th class="header"><g:message code="group.type.label" default="Type" /></th>
+							<th class="header"><g:message code="cluster.type.label" default="Type" /></th>
 						
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
-					<g:each in="${groupInstanceList}" var="groupInstance">
+					<g:each in="${clusterInstanceList}" var="clusterInstance">
 						<tr>
 						
-							<td>${fieldValue(bean: groupInstance, field: "owner")}</td>
+							<td>${fieldValue(bean: clusterInstance, field: "owner")}</td>
 						
-							<td>${fieldValue(bean: groupInstance, field: "definition")}</td>
+							<td>${fieldValue(bean: clusterInstance, field: "definition")}</td>
 						
-							<td>${fieldValue(bean: groupInstance, field: "name")}</td>
+							<td>${fieldValue(bean: clusterInstance, field: "name")}</td>
 						
-							<td>${fieldValue(bean: groupInstance, field: "type")}</td>
+							<td>${fieldValue(bean: clusterInstance, field: "type")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${groupInstance.id}" class="btn btn-small">Show &raquo;</g:link>
+								<g:link action="show" id="${clusterInstance.id}" class="btn btn-small">Show &raquo;</g:link>
 							</td>
 						</tr>
 					</g:each>
 					</tbody>
 				</table>
 				<div class="pagination">
-					<bootstrap:paginate total="${groupInstanceTotal}" />
+					<bootstrap:paginate total="${clusterInstanceTotal}" />
 				</div>
 			</div>
 
