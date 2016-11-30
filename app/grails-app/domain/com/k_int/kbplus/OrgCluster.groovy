@@ -9,7 +9,7 @@ class OrgCluster {
 
     static mapping = {
         id       column:'oc_id'
-        version  column:'version'
+        version  column:'oc_version'
         org      column:'oc_org_fk'
         cluster  column:'oc_cluster_fk'
     }

@@ -9,13 +9,13 @@ class Address {
     String city
     String state
     String country
-    RefdataValue type // TODO specify
+    RefdataValue type
     Person prs
     Org    org
     
     static mapping = {
         id       column:'adr_id'
-        version  column:'version'
+        version  column:'adr_version'
         street_1 column:'adr_street_1'
         street_2 column:'adr_street_2'
         pob      column:'adr_pob'
@@ -39,5 +39,9 @@ class Address {
         type     (nullable:true)
         prs      (nullable:true)
         org      (nullable:true)
+    }
+    
+    static getAllRefdataValues() {
+        RefdataCategory.getAllRefdataValues('AddressType')
     }
 }

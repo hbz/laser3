@@ -19,7 +19,7 @@ environments {
             dialect=org.hibernate.dialect.MySQL5Dialect
             username = "k-int"
             password = "k-int"
-            url = "jdbc:mysql://localhost/KBPlus?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
+            url = "jdbc:mysql://localhost/KBPlusDev?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
             // logSql = true
             // formatSql = true
@@ -42,7 +42,7 @@ environments {
             dialect=org.hibernate.dialect.MySQL5Dialect
             username = "k-int"
             password = "k-int"
-            url = "jdbc:mysql://localhost/kbplustest?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
+            url = "jdbc:mysql://localhost/KBPlusTest?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
             // logSql = true
             // formatSql = true

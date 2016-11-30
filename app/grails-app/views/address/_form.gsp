@@ -70,8 +70,12 @@
 		<g:message code="address.type.label" default="Type" />
 		
 	</label>
-	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${addressInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
-
+	<g:select id="type" name="type.id" 
+		from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
+    	optionKey="id"
+    	optionValue="value"
+    	value="${addressInstance?.type?.id}"
+        noSelection="['': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'prs', 'error')} ">

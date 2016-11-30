@@ -53,7 +53,9 @@
 					<g:form class="form-horizontal" action="edit" id="${contactInstance?.id}" >
 						<g:hiddenField name="version" value="${contactInstance?.version}" />
 						<fieldset>
-							<f:all bean="contactInstance"/>
+							<% // <f:all bean="contactInstance"/> %>
+							<g:render template="form"/>
+							
 							<div class="form-actions">
 								<button type="submit" class="btn btn-primary">
 									<i class="icon-ok icon-white"></i>

@@ -2,15 +2,15 @@ package com.k_int.kbplus
 
 class Contact {
     
-    String mail
-    String phone
-    RefdataValue type // TODO specify
-    Person prs
-    Org    org
+    String       mail
+    String       phone
+    RefdataValue type
+    Person       prs
+    Org          org
     
     static mapping = {
         id      column:'ct_id'
-        version column:'version'
+        version column:'ct_version'
         mail    column:'ct_mail'
         phone   column:'ct_phone'
         type    column:'ct_type_rv_fk'
@@ -24,5 +24,9 @@ class Contact {
         type   (nullable:true, blank:true)
         prs    (nullable:true)
         org    (nullable:true)
+    }
+    
+    static getAllRefdataValues() {
+        RefdataCategory.getAllRefdataValues('ContactType')
     }
 }

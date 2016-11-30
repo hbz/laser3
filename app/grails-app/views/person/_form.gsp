@@ -32,18 +32,11 @@
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
 	<label for="gender">
 		<g:message code="person.gender.label" default="Gender" />
-		
 	</label>
-	<g:select name="gender" from="${com.k_int.kbplus.Person$Gender?.values()}" keys="${com.k_int.kbplus.Person$Gender.values()*.name()}" value="${personInstance?.gender?.name()}"  noSelection="['': '']"/>
-
+	<g:select id="gender" name="gender" 
+		from="${com.k_int.kbplus.Person.getAllRefdataValues()}"
+    	optionKey="id"
+    	optionValue="value"
+        value="${personInstance?.gender?.id}"
+        noSelection="['': '']"/>
 </div>
-
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'org', 'error')} ">
-	<label for="org">
-		<g:message code="person.org.label" default="Org" />
-		
-	</label>
-	<g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${personInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
-
-</div>
-

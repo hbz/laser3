@@ -66,14 +66,7 @@
 					<g:if test="${personInstance?.gender}">
 						<dt><g:message code="person.gender.label" default="Gender" /></dt>
 						
-							<dd><g:fieldValue bean="${personInstance}" field="gender"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${personInstance?.org}">
-						<dt><g:message code="person.org.label" default="Org" /></dt>
-						
-							<dd><g:link controller="org" action="show" id="${personInstance?.org?.id}">${personInstance?.org?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="refdataValue" action="show" id="${personInstance?.gender?.id}">${personInstance?.gender?.encodeAsHTML()}</g:link></dd>
 						
 					</g:if>
 				

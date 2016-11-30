@@ -25,8 +25,12 @@
 		<g:message code="contact.type.label" default="Type" />
 		
 	</label>
-	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${contactInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
-
+	<g:select id="type" name="type.id" 
+		from="${com.k_int.kbplus.Contact.getAllRefdataValues()}"
+    	optionKey="id"
+    	optionValue="value"
+    	value="${contactInstance?.type?.id}"
+        noSelection="['': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: contactInstance, field: 'prs', 'error')} ">

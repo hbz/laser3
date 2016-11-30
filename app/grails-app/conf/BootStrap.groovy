@@ -36,6 +36,19 @@ class BootStrap {
     RefdataCategory.lookupOrCreate("YNO","Not applicable")
     RefdataCategory.lookupOrCreate("YNO","Unknown")
 
+    RefdataCategory.lookupOrCreate("Gender","F")
+    RefdataCategory.lookupOrCreate("Gender","M")
+    
+    // TODO
+    RefdataCategory.lookupOrCreate('AddressType', 'AddressType 1');
+    RefdataCategory.lookupOrCreate('AddressType', 'AddressType 2');
+    // TODO
+    RefdataCategory.lookupOrCreate('ContactType', 'ContactType 1');
+    RefdataCategory.lookupOrCreate('ContactType', 'ContactType 2');
+    // TODO
+    RefdataCategory.lookupOrCreate('ClusterType', 'ClusterType 1');
+    RefdataCategory.lookupOrCreate('ClusterType', 'ClusterType 2');
+    
     RefdataCategory.lookupOrCreate('CoreStatus', 'Yes');
     RefdataCategory.lookupOrCreate('CoreStatus', 'Print');
     RefdataCategory.lookupOrCreate('CoreStatus', 'Electronic');
@@ -63,6 +76,10 @@ class BootStrap {
     def or_subscriber_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
     def or_sc_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
  
+    // TODO
+    RefdataCategory.lookupOrCreate('Person Role', 'PR 1');
+    RefdataCategory.lookupOrCreate('Person Role', 'PR 2');
+    RefdataCategory.lookupOrCreate('Person Role', 'PR 3');
 
     OrgPermShare.assertPermShare(view_permission, or_licensee_role);
     OrgPermShare.assertPermShare(edit_permission, or_licensee_role);

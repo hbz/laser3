@@ -48,6 +48,27 @@ class RefdataCategory {
       result
   }
 
+  /**
+   * Returns a list containing category depending refdata_values.
+   * 
+   * @param category_name
+   * @return ArrayList
+   */
+  static getAllRefdataValues(category_name) {
+      println("RefdataCategory.getAllRefdataValues(n)")
+      
+      def result = RefdataValue.findAllByOwner(
+          RefdataCategory.findByDesc(category_name)
+          ).collect {[
+              id:    it.id.toString(),
+              value: it.value.toString(),
+              owner: it.owner.getId(),
+              group: it.group.toString(),
+              icon:  it.icon.toString()
+              ]}
+      result
+  }
+  
   @Transient
   public static final PKG_SCOPE = "Package.Scope"
   @Transient
