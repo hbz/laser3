@@ -1,8 +1,11 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*;
+
 import org.apache.commons.logging.LogFactory
+
 import groovy.util.logging.*
+
 import javax.persistence.Transient
 
 @Log4j
@@ -263,5 +266,9 @@ class Org {
     }
 
   }
-
+  
+  @Override
+  String toString() {
+      name + ', ' + sector + ' (' + id + ')'
+  }
 }

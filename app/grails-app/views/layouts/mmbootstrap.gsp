@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
-    <r:require modules="kbplus"/>
+    <r:require modules="kbplus" />
 
     <g:layoutHead/>
 
@@ -346,6 +346,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
                 </sec:ifAnyGranted>
                 </ul>
+                
+                <ul class="nav"><!-- demo -->
+                <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                  <li class="dropdown">
+                  	<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Demo <b class="caret"></b> </a>
+                    <ul class="dropdown-menu">
+                      <li><g:link controller="address" action="index">Address Controller</g:link></li>
+                      <li><g:link controller="cluster" action="index">Cluster Controller</g:link></li>
+                      <li><g:link controller="contact" action="index">Contact Controller</g:link></li>
+                      <li><g:link controller="person" action="index">Person Controller</g:link></li>
+               	    </ul>
+                  </li>
+                </sec:ifAnyGranted>
+                </ul><!-- demo -->
+                
+                
             </sec:ifLoggedIn>
 
             <sec:ifLoggedIn>

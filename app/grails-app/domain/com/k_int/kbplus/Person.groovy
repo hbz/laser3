@@ -26,4 +26,9 @@ class Person {
     static getAllRefdataValues() {
         RefdataCategory.getAllRefdataValues('Gender')
     }
+    
+    @Override
+    String toString() {
+        last_name + ', ' + first_name + ' ' + middle_name + ' (' + id + ')'
+    }
 }

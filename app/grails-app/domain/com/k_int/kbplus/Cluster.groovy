@@ -26,4 +26,9 @@ class Cluster {
     static getAllRefdataValues() {
         RefdataCategory.getAllRefdataValues('ClusterType')
     }
+    
+    @Override
+    String toString() {
+        name + ', ' + definition + ' (' + id + ')'
+    }
 }

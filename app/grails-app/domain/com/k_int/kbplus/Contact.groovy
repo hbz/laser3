@@ -29,4 +29,9 @@ class Contact {
     static getAllRefdataValues() {
         RefdataCategory.getAllRefdataValues('ContactType')
     }
+    
+    @Override
+    String toString() {
+        mail + ', ' + phone + ' (' + id + ')'
+    }
 }

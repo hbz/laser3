@@ -44,4 +44,9 @@ class Address {
     static getAllRefdataValues() {
         RefdataCategory.getAllRefdataValues('AddressType')
     }
+    
+    @Override
+    String toString() {
+        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + ')'
+    }
 }
