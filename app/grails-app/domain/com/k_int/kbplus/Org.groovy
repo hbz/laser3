@@ -24,25 +24,28 @@ class Org {
   RefdataValue orgType
   RefdataValue status
   RefdataValue membership
-
-
+  
   // Used to generate friendly semantic URLs
   String shortcode
 
   Set ids = []
 
-  static mappedBy = [ids: 'org', 
-                     outgoingCombos: 'fromOrg', 
-                     incomingCombos:'toOrg',
-                     links: 'org',
-                     affiliations: 'org' ]
+  static mappedBy = [
+      ids: 'org', 
+      outgoingCombos: 'fromOrg', 
+      incomingCombos: 'toOrg',
+      links: 'org',
+      affiliations: 'org' 
+      ]
 
-  static hasMany = [ids: IdentifierOccurrence, 
-                    outgoingCombos: Combo,  
-                    incomingCombos:Combo,
-                    links: OrgRole,
-                    affiliations: UserOrg,
-                    customProperties:OrgCustomProperty]
+  static hasMany = [
+      ids: IdentifierOccurrence, 
+      outgoingCombos: Combo,  
+      incomingCombos: Combo,
+      links: OrgRole,
+      affiliations: UserOrg,
+      customProperties:OrgCustomProperty
+      ]
 
   static mapping = {
             id column:'org_id'
@@ -60,8 +63,8 @@ class Org {
   }
 
   static constraints = {
-         impId(nullable:true, blank:true,maxSize:256);
-       address(nullable:true, blank:true,maxSize:256);
+         impId(nullable:true, blank:true, maxSize:256);
+       address(nullable:true, blank:true, maxSize:256);
        ipRange(nullable:true, blank:true, maxSize:1024);
         sector(nullable:true, blank:true, maxSize:128);
      shortcode(nullable:true, blank:true, maxSize:128);

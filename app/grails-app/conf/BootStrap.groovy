@@ -72,10 +72,13 @@ class BootStrap {
 
     def cons_combo = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium');
 
-    def or_licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+    def or_licensee_role   = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
     def or_subscriber_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-    def or_sc_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
- 
+    def or_sc_role         = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+    
+    def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Owner');
+    def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Member');
+    
     // TODO
     RefdataCategory.lookupOrCreate('Person Role', 'PR 1');
     RefdataCategory.lookupOrCreate('Person Role', 'PR 2');
@@ -87,15 +90,22 @@ class BootStrap {
     OrgPermShare.assertPermShare(edit_permission, or_subscriber_role);
     OrgPermShare.assertPermShare(view_permission, or_sc_role);
     OrgPermShare.assertPermShare(edit_permission, or_sc_role);
+    // TODO
+    OrgPermShare.assertPermShare(view_permission, cl_owner_role);
+    OrgPermShare.assertPermShare(edit_permission, cl_owner_role);
+    // TODO
+    OrgPermShare.assertPermShare(view_permission, cl_member_role);
+    OrgPermShare.assertPermShare(edit_permission, cl_member_role);
+    
     OrgPermShare.assertPermShare(view_permission, cons_combo);
 
 
     // Global System Roles
-    def userRole = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER', roleType:'global').save(failOnError: true)
-    def editorRole = Role.findByAuthority('ROLE_EDITOR') ?: new Role(authority: 'ROLE_EDITOR', roleType:'global').save(failOnError: true)
-    def adminRole = Role.findByAuthority('ROLE_ADMIN') ?: new Role(authority: 'ROLE_ADMIN', roleType:'global').save(failOnError: true)
+    def userRole      = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER', roleType:'global').save(failOnError: true)
+    def editorRole    = Role.findByAuthority('ROLE_EDITOR') ?: new Role(authority: 'ROLE_EDITOR', roleType:'global').save(failOnError: true)
+    def adminRole     = Role.findByAuthority('ROLE_ADMIN') ?: new Role(authority: 'ROLE_ADMIN', roleType:'global').save(failOnError: true)
     def kbplus_editor = Role.findByAuthority('KBPLUS_EDITOR') ?: new Role(authority: 'KBPLUS_EDITOR', roleType:'global').save(failOnError: true)
-    def apiRole = Role.findByAuthority('ROLE_API') ?: new Role(authority: 'ROLE_API', roleType:'global').save(failOnError: true)
+    def apiRole       = Role.findByAuthority('ROLE_API') ?: new Role(authority: 'ROLE_API', roleType:'global').save(failOnError: true)
 
     // Institutional Roles
     def institutionalAdmin = Role.findByAuthority('INST_ADM')

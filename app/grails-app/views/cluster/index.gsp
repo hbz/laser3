@@ -24,8 +24,6 @@
 			<thead>
 					<tr>
 					
-						<th><g:message code="cluster.owner.label" default="Owner" /></th>
-					
 						<g:sortableColumn property="definition" title="${message(code: 'cluster.definition.label', default: 'Definition')}" />
 					
 						<g:sortableColumn property="name" title="${message(code: 'cluster.name.label', default: 'Name')}" />
@@ -38,9 +36,7 @@
 				<g:each in="${clusterInstanceList}" status="i" var="clusterInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link action="show" id="${clusterInstance.id}">${fieldValue(bean: clusterInstance, field: "owner")}</g:link></td>
-					
-						<td>${fieldValue(bean: clusterInstance, field: "definition")}</td>
+						<td><g:link action="show" id="${clusterInstance.id}">${fieldValue(bean: clusterInstance, field: "definition")}</g:link></td>
 					
 						<td>${fieldValue(bean: clusterInstance, field: "name")}</td>
 					

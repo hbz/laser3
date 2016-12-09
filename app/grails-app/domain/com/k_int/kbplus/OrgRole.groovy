@@ -9,12 +9,13 @@ class OrgRole {
   RefdataValue roleType
 
   // For polymorphic joins based on "Target Context"
-  Package pkg
-  Subscription sub
-  License lic
+  Package       pkg
+  Subscription  sub
+  License       lic
+  Cluster       cluster
   TitleInstance title
-  Date startDate
-  Date endDate
+  Date          startDate
+  Date          endDate
 
   static mapping = {
           id column:'or_id'
@@ -24,19 +25,21 @@ class OrgRole {
          pkg column:'or_pkg_fk'
          sub column:'or_sub_fk'
          lic column:'or_lic_fk'
+     cluster column:'or_custer_fk'
        title column:'or_title_fk'
    startDate column:'or_start_date'
      endDate column:'or_end_date'
   }
 
   static constraints = {
-    roleType(nullable:true, blank:false)
-    pkg(nullable:true, blank:false)
-    sub(nullable:true, blank:false)
-    lic(nullable:true, blank:false)
-    title(nullable:true, blank:false)
-    startDate(nullable:true, blank:false)
-    endDate(nullable:true, blank:false)
+    roleType    (nullable:true, blank:false)
+    pkg         (nullable:true, blank:false)
+    sub         (nullable:true, blank:false)
+    lic         (nullable:true, blank:false)
+    cluster     (nullable:true, blank:false)
+    title       (nullable:true, blank:false)
+    startDate   (nullable:true, blank:false)
+    endDate     (nullable:true, blank:false)
   }
   
   

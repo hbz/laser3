@@ -7,11 +7,8 @@ class Combo {
 
   // Participant 1 - One of these
   Org fromOrg
-
   // Participant 2 - One of these
   Org toOrg
-
-
 
   static mapping = {
                 id column:'combo_id'
@@ -23,9 +20,9 @@ class Combo {
   }
 
   static constraints = {
-    status(nullable:true, blank:false)
-    type(nullable:true, blank:false)
-    fromOrg(nullable:true, blank:false)
-    toOrg(nullable:true, blank:false)
+    status  (nullable:true, blank:false)
+    type    (nullable:true, blank:false)
+    fromOrg (nullable:true, blank:false)
+    toOrg   (nullable:true, blank:false)
   }
 }

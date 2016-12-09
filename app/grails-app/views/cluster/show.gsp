@@ -42,13 +42,6 @@
 
 				<dl>
 				
-					<g:if test="${clusterInstance?.owner}">
-						<dt><g:message code="cluster.owner.label" default="Owner" /></dt>
-						
-							<dd><g:link controller="org" action="show" id="${clusterInstance?.owner?.id}">${clusterInstance?.owner?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
 					<g:if test="${clusterInstance?.definition}">
 						<dt><g:message code="cluster.definition.label" default="Definition" /></dt>
 						
@@ -60,6 +53,15 @@
 						<dt><g:message code="cluster.name.label" default="Name" /></dt>
 						
 							<dd><g:fieldValue bean="${clusterInstance}" field="name"/></dd>
+						
+					</g:if>
+				
+					<g:if test="${clusterInstance?.orgs}">
+						<dt><g:message code="cluster.orgs.label" default="Orgs" /></dt>
+						
+							<g:each in="${clusterInstance.orgs}" var="o">
+							<dd><g:link controller="orgRole" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></dd>
+							</g:each>
 						
 					</g:if>
 				

@@ -5,11 +5,12 @@ class PersonRole {
     RefdataValue    roleType
     License         lic
     Org             org
+    Cluster         cluster
     Package         pkg
     Subscription    sub   
     TitleInstance   title
-    def             start_date // TODO
-    def             end_date   // TODO
+    Date            start_date 
+    Date            end_date
     
     static belongsTo = [
         prs:        Person,
@@ -22,6 +23,7 @@ class PersonRole {
         prs         column:'pr_prs_fk'
         lic         column:'pr_lic_fk'
         org         column:'pr_org_fk'
+        cluster     column:'pr_cluster_fk'
         pkg         column:'pr_pkg_fk'
         sub         column:'pr_sub_fk'
         title       column:'pr_title_fk'
@@ -34,6 +36,7 @@ class PersonRole {
         prs         (nullable:false)
         lic         (nullable:true)
         org         (nullable:true)
+        cluster     (nullable:true)
         pkg         (nullable:true)
         sub         (nullable:true)
         title       (nullable:true)

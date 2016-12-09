@@ -44,8 +44,6 @@
 					<thead>
 						<tr>
 						
-							<th class="header"><g:message code="cluster.owner.label" default="Owner" /></th>
-						
 							<g:sortableColumn property="definition" title="${message(code: 'cluster.definition.label', default: 'Definition')}" />
 						
 							<g:sortableColumn property="name" title="${message(code: 'cluster.name.label', default: 'Name')}" />
@@ -58,8 +56,6 @@
 					<tbody>
 					<g:each in="${clusterInstanceList}" var="clusterInstance">
 						<tr>
-						
-							<td>${fieldValue(bean: clusterInstance, field: "owner")}</td>
 						
 							<td>${fieldValue(bean: clusterInstance, field: "definition")}</td>
 						
