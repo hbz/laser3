@@ -8,9 +8,9 @@
 	<ul class="one-to-many">
 		<g:each in="${clusterInstance?.orgs?}" var="o">
 		    <li class="ui-delete">
-		    	${o?.roleType?.value} - <g:link controller="orgRole" action="show" id="${o.id}">${o?.org?.name}</g:link>
-		    	<!-- <button type="button" name="delete" value="${o?.encodeAsHTML()}">Delete</button>-->
-		    	<button type="button" name="delete" value="${o?.id}">Delete</button>
+		    	${o.roleType?.value} - <g:link controller="orgRole" action="show" id="${o.id}">${o.org?.name}</g:link>
+		    	<!-- <button type="button" name="delete" value="${o.encodeAsHTML()}">Delete</button>-->
+		    	<button type="button" name="delete" value="${o.id}">Delete</button>
 		    </li>
 		</g:each>
 	</ul>

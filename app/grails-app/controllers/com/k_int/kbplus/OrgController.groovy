@@ -1,14 +1,19 @@
 package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
+
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
+
 import org.elasticsearch.groovy.common.xcontent.*
+
 import groovy.xml.MarkupBuilder
 import grails.plugins.springsecurity.Secured
+
+import com.k_int.kbplus.ajax.AjaxOrgRoleHandler
 import com.k_int.kbplus.auth.*;
 
-class OrgController {
+class OrgController extends AjaxOrgRoleHandler {
 
     def springSecurityService
 
@@ -145,5 +150,70 @@ class OrgController {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
             redirect action: 'show', id: params.id
         }
+    }
+
+    @Override
+    def ajax() {
+        // TODO: check permissions for operation
+        
+        switch(params.op){
+            case 'add':
+                ajaxOrgRoleAdd()
+                return
+            break;
+            case 'delete':
+                ajaxOrgRoleDelete()
+                return
+            break;
+            default:
+                ajaxOrgRoleList()
+                return
+            break;
+        }
+    }
+    @Override
+    def ajaxOrgRoleList() {
+        def orgInstance = Org.get(params.id)
+        def cluster = Cluster.getAll()
+        def roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Role'))
+        
+        render view: 'ajax/orgRoleList', model: [
+            orgInstance: orgInstance,
+            cluster: cluster,
+            roles: roles
+            ]
+        return
+    }
+    @Override
+    def private ajaxOrgRoleDelete() {
+        
+        def orgRole = OrgRole.get(params.orgRole)
+        // TODO: switch to resolveOID/resolveOID2 ?
+        
+        //def orgRole = AjaxController.resolveOID(params.orgRole[0])
+        if(orgRole) {
+            log.debug("deleting OrgRole ${orgRole}")
+            orgRole.delete(flush:true);
+        }
+        ajaxOrgRoleList()
+    }
+    @Override
+    def private ajaxOrgRoleAdd() {
+        
+        def org     = Org.get(params.id)
+        def cluster = Cluster.get(params.cluster)
+        def role    = RefdataValue.get(params.role)
+                
+        def newOrgRole = new OrgRole(org:org, roleType:role, cluster: cluster)
+        if ( newOrgRole.save(flush:true) ) {
+            log.debug("adding OrgRole ${newOrgRole}")
+        } else {
+            log.error("problem saving new OrgRole ${newOrgRole}")
+            newOrgRole.errors.each { e ->
+                log.error(e)
+            }
+        }
+        
+        ajaxOrgRoleList()
     }
 }

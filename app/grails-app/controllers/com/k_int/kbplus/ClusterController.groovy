@@ -1,8 +1,9 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.ajax.AjaxOrgRoleHandler
 import org.springframework.dao.DataIntegrityViolationException
 
-class ClusterController {
+class ClusterController extends AjaxOrgRoleHandler {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -107,6 +108,7 @@ class ClusterController {
         }
     }
     
+    @Override
     def ajax() {
         // TODO: check permissions for operation
         
@@ -125,7 +127,8 @@ class ClusterController {
             break;
         }
     }
-    def ajaxOrgRoleList() {
+    @Override
+    def private ajaxOrgRoleList() {
         def clusterInstance = Cluster.get(params.id)
         def orgs  = Org.getAll()
         def roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Role'))
@@ -137,18 +140,20 @@ class ClusterController {
             ]
         return
     }
+    @Override
     def private ajaxOrgRoleDelete() {
         
         def orgRole = OrgRole.get(params.orgRole)
         // TODO: switch to resolveOID/resolveOID2 ?
         
         //def orgRole = AjaxController.resolveOID(params.orgRole[0])
-        log.debug("deleting OrgRole ${orgRole}")
-        orgRole.delete(flush:true);
-
+        if(orgRole) {
+            log.debug("deleting OrgRole ${orgRole}")
+            orgRole.delete(flush:true);
+        }
         ajaxOrgRoleList()
     }
-    
+    @Override
     def private ajaxOrgRoleAdd() {
         
         def x    = Cluster.get(params.id)
