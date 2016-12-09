@@ -60,7 +60,7 @@
 						<dt><g:message code="cluster.orgs.label" default="Orgs" /></dt>
 						
 							<g:each in="${clusterInstance.orgs}" var="o">
-							<dd><g:link controller="orgRole" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></dd>
+							<dd>${o?.roleType?.value} - <g:link controller="org" action="show" id="${o?.org?.id}">${o?.org?.name}</g:link></dd>
 							</g:each>
 						
 					</g:if>
@@ -68,7 +68,7 @@
 					<g:if test="${clusterInstance?.type}">
 						<dt><g:message code="cluster.type.label" default="Type" /></dt>
 						
-							<dd><g:link controller="refdataValue" action="show" id="${clusterInstance?.type?.id}">${clusterInstance?.type?.encodeAsHTML()}</g:link></dd>
+							<dd>${clusterInstance?.type?.encodeAsHTML()}</dd>
 						
 					</g:if>
 				

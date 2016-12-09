@@ -106,4 +106,65 @@ class ClusterController {
             redirect action: 'show', id: params.id
         }
     }
+    
+    def ajax() {
+        // TODO: check permissions for operation
+        
+        switch(params.op){
+            case 'add':
+                ajaxOrgRoleAdd()
+                return
+            break;
+            case 'delete':
+                ajaxOrgRoleDelete()
+                return
+            break;
+            default:
+                ajaxOrgRoleList()
+                return
+            break;
+        }
+    }
+    def ajaxOrgRoleList() {
+        def clusterInstance = Cluster.get(params.id)
+        def orgs  = Org.getAll()
+        def roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Role'))
+        
+        render view: 'ajax/orgRoleList', model: [
+            clusterInstance: clusterInstance, 
+            orgs: orgs, 
+            roles: roles
+            ]
+        return
+    }
+    def private ajaxOrgRoleDelete() {
+        
+        def orgRole = OrgRole.get(params.orgRole)
+        // TODO: switch to resolveOID/resolveOID2 ?
+        
+        //def orgRole = AjaxController.resolveOID(params.orgRole[0])
+        log.debug("deleting OrgRole ${orgRole}")
+        orgRole.delete(flush:true);
+
+        ajaxOrgRoleList()
+    }
+    
+    def private ajaxOrgRoleAdd() {
+        
+        def x    = Cluster.get(params.id)
+        def org  = Org.get(params.org)
+        def role = RefdataValue.get(params.role)
+                
+        def newOrgRole = new OrgRole(org:org, roleType:role, cluster: x)
+        if ( newOrgRole.save(flush:true) ) {
+            log.debug("adding OrgRole [ ${x}, ${org}, ${role}]")
+        } else {
+            log.error("Problem saving new orgRole...")
+            newOrgRole.errors.each { e ->
+                log.error(e)
+            }
+        }
+        
+        ajaxOrgRoleList()
+    }
 }
