@@ -210,14 +210,63 @@
 
 </div>
 
-<div id="ui-placeholder">
+<hr/>
+
+<div id="ui-placeholder-cluster" class="ui-ajax">
 	<g:if test="${orgInstance?.id != null}">
 		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}").done(function(data){
-					$("#ui-placeholder").append(data);
+			$.get("/demo/org/ajax/${orgInstance?.id}?type=cluster").done(function(data){
+					$("#ui-placeholder-cluster").append(data);
 			});
 		</script>
 	</g:if>
 </div>
 
+<hr/>
+
+<div id="ui-placeholder-license" class="ui-ajax">
+	<g:if test="${orgInstance?.id != null}">
+		<script>
+			$.get("/demo/org/ajax/${orgInstance?.id}?type=license").done(function(data){
+					$("#ui-placeholder-license").append(data);
+			});
+		</script>
+	</g:if>
+</div>
+
+<hr/>
+
+<div id="ui-placeholder-package" class="ui-ajax">
+	<g:if test="${orgInstance?.id != null}">
+		<script>
+			$.get("/demo/org/ajax/${orgInstance?.id}?type=package").done(function(data){
+					$("#ui-placeholder-package").append(data);
+			});
+		</script>
+	</g:if>
+</div>
+
+<hr/>
+ 
+<div id="ui-placeholder-subscription" class="ui-ajax">
+	<g:if test="${orgInstance?.id != null}">
+		<script>
+			$.get("/demo/org/ajax/${orgInstance?.id}?type=subscription").done(function(data){
+					$("#ui-placeholder-subscription").append(data);
+			});
+		</script>
+	</g:if>
+</div>
+
+<hr/>
+
+<div id="ui-placeholder-title" class="ui-ajax">
+	<g:if test="${orgInstance?.id != null}">
+		<script>
+			$.get("/demo/org/ajax/${orgInstance?.id}?type=title").done(function(data){
+					$("#ui-placeholder-title").append(data);
+			});
+		</script>
+	</g:if>
+</div>
 

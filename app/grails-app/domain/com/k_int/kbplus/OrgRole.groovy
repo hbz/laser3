@@ -25,7 +25,7 @@ class OrgRole {
          pkg column:'or_pkg_fk'
          sub column:'or_sub_fk'
          lic column:'or_lic_fk'
-     cluster column:'or_custer_fk'
+     cluster column:'or_cluster_fk'
        title column:'or_title_fk'
    startDate column:'or_start_date'
      endDate column:'or_end_date'
