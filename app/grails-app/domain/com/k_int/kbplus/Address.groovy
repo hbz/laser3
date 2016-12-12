@@ -36,7 +36,7 @@ class Address {
         city     (nullable:false, blank:false)
         state    (nullable:false, blank:false)
         country  (nullable:false, blank:false)
-        type     (nullable:true)
+        type     (nullable:false)
         prs      (nullable:true)
         org      (nullable:true)
     }

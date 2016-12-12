@@ -75,7 +75,7 @@
     	optionKey="id"
     	optionValue="value"
     	value="${addressInstance?.type?.id}"
-        noSelection="['': '']"/>
+        required=""/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'prs', 'error')} ">

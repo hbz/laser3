@@ -21,7 +21,7 @@ class Contact {
     static constraints = {
         mail   (nullable:true, blank:true)
         phone  (nullable:true, blank:true)
-        type   (nullable:true, blank:true)
+        type   (nullable:false)
         prs    (nullable:true)
         org    (nullable:true)
     }

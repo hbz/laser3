@@ -2,7 +2,9 @@ package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
 
-class PersonController {
+import com.k_int.kbplus.ajax.AjaxOrgRoleHandler
+
+class PersonController extends AjaxOrgRoleHandler {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -105,5 +107,157 @@ class PersonController {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect action: 'show', id: params.id
         }
+    }
+    
+    @Override
+    def ajax() {
+        // TODO: check permissions for operation
+        
+        switch(params.op){
+            case 'add':
+                ajaxOrgRoleAdd()
+                return
+            break;
+            case 'delete':
+                ajaxOrgRoleDelete()
+                return
+            break;
+            default:
+                ajaxOrgRoleList()
+                return
+            break;
+        }
+    }
+    
+    @Override
+    def private ajaxOrgRoleList() {
+        def valid               = true
+        def person              = Person.get(params.id)
+        def org                 = Org.get(params.org)
+        def orgs                = Org.getAll()
+        def type                = params.type
+        def prsLinks            // only person depeding entities
+        def targets             //
+        def roles               = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Person Role'))
+        def targetOptionValue   = "name"
+        def linkController
+        def linkAction          // TODO
+                
+        def hqlPart = "from PersonRole as GOR where GOR.prs = ${person.id}"
+        
+        if(type == "cluster") {
+            targets             = Cluster.getAll()
+            linkController      = "cluster"
+            prsLinks            = PersonRole.findAll(hqlPart + " and GOR.cluster is not NULL")
+        }
+        else if(type == "lic") {
+            targets             = License.getAll()
+            targetOptionValue   = "reference"
+            linkController      = "license"
+            prsLinks            = PersonRole.findAll(hqlPart + " and GOR.lic is not NULL")
+        }
+        else if(type == "pkg") {
+            targets             = Package.getAll()
+            linkController      = "package"
+            prsLinks            = PersonRole.findAll(hqlPart + " and GOR.pkg is not NULL")
+        }
+        else if(type == "sub") {
+            targets             = Subscription.getAll()
+            linkController      = "subscription"
+            prsLinks            = PersonRole.findAll(hqlPart + " and GOR.sub is not NULL")
+        }
+        else if(type == "title") {
+            targets             = TitleInstance.getAll()
+            targetOptionValue   = "normTitle"
+            linkController      = "titleInstance"
+            prsLinks            = PersonRole.findAll(hqlPart + " and GOR.title is not NULL")
+        }
+        else {
+            valid = false
+        }
+
+        render view: 'ajax/genericOrgRoleList', model: [
+            personInstance:     person,
+            targets:            targets,
+            orgs:               orgs,
+            prsLinks:           prsLinks,
+            type:               type,
+            roles:              roles,
+            targetOptionValue:  targetOptionValue,
+            linkController:     linkController
+            ]
+        return
+    }
+
+    @Override
+    def private ajaxOrgRoleDelete() {
+
+        log.debug(params)
+        
+        def prsRole = PersonRole.get(params.prsRole)
+        // TODO: switch to resolveOID/resolveOID2 ?
+        
+        //def prsRole = AjaxController.resolveOID(params.prsRole[0])
+        if(prsRole) {
+            log.debug("deleting PersonRole ${prsRole}")
+            prsRole.delete(flush:true);
+        }
+        ajaxOrgRoleList()
+    }
+
+    @Override
+    def private ajaxOrgRoleAdd() {
+        
+        log.debug(params)
+     
+        def prs         = Person.get(params.id)
+        def org         = Org.get(params.org)
+        def prsRole     = RefdataValue.get(params.role)
+        def type        = params.type
+        def newPrsRole
+        def target
+        
+        switch(type) {
+            case "cluster":
+                target     = Cluster.get(params.target)
+                newPrsRole = new PersonRole(prs:prs, roleType:prsRole, org:org, cluster:target)
+            break;
+            case"lic":
+                target     = License.get(params.target)
+                newPrsRole = new PersonRole(prs:prs, roleType:prsRole, org:org, lic:target)
+            break;
+            case "pkg":
+                target     = Package.get(params.target)
+                newPrsRole = new PersonRole(prs:prs, roleType:prsRole, org:org, pkg:target)
+            break;
+            case "sub":
+                target     = Subscription.get(params.target)
+                newPrsRole = new PersonRole(prs:prs, roleType:prsRole, org:org, sub:target)
+            break;
+            case "title":
+                target     = TitleInstance.get(params.target)
+                newPrsRole = new PersonRole(prs:prs, roleType:prsRole, org:org, title:target)
+            break;
+        }
+        
+        if(PersonRole.find("from PersonRole as GOR where GOR.prs = ${prs.id} and GOR.org = ${org.id} and GOR.roleType = ${prsRole.id} and GOR.${type} = ${target.id}")) {
+            log.debug("ignoring to add PersonRole because of existing duplicate")
+        }
+        else if(newPrsRole) {
+            if(newPrsRole.save(flush:true)) {
+                log.debug("adding PersonRole ${newPrsRole}")
+            } else {
+                log.error("problem saving new PersonRole ${newPrsRole}")
+                if(newPrsRole)
+                    newPrsRole.errors.each { e ->
+                        log.error(e)
+                    }
+            }
+        }
+        else {
+            log.debug("problem saving new PersonRole")
+        }
+        
+        ajaxOrgRoleList()
     }
 }

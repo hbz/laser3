@@ -4,7 +4,6 @@ class PersonRole {
 
     RefdataValue    roleType
     License         lic
-    Org             org
     Cluster         cluster
     Package         pkg
     Subscription    sub   
@@ -14,6 +13,7 @@ class PersonRole {
     
     static belongsTo = [
         prs:        Person,
+        org:        Org
     ]
     
     static mapping = {

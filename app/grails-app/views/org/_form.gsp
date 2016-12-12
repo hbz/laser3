@@ -210,63 +210,30 @@
 
 </div>
 
-<hr/>
+<h3>Org-to-X-with-Role</h3>
 
-<div id="ui-placeholder-cluster" class="ui-ajax">
-	<g:if test="${orgInstance?.id != null}">
-		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}?type=cluster").done(function(data){
-					$("#ui-placeholder-cluster").append(data);
-			});
-		</script>
-	</g:if>
-</div>
+<div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>
+<div id="ui-placeholder-lic" class="ui-ajax"></div><hr/>
+<div id="ui-placeholder-pkg" class="ui-ajax"></div><hr/>
+<div id="ui-placeholder-sub" class="ui-ajax"></div><hr/>
+<div id="ui-placeholder-title" class="ui-ajax"></div>
 
-<hr/>
-
-<div id="ui-placeholder-lic" class="ui-ajax">
-	<g:if test="${orgInstance?.id != null}">
-		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}?type=lic").done(function(data){
-					$("#ui-placeholder-lic").append(data);
-			});
-		</script>
-	</g:if>
-</div>
-
-<hr/>
-
-<div id="ui-placeholder-pkg" class="ui-ajax">
-	<g:if test="${orgInstance?.id != null}">
-		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}?type=pkg").done(function(data){
-					$("#ui-placeholder-pkg").append(data);
-			});
-		</script>
-	</g:if>
-</div>
-
-<hr/>
- 
-<div id="ui-placeholder-sub" class="ui-ajax">
-	<g:if test="${orgInstance?.id != null}">
-		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}?type=sub").done(function(data){
-					$("#ui-placeholder-sub").append(data);
-			});
-		</script>
-	</g:if>
-</div>
-
-<hr/>
-
-<div id="ui-placeholder-title" class="ui-ajax">
-	<g:if test="${orgInstance?.id != null}">
-		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}?type=title").done(function(data){
-					$("#ui-placeholder-title").append(data);
-			});
-		</script>
-	</g:if>
-</div>
-
+<g:if test="${orgInstance?.id != null}">
+	<script>
+		$.get("/demo/org/ajax/${orgInstance.id}?type=cluster").done(function(data){
+			$("#ui-placeholder-cluster").append(data);
+		});
+		$.get("/demo/org/ajax/${orgInstance.id}?type=lic").done(function(data){
+			$("#ui-placeholder-lic").append(data);
+		});
+		$.get("/demo/org/ajax/${orgInstance.id}?type=pkg").done(function(data){
+			$("#ui-placeholder-pkg").append(data);
+		});
+		$.get("/demo/org/ajax/${orgInstance.id}?type=sub").done(function(data){
+			$("#ui-placeholder-sub").append(data);
+		});
+		$.get("/demo/org/ajax/${orgInstance.id}?type=title").done(function(data){
+			$("#ui-placeholder-title").append(data);
+		});
+	</script>
+</g:if>

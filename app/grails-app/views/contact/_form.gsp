@@ -30,7 +30,7 @@
     	optionKey="id"
     	optionValue="value"
     	value="${contactInstance?.type?.id}"
-        noSelection="['': '']"/>
+        required=""/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: contactInstance, field: 'prs', 'error')} ">

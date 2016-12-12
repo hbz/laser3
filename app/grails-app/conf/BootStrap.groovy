@@ -36,15 +36,15 @@ class BootStrap {
     RefdataCategory.lookupOrCreate("YNO","Not applicable")
     RefdataCategory.lookupOrCreate("YNO","Unknown")
 
-    RefdataCategory.lookupOrCreate("Gender","F")
-    RefdataCategory.lookupOrCreate("Gender","M")
+    RefdataCategory.lookupOrCreate("Gender","Female")
+    RefdataCategory.lookupOrCreate("Gender","Male")
     
-    // TODO
-    RefdataCategory.lookupOrCreate('AddressType', 'AddressType 1');
-    RefdataCategory.lookupOrCreate('AddressType', 'AddressType 2');
-    // TODO
-    RefdataCategory.lookupOrCreate('ContactType', 'ContactType 1');
-    RefdataCategory.lookupOrCreate('ContactType', 'ContactType 2');
+    RefdataCategory.lookupOrCreate('AddressType', 'Postal address');
+    RefdataCategory.lookupOrCreate('AddressType', 'Billing address');
+    RefdataCategory.lookupOrCreate('AddressType', 'Delivery address');
+
+    RefdataCategory.lookupOrCreate('ContactType', 'Personal');
+    RefdataCategory.lookupOrCreate('ContactType', 'Job-related');
     // TODO
     RefdataCategory.lookupOrCreate('ClusterType', 'ClusterType 1');
     RefdataCategory.lookupOrCreate('ClusterType', 'ClusterType 2');
@@ -79,10 +79,9 @@ class BootStrap {
     def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Owner');
     def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Member');
     
-    // TODO
-    RefdataCategory.lookupOrCreate('Person Role', 'PR 1');
-    RefdataCategory.lookupOrCreate('Person Role', 'PR 2');
-    RefdataCategory.lookupOrCreate('Person Role', 'PR 3');
+    RefdataCategory.lookupOrCreate('Person Role', 'Specific licence editor');
+    RefdataCategory.lookupOrCreate('Person Role', 'Specific subscription editor');
+    RefdataCategory.lookupOrCreate('Person Role', 'Specific package editor');
 
     OrgPermShare.assertPermShare(view_permission, or_licensee_role);
     OrgPermShare.assertPermShare(edit_permission, or_licensee_role);

@@ -278,18 +278,19 @@ class OrgController extends AjaxOrgRoleHandler {
         if(OrgRole.find("from OrgRole as GOR where GOR.org = ${org.id} and GOR.roleType = ${orgRole.id} and GOR.${type} = ${target.id}")) {
             log.debug("ignoring to add OrgRole because of existing duplicate")
         }
-        else {    
-            if(newOrgRole) {
-                if(newOrgRole.save(flush:true)) {
-                    log.debug("adding OrgRole ${newOrgRole}")
-                } else {
-                    log.error("problem saving new OrgRole ${newOrgRole}")
-                    if(newOrgRole)
-                        newOrgRole.errors.each { e ->
-                            log.error(e)
-                        }
-                }
+        else if(newOrgRole) {
+            if(newOrgRole.save(flush:true)) {
+                log.debug("adding OrgRole ${newOrgRole}")
+            } else {
+                log.error("problem saving new OrgRole ${newOrgRole}")
+                if(newOrgRole)
+                    newOrgRole.errors.each { e ->
+                        log.error(e)
+                    }
             }
+        }
+        else {
+            log.debug("problem saving new OrgRole")
         }
         
         ajaxOrgRoleList()

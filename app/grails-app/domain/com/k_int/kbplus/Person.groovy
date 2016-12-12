@@ -16,6 +16,14 @@ class Person {
         gender      column:'prs_gender'
     }
     
+    static mappedBy = [
+        links: 'prs'
+    ]
+  
+    static hasMany = [
+        links: PersonRole
+    ]
+    
     static constraints = {
         first_name  (nullable:false, blank:false)
         middle_name (nullable:true,  blank:true)
