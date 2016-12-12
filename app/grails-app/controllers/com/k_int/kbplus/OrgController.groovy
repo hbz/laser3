@@ -4,12 +4,9 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
-
 import org.elasticsearch.groovy.common.xcontent.*
-
 import groovy.xml.MarkupBuilder
 import grails.plugins.springsecurity.Secured
-
 import com.k_int.kbplus.ajax.AjaxOrgRoleHandler
 import com.k_int.kbplus.auth.*;
 
@@ -190,18 +187,18 @@ class OrgController extends AjaxOrgRoleHandler {
             roles               = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Role'))
             orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.cluster is not NULL")
         }
-        else if(type == "license") {
+        else if(type == "lic") {
             targets             = License.getAll()
             targetOptionValue   = "reference"
             linkController      = "license"
             orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.lic is not NULL")
         }
-        else if(type == "package") {
+        else if(type == "pkg") {
             targets             = Package.getAll()
             linkController      = "package"
             orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.pkg is not NULL")
         }
-        else if(type == "subscription") {
+        else if(type == "sub") {
             targets             = Subscription.getAll()
             linkController      = "subscription"
             orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.sub is not NULL")
@@ -254,21 +251,21 @@ class OrgController extends AjaxOrgRoleHandler {
         def type        = params.type
         def newOrgRole
         def target
-        
+
         switch(type) {
             case "cluster":
                 target      = Cluster.get(params.target)
                 newOrgRole  = new OrgRole(org:org, roleType:orgRole, cluster:target)
             break;
-            case"license":
+            case"lic":
                 target      = License.get(params.target)
                 newOrgRole  = new OrgRole(org:org, roleType:orgRole, lic:target)
             break;
-            case "package":
+            case "pkg":
                 target      = Package.get(params.target)
                 newOrgRole  = new OrgRole(org:org, roleType:orgRole, pkg:target)
             break;
-            case "subscription":
+            case "sub":
                 target      = Subscription.get(params.target)
                 newOrgRole  = new OrgRole(org:org, roleType:orgRole, sub:target)
             break;
@@ -278,12 +275,20 @@ class OrgController extends AjaxOrgRoleHandler {
             break;
         }
         
-        if(newOrgRole && newOrgRole.save(flush:true)) {
-            log.debug("adding OrgRole ${newOrgRole}")
-        } else {
-            log.error("problem saving new OrgRole ${newOrgRole}")
-            newOrgRole.errors.each { e ->
-                log.error(e)
+        if(OrgRole.find("from OrgRole as GOR where GOR.org = ${org.id} and GOR.roleType = ${orgRole.id} and GOR.${type} = ${target.id}")) {
+            log.debug("ignoring to add OrgRole because of existing duplicate")
+        }
+        else {    
+            if(newOrgRole) {
+                if(newOrgRole.save(flush:true)) {
+                    log.debug("adding OrgRole ${newOrgRole}")
+                } else {
+                    log.error("problem saving new OrgRole ${newOrgRole}")
+                    if(newOrgRole)
+                        newOrgRole.errors.each { e ->
+                            log.error(e)
+                        }
+                }
             }
         }
         

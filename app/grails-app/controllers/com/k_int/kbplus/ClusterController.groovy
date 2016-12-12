@@ -159,14 +159,20 @@ class ClusterController extends AjaxOrgRoleHandler {
         def x    = Cluster.get(params.id)
         def org  = Org.get(params.org)
         def role = RefdataValue.get(params.role)
+        
+        if(OrgRole.find("from OrgRole as GOR where GOR.org = ${org.id} and GOR.roleType = ${role.id} and GOR.cluster = ${x.id}")) {
+            log.debug("ignoring to add OrgRole because of existing duplicate")
+        }
+        else {
                 
-        def newOrgRole = new OrgRole(org:org, roleType:role, cluster: x)
-        if ( newOrgRole.save(flush:true) ) {
-            log.debug("adding OrgRole [ ${x}, ${org}, ${role}]")
-        } else {
-            log.error("Problem saving new orgRole...")
-            newOrgRole.errors.each { e ->
-                log.error(e)
+            def newOrgRole = new OrgRole(org:org, roleType:role, cluster: x)
+            if ( newOrgRole.save(flush:true) ) {
+                log.debug("adding OrgRole [ ${x}, ${org}, ${role}]")
+            } else {
+                log.error("Problem saving new orgRole...")
+                newOrgRole.errors.each { e ->
+                    log.error(e)
+                }
             }
         }
         

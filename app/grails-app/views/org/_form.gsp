@@ -224,11 +224,11 @@
 
 <hr/>
 
-<div id="ui-placeholder-license" class="ui-ajax">
+<div id="ui-placeholder-lic" class="ui-ajax">
 	<g:if test="${orgInstance?.id != null}">
 		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}?type=license").done(function(data){
-					$("#ui-placeholder-license").append(data);
+			$.get("/demo/org/ajax/${orgInstance?.id}?type=lic").done(function(data){
+					$("#ui-placeholder-lic").append(data);
 			});
 		</script>
 	</g:if>
@@ -236,11 +236,11 @@
 
 <hr/>
 
-<div id="ui-placeholder-package" class="ui-ajax">
+<div id="ui-placeholder-pkg" class="ui-ajax">
 	<g:if test="${orgInstance?.id != null}">
 		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}?type=package").done(function(data){
-					$("#ui-placeholder-package").append(data);
+			$.get("/demo/org/ajax/${orgInstance?.id}?type=pkg").done(function(data){
+					$("#ui-placeholder-pkg").append(data);
 			});
 		</script>
 	</g:if>
@@ -248,11 +248,11 @@
 
 <hr/>
  
-<div id="ui-placeholder-subscription" class="ui-ajax">
+<div id="ui-placeholder-sub" class="ui-ajax">
 	<g:if test="${orgInstance?.id != null}">
 		<script>
-			$.get("/demo/org/ajax/${orgInstance?.id}?type=subscription").done(function(data){
-					$("#ui-placeholder-subscription").append(data);
+			$.get("/demo/org/ajax/${orgInstance?.id}?type=sub").done(function(data){
+					$("#ui-placeholder-sub").append(data);
 			});
 		</script>
 	</g:if>
