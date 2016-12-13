@@ -40,6 +40,7 @@
 				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
 				</g:if>
 
+<div class="inline-lists">
 				<dl>
 				
 					<g:if test="${clusterInstance?.definition}">
@@ -48,23 +49,26 @@
 							<dd><g:fieldValue bean="${clusterInstance}" field="definition"/></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${clusterInstance?.name}">
 						<dt><g:message code="cluster.name.label" default="Name" /></dt>
 						
 							<dd><g:fieldValue bean="${clusterInstance}" field="name"/></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${clusterInstance?.orgs}">
 						<dt><g:message code="cluster.orgs.label" default="Orgs" /></dt>
-						
+						<dd><ul>
 							<g:each in="${clusterInstance.orgs}" var="o">
-							<dd>${o?.roleType?.value} - <g:link controller="org" action="show" id="${o?.org?.id}">${o?.org?.name}</g:link></dd>
+							<li>${o?.roleType?.value} - <g:link controller="org" action="show" id="${o?.org?.id}">${o?.org?.name}</g:link></li>
 							</g:each>
-						
+						</ul></dd>
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${clusterInstance?.type}">
 						<dt><g:message code="cluster.type.label" default="Type" /></dt>
 						
@@ -73,7 +77,7 @@
 					</g:if>
 				
 				</dl>
-
+</div>
 				<g:form>
 					<g:hiddenField name="id" value="${clusterInstance?.id}" />
 					<div class="form-actions">

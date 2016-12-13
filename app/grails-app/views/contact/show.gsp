@@ -40,36 +40,41 @@
 				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
 				</g:if>
 
-				<dl>
 				
+<div class="inline-lists">
+				<dl>			
 					<g:if test="${contactInstance?.mail}">
 						<dt><g:message code="contact.mail.label" default="Mail" /></dt>
 						
 							<dd><g:fieldValue bean="${contactInstance}" field="mail"/></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${contactInstance?.phone}">
 						<dt><g:message code="contact.phone.label" default="Phone" /></dt>
 						
 							<dd><g:fieldValue bean="${contactInstance}" field="phone"/></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${contactInstance?.type}">
 						<dt><g:message code="contact.type.label" default="Type" /></dt>
 						
 							<dd><g:link controller="refdataValue" action="show" id="${contactInstance?.type?.id}">${contactInstance?.type?.encodeAsHTML()}</g:link></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${contactInstance?.prs}">
 						<dt><g:message code="contact.prs.label" default="Prs" /></dt>
 						
 							<dd><g:link controller="person" action="show" id="${contactInstance?.prs?.id}">${contactInstance?.prs?.encodeAsHTML()}</g:link></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${contactInstance?.org}">
 						<dt><g:message code="contact.org.label" default="Org" /></dt>
 						
@@ -78,7 +83,7 @@
 					</g:if>
 				
 				</dl>
-
+</div>
 				<g:form>
 					<g:hiddenField name="id" value="${contactInstance?.id}" />
 					<div class="form-actions">

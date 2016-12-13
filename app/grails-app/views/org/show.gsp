@@ -125,9 +125,10 @@
                                   <g:if test="${i.sub}"><g:link controller="subscription" action="show" id="${i.sub.id}">Subscription: ${i.sub.name}</g:link></g:if>
                                   <g:if test="${i.lic}">Licence: ${i.lic.id}</g:if>
                                   <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">Title: ${i.title.title}</g:link></g:if>
-                                  (${i.roleType?.value}) </li>
+                                  (${i.roleType?.value}) 
+                                  </li>
                               </g:each>
-                          </li></dd>
+                      </ul></dd>
                   </dl>
               </g:if>
 

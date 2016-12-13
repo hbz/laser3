@@ -69,6 +69,7 @@
 						
 							<td class="link">
 								<g:link action="show" id="${personInstance.id}" class="btn btn-small">Show &raquo;</g:link>
+								<g:link action="edit" id="${personInstance.id}" class="btn btn-small">Edit</g:link>
 							</td>
 						</tr>
 					</g:each>

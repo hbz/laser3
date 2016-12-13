@@ -40,6 +40,7 @@
 				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
 				</g:if>
 
+<div class="inline-lists">
 				<dl>
 				
 					<g:if test="${personInstance?.first_name}">
@@ -48,30 +49,62 @@
 							<dd><g:fieldValue bean="${personInstance}" field="first_name"/></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${personInstance?.middle_name}">
 						<dt><g:message code="person.middle_name.label" default="Middlename" /></dt>
 						
 							<dd><g:fieldValue bean="${personInstance}" field="middle_name"/></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${personInstance?.last_name}">
 						<dt><g:message code="person.last_name.label" default="Lastname" /></dt>
 						
 							<dd><g:fieldValue bean="${personInstance}" field="last_name"/></dd>
 						
 					</g:if>
-				
+				</dl>
+				<dl>
 					<g:if test="${personInstance?.gender}">
 						<dt><g:message code="person.gender.label" default="Gender" /></dt>
 						
 							<dd><g:link controller="refdataValue" action="show" id="${personInstance?.gender?.id}">${personInstance?.gender?.encodeAsHTML()}</g:link></dd>
 						
 					</g:if>
+				</dl>
+				<dl>
+					<g:if test="${personInstance?.links}">
+						
+							<dt><g:message code="person.links.label" default="Links" /></dt>
+							<dd><ul>
+								<g:each in="${personInstance.links}" var="l">
+								<li>
+									<g:link controller="org" action="show" id="${l.org?.id}">Org: ${l.org?.name}</g:link> /
+								 	
+								 	<g:if test="${l.pkg}">
+								 		<g:link controller="package" action="show" id="${l.pkg.id}">Package: ${l.pkg.name}</g:link>
+								 	</g:if>
+	                                <g:if test="${l.cluster}">
+	                                	<g:link controller="cluster" action="show" id="${l.cluster.id}">Cluster: ${l.cluster.name}</g:link>
+	                                </g:if>
+	                                <g:if test="${l.sub}">
+	                                	<g:link controller="subscription" action="show" id="${l.sub.id}">Subscription: ${l.sub.name}</g:link>
+	                                </g:if>
+	                                <g:if test="${l.lic}">Licence: ${l.lic.id}</g:if>
+	                                <g:if test="${l.title}">
+	                                	<g:link controller="titleInstance" action="show" id="${l.title.id}">Title: ${l.title.title}</g:link>
+	                                </g:if>
+	                                  / ${l.roleType?.value}
+	                            </li>
+								</g:each>
+							</ul></dd>
+				
+					</g:if>
 				
 				</dl>
-
+</div>
 				<g:form>
 					<g:hiddenField name="id" value="${personInstance?.id}" />
 					<div class="form-actions">
