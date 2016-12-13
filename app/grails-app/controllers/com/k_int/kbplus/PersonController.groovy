@@ -2,9 +2,9 @@ package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
 
-import com.k_int.kbplus.ajax.AjaxOrgRoleHandler
+import com.k_int.kbplus.ajax.AjaxHandler
 
-class PersonController extends AjaxOrgRoleHandler {
+class PersonController extends AjaxHandler {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -115,22 +115,22 @@ class PersonController extends AjaxOrgRoleHandler {
         
         switch(params.op){
             case 'add':
-                ajaxOrgRoleAdd()
+                ajaxAdd()
                 return
             break;
             case 'delete':
-                ajaxOrgRoleDelete()
+                ajaxDelete()
                 return
             break;
             default:
-                ajaxOrgRoleList()
+                ajaxList()
                 return
             break;
         }
     }
     
     @Override
-    def private ajaxOrgRoleList() {
+    def private ajaxList() {
         def valid               = true
         def person              = Person.get(params.id)
         def org                 = Org.get(params.org)
@@ -190,7 +190,7 @@ class PersonController extends AjaxOrgRoleHandler {
     }
 
     @Override
-    def private ajaxOrgRoleDelete() {
+    def private ajaxDelete() {
 
         log.debug(params)
         
@@ -202,11 +202,11 @@ class PersonController extends AjaxOrgRoleHandler {
             log.debug("deleting PersonRole ${prsRole}")
             prsRole.delete(flush:true);
         }
-        ajaxOrgRoleList()
+        ajaxList()
     }
 
     @Override
-    def private ajaxOrgRoleAdd() {
+    def private ajaxAdd() {
         
         log.debug(params)
      
@@ -258,6 +258,6 @@ class PersonController extends AjaxOrgRoleHandler {
             log.debug("problem saving new PersonRole")
         }
         
-        ajaxOrgRoleList()
+        ajaxList()
     }
 }

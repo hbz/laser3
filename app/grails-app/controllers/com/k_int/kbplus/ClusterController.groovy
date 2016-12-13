@@ -1,9 +1,9 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.ajax.AjaxOrgRoleHandler
+import com.k_int.kbplus.ajax.AjaxHandler
 import org.springframework.dao.DataIntegrityViolationException
 
-class ClusterController extends AjaxOrgRoleHandler {
+class ClusterController extends AjaxHandler {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -114,21 +114,21 @@ class ClusterController extends AjaxOrgRoleHandler {
         
         switch(params.op){
             case 'add':
-                ajaxOrgRoleAdd()
+                ajaxAdd()
                 return
             break;
             case 'delete':
-                ajaxOrgRoleDelete()
+                ajaxDelete()
                 return
             break;
             default:
-                ajaxOrgRoleList()
+                ajaxList()
                 return
             break;
         }
     }
     @Override
-    def private ajaxOrgRoleList() {
+    def private ajaxList() {
         def clusterInstance = Cluster.get(params.id)
         def orgs  = Org.getAll()
         def roles = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Role'))
@@ -141,7 +141,7 @@ class ClusterController extends AjaxOrgRoleHandler {
         return
     }
     @Override
-    def private ajaxOrgRoleDelete() {
+    def private ajaxDelete() {
         
         def orgRole = OrgRole.get(params.orgRole)
         // TODO: switch to resolveOID/resolveOID2 ?
@@ -151,10 +151,10 @@ class ClusterController extends AjaxOrgRoleHandler {
             log.debug("deleting OrgRole ${orgRole}")
             orgRole.delete(flush:true);
         }
-        ajaxOrgRoleList()
+        ajaxList()
     }
     @Override
-    def private ajaxOrgRoleAdd() {
+    def private ajaxAdd() {
         
         def x    = Cluster.get(params.id)
         def org  = Org.get(params.org)
@@ -176,6 +176,6 @@ class ClusterController extends AjaxOrgRoleHandler {
             }
         }
         
-        ajaxOrgRoleList()
+        ajaxList()
     }
 }

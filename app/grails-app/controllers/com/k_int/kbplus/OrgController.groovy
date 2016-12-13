@@ -7,10 +7,10 @@ import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
 import grails.plugins.springsecurity.Secured
-import com.k_int.kbplus.ajax.AjaxOrgRoleHandler
+import com.k_int.kbplus.ajax.AjaxHandler
 import com.k_int.kbplus.auth.*;
 
-class OrgController extends AjaxOrgRoleHandler {
+class OrgController extends AjaxHandler {
 
     def springSecurityService
 
@@ -155,22 +155,22 @@ class OrgController extends AjaxOrgRoleHandler {
         
         switch(params.op){
             case 'add':
-                ajaxOrgRoleAdd()
+                ajaxAdd()
                 return
             break;
             case 'delete':
-                ajaxOrgRoleDelete()
+                ajaxDelete()
                 return
             break;
             default:
-                ajaxOrgRoleList()
+                ajaxList()
                 return
             break;
         }
     }
 
     @Override
-    def private ajaxOrgRoleList() {
+    def private ajaxList() {
         def valid               = true
         def org                 = Org.get(params.id)
         def type                = params.type
@@ -181,33 +181,35 @@ class OrgController extends AjaxOrgRoleHandler {
         def linkController      
         def linkAction          // TODO
                 
+        def hqlPart = "from OrgRole as GOR where GOR.org = ${org.id}"
+        
         if(type == "cluster") {
             targets             = Cluster.getAll()
             linkController      = "cluster"
             roles               = RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Role'))
-            orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.cluster is not NULL")
+            orgLinks            = OrgRole.findAll(hqlPart + " and GOR.cluster is not NULL")
         }
         else if(type == "lic") {
             targets             = License.getAll()
             targetOptionValue   = "reference"
             linkController      = "license"
-            orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.lic is not NULL")
+            orgLinks            = OrgRole.findAll(hqlPart + " and GOR.lic is not NULL")
         }
         else if(type == "pkg") {
             targets             = Package.getAll()
             linkController      = "package"
-            orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.pkg is not NULL")
+            orgLinks            = OrgRole.findAll(hqlPart + " and GOR.pkg is not NULL")
         }
         else if(type == "sub") {
             targets             = Subscription.getAll()
             linkController      = "subscription"
-            orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.sub is not NULL")
+            orgLinks            = OrgRole.findAll(hqlPart + " and GOR.sub is not NULL")
         }
         else if(type == "title") {
             targets             = TitleInstance.getAll()
             targetOptionValue   = "normTitle"
             linkController      = "titleInstance"
-            orgLinks            = OrgRole.findAll("from OrgRole as GOR where GOR.org = ${org.id} and GOR.title is not NULL")
+            orgLinks            = OrgRole.findAll(hqlPart + " and GOR.title is not NULL")
         }
         else {
             valid = false
@@ -226,7 +228,7 @@ class OrgController extends AjaxOrgRoleHandler {
     }
 
     @Override
-    def private ajaxOrgRoleDelete() {
+    def private ajaxDelete() {
 
         log.debug(params)
         
@@ -238,11 +240,11 @@ class OrgController extends AjaxOrgRoleHandler {
             log.debug("deleting OrgRole ${orgRole}")
             orgRole.delete(flush:true);
         }
-        ajaxOrgRoleList()
+        ajaxList()
     }
 
     @Override
-    def private ajaxOrgRoleAdd() {
+    def private ajaxAdd() {
         
         log.debug(params)
      
@@ -293,6 +295,6 @@ class OrgController extends AjaxOrgRoleHandler {
             log.debug("problem saving new OrgRole")
         }
         
-        ajaxOrgRoleList()
+        ajaxList()
     }
 }

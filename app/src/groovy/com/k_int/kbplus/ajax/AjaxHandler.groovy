@@ -2,7 +2,7 @@ package com.k_int.kbplus.ajax
 
 import com.k_int.kbplus.OrgRole
 
-abstract class AjaxOrgRoleHandler {
+abstract class AjaxHandler {
 
     /**
      * delegates requesting ajax call to private functions in extending classes
@@ -12,10 +12,10 @@ abstract class AjaxOrgRoleHandler {
     def ajax() {
     }
     
-    def private ajaxOrgRoleList() {
+    def private ajaxList() {
     }
-    def private ajaxOrgRoleAdd() {
+    def private ajaxAdd() {
     }
-    def private ajaxOrgRoleDelete() {
+    def private ajaxDelete() {
     }
 }
