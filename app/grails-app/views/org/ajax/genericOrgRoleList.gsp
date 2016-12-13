@@ -51,7 +51,7 @@
 		$('#ui-placeholder-${type} button[name=add]').click(function(){
 			var target = $("#ui-placeholder-${type} [name=orgRole_target] option:selected").attr("value");
 			var role   = $("#ui-placeholder-${type} [name=orgRole_role] option:selected").attr("value");
-			$.post("/demo/org/ajax", {
+			$.post("${webRequest.baseUrl}/org/ajax", {
 				op:     "add",
 				id:     "${orgInstance.id}",
 				type:   "${type}",
@@ -63,7 +63,7 @@
 		})
 		$('#ui-placeholder-${type} button[name=delete]').click(function(){
 			var orgRole = $(this).attr("value");
-			$.post("/demo/org/ajax", {
+			$.post("${webRequest.baseUrl}/org/ajax", {
 				op:      "delete",
 				id:      "${orgInstance.id}",
 				type:    "${type}",

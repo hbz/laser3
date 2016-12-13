@@ -37,8 +37,8 @@
             <td><em>2013</em>,<em>2014</em></td>
           </tr>
         </table>
-        <p>Example Call:  <em><strong>wget "http://localhost:8080/demo/api/assertCore?inst=jusplogin:ast&amp;title=jusp:9498&amp;year=2014"</strong></em></p>
-        <p>Example Call:  <em><strong>wget "http://localhost:8080/demo/api/assertCore?inst=jusplogin:ast&amp;title=jusp:201570&amp;year=2014"</strong></em> (title via multiple providers!)</p>
+        <p>Example Call:  <em><strong>wget "${webRequest.baseUrl}/api/assertCore?inst=jusplogin:ast&amp;title=jusp:9498&amp;year=2014"</strong></em></p>
+        <p>Example Call:  <em><strong>wget "${webRequest.baseUrl}/api/assertCore?inst=jusplogin:ast&amp;title=jusp:201570&amp;year=2014"</strong></em> (title via multiple providers!)</p>
       </li>
     </ul>
 

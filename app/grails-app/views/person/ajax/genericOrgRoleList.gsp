@@ -61,7 +61,7 @@
 			var org    = $("#ui-placeholder-${type} [name=prsRole_org] option:selected").attr("value");
 			var role   = $("#ui-placeholder-${type} [name=prsRole_role] option:selected").attr("value");
 
-			$.post("/demo/person/ajax", {
+			$.post("${webRequest.baseUrl}/person/ajax", {
 				op:     "add",
 				id:     "${personInstance.id}",
 				org:	org,
@@ -75,7 +75,7 @@
 		$('#ui-placeholder-${type} button[name=delete]').click(function(){
 			var prsRole = $(this).attr("value");
 
-			$.post("/demo/person/ajax", {
+			$.post("${webRequest.baseUrl}/person/ajax", {
 				op:      "delete",
 				id:      "${personInstance.id}",
 				type:    "${type}",

@@ -52,19 +52,19 @@
 
 <g:if test="${personInstance?.id != null}">
 	<script>
-		$.get("/demo/person/ajax/${personInstance.id}?type=cluster").done(function(data){
+		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=cluster").done(function(data){
 			$("#ui-placeholder-cluster").append(data);
 		});
-		$.get("/demo/person/ajax/${personInstance.id}?type=lic").done(function(data){
+		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=lic").done(function(data){
 			$("#ui-placeholder-lic").append(data);
 		});
-		$.get("/demo/person/ajax/${personInstance.id}?type=pkg").done(function(data){
+		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=pkg").done(function(data){
 			$("#ui-placeholder-pkg").append(data);
 		});
-		$.get("/demo/person/ajax/${personInstance.id}?type=sub").done(function(data){
+		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=sub").done(function(data){
 			$("#ui-placeholder-sub").append(data);
 		});
-		$.get("/demo/person/ajax/${personInstance.id}?type=title").done(function(data){
+		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=title").done(function(data){
 			$("#ui-placeholder-title").append(data);
 		});
 	</script>

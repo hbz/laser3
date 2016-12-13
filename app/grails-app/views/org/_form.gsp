@@ -220,19 +220,19 @@
 
 <g:if test="${orgInstance?.id != null}">
 	<script>
-		$.get("/demo/org/ajax/${orgInstance.id}?type=cluster").done(function(data){
+		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=cluster").done(function(data){
 			$("#ui-placeholder-cluster").append(data);
 		});
-		$.get("/demo/org/ajax/${orgInstance.id}?type=lic").done(function(data){
+		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=lic").done(function(data){
 			$("#ui-placeholder-lic").append(data);
 		});
-		$.get("/demo/org/ajax/${orgInstance.id}?type=pkg").done(function(data){
+		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=pkg").done(function(data){
 			$("#ui-placeholder-pkg").append(data);
 		});
-		$.get("/demo/org/ajax/${orgInstance.id}?type=sub").done(function(data){
+		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=sub").done(function(data){
 			$("#ui-placeholder-sub").append(data);
 		});
-		$.get("/demo/org/ajax/${orgInstance.id}?type=title").done(function(data){
+		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=title").done(function(data){
 			$("#ui-placeholder-title").append(data);
 		});
 	</script>

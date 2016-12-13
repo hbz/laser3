@@ -57,7 +57,7 @@
 <div id="ui-placeholder">
 	<g:if test="${clusterInstance?.id != null}">
 		<script>
-			$.get("/demo/cluster/ajax/${clusterInstance?.id}").done(function(data){
+			$.get("${webRequest.baseUrl}/cluster/ajax/${clusterInstance?.id}").done(function(data){
 					$("#ui-placeholder").append(data);
 			});
 		</script>

@@ -34,7 +34,7 @@
 		$('#ui-placeholder button[name=add]').click(function(){
 			var org = $("#ui-placeholder [name=orgRole_org] option:selected").attr("value");
 			var role = $("#ui-placeholder [name=orgRole_role] option:selected").attr("value");
-			$.post("/demo/cluster/ajax", {
+			$.post("${webRequest.baseUrl}/cluster/ajax", {
 				op: "add",
 				id: "${clusterInstance.id}",
 				org:  org,
@@ -45,7 +45,7 @@
 		})
 		$('#ui-placeholder button[name=delete]').click(function(){
 			var orgRole = $(this).attr("value");
-			$.post("/demo/cluster/ajax", {
+			$.post("${webRequest.baseUrl}/cluster/ajax", {
 				op: "delete",
 				id: "${clusterInstance.id}",
 				orgRole: orgRole
