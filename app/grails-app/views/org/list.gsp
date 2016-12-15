@@ -20,14 +20,14 @@
 								<g:message code="default.list.label" args="[entityName]" />
 							</g:link>
 						</li>
-<sec:ifAnyGranted roles="ROLE_ADMIN">
+						<sec:ifAnyGranted roles="ROLE_ADMIN">
 						<li>
 							<g:link class="create" action="create">
 								<i class="icon-plus"></i>
 								<g:message code="default.create.label" args="[entityName]" />
 							</g:link>
 						</li>
-                                                </sec:ifAnyGranted>
+						 </sec:ifAnyGranted>
 					</ul>
 				</div>
 			</div>
@@ -35,15 +35,17 @@
 			<div class="span9">
 				
 				<div class="page-header">
-				<h1>Organisations</h1>
+					<h1>Organisations</h1>
 				</div>
 
                 <div class="well">
-          <g:form action="list" method="get" class="form-inline">
-            Org Name Contains: <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> Restrict to orgs who are 
-            <g:select name="orgRole" noSelection="${['':'Select One...']}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
-            <input type="submit" value="GO" class="btn btn-primary"/> (${orgInstanceTotal} Matches)
-          </g:form>
+			          <g:form action="list" method="get" class="form-inline">
+			            Org Name Contains: 
+			            <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> 
+			            Restrict to orgs who are 
+			            <g:select name="orgRole" noSelection="${['':'Select One...']}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
+			            <input type="submit" value="GO" class="btn btn-primary"/> (${orgInstanceTotal} Matches)
+			          </g:form>
                 </div>
 
 				<g:if test="${flash.message}">
@@ -53,15 +55,24 @@
 				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-							<g:sortableColumn property="name" title="${message(code: 'org.name.label', default: 'Name')}" />
+							<g:sortableColumn property="impId" title="${message(code: 'org.impId.label', default: 'Imp Id')}" />
+							<g:sortableColumn property="address" title="${message(code: 'org.address.label', default: 'Address')}" />					
+							<g:sortableColumn property="ipRange" title="${message(code: 'org.ipRange.label', default: 'Ip Range')}" />						
+							<g:sortableColumn property="sector" title="${message(code: 'org.sector.label', default: 'Sector')}" />
+							<g:sortableColumn property="shortcode" title="${message(code: 'org.shortcode.label', default: 'Shortcode')}" />
+							<g:sortableColumn property="scope" title="${message(code: 'org.scope.label', default: 'Scope')}" />
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
 					<g:each in="${orgInstanceList}" var="orgInstance">
 						<tr>
-							<td>${fieldValue(bean: orgInstance, field: "name")}</td>
-						
+							<td>${fieldValue(bean: orgInstance, field: "impId")}</td>
+							<td>${fieldValue(bean: orgInstance, field: "address")}</td>	
+							<td>${fieldValue(bean: orgInstance, field: "ipRange")}</td>					
+							<td>${fieldValue(bean: orgInstance, field: "sector")}</td>						
+							<td>${fieldValue(bean: orgInstance, field: "shortcode")}</td>						
+							<td>${fieldValue(bean: orgInstance, field: "scope")}</td>						
 							<td class="link">
 								<g:link action="show" id="${orgInstance.id}" class="btn btn-small">Show &raquo;</g:link>
 								<g:link action="edit" id="${orgInstance.id}" class="btn btn-small">Edit</g:link>
@@ -71,7 +82,7 @@
 					</tbody>
 				</table>
 				<div class="pagination">
-					<bootstrap:paginate total="${orgInstanceTotal}" params="${params}" />
+					<bootstrap:paginate total="${orgInstanceTotal}" />
 				</div>
 			</div>
 

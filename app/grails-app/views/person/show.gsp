@@ -75,9 +75,19 @@
 					</g:if>
 				</dl>
 				<dl>
-					<g:if test="${personInstance?.links}">
+					<g:if test="${personInstance?.contacts}">
+						<dt><g:message code="person.contacts.label" default="Contacts" /></dt>
 						
-							<dt><g:message code="person.links.label" default="Links" /></dt>
+							<g:each in="${personInstance.contacts}" var="c">
+							<dd><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></dd>
+							</g:each>
+						
+					</g:if>
+				</dl>
+				<dl>
+					<g:if test="${personInstance?.links}">
+						<dt><g:message code="person.links.label" default="Links" /></dt>
+						
 							<dd><ul>
 								<g:each in="${personInstance.links}" var="l">
 								<li>

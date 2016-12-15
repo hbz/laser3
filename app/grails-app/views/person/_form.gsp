@@ -32,6 +32,7 @@
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
 	<label for="gender">
 		<g:message code="person.gender.label" default="Gender" />
+		
 	</label>
 	<g:select id="gender" name="gender" 
 		from="${com.k_int.kbplus.Person.getAllRefdataValues()}"
@@ -41,6 +42,21 @@
         noSelection="['': '']"/>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
+	<label for="contacts">
+		<g:message code="person.contacts.label" default="Contacts" />
+		
+	</label>
+	
+<ul class="one-to-many">
+<g:each in="${personInstance?.contacts?}" var="c">
+    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+</g:each>
+<li class="add">
+<g:link controller="contact" action="create" params="['person.id': personInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}</g:link>
+</li>
+</ul>
+</div>
 
 <h3>Person-to-Org-and-X-with-Role</h3>
 

@@ -17,11 +17,13 @@ class Person {
     }
     
     static mappedBy = [
-        links: 'prs'
+        links: 'prs',
+        contacts: 'prs'
     ]
   
     static hasMany = [
-        links: PersonRole
+        links:    PersonRole,
+        contacts: Contact
     ]
     
     static constraints = {

@@ -36,6 +36,7 @@ class Org {
       incomingCombos: 'toOrg',
       links: 'org',
       pinks: 'org',
+      contacts: 'org',
       affiliations: 'org' 
       ]
 
@@ -45,6 +46,7 @@ class Org {
       incomingCombos: Combo,
       links: OrgRole,
       pinks: PersonRole,
+      contacts: Contact,
       affiliations: UserOrg,
       customProperties:OrgCustomProperty
       ]

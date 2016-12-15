@@ -160,19 +160,8 @@
 <g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
 </li>
 </ul>
-
-
 </div>
 
-
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} required">
-	<label for="name">
-		<g:message code="org.name.label" default="Name" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:textField name="name" required="" value="${orgInstance?.name}"/>
-
-</div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'outgoingCombos', 'error')} ">
 	<label for="outgoingCombos">
@@ -192,6 +181,22 @@
 
 </div>
 
+
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
+	<label for="contacts">
+		<g:message code="person.contacts.label" default="Contacts" />
+		
+	</label>
+	<ul class="one-to-many">
+	<g:each in="${orgInstance?.contacts?}" var="o">
+	    <li><g:link controller="contact" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></li>
+	</g:each>
+	<li class="add">
+	<g:link controller="contact" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}</g:link>
+	</li>
+	</ul>
+</div>
+
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
 	<label for="links">
 		<g:message code="org.links.label" default="Links" />
@@ -204,6 +209,24 @@
 </g:each>
 <li class="add">
 <g:link controller="orgRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgRole.label', default: 'OrgRole')])}</g:link>
+</li>
+</ul>
+
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'pinks', 'error')} ">
+	<label for="pinks">
+		<g:message code="org.pinks.label" default="Pinks" />
+		
+	</label>
+	
+<ul class="one-to-many">
+<g:each in="${orgInstance?.pinks?}" var="p">
+    <li><g:link controller="personRole" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+</g:each>
+<li class="add">
+<g:link controller="personRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'personRole.label', default: 'PersonRole')])}</g:link>
 </li>
 </ul>
 
