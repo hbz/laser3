@@ -7,11 +7,13 @@ class Cluster {
     RefdataValue type
     
     static hasMany = [
-        orgs: OrgRole
+        orgs:     OrgRole,
+        prsLinks: PersonRole,
     ]
     
     static mappedBy = [
-        orgs: 'cluster'
+        orgs:     'cluster',
+        prsLinks: 'cluster'
     ]
 
     static mapping = {

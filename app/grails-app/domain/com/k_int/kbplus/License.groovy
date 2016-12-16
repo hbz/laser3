@@ -48,10 +48,11 @@ class License implements Comparable<License>{
   static hasOne = [onixplLicense: OnixplLicense]
 
   static hasMany = [
-    pkgs:Package, 
+    pkgs:         Package, 
     subscriptions:Subscription, 
-    documents:DocContext,
-    orgLinks:OrgRole,
+    documents:    DocContext,
+    orgLinks:     OrgRole,
+    prsLinks:     PersonRole,
     outgoinglinks:Link,
     incomingLinks:Link,
     pendingChanges:PendingChange,
@@ -59,12 +60,13 @@ class License implements Comparable<License>{
   ]
 
   static mappedBy = [ 
-                      pkgs: 'license',
+                      pkgs:          'license',
                       subscriptions: 'owner',
-                      documents: 'license',
-                      orgLinks:'lic',
-                      outgoinglinks:'fromLic',
-                      incomingLinks:'toLic',
+                      documents:     'license',
+                      orgLinks:      'lic',
+                      prsLinks:      'lic',
+                      outgoinglinks: 'fromLic',
+                      incomingLinks: 'toLic',
                       pendingChanges:'license',
   ]
 

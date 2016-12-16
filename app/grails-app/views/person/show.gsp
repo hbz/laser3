@@ -85,13 +85,13 @@
 					</g:if>
 				</dl>
 				<dl>
-					<g:if test="${personInstance?.links}">
-						<dt><g:message code="person.links.label" default="Links" /></dt>
+					<g:if test="${personInstance?.roleLinks}">
+						<dt><g:message code="person.roleLinks.label" default="Links" /></dt>
 						
 							<dd><ul>
-								<g:each in="${personInstance.links}" var="l">
+								<g:each in="${personInstance.roleLinks}" var="l">
 								<li>
-									<g:link controller="org" action="show" id="${l.org?.id}">Org: ${l.org?.name}</g:link> /
+									${l.roleType?.value} -
 								 	
 								 	<g:if test="${l.pkg}">
 								 		<g:link controller="package" action="show" id="${l.pkg.id}">Package: ${l.pkg.name}</g:link>
@@ -106,7 +106,10 @@
 	                                <g:if test="${l.title}">
 	                                	<g:link controller="titleInstance" action="show" id="${l.title.id}">Title: ${l.title.title}</g:link>
 	                                </g:if>
-	                                  / ${l.roleType?.value}
+	                                
+	                                <br />
+	                                <g:link controller="org" action="show" id="${l.org?.id}">Org: ${l.org?.name}</g:link>
+									
 	                            </li>
 								</g:each>
 							</ul></dd>

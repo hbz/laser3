@@ -26,7 +26,7 @@
 					
 						<g:sortableColumn property="impId" title="${message(code: 'org.impId.label', default: 'Imp Id')}" />
 					
-						<g:sortableColumn property="address" title="${message(code: 'org.address.label', default: 'Address')}" />
+						<g:sortableColumn property="comment" title="${message(code: 'org.comment.label', default: 'Comment')}" />
 					
 						<g:sortableColumn property="ipRange" title="${message(code: 'org.ipRange.label', default: 'Ip Range')}" />
 					
@@ -44,7 +44,7 @@
 					
 						<td><g:link action="show" id="${orgInstance.id}">${fieldValue(bean: orgInstance, field: "impId")}</g:link></td>
 					
-						<td>${fieldValue(bean: orgInstance, field: "address")}</td>
+						<td>${fieldValue(bean: orgInstance, field: "comment")}</td>
 					
 						<td>${fieldValue(bean: orgInstance, field: "ipRange")}</td>
 					

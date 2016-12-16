@@ -65,6 +65,33 @@
                       <dd><g:fieldValue bean="${titleInstanceInstance}" field="impId"/></dd>
                   </dl>
               </g:if>
+              
+              <g:if test="${titleInstanceInstance?.prsLinks}">
+				<dl>
+					<dt><g:message code="titleInstanceInstance.prsLinks.label" default="Person Roles" /></dt>
+					<dd><ul>
+						<g:each in="${titleInstanceInstance.prsLinks}" var="p">
+							<li>
+								${p.roleType?.value} - 
+                                
+                                <g:if test="${p.cluster}">
+                                	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
+                                </g:if>
+                                <g:if test="${p.org}">
+                                	<g:link controller="org" action="show" id="${p.org.id}">Org: ${p.org.name}</g:link>
+                                </g:if> 
+                                <g:if test="${p.pkg}">
+                                	<g:link controller="package" action="show" id="${p.pkg.id}">Package: ${p.pkg.name}</g:link>
+                                </g:if>
+                                <g:if test="${p.sub}">
+                                	<g:link controller="subscription" action="show" id="${p.sub.id}">Subscription: ${p.sub.name}</g:link>
+                                </g:if>
+                                <g:if test="${p.lic}">Licence: ${p.lic.id}</g:if>
+						 	</li>
+						</g:each>
+					</ul></dd>
+				</dl>
+			</g:if>
           </div>
 
           <g:if test="${titleInstanceInstance?.tipps}">
@@ -92,7 +119,7 @@
                   </g:each>
               </table>
           </g:if>
-
+			
           <g:form>
               <sec:ifAnyGranted roles="ROLE_ADMIN">
                   <g:hiddenField name="id" value="${titleInstanceInstance?.id}" />

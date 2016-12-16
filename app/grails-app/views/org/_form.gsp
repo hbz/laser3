@@ -11,12 +11,12 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'address', 'error')} ">
-	<label for="address">
-		<g:message code="org.address.label" default="Address" />
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'comment', 'error')} ">
+	<label for="comment">
+		<g:message code="org.comment.label" default="Comment" />
 		
 	</label>
-	<g:textArea name="address" cols="40" rows="5" maxlength="256" value="${orgInstance?.address}"/>
+	<g:textArea name="comment" cols="40" rows="5" maxlength="256" value="${orgInstance?.comment}"/>
 
 </div>
 
@@ -70,8 +70,13 @@
 		<g:message code="org.orgType.label" default="Org Type" />
 		
 	</label>
-	<g:select id="orgType" name="orgType.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.orgType?.id}" class="many-to-one" noSelection="['null': '']"/>
-
+	<g:select id="orgType" name="orgType.id" 
+		from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('OrgType'))}" 
+		optionKey="id"
+		optionValue="value" 
+		value="${orgInstance?.orgType?.id}" 
+		class="many-to-one" noSelection="['null': '']"/>
+	
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
@@ -79,7 +84,12 @@
 		<g:message code="org.status.label" default="Status" />
 		
 	</label>
-	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="status" name="status.id" 
+		from="${com.k_int.kbplus.RefdataValue.list()}" 
+		optionKey="id" 
+		optionValue="value" 
+		value="${orgInstance?.status?.id}" 
+		class="many-to-one" noSelection="['null': '']"/>
 
 </div>
 
@@ -197,6 +207,7 @@
 	</ul>
 </div>
 
+<!-- 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
 	<label for="links">
 		<g:message code="org.links.label" default="Links" />
@@ -212,17 +223,17 @@
 </li>
 </ul>
 
-
 </div>
-
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'pinks', 'error')} ">
-	<label for="pinks">
-		<g:message code="org.pinks.label" default="Pinks" />
+-->
+<!-- 
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'prsLinks', 'error')} ">
+	<label for="prsLinks">
+		<g:message code="org.prsLinks.label" default="prsLinks" />
 		
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${orgInstance?.pinks?}" var="p">
+<g:each in="${orgInstance?.prsLinks?}" var="p">
     <li><g:link controller="personRole" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">
@@ -230,9 +241,39 @@
 </li>
 </ul>
 
-
 </div>
+-->
 
+<h3>Org-to-X-with-PersonRole</h3>
+<p>TODO</p>
+
+<g:if test="${orgInstance?.prsLinks}">
+				<dl>
+					<dt><g:message code="org.prsLinks.label" default="Person Roles" /></dt>
+					<dd><ul>
+						<g:each in="${orgInstance.prsLinks}" var="p">
+							<li>
+								${p.roleType?.value} - 
+                                
+                                <g:if test="${p.cluster}">
+                                	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
+                                </g:if>
+                                <g:if test="${p.pkg}">
+                                	<g:link controller="package" action="show" id="${p.pkg.id}">Package: ${p.pkg.name}</g:link>
+                                </g:if>
+                                <g:if test="${p.sub}">
+                                	<g:link controller="subscription" action="show" id="${p.sub.id}">Subscription: ${p.sub.name}</g:link>
+                                </g:if>
+                                <g:if test="${p.lic}">Licence: ${p.lic.id}</g:if>
+                                <g:if test="${p.title}">
+                                	<g:link controller="titleInstance" action="show" id="${p.title.id}">Title: ${p.title.title}</g:link>
+                                </g:if> 
+						 	</li>
+						</g:each>
+					</ul></dd>
+				</dl>
+			</g:if>
+			
 <h3>Org-to-X-with-Role</h3>
 
 <div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>

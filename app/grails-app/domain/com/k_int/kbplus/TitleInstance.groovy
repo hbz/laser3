@@ -34,16 +34,19 @@ class TitleInstance {
   Date lastUpdated
 
   static mappedBy = [
-                     tipps: 'title',
-                     ids: 'ti',
-                     orgs: 'title',
-                     historyEvents: 'participant']
+                     tipps:     'title',
+                     ids:       'ti',
+                     orgs:      'title',
+                     historyEvents: 'participant',
+                     prsLinks:  'title'
+                     ]
   static hasMany = [
-                    tipps: TitleInstancePackagePlatform,
-                    ids: IdentifierOccurrence,
-                    orgs: OrgRole,
-                    historyEvents: TitleHistoryEventParticipant]
-
+                    tipps:  TitleInstancePackagePlatform,
+                    ids:    IdentifierOccurrence,
+                    orgs:   OrgRole,
+                    historyEvents: TitleHistoryEventParticipant,
+                    prsLinks: PersonRole
+                    ]
 
   static mapping = {
            id column:'ti_id'

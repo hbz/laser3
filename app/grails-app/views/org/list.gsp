@@ -56,7 +56,7 @@
 					<thead>
 						<tr>
 							<g:sortableColumn property="impId" title="${message(code: 'org.impId.label', default: 'Imp Id')}" />
-							<g:sortableColumn property="address" title="${message(code: 'org.address.label', default: 'Address')}" />					
+							<g:sortableColumn property="comment" title="${message(code: 'org.comment.label', default: 'Comment')}" />					
 							<g:sortableColumn property="ipRange" title="${message(code: 'org.ipRange.label', default: 'Ip Range')}" />						
 							<g:sortableColumn property="sector" title="${message(code: 'org.sector.label', default: 'Sector')}" />
 							<g:sortableColumn property="shortcode" title="${message(code: 'org.shortcode.label', default: 'Shortcode')}" />
@@ -68,7 +68,7 @@
 					<g:each in="${orgInstanceList}" var="orgInstance">
 						<tr>
 							<td>${fieldValue(bean: orgInstance, field: "impId")}</td>
-							<td>${fieldValue(bean: orgInstance, field: "address")}</td>	
+							<td>${fieldValue(bean: orgInstance, field: "comment")}</td>	
 							<td>${fieldValue(bean: orgInstance, field: "ipRange")}</td>					
 							<td>${fieldValue(bean: orgInstance, field: "sector")}</td>						
 							<td>${fieldValue(bean: orgInstance, field: "shortcode")}</td>						

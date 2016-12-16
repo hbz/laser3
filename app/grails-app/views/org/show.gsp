@@ -51,10 +51,10 @@
                   </dl>
               </g:if>
 
-              <g:if test="${orgInstance?.address}">
+              <g:if test="${orgInstance?.comment}">
                   <dl>
-                      <dt><g:message code="org.address.label" default="Address" /></dt>
-                      <dd><g:fieldValue bean="${orgInstance}" field="address"/></dd>
+                      <dt><g:message code="org.comment.label" default="Comment" /></dt>
+                      <dd><g:fieldValue bean="${orgInstance}" field="comment"/></dd>
                   </dl>
               </g:if>
 
@@ -126,15 +126,14 @@
 			</g:if>
 
 
-			<g:if test="${orgInstance?.pinks}">
+			<g:if test="${orgInstance?.prsLinks}">
 				<dl>
-					<dt><g:message code="org.pinks.label" default="Person Roles" /></dt>
+					<dt><g:message code="org.prsLinks.label" default="Person Roles" /></dt>
 					<dd><ul>
-						<g:each in="${orgInstance.pinks}" var="p">
-							<li>								
-                                <g:if test="${p.roleType}">
-                                	 ${p.roleType.value}:
-                                </g:if>
+						<g:each in="${orgInstance.prsLinks}" var="p">
+							<li>
+								${p.roleType?.value} - 
+                                
                                 <g:if test="${p.cluster}">
                                 	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
                                 </g:if>
@@ -147,9 +146,7 @@
                                 <g:if test="${p.lic}">Licence: ${p.lic.id}</g:if>
                                 <g:if test="${p.title}">
                                 	<g:link controller="titleInstance" action="show" id="${p.title.id}">Title: ${p.title.title}</g:link>
-                                </g:if>
-                                (${p.roleType?.value}) 
-                                
+                                </g:if> 
 						 	</li>
 						</g:each>
 					</ul></dd>
@@ -162,12 +159,13 @@
                       <dd><ul>
                           <g:each in="${orgInstance.links}" var="i">
                               <li>
+                              	${i.roleType?.value} - 
+                              
                                   <g:if test="${i.pkg}">    <g:link controller="package" action="show" id="${i.pkg.id}">Package: ${i.pkg.name}</g:link></g:if>
                                   <g:if test="${i.cluster}"><g:link controller="cluster" action="show" id="${i.cluster.id}">Cluster: ${i.cluster.name}</g:link></g:if>
                                   <g:if test="${i.sub}">    <g:link controller="subscription" action="show" id="${i.sub.id}">Subscription: ${i.sub.name}</g:link></g:if>
                                   <g:if test="${i.lic}">Licence: ${i.lic.id}</g:if>
                                   <g:if test="${i.title}">  <g:link controller="titleInstance" action="show" id="${i.title.id}">Title: ${i.title.title}</g:link></g:if>
-                                  (${i.roleType?.value}) 
                               </li>
                           </g:each>
                       </ul></dd>

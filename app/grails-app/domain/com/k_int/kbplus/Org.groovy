@@ -13,7 +13,7 @@ class Org {
 
   String name
   String impId
-  String address
+  String comment
   String ipRange
   String sector
   String scope
@@ -31,24 +31,24 @@ class Org {
   Set ids = []
 
   static mappedBy = [
-      ids: 'org', 
+      ids:      'org', 
       outgoingCombos: 'fromOrg', 
       incomingCombos: 'toOrg',
-      links: 'org',
-      pinks: 'org',
+      links:    'org',
+      prsLinks: 'org',
       contacts: 'org',
       affiliations: 'org' 
       ]
 
   static hasMany = [
-      ids: IdentifierOccurrence, 
-      outgoingCombos: Combo,  
-      incomingCombos: Combo,
-      links: OrgRole,
-      pinks: PersonRole,
-      contacts: Contact,
-      affiliations: UserOrg,
-      customProperties:OrgCustomProperty
+      ids:              IdentifierOccurrence, 
+      outgoingCombos:   Combo,  
+      incomingCombos:   Combo,
+      links:            OrgRole,
+      prsLinks:         PersonRole,
+      contacts:         Contact,
+      affiliations:     UserOrg,
+      customProperties: OrgCustomProperty
       ]
 
   static mapping = {
@@ -56,7 +56,7 @@ class Org {
        version column:'org_version'
          impId column:'org_imp_id', index:'org_imp_id_idx'
           name column:'org_name', index:'org_name_idx'
-       address column:'org_address'
+       comment column:'org_comment'
        ipRange column:'org_ip_range'
      shortcode column:'org_shortcode', index:'org_shortcode_idx'
          scope column:'org_scope'
@@ -68,7 +68,7 @@ class Org {
 
   static constraints = {
          impId(nullable:true, blank:true, maxSize:256);
-       address(nullable:true, blank:true, maxSize:256);
+       comment(nullable:true, blank:true, maxSize:2048);
        ipRange(nullable:true, blank:true, maxSize:1024);
         sector(nullable:true, blank:true, maxSize:128);
      shortcode(nullable:true, blank:true, maxSize:128);

@@ -34,19 +34,22 @@ class Package {
   Set pendingChanges
   Boolean autoAccept = false
 
-static hasMany = [tipps: TitleInstancePackagePlatform, 
-                    orgs: OrgRole, 
-                    documents:DocContext,
-                    subscriptions: SubscriptionPackage,
-                    pendingChanges:PendingChange,
+static hasMany = [  tipps:     TitleInstancePackagePlatform, 
+                    orgs:      OrgRole, 
+                    prsLinks:  PersonRole,
+                    documents: DocContext,
+                    subscriptions:  SubscriptionPackage,
+                    pendingChanges: PendingChange,
                     ids: IdentifierOccurrence ]
 
-  static mappedBy = [tipps: 'pkg', 
-                     orgs: 'pkg',
-                     documents:'pkg',
+  static mappedBy = [tipps:     'pkg', 
+                     orgs:      'pkg',
+                     prsLinks:  'pkg',
+                     documents: 'pkg',
                      subscriptions: 'pkg',
                      pendingChanges: 'pkg',
-                     ids: 'pkg' ]
+                     ids:       'pkg'
+                     ]
 
 
   static mapping = {

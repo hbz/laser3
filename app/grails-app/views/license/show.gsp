@@ -218,6 +218,20 @@
                         </dd>
                     </dl>
                 </g:if>
+                
+                <g:if test="${licenseInstance?.prsLinks}">
+                    <dl>
+                        <dt><g:message code="license.prsLinks.label" default="Person Links" /></dt>
+
+                        <dd>
+                            <ul>
+                                <g:each in="${licenseInstance.prsLinks}" var="o">
+                                    <li><g:link controller="personRole" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></li>
+                                </g:each>
+                            </ul>
+                        </dd>
+                    </dl>
+                </g:if>
 
                 <g:if test="${licenseInstance?.subscriptions}">
                     <dl>

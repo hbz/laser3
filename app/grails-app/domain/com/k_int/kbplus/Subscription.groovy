@@ -45,22 +45,25 @@ class Subscription {
                      ids: IdentifierOccurrence,
                      packages : SubscriptionPackage,
                      issueEntitlements: IssueEntitlement,
-                     documents:DocContext,
+                     documents: DocContext,
                      orgRelations: OrgRole,
+                     prsLinks: PersonRole,
                      derivedSubscriptions: Subscription,
-                     pendingChanges:PendingChange,
-                     customProperties:SubscriptionCustomProperty,
-                     costItems:CostItem]
+                     pendingChanges: PendingChange,
+                     customProperties: SubscriptionCustomProperty,
+                     costItems: CostItem]
 
   static mappedBy = [
                       ids: 'sub',
-                      packages : 'subscription',
+                      packages: 'subscription',
                       issueEntitlements: 'subscription',
                       documents: 'subscription',
                       orgRelations: 'sub',
+                      prsLinks: 'sub',
                       derivedSubscriptions: 'instanceOf',
-                      pendingChanges:'subscription',
-                      costItems:'sub' ]
+                      pendingChanges: 'subscription',
+                      costItems: 'sub'
+                      ]
 
   static mapping = {
                   id column:'sub_id'
