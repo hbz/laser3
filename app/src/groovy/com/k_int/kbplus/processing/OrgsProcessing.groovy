@@ -43,11 +43,12 @@ public class OrgsProcessing {
       [ sourceProperty:'name', targetProperty:'name', transformation:'trim' ],
       [ sourceProperty:'ipRange', targetProperty:'ipRange' ],
       [ sourceProperty:'sector', targetProperty:'sector' ],
-      [ sourceProperty:'ringoldId', processingClosure: { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'Ringold', domain_object);}],
-      [ sourceProperty:'ingentaId', processingClosure: { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'Ingenta', domain_object);}],
-      [ sourceProperty:'jcId', processingClosure: { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'JC', domain_object);}],
-      [ sourceProperty:'athensId', processingClosure: { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'Athens', domain_object);}],
-      [ sourceProperty:'famId', processingClosure: { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'UKAMF', domain_object);}]
+      [ sourceProperty:'ringoldId', processingClosure:  { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'Ringold', domain_object);}],
+      [ sourceProperty:'isilId', processingClosure:     { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'ISIL', domain_object);}],
+      [ sourceProperty:'ingentaId', processingClosure:  { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'Ingenta', domain_object);}],
+      [ sourceProperty:'jcId', processingClosure:       { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'JC', domain_object);}],
+      [ sourceProperty:'athensId', processingClosure:   { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'Athens', domain_object);}],
+      [ sourceProperty:'famId', processingClosure:      { value, appctx, domain_object -> OrgsProcessing.addIdentifier(value, appctx, 'UKAMF', domain_object);}]
     ]
   ]
     
