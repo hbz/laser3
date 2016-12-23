@@ -20,10 +20,10 @@
                 <td>sector,</td>
                 <td>org.consortium,</td>
                 <td>id.jusplogin</td>
-                <td>id.jusp</td>
                 <td>id.JC</td>
                 <td>id.Ringold</td>
                 <td>id.UKAMF</td>
+                <td>id.ISIL</td>
                 <td>iprange</td>
               </tr>
               <tr>
@@ -36,7 +36,7 @@
                 <td>"",</td>
                 <td>"",</td>
                 <td>"",</td>
-                <td>"n.n.n.n,n.n.n.n"</td>
+                <td>"n.n.n.n-n.n.n.n"</td>
               </tr>
             </table>
           </p>
