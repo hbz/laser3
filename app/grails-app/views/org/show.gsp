@@ -114,6 +114,17 @@
                   </g:each>
               </g:if>
 				
+			<g:if test="${orgInstance?.addresses}">
+				<dl>
+					<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
+					<dd><ul>
+						<g:each in="${orgInstance.addresses}" var="a">
+							<li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+						</g:each>
+					</ul></dd>
+				</dl>
+			</g:if>
+			
 			<g:if test="${orgInstance?.contacts}">
 				<dl>
 					<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
