@@ -24,10 +24,25 @@
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
               <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
-        
-            <dt><g:message code="org.address.label" default="Address" /></dt>
-              <dd><g:fieldValue bean="${orgInstance}" field="address"/></dd>
 
+				<g:if test="${orgInstance?.addresses}">
+					<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
+					<dd><ul>
+						<g:each in="${orgInstance.addresses}" var="a">
+							<li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+						</g:each>
+					</ul></dd>
+				</g:if>
+			
+				<g:if test="${orgInstance?.contacts}">
+					<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
+					<dd><ul>
+						<g:each in="${orgInstance.contacts}" var="c">
+							<li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+						</g:each>
+					</ul></dd>
+				</g:if>
+			
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
               <dd>
                 <g:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>

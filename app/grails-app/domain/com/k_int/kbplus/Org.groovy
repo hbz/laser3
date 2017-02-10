@@ -37,6 +37,7 @@ class Org {
       links:    'org',
       prsLinks: 'org',
       contacts: 'org',
+      addresses: 'org',
       affiliations: 'org' 
       ]
 
@@ -47,6 +48,7 @@ class Org {
       links:            OrgRole,
       prsLinks:         PersonRole,
       contacts:         Contact,
+      addresses:        Address,
       affiliations:     UserOrg,
       customProperties: OrgCustomProperty
       ]
