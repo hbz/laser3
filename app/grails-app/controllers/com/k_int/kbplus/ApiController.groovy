@@ -232,5 +232,157 @@ where tipp.title = ? and orl.roleType.value=?''',[title,'Content Provider']);
 
     render result as JSON
   }
+  
+/*
+{
+  id:'a1b2c3d4',
+  more:{
+      a:1,
+      b:2
+  }
+}
+ */
+  def orgsImport() {
+      log.info("orgsImport() ..")
+      
+      def xml = new XmlSlurper().parseText(request.reader.text)
+      assert xml instanceof groovy.util.slurpersupport.GPathResult
+
+      if(request.method == 'POST') {
+          xml.institution.each{ inst -> 
+
+              def identifiers = [:]
+              
+              def org = null
+              def person = null
+              
+              def title, userName, sigel, subscriperGroup 
+              def firstName, middleName, lastName
+              def email, telephone
+              def street1, street2, zip, city, county, country
+              
+              if(inst.user_name){
+                  title    = inst.title.text().replaceAll("\\s+", " ").trim()
+                  userName = inst.user_name.text().replaceAll("\\s+", " ").trim()
+
+                  log.debug("checking BY WIB-IDENTIFIER: ${title} - ${userName}")
+                  org = Org.lookupByIdentifierString("wib:${userName}")
+              }
+              if(!org && inst.sigel){
+                  sigel = inst.sigel.text().replaceAll("\\s+", " ").trim()
+                  
+                  log.debug("checking BY ISIL: ${title} - ${sigel}")
+                  org = Org.lookupByIdentifierString("isil:${sigel}")
+              }
+              if(!org){
+                  log.debug("TODO: checking BY TITLE: ${title}")
+                  // TODO
+              }
+
+              
+              if(!org){
+                  log.info("no org found, create new one: ${sigel} - ${title}")
+                  
+                  // Identifier
+                  if(userName != ''){
+                      identifiers.put("wib", userName)
+                  }
+                  if(sigel != ''){
+                      identifiers.put("isil", sigel)
+                  }
+                  
+                  subscriperGroup = inst.subscriper_group.text().replaceAll("\\s+", " ").trim()
+                  
+                  // Org
+                  // Org.lookupOrCreate(name, sector, consortium, identifiers, iprange)
+                  org = Org.lookupOrCreate("${title}", "${subscriperGroup}", null, identifiers, null)
+              }
+              else {
+                  // Identifier
+                  if(sigel){ 
+                      new IdentifierOccurrence(org:org, identifier:Identifier.lookupOrCreateCanonicalIdentifier('isil', )).save()
+              }
+              
+              if(org){
+                  
+                  def cpToken = []
+                  def emToken = []
+                  def phToken = []
+                  
+                  // Multiple Token
+                  if(inst.contactperson){
+                      inst.contactperson.token?.each{ token ->
+                          cpToken << token
+                      }
+                  }
+                  if(inst.email){
+                      inst.email.token?.each{ token ->
+                          emToken << token
+                      }
+                  }
+                  if(inst.telephone){
+                      inst.telephone.token?.each{ token ->
+                          phToken << token
+                      }
+                  }
+                  
+                  cpToken.eachWithIndex{ token, i ->
+                      
+                      // Person
+                      
+                      def cpParts = cpToken[i].text().replaceAll("\\s+", " ").replaceAll("(Herr|Frau)", "")trim().split(' ')
+                      
+                      firstName  = cpParts[0].trim()
+                      middleName = cpParts.size() > 2 ? cpParts[1..cpParts.size() - 2].join(" ") : ''
+                      lastName   = cpParts[cpParts.size() - 1].trim()
+                      
+                      // single created if no match found | list with matches
+                      person = Person.lookupOrCreate(firstName, middleName, lastName, null /* gender */)
+                      
+                      // Contact 
+                      
+                      email     = emToken[i].text().replaceAll("\\s+", " ").trim()
+                      telephone = phToken[i].text().replaceAll("(/|-|\\(|\\))", " ").replaceAll("\\s+", "").trim()
+                      
+                      person.each{ p ->
+                          def cp = Contact.executeQuery(
+                              "from Contact c, Person p where lower(c.mail) = ? and lower(c.phone) = ? and c.prs = ?",
+                              [mail.toLowerCase(), phone.toLowerCase(), p]
+                              )
+                          println cp
+                      }
+                      // single created if no match found | list with matches
+                      Contact.lookupOrCreate("${email}", "${telephone}", RefdataValue.findByValue("Job-related"), person, org)                     
+                  }
+                  
+                  // Address
+                  
+                  if(inst.zip && inst.city){
+                      def stParts = inst.street.text().replaceAll("\\s+", " ").replaceAll("(Str\\.|Strasse)", "Straße").replaceAll("stra(ss|ß)e", "str.").trim().split(" ")
+                      if(stParts.size() > 1){
+                          street1 = stParts[0..stParts.size() - 2].join(" ") 
+                          street2 = stParts[stParts.size() - 1]
+                      }
+                      else {
+                          street1 = stParts[0]
+                          street2 = ""
+                      }
+                      zip     = inst.zip.text().replaceAll("\\s+", " ").trim()
+                      city    = inst.city.text().replaceAll("\\s+", " ").trim()
+                      county  = inst.country.text().replaceAll("\\s+", " ").trim()
+                      country = inst.country.text().replaceAll("\\s+", " ").trim()
+                      
+                      // single created if no match found | list with matches
+                      Address.lookupOrCreate("${street1}", "${street2}", null, "${zip}", "${city}", "${county}", "${country}", 
+                          RefdataValue.findByValue("Postal address"), null, org) // TODO
+                  }
+              }
+
+          }
+      } 
+      
+      render xml
+  }
+  
 }
 
