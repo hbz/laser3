@@ -79,6 +79,7 @@ class BootStrap {
     def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Owner');
     def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Member');
     
+    RefdataCategory.lookupOrCreate('Person Role', 'General contact person');
     RefdataCategory.lookupOrCreate('Person Role', 'Specific licence editor');
     RefdataCategory.lookupOrCreate('Person Role', 'Specific subscription editor');
     RefdataCategory.lookupOrCreate('Person Role', 'Specific package editor');

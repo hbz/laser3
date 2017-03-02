@@ -1,7 +1,11 @@
 package com.k_int.kbplus
 
+import java.util.List
+
 import groovy.util.logging.Log4j
+
 import org.apache.commons.logging.LogFactory
+
 import groovy.util.logging.*
 
 @Log4j
@@ -59,21 +63,27 @@ class Address {
         
         def result = null
         
-        street1      = street1 ? street1 : ''
-        street2      = street2 ? street2 : ''
-        postbox      = postbox ? postbox : ''
-        zipcode      = zipcode ? zipcode : ''
-        city         = city    ? city    : ''
-        state        = state   ? state   : ''
-        country      = country ? country : ''
-        type         = type    ? type : null
-        person       = person  ? person : null
-        organisation = organisation ? organisation : null
+        def hqlStreet1 = Address.hqlHelper(street1)
+        def hqlStreet2 = Address.hqlHelper(street2)
+        def hqlPostbox = Address.hqlHelper(postbox)
+        def hqlZipcode = Address.hqlHelper(zipcode)
+        def hqlCity    = Address.hqlHelper(city)
+        def hqlState   = Address.hqlHelper(state)
+        def hqlCountry = Address.hqlHelper(country)
+        def hqlType    = Address.hqlHelper(type)
+        def hqlPrs     = Address.hqlHelper(person)
+        def hqlOrg     = Address.hqlHelper(organisation)
         
-        def a = Address.executeQuery(
-            "from Address a where a.zipcode = ? and lower(a.city) = ? and ((lower(a.street_1) = ? and a.street_2 = ?) or a.pob = ?)",
-            [zipcode, city.toLowerCase(), street1.toLowerCase(), street2, postbox]
-            )
+        def query = "from Address a where a.org ${hqlOrg[1]} and a.prs ${hqlPrs[1]} and a.zipcode ${hqlZipcode[1]} and lower(a.city) ${hqlCity[1]} "
+        query = query + "and ((lower(a.street_1) ${hqlStreet1[1]} and a.street_2 ${hqlStreet2[1]}) or a.pob ${hqlPostbox[1]})"
+        
+        def queryParams = [hqlOrg[0], hqlPrs[0], hqlZipcode[0], hqlCity[0].toLowerCase(), hqlStreet1[0].toLowerCase(), hqlStreet2[0], hqlPostbox[0]]
+        queryParams.removeAll([null, ''])
+        
+        log.debug(query)
+        log.debug('@ ' + queryParams)
+        
+        def a = Address.executeQuery(query, queryParams)
        
         if(!a && type){
             LogFactory.getLog(this).debug('trying to save new address')
@@ -96,10 +106,25 @@ class Address {
             }
         }
         else {
-            result = a
-        }
+            // TODO catch multiple results
+            if(a.size() > 0){
+                result = a[0]
+            }
+        }        
+        result   
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return list with two elements for building hql query
+     */
+    static List hqlHelper(obj){
+        
+        def result = []
+        result.add(obj ? obj : '')
+        result.add(obj ? '= ?' : 'is null')
         
         result
-       
     }
 }

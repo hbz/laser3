@@ -1,7 +1,12 @@
 package com.k_int.kbplus
 
+import java.util.Date
+import java.util.List
+
 import groovy.util.logging.Log4j
+
 import org.apache.commons.logging.LogFactory
+
 import groovy.util.logging.*
 
 @Log4j
@@ -46,48 +51,86 @@ class Person {
     String toString() {
         last_name + ', ' + first_name + ' ' + middle_name + ' (' + id + ')'
     }
-    
-    static def lookupOrCreate(firstName, middleName, lastName, gender) {
         
-        def result = null
+    static def lookupOrCreate(firstName, middleName, lastName, gender, org, roleType) {
         
-        firstName  = firstName  ? firstName  : ''
-        middleName = middleName ? middleName : ''
-        lastName   = lastName   ? lastName   : ''
-        gender     = gender     ? gender : null // TODO
+        def resultPerson = null
+        def resultPersonRole = null
         
-        def p
-        if(middleName != ''){
-            p = Person.executeQuery(
-                "from Person p where lower(p.first_name) = ? and lower(p.middle_name) = ? and lower(p.last_name) = ?", 
-                [firstName.toLowerCase(), middleName.toLowerCase(), lastName.toLowerCase()]
-            )
-        }
-        else{
-            p = Person.executeQuery(
-                "from Person p where lower(p.first_name) = ? and lower(p.last_name) = ?",
-                [firstName.toLowerCase(), lastName.toLowerCase()]
-            )
-        }
+        def hqlFirstName  = Person.hqlHelper(firstName)
+        def hqlMiddleName = Person.hqlHelper(middleName)
+        def hqlLastName   = Person.hqlHelper(lastName)
+        def hqlGender     = Person.hqlHelper(gender)
+        def hqlOrg        = Person.hqlHelper(org)
+        def hqlRoleType   = Person.hqlHelper(roleType)
+               
+        def query = "select p from Person p, PersonRole pr where p = pr.prs "
+        query = query + "and pr.org ${hqlOrg[1]} and pr.roleType ${hqlRoleType[1]} "
+        query = query + "and lower(p.first_name) ${hqlFirstName[1]} and lower(p.middle_name) ${hqlMiddleName[1]} and lower(p.last_name) ${hqlLastName[1]}"
+
+        def queryParams = [hqlOrg[0], hqlRoleType[0], hqlFirstName[0].toLowerCase(), hqlMiddleName[0].toLowerCase(), hqlLastName[0].toLowerCase()]
+        queryParams.removeAll([null, ''])
+        
+        log.debug(query)
+        log.debug('@ ' + queryParams)
+        
+        def p = Person.executeQuery(query, queryParams)
+        
         if(!p){
-            LogFactory.getLog(this).debug('trying to save new person')
+            LogFactory.getLog(this).debug("trying to save new person: ${firstName} ${middleName} ${lastName}")
             
-            result = new Person(
+            resultPerson = new Person(
                 first_name:  firstName,
                 middle_name: middleName,
                 last_name:   lastName,
                 gender:      gender
                 )
                 
-            if(!result.save()){
-                result.errors.each{ println it }
+            if(!resultPerson.save()){
+                resultPerson.errors.each{ println it }
+            }
+            
+            if(resultPerson && org && roleType){
+                LogFactory.getLog(this).debug("trying to save new personRole: ${resultPerson} - ${roleType} - ${org}")
+                
+                resultPersonRole = new PersonRole(
+                    roleType:   roleType,
+                    prs:        resultPerson,
+                    lic:        null,
+                    org:        org,
+                    cluster:    null,
+                    pkg:        null,
+                    sub:        null,
+                    title:      null,
+                    start_date: null,
+                    end_date:   null
+                    )
+                    
+                if(!resultPersonRole.save()){
+                    resultPersonRole.errors.each{ println it }
+                }
             }
         }
         else {
-            result = p
-        }
+            // TODO catch multiple results
+            if(p.size() > 0){
+                resultPerson = p[0]
+            }
+        }      
+        resultPerson      
+    }
+    
+    /**
+     *
+     * @param obj
+     * @return list with two elements for building hql query
+     */
+    static List hqlHelper(obj){
         
-        result     
-       
+        def result = []
+        result.add(obj ? obj : '')
+        result.add(obj ? '= ?' : 'is null')
+        
+        result
     }
 }
