@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
-import org.apache.commons.lang3.StringUtils
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
@@ -22,7 +21,6 @@ class ApiService {
             def person      = null
             
             def title = normString(inst.title.text())
-            title     = StringUtils.left(title, 128) // TODO: HOTFIX
             def subscriperGroup = inst.subscriper_group ? normString(inst.subscriper_group.text()) : ''
             
             log.info("importing org: ${title}")
@@ -81,7 +79,7 @@ class ApiService {
                         null,
                         normString(inst.zip?.text()),
                         normString(inst.city?.text()),
-                        normString(inst.country?.text()),
+                        normString(inst.county?.text()),
                         normString(inst.country?.text()),
                         RefdataValue.findByValue("Postal address"),
                         null,

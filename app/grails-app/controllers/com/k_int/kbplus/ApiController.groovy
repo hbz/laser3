@@ -235,6 +235,7 @@ where tipp.title = ? and orl.roleType.value=?''',[title,'Content Provider']);
   }
   
 
+    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def orgsImport() {
         log.info("orgsImport() ..")
         def xml = new XmlSlurper().parseText(request.reader.text)
