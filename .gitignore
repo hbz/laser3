@@ -1,4 +1,4 @@
-/app/logs/kbplus.log
+/app/logs/
 *.iml
 .idea
 app/target

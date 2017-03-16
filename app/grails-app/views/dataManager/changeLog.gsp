@@ -39,23 +39,23 @@
       <h2>Data Manager Change Log</h2>
       <h6>Change Log <span class="pull-right">${num_hl} changes</span></h6>
       <g:form action="changeLog" controller="dataManager" method="get">
-        From Date:
+        ${message(code:'datamanager.changeLog.from_date')}:
             <div class="input-append date">
               <input class="span2 datepicker-class" size="16" type="text" 
               name="startDate" value="${params.startDate}">
               <span class="add-on"><i class="icon-th"></i></span> 
             </div>
-
-        To Date:
+        &nbsp;
+        ${message(code:'datamanager.changeLog.to_date')}:
             <div class="input-append date">
               <input class="span2 datepicker-class" size="16" type="text" 
               name="endDate" value="${params.endDate}">
               <span class="add-on"><i class="icon-th"></i></span> 
             </div>
         <div class="dropdown">
-        Actor : 
+        ${message(code:'datamanager.changeLog.actor')} :
         <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">
-            Select Actors
+            ${message(code:'datamanager.changeLog.actor_select')}
             <b class="caret"></b>
         </a>
         <ul class="dropdown-checkboxes dropdown-menu" role="menu">
@@ -63,14 +63,14 @@
                 <label class="checkbox">
                     <input type="checkbox" name="change_actor_PEOPLE" value="Y"
                     ${params.change_actor_PEOPLE == "Y" ? 'checked' : ''} >
-                    ALL (Real Users)
+                    ${message(code:'datamanager.changeLog.actor_select.all_real')}
                 </label>
             </li>
             <li>
                 <label class="checkbox">
                     <input type="checkbox" name="change_actor_ALL" value="Y"
                     ${params.change_actor_ALL == "Y" ? 'checked' : ''} >
-                    ALL (Including system)
+                    ${message(code:'datamanager.changeLog.actor_select.all_system')}
                 </label>
             </li>
             <g:each in="${actors}" var="a">
@@ -88,14 +88,14 @@
 
         <br/>
 
-        Whats Changed :
-        <input type="checkbox" name="packages" value="Y" ${params.packages=='Y'?'checked':''}/> Packages &nbsp;
-        <input type="checkbox" name="licenses" value="Y" ${params.licenses=='Y'?'checked':''}/> <g:message code="licence" default="Licence"/>s &nbsp;
-        <input type="checkbox" name="titles" value="Y" ${params.titles=='Y'?'checked':''}/> Titles &nbsp;
-        <input type="checkbox" name="tipps" value="Y" ${params.tipps=='Y'?'checked':''}/> TIPPs &nbsp; <br/>
-        How has it changed :
-        <input type="checkbox" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> New Items &nbsp;
-        <input type="checkbox" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> Updates to existing items&nbsp;
+        ${message(code:'datamanager.changeLog.what_changed')}:
+        <input type="checkbox" name="packages" value="Y" ${params.packages=='Y'?'checked':''}/> <g:message code="package.plural" default="Packages"/> &nbsp;
+        <input type="checkbox" name="licenses" value="Y" ${params.licenses=='Y'?'checked':''}/> <g:message code="licence.plural" default="Licences"/> &nbsp;
+        <input type="checkbox" name="titles" value="Y" ${params.titles=='Y'?'checked':''}/> <g:message code="title.plural" default="Titles"/> &nbsp;
+        <input type="checkbox" name="tipps" value="Y" ${params.tipps=='Y'?'checked':''}/> <g:message code="tipp.plural" default="TIPPs"/> &nbsp; <br/>
+        ${message(code:'datamanager.changeLog.how_changed')}:
+        <input type="checkbox" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.new_items" default="New Items"/> &nbsp;
+        <input type="checkbox" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
         <input  class="btn btn-primary" type="submit"/>
       </g:form>
 
@@ -108,20 +108,20 @@
       <div class="container alert-warn">
 
       <g:link action="changeLog"> 
-         <input type="button" value="Clear Search" class="btn btn-danger"/> 
+         <input type="button" value="Clear Search" class="btn btn-danger">${message(code:'default.button.clear_search.label')}</input>
       </g:link>
 
         <table class="table table-bordered">
           <thead>
             <tr>
               <td></td>
-              <td>Name</td>
-              <td>Actor</td>
-              <td>Event name</td>
-              <td>Property</td>
-              <td>Old</td>
-              <td>New</td>
-              <td>Timestamp</td>
+              <td>${message(code:'event.component')}</td>
+              <td>${message(code:'event.actor')}</td>
+              <td>${message(code:'event.name')}</td>
+              <td>${message(code:'event.property')}</td>
+              <td>${message(code:'event.old')}</td>
+              <td>${message(code:'event.new')}</td>
+              <td>${message(code:'event.timestamp')}</td>
             </tr>
           </thead>
           <tbody>

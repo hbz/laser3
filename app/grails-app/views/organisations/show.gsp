@@ -76,7 +76,7 @@
             </dd>
 
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-            Select an existing identifer using the typedown, or create a new one by entering namespace:value (EG eISSN:2190-9180) then clicking that value in the dropdown to confirm.
+              ${message(code:'identifier.select.text')}
             <g:if test="${orgInstance?.ids}">
               <g:each in="${orgInstance.ids}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link></dd>
@@ -149,7 +149,7 @@
     $(function(){
       <g:if test="${editable}">
       $("#addIdentifierSelect").select2({
-        placeholder: "Search for an identifier...",
+        placeholder: "${message(code:'identifier.select.ph')}",
         minimumInputLength: 1,
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",

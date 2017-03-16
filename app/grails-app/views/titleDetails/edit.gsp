@@ -58,10 +58,10 @@
             <table class="table table-bordered">
               <thead>
                 <tr>
-                  <th>ID</td>
-                  <th>Identifier Namespace</th>
-                  <th>Identifier</th>
-                  <th>Actions</th>
+                  <th>${message(code:'title.edit.component_id.label')}</td>
+                  <th>${message(code:'title.edit.namespace.label')}</th>
+                  <th>${message(code:'title.edit.identifier.label')}</th>
+                  <th>${message(code:'title.edit.actions.label')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,7 +70,7 @@
                     <td>${io.id}</td>
                     <td>${io.identifier.ns.ns}</td>
                     <td>${io.identifier.value}</td>
-                    <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ti.class.name}:${ti.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>Delete Identifier</g:link></g:if></td>
+                    <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ti.class.name}:${ti.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'title.edit.identifier.delete')}</g:link></g:if></td>
                   </tr>
                 </g:each>
               </tbody>
@@ -79,15 +79,15 @@
            
             <g:if test="${editable}">
               <g:form controller="ajax" action="addToCollection" class="form-inline" name="add_ident_submit">
-                Select an existing identifer using the typedown, or create a new one by entering namespace:value (EG eISSN:2190-9180) then clicking that value in the dropdown to confirm.<br/>
+                ${message(code:'title.edit.identifier.select.text')}<br/>
                 <input type="hidden" name="__context" value="${ti.class.name}:${ti.id}"/>
                 <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
                 <input type="hidden" name="__recip" value="ti"/>
                 <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                <input type="submit" value="Add Identifier..." class="btn btn-primary btn-small"/><br/>
+                <input type="submit" value="${message(code:'title.edit.identifier.select.add')}" class="btn btn-primary btn-small"/><br/>
               </g:form>
             </g:if>
-            <h3>Org Links</h3>
+            <h3>${message(code:'title.edit.orglink')}</h3>
 
           <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:ti?.orgs,editmode:editable]}" />
 
@@ -98,12 +98,12 @@
           <div class="span12">
 
 
-            <h3>Appears in...</h3>
+            <h3>${message(code:'title.edit.tipp')}</h3>
             <table class="table table-bordered table-striped">
                     <tr>
-                        <th>From Date</th><th>From Volume</th><th>From Issue</th>
-                        <th>To Date</th><th>To Volume</th><th>To Issue</th><th>Coverage Depth</th>
-                        <th>Platform</th><th>Package</th><th>Actions</th>
+                        <th>${message(code:'tipp.from_date')}</th><th>${message(code:'tipp.from_volume')}</th><th>${message(code:'tipp.from_issue')}</th>
+                        <th>${message(code:'tipp.to_date')}</th><th>${message(code:'tipp.to_volume')}</th><th>${message(code:'tipp.to_issue')}</th><th>${message(code:'tipp.coverage_depth')}</th>
+                        <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'title.edit.actions.label')}</th>
                     </tr>
                     <g:each in="${ti.tipps}" var="t">
                         <tr>
@@ -162,7 +162,7 @@
 
       <g:if test="${editable}">
       $("#addIdentifierSelect").select2({
-        placeholder: "Search for an identifier...",
+        placeholder: "${message(code:'identifier.select.ph')}",
         minimumInputLength: 1,
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",

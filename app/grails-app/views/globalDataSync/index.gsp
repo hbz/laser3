@@ -18,8 +18,8 @@
 
     <div class="container" style="text-align:center">
       <g:form action="index" method="get" class="form-inline">
-        <label>Search text</label> <input type="text" name="q" placeholder="enter search term..." value="${params.q?.encodeAsHTML()}"  />
-        <input type="submit" class="btn btn-primary" value="Search" />
+        <label>${message(code: 'globalDataSync.search.text')}: </label> <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}" value="${params.q?.encodeAsHTML()}"  />
+        <input type="submit" class="btn btn-primary" value="${message(code: 'default.button.search.label')}" />
       </g:form><br/>
     </div>
 
@@ -27,7 +27,7 @@
         
       <g:if test="${items != null}">
         <div class="container" style="text-align:center">
-          Records ${offset} to ${offset+items.size()} of ${globalItemTotal}
+          ${message(code:'globalDataSync.pagination.text', args: [offset,(offset + items.size()),globalItemTotal])}
         </div>
       </g:if>
       <table class="table table-bordered table-striped">
@@ -39,7 +39,7 @@
             <g:sortableColumn property="source.name"     title="${message(code: 'package.source.label'         )}" />
             <g:sortableColumn property="type"            title="${message(code: 'package.type.label'           )}" />
             <g:sortableColumn property="kbplusCompliant" title="${message(code: 'package.kbplusCompliant.label')}" />
-            <th>Actions</th>
+            <th>${message(code: 'globalDataSync.actions.label')}</th>
           </tr>
         </thead>
         <tbody>
@@ -53,13 +53,14 @@
                      ${item.source.name}</a></td>
               <td> <a href="${item.source.baseUrl}search/index?qbe=g:1packages">${item.displayRectype}</a></td>
               <td>${item.kbplusCompliant?.value}</td>
-              <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}" class="btn btn-success">Track(New)</g:link>
-                  <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}" class="btn btn-success">Track(Merge)</g:link></td>
+              <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}" class="btn btn-success">${message(code: 'globalDataSync.track_new')}</g:link>
+                  <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}" class="btn btn-success">${message(code: 'globalDataSync.track_merge')}</g:link>
+              </td>
             </tr>
             <g:each in="${item.trackers}" var="tracker">
               <tr>
                 <td colspan="6">
-                  -> Tracking using id
+                  -> ${message(code: 'globalDataSync.using_id')}
                   <g:if test="${tracker.localOid != null}">
                     <g:if test="${tracker.localOid.startsWith('com.k_int.kbplus.Package')}">
                       <g:link controller="packageDetails" action="show" id="${tracker.localOid.split(':')[1]}">

@@ -11,12 +11,12 @@
     <div class="container">
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="titleDetails" action="show" id="${ti.id}">Title ${ti.title}</g:link> </li>
+        <li> <g:link controller="titleDetails" action="show" id="${ti.id}">${message(code:'title.title.label')} ${ti.title}</g:link> </li>
 
         <li class="dropdown pull-right">
 
         <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable')}</span>&nbsp;</li>
         </g:if>
       </ul>
     </div>
@@ -44,12 +44,12 @@
         <div class="row">
           <div class="span6">
 
-            <h3>Identifiers</h3>
+            <h3>${message(code:'title.identifiers.label')}</h3>
 
               <g:each in="${duplicates}" var="entry">
 
                  <bootstrap:alert class="alert-info">
-                 Identifier ${entry.key} used in multiple titles:
+                 ${message(code:'title.edit.duplicate.warn', args: [entry.key])}:
                  <ul>
                  <g:each in ="${entry.value}" var="dup_title">
                  <li><g:link controller='titleDetails' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
@@ -61,9 +61,9 @@
             <table class="table table-bordered">
               <thead>
                 <tr>
-                  <th>ID</td>
-                  <th>Identifier Namespace</th>
-                  <th>Identifier</th>
+                  <th>${message(code:'title.edit.component_id.label')}</td>
+                  <th>${message(code:'title.edit.namespace.label')}</th>
+                  <th>${message(code:'title.edit.identifier.label')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -71,22 +71,29 @@
                   <tr>
                     <td>${io.id}</td>
                     <td>${io.identifier.ns.ns}</td>
-                    <td>${io.identifier.value}</td>
+                    <td>
+                      <g:if test="${io.identifier.ns.ns == 'originediturl'}">
+                        <a href="${io.identifier.value}">GOKb Link</a>
+                      </g:if>
+                      <g:else>
+                        ${io.identifier.value}
+                      </g:else>
+                    </td>
                   </tr>
                 </g:each>
               </tbody>
             </table>
 	  </div>
           <div class="span6">
-            <h3>Org Links</h3>
+            <h3>${message(code:'title.edit.orglink')}</h3>
             <table class="table table-bordered">
               <thead>
                 <tr>
-                  <th>ID</td>
-                  <th>Org</th>
-                  <th>Role</th>
-                  <th>From</th>
-                  <th>To</th>
+                  <th>${message(code:'title.edit.component_id.label')}</td>
+                  <th>${message(code:'template.orgLinks.name')}</th>
+                  <th>${message(code:'template.orgLinks.role')}</th>
+                  <th>${message(code:'title.edit.orglink.from')}</th>
+                  <th>${message(code:'title.edit.orglink.to')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -111,13 +118,13 @@
 
         <div class="row">
           <div class="span12">
-            <h3>Bibliographic Title History</h3>
+            <h3>${message(code: 'title.show.history.label')}</h3>
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>From</th>
-                  <th>To</th>
+                  <th>${message(code: 'title.show.history.date')}</th>
+                  <th>${message(code: 'title.show.history.from')}</th>
+                  <th>${message(code: 'title.show.history.to')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,7 +151,7 @@
             </table>
             <g:if test="${ti.getIdentifierValue('originediturl') != null}">
               <span class="pull-right">
-                Title history can be edited in gokb here:: <a href="${ti.getIdentifierValue('originediturl')}">Here</a>
+                ${message(code: 'title.show.gokb')} <a href="${ti.getIdentifierValue('originediturl')}">GOKb</a>.
               </span>
             </g:if>
           </div>
@@ -153,56 +160,56 @@
         <div class="row">
           <div class="span12">
 
-            <h3>Appears in...</h3>
+            <h3>${message(code:'title.edit.tipp')}</h3>
             <g:form id="${params.id}" controller="titleDetails" action="batchUpdate">
               <table class="table table-bordered table-striped">
                 <tr>
                   <th rowspan="2"></th>
-                  <th>Platform</th><th>Package</th>
-                  <th>Start</th>
-                  <th>End</th>
-                  <th>Coverage Depth</th>
-                  <th>Actions</th>
+                  <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>
+                  <th>${message(code:'tipp.start')}</th>
+                  <th>${message(code:'tipp.end')}</th>
+                  <th>${message(code:'tipp.coverage_depth')}</th>
+                  <th>${message(code:'title.edit.actions.label')}</th>
                 </tr>
                 <tr>
-                  <th colspan="6">Coverage Note</th>
+                  <th colspan="6">${message(code:'tipp.coverage_note')}</th>
                 </tr>
 
                 <g:if test="${editable}">
                   <tr>
                     <td rowspan="2"><input type="checkbox" name="checkall" onClick="javascript:$('.bulkcheck').attr('checked', true);"/></td>
-                    <td colspan="2"><button class="btn btn-primary" type="submit" value="Go" name="BatchEdit">Apply Batch Changes</button></td>
-                    <td>Date:<g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
-                       - <input type="checkbox" name="clear_start_date"/> (clear)
+                    <td colspan="2"><button class="btn btn-primary" type="submit" value="Go" name="BatchEdit">${message(code:'title.edit.tipp.clear')}</button></td>
+                    <td>${message(code:'title.show.history.date')}:<g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
+                       - <input type="checkbox" name="clear_start_date"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>
-                        Volume:<g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume"/>
-                       - <input type="checkbox" name="clear_start_volume"/> (clear)
+                        ${message(code:'tipp.volume')}:<g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume"/>
+                       - <input type="checkbox" name="clear_start_volume"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>
-                        Issue:<g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
-                       - <input type="checkbox" name="clear_start_issue"/> (clear)
+                        ${message(code:'tipp.issue')}:<g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                       - <input type="checkbox" name="clear_start_issue"/> (${message(code:'title.edit.tipp.clear')})
 
                     </td>
-                    <td>Date:<g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
-                       - <input type="checkbox" name="clear_end_date"/> (clear)
+                    <td>${message(code:'title.show.history.date')}:<g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
+                       - <input type="checkbox" name="clear_end_date"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>
-                        Volume: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
-                       - <input type="checkbox" name="clear_end_volume"/> (clear)
+                        ${message(code:'tipp.volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+                       - <input type="checkbox" name="clear_end_volume"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>
-                        Issue: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
-                       - <input type="checkbox" name="clear_end_issue"/> (clear)
+                        ${message(code:'tipp.issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+                       - <input type="checkbox" name="clear_end_issue"/> (${message(code:'title.edit.tipp.clear')})
 
                     </td>
                     <td><g:simpleHiddenValue id="bulk_coverage_depth" name="bulk_coverage_depth"/>
-                        - <input type="checkbox" name="clear_coverage_depth"/> (clear)
+                        - <input type="checkbox" name="clear_coverage_depth"/> (${message(code:'title.edit.tipp.clear')})
                     </td>
                     <td/>
                   </tr>
                   <tr>
                     <td colspan="6">
-                      Bulk coverage note change: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
-                       - <input type="checkbox" name="clear_coverage_note"/> (clear) <br/>
-                      Bulk Host Platform URL change: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
-                       - <input type="checkbox" name="clear_hostPlatformURL"/> (clear) <br/>
+                      ${message(code:'title.edit.tipp.bulk_notes_change')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+                       - <input type="checkbox" name="clear_coverage_note"/> (${message(code:'title.edit.tipp.clear')}) <br/>
+                      ${message(code:'title.edit.tipp.bulk_platform_change')}: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
+                       - <input type="checkbox" name="clear_hostPlatformURL"/> (${message(code:'title.edit.tipp.clear')}) <br/>
                     </td>
                   </tr>
                 </g:if>
@@ -213,18 +220,18 @@
                     <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
                     <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
   
-                    <td>Date: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/><br/>
-                    Volume: ${t.startVolume}<br/>
-                    Issue: ${t.startIssue}</td>
-                    <td>Date: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.endDate}"/><br/>
-                    Volume: ${t.endVolume}<br/>
-                    Issue: ${t.endIssue}</td>
+                    <td>${message(code:'title.show.history.date')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/><br/>
+                    ${message(code:'tipp.volume')}: ${t.startVolume}<br/>
+                    ${message(code:'tipp.issue')}: ${t.startIssue}</td>
+                    <td>${message(code:'title.show.history.date')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.endDate}"/><br/>
+                    ${message(code:'tipp.volume')}: ${t.endVolume}<br/>
+                    ${message(code:'tipp.issue')}: ${t.endIssue}</td>
                     <td>${t.coverageDepth}</td>
-                    <td><g:link controller="tipp" action="show" id="${t.id}">Full TIPP record</g:link></td>
+                    <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'title.edit.tipp.show')}</g:link></td>
                   </tr>
                   <tr>
-                    <td colspan="6">Coverage Note: ${t.coverageNote?:'No coverage note'}<br/>
-                                    Host Platform URL: ${t.hostPlatformURL?:'No Host Platform URL'}</td>
+                    <td colspan="6">${message(code:'tipp.coverage_note')}: ${t.coverageNote?:"${message(code:'title.edit.tipp.no_note', default: 'No coverage note')}"}<br/>
+                                    ${message(code:'tipp.platform_url')}: ${t.hostPlatformURL?:"${message(code:'title.edit.tipp.no_url', default: 'No Host Platform URL')}"}</td>
                   </tr>
                 </g:each>
               </table>

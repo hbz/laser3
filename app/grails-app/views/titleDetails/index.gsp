@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Titles - Search</title>
+    <title>KB+ ${message(code: 'title.plural')} - ${message(code: 'default.button.search.label')}</title>
   </head>
 
   <body>
@@ -11,7 +11,7 @@
     <div class="container">
       <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="titleDetails" action="index">All Titles</g:link></li>
+        <li><g:link controller="titleDetails" action="index">${message(code: 'menu.institutions.all_titles')}</g:link></li>
       </ul>
     </div>
 
@@ -21,13 +21,13 @@
 
         <input type="hidden" name="offset" value="${params.offset}"/>
 
-        <label for="q" class="control-label">Search :</label>   
+        <label for="q" class="control-label">${message(code: 'title.search')} :</label>
         <input id="q" type="text" name="q" placeholder="Add &quot;&quot; for exact match" value="${params.q}"/>
        
-        <label for="filter" class="control-label">Search in :</label>
-        <g:select id="filter" name="filter" from="${[[key:'title',value:'Title'],[key:'publisher',value:'Publisher'],[key:'',value:'All']   ]}" optionKey="key" optionValue="value" value="${params.filter}"/>
+        <label for="filter" class="control-label">${message(code: 'title.search_in')} :</label>
+        <g:select id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code: 'title.title.publisher')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
        
-        <button type="submit" name="search" value="yes">Search</button>
+        <button type="submit" name="search" value="yes">${message(code: 'default.button.search.label')}</button>
       </g:form>
       </div>
     </div>
@@ -40,13 +40,16 @@
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
                   <g:if test="${params.int('offset')}">
-                   Showing Results ${params.int('offset') + 1} - ${resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))} of ${resultsTotal}
+                    <g:set var="curOffset" value="${params.int('offset') + 1}" />
+                    <g:set var="pageMax" value="${resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))}" />
+                    ${message(code: 'title.search.offset.text', args: [curOffset,pageMax,resultsTotal])}
                   </g:if>
                   <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                    Showing Results 1 - ${resultsTotal < params.int('max') ? resultsTotal : params.int('max')} of ${resultsTotal}
+                    <g:set var="pageMax" value="${resultsTotal < params.int('max') ? resultsTotal : params.int('max')}" />
+                    ${message(code: 'title.search.no_offset.text', args: [pageMax,resultsTotal])}
                   </g:elseif>
                   <g:else>
-                    Showing ${resultsTotal} Results
+                    ${message(code: 'title.search.no_pagination.text', args: [resultsTotal])}
                   </g:else>
                 </div>
 
@@ -54,9 +57,9 @@
                   <table class="table table-bordered table-striped">
                     <thead>
                       <tr>
-                      <g:sortableColumn property="sortTitle" title="Title" params="${params}" />
-                      <g:sortableColumn property="publisher" title="Publisher" params="${params}" />
-                      <th style="white-space:nowrap">Identifiers</th>
+                      <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />
+                      <g:sortableColumn property="publisher" style="white-space:nowrap" title="${message(code: 'title.publisher.label', default: 'Publisher')}" params="${params}" />
+                      <th style="white-space:nowrap"><g:message code="title.identifiers.label" /></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -65,7 +68,7 @@
                           <td>
                             <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link>
                             <g:if test="${editable}">
-                              <g:link controller="titleDetails" action="edit" id="${hit.getSource().dbId}">(Edit)</g:link>
+                              <g:link controller="titleDetails" action="edit" id="${hit.getSource().dbId}">(${message(code: 'default.button.edit.label')})</g:link>
                             </g:if>
                           </td>
                           <td>
@@ -73,7 +76,7 @@
                           </td>
                           <td>
                             <g:each in="${hit.getSource().identifiers}" var="id">
-                              ${id.type}:${id.value}<br/>
+                              <div style="white-space:nowrap"><span>${id.type}:</span><span>${id.value}</span></div>
                             </g:each>
                           </td>
                         </tr>

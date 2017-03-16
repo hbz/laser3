@@ -1,9 +1,9 @@
   <table class="table table-bordered table-condensed table-striped">
     <thead>
       <tr>
-        <th>Organisation Name</th>
-        <th>Role</th>
-        <th>Actions</th>
+        <th>${message(code:'template.orgLinks.name')}</th>
+        <th>${message(code:'template.orgLinks.role')}</th>
+        <th>${message(code:'title.edit.actions.label')}</th>
       </tr>
     </thead>
     <g:each in="${roleLinks}" var="role">
@@ -13,16 +13,16 @@
           <td>${role?.roleType?.value}</td>
           <td>
             <g:if test="${editmode}">
-              <g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm('Really delete this org link?')">Delete</g:link>
+              <g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">${message(code:'default.button.delete.label')}</g:link>
             </g:if>
           </td>
         </g:if>
         <g:else>
-          <td colspan="3">Error - Role link without org ${role.id} Please report to support</td>
+          <td colspan="3">${message(code:'template.orgLinks.error' , args:[role.id])}</td>
         </g:else>
       </tr>
     </g:each>
   </table>
   <g:if test="${editmode}">
-    <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >Add Org Link</a>
+    <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >${message(code:'template.orgLinks.add')}</a>
   </g:if>

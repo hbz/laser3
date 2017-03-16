@@ -113,10 +113,6 @@
     <div id="Footer">
         <div class="container">
             <div class="row">
-                <div class="pull-left">
-                    <a href="http://www.jisc-collections.ac.uk/"><div class="sprite sprite-jisc_collections_logo">JISC Collections</div></a>
-                    <div class="clearfix"></div>
-                </div>
                 <div class="pull-right">
                     <a href="http://www.kbplus.ac.uk"><div class="sprite sprite-kbplus_logo">Knowledge Base Plus</div></a>
                 </div>
@@ -129,22 +125,6 @@
     </div>
             
   <r:layoutResources/>
-
-    <script type="text/javascript" src="//assets.zendesk.com/external/zenbox/v2.4/zenbox.js"></script>
-    <style type="text/css" media="screen, projection">
-      @import url(//assets.zendesk.com/external/zenbox/v2.4/zenbox.css);
-    </style>
-    <r:script type="text/javascript">
-      if (typeof(Zenbox) !== "undefined") {
-        Zenbox.init({
-          dropboxID:   "20059881",
-          url:         "https://kbplus.zendesk.com",
-          tabID:       "feedback",
-          tabColor:    "green",
-          tabPosition: "Right"
-        });
-      }
-    </r:script>
 
   </body>
 </html>

@@ -1,24 +1,24 @@
 <div class="well notes">
-  <h5>Notes</h5>
+  <h5>${message(code:'template.notes', default:'Notes')}</h5>
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">
       <g:if test="${((docctx.owner?.contentType==0) && !(docctx.domain) && (docctx.status?.value!='Deleted') )}">
         <li>
           <g:xEditable owner="${docctx.owner}" field="content"/><br/>
-          <i>Note created <g:formatDate format="dd/MM/yyyy" date="${docctx.owner.dateCreated}"/>
+          <i>${message(code:'template.notes.created')} <g:formatDate format="dd/MM/yyyy" date="${docctx.owner.dateCreated}"/>
           <g:if test="${docctx.alert}">
-            shared by ${docctx.alert.createdBy.displayName}
-            <g:if test="${docctx.alert.sharingLevel==1}">With JC</g:if>
-            <g:if test="${docctx.alert.sharingLevel==2}">With Community</g:if>
+            ${message(code:'template.notes.shared')} ${docctx.alert.createdBy.displayName}
+            <g:if test="${docctx.alert.sharingLevel==1}">${message(code:'template.notes.shared_jc')}</g:if>
+            <g:if test="${docctx.alert.sharingLevel==2}">${message(code:'template.notes.shared_community')}</g:if>
             <div class="comments"><a href="#modalComments" class="announce" data-id="${docctx.alert.id}">${docctx.alert?.comments != null ? docctx.alert?.comments?.size() : 0} Comment(s)</a></div>
           </g:if>
-          <g:else>(Not shared)</g:else></i>
+          <g:else>${message(code:'template.notes.not_shared')}</g:else></i>
         </li>
       </g:if>
     </g:each>
   </ul>
   <g:if test="${editable}">
-    <input type="submit" class="btn btn-primary" value="Add new note" data-toggle="modal" href="#modalCreateNote" />
+    <input type="submit" class="btn btn-primary" value="${message(code:'template.notes.add', default:'Add New Note')}" data-toggle="modal" href="#modalCreateNote" />
   </g:if>
 </div>
 

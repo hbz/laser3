@@ -36,12 +36,25 @@ class GlobalSourceSyncService {
       title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
     }
 
-    if ( ( newtitle.publisher != null ) && ( title_instance.getPublisher() == null ) ) {
-      def publisher_identifiers = []
-      def publisher = Org.lookupOrCreate(newtitle.publisher, 'publisher', null, publisher_identifiers, null)
-      def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');
-      log.debug("Asserting ${publisher} ${title_instance} ${pub_role}");
-      OrgRole.assertOrgTitleLink(publisher, title_instance, pub_role)
+    if ( ( newtitle.publishers != null ) && ( title_instance.getPublisher() == null ) ) {
+      newtitle.publishers.each { pub ->
+        def publisher_identifiers = []
+        def publisher = Org.lookupOrCreate(pub.name , 'publisher', null, publisher_identifiers, null)
+        def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');
+        def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        def start_date
+        def end_date
+
+        if(pub.startDate){
+          start_date = sdf.parse(pub.startDate);
+        }
+        if(pub.endDate){
+          end_date = sdf.parse(pub.endDate);
+        }
+
+        log.debug("Asserting ${publisher} ${title_instance} ${pub_role}");
+        OrgRole.assertOrgTitleLink(publisher, title_instance, pub_role, ( pub.startDate ? start_date : null), ( pub.endDate ? end_date : null))
+      }
     }
 
     // Title history!!
@@ -99,11 +112,26 @@ class GlobalSourceSyncService {
     result.parsed_rec = [:]
     result.parsed_rec.identifiers = []
     result.parsed_rec.history = []
+    result.parsed_rec.publishers = []
 
     result.title = md.gokb.title.name.text()
     result.parsed_rec.title = md.gokb.title.name.text()
-    result.parsed_rec.publisher = md.gokb.title.publisher?.name?.text()
 
+    md.gokb.title.publishers?.publisher.each{ pub ->
+      def publisher = [:]
+      publisher.name = pub.name.text()
+      publisher.status = pub.status.text()
+
+      if(pub.startDate){
+        publisher.startDate = pub.startDate.text()
+      }
+
+      if(pub.endDate){
+        publisher.endDate = pub.endDate.text()
+      }
+
+      result.parsed_rec.publishers.add(publisher)
+    }
     md.gokb.title.identifiers.identifier.each { id ->
       result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
     }
@@ -146,6 +174,8 @@ class GlobalSourceSyncService {
     def pkg = null;
     boolean auto_accept_flag = false
 
+    log.debug("Reconciling new Package!")
+
     def scope = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_SCOPE,(newpkg?.scope)?:'Unknown');
     def listStatus = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_LIST_STAT,(newpkg?.listStatus)?:'Unknown');
     def breakable = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_BREAKABLE,(newpkg?.breakable)?:'Unknown');
@@ -161,6 +191,7 @@ class GlobalSourceSyncService {
     }
     else {
       // create a new package
+      log.debug("Creating new Package..")
 
       // Auto accept everything whilst we load the package initially
       auto_accept_flag = true;
@@ -182,6 +213,7 @@ class GlobalSourceSyncService {
 
 
       if ( pkg.save() ) {
+        log.debug("Saved Package as com.k_int.kbplus.Package:${pkg.id}!")
         grt.localOid = "com.k_int.kbplus.Package:${pkg.id}"
         grt.save()
       }
@@ -303,7 +335,7 @@ class GlobalSourceSyncService {
     }
 
     def onDeletedTipp = { ctx, tipp, auto_accept ->
-      println("deletd tipp");
+      println("deleted tipp");
     }
 
     def onPkgPropChange = { ctx, propname, value, auto_accept ->
@@ -368,8 +400,8 @@ class GlobalSourceSyncService {
     result
   }
   def packageConv = { md, synctask ->
-    println("Package conv...");
-    // Convert XML to internal structure ansd return
+    log.debug("Package conv...");
+    // Convert XML to internal structure and return
     def result = [:]
     // result.parsed_rec = xml.text().getBytes();
     result.title = md.gokb.package.name.text()
@@ -419,7 +451,7 @@ class GlobalSourceSyncService {
     }
 
     result.parsed_rec.tipps.sort{it.titleId}
-    println("Rec conversion for package returns object with title ${result.parsed_rec.title} and ${result.parsed_rec.tipps?.size()} tipps");
+    log.debug("Rec conversion for package returns object with title ${result.parsed_rec.title} and ${result.parsed_rec.tipps?.size()} tipps");
     return result
   }
 
