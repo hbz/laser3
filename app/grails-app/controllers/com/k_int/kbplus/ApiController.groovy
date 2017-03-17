@@ -21,6 +21,7 @@ import grails.converters.*
 class ApiController {
 
   def springSecurityService
+  ApiService apiService
 
 
   // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
@@ -232,5 +233,18 @@ where tipp.title = ? and orl.roleType.value=?''',[title,'Content Provider']);
 
     render result as JSON
   }
+  
+
+    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    def orgsImport() {
+        log.info("orgsImport() ..")
+        def xml = new XmlSlurper().parseText(request.reader.text)
+        assert xml instanceof groovy.util.slurpersupport.GPathResult
+
+        if(request.method == 'POST') {
+            apiService.importOrg(xml)
+        }
+        render xml
+    }
 }
 

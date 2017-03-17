@@ -1,11 +1,9 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
-
+import com.k_int.kbplus.auth.*
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
-
 import groovy.util.logging.*
-
 import javax.persistence.Transient
 
 @Log4j
@@ -69,6 +67,7 @@ class Org {
   }
 
   static constraints = {
+          name(nullable:true, blank:false,maxSize:256);
          impId(nullable:true, blank:true, maxSize:256);
        comment(nullable:true, blank:true, maxSize:2048);
        ipRange(nullable:true, blank:true, maxSize:1024);
@@ -94,7 +93,7 @@ class Org {
   }
 
   def generateShortcode(name) {
-    def candidate = name.trim().replaceAll(" ","_")
+    def candidate = StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
     return incUntilUnique(candidate);
   }
 
@@ -216,7 +215,7 @@ class Org {
                        impId:java.util.UUID.randomUUID().toString()).save()
 
       identifiers.each { k,v ->
-        def io = new IdentifierOccurrence(org:result, identifier:Identifier.lookupOrCreateCanonicalIdentifier(k,v)).save()
+          def io = new IdentifierOccurrence(org:result, identifier:Identifier.lookupOrCreateCanonicalIdentifier(k,v)).save()
       }
 
       if ( ( consortium != null ) && ( consortium.length() > 0 ) ) {

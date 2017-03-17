@@ -349,8 +349,11 @@
                       <li><g:link controller="person" action="index">Person Controller</g:link></li>
                       <li class="divider"></li>
                       
+                      <li><g:link controller="identifier" action="index">Identifier Controller</g:link></li>
                       <li><g:link controller="license" action="index">License Controller</g:link></li>
                       <li><g:link controller="org" action="index">Org Controller</g:link></li>
+                      <li><g:link controller="organisations" action="index">Organisations Controller</g:link></li>
+                      
                       <li><g:link controller="package" action="index">Package Controller</g:link></li>
                       <li><g:link controller="subscription" action="index">Subscription Controller</g:link></li>
                       <li><g:link controller="titleInstance" action="index">Title Controller</g:link></li>

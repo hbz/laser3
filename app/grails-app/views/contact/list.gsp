@@ -50,10 +50,6 @@
 						
 							<th class="header"><g:message code="contact.type.label" default="Type" /></th>
 						
-							<th class="header"><g:message code="contact.prs.label" default="Prs" /></th>
-						
-							<th class="header"><g:message code="contact.org.label" default="Org" /></th>
-						
 							<th></th>
 						</tr>
 					</thead>
@@ -66,10 +62,6 @@
 							<td>${fieldValue(bean: contactInstance, field: "phone")}</td>
 						
 							<td>${fieldValue(bean: contactInstance, field: "type")}</td>
-						
-							<td>${fieldValue(bean: contactInstance, field: "prs")}</td>
-						
-							<td>${fieldValue(bean: contactInstance, field: "org")}</td>
 						
 							<td class="link">
 								<g:link action="show" id="${contactInstance.id}" class="btn btn-small">Show &raquo;</g:link>
