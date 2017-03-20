@@ -21,7 +21,7 @@ class GlobalRecordSource {
                    id column:'grs_id'
               version column:'grs_version'
            identifier column:'grs_identifier'
-                 name column:'grs_name'
+                 name column:'grs_name', type:'text'
              haveUpTo column:'grs_have_up_to'
                   uri column:'grs_uri'
            fullPrefix column:'grs_full_prefix'
@@ -35,7 +35,7 @@ class GlobalRecordSource {
 
   static constraints = {
      identifier(nullable:true, blank:false)
-           name(nullable:true, blank:false)
+           name(nullable:true, blank:false, maxSize:2048)
        haveUpTo(nullable:true, blank:false)
             uri(nullable:true, blank:false)
            type(nullable:true, blank:false)

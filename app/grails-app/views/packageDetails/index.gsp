@@ -42,7 +42,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Packages</title>
+    <title>KB+ ${message(code:'package.plural', default:'Packages')}</title>
   </head>
 
   <body>
@@ -51,7 +51,7 @@
     <div class="container">
       <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">All Packages</g:link></li>
+        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link></li>
       </ul>
     </div>
 
@@ -64,17 +64,17 @@
       <div class="row">
         <div class="span12">
           <div class="well form-horizontal">
-            Package Name: <input name="q" placeholder="Add &quot;&quot; for exact match" value="${params.q}"/>
-            Sort: <select name="sort">
-                    <option ${params.sort=='sortname' ? 'selected' : ''} value="sortname">Package Name</option>
-                    <option ${params.sort=='_score' ? 'selected' : ''} value="_score">Score</option>
-                    <option ${params.sort=='lastModified' ? 'selected' : ''} value="lastModified">Last Modified</option>
+            ${message(code:'package.show.pkg_name', default:'Package Name')}: <input name="q" placeholder="${message(code:'packageDetails.index.search.ph')}" value="${params.q}"/>
+            ${message(code:'packageDetails.index.search.sort', default:'Sort')}: <select name="sort">
+                    <option ${params.sort=='sortname' ? 'selected' : ''} value="sortname">${message(code:'package.show.pkg_name', default:'Package Name')}</option>
+                    <option ${params.sort=='_score' ? 'selected' : ''} value="_score">${message(code:'packageDetails.index.search.sort.score', default:'Score')}</option>
+                    <option ${params.sort=='lastModified' ? 'selected' : ''} value="lastModified">${message(code:'packageDetails.index.search.sort.modified', default:'Last Modified')}</option>
                   </select>
-            Order: <select name="order" value="${params.order}">
-                    <option ${params.order=='asc' ? 'selected' : ''} value="asc">Ascending</option>
-                    <option ${params.order=='desc' ? 'selected' : ''} value="desc">Descending</option>
+            ${message(code:'packageDetails.index.search.sort.order', default:'Order')}: <select name="order" value="${params.order}">
+                    <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
+                    <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
                   </select>
-            <button type="submit" name="search" value="yes">Search</button>
+            <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
           </div>
         </div>
       </div>
@@ -125,14 +125,17 @@
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
 
-                    <g:if test=" ${params.int('offset')}">
-                   Showing Results ${params.int('offset') + 1} - ${resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))} of ${resultsTotal}
+                  <g:if test="${offset && params.int('offset') > 0 }">
+                    ${message(code:'default.search.offset.text', args: [(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
                   </g:if>
-                  <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                      Showing Results 1 - ${resultsTotal < params.int('max') ? resultsTotal : params.int('max')} of ${resultsTotal}
+                  <g:elseif test="${resultsTotal && resultsTotal > params.int('max')}">
+                    ${message(code:'default.search.no_offset.text', args: [(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
+                  </g:elseif>
+                  <g:elseif test="${resultsTotal && resultsTotal == 1}">
+                    ${message(code:'default.search.single.text')}
                   </g:elseif>
                   <g:else>
-                    Showing ${resultsTotal} Results
+                    ${message(code:'default.search.no_pagiantion.text', args:[resultsTotal])}
                   </g:else>
                 </div>
 
@@ -140,35 +143,46 @@
                   <table class="table table-bordered table-striped">
                     <thead>
                       <tr>
-                      <g:sortableColumn property="sortname" title="Package Name" params="${params}" />
-                      <g:sortableColumn property="consortiaName" title="Consortium" params="${params}" />
-                      <th>Start Date</th>
-                      <th>End Date</th>
-                      <th>Last Modified</th></tr>
+                      <g:sortableColumn property="sortname" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
+                      <g:sortableColumn property="consortiaName" title="${message(code:'consortium', default:'Consortium')}" params="${params}" />
+                      <th style="word-break:normal">${message(code:'package.show.start_date', default:'Start Date')}</th>
+                      <th style="word-break:normal">${message(code:'package.show.end_date', default:'End Date')}</th>
+                      <th>${message(code:'package.lastUpdated.label', default:'Last Modified')}</th></tr>
                     </thead>
                     <tbody>
                       <g:each in="${hits}" var="hit">
                         <tr>
                           <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link>
-                              <!--(${hit.score})-->
-                              <span>(${hit.getSource().titleCount?:'Unknown number of'} titles)</span>
-                              </td>
+                            <!--(${hit.score})-->
+                            <span style="white-space:nowrap">(
+                              <g:if test="${hit.getSource().titleCount}">
+                                <g:if test="${hit.getSource().titleCount == 1}">
+                                  ${message(code:'packageDetails.index.result.titles.single')}
+                                </g:if>
+                                <g:else>
+                                  ${message(code:'packageDetails.index.result.titles', args: [hit.getSource().titleCount])}
+                                </g:else>
+                              </g:if>
+                              <g:else>
+                                  ${message(code:'packageDetails.index.result.titles.unknown', default:'Unknown number of titles')}
+                              </g:else>
+                            )</span>
+                          </td>
                           <td>${hit.getSource().consortiaName}</td>
-                          <td>
+                          <td style="white-space:nowrap">
                           <g:formatDate formatName="default.date.format.notime" date='${hit.getSource().startDate?dateFormater.parse(hit.getSource().startDate):null}'/>
                           </td>
-                          <td>
-                          <g:formatDate formatName="default.date.format.notime" date='${hit.getSource().endDate?
-                            dateFormater.parse(hit.getSource().endDate):null}'/>
+                          <td style="white-space:nowrap">
+                          <g:formatDate formatName="default.date.format.notime" date='${hit.getSource().endDate?dateFormater.parse(hit.getSource().endDate):null}'/>
                           </td>
-                          <td>${hit.getSource().lastModified}</td>
+                          <td style="white-space:nowrap">${hit.getSource().lastModified}</td>
                         </tr>
                       </g:each>
                     </tbody>
                   </table>
                 </div>
                 <div class="paginateButtons" style="text-align:center">
-                  <span><g:paginate controller="packageDetails" action="index" params="${params}" next="Next" prev="Prev" total="${resultsTotal}" /></span>
+                  <span><g:paginate controller="packageDetails" action="index" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" total="${resultsTotal}" /></span>
             </g:if>
             <g:else>
               <p><g:message code="default.search.empty" default="No results found"/></p>

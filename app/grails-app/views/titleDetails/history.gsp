@@ -19,12 +19,12 @@
 <div class="container">
   <ul class="breadcrumb">
     <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-    <li> <g:link controller="titleDetails" action="show" id="${titleInstance.id}">Title ${titleInstance.title}</g:link> </li>
+    <li> <g:link controller="titleDetails" action="show" id="${titleInstance.id}">${message(code: 'title', default: 'Title')} ${titleInstance.title}</g:link> </li>
 
     <li class="dropdown pull-right">
 
     <g:if test="${editable}">
-      <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+      <li class="pull-right"><span class="badge badge-warning">${message(code: 'default.editable', default: 'Editable')}</span>&nbsp;</li>
     </g:if>
   </ul>
 </div>

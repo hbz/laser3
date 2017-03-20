@@ -22,7 +22,7 @@
         <input type="hidden" name="offset" value="${params.offset}"/>
 
         <label for="q" class="control-label">${message(code: 'title.search')} :</label>
-        <input id="q" type="text" name="q" placeholder="Add &quot;&quot; for exact match" value="${params.q}"/>
+        <input id="q" type="text" name="q" placeholder="${message(code: 'title.search.ph')}" value="${params.q}"/>
        
         <label for="filter" class="control-label">${message(code: 'title.search_in')} :</label>
         <g:select id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code: 'title.title.publisher')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
@@ -87,7 +87,7 @@
              </g:if>
              <div class="paginateButtons" style="text-align:center">
                 <g:if test="${hits}" >
-                  <span><g:paginate controller="titleDetails" action="index" params="${params}" next="Next" prev="Prev" maxsteps="10" total="${resultsTotal}" /></span>
+                  <span><g:paginate controller="titleDetails" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" /></span>
                 </g:if>
               </div>
           </div>

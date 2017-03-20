@@ -28,10 +28,10 @@
             
           </g:if>
         
-          <g:if test="${orgInstance?.address}">
+          <g:if test="${orgInstance?.addresses}">
             <dt><g:message code="org.address.label" default="Address" /></dt>
             
-              <dd><g:fieldValue bean="${orgInstance}" field="address"/></dd>
+              <dd><g:fieldValue bean="${orgInstance}" field="addresses"/></dd>
             
           </g:if>
         

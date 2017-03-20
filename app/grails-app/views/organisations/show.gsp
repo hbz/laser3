@@ -22,36 +22,34 @@
         </g:if>
 
         <dl>
-            <dt><g:message code="org.name.label" default="Name" /></dt>
-              <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
+          <dt><g:message code="org.name.label" default="Name" /></dt>
+            <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
+              <g:if test="${orgInstance?.addresses}">
+                <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
+                <dd><ul>
+                  <g:each in="${orgInstance.addresses}" var="a">
+                    <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+                  </g:each>
+                </ul></dd>
+              </g:if>
 
-				<g:if test="${orgInstance?.addresses}">
-					<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-					<dd><ul>
-						<g:each in="${orgInstance.addresses}" var="a">
-							<li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
-						</g:each>
-					</ul></dd>
-				</g:if>
-			
-				<g:if test="${orgInstance?.contacts}">
-					<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
-					<dd><ul>
-						<g:each in="${orgInstance.contacts}" var="c">
-							<li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
-						</g:each>
-					</ul></dd>
-				</g:if>
-			
+              <g:if test="${orgInstance?.contacts}">
+                <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
+                <dd><ul>
+                  <g:each in="${orgInstance.contacts}" var="c">
+                    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+                  </g:each>
+                </ul></dd>
+              </g:if>
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
               <dd>
                 <g:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
               </dd>
-        
-            <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
-            
-              <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
-        
+            <g:if test="${editable}">
+              <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
+
+                <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
+            </g:if>
             <dt><g:message code="org.sector.label" default="Sector" /></dt>
             <dd>
               <g:if test="${editable}"><span id="orgSectorEdit" 
@@ -89,7 +87,7 @@
               <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
               <input type="hidden" name="__recip" value="org"/>
               <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-              <input type="submit" value="Add Identifier..." class="btn btn-primary btn-small"/>
+              <input type="submit" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small"/>
             </g:form>
           </g:if>
 
@@ -122,17 +120,17 @@
             <dd><ul>
               <g:each in="${orgInstance.links}" var="i">
                 <li>
-                  <g:if test="${i.pkg}"><g:link controller="packageDetails" action="show" id="${i.pkg.id}">Package: ${i.pkg.name} (${i.pkg?.packageStatus?.value})</g:link></g:if>
-                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">Subscription: ${i.sub.name} (${i.sub.status?.value})</g:link></g:if>
-                  <g:if test="${i.lic}">Licence: ${i.lic.id} (${i.lic.status?.value})</g:if>
-                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">Title: ${i.title.title} (${i.title.status?.value})</g:link></g:if>
+                  <g:if test="${i.pkg}"><g:link controller="packageDetails" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.value})</g:link></g:if>
+                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.value})</g:link></g:if>
+                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${i.lic.status?.value})</g:if>
+                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.value})</g:link></g:if>
                   (${i.roleType?.value}) </li>
               </g:each>
             </ui></dd>
           </g:if>
         
           <g:if test="${orgInstance?.impId}">
-            <dt><g:message code="org.impId.label" default="Imp Id" /></dt>
+            <dt><g:message code="org.impId.label" default="Import ID" /></dt>
             
               <dd><g:fieldValue bean="${orgInstance}" field="impId"/></dd>
             

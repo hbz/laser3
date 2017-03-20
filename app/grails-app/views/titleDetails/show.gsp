@@ -130,7 +130,7 @@
               <tbody>
                 <g:each in="${titleHistory}" var="th">
                   <tr>
-                    <td><g:formatDate date="${th.eventDate}" format="yyyy-MM-dd"/></td>
+                    <td><g:formatDate date="${th.eventDate}" formatName="default.date.format.notime"/></td>
                     <td>
                       <g:each in="${th.participants}" var="p">
                         <g:if test="${p.participantRole=='from'}">

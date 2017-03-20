@@ -96,7 +96,7 @@ class TitleInstancePackagePlatform {
       statusReason column:'tipp_status_reason_rv_fk'
            payment column:'tipp_payment_rv_fk'
             option column:'tipp_option_rv_fk'
-   hostPlatformURL column:'tipp_host_platform_url'
+   hostPlatformURL column:'tipp_host_platform_url', type: 'text'
                sub column:'tipp_sub_fk'
        derivedFrom column:'tipp_derived_from'
    coreStatusStart column:'tipp_core_status_start_date'
@@ -123,7 +123,7 @@ class TitleInstancePackagePlatform {
     payment(nullable:true, blank:false);
     option(nullable:true, blank:false);
     sub(nullable:true, blank:false);
-    hostPlatformURL(nullable:true, blank:true);
+    hostPlatformURL(nullable:true, blank:true, maxSize:2048);
     derivedFrom(nullable:true, blank:true);
     coreStatusStart(nullable:true, blank:true);
     coreStatusEnd(nullable:true, blank:true);
