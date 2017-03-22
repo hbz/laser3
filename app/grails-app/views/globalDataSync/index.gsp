@@ -27,7 +27,7 @@
         
       <g:if test="${items != null}">
         <div class="container" style="text-align:center">
-          ${message(code:'globalDataSync.pagination.text', args: [offset,(offset + items.size()),globalItemTotal])}
+          ${message(code:'globalDataSync.pagination.text', args: [offset+1,(offset + items.size()),globalItemTotal])}
         </div>
       </g:if>
       <table class="table table-bordered table-striped">
