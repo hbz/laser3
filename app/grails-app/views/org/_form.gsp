@@ -85,7 +85,7 @@
 		
 	</label>
 	<g:select id="status" name="status.id" 
-		from="${com.k_int.kbplus.RefdataValue.list()}" 
+		from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('PendingChangeStatus'))}"
 		optionKey="id" 
 		optionValue="value" 
 		value="${orgInstance?.status?.id}" 
@@ -98,7 +98,7 @@
 		<g:message code="org.membership.label" default="Membership" />
 		
 	</label>
-	<g:select id="membership" name="membership.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="membership" name="membership.id" from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('YN'))}" optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
 
 </div>
 

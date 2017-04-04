@@ -56,7 +56,7 @@ class Platform {
       platform = Platform.findByNormname(norm_name)
 
       if ( !platform ) {
-        platform = new Platform(impId:params.impId,
+        platform = new Platform(impId:java.util.UUID.randomUUID().toString(),
                                 name:params.name,
                                 normname:norm_name,
                                 provenance:params.provenance,
