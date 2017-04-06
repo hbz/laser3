@@ -141,7 +141,7 @@
           <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="form-search" method="get">
 
             <g:select name="org"
-            		  from="${com.k_int.kbplus.Org.findAll('from Org o order by o.name')}"
+            		  from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
                       optionKey="id"
                       optionValue="name"
                       class="input-medium"/>
