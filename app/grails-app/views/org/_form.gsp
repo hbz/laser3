@@ -34,7 +34,12 @@
 		<g:message code="org.sector.label" default="Sector" />
 		
 	</label>
-	<g:textField name="sector" maxlength="128" value="${orgInstance?.sector}"/>
+	<g:select id="sector" name="sector.id" 
+		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector')}" 
+		optionKey="id" 
+		optionValue="value" 
+		value="${orgInstance?.sector?.id}" 
+		class="many-to-one" noSelection="['null': '']"/>
 
 </div>
 

@@ -70,6 +70,10 @@ class BootStrap {
     RefdataCategory.lookupOrCreate("FactType","JUSP:JR1-JR1a")
     RefdataCategory.lookupOrCreate("FactType","JUSP:JR1GOA")
 
+    // TODO
+    RefdataCategory.lookupOrCreate('OrgSector', 'Higher Education');
+    RefdataCategory.lookupOrCreate('OrgSector', 'Publisher');
+    
     def cons_combo = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium');
 
     def or_licensee_role   = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');

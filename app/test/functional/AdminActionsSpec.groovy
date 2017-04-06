@@ -8,7 +8,7 @@ class AdminActionsSpec extends GebReportingSpec {
 
   // //The following will setup everything required for this test case
   // def setupSpec(){
-  //     def org = new com.k_int.kbplus.Org(name:Data.Org_name,impId:Data.Org_impId,sector:"Higher Education").save()
+  //     def org = new com.k_int.kbplus.Org(name:Data.Org_name,impId:Data.Org_impId,sector:RefdataValue.findByValue('Higher Education')).save()
   //     def user = com.k_int.kbplus.auth.User.findByUsername(Data.UserA_name)
   //     def userAdm = com.k_int.kbplus.auth.User.findByUsername(Data.UserD_name)
   //     def formal_role = com.k_int.kbplus.auth.Role.findByAuthority('INST_ADM')
