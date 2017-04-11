@@ -92,7 +92,7 @@ class OrganisationsController {
     switch (request.method) {
     case 'GET':
         if (!params.name && !params.sector) {
-        params.sector = 'Higher Education'
+            params.sector = RefdataValue.findByValue('Higher Education')
         }
           [orgInstance: new Org(params)]
       break

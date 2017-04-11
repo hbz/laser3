@@ -13,13 +13,13 @@ class Org {
   String impId
   String comment
   String ipRange
-  String sector
   String scope
   Date dateCreated
   Date lastUpdated
   String categoryId
 
   RefdataValue orgType
+  RefdataValue sector
   RefdataValue status
   RefdataValue membership
   
@@ -62,6 +62,7 @@ class Org {
          scope column:'org_scope'
     categoryId column:'org_cat'
        orgType column:'org_type_rv_fk'
+        sector column:'org_sector_rv_fk'
         status column:'org_status_rv_fk'
     membership column:'org_membership'
   }
@@ -71,7 +72,7 @@ class Org {
          impId(nullable:true, blank:true, maxSize:256);
        comment(nullable:true, blank:true, maxSize:2048);
        ipRange(nullable:true, blank:true, maxSize:1024);
-        sector(nullable:true, blank:true, maxSize:128);
+        sector(nullable:true, blank:true);
      shortcode(nullable:true, blank:true, maxSize:128);
          scope(nullable:true, blank:true, maxSize:128);
     categoryId(nullable:true, blank:true, maxSize:128);

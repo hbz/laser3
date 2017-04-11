@@ -75,7 +75,7 @@ class DataloadService {
       result.status = org.status?.value
       result._id = org.impId
       result.name = org.name
-      result.sector = org.sector
+      result.sector = org.sector?.value
       result.dbId = org.id
       result.visible = ['Public']
       result.rectype = 'Organisation'

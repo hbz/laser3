@@ -52,15 +52,7 @@
             </g:if>
             <dt><g:message code="org.sector.label" default="Sector" /></dt>
             <dd>
-              <g:if test="${editable}"><span id="orgSectorEdit" 
-                                          class="xEditableValue"
-                                          data-pk="${orgInstance.class.name}:${orgInstance.id}"
-                                          data-name="sector" 
-                                          data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                                          data-original-title="${orgInstance.sector}">${orgInstance.sector}</span></g:if>
-               <g:else>
-                 <g:fieldValue bean="${orgInstance}" field="sector"/>
-               </g:else>
+            	<g:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
             </dd>
 
             <dt><g:message code="org.membership.label" default="Membership Organisation" /></dt>
