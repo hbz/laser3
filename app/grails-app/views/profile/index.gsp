@@ -105,7 +105,7 @@
         <div class="well">
           <h2>${message(code: 'profile.membership.existing', default:'Existing Memberships')}</h2>
 
-          <table class="table table-striped table-bordered table-condensed">
+          <table class="table table-striped table-bordered table-condensed" style="word-break:normal;">
             <thead>
               <tr>
                 <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
@@ -139,7 +139,7 @@
           <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="form-search" method="get">
 
             <g:select name="org"
-                      from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                      from="${com.k_int.kbplus.Org.findAllBySector('Higher Education')}"
                       optionKey="id"
                       optionValue="name"
                       class="input-medium"/>

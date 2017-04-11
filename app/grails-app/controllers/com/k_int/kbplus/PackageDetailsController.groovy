@@ -319,7 +319,7 @@ class PackageDetailsController {
           params.insrt = "Y"
           params.dlt = "Y"
           params.updt = "Y"
-          flash.message = "Please select two packages for comparison."
+          flash.message = message(code:'', default:"Please select two packages for comparison.")
           result
         }
       

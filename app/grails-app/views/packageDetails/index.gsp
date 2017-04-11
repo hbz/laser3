@@ -70,7 +70,7 @@
                     <option ${params.sort=='_score' ? 'selected' : ''} value="_score">${message(code:'packageDetails.index.search.sort.score', default:'Score')}</option>
                     <option ${params.sort=='lastModified' ? 'selected' : ''} value="lastModified">${message(code:'packageDetails.index.search.sort.modified', default:'Last Modified')}</option>
                   </select>
-            ${message(code:'packageDetails.index.search.sort.order', default:'Order')}: <select name="order" value="${params.order}">
+            ${message(code:'packageDetails.index.search.order', default:'Order')}: <select name="order" value="${params.order}">
                     <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
                     <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
                   </select>

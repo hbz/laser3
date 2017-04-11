@@ -9,18 +9,18 @@
 
 <div class="container">
 <div class="row">
-	<h2>Package Comparison</h2>
+	<h2>${message(code:'package.compare', default:'Package Comparison')}</h2>
 	<br/>
       <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">All Packages</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="compare">Compare</g:link></li>
+        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
+        <li><g:link controller="packageDetails" action="compare">${message(code:'package.compare.compare', default:'Compare')}</g:link></li>
 
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'package.compare.exports', default:'Exports')}<b class="caret"></b></a>
 
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link action="compare" params="${params+[format:'csv']}">CSV Export</g:link></li>
+            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'package.compare.exports.csv', default:'CSV Export')}</g:link></li>
             
           </ul>
         </li>
@@ -39,28 +39,27 @@
 			<thead>
 				<tr>
 					<th></th>
-					<th>Package A</th>
-					<th>Package B</th>
+					<th>${message(code:'package.label', default:'Package')} A</th>
+					<th>${message(code:'package.label', default:'Package')} B</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>Package name</td>
-					<td>Restrict this list to packages starting after- <g:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-							and/or ending before- <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/>
-                                              Now select first package to compare (Filtered by dates above). Use '%' as
-                                              wildcard.<br/>
+					<td>${message(code:'package.show.pkg_name', default:'Package Name')}</td>
+					<td>${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <g:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/>
+                                              ${message(code:'package.compare.select.first', default:'Now select first package to compare (Filtered by dates above). Use \'%\' as wildcard.')}<br/>
                                               <input type="hidden" name="pkgA" id="packageSelectA" value="${pkgA}"/> 
 					</td>
 					<td> 
-					    Restrict this list to packages starting after- <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-							and/or ending before- <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
-                                              Select second package to compare (Filtered by dates above). Use '%' as wildcard.<br/>
+					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
+                                              ${message(code:'package.compare.select.first', default:'Select second package to compare (Filtered by dates above). Use \'%\' as wildcard.')}<br/>
                                               <input type="hidden" name="pkgB" id="packageSelectB" value="${pkgB}" />
 					</td>
 				</tr>
 				<tr>
-					<td> Package On date</td>
+					<td>${message(code:'package.compare.snapshot', default:'Package On date')}</td>
 					<td>
 						<div class="input-append date">
 							<input class="span2" size="16" type="text" 
@@ -77,18 +76,18 @@
 					</td>
 				</tr>
 				<tr>
-					<td> Add Filter</td>
+					<td>${message(code:'package.compare.filter.add', default:'Add Filter')}</td>
 					<td colspan="2">
-        <input type="checkbox" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>  Insert&nbsp;
-        <input type="checkbox" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/> Delete &nbsp;
-        <input type="checkbox" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/> Update &nbsp;
-        <input type="checkbox" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/> No Change &nbsp;
+        <input type="checkbox" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.insert', default:'Insert')}&nbsp;
+        <input type="checkbox" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.delete', default:'Delete')}&nbsp;
+        <input type="checkbox" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.update', default:'Update')}&nbsp;
+        <input type="checkbox" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/> ${message(code:'package.compare.filter.no_change', default:'No Change')}&nbsp;
 					</td>		
 				</tr>
 			</tbody>
 		</table>
 
-		<input type="submit" class="btn btn-primary" value="Compare">
+		<input type="submit" class="btn btn-primary" value="${message(code:'package.compare.submit.label', default:'Compare')}">
 	</g:form>
 </div>
 
@@ -96,33 +95,33 @@
 <g:if test="${pkgInsts?.get(0) && pkgInsts?.get(1)}">
 
 	<div class="row">
-	<h3>Packages Compared</h3>
+	<h3>${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th>Value</th>
+				<th>${message(code:'package.compare.overview.value', default:'Value')}</th>
 				<th>${pkgInsts.get(0).name}</th>
 				<th>${pkgInsts.get(1).name}</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td>Date Created</td>
+				<td>${message(code:'package.dateCreated.label', default:'Date Created')}</td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).dateCreated}"/></td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).dateCreated}"/></td>
 			</tr>
 			<tr>
-				<td>Start Date</td>
+				<td>${message(code:'package.show.start_date', default:'Start Date')}</td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).startDate}"/></td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).startDate}"/></td>
 			</tr>
 			<tr>
-				<td>End Date</td>
+				<td>${message(code:'package.show.end_date', default:'End Date')}</td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).endDate}"/></td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).endDate}"/></td>
 			</tr>
 			<tr>
-				<td>Number of TIPPs</td>
+				<td>${message(code:'package.compare.overview.tipps', default:'Number of TIPPs')}</td>
 				<td>${params.countA}</td>
 				<td>${params.countB}</td>
 			</tr>
@@ -131,7 +130,7 @@
 	</div>
 <div class="row">
 <g:form action="compare" method="get" class="form-inline">
-	<input type="hidden" name="pkgA"value="${params.pkgA}"/>
+	<input type="hidden" name="pkgA" value="${params.pkgA}"/>
 	<input type="hidden" name="pkgB" value="${params.pkgB}"/>
 	<input type="hidden" name="dateA" value="${params.dateA}"/>
 	<input type="hidden" name="dateB" value="${params.dateB}"/>
@@ -145,24 +144,24 @@
 	<table>
 		<tr>
 			<td>
-				Filters - Title: <input type="text" name="filter" value="${params.filter}"/>
+				${message(code:'package.compare.filter.title', default:'Filters - Title')}: <input type="text" name="filter" value="${params.filter}"/>
 			</td>
 			<td>
-				Coverage Starts Before:
+				${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:
 	<g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
 			</td>
-			<td> <input type='button' class="btn btn-primary" id="resetFilters" value='Clear'/></td>
+			<td> <input type='button' class="btn btn-primary" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
 		</tr>
 		<tr>
 		<td>
-			Coverage note: <input type="text" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
+			${message(code:'package.compare.filter.coverage_note', default:'Coverage note')}: <input type="text" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
 		</td>
 		<td>
-			Coverage Ends After:
+			${message(code:'package.compare.filter.coverage_endsAfter', default:'Coverage Ends After')}:
 			<g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 		</td>
 
-			<td> <input type="submit" class="btn btn-primary" value="Filter Results" /> </td>
+			<td> <input type="submit" class="btn btn-primary" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>
 		</tr>
 	</table>
 
@@ -170,19 +169,19 @@
 
 
 <div class="span6 offset3">
-<dt class="center">Showing Titles (${offset+1} to ${offset+ comparisonMap.size()}  of ${unionListSize})</dt>
+<dt class="center">${message(code:'package.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 </div>
 <table class="table table-bordered">
 	<thead>
 		<tr> 
-			<td> Title </td>
+			<td> ${message(code:'package.show.title.title', default:'Title')} </td>
 			<td> ${pkgInsts.get(0).name} on ${pkgDates.get(0)} </td>
 			<td> ${pkgInsts.get(1).name} on ${pkgDates.get(1)} </td>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td><b>Total TIPPs for query</b></td>
+			<td><b>${message(code:'package.compare.results.tipps.total', default:'Total TIPPs for query')}</b></td>
 			<td><b>${listACount}</b></td>
 			<td><b>${listBCount}</b></td>
 		<tr>
@@ -220,7 +219,7 @@
 </table>
 <div class="pagination" style="text-align:center">
 
- <bootstrap:paginate  action="compare" controller="packageDetails" params="${params}" first="first" last="Last" maxsteps="${max}" total="${unionListSize}" />
+ <bootstrap:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" maxsteps="${max}" total="${unionListSize}" />
 </div>
 
 </g:if>
@@ -244,7 +243,7 @@
 
       $("#packageSelect"+filter).select2({
       	width: "90%",
-        placeholder: "Type package name...",
+        placeholder: "${message(code:'package.compare.search.ph', default:'Type package name...')}",
         minimumInputLength: 1,
         ajax: { 
             url: '<g:createLink controller='ajax' action='lookup'/>',
