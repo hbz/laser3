@@ -83,6 +83,19 @@
 					</g:if>
 				
 				</dl>
+				
+				<dl>
+					<g:if test="${contactInstance?.prs?.owner}">
+						<dt><g:message code="person.owner.label" default="Owner (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${contactInstance?.prs?.owner?.id}">${contactInstance?.prs?.owner?.encodeAsHTML()}</g:link></dd>
+					</g:if>
+				</dl>
+				<dl>
+					<g:if test="${contactInstance?.prs?.isPublic}">
+						<dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${contactInstance?.prs?.isPublic?.id}">${contactInstance?.prs?.isPublic?.encodeAsHTML()}</g:link></dd>
+					</g:if>
+				</dl>
 </div>
 				<g:form>
 					<g:hiddenField name="id" value="${contactInstance?.id}" />

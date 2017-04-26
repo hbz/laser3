@@ -35,7 +35,7 @@
 		
 	</label>
 	<g:select id="gender" name="gender" 
-		from="${com.k_int.kbplus.Person.getAllRefdataValues()}"
+		from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
     	optionKey="id"
     	optionValue="value"
         value="${personInstance?.gender?.id}"
@@ -57,6 +57,30 @@
 </li>
 </ul>
 </div>
+
+
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'owner', 'error')} required">
+	<label for="org">
+		<g:message code="person.owner.label" default="Owner" />
+		<span class="required-indicator">*</span>		
+	</label>
+	<g:select id="owner" name="owner.id" from="${com.k_int.kbplus.Org.list()}" 
+		optionKey="id" value="${personInstance?.owner?.id}" />
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
+	<label for="isPublic">
+		<g:message code="person.isPublic.label" default="IsPublic" />
+		<span class="required-indicator">*</span>	
+	</label>
+	<g:select id="isPublic" name="isPublic" 
+		from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
+    	optionKey="id"
+    	optionValue="value"
+        value="${personInstance?.isPublic?.id}" />
+</div>
+
 
 <h3>Person-to-Org-and-X-with-Role</h3>
 

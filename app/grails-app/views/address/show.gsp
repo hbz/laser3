@@ -125,6 +125,19 @@
 					</g:if>
 				
 				</dl>
+
+				<dl>
+					<g:if test="${addressInstance?.prs?.owner}">
+						<dt><g:message code="person.owner.label" default="Owner (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${addressInstance?.prs?.owner?.id}">${addressInstance?.prs?.owner?.encodeAsHTML()}</g:link></dd>
+					</g:if>
+				</dl>
+				<dl>
+					<g:if test="${addressInstance?.prs?.isPublic}">
+						<dt><g:message code="person.owner.label" default="IsPublic (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${addressInstance?.prs?.isPublic?.id}">${addressInstance?.prs?.isPublic?.encodeAsHTML()}</g:link></dd>
+					</g:if>
+				</dl>
 </div>
 				<g:form>
 					<g:hiddenField name="id" value="${addressInstance?.id}" />

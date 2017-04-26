@@ -55,6 +55,8 @@
 							<g:sortableColumn property="city" title="${message(code: 'address.city.label', default: 'City')}" />
 						
 							<g:sortableColumn property="state" title="${message(code: 'address.state.label', default: 'State')}" />
+							
+							<th class="header"><g:message code="person.isPublic.label" default="IsPublic" /></th>
 						
 							<th></th>
 						</tr>
@@ -74,6 +76,8 @@
 							<td>${fieldValue(bean: addressInstance, field: "city")}</td>
 						
 							<td>${fieldValue(bean: addressInstance, field: "state")}</td>
+							
+							<td>${addressInstance?.prs?.isPublic?.encodeAsHTML()}</td>
 						
 							<td class="link">
 								<g:link action="show" id="${addressInstance.id}" class="btn btn-small">Show &raquo;</g:link>

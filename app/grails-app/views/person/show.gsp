@@ -85,6 +85,18 @@
 					</g:if>
 				</dl>
 				<dl>
+					<g:if test="${personInstance?.owner}">
+						<dt><g:message code="person.owner.label" default="Owner" /></dt>
+						<dd><g:link controller="org" action="show" id="${personInstance.owner?.id}">${personInstance.owner?.encodeAsHTML()}</g:link></dd>	
+					</g:if>
+				</dl>
+				<dl>
+					<g:if test="${personInstance?.isPublic}">
+						<dt><g:message code="person.isPublic.label" default="IsPublic" /></dt>
+						<dd><g:fieldValue bean="${personInstance}" field="isPublic"/></dd>	
+					</g:if>
+				</dl>
+				<dl>
 					<g:if test="${personInstance?.roleLinks}">
 						<dt><g:message code="person.roleLinks.label" default="Links" /></dt>
 						

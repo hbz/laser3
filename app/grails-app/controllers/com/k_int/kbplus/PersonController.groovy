@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import grails.plugins.springsecurity.Secured
+
 import org.springframework.dao.DataIntegrityViolationException
 
 import com.k_int.kbplus.ajax.AjaxHandler
@@ -8,15 +10,18 @@ class PersonController extends AjaxHandler {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -35,6 +40,7 @@ class PersonController extends AjaxHandler {
 		}
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
@@ -46,6 +52,7 @@ class PersonController extends AjaxHandler {
         [personInstance: personInstance]
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
 		switch (request.method) {
 		case 'GET':
@@ -90,6 +97,7 @@ class PersonController extends AjaxHandler {
 		}
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
