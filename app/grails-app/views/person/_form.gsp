@@ -45,23 +45,38 @@
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
 	<label for="contacts">
 		<g:message code="person.contacts.label" default="Contacts" />
-		
 	</label>
-	
-<ul class="one-to-many">
-<g:each in="${personInstance?.contacts?}" var="c">
-    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
-</g:each>
-<li class="add">
-<g:link controller="contact" action="create" params="['person.id': personInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}</g:link>
-</li>
-</ul>
+	<ul class="one-to-many">
+		<g:each in="${personInstance?.contacts?}" var="c">
+		    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+		</g:each>
+		<li class="add">
+		<g:link controller="contact" action="create" params="['prs.id': personInstance?.id]">
+			${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
+		</g:link>
+		</li>
+	</ul>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
+	<label for="contacts">
+		<g:message code="person.addresses.label" default="Addresses" />
+	</label>
+	<ul class="one-to-many">
+		<g:each in="${personInstance?.addresses?}" var="a">
+		    <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+		</g:each>
+		<li class="add">
+		<g:link controller="address" action="create" params="['prs.id': personInstance?.id]">
+			${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}
+		</g:link>
+		</li>
+	</ul>
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'owner', 'error')} required">
 	<label for="org">
-		<g:message code="person.owner.label" default="Owner" />
+		<g:message code="person.owner.label" default="Owner (Permissions to edit this person and depending addresses and contacts)" />
 		<span class="required-indicator">*</span>		
 	</label>
 	<g:select id="owner" name="owner.id" from="${com.k_int.kbplus.Org.list()}" 

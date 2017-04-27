@@ -85,6 +85,16 @@
 					</g:if>
 				</dl>
 				<dl>
+					<g:if test="${personInstance?.addresses}">
+						<dt><g:message code="person.addresses.label" default="Addresses" /></dt>
+						
+							<g:each in="${personInstance.addresses}" var="a">
+							<dd><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></dd>
+							</g:each>
+						
+					</g:if>
+				</dl>
+				<dl>
 					<g:if test="${personInstance?.owner}">
 						<dt><g:message code="person.owner.label" default="Owner" /></dt>
 						<dd><g:link controller="org" action="show" id="${personInstance.owner?.id}">${personInstance.owner?.encodeAsHTML()}</g:link></dd>	

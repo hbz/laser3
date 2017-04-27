@@ -37,8 +37,8 @@ class Person {
         middle_name (nullable:true,  blank:true)
         last_name   (nullable:false, blank:false)
         gender      (nullable:true)
-        owner       (nullable:false, blank:false)
-        isPublic    (nullable:false, blank:false)
+        owner       (nullable:true)
+        isPublic    (nullable:true)
     }
     
     static getAllRefdataValues(String category) {
