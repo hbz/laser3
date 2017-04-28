@@ -43,18 +43,18 @@
 				
 <div class="inline-lists">
 				<dl>			
-					<g:if test="${contactInstance?.mail}">
-						<dt><g:message code="contact.mail.label" default="Mail" /></dt>
+					<g:if test="${contactInstance?.contentType}">
+						<dt><g:message code="contact.contentType.label" default="ContentType" /></dt>
 						
-							<dd><g:fieldValue bean="${contactInstance}" field="mail"/></dd>
+							<dd><g:fieldValue bean="${contactInstance}" field="contentType"/></dd>
 						
 					</g:if>
 				</dl>
 				<dl>
-					<g:if test="${contactInstance?.phone}">
-						<dt><g:message code="contact.phone.label" default="Phone" /></dt>
+					<g:if test="${contactInstance?.content}">
+						<dt><g:message code="contact.content.label" default="Content" /></dt>
 						
-							<dd><g:fieldValue bean="${contactInstance}" field="phone"/></dd>
+							<dd><g:fieldValue bean="${contactInstance}" field="content"/></dd>
 						
 					</g:if>
 				</dl>

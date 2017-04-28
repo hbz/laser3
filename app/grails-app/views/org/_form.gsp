@@ -249,7 +249,7 @@
 </div>
 -->
 
-<h3>Org-to-X-with-PersonRole</h3>
+<h3>Org-to-X-with-PersonRole (Demo only)</h3>
 <p>TODO</p>
 
 <g:if test="${orgInstance?.prsLinks}">
@@ -279,7 +279,7 @@
 				</dl>
 			</g:if>
 			
-<h3>Org-to-X-with-Role</h3>
+<h3>Org-to-X-with-Role (Demo only)</h3>
 
 <div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>
 <div id="ui-placeholder-lic" class="ui-ajax"></div><hr/>

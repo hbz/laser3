@@ -2,21 +2,26 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: contactInstance, field: 'mail', 'error')} ">
-	<label for="mail">
-		<g:message code="contact.mail.label" default="Mail" />
+<div class="fieldcontain ${hasErrors(bean: contactInstance, field: 'contentType', 'error')} ">
+	<label for="contentType">
+		<g:message code="contact.contentType.label" default="ContentType" />
 		
 	</label>
-	<g:textField name="mail" value="${contactInstance?.mail}"/>
+	<g:select id="contentType" name="contentType.id" 
+		from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactContentType')}"
+    	optionKey="id"
+    	optionValue="value"
+    	value="${contactInstance?.contentType?.id}"
+        required=""/>
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: contactInstance, field: 'phone', 'error')} ">
-	<label for="phone">
-		<g:message code="contact.phone.label" default="Phone" />
+<div class="fieldcontain ${hasErrors(bean: contactInstance, field: 'content', 'error')} ">
+	<label for="content">
+		<g:message code="contact.content.label" default="Content" />
 		
 	</label>
-	<g:textField name="phone" value="${contactInstance?.phone}"/>
+	<g:textField name="content" value="${contactInstance?.content}"/>
 
 </div>
 
@@ -26,7 +31,7 @@
 		
 	</label>
 	<g:select id="type" name="type.id" 
-		from="${com.k_int.kbplus.Contact.getAllRefdataValues()}"
+		from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
     	optionKey="id"
     	optionValue="value"
     	value="${contactInstance?.type?.id}"

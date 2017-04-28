@@ -44,9 +44,9 @@
 					<thead>
 						<tr>
 						
-							<g:sortableColumn property="mail" title="${message(code: 'contact.mail.label', default: 'Mail')}" />
+							<g:sortableColumn property="contentType" title="${message(code: 'contact.contentType.label', default: 'ContentType')}" />
 						
-							<g:sortableColumn property="phone" title="${message(code: 'contact.phone.label', default: 'Phone')}" />
+							<g:sortableColumn property="content" title="${message(code: 'contact.content.label', default: 'Content')}" />
 						
 							<th class="header"><g:message code="contact.type.label" default="Type" /></th>
 						
@@ -63,9 +63,9 @@
 					<g:each in="${contactInstanceList}" var="contactInstance">
 						<tr>
 						
-							<td>${fieldValue(bean: contactInstance, field: "mail")}</td>
+							<td>${contactInstance?.contentType}</td>
 						
-							<td>${fieldValue(bean: contactInstance, field: "phone")}</td>
+							<td>${fieldValue(bean: contactInstance, field: "content")}</td>
 						
 							<td>${fieldValue(bean: contactInstance, field: "type")}</td>
 						

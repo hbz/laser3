@@ -56,6 +56,10 @@
 						
 							<g:sortableColumn property="state" title="${message(code: 'address.state.label', default: 'State')}" />
 							
+							<th class="header"><g:message code="address.prs.label" default="Prs" /></th>
+						
+							<th class="header"><g:message code="address.org.label" default="Org" /></th>
+							
 							<th class="header"><g:message code="person.isPublic.label" default="IsPublic" /></th>
 						
 							<th></th>
@@ -76,6 +80,10 @@
 							<td>${fieldValue(bean: addressInstance, field: "city")}</td>
 						
 							<td>${fieldValue(bean: addressInstance, field: "state")}</td>
+							
+							<td>${fieldValue(bean: addressInstance, field: "prs")}</td>
+						
+							<td>${fieldValue(bean: addressInstance, field: "org")}</td>
 							
 							<td>${addressInstance?.prs?.isPublic?.encodeAsHTML()}</td>
 						

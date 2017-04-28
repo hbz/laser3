@@ -97,7 +97,7 @@
 </div>
 
 
-<h3>Person-to-Org-and-X-with-Role</h3>
+<h3>Person-to-Org-and-X-with-Role (Demo only)</h3>
 
 <div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>
 <div id="ui-placeholder-lic" class="ui-ajax"></div><hr/>

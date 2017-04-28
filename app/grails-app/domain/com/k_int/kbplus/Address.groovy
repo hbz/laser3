@@ -47,6 +47,6 @@ class Address {
     
     @Override
     String toString() {
-        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + ')'
+        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type?.value
     }
 }

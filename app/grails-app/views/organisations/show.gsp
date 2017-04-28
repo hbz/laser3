@@ -24,38 +24,30 @@
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
               <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
-
-
-				<g:if test="${orgInstance?.prsLinks}">
-					<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
-					<dd><ul>
-					
-						<g:each in="${orgInstance?.prsLinks}" var="pl">
-							<g:if test="${pl?.prs?.isPublic?.value != 'No'}">
-								<li><g:link controller="person" action="show" id="${pl?.prsId}">${pl?.prs?.encodeAsHTML()}</g:link></li>
-							</g:if>
-						</g:each>
-					</ul></dd>
-				</g:if>
 				
 				<g:if test="${orgInstance?.addresses}">
 					<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-					<dd><ul>
-						<g:each in="${orgInstance?.addresses}" var="a">
-							<li><g:link controller="address" action="show" id="${a?.id}">${a?.encodeAsHTML()}</g:link></li>
-						</g:each>
-					</ul></dd>
+					<g:each in="${orgInstance?.addresses}" var="a">
+						<dd><g:link controller="address" action="show" id="${a?.id}">${a?.encodeAsHTML()}</g:link></dd>
+					</g:each>
 				</g:if>
 			
 				<g:if test="${orgInstance?.contacts}">
 					<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
-					<dd><ul>
-						<g:each in="${orgInstance?.contacts}" var="c">
-							<li><g:link controller="contact" action="show" id="${c?.id}">${c?.encodeAsHTML()}</g:link></li>
-						</g:each>
-					</ul></dd>
+					<g:each in="${orgInstance?.contacts}" var="c">
+						<dd><g:link controller="contact" action="show" id="${c?.id}">${c?.encodeAsHTML()}</g:link></dd>
+					</g:each>
 				</g:if>
 			
+				<g:if test="${orgInstance?.prsLinks}">
+					<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+					<g:each in="${orgInstance?.prsLinks}" var="pl">
+						<g:if test="${pl?.prs?.isPublic?.value != 'No'}">
+							<dd><g:link controller="person" action="show" id="${pl?.prsId}">${pl?.prs?.encodeAsHTML()}</g:link></dd>
+						</g:if>
+					</g:each>
+				</g:if>
+				
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
               <dd>
                 <g:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
