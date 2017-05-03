@@ -1,4 +1,8 @@
-<%@ page import="com.k_int.kbplus.Person" %>
+<%@ page
+import="com.k_int.kbplus.Org"  
+import="com.k_int.kbplus.Person" 
+import="com.k_int.kbplus.PersonRole" 
+%>
 
 
 
@@ -96,31 +100,84 @@
         value="${personInstance?.isPublic?.id}" />
 </div>
 
+<div id="person-role-manager">
 
-<h3>Person-to-Org-and-X-with-Role (Demo only)</h3>
+	<div class="person-role-existing-functions-and-responsibilites">
+		<h3>Functions and Responsibilities</h3>
+		<div class="workspace">
+			<h4>Existing</h4>
+			<div class="existing"></div>
+		</div>
+	</div>
+	
+	<div class="person-role-function-manager">
+		<h3>Functions</h3>
+		
+		<select class="values">
+			<option value="org">Function only</option>
+		</select>
+	
+		<button class="add-person-role" type="button">Add</button>
+		
+		<div class="workspace">
+			<!--<h4>Existing</h4>
+			<div class="existing"></div>-->
+			
+			<h4>Adding new</h4>
+			<div class="adding"></div>
+		</div>
+	</div>
+	
+	
+	<div class="person-role-responsibility-manager">
+		<h3>Responsibilities</h3>
+		
+		<select class="values">
+			<option value="cluster">Responsibility for cluster</option>
+			<option value="lic">Responsibility for license</option>
+			<option value="pkg">Responsibility for package</option>
+			<option value="sub">Responsibility for subscription</option>
+			<option value="title">Responsibility for title</option>
+		</select>
+	
+		<button class="add-person-role" type="button">Add</button>
 
-<div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-lic" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-pkg" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-sub" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-title" class="ui-ajax"></div>
-
-<g:if test="${personInstance?.id != null}">
+		<div class="workspace">
+			<!--<h4>Existing</h4>
+			<div class="existing"></div>-->
+			
+			<h4>Adding new</h4>
+			<div class="adding"></div>
+		</div>
+	</div>
+	
 	<script>
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=cluster").done(function(data){
-			$("#ui-placeholder-cluster").append(data);
+		// TODO; fallback
+		$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list').done(function(data){
+			$('.person-role-existing-functions-and-responsibilites .workspace .existing').append(data);
 		});
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=lic").done(function(data){
-			$("#ui-placeholder-lic").append(data);
-		});
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=pkg").done(function(data){
-			$("#ui-placeholder-pkg").append(data);
-		});
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=sub").done(function(data){
-			$("#ui-placeholder-sub").append(data);
-		});
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=title").done(function(data){
-			$("#ui-placeholder-title").append(data);
-		});
+		
+		/* $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&type=functions').done(function(data){
+			$('.person-role-function-manager .workspace .existing').append(data);
+		});	*/
+		$('.person-role-function-manager .add-person-role').click(function(){
+			var tt = $('.person-role-function-manager .values').val()
+			
+			$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&org=${params?.org?.id}&type=' + tt).done(function(data){
+				$('.person-role-function-manager .workspace .adding').append(data);
+			});
+		})
+		
+		/* $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&type=responsibilities').done(function(data){
+			$('.person-role-responsibility-manager .workspace .existing').append(data);
+		}); */		
+		$('.person-role-responsibility-manager .add-person-role').click(function(){
+			var tt = $('.person-role-responsibility-manager .values').val()
+			
+			$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&org=${params?.org?.id}&type=' + tt).done(function(data){
+				$('.person-role-responsibility-manager .workspace .adding').append(data);
+			});
+		})
 	</script>
-</g:if>
+	
+</div>
