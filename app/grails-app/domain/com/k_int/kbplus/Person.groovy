@@ -7,7 +7,7 @@ class Person {
     String       last_name
     RefdataValue gender
     Org          owner
-    RefdataValue isPublic
+    RefdataValue isPublic // 'YN'
     
     static mapping = {
         id          column:'prs_id'

@@ -14,8 +14,7 @@
       <g:render template="nav" contextPath="." />
     </div>
 
-    <div class="container">
-      
+    <div class="container"> 
 
         <g:if test="${flash.message}">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
@@ -43,7 +42,18 @@
 					<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
 					<g:each in="${orgInstance?.prsLinks}" var="pl">
 						<g:if test="${pl?.prs?.isPublic?.value != 'No'}">
-							<dd><g:link controller="person" action="show" id="${pl?.prsId}">${pl?.prs?.encodeAsHTML()}</g:link></dd>
+							<dd>
+								<g:link controller="person" action="show" id="${pl?.prsId}">${pl?.prs?.encodeAsHTML()}</g:link>
+								(${pl?.functionType})
+							</dd>
+							<dl>
+								<g:each in="${pl?.prs?.contacts}" var="plContact">
+									<dd>- <g:link controller="contact" action="show" id="${plContact?.id}">${plContact?.encodeAsHTML()}</g:link></dd>
+								</g:each>
+								<g:each in="${pl?.prs?.addresses}" var="plAddress">
+									<dd>- <g:link controller="address" action="show" id="${plAddress?.id}">${plAddress?.encodeAsHTML()}</g:link></dd>
+								</g:each>
+							</dl>
 						</g:if>
 					</g:each>
 				</g:if>

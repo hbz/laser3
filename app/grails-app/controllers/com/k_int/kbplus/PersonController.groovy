@@ -124,28 +124,33 @@ class PersonController {
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def ajax() {        
-        def person              = Person.get(params.id)         // current person
-        def org                 = Org.get(params.org)           // referenced org for setting g:select value
-        def personRoleRdv       = PersonRole.getAllRefdataValues()
-        def prsLinks                                            // person depending person roles
-        def allOrgs             = Org.getAll()
-        def allSubjects                                         // all subjects of given type
-        def subjectType                                         // type of subject
-        def subjectOptionValue
-        def timestamp           = System.currentTimeMillis()
+        def person                  = Person.get(params.id)
+        def existingPrsLinks
         
-        def cmd  = params.cmd
-        def type = params.type
+        def allSubjects             // all subjects of given type
+        def subjectType             // type of subject
+        def subjectFormOptionValue
         
-        if(cmd == 'list'){ 
-        // lists existing personRoles with checkbox to delete
+        def cmd      = params.cmd
+        def roleType = params.roleType
+        
+        // requesting form for deleting existing personRoles
+        if('list' == cmd){ 
             
             if(person){
-                def hqlPart = "from PersonRole as GOR where GOR.prs = ${person?.id}"  
-                prsLinks    = PersonRole.findAll(hqlPart)
+                if('func' == roleType){
+                    def rdc = RefdataCategory.findByDesc('Person Function')
+                    def hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.functionType.owner = ${rdc.id}"  
+                    existingPrsLinks = PersonRole.findAll(hqlPart) 
+                }
+                else if('resp' == roleType){
+                    def rdc = RefdataCategory.findByDesc('Person Responsibility')
+                    def hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.responsibilityType.owner = ${rdc.id}"  
+                    existingPrsLinks = PersonRole.findAll(hqlPart)
+                }
 
                 render view: 'ajax/listPersonRoles', model: [
-                    prsLinks: prsLinks
+                    existingPrsLinks: existingPrsLinks
                 ]
                 return
             }
@@ -155,49 +160,55 @@ class PersonController {
             }
         }
         
-        else if(cmd == 'add'){
         // requesting form for adding new personRoles
+        else if('add' == cmd){ 
             
-            if(type == "org") {
-                subjectType  = "personRole"
+            def roleRdv = RefdataValue.get(params.roleTypeId)
+
+            if('func' == roleType){
+                
+                // only one rdv of person function
             }
-            else if(type == "cluster") {
-                allSubjects         = Cluster.getAll()
-                subjectType         = "cluster"
-                subjectOptionValue  = "name"
-            }
-            else if(type == "lic") {
-                allSubjects         = License.getAll()
-                subjectType         = "license"
-                subjectOptionValue  = "reference"
-            }
-            else if(type == "pkg") {
-                allSubjects         = Package.getAll()
-                subjectType         = "package"
-                subjectOptionValue  = "name"
-            }
-            else if(type == "sub") {
-                allSubjects         = Subscription.getAll()
-                subjectType         = "subscription"
-                subjectOptionValue  = "name"
-            }
-            else if(type == "title") {
-                allSubjects          = TitleInstance.getAll()
-                subjectType          = "titleInstance"
-                subjectOptionValue   = "normTitle"
+            else if('resp' == roleType){
+                
+                if(roleRdv?.value == "Specific cluster editor") {
+                    allSubjects             = Cluster.getAll()
+                    subjectType             = "cluster"
+                    subjectFormOptionValue  = "name"
+                }
+                else if(roleRdv?.value == "Specific licence editor") {
+                    allSubjects             = License.getAll()
+                    subjectType             = "license"
+                    subjectFormOptionValue  = "reference"
+                }
+                else if(roleRdv?.value == "Specific package editor") {
+                    allSubjects             = Package.getAll()
+                    subjectType             = "package"
+                    subjectFormOptionValue  = "name"
+                }
+                else if(roleRdv?.value == "Specific subscription editor") {
+                    allSubjects             = Subscription.getAll()
+                    subjectType             = "subscription"
+                    subjectFormOptionValue  = "name"
+                }
+                else if(roleRdv?.value == "Specific title editor") {
+                    allSubjects             = TitleInstance.getAll()
+                    subjectType             = "titleInstance"
+                    subjectFormOptionValue  = "normTitle"
+                }
             }
             
             render view: 'ajax/addPersonRole', model: [
                 personInstance:     person,
-                allOrgs:            allOrgs,
+                allOrgs:            Org.getAll(),
                 allSubjects:        allSubjects,
                 subjectType:        subjectType,
-                subjectOptionValue: subjectOptionValue,
-                prsLinks:           prsLinks,
-                type:               type,
-                roleTypes:          personRoleRdv,
-                org:                org,
-                timestamp:          timestamp
+                subjectOptionValue: subjectFormOptionValue,
+                existingPrsLinks:   existingPrsLinks,
+                roleType:           roleType,
+                roleRdv:            roleRdv,
+                org:                Org.get(params.org),        // through passing for g:select value
+                timestamp:          System.currentTimeMillis()
                 ]
             return
         }
@@ -218,43 +229,71 @@ class PersonController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     private addPersonRoles(Person prs){
     
-       params?.roleType?.each{ key, value ->     
+        params?.functionType?.each{ key, value ->
+            def result
+            
+            def roleRdv = RefdataValue.get(params.functionType[key])
+            def org     = Org.get(params.org[key])
+
+            result = new PersonRole(prs:prs, functionType:roleRdv, org:org)
+            
+            if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${roleRdv.id}")) {
+                log.debug("ignore adding PersonRole because of existing duplicate")
+            } else if(result){
+                if(result.save(flush:true)) {
+                    log.debug("adding PersonRole ${result}")
+                } else {
+                    log.error("problem saving new PersonRole ${result}")
+                }
+            }
+       }
+        
+       params?.responsibilityType?.each{ key, value ->     
            def result
-           def prsRole  = RefdataValue.get(params.roleType[key])
-           def org      = Org.get(params.org[key])
-           def subject  // dynamic
-           def type     = params.type[key]
            
-           switch(type) {
-               case "org":
-                   result = new PersonRole(prs:prs, roleType:prsRole, org:org)
-               break;
+           def roleRdv      = RefdataValue.get(params.responsibilityType[key])
+           def org          = Org.get(params.org[key])
+           def subject      // dynamic
+           def subjectType  = params.subjectType[key]
+           
+           switch(subjectType) {
                case "cluster":
-                   subject = Cluster.get(params.cluster[key])
-                   result = new PersonRole(prs:prs, roleType:prsRole, org:org, cluster:subject)
+                   if(params.cluster){
+                       subject = Cluster.get(params.cluster[key])
+                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, cluster:subject)
+                   }
                break;
-               case"lic":
-                   subject = License.get(params.lic[key])
-                   result = new PersonRole(prs:prs, roleType:prsRole, org:org, lic:subject)
+               case"license":
+                   if(params.license){
+                       subject = License.get(params.license[key])
+                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, lic:subject)
+                   }
                break;
-               case "pkg":
-                   subject = Package.get(params.pkg[key])
-                   result = new PersonRole(prs:prs, roleType:prsRole, org:org, pkg:subject)
+               case "package":
+                   if(params.package){
+                       subject = Package.get(params.package[key])
+                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, pkg:subject)
+                   }
                break;
-               case "sub":
-                   subject = Subscription.get(params.sub[key])
-                   result = new PersonRole(prs:prs, roleType:prsRole, org:org, sub:subject)
+               case "subscription":
+                   if(params.subscription){
+                       subject = Subscription.get(params.subscription[key])
+                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, sub:subject)
+                   }
                break;
-               case "title":
-                   subject = TitleInstance.get(params.title[key])
-                   result = new PersonRole(prs:prs, roleType:prsRole, org:org, title:subject)
+               case "titleInstance":
+                   if(params.titleInstance){
+                       subject = TitleInstance.get(params.titleInstance[key])
+                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, title:subject)
+                   }
                break;
            }
            
-           /*if(PersonRole.find("from PersonRole as GOR where GOR.prs = ${prs.id} and GOR.org = ${org.id} and GOR.roleType = ${prsRole.id} and GOR.${type} = ${target.id}")) {
+           // TODO duplicate check
+           /* if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.responsibilityType = ${roleRdv.id} and PR.${typeTODOHERE} = ${subject.id}")) {
                log.debug("ignore adding PersonRole because of existing duplicate")
            }
-           else*/ if(result){
+           else */ if(result){
                if(result.save(flush:true)) {
                    log.debug("adding PersonRole ${result}")
                } else {

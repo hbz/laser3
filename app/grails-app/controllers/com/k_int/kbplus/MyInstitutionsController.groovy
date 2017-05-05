@@ -2521,4 +2521,26 @@ AND EXISTS (
       }
       result
     }
+    
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])  
+    def addressbook() {
+        def result          = [:]
+        result.user         = User.get(springSecurityService.principal.id)
+        result.institution  = Org.findByShortcode(params.shortcode)
+        
+        def visiblePersons = []
+        
+        def prs = Person.findAll("from Person as P where P.owner = ${result.institution.id}")
+        
+        
+        prs?.each { p ->
+            if(p?.isPublic?.value == 'No'){
+                visiblePersons << p
+            }
+        }
+        result.visiblePersons = visiblePersons
+
+        result
+      }
+      
 }

@@ -97,7 +97,7 @@
 				<dl>
 					<g:if test="${personInstance?.owner}">
 						<dt><g:message code="person.owner.label" default="Owner" /></dt>
-						<dd><g:link controller="org" action="show" id="${personInstance.owner?.id}">${personInstance.owner?.encodeAsHTML()}</g:link></dd>	
+						<dd><g:link controller="organisations" action="show" id="${personInstance.owner?.id}">${personInstance.owner?.encodeAsHTML()}</g:link></dd>	
 					</g:if>
 				</dl>
 				<dl>
@@ -108,31 +108,60 @@
 				</dl>
 				<dl>
 					<g:if test="${personInstance?.roleLinks}">
-						<dt><g:message code="person.roleLinks.label" default="Links" /></dt>
+						<dt><g:message code="person.functions.label" default="Functions" /></dt>
 						
 							<dd><ul>
-								<g:each in="${personInstance.roleLinks}" var="l">
-								<li>
-									${l.roleType?.value} -
-								 	
-								 	<g:if test="${l.pkg}">
-								 		<g:link controller="package" action="show" id="${l.pkg.id}">Package: ${l.pkg.name}</g:link>
-								 	</g:if>
-	                                <g:if test="${l.cluster}">
-	                                	<g:link controller="cluster" action="show" id="${l.cluster.id}">Cluster: ${l.cluster.name}</g:link>
-	                                </g:if>
-	                                <g:if test="${l.sub}">
-	                                	<g:link controller="subscription" action="show" id="${l.sub.id}">Subscription: ${l.sub.name}</g:link>
-	                                </g:if>
-	                                <g:if test="${l.lic}">Licence: ${l.lic.id}</g:if>
-	                                <g:if test="${l.title}">
-	                                	<g:link controller="titleInstance" action="show" id="${l.title.id}">Title: ${l.title.title}</g:link>
-	                                </g:if>
-	                                
-	                                <br />
-	                                <g:link controller="org" action="show" id="${l.org?.id}">Org: ${l.org?.name}</g:link>
-									
-	                            </li>
+								<g:each in="${personInstance.roleLinks}" var="link">
+									<g:if test="${link.functionType}">
+										<li>
+											${link.functionType?.value}
+											<br/>
+		
+			                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+			                                (Organisation) 
+			                            </li>
+		                            </g:if>
+								</g:each>
+							</ul></dd>
+				
+					</g:if>
+				
+				</dl>
+				<dl>
+					<g:if test="${personInstance?.roleLinks}">
+						<dt><g:message code="person.responsibilites.label" default="Responsibilites" /></dt>
+						
+							<dd><ul>
+								<g:each in="${personInstance.roleLinks}" var="link">
+									<g:if test="${link.responsibilityType}">
+										<li>
+											${link.responsibilityType?.value}<br/>
+										 	
+										 	<g:if test="${link.pkg}">
+										 		<g:link controller="package" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
+										 		(Package) <br />
+										 	</g:if>
+			                                <g:if test="${link.cluster}">
+			                                	<g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
+			                                	(Cluster) <br />
+			                                </g:if>
+			                                <g:if test="${link.sub}">
+			                                	<g:link controller="subscription" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
+			                                	(Subscription) <br />
+			                                </g:if>
+			                                <g:if test="${link.lic}">
+			                                	${link.lic}
+			                                	(License) <br />
+			                                </g:if>
+			                                <g:if test="${link.title}">
+			                                	<g:link controller="titleInstance" action="show" id="${link.title.id}">${link.title.title}</g:link>
+			                                	(Title) <br />
+			                                </g:if>
+		
+			                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+			                                (Organisation) 
+			                            </li>
+			                    	</g:if>
 								</g:each>
 							</ul></dd>
 				

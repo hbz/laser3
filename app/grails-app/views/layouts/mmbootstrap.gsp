@@ -107,7 +107,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                                            params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.subs')} </g:link></li>
                                <li><g:link controller="myInstitutions"
                                            action="currentTitles"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.ttls')} </g:link></li>
+                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.ttls')} </g:link></li> 
+                               <li><g:link controller="myInstitutions" 
+                                       		action="addressbook" 
+                                       		params="${[shortcode:org.shortcode]}">Addressbook</g:link></li>
                                <li><g:link controller="subscriptionDetails"
                                            action="compare"
                                            params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_sub')} </g:link></li>

@@ -86,9 +86,17 @@ class BootStrap {
     def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Owner');
     def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Member');
     
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific licence editor');
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific subscription editor');
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific package editor');
+    //RefdataCategory.lookupOrCreate('Person Role', 'Specific licence editor');
+    //RefdataCategory.lookupOrCreate('Person Role', 'Specific subscription editor');
+    //RefdataCategory.lookupOrCreate('Person Role', 'Specific package editor');
+    
+    RefdataCategory.lookupOrCreate('Person Function', 'General contact person');
+    
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific licence editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific subscription editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific package editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific cluster editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific title editor');
 
     OrgPermShare.assertPermShare(view_permission, or_licensee_role);
     OrgPermShare.assertPermShare(edit_permission, or_licensee_role);
