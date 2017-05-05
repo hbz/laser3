@@ -2,9 +2,11 @@ package com.k_int.kbplus
 
 import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
+import com.k_int.kbplus.auth.User
 
 class PersonController {
 
+    def springSecurityService
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -20,19 +22,31 @@ class PersonController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
+        def userMemberships = []
+        User.get(springSecurityService.principal.id).affiliations.each{ uo ->
+            userMemberships << uo.org
+        }
+
+        // TODO remove this fallback !!!!
+        if(userMemberships.size() == 0){
+            userMemberships = Org.list()
+        }
+        
         switch (request.method) {
 		case 'GET':
             def personInstance = new Person(params)
+            // processing dynamic form data
             addPersonRoles(personInstance)
             
-        	[personInstance: personInstance]
+        	[personInstance: personInstance, userMemberships: userMemberships]
 			break
 		case 'POST':
 	        def personInstance = new Person(params)
 	        if (!personInstance.save(flush: true)) {
-	            render view: 'create', model: [personInstance: personInstance]
+	            render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
 	            return
 	        }
+            // processing dynamic form data
             addPersonRoles(personInstance)
             
 			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
@@ -55,6 +69,11 @@ class PersonController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
+        def userMemberships = []
+        User.get(springSecurityService.principal.id).affiliations.each{ uo ->
+            userMemberships << uo.org
+        }
+        
 		switch (request.method) {
 		case 'GET':
 	        def personInstance = Person.get(params.id)
@@ -63,10 +82,16 @@ class PersonController {
 	            redirect action: 'list'
 	            return
 	        }
+            // processing dynamic form data
             addPersonRoles(personInstance)
             deletePersonRoles(personInstance)
             
-	        [personInstance: personInstance]
+            // current owner must be present
+            if(personInstance.owner){
+                userMemberships << personInstance.owner 
+            }
+            
+	        [personInstance: personInstance, userMemberships: userMemberships]
 			break
 		case 'POST':
 	        def personInstance = Person.get(params.id)
@@ -82,7 +107,7 @@ class PersonController {
 	                personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
 	                          [message(code: 'person.label', default: 'Person')] as Object[],
 	                          "Another user has updated this Person while you were editing")
-	                render view: 'edit', model: [personInstance: personInstance]
+	                render view: 'edit', model: [personInstance: personInstance, userMemberships: userMemberships]
 	                return
 	            }
 	        }
@@ -90,11 +115,17 @@ class PersonController {
 	        personInstance.properties = params
 
 	        if (!personInstance.save(flush: true)) {
-	            render view: 'edit', model: [personInstance: personInstance]
+	            render view: 'edit', model: [personInstance: personInstance, userMemberships: userMemberships]
 	            return
 	        }
+            // processing dynamic form data
             addPersonRoles(personInstance)
             deletePersonRoles(personInstance)
+            
+            // current owner must be present
+            if(personInstance.owner){
+                userMemberships << personInstance.owner 
+            }
             
 			flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
 	        redirect action: 'show', id: personInstance.id

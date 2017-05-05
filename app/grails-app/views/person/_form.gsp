@@ -83,9 +83,8 @@ import="com.k_int.kbplus.PersonRole"
 		<g:message code="person.owner.label" default="Owner (Permissions to edit this person and depending addresses and contacts)" />
 		<span class="required-indicator">*</span>		
 	</label>
-	<g:select id="owner" name="owner.id" from="${com.k_int.kbplus.Org.list()}" 
+	<g:select id="owner" name="owner.id" from="${userMemberships}" 
 		optionKey="id" value="${personInstance?.owner?.id}" />
-
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
