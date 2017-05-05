@@ -2,8 +2,8 @@ package com.k_int.kbplus
 
 class PersonRole {
 
-    RefdataValue    functionType        // Person Function
-    RefdataValue    responsibilityType  // Person Responsibility
+    RefdataValue    functionType        // 'Person Function'
+    RefdataValue    responsibilityType  // 'Person Responsibility'
     License         lic
     Cluster         cluster
     Package         pkg

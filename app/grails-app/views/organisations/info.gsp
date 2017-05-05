@@ -27,21 +27,30 @@
               <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
           </g:if>
         
+
 			<g:if test="${orgInstance?.addresses}">
 				<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-				<g:each in="${orgInstance.addresses}" var="a">
-					<dd><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></dd>
+				<g:each in="${orgInstance?.addresses}" var="a">
+					<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
 				</g:each>
 			</g:if>
+		
+			<g:if test="${orgInstance?.contacts}">
+				<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
+				<g:each in="${orgInstance?.contacts}" var="c">
+					<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+				</g:each>
+			</g:if>
+				
         
-        <g:if test="${orgInstance?.prsLinks}">
-			<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
-			<g:each in="${orgInstance?.prsLinks}" var="pl">
-				<g:if test="${pl?.prs?.isPublic?.value != 'No'}">
-					<dd><g:link controller="person" action="show" id="${pl?.prsId}">${pl?.prs?.encodeAsHTML()}</g:link></dd>
-				</g:if>
-			</g:each>
-		</g:if>
+        	<g:if test="${orgInstance?.prsLinks}">
+				<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+				<g:each in="${orgInstance?.prsLinks}" var="pl">
+					<g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">		
+						<g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+					</g:if>
+				</g:each>
+			</g:if>
 		
           <g:if test="${orgInstance?.ipRange}">
             <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>

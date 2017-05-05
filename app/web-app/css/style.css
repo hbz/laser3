@@ -7,6 +7,20 @@
  *
 */
 
+/** hbz - start */
+
+.debug-only {
+	background-color: #ffeecc;
+}
+.person-details {
+	margin: 0.25em 0;
+}
+.person-details ul {
+	margin-bottom: 0.25em;
+}
+
+/** hbz - end */
+
 /* Table Columns Adjustment */
 ul.dropdown-checkboxes {
     padding: 5px 10px 0;
