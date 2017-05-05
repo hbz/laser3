@@ -1,21 +1,27 @@
 package com.k_int.kbplus
 
+import grails.plugins.springsecurity.Secured
+
 import com.k_int.kbplus.ajax.AjaxHandler
+
 import org.springframework.dao.DataIntegrityViolationException
 
 class ClusterController extends AjaxHandler {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [clusterInstanceList: Cluster.list(params), clusterInstanceTotal: Cluster.count()]
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -34,6 +40,7 @@ class ClusterController extends AjaxHandler {
 		}
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
         def clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {
@@ -45,6 +52,7 @@ class ClusterController extends AjaxHandler {
         [clusterInstance: clusterInstance]
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
 		switch (request.method) {
 		case 'GET':
@@ -89,6 +97,7 @@ class ClusterController extends AjaxHandler {
 		}
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
         def clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {

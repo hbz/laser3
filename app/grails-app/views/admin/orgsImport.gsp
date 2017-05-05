@@ -29,7 +29,7 @@
               <tr>
                 <td>Example Body Row:</td>
                 <td>"Some inst",</td>
-                <td>"Higher Education",</td>
+                <td>"Higher Education|Publisher",</td>
                 <td>"JISC Collections",</td>
                 <td>"",</td>
                 <td>"",</td>

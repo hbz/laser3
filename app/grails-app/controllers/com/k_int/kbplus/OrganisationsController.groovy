@@ -92,7 +92,7 @@ class OrganisationsController {
     switch (request.method) {
     case 'GET':
         if (!params.name && !params.sector) {
-        params.sector = 'Higher Education'
+            params.sector = RefdataValue.findByValue('Higher Education')
         }
           [orgInstance: new Org(params)]
       break
@@ -288,4 +288,36 @@ class OrganisationsController {
       redirect action: 'users', id: params.id
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addressbook() {
+      def result = [:]
+      result.user = User.get(springSecurityService.principal.id)
+      
+      def orgInstance = Org.get(params.id)
+      if (!orgInstance) {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+        redirect action: 'list'
+        return
+      }    
+      
+      def membershipOrgIds = []
+      result.user?.authorizedOrgs?.each{ org ->
+          membershipOrgIds << org.id
+      }
+      
+      def visiblePersons = []
+      orgInstance?.prsLinks.each { pl ->
+          if(pl.prs?.isPublic?.value == 'No'){
+              if(pl.prs?.owner?.id && membershipOrgIds.contains(pl.prs?.owner?.id)){
+                  if(!visiblePersons.contains(pl.prs)){
+                      visiblePersons << pl.prs
+                  }
+              }
+          }
+      }
+      result.visiblePersons = visiblePersons
+      
+      result.orgInstance = orgInstance
+      result
+    }
 }

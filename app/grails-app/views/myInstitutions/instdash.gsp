@@ -41,6 +41,11 @@
                                        action="finance"
                                        params="${[shortcode:params.shortcode]}">Finance</g:link></li>
           </g:if>
+          
+          <li><h5>Special:</h5></li>
+          <li><g:link controller="myInstitutions" 
+                                       action="addressbook" 
+                                       params="${[shortcode:params.shortcode]}">Addressbook</g:link></li>
         </ul>
       </div>
     </div>

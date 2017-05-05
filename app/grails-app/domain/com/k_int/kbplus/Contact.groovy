@@ -8,37 +8,37 @@ import groovy.util.logging.*
 @Log4j
 class Contact {
     
-    String       mail
-    String       phone
+    String       content
+    RefdataValue contentType
     RefdataValue type
     Person       prs
     Org          org
     
     static mapping = {
-        id      column:'ct_id'
-        version column:'ct_version'
-        mail    column:'ct_mail'
-        phone   column:'ct_phone'
-        type    column:'ct_type_rv_fk'
-        prs     column:'ct_prs_fk'
-        org     column:'ct_org_fk'
+        id          column:'ct_id'
+        version     column:'ct_version'
+        content     column:'ct_content'
+        contentType column:'ct_content_type_rv_fk'
+        type        column:'ct_type_rv_fk'
+        prs         column:'ct_prs_fk'
+        org         column:'ct_org_fk'
     }
     
     static constraints = {
-        mail   (nullable:true, blank:true)
-        phone  (nullable:true, blank:true)
-        type   (nullable:false)
-        prs    (nullable:true)
-        org    (nullable:true)
+        content     (nullable:true, blank:true)
+        contentType (nullable:true, blank:true)
+        type        (nullable:false)
+        prs         (nullable:true)
+        org         (nullable:true)
     }
     
-    static getAllRefdataValues() {
-        RefdataCategory.getAllRefdataValues('ContactType')
+    static getAllRefdataValues(String category) {
+        RefdataCategory.getAllRefdataValues(category)
     }
     
     @Override
     String toString() {
-        mail + ', ' + phone + ' (' + id + ')'
+        contentType?.value + ', ' + content + ' (' + id + '); ' + type?.value
     }
     
     static def lookupOrCreate(mail, phone, type, person, organisation) {

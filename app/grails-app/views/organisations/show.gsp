@@ -14,8 +14,7 @@
       <g:render template="nav" contextPath="." />
     </div>
 
-    <div class="container">
-      
+    <div class="container"> 
 
         <g:if test="${flash.message}">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
@@ -24,25 +23,41 @@
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
               <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
-
+				
 				<g:if test="${orgInstance?.addresses}">
 					<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-					<dd><ul>
-						<g:each in="${orgInstance.addresses}" var="a">
-							<li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
-						</g:each>
-					</ul></dd>
+					<g:each in="${orgInstance?.addresses}" var="a">
+						<dd><g:link controller="address" action="show" id="${a?.id}">${a?.encodeAsHTML()}</g:link></dd>
+					</g:each>
 				</g:if>
 			
 				<g:if test="${orgInstance?.contacts}">
 					<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
-					<dd><ul>
-						<g:each in="${orgInstance.contacts}" var="c">
-							<li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
-						</g:each>
-					</ul></dd>
+					<g:each in="${orgInstance?.contacts}" var="c">
+						<dd><g:link controller="contact" action="show" id="${c?.id}">${c?.encodeAsHTML()}</g:link></dd>
+					</g:each>
 				</g:if>
 			
+				<g:if test="${orgInstance?.prsLinks}">
+					<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+					<g:each in="${orgInstance?.prsLinks}" var="pl">
+						<g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
+							<dd>
+								<g:link controller="person" action="show" id="${pl?.prsId}">${pl?.prs?.encodeAsHTML()}</g:link>
+								(${pl?.functionType})
+							</dd>
+							<dl>
+								<g:each in="${pl?.prs?.contacts}" var="plContact">
+									<dd>- <g:link controller="contact" action="show" id="${plContact?.id}">${plContact?.encodeAsHTML()}</g:link></dd>
+								</g:each>
+								<g:each in="${pl?.prs?.addresses}" var="plAddress">
+									<dd>- <g:link controller="address" action="show" id="${plAddress?.id}">${plAddress?.encodeAsHTML()}</g:link></dd>
+								</g:each>
+							</dl>
+						</g:if>
+					</g:each>
+				</g:if>
+				
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
               <dd>
                 <g:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
@@ -54,15 +69,7 @@
         
             <dt><g:message code="org.sector.label" default="Sector" /></dt>
             <dd>
-              <g:if test="${editable}"><span id="orgSectorEdit" 
-                                          class="xEditableValue"
-                                          data-pk="${orgInstance.class.name}:${orgInstance.id}"
-                                          data-name="sector" 
-                                          data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                                          data-original-title="${orgInstance.sector}">${orgInstance.sector}</span></g:if>
-               <g:else>
-                 <g:fieldValue bean="${orgInstance}" field="sector"/>
-               </g:else>
+            	<g:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
             </dd>
 
             <dt><g:message code="org.membership.label" default="Membership Organisation" /></dt>
