@@ -22,10 +22,7 @@ class PersonController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-        def userMemberships = []
-        User.get(springSecurityService.principal.id).affiliations.each{ uo ->
-            userMemberships << uo.org
-        }
+        def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
 
         // TODO remove this fallback !!!!
         if(userMemberships.size() == 0){
@@ -69,10 +66,7 @@ class PersonController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
-        def userMemberships = []
-        User.get(springSecurityService.principal.id).affiliations.each{ uo ->
-            userMemberships << uo.org
-        }
+        def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         
 		switch (request.method) {
 		case 'GET':

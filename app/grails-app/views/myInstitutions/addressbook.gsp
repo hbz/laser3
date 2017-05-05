@@ -64,22 +64,9 @@ import="com.k_int.kbplus.RefdataCategory"
 			<g:if test="${visiblePersons}">
 				<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
 				<g:each in="${visiblePersons}" var="p">
-					<dd><g:link controller="person" action="show" id="${p?.id}">${p?.encodeAsHTML()}</g:link></dd>
-					<dl>
-						<g:each in="${p?.contacts}" var="c">
-							<dd>
-								- <g:link controller="contact" action="show" id="${c?.id}">${c?.encodeAsHTML()}</g:link>
-							</dd>
-						</g:each>
-						<g:each in="${p?.addresses}" var="a">
-							<dd>
-								- <g:link controller="address" action="show" id="${a?.id}">${a?.encodeAsHTML()}</g:link>
-							</dd>
-						</g:each>
-					</dl>
+					<g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
 				</g:each>
-			</g:if>
-				
+			</g:if>			
 		</dl>
 		
 

@@ -80,7 +80,9 @@
 						
 							<dd><ul>
 								<g:each in="${personInstance.contacts}" var="c">
-								<li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+									<li>
+										<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+									</li>
 								</g:each>
 							</ul></dd>
 						
@@ -92,19 +94,21 @@
 						
 							<dd><ul>
 								<g:each in="${personInstance.addresses}" var="a">
-								<li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+									<li>
+										<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+									</li>
 								</g:each>
 							</ul></dd>
 						
 					</g:if>
 				</dl>
-				<dl>
+				<dl class="debug-only">
 					<g:if test="${personInstance?.owner}">
 						<dt><g:message code="person.owner.label" default="Owner" /></dt>
 						<dd><g:link controller="organisations" action="show" id="${personInstance.owner?.id}">${personInstance.owner?.encodeAsHTML()}</g:link></dd>	
 					</g:if>
 				</dl>
-				<dl>
+				<dl class="debug-only">
 					<g:if test="${personInstance?.isPublic}">
 						<dt><g:message code="person.isPublic.label" default="IsPublic" /></dt>
 						<dd><g:fieldValue bean="${personInstance}" field="isPublic"/></dd>	
