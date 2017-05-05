@@ -58,6 +58,7 @@ import="com.k_int.kbplus.RefdataCategory"
 			</g:link>	
 		</div>
 		
+		<p>These persons are visible to you due your membership ..</p>
 		
         <dl>
 			<g:if test="${visiblePersons}">

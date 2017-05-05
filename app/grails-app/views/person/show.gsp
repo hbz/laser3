@@ -78,9 +78,11 @@
 					<g:if test="${personInstance?.contacts}">
 						<dt><g:message code="person.contacts.label" default="Contacts" /></dt>
 						
-							<g:each in="${personInstance.contacts}" var="c">
-							<dd><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></dd>
-							</g:each>
+							<dd><ul>
+								<g:each in="${personInstance.contacts}" var="c">
+								<li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+								</g:each>
+							</ul></dd>
 						
 					</g:if>
 				</dl>
@@ -88,9 +90,11 @@
 					<g:if test="${personInstance?.addresses}">
 						<dt><g:message code="person.addresses.label" default="Addresses" /></dt>
 						
-							<g:each in="${personInstance.addresses}" var="a">
-							<dd><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></dd>
-							</g:each>
+							<dd><ul>
+								<g:each in="${personInstance.addresses}" var="a">
+								<li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+								</g:each>
+							</ul></dd>
 						
 					</g:if>
 				</dl>

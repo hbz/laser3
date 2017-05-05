@@ -41,7 +41,7 @@
 				<g:if test="${orgInstance?.prsLinks}">
 					<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
 					<g:each in="${orgInstance?.prsLinks}" var="pl">
-						<g:if test="${pl?.prs?.isPublic?.value != 'No'}">
+						<g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
 							<dd>
 								<g:link controller="person" action="show" id="${pl?.prsId}">${pl?.prs?.encodeAsHTML()}</g:link>
 								(${pl?.functionType})

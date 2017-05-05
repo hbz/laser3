@@ -309,7 +309,9 @@ class OrganisationsController {
       orgInstance?.prsLinks.each { pl ->
           if(pl.prs?.isPublic?.value == 'No'){
               if(pl.prs?.owner?.id && membershipOrgIds.contains(pl.prs?.owner?.id)){
-                  visiblePersons << pl.prs
+                  if(!visiblePersons.contains(pl.prs)){
+                      visiblePersons << pl.prs
+                  }
               }
           }
       }
