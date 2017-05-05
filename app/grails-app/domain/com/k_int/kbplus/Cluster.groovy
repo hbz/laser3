@@ -4,7 +4,7 @@ class Cluster {
 
     String       name
     String       definition
-    RefdataValue type
+    RefdataValue type           // 'ClusterType'
     
     static hasMany = [
         orgs:     OrgRole,

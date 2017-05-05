@@ -5,9 +5,9 @@ class Person {
     String       first_name
     String       middle_name
     String       last_name
-    RefdataValue gender
+    RefdataValue gender     // 'Gender'
     Org          owner
-    RefdataValue isPublic // 'YN'
+    RefdataValue isPublic   // 'YN'
     
     static mapping = {
         id          column:'prs_id'
@@ -15,9 +15,9 @@ class Person {
         first_name  column:'prs_first_name'
         middle_name column:'prs_middle_name'
         last_name   column:'prs_last_name'
-        gender      column:'prs_gender'
+        gender      column:'prs_gender_rv_fk'
         owner       column:'prs_owner_fk'
-        isPublic    column:'prs_is_public_rdv_fk'
+        isPublic    column:'prs_is_public_rv_fk'
     }
     
     static mappedBy = [

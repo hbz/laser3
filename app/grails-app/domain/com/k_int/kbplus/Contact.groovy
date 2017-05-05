@@ -3,8 +3,8 @@ package com.k_int.kbplus
 class Contact {
     
     String       content
-    RefdataValue contentType
-    RefdataValue type
+    RefdataValue contentType    // 'ContactContentType'
+    RefdataValue type           // 'ContactType'
     Person       prs
     Org          org
     

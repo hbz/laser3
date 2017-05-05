@@ -9,7 +9,7 @@ class Address {
     String city
     String state
     String country
-    RefdataValue type
+    RefdataValue type       // 'AddressType'
     Person prs
     Org    org
     
