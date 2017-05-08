@@ -43,6 +43,10 @@ class BootStrap {
     RefdataCategory.lookupOrCreate('AddressType', 'Billing address');
     RefdataCategory.lookupOrCreate('AddressType', 'Delivery address');
 
+    RefdataCategory.lookupOrCreate('ContactContentType', 'Mail');
+    RefdataCategory.lookupOrCreate('ContactContentType', 'Phone');
+    RefdataCategory.lookupOrCreate('ContactContentType', 'Fax');
+    
     RefdataCategory.lookupOrCreate('ContactType', 'Personal');
     RefdataCategory.lookupOrCreate('ContactType', 'Job-related');
     // TODO
@@ -74,6 +78,14 @@ class BootStrap {
     RefdataCategory.lookupOrCreate('OrgSector', 'Higher Education');
     RefdataCategory.lookupOrCreate('OrgSector', 'Publisher');
     
+    RefdataCategory.lookupOrCreate('Person Function', 'General contact person');
+    
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific licence editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific subscription editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific package editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific cluster editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific title editor');
+    
     def cons_combo = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium');
 
     def or_licensee_role   = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
@@ -83,11 +95,6 @@ class BootStrap {
     def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Owner');
     def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Member');
     
-    RefdataCategory.lookupOrCreate('Person Role', 'General contact person');
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific licence editor');
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific subscription editor');
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific package editor');
-
     OrgPermShare.assertPermShare(view_permission, or_licensee_role);
     OrgPermShare.assertPermShare(edit_permission, or_licensee_role);
     OrgPermShare.assertPermShare(view_permission, or_subscriber_role);

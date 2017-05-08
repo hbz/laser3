@@ -44,15 +44,17 @@
 					<thead>
 						<tr>
 						
-							<g:sortableColumn property="mail" title="${message(code: 'contact.mail.label', default: 'Mail')}" />
+							<g:sortableColumn property="contentType" title="${message(code: 'contact.contentType.label', default: 'ContentType')}" />
 						
-							<g:sortableColumn property="phone" title="${message(code: 'contact.phone.label', default: 'Phone')}" />
+							<g:sortableColumn property="content" title="${message(code: 'contact.content.label', default: 'Content')}" />
 						
 							<th class="header"><g:message code="contact.type.label" default="Type" /></th>
 
-                                                        <th class="header"><g:message code="contact.prs.label" default="Prs" /></th>
+               <th class="header"><g:message code="contact.prs.label" default="Prs" /></th>
 
 							<th class="header"><g:message code="contact.org.label" default="Org" /></th>
+
+							<th class="header"><g:message code="person.isPublic.label" default="IsPublic" /></th>
 
 							<th></th>
 						</tr>
@@ -61,9 +63,9 @@
 					<g:each in="${contactInstanceList}" var="contactInstance">
 						<tr>
 						
-							<td>${fieldValue(bean: contactInstance, field: "mail")}</td>
+							<td>${contactInstance?.contentType}</td>
 						
-							<td>${fieldValue(bean: contactInstance, field: "phone")}</td>
+							<td>${fieldValue(bean: contactInstance, field: "content")}</td>
 						
 							<td>${fieldValue(bean: contactInstance, field: "type")}</td>
 
@@ -71,6 +73,8 @@
 
 							<td>${fieldValue(bean: contactInstance, field: "org")}</td>
 						
+							<td>${contactInstance?.prs?.isPublic?.encodeAsHTML()}</td>
+							
 							<td class="link">
 								<g:link action="show" id="${contactInstance.id}" class="btn btn-small">Show &raquo;</g:link>
 								<g:link action="edit" id="${contactInstance.id}" class="btn btn-small">Edit</g:link>

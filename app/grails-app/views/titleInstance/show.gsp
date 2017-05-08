@@ -68,11 +68,11 @@
               
               <g:if test="${titleInstanceInstance?.prsLinks}">
 				<dl>
-					<dt><g:message code="titleInstanceInstance.prsLinks.label" default="Person Roles" /></dt>
+					<dt><g:message code="titleInstanceInstance.prsLinks.label" default="Responsibilites" /></dt>
 					<dd><ul>
 						<g:each in="${titleInstanceInstance.prsLinks}" var="p">
 							<li>
-								${p.roleType?.value} - 
+								${p.responsibilityType?.value} - 
                                 
                                 <g:if test="${p.cluster}">
                                 	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>

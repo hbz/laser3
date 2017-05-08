@@ -18,9 +18,11 @@ class Address {
     String city
     String state
     String country
-    RefdataValue type
-    Person prs
-    Org    org
+    RefdataValue type   // RefdataCategory 'AddressType'
+    Person prs          // person related contact
+    Org    org          // org related contact
+                        // if prs AND org set,
+                        // this address belongs to a person in context of an org
     
     static mapping = {
         id       column:'adr_id'
@@ -56,7 +58,74 @@ class Address {
     
     @Override
     String toString() {
-        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + ')'
+        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type?.value
+    }
+    
+    // TODO implement existing check (lookup)
+    static def lookupOrCreate(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
+        
+        def info   = "saving new address: ${type}"
+        def result = null
+        
+        if(person && organisation){
+            type = RefdataValue.findByValue("Job-related")
+        }
+
+        def check = Address.findAllWhere(
+            street_1: street1,
+            street_2: street2,
+            pob:      postbox,
+            zipcode:  zipcode,
+            city:     city,
+            state:    state,
+            country:  country,
+            type:     type,
+            prs:      person,
+            org:      organisation
+        ).sort({id: 'asc'})
+            
+        if(check.size()>0){
+            result = check.get(0)
+            info += " > ignored/duplicate"
+        }
+        else{
+            result = new Address(
+                street_1: street1,
+                street_2: street2,
+                pob:      postbox,
+                zipcode:  zipcode,
+                city:     city,
+                state:    state,
+                country:  country,
+                type:     type,
+                prs:      person,
+                org:      organisation
+                )
+                
+            if(!result.save()){
+                result.errors.each{ println it }
+            }
+            else {
+                info += " > ok"
+            }
+        }
+             
+        LogFactory.getLog(this).debug(info)
+        result   
+    }
+
+    /**
+     * 
+     * @param obj
+     * @return list with two elements for building hql query
+     */
+    static List hqlHelper(obj){
+        
+        def result = []
+        result.add(obj ? obj : '')
+        result.add(obj ? '= ?' : 'is null')
+        
+        result
     }
     
     static def lookupOrCreate(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {

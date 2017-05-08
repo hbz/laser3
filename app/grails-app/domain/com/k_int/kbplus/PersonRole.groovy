@@ -2,7 +2,8 @@ package com.k_int.kbplus
 
 class PersonRole {
 
-    RefdataValue    roleType
+    RefdataValue    functionType        // 'Person Function'; exclusive with responsibilityType
+    RefdataValue    responsibilityType  // 'Person Responsibility'; exclusive with functionType
     License         lic
     Cluster         cluster
     Package         pkg
@@ -19,7 +20,8 @@ class PersonRole {
     static mapping = {
         id          column:'pr_id'
         version     column:'pr_version'
-        roleType    column:'pr_roletype_rv_fk'
+        functionType        column:'pr_function_type_rv_fk'
+        responsibilityType  column:'pr_responsibility_type_rv_fk'
         prs         column:'pr_prs_fk'
         lic         column:'pr_lic_fk'
         org         column:'pr_org_fk'
@@ -32,7 +34,8 @@ class PersonRole {
     }
     
     static constraints = {
-        roleType    (nullable:false)
+        functionType        (nullable:true)
+        responsibilityType  (nullable:true)
         prs         (nullable:false)
         lic         (nullable:true)
         org         (nullable:true)
@@ -44,7 +47,7 @@ class PersonRole {
         end_date    (nullable:true)
     }
     
-    static getAllRefdataValues() {
-        RefdataCategory.getAllRefdataValues('Person Role')
+    static getAllRefdataValues(String category) {
+        RefdataCategory.getAllRefdataValues(category)
     }
 }
