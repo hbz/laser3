@@ -1,13 +1,20 @@
 <%@ page import="com.k_int.kbplus.Org" %>
 
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
+	<label for="name">
+		<g:message code="org.name.label" default="Name" />
 
+	</label>
+	<g:textArea name="name" cols="40" rows="1" maxlength="256" value="${orgInstance?.name}"/>
+
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">
 	<label for="impId">
 		<g:message code="org.impId.label" default="Imp Id" />
-		
+
 	</label>
-	<g:textArea name="impId" cols="40" rows="5" maxlength="256" value="${orgInstance?.impId}"/>
+	<g:textArea name="impId" cols="40" rows="1" maxlength="256" value="${orgInstance?.impId}"/>
 
 </div>
 
@@ -87,7 +94,6 @@
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="org.status.label" default="Status" />
-		
 	</label>
 	<g:select id="status" name="status.id" 
 		from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('PendingChangeStatus'))}"
@@ -97,7 +103,6 @@
 		class="many-to-one" noSelection="['null': '']"/>
 
 </div>
-
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
