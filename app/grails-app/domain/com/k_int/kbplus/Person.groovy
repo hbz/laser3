@@ -4,8 +4,8 @@ import java.util.Date
 import java.util.List
 
 import groovy.util.logging.Log4j
-
 import org.apache.commons.logging.LogFactory
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Sort
 
 import groovy.util.logging.*
 
@@ -44,7 +44,7 @@ class Person {
     
     static constraints = {
         first_name  (nullable:false, blank:false)
-        middle_name (nullable:true,  blank:true)
+        middle_name (nullable:true,  blank:false)
         last_name   (nullable:false, blank:false)
         gender      (nullable:true)
         owner       (nullable:true)
@@ -62,29 +62,52 @@ class Person {
         
     // TODO implement existing check (lookup)
     // TODO implement responsibilityType
-    static def customCreate(firstName, middleName, lastName, gender, owner, isPublic, org, functionType) {
+    static def lookupOrCreate(firstName, middleName, lastName, gender, owner, isPublic, org, functionType) {
         
-        LogFactory.getLog(this).debug("trying to save new person: ${firstName} ${middleName} ${lastName}")
+        def info = "saving new person: ${firstName} ${middleName} ${lastName}"
         def resultPerson = null
         def resultPersonRole = null
  
-        resultPerson = new Person(
+        // ugly fallback
+        if(middleName=='')
+            middleName = null
+            
+        def check = Person.findAllWhere(
             first_name:  firstName,
             middle_name: middleName,
             last_name:   lastName,
             gender:      gender,
             owner:       owner,
-            isPublic:    isPublic
-            )
+            isPublic:    isPublic, 
+            ).sort({id: 'asc'})
             
-        if(!resultPerson.save()){
-            resultPerson.errors.each{ println it }
+        if(check.size()>0){
+            resultPerson = check.get(0)
+            info += " > ignored/duplicate"
         }
+        else{
+            resultPerson = new Person(
+                first_name:  firstName,
+                middle_name: middleName,
+                last_name:   lastName,
+                gender:      gender,
+                owner:       owner,
+                isPublic:    isPublic
+                )
+                
+            if(!resultPerson.save()){
+                resultPerson.errors.each{ println it }
+            }
+            else {
+                info += " > ok"
+            }
+        }
+        LogFactory.getLog(this).debug(info)
         
         if(resultPerson){
-            LogFactory.getLog(this).debug("trying to save new personRole: ${resultPerson} - ${functionType} - ${org}")
+            info = "saving new personRole: ${resultPerson} - ${functionType} - ${org}"
             
-            resultPersonRole = new PersonRole(
+            check = PersonRole.findAllWhere(
                 functionType:   functionType,
                 prs:        resultPerson,
                 lic:        null,
@@ -95,12 +118,36 @@ class Person {
                 title:      null,
                 start_date: null,
                 end_date:   null
-                )
+                ).sort({id: 'asc'})
                 
-            if(!resultPersonRole.save()){
-                resultPersonRole.errors.each{ println it }
+            if(check.size()>0){
+                resultPersonRole = check.get(0)
+                info += " > ignored/duplicate"
             }
-        }     
+            else{   
+                resultPersonRole = new PersonRole(
+                    functionType:   functionType,
+                    prs:        resultPerson,
+                    lic:        null,
+                    org:        org,
+                    cluster:    null,
+                    pkg:        null,
+                    sub:        null,
+                    title:      null,
+                    start_date: null,
+                    end_date:   null
+                    )
+                    
+                if(!resultPersonRole.save()){
+                    resultPersonRole.errors.each{ println it }
+                }
+                else {
+                    info += " > ok"
+                }
+            }
+            LogFactory.getLog(this).debug(info)
+        }
+        
         resultPerson      
     }
     

@@ -27,14 +27,18 @@
 				<g:if test="${orgInstance?.addresses}">
 					<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
 					<g:each in="${orgInstance?.addresses}" var="a">
-						<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+						<g:if test="${a.org&&!a.prs}">
+							<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+						</g:if>
 					</g:each>
 				</g:if>
 			
 				<g:if test="${orgInstance?.contacts}">
 					<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
 					<g:each in="${orgInstance?.contacts}" var="c">
-						<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+						<g:if test="${c.org&&!c.prs}">
+							<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+						</g:if>
 					</g:each>
 				</g:if>
 			

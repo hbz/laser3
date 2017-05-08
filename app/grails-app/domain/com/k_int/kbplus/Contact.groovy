@@ -44,26 +44,45 @@ class Contact {
     }
     
     // TODO implement existing check (lookup)
-    static def customCreate(content, contentType, type, person, organisation) {
+    static def lookupOrCreate(content, contentType, type, person, organisation) {
         
-        LogFactory.getLog(this).debug("trying to save new contact: ${content} ${contentType} ${type}")
+        def info   = "saving new contact: ${content} ${contentType} ${type}"
         def result = null
 
         if(person && organisation){
             type = RefdataValue.findByValue("Job-related")
         }
         
-        result = new Contact(
-            content:     content,
-            contentType: contentType,
-            type:        type,
-            prs:         person,
-            org:         organisation
-            )
-            
-        if(!result.save()){
-            result.errors.each{ println it }
+        def check = Contact.findAllWhere(
+            content: content, 
+            contentType: contentType, 
+            type: type, 
+            prs: person, 
+            org: organisation
+            ).sort({id: 'asc'})
+              
+        if(check.size()>0){
+            result = check.get(0)
+            info += " > ignored/duplicate"
         }
+        else{
+            result = new Contact(
+                content:     content,
+                contentType: contentType,
+                type:        type,
+                prs:         person,
+                org:         organisation
+                )
+                
+            if(!result.save()){
+                result.errors.each{ println it }
+            }
+            else {
+                info += " > ok"
+            }
+        }
+        
+        LogFactory.getLog(this).debug(info)
         result  
     }
     

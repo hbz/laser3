@@ -21,7 +21,7 @@ class ApiService {
         def overrideOwner
         def overrideIsPublic
         
-        if(xml.override?.owner){
+        if(xml.override?.owner?.text()){
             overrideOwner    = Org.findByShortcode(xml.override.owner.text())
             overrideIsPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'No')
             
@@ -86,7 +86,7 @@ class ApiService {
                     }
                     
                     // create if no match found
-                    Address.customCreate(
+                    Address.lookupOrCreate(
                         "${street1}",
                         "${street2}",
                         null,
@@ -126,12 +126,12 @@ class ApiService {
                     def cpParts = normString(cpText).replaceAll("(Herr|Frau)", "").trim().split(" ")
   
                     firstName  = cpParts[0].trim()
-                    middleName = cpParts.size() > 2 ? cpParts[1..cpParts.size() - 2].join(" ") : ''
+                    middleName = (cpParts.size() > 2) ? (cpParts[1..cpParts.size() - 2].join(" ")) : ""
                     lastName   = cpParts[cpParts.size() - 1].trim()
                     
                     // create if no match found
                     if(firstName != '' && lastName != ''){
-                        person = Person.customCreate(
+                        person = Person.lookupOrCreate(
                             firstName,
                             middleName,
                             lastName,
@@ -149,7 +149,7 @@ class ApiService {
                         def faxText   = faxList[i]   ? faxList[i].text()   : ''
 
                         if(mailText != '' ){
-                            Contact.customCreate(
+                            Contact.lookupOrCreate(
                                 normString(mailText),
                                 RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Mail'),
                                 RefdataValue.findByValue("Job-related"),
@@ -158,7 +158,7 @@ class ApiService {
                                 )
                         }
                         if(phoneText != ''){
-                            Contact.customCreate(
+                            Contact.lookupOrCreate(
                                 normString(phoneText),
                                 RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Phone'),
                                 RefdataValue.findByValue("Job-related"),
@@ -167,7 +167,7 @@ class ApiService {
                                 )
                         }
                         if(faxText != ''){
-                            Contact.customCreate(
+                            Contact.lookupOrCreate(
                                 normString(faxText),
                                 RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Fax'),
                                 RefdataValue.findByValue("Job-related"),

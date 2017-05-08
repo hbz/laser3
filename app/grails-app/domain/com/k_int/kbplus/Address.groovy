@@ -62,16 +62,16 @@ class Address {
     }
     
     // TODO implement existing check (lookup)
-    static def customCreate(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
+    static def lookupOrCreate(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
         
-        LogFactory.getLog(this).debug('trying to save new address: ${type}"')
+        def info   = "saving new address: ${type}"
         def result = null
         
         if(person && organisation){
             type = RefdataValue.findByValue("Job-related")
         }
 
-        result = new Address(
+        def check = Address.findAllWhere(
             street_1: street1,
             street_2: street2,
             pob:      postbox,
@@ -82,14 +82,38 @@ class Address {
             type:     type,
             prs:      person,
             org:      organisation
-            )
+        ).sort({id: 'asc'})
             
-        if(!result.save()){
-            result.errors.each{ println it }
-        }       
+        if(check.size()>0){
+            result = check.get(0)
+            info += " > ignored/duplicate"
+        }
+        else{
+            result = new Address(
+                street_1: street1,
+                street_2: street2,
+                pob:      postbox,
+                zipcode:  zipcode,
+                city:     city,
+                state:    state,
+                country:  country,
+                type:     type,
+                prs:      person,
+                org:      organisation
+                )
+                
+            if(!result.save()){
+                result.errors.each{ println it }
+            }
+            else {
+                info += " > ok"
+            }
+        }
+             
+        LogFactory.getLog(this).debug(info)
         result   
     }
-    
+
     /**
      * 
      * @param obj
