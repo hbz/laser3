@@ -66,7 +66,7 @@ class Person {
         def resultPerson = null
         def resultPersonRole = null
  
-        // ugly fallback
+        // TODO: ugly mapping fallback
         if(middleName=='')
             middleName = null
             
