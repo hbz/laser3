@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
@@ -14,11 +15,23 @@ class ApiService {
      */
     GPathResult importOrg(GPathResult xml){
         
+        def rdcYN = RefdataCategory.findByDesc('YN')
+        def rdcContactContentType = RefdataCategory.findByDesc('ContactContentType')
+
+        def overrideOwner
+        def overrideIsPublic
+        
+        if(xml.override?.owner){
+            overrideOwner    = Org.findByShortcode(xml.override.owner.text())
+            overrideIsPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'No')
+            
+            log.info("OVERRIDING OWNER: ${overrideOwner}")
+        }
+        
         xml.institution.each{ inst ->
 
             def identifiers = [:]
             def org         = null
-            def person      = null
             
             def title = normString(inst.title.text())
             def subscriperGroup = inst.subscriper_group ? normString(inst.subscriper_group.text()) : ''
@@ -73,7 +86,7 @@ class ApiService {
                     }
                     
                     // create if no match found
-                    Address.lookupOrCreate(
+                    Address.customCreate(
                         "${street1}",
                         "${street2}",
                         null,
@@ -88,44 +101,75 @@ class ApiService {
                 }
                 
                 // adding contact persons
+                def person
+                
+                // overrides
+                def owner = org
+                def isPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'Yes')
+                
+                if(overrideOwner){
+                    owner = overrideOwner
+                }
+                if(overrideIsPublic){
+                    isPublic = overrideIsPublic
+                }
+                
                 def cpList    = flattenToken(inst.contactperson)
                 def mailList  = flattenToken(inst.email)
                 def phoneList = flattenToken(inst.telephone)
+                def faxList   = flattenToken(inst.fax)
                          
                 cpList.eachWithIndex{ token, i ->
-                    
-                    def cpText    = cpList[i]    ? cpList[i].text()    : ''
-                    def mailText  = mailList[i]  ? mailList[i].text()  : ''
-                    def phoneText = phoneList[i] ? phoneList[i].text() : ''
-                    
+   
                     // adding person
+                    def cpText = cpList[i] ? cpList[i].text() : ''
                     def cpParts = normString(cpText).replaceAll("(Herr|Frau)", "").trim().split(" ")
   
                     firstName  = cpParts[0].trim()
                     middleName = cpParts.size() > 2 ? cpParts[1..cpParts.size() - 2].join(" ") : ''
                     lastName   = cpParts[cpParts.size() - 1].trim()
-  
+                    
                     // create if no match found
                     if(firstName != '' && lastName != ''){
-                        person = Person.lookupOrCreate(
+                        person = Person.customCreate(
                             firstName,
                             middleName,
                             lastName,
                             null /* gender */,
+                            owner,
+                            isPublic,
                             org,
                             RefdataValue.findByValue("General contact person")
                             )
                             
-                        // adding contact
-                        email     = normString(mailText)
-                        telephone = phoneText.replaceAll("(/|-|\\(|\\))", "").replaceAll("\\s+", "")
-    
-                        if(email != '' || telephone != ''){
+                        // adding contacts
                             
-                            // create if no match found
-                            Contact.lookupOrCreate(
-                                email,
-                                telephone,
+                        def mailText  = mailList[i]  ? mailList[i].text()  : ''
+                        def phoneText = phoneList[i] ? phoneList[i].text() : ''
+                        def faxText   = faxList[i]   ? faxList[i].text()   : ''
+
+                        if(mailText != '' ){
+                            Contact.customCreate(
+                                normString(mailText),
+                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Mail'),
+                                RefdataValue.findByValue("Job-related"),
+                                person,
+                                org
+                                )
+                        }
+                        if(phoneText != ''){
+                            Contact.customCreate(
+                                normString(phoneText),
+                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Phone'),
+                                RefdataValue.findByValue("Job-related"),
+                                person,
+                                org
+                                )
+                        }
+                        if(faxText != ''){
+                            Contact.customCreate(
+                                normString(faxText),
+                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Fax'),
                                 RefdataValue.findByValue("Job-related"),
                                 person,
                                 org

@@ -9,10 +9,12 @@ import groovy.util.logging.*
 class Contact {
     
     String       content
-    RefdataValue contentType    // 'ContactContentType'
-    RefdataValue type           // 'ContactType'
-    Person       prs
-    Org          org
+    RefdataValue contentType    // RefdataCategory 'ContactContentType'
+    RefdataValue type           // RefdataCategory 'ContactType'
+    Person       prs            // person related contact
+    Org          org            // org related contact
+                                // if prs AND org set,
+                                // this contact belongs to a person in context of an org
     
     static mapping = {
         id          column:'ct_id'
@@ -41,48 +43,27 @@ class Contact {
         contentType?.value + ', ' + content + ' (' + id + '); ' + type?.value
     }
     
-    static def lookupOrCreate(mail, phone, type, person, organisation) {
+    // TODO implement existing check (lookup)
+    static def customCreate(content, contentType, type, person, organisation) {
         
+        LogFactory.getLog(this).debug("trying to save new contact: ${content} ${contentType} ${type}")
         def result = null
 
-        def hqlMail  = Contact.hqlHelper(mail)  
-        def hqlPhone = Contact.hqlHelper(phone)
-        def hqlType  = Contact.hqlHelper(type)
-        def hqlPrs   = Contact.hqlHelper(person)
-        def hqlOrg   = Contact.hqlHelper(organisation)
-          
-        def query = "from Contact c where lower(c.mail) ${hqlMail[1]} and c.phone ${hqlPhone[1]} and c.type ${hqlType[1]} and c.prs ${hqlPrs[1]} and c.org ${hqlOrg[1]}" 
+        if(person && organisation){
+            type = RefdataValue.findByValue("Job-related")
+        }
         
-        def queryParams = [hqlMail[0].toLowerCase(), hqlPhone[0], hqlType[0], hqlPrs[0], hqlOrg[0]]
-        queryParams.removeAll([null, ''])
-        
-        log.debug(query)
-        log.debug('@ ' + queryParams)
-        
-        def c = Contact.executeQuery(query, queryParams)
-   
-        if(!c && type){
-            LogFactory.getLog(this).debug("trying to save new contact: ${mail} ${phone} ${type}")
+        result = new Contact(
+            content:     content,
+            contentType: contentType,
+            type:        type,
+            prs:         person,
+            org:         organisation
+            )
             
-            result = new Contact(
-                mail:  mail,
-                phone: phone,
-                type:  type,
-                prs:   person,
-                org:   organisation
-                )
-                
-            if(!result.save()){
-                result.errors.each{ println it }
-            }
+        if(!result.save()){
+            result.errors.each{ println it }
         }
-        else {
-            // TODO catch multiple results
-            if(c.size() > 0){
-                result = c[0]
-            }
-        }
-        
         result  
     }
     

@@ -45,6 +45,7 @@ class BootStrap {
 
     RefdataCategory.lookupOrCreate('ContactContentType', 'Mail');
     RefdataCategory.lookupOrCreate('ContactContentType', 'Phone');
+    RefdataCategory.lookupOrCreate('ContactContentType', 'Fax');
     
     RefdataCategory.lookupOrCreate('ContactType', 'Personal');
     RefdataCategory.lookupOrCreate('ContactType', 'Job-related');
