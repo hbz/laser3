@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Institutional Dash :: ${institution?.name}</title>
+    <title>${message(code:'myinst.title', default:'KB+ Institutional Dash')} :: ${institution?.name}</title>
   </head>
 
   <body>
@@ -19,27 +19,27 @@
       <div class="well">
         <h1>${institution.name} Dashboard</h1>
         <ul class="inline">
-          <li><h5>View:</h5></li>
+          <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
           <li><g:link controller="myInstitutions" 
                                        action="currentLicenses" 
-                                       params="${[shortcode:params.shortcode]}">Licences</g:link></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'licence.plural', default:'Licences')}</g:link></li>
           <li><g:link controller="myInstitutions" 
                                        action="currentSubscriptions" 
-                                       params="${[shortcode:params.shortcode]}">Subscriptions</g:link></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'subscription.plural', default:'Subscriptions')}</g:link></li>
           <li><g:link controller="myInstitutions" 
                                        action="currentTitles" 
-                                       params="${[shortcode:params.shortcode]}">Titles</g:link></li>
-          <li><h5>Renewals:</h5></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'title.plural', default:'Titles')}</g:link></li>
+          <li><h5>${message(code:'myinst.renewals', default:'Renewals')}:</h5></li>
           <li><g:link controller="myInstitutions" 
                                        action="renewalsSearch" 
-                                       params="${[shortcode:params.shortcode]}">Generate Renewals Worksheet</g:link></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link></li>
           <li><g:link controller="myInstitutions" 
                                        action="renewalsUpload" 
-                                       params="${[shortcode:params.shortcode]}">Import Renewals</g:link></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link></li>
           <g:if test="${grailsApplication.config.feature_finance}">
             <li><g:link controller="myInstitutions"
                                        action="finance"
-                                       params="${[shortcode:params.shortcode]}">Finance</g:link></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.finance', default:'Finance')}</g:link></li>
           </g:if>
           
           <li><h5>Special:</h5></li>
@@ -68,7 +68,7 @@
             <table class="table table-bordered dashboard-widget">
               <thead>
                 <th>
-                  <h5 class="pull-left">To Do</h5>
+                  <h5 class="pull-left">${message(code:'myinst.todo.label', default:'To Do')}</h5>
                   <img src="${resource(dir: 'images', file: 'icon_todo.png')}" alt="To-Dos" class="pull-right" />
                 </th>
               </thead>
@@ -90,14 +90,14 @@
                         </g:else>
                       </p>
 
-                      <p>Changes between <g:formatDate date="${todo.earliest}" format="yyyy-MM-dd hh:mm a"/></span> and <g:formatDate date="${todo.latest}" format="yyyy-MM-dd hh:mm a"/></p>
+                      <p>${message(code:'myinst.change_from', default:'Changes between')} <g:formatDate date="${todo.earliest}" format="yyyy-MM-dd hh:mm a"/></span> ${message(code:'myinst.change_to', default:'and')} <g:formatDate date="${todo.latest}" format="yyyy-MM-dd hh:mm a"/></p>
                     </div>
                   </td>
                 </tr>
               </g:each>
                 <tr>
                   <td>
-                    <g:link action="todo" params="${[shortcode:params.shortcode]}" class="btn btn-primary pull-right">View To Do List</g:link>
+                    <g:link action="todo" params="${[shortcode:params.shortcode]}" class="btn btn-primary pull-right">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
                   </td>
                 </tr>
               </tbody>
@@ -107,7 +107,7 @@
             <table class="table table-bordered dashboard-widget">
               <thead>
                 <th>
-                  <h5 class="pull-left">Announcements</h5>
+                  <h5 class="pull-left">${message(code:'announcement.plural', default:'Announcements')}</h5>
                   <img src="${resource(dir: 'images', file: 'icon_announce.png')}" alt="To-Dos" class="pull-right" />
                 </th>
               </thead>
@@ -124,14 +124,14 @@
                         <span class="widget-content">${ra.content}</span>
                         <div class="see-more"><a href="">[ See More ]</a></div>
                       </div> 
-                      <p>Posted by <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em> on <g:formatDate date="${ra.dateCreated}" format="yyyy-MM-dd hh:mm a"/></p>
+                      <p>${message(code:'myinst.ann.posted_by', default:'Posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em> ${message(code:'myinst.ann.posted_on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="yyyy-MM-dd hh:mm a"/></p>
                     </div>
                   </td>
                 </tr>
               </g:each>
                 <tr>
                   <td>
-                     <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="btn btn-primary pull-right">View All Announcements</g:link>
+                     <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="btn btn-primary pull-right">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
                   </td>
                 </tr>
               </tbody>

@@ -43,7 +43,7 @@
               <td><g:link  action="show" id="${orgInstance.id}">${fieldValue(bean: orgInstance, field: "name")}</g:link></td>
               <td>${fieldValue(bean: orgInstance, field: "shortcode")}</td>
               <td>${orgInstance?.orgType?.value}</td>
-              <td>${fieldValue(bean: orgInstance, field: "sector")}</td>
+              <td>${orgInstance?.sector?.value}</td>
               <td>${fieldValue(bean: orgInstance, field: "scope")}</td>
               <td>${orgInstance?.membership?.value}</td>
             </tr>
