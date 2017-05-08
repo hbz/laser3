@@ -319,7 +319,7 @@ class PackageDetailsController {
           params.insrt = "Y"
           params.dlt = "Y"
           params.updt = "Y"
-          flash.message = "Please select two packages for comparison."
+          flash.message = message(code:'', default:"Please select two packages for comparison.")
           result
         }
       
@@ -633,7 +633,7 @@ class PackageDetailsController {
      }
 
     if ( asAt != null ) {
-      base_qry += " and ( ( ? >= coalesce(tipp.accessStartDate, tipp.pkg.startDate) ) and ( ( ? <= tipp.accessEndDate ) or ( tipp.accessEndDate is null ) ) ) "
+      base_qry += " and ( ( ( ? >= coalesce(tipp.accessStartDate, tipp.pkg.startDate) ) or ( tipp.accessEndDate is null ) ) and ( ( ? <= tipp.accessEndDate ) or ( tipp.accessEndDate is null ) ) ) "
       qry_params.add(asAt);
       qry_params.add(asAt);
     }

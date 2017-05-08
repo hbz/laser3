@@ -27,7 +27,6 @@
               <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
           </g:if>
         
-
 			<g:if test="${orgInstance?.addresses}">
 				<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
 				<g:each in="${orgInstance?.addresses}" var="a">
@@ -45,8 +44,7 @@
 					</g:if>
 				</g:each>
 			</g:if>
-				
-        
+
         	<g:if test="${orgInstance?.prsLinks}">
 				<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
 				<g:each in="${orgInstance?.prsLinks}" var="pl">

@@ -23,12 +23,12 @@
 
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>User</th>
-          <th>Email</th>
-          <th>System Role</th>
-          <th>Institutional Role</th>
-          <th>Status</th>
-          <th>Actions</th>
+          <th>${message(code:'user.label', default:'User')}</th>
+          <th>${message(code:'user.email', default:'Email')}</th>
+          <th>${message(code:'user.sys_role', default:'System Role')}</th>
+          <th>${message(code:'user.inst_role', default:'Institutional Role')}</th>
+          <th>${message(code:'user.status', default:'Status')}</th>
+          <th>${message(code:'user.actions', default:'Actions')}</th>
         </tr>
 
         <g:each in="${users}" var="userOrg">

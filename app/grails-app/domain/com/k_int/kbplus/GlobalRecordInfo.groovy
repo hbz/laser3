@@ -24,15 +24,15 @@ class GlobalRecordInfo {
                source column:'gri_source_fk'
                    ts column:'gri_timestamp'
            identifier column:'gri_identifier'
-                 name column:'gri_name'
-                 desc column:'gri_desc'
+                 name column:'gri_name', type:'text'
+                 desc column:'gri_desc', type:'text'
               rectype column:'gri_rectype'
                record column:'gri_record', length:(1024*1024*64)// , type:'blob' // , length:(1024*1024*64)
       kbplusCompliant column:'gri_kbplus_compliant'
   }
 
   static constraints = {
-                  name(nullable:true, blank:false)
+                  name(nullable:true, blank:false, maxSize:2048)
                   desc(nullable:true, blank:false)
                rectype(nullable:true, blank:false)
                     ts(nullable:true, blank:false)

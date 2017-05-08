@@ -11,7 +11,7 @@
 
     <div class="container">
       <div class="page-header">
-        <h1>Packages</h1>
+        <h1>${message(code:'package.search')}</h1>
       </div>
       <g:if test="${flash.message}">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
@@ -23,19 +23,19 @@
         <table>
           <tr>
             <td >
-              <label>Search text : </label> <input type="text" name="q" placeholder="enter search term..." value="${params.q?.encodeAsHTML()}"  /> &nbsp;
+              <label>${message(code:'package.search.text')} : </label> <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
             </td>
             <td style="width:30%;">
-              <label>Updated After : </label> <input name="updateStartDate" type="date" value="${params.updateStartDate}"/> &nbsp;
-              <label>Created After : </label> <input name="createStartDate" type="date" value="${params.createStartDate}"/> &nbsp;
+              <label>${message(code:'package.search.updated_after')} : </label> <input name="updateStartDate" type="date" value="${params.updateStartDate}"/> &nbsp;
+              <label>${message(code:'package.search.created_after')} : </label> <input name="createStartDate" type="date" value="${params.createStartDate}"/> &nbsp;
             </td>
             <td style="width:30%;">
-              <label>Updated Before : </label> <input name="updateEndDate" type="date" value="${params.updateEndDate}"/> &nbsp;
-              <label>Created Before : </label> <input name="createEndDate" type="date" value="${params.createEndDate}"/> &nbsp;
+              <label>${message(code:'package.search.updated_before')} : </label> <input name="updateEndDate" type="date" value="${params.updateEndDate}"/> &nbsp;
+              <label>${message(code:'package.search.created_before')} : </label> <input name="createEndDate" type="date" value="${params.createEndDate}"/> &nbsp;
             </td>
             <td >
-              <input type="submit" class="btn btn-primary" value="Search" />
-              <button type="submit" name="format" value="csv" class="btn btn-primary" value="Search">Export</button>
+              <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label')}" ></input>
+              <button type="submit" name="format" value="csv" class="btn btn-primary" value="Search">${message(code:'package.search.export.button')}</button>
             </td>
           </tr>
         </table>
@@ -62,7 +62,7 @@
               <td>${fieldValue(bean: packageInstance, field: "dateCreated")}</td>
               <td>${fieldValue(bean: packageInstance, field: "lastUpdated")}</td>
               <td class="link">
-                <g:link action="show" id="${packageInstance.id}" class="btn btn-small">Show &raquo;</g:link>
+                <g:link action="show" id="${packageInstance.id}" class="btn btn-small">${message(code:'package.search.show')} &raquo;</g:link>
               </td>
             </tr>
           </g:each>

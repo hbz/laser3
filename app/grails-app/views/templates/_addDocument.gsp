@@ -7,7 +7,7 @@
             <div class="inline-lists">
                 <dl>
                     <dt>
-                        <label>Document Name:</label>
+                        <label>${message(code: 'template.addDocument.name', default: 'Document Name')}:</label>
                     </dt>
                     <dd>
                         <input type="text" name="upload_title">
@@ -15,7 +15,7 @@
                 </dl>
                 <dl>
                     <dt>
-                        <label>File:</label>
+                        <label>${message(code: 'template.addDocument.file', default: 'File')}:</label>
                     </dt>
                     <dd>
                         <input type="file" name="upload_file" />
@@ -23,21 +23,21 @@
                 </dl>
                 <dl>
                     <dt>
-                        <label>Document Type:</label>
+                        <label>${message(code: 'template.addDocument.type', default: 'Document Type')}:</label>
                     </dt>
                     <dd>
                         <select name="doctype">
                             <option value="License"><g:message code="licence" default="Licence"/></option>
-                            <option value="General">General</option>
-                            <option value="General">Addendum</option>
+                            <option value="General"><g:message code="template.addDocument.type.general" default="General"/></option>
+                            <option value="General"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
                         </select>
                     </dd>
                 </dl>
             </div>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">Close</a>
-            <input type="submit" class="btn btn-primary" name ="SaveDoc" value="Save Changes">
+            <a href="#" class="btn" data-dismiss="modal">${message(code: 'default.button.close.label', default:'Close')}</a>
+            <input type="submit" class="btn btn-primary" name ="SaveDoc" value="${message(code: 'default.button.save_changes', default: 'Save Changes')}">
         </div>
     </g:form>
 

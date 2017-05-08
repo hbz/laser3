@@ -49,13 +49,13 @@
 							<g:sortableColumn property="content" title="${message(code: 'contact.content.label', default: 'Content')}" />
 						
 							<th class="header"><g:message code="contact.type.label" default="Type" /></th>
-						
-							<th class="header"><g:message code="contact.prs.label" default="Prs" /></th>
-						
+
+               <th class="header"><g:message code="contact.prs.label" default="Prs" /></th>
+
 							<th class="header"><g:message code="contact.org.label" default="Org" /></th>
-							
+
 							<th class="header"><g:message code="person.isPublic.label" default="IsPublic" /></th>
-						
+
 							<th></th>
 						</tr>
 					</thead>
@@ -68,9 +68,9 @@
 							<td>${fieldValue(bean: contactInstance, field: "content")}</td>
 						
 							<td>${fieldValue(bean: contactInstance, field: "type")}</td>
-						
+
 							<td>${fieldValue(bean: contactInstance, field: "prs")}</td>
-						
+
 							<td>${fieldValue(bean: contactInstance, field: "org")}</td>
 						
 							<td>${contactInstance?.prs?.isPublic?.encodeAsHTML()}</td>

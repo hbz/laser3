@@ -178,7 +178,13 @@
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                   <g:each in="${t.title.ids}" var="id">
-                    ${id.identifier.ns.ns}:${id.identifier.value}<br/>
+                    <g:if test="${id.identifier.ns.ns == 'originediturl'}">
+                      ${id.identifier.ns.ns}: <a href="${id.identifier.value}">Open Link</a>
+                    </g:if>
+                    <g:else>
+                      ${id.identifier.ns.ns}:${id.identifier.value}
+                    </g:else>
+                    <br/>
                   </g:each>
                 </td>
 

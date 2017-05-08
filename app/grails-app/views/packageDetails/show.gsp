@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap">
-    <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
+    <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
  <body>
@@ -12,14 +12,14 @@
     <div class="container">
       <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">All Packages</g:link><span class="divider">/</span></li>
+        <li><g:link controller="packageDetails" action="index">${message(code: 'package.show.all')}</g:link><span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
 
         <li class="dropdown pull-right">
           <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
 
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link action="show" params="${params+[format:'json']}">Json Export</g:link></li>
+            <li><g:link action="show" params="${params+[format:'json']}">JSON Export</g:link></li>
             <li><g:link action="show" params="${params+[format:'xml']}">XML Export</g:link></li>
             <g:each in="${transforms}" var="transkey,transval">
               <li><g:link action="show" id="${params.id}" params="${[format:'xml',transformId:transkey,mode:params.mode]}"> ${transval.name}</g:link></li>
@@ -29,9 +29,9 @@
 
         <li class="pull-right">
           <g:if test="${editable}">
-              <span class="badge badge-warning">Editable</span>&nbsp;
+              <span class="badge badge-warning">${message(code: 'default.editable')}</span>&nbsp;
           </g:if>
-          View:
+          ${message(code: 'package.show.view')}:
           <div class="btn-group" data-toggle="buttons-radio">
             <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
             <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
@@ -57,7 +57,7 @@
                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if><g:else>${packageInstance.name}</g:else></h1>
            <g:render template="nav" />
             <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-            <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>Mention this package in an announcement</g:link>
+            <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
             </sec:ifAnyGranted>
             <g:if test="${forum_url != null}">
               <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
@@ -85,35 +85,36 @@
     <div class="container">
       <div class="row">
         <div class="span8">
-            <h6>Package Information
-          <span class="btn-group pull-right" data-toggle="buttons-radio">
-            <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
-            <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
-          </span>
-          &nbsp;
-</h6>
+            <h6>
+              ${message(code: 'package.show.pkg_information')}
+              <span class="btn-group pull-right" data-toggle="buttons-radio">
+                <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
+                <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
+              </span>
+              &nbsp;
+            </h6>
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">
 
               <dl>
-                <dt>Package Name</dt>
+                <dt>${message(code: 'package.show.pkg_name')}</dt>
                 <dd> <g:xEditable owner="${packageInstance}" field="name"/></dd>
               </dl>
               
               <dl>
-                <dt>Package Persistent Identifier</dt>
+                <dt>${message(code: 'package.show.persistent_id')}</dt>
                 <dd>uri://kbplus/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
               </dl>
               
               <dl>
-                <dt>Other Identifiers</dt>
+                <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
                   <table class="table table-bordered">
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>Identifier Namespace</th>
-                        <th>Identifier</th>
+                        <th>${message(code: 'component.id.label')}</th>
+                        <th>${message(code: 'identifier.namespace.label')}</th>
+                        <th>${message(code: 'identifier.label')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -134,7 +135,7 @@
                       <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
                       <input type="hidden" name="__recip" value="pkg"/>
                       <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                      <input type="submit" value="Add Identifier..." class="btn btn-primary btn-small"/>
+                      <input type="submit" value="${message(code: 'identifier.select.add')}" class="btn btn-primary btn-small"/>
                     </g:form>
                   </g:if>
 
@@ -142,7 +143,7 @@
               </dl>
 
               <dl>
-                <dt>Public?</dt>
+                <dt>${message(code: 'licence.is_public')}</dt>
                 <dd>
                   <g:xEditableRefData owner="${packageInstance}" field="isPublic" config='YN'/>
                 </dd>
@@ -156,21 +157,21 @@
               </dl>
 
               <dl>
-                <dt>Vendor URL</dt>
+                <dt>${message(code: 'package.show.vendor_url')}</dt>
                 <dd>
                   <g:xEditable owner="${packageInstance}" field="vendorURL" />
                 </dd>
               </dl>
 
                 <dl>
-                  <dt>Start Date</dt>
+                  <dt>${message(code: 'package.show.start_date')}</dt>
                   <dd>
                     <g:xEditable owner="${packageInstance}" field="startDate" type="date"/>
                 </dd>
                 </dl>
 
                <dl>
-                    <dt>End Date</dt>
+                    <dt>${message(code: 'package.show.end_date')}</dt>
                     <dd>
                        <g:xEditable owner="${packageInstance}" id="${packageInstance.class.name.replace(".","")}_${packageInstance.id}_endDate"field="endDate" type="date"/>
                     </dd>
@@ -179,42 +180,42 @@
 
 
               <dl>
-                <dt>Org Links</dt>
+                <dt>${message(code: 'package.show.orglink')}</dt>
                 <dd><g:render template="orgLinks" 
                             contextPath="../templates"
                             model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',editmode:editable]}" /></dd>
               </dl>
 
              <dl>
-                <dt>List Status</dt>
+                <dt>${message(code: 'package.list_status')}</dt>
                 <dd>
                   <g:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RefdataCategory.PKG_LIST_STAT}"/>
                 </dd>
              </dl>
 
              <dl>
-                <dt>Breakable</dt>
+                <dt>${message(code: 'package.breakable')}</dt>
                 <dd>
                   <g:xEditableRefData owner="${packageInstance}" field="breakable" config="${RefdataCategory.PKG_BREAKABLE}"/>
                 </dd>
              </dl>
 
              <dl>
-                <dt>Consistent</dt>
+                <dt>${message(code: 'package.consistent')}</dt>
                 <dd>
                   <g:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>
                 </dd>
              </dl>
 
              <dl>
-                <dt>Fixed</dt>
+                <dt>${message(code: 'package.fixed')}</dt>
                 <dd>
                   <g:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
                 </dd>
              </dl>
 
               <dl>
-                <dt>Package Scope</dt>
+                <dt>${message(code: 'package.scope')}</dt>
                 <dd>
                   <g:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
                 </dd>
@@ -228,7 +229,7 @@
 
           <div class="well notes">
             <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
-              <h5>Add package to institutional subscription:</h5>
+              <h5>${message(code: 'package.show.addToSub')}:</h5>
               <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}">
                 <select name="subid">
                   <g:each in="${subscriptionList}" var="s">
@@ -240,7 +241,7 @@
               </g:form>
             </g:if>
             <g:else>
-              No subscriptions available to link to this package
+              ${message(code: 'package.show.no_subs')}
             </g:else>
           </div>
 
@@ -263,12 +264,12 @@
             Showing filtered list of ${num_tipp_rows} from a total of ${unfiltered_num_tipp_rows} TIPPs
           </g:else>
         </span>
-        Titles (${offset+1} to ${lasttipp}  of ${num_tipp_rows})
+        ${message(code: 'package.show.pagination', args: [(offset+1),lasttipp,num_tipp_rows])} (
         <g:if test="${params.mode=='advanced'}">Includes Expected or Expired titles, switch to the <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}">Basic</g:link> view to hide them
         </g:if>
         <g:else>Expected or Expired titles are not shown, use the <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}">Advanced</g:link> view to see them
         </g:else>
-              )
+          )
      </p>
 
         <div class="well">
@@ -425,7 +426,13 @@
                 <td style="white-space: nowrap;vertical-align:top;">
                   <g:each in="${t.title.ids}" var="id">
                     <g:if test="${id.identifier.ns.hide != true}">
-                      ${id.identifier.ns.ns}:${id.identifier.value}<br/>
+                      <g:if test="${id.identifier.ns.ns == 'originediturl'}">
+                        ${id.identifier.ns.ns}: <a href="${id.identifier.value}">Open Link</a>
+                      </g:if>
+                      <g:else>
+                        ${id.identifier.ns.ns}:${id.identifier.value}
+                      </g:else>
+                      <br/>
                     </g:if>
                   </g:each>
                 </td>

@@ -32,7 +32,7 @@
 
     <g:if test="${pendingChanges?.size() > 0}">
       <div class="container alert-warn">
-        <h6>Packages with pending changes</h6>
+        <h6>${message(code:'datamanager.pending.label')}</h6>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -45,8 +45,8 @@
               <tr>
                 <td><g:link controller="packageDetails" action="show" id="${pc.pkg.id}">${pc.pkg.name}</g:link> <br/>${pc.desc}</td>
                 <td>
-                  <g:link controller="pendingChange" action="accept" id="${pc.id}" class="btn btn-success"><i class="icon-white icon-ok"></i>Accept</g:link>
-                  <g:link controller="pendingChange" action="reject" id="${pc.id}" class="btn btn-danger"><i class="icon-white icon-remove"></i>Reject</g:link>
+                  <g:link controller="pendingChange" action="accept" id="${pc.id}" class="btn btn-success"><i class="icon-white icon-ok"></i>${message(code:'datamanager.accept.label')}</g:link>
+                  <g:link controller="pendingChange" action="reject" id="${pc.id}" class="btn btn-danger"><i class="icon-white icon-remove"></i>${message(code:'datamanager.reject.label')}</g:link>
                 </td>
               </tr>
             </g:each>

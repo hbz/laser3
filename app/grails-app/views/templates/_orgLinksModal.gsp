@@ -3,7 +3,7 @@
     <g:form id="create_org_role_link" url="[controller:'ajax',action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">×</button>
-            <h3>Add Org Link</h3>
+            <h3>${message(code:'template.orgLinksModal')}</h3>
         </div>
 
         <input type="hidden" name="parent" value="${parent}"/>
@@ -11,7 +11,7 @@
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
         <div class="modal-body">
             <dl>
-                <dt><label class="control-label">Orgs</label></dt>
+                <dt><label class="control-label">${message(code:'template.orgLinksModal.label')}</label></dt>
                 <dd>
                     <table id="org_role_tab" class="table table-bordered">
                         <thead>
@@ -23,7 +23,7 @@
             </dl>
 
             <dl>         
-                <dt><label class="control-label">Role</label></dt>
+                <dt><label class="control-label">${message(code:'template.orgLinksModal.role')}</label></dt>
                 <dd>    
                 <g:if test="${linkType}">
                     <g:select name="orm_orgRole"
@@ -45,8 +45,8 @@
         </div>
 
         <div class="modal-footer">
-            <input id="org_role_add_btn" type="submit" class="btn btn-primary" value="Add">
-            <a href="#" data-dismiss="modal" class="btn btn-primary">Close</a>
+            <input id="org_role_add_btn" type="submit" class="btn btn-primary" value="${message(code:'default.button.add.label')}" />
+            <a href="#" data-dismiss="modal" class="btn btn-primary">${message(code:'default.button.close.label')}</a>
         </div>
     </g:form>
 
@@ -58,8 +58,8 @@
     $(document).ready(function(){
 
         $('#add_org_head_row').empty();
-        $('#add_org_head_row').append("<td>Org Name</td>");
-        $('#add_org_head_row').append("<td>Select</td>");
+        $('#add_org_head_row').append("<td>${message(code:'template.orgLinksModal.name.label')}</td>");
+        $('#add_org_head_row').append("<td>${message(code:'template.orgLinksModal.select')}</td>");
 
         oOrTable = $('#org_role_tab').dataTable( {
             'bAutoWidth': true,
@@ -89,7 +89,7 @@
     function validateAddOrgRole() {
       if ( $('#orm_orgRole').val() == '' ) {
         // alert('hello "'+ $('#orm_orgRole').val()+'"'); 
-        return confirm('No role specified. Are you sure you want to link an Organisation without a role?');
+        return confirm(${message(code:'template.orgLinksModal.warn')});
       }
 
       return true;

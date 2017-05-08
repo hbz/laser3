@@ -64,6 +64,7 @@
                     <option value="es">Español</option>
                     <option value="fr">Français</option>
                     <option value="it">Italiano</option>
+                    <option value="de">Deutsch</option>
                     <option value="ja">日本人</option>
                     <option value="zn-CH">中国的</option>
                     <option value="en_US">US English</option>

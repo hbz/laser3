@@ -2,11 +2,9 @@ package com.k_int.kbplus
 
 import java.util.Date
 import java.util.List
-
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.LogFactory
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Sort
-
 import groovy.util.logging.*
 
 @Log4j
@@ -59,7 +57,7 @@ class Person {
     String toString() {
         last_name + ', ' + first_name + ' ' + middle_name + ' (' + id + ')'
     }
-        
+    
     // TODO implement existing check (lookup)
     // TODO implement responsibilityType
     static def lookupOrCreate(firstName, middleName, lastName, gender, owner, isPublic, org, functionType) {
@@ -147,7 +145,6 @@ class Person {
             }
             LogFactory.getLog(this).debug(info)
         }
-        
         resultPerson      
     }
     

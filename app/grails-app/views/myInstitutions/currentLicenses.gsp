@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Current Licences</title>
+    <title>KB+ ${message(code:'licence.current', default:'Current Licences')}</title>
   </head>
   <body>
 
@@ -11,13 +11,13 @@
             <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
            <li> <g:link controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}">${institution.name} ${message(code:'licence.current')}</g:link> </li>
            <g:if test="${is_admin}">
-              <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+              <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
           </g:if>
        <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>&nbsp;
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li>
-              <g:link action="currentLicenses" params="${params+[format:'csv']}">CSV Export</g:link>
+              <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
             </li>
             <g:each in="${transforms}" var="transkey,transval">
                 <li><g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link></li>
@@ -40,7 +40,7 @@
     </g:if>
 
     <div class="container">
-      <h1>${institution?.name} - Licences</h1>
+      <h1>${institution?.name} - ${message(code:'licence.plural', default:'Licences')}</h1>
 
      <ul class="nav nav-pills">
        <li class="active"><g:link controller="myInstitutions" 
@@ -50,7 +50,7 @@
 
           <li><g:link controller="myInstitutions" 
                                   action="addLicense" 
-                                  params="${[shortcode:params.shortcode]}">Copy from Template</g:link></li>
+                                  params="${[shortcode:params.shortcode]}">${message(code:'licence.copy', default:'Copy from Template')}</g:link></li>
         <g:if test="${is_admin}">
           <li><g:link controller="myInstitutions" 
                                      action="cleanLicense" 
@@ -66,17 +66,19 @@
               <div class="well">
 
                 <form class="form-inline">
-                    <label>Valid On:</label> 
+                  <div>
+                    <label>${message(code:'licence.valid_on', default:'Valid On')}:</label>
                     <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">
-                    <label>Search by Reference:</label>
-                    <input type="text" name="keyword-search" placeholder="enter search term..." value="${params['keyword-search']?:''}" />
-                    <br/>
+                    <label>${message(code:'licence.search.by_ref', default:'Search by Reference')}:</label>
+                    <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
+                  </div>
+                  <div style="margin-top:10px;">
                     <label>${message(code:'licence.property.search')}:</label>
-                      <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
-                      <input id="selectVal" type="text" name="propertyFilter" placeholder="property value..." value="${params.propertyFilter?:''}" />
-                   
-                <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
-                <input type="submit" class="btn btn-primary" value="Search" />
+                    <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
+                    <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'licence.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
+                    <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
+                    <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
+                  </div>
                 </form>
               </div>
             </div>
@@ -85,7 +87,7 @@
 
       <div class="container">
           <div class="well licence-options">
-              <input type="submit" name="delete-licence" value="Delete Selected" class="btn btn-danger delete-licence" />
+              <input type="submit" name="delete-licence" value="${message(code:'licence.delete_selected.label', default:'Delete Selected')}" class="btn btn-danger delete-licence" />
           </div>
       </div>
 
@@ -93,16 +95,16 @@
 
         <div class="container licence-results">
         <g:if test="${licenseCount && licenseCount>0}">
-          <span>Showing ${licenseCount} licenses</span>
+          <span>${message(code:'licence.current.showing', args:[licenseCount])}</span>
         </g:if>
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'licence.name')}" />
-                <th>Licensor</th>
-                <g:sortableColumn params="${params}" property="startDate" title="Start Date" />
-                <g:sortableColumn params="${params}" property="endDate" title="End Date" />
-                <th>Action</th>
+                <th>${message(code:'licence.licensor.label', default:'Licensor')}</th>
+                <g:sortableColumn params="${params}" property="startDate" title="${message(code:'licence.start_date', default:'Start Date')}" />
+                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'licence.end_date', default:'End Date')}" />
+                <th>${message(code:'default.actions.label', default:'Action')}</th>
               </tr>
             </thead>
             <tbody>
@@ -129,7 +131,7 @@
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.endDate}"/></td>
                   <td>
                     <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">Copy</g:link>
-                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('Are you sure you want to delete ${l.reference?:'** No licence reference ** '}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-licence':'Y']}" class="btn btn-danger">Delete</g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'licence.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No Licence Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-licence':'Y']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                   </td>
                 </tr>
               </g:each>
@@ -138,7 +140,7 @@
         </div>
        
         <div class="pagination" style="text-align:center">
-          <bootstrap:paginate action="currentLicenses" controller="myInstitutions" params="${params}" next="Next" prev="Prev" max="${max}" total="${licenseCount}" />
+          <bootstrap:paginate action="currentLicenses" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
         </div>
 
     <r:script type="text/javascript">
@@ -182,7 +184,7 @@
             });
           }else{
             //If we dont have RefdataValues,create a simple text input
-            $('#selectVal').replaceWith('<input id="selectVal" type="text" name="propertyFilter" placeholder="property value" />')
+            $('#selectVal').replaceWith('<input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'licence.search.property.ph', default:'property value')}" />')
           }
         }
 

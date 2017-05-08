@@ -37,15 +37,6 @@
      'UserRole': 'ROLE_USER'
     }];
   </script>
-<!-- Google Tag Manager - Placed here as instructed by MB 20/01/2016, made aware of possible negative impacts -->
-<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-5BMV57"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-5BMV57');</script>
-<!-- End Google Tag Manager -->
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
@@ -167,48 +158,48 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 <ul class="nav">
                 <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
                    <li class="dropdown">
-                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Data Managers <b class="caret"></b> </a>
+                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">${message(code:'menu.datamanager')}<b class="caret"></b> </a>
                      <ul class="dropdown-menu">
                        <li <%= ( ( 'dataManager'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="dataManager" action="index">Data Manager Dashboard</g:link></li>
+                         <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link></li>
                        <li class="divider"></li>
                        <li <%= ( ( 'announcement'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="announcement" action="index">Announcements</g:link></li>
+                         <g:link controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link></li>
                        <li <%= ( ( 'packageDetails'== controllerName ) && ( 'list'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="packageDetails" action="list">Search Packages</g:link></li>
+                         <g:link controller="packageDetails" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link></li>
                        <li <%= ( ( 'platform'== controllerName ) && ( 'list'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="platform" action="list">Search Platforms</g:link></li>
+                         <g:link controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link></li>
                        <li class="divider"></li>
                          <li <%= ( ( 'upload'== controllerName ) && ( 'reviewPackage'==actionName ) ) ? ' class="active"' : '' %>>
-                             <g:link controller="upload" action="reviewPackage">Upload new Package</g:link></li>
+                             <g:link controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link></li>
                          <li <%= ( ( 'licenseImport'== controllerName ) && ( 'doImport'==actionName ) ) ? ' class="active"' : '' %>>
                              <g:link controller="licenseImport" action="doImport">${message(code:'onix.import.licence')}</g:link></li>
                        <li class="divider"></li>
                        <li <%= ( ( 'titleDetails'== controllerName ) && ( 'findTitleMatches'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="titleDetails" action="findTitleMatches">New Title</g:link></li>
+                         <g:link controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link></li>
                        <li <%= ( ( 'licenseDetails'== controllerName ) && ( 'create'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="licenseDetails" action="create">${message(code:'licence.new')}</g:link></li>
                        <li <%= ( ( 'platform'== controllerName ) && ( 'create'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="platform" action="create">New Platform</g:link></li>
+                         <g:link controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link></li>
                        <li class="divider"></li>
 
                         <li<%= ( ( 'subscriptionDetails'== controllerName ) && ( 'compare'==actionName ) ) ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
-                                           action="compare">Compare Subscriptions</g:link></li>
+                                           action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link></li>
 
                        <li <%= ( ( 'subscriptionImport'== controllerName ) && ( 'generateImportWorksheet'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="subscriptionImport" action="generateImportWorksheet">Generate Subscription Taken Worksheet</g:link></li>
+                         <g:link controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link></li>
                        <li <%= ( ( 'subscriptionImport'== controllerName ) && ( 'importSubscriptionWorksheet'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">Import Subscription Taken Worksheet</g:link></li>
+                         <g:link controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link></li>
                        <li <%= ( ( 'dataManager'== controllerName ) && ( 'changeLog'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="dataManager" action="changeLog">Data Manager Change Log</g:link></li>
+                         <g:link controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link></li>
                        <li class="divider"></li>
                        <li <%= ( ( 'globalDataSync'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="globalDataSync" action="index">Global Data Download [Packages]</g:link></li>
+                         <g:link controller="globalDataSync" action="index">${message(code:'menu.datamanager.global_data_sync')}</g:link></li>
                        <li class="divider"></li>
                        <li <%= ( ( 'jasperReports'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
-                           <g:link controller="jasperReports" action="index">Reports</g:link></li>
+                           <g:link controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link></li>
                        <li <%= ( ( 'titleDetails'== controllerName ) && ( 'dmIndex'==actionName ) ) ? ' class="active"' : '' %>>
-                           <g:link controller="titleDetails" action="dmIndex">Titles</g:link></li>
+                           <g:link controller="titleDetails" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link></li>
                      </ul>
                    </li>
                 </sec:ifAnyGranted>
@@ -389,15 +380,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">${user.displayName} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                       <li <%= ( ( 'profile'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="profile" action="index">Profile</g:link></li>
-                      <li><g:link controller="logout">Logout</g:link></li>
+                         <g:link controller="profile" action="index">${message(code:'menu.user.profile')}</g:link></li>
+                      <li><g:link controller="logout">${message(code:'menu.user.logout')}</g:link></li>
 
                     </ul>
                   </li>
                 </g:if>
               </sec:ifLoggedIn>
               <sec:ifNotLoggedIn>
-                <li><g:link controller="myInstitutions" action="dashboard">Login</g:link></li>
+                <li><g:link controller="myInstitutions" action="dashboard">${message(code:'menu.user.login')}</g:link></li>
               </sec:ifNotLoggedIn>
             </ul>
         </div>
@@ -419,66 +410,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <g:layoutBody/>
 
   <div id="Footer">
-      <div class="navbar navbar-footer">
-          <div class="navbar-inner">
-              <div class="container">
-                  <div>
-                      <ul class="footer-sublinks nav">
-                          <li><a href=${createLink(uri: '/terms-and-conditions')}>Terms & Conditions</a></li>
-                          <li><a href=${createLink(uri: '/privacy-policy')}>Privacy Policy</a></li>
-                          <li><a href=${createLink(uri: '/freedom-of-information-policy')}>Freedom of Information Policy</a></li>
-                      </ul>
-                  </div>
-                  <g:set var="appVersion" value="${grailsApplication.metadata['app.version']}"/>
-                  <div class="pull-right">
-                      <div class="nav-collapse">
-                          <ul class="nav">
-                              <li class="dropdown">
-                                  <a href="#"
-                                     class="dropdown-toggle"
-                                     data-toggle="dropdown">
-                                      Tools
-                                      <b class="caret"></b>
-                                  </a>
-                                  <ul class="dropdown-menu">
-                                      <li><a href="http://www.kbplus.ac.uk/kbplus/home/index">KB+</a></li>
-                                      <li><a href="http://www.kbplus.ac.uk/demo/home/index">KB+ Demo</a></li>
-                                      <li><a href="http://www.kbplus.ac.uk/test/home/index">KB+ Sandpit</a></li>
-                                  </ul>
-                              </li>
-                              <li><a href="https://github.com/k-int/KBPlus/releases/tag/${appVersion}">
-                              v${appVersion}</a></li>
-                          </ul>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
 
       <div class="clearfix"></div>
 
       <div class="footer-links container">
           <div class="row">
-              <div class="pull-left">
-                  <a href="http://www.jisc-collections.ac.uk/"><div class="sprite sprite-jisc_collections_logo">JISC Collections</div></a>
-              </div>
-
-              <div class="pull-right">
-                  <a href="http://www.kbplus.ac.uk"><div class="sprite sprite-kbplus_logo">Knowledge Base Plus</div></a>
-              </div>
 
           </div>
       </div>
   </div>
 
   <tmpl:/layouts/analytics />
-
-  <!-- Start of kbplus Zendesk Widget script -->
-  <r:script type="text/javascript">
-/*<![CDATA[*/window.zEmbed||function(e,t){var n,o,d,i,s,a=[],r=document.createElement("iframe");window.zEmbed=function(){a.push(arguments)},window.zE=window.zE||window.zEmbed,r.src="javascript:false",r.title="",r.role="presentation",(r.frameElement||r).style.cssText="display: none",d=document.getElementsByTagName("script"),d=d[d.length-1],d.parentNode.insertBefore(r,d),i=r.contentWindow,s=i.document;try{o=s}catch(c){n=document.domain,r.src='javascript:var d=document.open();d.domain="'+n+'";void(0);',o=s}o.open()._l=function(){var o=this.createElement("script");n&&(this.domain=n),o.id="js-iframe-async",o.src=e,this.t=+new Date,this.zendeskHost=t,this.zEQueue=a,this.body.appendChild(o)},o.write('<body onload="document._l();">'),o.close()}("https://assets.zendesk.com/embeddable_framework/main.js","kbplus.zendesk.com");
-/*]]>*/
-  </r:script>
-  <!-- End of kbplus Zendesk Widget script -->
 
   <r:layoutResources/>
 

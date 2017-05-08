@@ -26,24 +26,24 @@
 			<div class="span8">
 				<g:form id="compare" name="compare" action="matrix" method="post">
 					<div>
-						<label for="addIdentifierSelect">Search licence for comparison:</label>
+						<label for="addIdentifierSelect">${message(code:'onixplLicence.compare.add_id.label', default:'Search licence for comparison:')}</label>
 
 		                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
-		                <button type="button"class="btn btn-success" id="addToList" >Add</button>
+		                <button type="button" class="btn btn-success" id="addToList" style="margin-top:10px">${message(code:'default.button.add.label', default:'Add')}</button>
 					</div>
 					
-					<label for="selectedLicences">Licences selected for comparison:</label>
+					<label for="selectedLicences">${message(code:'onixplLicence.compare.selected.label', default:'Licences selected for comparison:')}</label>
 					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicences" name="selectedLicences" class="compare-license" from="${[]}" multiple="true" />
 
 
 					<div>
-						<label for="section">Compare section:</label>
+						<label for="section">${message(code:'onixplLicence.compare.section.label', default:'Compare section:')}</label>
 						<g:treeSelect name="sections" id="section" class="compare-section"
 							options="${termList}" selected="true" multiple="true" />
 					</div>
 
 					<div>
-					  <input id="submitButton" disabled='true' type="submit" value="Compare"  name="Compare" class="btn btn-primary" />
+					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="btn btn-primary" />
 					</div>
 				</g:form>
 			</div>
@@ -75,7 +75,7 @@
 
 	      $("#addIdentifierSelect").select2({
   	        width: '90%',
-	        placeholder: "Search for a licence...",
+	        placeholder: "${message(code:'onixplLicence.compare.search.ph', default:'Search for a licence...')}",
 	        minimumInputLength: 1,
 	        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
 	          url: "<g:createLink controller='ajax' action='lookup'/>",

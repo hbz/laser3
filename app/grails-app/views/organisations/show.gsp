@@ -50,16 +50,16 @@
 						</g:if>
 					</g:each>
 				</g:if>
-				
+
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
               <dd>
                 <g:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
               </dd>
-        
-            <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
-            
-              <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
-        
+            <g:if test="${editable}">
+              <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
+
+                <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
+            </g:if>
             <dt><g:message code="org.sector.label" default="Sector" /></dt>
             <dd>
             	<g:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
@@ -76,7 +76,7 @@
             </dd>
 
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-            Select an existing identifer using the typedown, or create a new one by entering namespace:value (EG eISSN:2190-9180) then clicking that value in the dropdown to confirm.
+              ${message(code:'identifier.select.text')}
             <g:if test="${orgInstance?.ids}">
               <g:each in="${orgInstance.ids}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link></dd>
@@ -89,7 +89,7 @@
               <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
               <input type="hidden" name="__recip" value="org"/>
               <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-              <input type="submit" value="Add Identifier..." class="btn btn-primary btn-small"/>
+              <input type="submit" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small"/>
             </g:form>
           </g:if>
 
@@ -122,17 +122,17 @@
             <dd><ul>
               <g:each in="${orgInstance.links}" var="i">
                 <li>
-                  <g:if test="${i.pkg}"><g:link controller="packageDetails" action="show" id="${i.pkg.id}">Package: ${i.pkg.name} (${i.pkg?.packageStatus?.value})</g:link></g:if>
-                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">Subscription: ${i.sub.name} (${i.sub.status?.value})</g:link></g:if>
-                  <g:if test="${i.lic}">Licence: ${i.lic.id} (${i.lic.status?.value})</g:if>
-                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">Title: ${i.title.title} (${i.title.status?.value})</g:link></g:if>
+                  <g:if test="${i.pkg}"><g:link controller="packageDetails" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.value})</g:link></g:if>
+                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.value})</g:link></g:if>
+                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${i.lic.status?.value})</g:if>
+                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.value})</g:link></g:if>
                   (${i.roleType?.value}) </li>
               </g:each>
             </ui></dd>
           </g:if>
         
           <g:if test="${orgInstance?.impId}">
-            <dt><g:message code="org.impId.label" default="Imp Id" /></dt>
+            <dt><g:message code="org.impId.label" default="Import ID" /></dt>
             
               <dd><g:fieldValue bean="${orgInstance}" field="impId"/></dd>
             
@@ -149,7 +149,7 @@
     $(function(){
       <g:if test="${editable}">
       $("#addIdentifierSelect").select2({
-        placeholder: "Search for an identifier...",
+        placeholder: "${message(code:'identifier.select.ph')}",
         minimumInputLength: 1,
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",

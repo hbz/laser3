@@ -50,25 +50,25 @@ class TitleInstance {
 
   static mapping = {
            id column:'ti_id'
-        title column:'ti_title'
-    normTitle column:'ti_norm_title'
-     keyTitle column:'ti_key_title'
+        title column:'ti_title', type:'text'
+    normTitle column:'ti_norm_title', type:'text'
+     keyTitle column:'ti_key_title', type:'text'
       version column:'ti_version'
         impId column:'ti_imp_id', index:'ti_imp_id_idx'
        status column:'ti_status_rv_fk'
          type column:'ti_type_rv_fk'
         tipps sort:'startDate', order: 'asc'
-    sortTitle column:'sort_title'
+    sortTitle column:'sort_title', type:'text'
 
   }
 
   static constraints = {
     status(nullable:true, blank:false);
     type(nullable:true, blank:false);
-    title(nullable:true, blank:false,maxSize:1024);
-    normTitle(nullable:true, blank:false,maxSize:1024);
-    sortTitle(nullable:true, blank:false,maxSize:1024);
-    keyTitle(nullable:true, blank:false,maxSize:1024);
+    title(nullable:true, blank:false,maxSize:2048);
+    normTitle(nullable:true, blank:false,maxSize:2048);
+    sortTitle(nullable:true, blank:false,maxSize:2048);
+    keyTitle(nullable:true, blank:false,maxSize:2048);
   }
 
   String getIdentifierValue(idtype) {
@@ -202,7 +202,7 @@ class TitleInstance {
 
       def io = IdentifierOccurrence.findByIdentifier(id)
       if ( io && io.ti ) {
-        static_logger.debug("located existing titie: ${io.ti.id}");
+        static_logger.debug("located existing title: ${io.ti.id}");
         result = io.ti;
       }
       else {

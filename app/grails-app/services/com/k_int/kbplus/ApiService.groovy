@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
-
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
@@ -32,7 +31,7 @@ class ApiService {
 
             def identifiers = [:]
             def org         = null
-            
+
             def title = normString(inst.title.text())
             def subscriperGroup = inst.subscriper_group ? normString(inst.subscriper_group.text()) : ''
             
