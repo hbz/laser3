@@ -130,14 +130,14 @@ class ApiService {
                     
                     // create if no match found
                     if(firstName != '' && lastName != ''){
-                        person = Person.lookupOrCreate(
+                        person = Person.lookupOrCreateWithPersonRole(
                             firstName,
                             middleName,
                             lastName,
                             null /* gender */,
                             owner,
                             isPublic,
-                            org,
+                            org, /* needed for person_role */
                             RefdataValue.findByValue("General contact person")
                             )
                             
@@ -153,7 +153,7 @@ class ApiService {
                                 RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Mail'),
                                 RefdataValue.findByValue("Job-related"),
                                 person,
-                                org
+                                null /* person contact only */
                                 )
                         }
                         if(phoneText != ''){
@@ -162,7 +162,7 @@ class ApiService {
                                 RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Phone'),
                                 RefdataValue.findByValue("Job-related"),
                                 person,
-                                org
+                                null /* person contact only */
                                 )
                         }
                         if(faxText != ''){
@@ -171,7 +171,7 @@ class ApiService {
                                 RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Fax'),
                                 RefdataValue.findByValue("Job-related"),
                                 person,
-                                org
+                                null /* person contact only */
                                 )
                         }
                     }     

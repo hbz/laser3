@@ -19,10 +19,8 @@ class Address {
     String state
     String country
     RefdataValue type   // RefdataCategory 'AddressType'
-    Person prs          // person related contact
-    Org    org          // org related contact
-                        // if prs AND org set,
-                        // this address belongs to a person in context of an org
+    Person prs          // person related contact; exclusive with org
+    Org    org          // org related contact; exclusive with prs
     
     static mapping = {
         id       column:'adr_id'

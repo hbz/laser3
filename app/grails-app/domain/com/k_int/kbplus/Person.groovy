@@ -60,7 +60,7 @@ class Person {
     
     // TODO implement existing check (lookup)
     // TODO implement responsibilityType
-    static def lookupOrCreate(firstName, middleName, lastName, gender, owner, isPublic, org, functionType) {
+    static def lookupOrCreateWithPersonRole(firstName, middleName, lastName, gender, owner, isPublic, org, functionType) {
         
         def info = "saving new person: ${firstName} ${middleName} ${lastName}"
         def resultPerson = null

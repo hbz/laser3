@@ -11,10 +11,8 @@ class Contact {
     String       content
     RefdataValue contentType    // RefdataCategory 'ContactContentType'
     RefdataValue type           // RefdataCategory 'ContactType'
-    Person       prs            // person related contact
-    Org          org            // org related contact
-                                // if prs AND org set,
-                                // this contact belongs to a person in context of an org
+    Person       prs            // person related contact; exclusive with org
+    Org          org            // org related contact; exclusive with prs
     
     static mapping = {
         id          column:'ct_id'
