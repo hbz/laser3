@@ -17,10 +17,10 @@
         <li><g:link controller="packageDetails" action="compare">${message(code:'package.compare.compare', default:'Compare')}</g:link></li>
 
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'package.compare.exports', default:'Exports')}<b class="caret"></b></a>
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
 
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'package.compare.exports.csv', default:'CSV Export')}</g:link></li>
+            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
             
           </ul>
         </li>
@@ -87,7 +87,7 @@
 			</tbody>
 		</table>
 
-		<input type="submit" class="btn btn-primary" value="${message(code:'package.compare.submit.label', default:'Compare')}">
+		<input type="submit" class="btn btn-primary" value="${message(code:'default.button.compare.label', default:'Compare')}">
 	</g:form>
 </div>
 
@@ -99,24 +99,24 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th>${message(code:'package.compare.overview.value', default:'Value')}</th>
+				<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
 				<th>${pkgInsts.get(0).name}</th>
 				<th>${pkgInsts.get(1).name}</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td>${message(code:'package.dateCreated.label', default:'Date Created')}</td>
+				<td>${message(code:'default.dateCreated.label', default:'Date Created')}</td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).dateCreated}"/></td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).dateCreated}"/></td>
 			</tr>
 			<tr>
-				<td>${message(code:'package.show.start_date', default:'Start Date')}</td>
+				<td>${message(code:'default.startDate.label', default:'Start Date')}</td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).startDate}"/></td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).startDate}"/></td>
 			</tr>
 			<tr>
-				<td>${message(code:'package.show.end_date', default:'End Date')}</td>
+				<td>${message(code:'default.endDate.label', default:'End Date')}</td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).endDate}"/></td>
 				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).endDate}"/></td>
 			</tr>
@@ -174,9 +174,9 @@
 <table class="table table-bordered">
 	<thead>
 		<tr> 
-			<td> ${message(code:'package.show.title.title', default:'Title')} </td>
-			<td> ${pkgInsts.get(0).name} on ${pkgDates.get(0)} </td>
-			<td> ${pkgInsts.get(1).name} on ${pkgDates.get(1)} </td>
+			<td> ${message(code:'title.label', default:'Title')} </td>
+			<td> ${pkgInsts.get(0).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(0)} </td>
+			<td> ${pkgInsts.get(1).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(1)} </td>
 		</tr>
 	</thead>
 	<tbody>
@@ -195,7 +195,7 @@
 			
 			<td>
 			<b><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></b> 
-			<i onclick="showMore('${currentTitle.id}')"class="icon-info-sign"></i>
+			<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
 			<g:each in="${currentTitle.ids}" var="id">
                 <br>${id.identifier.ns.ns}:${id.identifier.value}

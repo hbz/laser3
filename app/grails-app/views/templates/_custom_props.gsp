@@ -24,7 +24,8 @@
     <input type="hidden" name="ownerId" value="${ownobj.id}"/>
     <input type="hidden" name="editable" value="${editable}"/>
     <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-    <input type="submit" value="Add Property" class="btn btn-primary btn-small"/>
+    <g:set var="local_prop" value="${message(code:'default.property.label')}"/>
+    <input type="submit" value="${message(code:'default.add.label', args:[local_prop], default:'Add Property')}" class="btn btn-primary btn-small"/>
 </g:formRemote>
 </g:if>
 
@@ -32,10 +33,10 @@
 <table id="custom_props_table" class="table table-bordered">
     <thead>
     <tr>
-        <th>Property</th>
-        <th>Value</th>
-        <th>Notes</th>
-        <th>Delete</th>
+        <th>${message(code:'default.property.label', default:'Property')}</th>
+        <th>${message(code:'default.value.label', default:'Value')}</th>
+        <th>${message(code:'default.notes.label', default:'Notes')}</th>
+        <th>${message(code:'default.actions.label', default:'Actions')}</th>
     </tr>
     </thead>
     <tbody>
@@ -63,7 +64,7 @@
             <g:remoteLink controller="ajax" action="delCustomProperty" 
                 before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                 params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                onComplete="runCustomPropsJS('${createLink(controller:'ajax', action:'lookup')}')" update="custom_props_div">Delete</g:remoteLink>
+                onComplete="runCustomPropsJS('${createLink(controller:'ajax', action:'lookup')}')" update="custom_props_div">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
             </g:if>
         </td>
         </tr>

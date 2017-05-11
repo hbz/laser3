@@ -65,6 +65,7 @@ class InplaceTagLib {
     if ( editable == true ) {
       def oid = "${attrs.owner.class.name}:${attrs.owner.id}"
       def id = attrs.id ?: "${oid}:${attrs.field}"
+      def default_empty = message(code:'default.button.edit.label')
 
       out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class?:''}\""
       out << " data-type=\"${attrs.type?:'textarea'}\" data-pk=\"${oid}\""
@@ -83,6 +84,9 @@ class InplaceTagLib {
 
       if (attrs?.emptytext)
           out << " data-emptytext=\"${attrs.emptytext}\""
+      else {
+          out << " data-emptytext=\"${default_empty}\""
+      }
 
       out << " data-url=\"${data_link}\""
       out << ">"
@@ -137,7 +141,8 @@ class InplaceTagLib {
         def data_link = createLink(controller:dataController, action: dataAction, params:[id:attrs.config,format:'json',oid:oid]).encodeAsHTML()
         def update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
         def id = attrs.id ?: "${oid}:${attrs.field}"
-        def emptyText = attrs?.emptytext? " data-emptytext=\"${attrs.emptytext}\"" : ''
+        def default_empty = message(code:'default.button.edit.label')
+        def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
         out << "<span>"
 

@@ -101,7 +101,7 @@
                                            params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.ttls')} </g:link></li> 
                                <li><g:link controller="myInstitutions" 
                                        		action="addressbook" 
-                                       		params="${[shortcode:org.shortcode]}">Addressbook</g:link></li>
+                                       		params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
                                <li><g:link controller="subscriptionDetails"
                                            action="compare"
                                            params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_sub')} </g:link></li>
