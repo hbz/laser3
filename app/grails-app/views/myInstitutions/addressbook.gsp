@@ -53,7 +53,7 @@ import="com.k_int.kbplus.RefdataCategory"
     <div class="container">
 		
 		<div> 
-			<g:link controller="person" action="create" params="['owner.id': institution?.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No').id ]">
+			<g:link controller="person" action="create" params="['tenant.id': institution?.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No').id ]">
 				${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
 			</g:link>	
 		</div>

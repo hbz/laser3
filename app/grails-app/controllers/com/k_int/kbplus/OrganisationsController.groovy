@@ -308,7 +308,7 @@ class OrganisationsController {
       def visiblePersons = []
       orgInstance?.prsLinks.each { pl ->
           if(pl.prs?.isPublic?.value == 'No'){
-              if(pl.prs?.owner?.id && membershipOrgIds.contains(pl.prs?.owner?.id)){
+              if(pl.prs?.tenant?.id && membershipOrgIds.contains(pl.prs?.tenant?.id)){
                   if(!visiblePersons.contains(pl.prs)){
                       visiblePersons << pl.prs
                   }

@@ -17,14 +17,14 @@ class ApiService {
         def rdcYN = RefdataCategory.findByDesc('YN')
         def rdcContactContentType = RefdataCategory.findByDesc('ContactContentType')
 
-        def overrideOwner
+        def overrideTenant
         def overrideIsPublic
         
-        if(xml.override?.owner?.text()){
-            overrideOwner    = Org.findByShortcode(xml.override.owner.text())
+        if(xml.override?.tenant?.text()){
+            overrideTenant   = Org.findByShortcode(xml.override.tenant.text())
             overrideIsPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'No')
             
-            log.info("OVERRIDING OWNER: ${overrideOwner}")
+            log.info("OVERRIDING TENANT: ${overrideTenant}")
         }
         
         xml.institution.each{ inst ->
@@ -103,11 +103,11 @@ class ApiService {
                 def person
                 
                 // overrides
-                def owner = org
+                def tenant   = org
                 def isPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'Yes')
                 
-                if(overrideOwner){
-                    owner = overrideOwner
+                if(overrideTenant){
+                    tenant = overrideTenant
                 }
                 if(overrideIsPublic){
                     isPublic = overrideIsPublic
@@ -135,7 +135,7 @@ class ApiService {
                             middleName,
                             lastName,
                             null /* gender */,
-                            owner,
+                            tenant,
                             isPublic,
                             org, /* needed for person_role */
                             RefdataValue.findByValue("General contact person")
