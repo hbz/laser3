@@ -1,4 +1,4 @@
-package com.k_int.custprops
+package com.k_int.properties
 
 class ObjectProperty {
 

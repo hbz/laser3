@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import javax.persistence.Transient
 import java.text.Normalizer
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
 class License implements Comparable<License>{

@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class AjaxController {
@@ -535,7 +535,7 @@ class AjaxController {
       flash.error = error
       redirect(controller:"propertyDefinition",action:"create")
     }else{
-      render(template: "/templates/custom_props", model:[ownobj:owner, newProp:newProp, error:error])        
+      render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error])        
     }
   }
 
@@ -560,9 +560,9 @@ class AjaxController {
 
     owner.refresh()
     request.setAttribute("editable",params.editable == "true")
-    render(template: "/templates/custom_props",model:[ownobj:owner,newProp:newProp,error:error ])  
-  }  
-
+    render(template: "/templates/properties/custom",model:[ownobj:owner,newProp:newProp,error:error ])  
+  }
+  
   def delOrgRole() {
     // log.debug("delOrgRole ${params}");
     def or = OrgRole.get(params.id)
@@ -585,7 +585,7 @@ class AjaxController {
         log.debug("Deleted Custom Property: "+property.type.name)
       }
       request.setAttribute("editable", params.editable == "true")
-      render(template: "/templates/custom_props",model:[ownobj:owner, newProp:property])
+      render(template: "/templates/properties/custom",model:[ownobj:owner, newProp:property])
   }
 
   def coreExtend(){

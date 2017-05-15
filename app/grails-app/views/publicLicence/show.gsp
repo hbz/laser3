@@ -40,7 +40,7 @@
             <div class="row">
  <h6>${message(code:'licence.properties')}</h6>
               <div id="custom_props_div" class="span12">
-                  <g:render template="/templates/custom_props" model="${[ ownobj:license ]}"/>
+                  <g:render template="/templates/properties/custom" model="${[ ownobj:license ]}"/>
               </div>
             <br/>
               <div class="span8">

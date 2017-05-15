@@ -1,7 +1,7 @@
 import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 

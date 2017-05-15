@@ -1,4 +1,4 @@
-package com.k_int.custprops
+package com.k_int.properties
 
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.CustomProperty
@@ -25,10 +25,10 @@ class PropertyDefinition {
 
     //Map keys can change and they wont affect any of the functionality
     @Transient
-    static def validTypes = ["Number":Integer.toString(), 
-                             "Text":String.toString(), 
-                             "Refdata":RefdataValue.toString(), 
-                             "Decimal":BigDecimal.toString()]
+    static def validTypes = ["Number":  Integer.toString(), 
+                             "Text":    String.toString(), 
+                             "Refdata": RefdataValue.toString(), 
+                             "Decimal": BigDecimal.toString()]
 
     static constraints = {
         name(nullable: false, blank: false, unique:true)

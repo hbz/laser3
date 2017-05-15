@@ -8,7 +8,7 @@ import groovy.xml.MarkupBuilder
 import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 
 class OrganisationsController {
 

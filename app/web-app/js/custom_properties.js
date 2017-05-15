@@ -45,7 +45,7 @@ function searchProp(ajaxurl){
                     q: term, // search term
                     desc:$("#customPropSelect").attr('desc'),
                     page_limit: 10,
-                    baseClass:'com.k_int.custprops.PropertyDefinition'
+                    baseClass:'com.k_int.properties.PropertyDefinition'
                 };
             },
             results: function (data, page) {
