@@ -78,13 +78,13 @@ import="com.k_int.kbplus.PersonRole"
 	</ul>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'owner', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
 	<label for="org">
-		<g:message code="person.owner.label" default="Owner (Permissions to edit this person and depending addresses and contacts)" />
+		<g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
 		<span class="required-indicator">*</span>		
 	</label>
-	<g:select id="owner" name="owner.id" from="${userMemberships}" 
-		optionKey="id" value="${personInstance?.owner?.id}" />
+	<g:select id="tenant" name="tenant.id" from="${userMemberships}" 
+		optionKey="id" value="${personInstance?.tenant?.id}" />
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">

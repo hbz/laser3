@@ -85,9 +85,9 @@
 				</dl>
 				
 				<dl class="debug-only">
-					<g:if test="${contactInstance?.prs?.owner}">
-						<dt><g:message code="person.owner.label" default="Owner (derived from Prs)" /></dt>
-						<dd><g:link controller="org" action="show" id="${contactInstance?.prs?.owner?.id}">${contactInstance?.prs?.owner?.encodeAsHTML()}</g:link></dd>
+					<g:if test="${contactInstance?.prs?.tenant}">
+						<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
 					</g:if>
 				</dl>
 				<dl class="debug-only">

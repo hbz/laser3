@@ -2530,7 +2530,7 @@ AND EXISTS (
         
         def visiblePersons = []
         
-        def prs = Person.findAll("from Person as P where P.owner = ${result.institution.id}")
+        def prs = Person.findAll("from Person as P where P.tenant = ${result.institution.id}")
         
         
         prs?.each { p ->

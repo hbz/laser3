@@ -80,9 +80,9 @@ class PersonController {
             addPersonRoles(personInstance)
             deletePersonRoles(personInstance)
             
-            // current owner must be present
-            if(personInstance.owner){
-                userMemberships << personInstance.owner 
+            // current tenant must be present
+            if(personInstance.tenant){
+                userMemberships << personInstance.tenant 
             }
             
 	        [personInstance: personInstance, userMemberships: userMemberships]
@@ -116,9 +116,9 @@ class PersonController {
             addPersonRoles(personInstance)
             deletePersonRoles(personInstance)
             
-            // current owner must be present
-            if(personInstance.owner){
-                userMemberships << personInstance.owner 
+            // current tenant must be present
+            if(personInstance.tenant){
+                userMemberships << personInstance.tenant 
             }
             
 			flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])

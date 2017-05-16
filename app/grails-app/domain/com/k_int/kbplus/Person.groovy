@@ -14,7 +14,7 @@ class Person {
     String       middle_name
     String       last_name
     RefdataValue gender     // RefdataCategory 'Gender'
-    Org          owner
+    Org          tenant
     RefdataValue isPublic   // RefdataCategory 'YN'
     
     static mapping = {
@@ -24,7 +24,7 @@ class Person {
         middle_name column:'prs_middle_name'
         last_name   column:'prs_last_name'
         gender      column:'prs_gender_rv_fk'
-        owner       column:'prs_owner_fk'
+        tenant      column:'prs_tenant_fk'
         isPublic    column:'prs_is_public_rv_fk'
     }
     
@@ -45,7 +45,7 @@ class Person {
         middle_name (nullable:true,  blank:false)
         last_name   (nullable:false, blank:false)
         gender      (nullable:true)
-        owner       (nullable:true)
+        tenant      (nullable:true)
         isPublic    (nullable:true)
     }
     
@@ -60,7 +60,7 @@ class Person {
     
     // TODO implement existing check (lookup)
     // TODO implement responsibilityType
-    static def lookupOrCreateWithPersonRole(firstName, middleName, lastName, gender, owner, isPublic, org, functionType) {
+    static def lookupOrCreateWithPersonRole(firstName, middleName, lastName, gender, tenant, isPublic, org, functionType) {
         
         def info = "saving new person: ${firstName} ${middleName} ${lastName}"
         def resultPerson = null
@@ -75,7 +75,7 @@ class Person {
             middle_name: middleName,
             last_name:   lastName,
             gender:      gender,
-            owner:       owner,
+            tenant:      tenant,
             isPublic:    isPublic, 
             ).sort({id: 'asc'})
             
@@ -89,7 +89,7 @@ class Person {
                 middle_name: middleName,
                 last_name:   lastName,
                 gender:      gender,
-                owner:       owner,
+                tenant:      tenant,
                 isPublic:    isPublic
                 )
                 

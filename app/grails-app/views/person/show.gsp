@@ -103,9 +103,9 @@
 					</g:if>
 				</dl>
 				<dl class="debug-only">
-					<g:if test="${personInstance?.owner}">
-						<dt><g:message code="person.owner.label" default="Owner" /></dt>
-						<dd><g:link controller="organisations" action="show" id="${personInstance.owner?.id}">${personInstance.owner?.encodeAsHTML()}</g:link></dd>	
+					<g:if test="${personInstance?.tenant}">
+						<dt><g:message code="person.tenant.label" default="Tenant" /></dt>
+						<dd><g:link controller="organisations" action="show" id="${personInstance.tenant?.id}">${personInstance.tenant?.encodeAsHTML()}</g:link></dd>	
 					</g:if>
 				</dl>
 				<dl class="debug-only">
