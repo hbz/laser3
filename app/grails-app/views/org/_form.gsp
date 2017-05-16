@@ -220,7 +220,7 @@
 <!-- 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
 	<label for="links">
-		<g:message code="org.links.label" default="Links" />
+		<g:message code="org.links.other.label" default="Links" />
 		
 	</label>
 	

@@ -9,24 +9,24 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Subscription Details</title>
+    <title>KB+ ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
 
   </head>
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${subscriptionInstance.subscriber}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.name} Current Subscriptions</g:link> <span class="divider">/</span> </li>
+          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
-        <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">Subscription ${subscriptionInstance.id} Details</g:link> </li>
+        <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.label', default:'Subscription Details')}</g:link> </li>
         
       
 
     </li>
         <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
         </g:if>
         <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
       </ul>
@@ -41,7 +41,7 @@
     </g:if>
 
     <div class="container">
-      <g:if test="${params.asAt}"><h1>Snapshot on ${params.asAt} from </h1></g:if>
+      <g:if test="${params.asAt}"><h1>${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1></g:if>
        <h1><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
        <g:render template="nav"  />
     </div>
@@ -53,70 +53,71 @@
       <div class="row">
         <div class="span8"> 
             <br/>
-            <h6>Subscription Information</h6>
+            <h6>${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
             <div class="inline-lists"> 
                <dl><dt>${message(code:'licence')}</dt><dd><g:if test="${subscriptionInstance.subscriber}">
                          <g:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                         <g:if test="${subscriptionInstance.owner != null}">(<g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">Link</g:link> <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>)</g:if>
+                         <g:if test="${subscriptionInstance.owner != null}">(<g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>)</g:if>
                        </g:if><g:else>N/A (Subscription offered)</g:else>
                    </dd>
                </dl>
-               <dl><dt>Package Name</dt><dd><g:each in="${subscriptionInstance.packages}" var="sp">
+               <dl><dt>${message(code:'package.show.pkg_name', default:'Package Name')}</dt><dd><g:each in="${subscriptionInstance.packages}" var="sp">
                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link> (${sp.pkg?.contentProvider?.name}) 
                            <g:if test="${editable}">
-                           <a onclick="unlinkPackage(${sp.pkg.id})">Unlink <i class="fa fa-times"></i></a>
+                           <a onclick="unlinkPackage(${sp.pkg.id})">${message(code:'default.button.unlink.label', default:'Unlink')} <i class="fa fa-times"></i></a>
                            <br/>
                            </g:if>
                        </g:each></dd></dl>
 
-               <dl><dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">Subscription Identifiers</g:annotatedLabel></dt>
+               <dl><dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
                    <dd>
                      <table class="table table-bordered">
                        <thead>
                          <tr>
-                           <th>Authority</th>
-                           <th>Identifier</th>               
-                           <th>Actions</th>
+                           <th>${message(code:'default.authority.label', default:'Authority')}</th>
+                           <th>${message(code:'default.identifier.label', default:'Identifier')}</th>
+                           <th>${message(code:'default.actions.label', default:'Actions')}</th>
                          </tr>
                        </thead>
                        <tbody>
+                         <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
                          <g:each in="${subscriptionInstance.ids}" var="io">
                            <tr>
                              <td>${io.identifier.ns.ns}</td>
                              <td>${io.identifier.value}</td>
-                             <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${subscriptionInstance.class.name}:${subscriptionInstance.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>Delete Identifier</g:link></g:if></td>
+                             <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${subscriptionInstance.class.name}:${subscriptionInstance.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'default.delete.label', args:[identifier_label], default:'Delete Identifier')}</g:link></g:if></td>
                            </tr>
                          </g:each>
                        </tbody>
                      </table>
            <g:if test="${editable}">
               <g:form controller="ajax" action="addToCollection" class="form-inline" name="add_ident_submit">
-                Select an existing identifer using the typedown, or create a new one by entering namespace:value (EG JC:66454) then clicking that value in the dropdown to confirm.<br/>
+                ${message(code:'identifier.select.text', args:['JC:66454'])}<br/>
                 <input type="hidden" name="__context" value="${subscriptionInstance.class.name}:${subscriptionInstance.id}"/>
                 <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
                 <input type="hidden" name="__recip" value="sub"/>
                 <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                <input type="submit" id="addIdentBtn" value="Add Identifier..." class="btn btn-primary btn-small"/><br/>
+                <input type="submit" id="addIdentBtn" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small"/><br/>
               </g:form>
             </g:if>
                    </dd>
                </dl>
 
-               <dl><dt>Start Date</dt><dd><g:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd></dl>
+               <dl><dt>${message(code:'default.startDate.label', default:'Start Date')}</dt><dd><g:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd></dl>
 
-               <dl><dt>End Date</dt><dd><g:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd></dl>
+               <dl><dt>${message(code:'default.endDate.label', default:'End Date')}</dt><dd><g:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd></dl>
 
-               <dl><dt>Financial</dt>
+               <dl><dt>${message(code:'financials.label', default:'Financials')}</dt>
                    <dd>
                      <table class="table table-striped table-bordered">
                        <thead>
                          <tr>
-                           <th>CI #</th>
-                           <th>Order #</th>
-                           <th>Date Paid</th>
-                           <th>Start Date</th>
-                           <th>End Date</th>
-                           <th>Amount</th>
+                           <th>${message(code:'financials.costItem', default:'CI')}</th>
+                           <th>${message(code:'financials.order', default:'Order')}</th>
+                           <th>${message(code:'financials.datePaid', default:'Date Paid')}</th>
+                           <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
+                           <th>${message(code:'default.endDate.label', default:'End Date')}</th>
+                           <th>${message(code:'financials.amount', default:'Amount')}</th>
                          </tr>
                        </thead>
                        <tbody>
@@ -136,33 +137,33 @@
                </dl>
 
 
-               <dl><dt>Manual Renewal Date</dt><dd><g:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd></dl>
-               <dL><dt>Child </dt><dd>
+               <dl><dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt><dd><g:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd></dl>
+               <dL><dt>${message(code:'licence.details.incoming.child', default:'Child')} </dt><dd>
                         <g:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
                </dd></dL>
                <dl>
                  <dt>
-                   <g:annotatedLabel owner="${subscriptionInstance}" property="nominalPlatform">Nominal Platform(s)</g:annotatedLabel>
+                   <g:annotatedLabel owner="${subscriptionInstance}" property="nominalPlatform">${message(code:'package.nominalPlatform', default:'Nominal Platform')}</g:annotatedLabel>
                  </dt><dd>
                     <g:each in="${subscriptionInstance.packages}" var="sp">
                         ${sp.pkg?.nominalPlatform?.name}<br/>
                     </g:each></dd></dl>
 
              <dl>
-                <dt>Cancellation Allowances</dt>
+                <dt>${message(code:'financials.cancellationAllowances', default:'Cancellation Allowances')}</dt>
                 <dd>
                   <g:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" />
                 </dd>
               </dl>
 
 
-               <dl><dt><label class="control-label" for="licenseeRef">Org Links</label></dt><dd>
+               <dl><dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
                        <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:subscriptionInstance?.orgRelations,editmode:editable]}" />
                      </dd>
                </dl>
 
                <g:if test="${params.mode=='advanced'}">
-                 <dl><dt><label class="control-label" for="licenseeRef">Status</label></dt><dd>
+                 <dl><dt><label class="control-label" for="licenseeRef">${message(code:'default.status.label', default:'Status')}</label></dt><dd>
                       <g:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status'/>
                      </dd>
                </dl>
@@ -238,7 +239,7 @@
                   $("[name='add_ident_submit']").unbind( "submit" )
                   $("[name='add_ident_submit']").submit();
                 }else if(data.duplicates){
-                  var warning = "The following Subscriptions are also associated with this identifier:\n";
+                  var warning = "${message(code:'subscription.details.details.duplicate.warn', default:'The following Subscriptions are also associated with this identifier')}:\n";
                   for(var ti of data.duplicates){
                       warning+= ti.id +":"+ ti.title+"\n";
                   }
@@ -253,7 +254,7 @@
           });
 
           $("#addIdentifierSelect").select2({
-            placeholder: "Search for an identifier...",
+            placeholder: "${message(code:'identifier.select.ph', default:'Search for an identifier...')}",
             minimumInputLength: 1,
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
               url: "<g:createLink controller='ajax' action='lookup'/>",

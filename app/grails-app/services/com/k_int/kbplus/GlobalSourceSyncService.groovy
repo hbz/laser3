@@ -188,6 +188,11 @@ class GlobalSourceSyncService {
     // Firstly, make sure that there is a package for this record
     if ( grt.localOid != null ) {
       pkg = genericOIDService.resolveOID(grt.localOid)
+
+      newpkg.identifiers.each {
+        log.debug("Checking package has ${it.namespace}:${it.value}");
+        pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
+      }
     }
     else {
       // create a new package
@@ -214,6 +219,12 @@ class GlobalSourceSyncService {
 
       if ( pkg.save() ) {
         log.debug("Saved Package as com.k_int.kbplus.Package:${pkg.id}!")
+
+        newpkg.identifiers.each {
+          log.debug("Checking package has ${it.namespace}:${it.value}");
+          pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
+        }
+
         grt.localOid = "com.k_int.kbplus.Package:${pkg.id}"
         grt.save()
       }
@@ -410,6 +421,12 @@ class GlobalSourceSyncService {
     result.parsed_rec.packageName = md.gokb.package.name.text()
     result.parsed_rec.packageId = md.gokb.package.'@id'.text()
     result.parsed_rec.tipps = []
+    result.parsed_rec.identifiers = []
+
+    md.gokb.package.identifiers.identifier.each { id ->
+      result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
+    }
+
     int ctr=0
     md.gokb.package.TIPPs.TIPP.each { tip ->
       log.debug("Processing tipp ${ctr++} from package ${result.parsed_rec.packageId} - ${result.title} (source:${synctask.uri})");

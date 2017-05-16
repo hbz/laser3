@@ -2,26 +2,24 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Package Planning - Select Candidate Packages</title>
+    <title>KB+ ${message(code:'myinst.selectPackages.label', default:'Package Planning - Select Candidate Packages')}</title>
   </head>
 
   <body>
     <div class="container">
-      This page current lists all packages with any title overlap for entitlements in the current subscription. <br/>
-      Showing alternatives packages for current subscription ${subscriptionInstance}<br/>
-      There are ${titles_in_this_sub} titles currently in this subscription<br/>
-      This subscription is currently formed from the following packages : <ul><g:each in="${subscriptionInstance.packages}" var="p">
+      ${message(code:'myinst.selectPackages.note', args:[subscriptionInstance,titles_in_this_sub])}
+      <ul><g:each in="${subscriptionInstance.packages}" var="p">
         <li>${p?.pkg?.name}</li>
       </g:each></ul>
       <table>
         <tr>
-          <th>Content Provider</th>
-          <th>Candidate Packages</th>
-          <th>Titles in Package</th>
-          <th># Matching Titles</th>
-          <th>Platform</th>
-          <th>Overlap</th>
-          <th>Select</th>
+          <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
+          <th>${message(code:'myinst.selectPackages.candidates', default:'Candidate Packages')}</th>
+          <th>${message(code:'myinst.selectPackages.pkg_titles', default:'Titles in Package')}</th>
+          <th>${message(code:'myinst.selectPackages.titles_no', default:'# Matching Titles')}</th>
+          <th>${message(code:'tipp.platform', default:'Platform')}</th>
+          <th>${message(code:'myinst.selectPackages.overlap', default:'Overlap')}</th>
+          <th>${message(code:'default.select.label', default:'Select')}</th>
         </tr>
         <g:each in="${candidates}" var="c">
           <tr>

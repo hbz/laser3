@@ -2,20 +2,20 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data import explorer</title>
+    <title>KB+ ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</title>
   </head>
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
          <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions"  action="addSubscription" params="${[shortcode:params.shortcode]}">${institution.name} Add Subscripton</g:link> </li>
+        <li> <g:link controller="myInstitutions"  action="addSubscription" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</g:link> </li>
       </ul>
     </div>
 
 
     <div class="container">
-      <h1>${institution?.name} - Add Subscription</h1>
+      <h1>${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
       <g:render template="subsNav" contextPath="." />
     </div>
 
@@ -23,9 +23,9 @@
       <div class="container">
           <div class="pull-right">
               <g:form action="addSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
-                  <label>Search text</label>: <input type="text" name="q" placeholder="enter search term..."  value="${params.q?.encodeAsHTML()}"  />
-                  <label>Valid On</label>: <input name="validOn" type="text" value="${validOn}"/>
-                  <input type="submit" class="btn btn-primary" value="Search" />
+                  <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"  value="${params.q?.encodeAsHTML()}"  />
+                  <label>${message(code:'default.valid_on.label', default:'Valid On')}</label>: <input name="validOn" type="text" value="${validOn}"/>
+                  <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
               </g:form>
           </div>
       </div>
@@ -37,24 +37,24 @@
             <div class="pull-left subscription-create">
             <g:if test="${is_admin}"> 
               <select name="createSubAction"> 
-                <option value="copy">Copy With Entitlements</option>
-                <option value="nocopy">Copy Without Entitlements</option>
-                <input type="submit" class="btn disabled" value="Create Subscription" /> 
+                <option value="copy">${message(code:'myinst.addSubscription.copy_with_ent', default:'Copy With Entitlements')}</option>
+                <option value="nocopy">${message(code:'myinst.addSubscription.copy_wo_ent', default:'Copy Without Entitlements')}</option>
+                <input type="submit" class="btn disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
             </g:if>
-            <g:else>You must have editor role to be able to add licences</g:else>
+            <g:else>${message(code:'myinst.addLicence.no_permission')}</g:else>
             </div>
               
               <div class="clearfix"></div>
               
             <table class="table table-striped table-bordered subscriptions-list">
                 <tr>
-                  <th>Select</th>
-                  <g:sortableColumn params="${params}" property="p.name" title="Name" />
-                  <th>Consortia</th>
-                  <g:sortableColumn params="${params}" property="p.startDate" title="Start Date" />
-                  <g:sortableColumn params="${params}" property="p.endDate" title="End Date" />
-                  <th>Platform</th>
-                  <th>License</th>
+                  <th>${message(code:'default.select.label', default:'Select')}</th>
+                  <g:sortableColumn params="${params}" property="p.name" title="${message(code:'default.name.label', default:'Name')}" />
+                  <th>${message(code:'consortium.plural', default:'Consortia')}</th>
+                  <g:sortableColumn params="${params}" property="p.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                  <g:sortableColumn params="${params}" property="p.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                  <th>${message(code:'tipp.platform', default:'Platform')}</th>
+                  <th>${message(code:'licence.label' default:'License')}</th>
                 </tr>
                 <g:each in="${packages}" var="p">
                   <tr>
@@ -78,7 +78,7 @@
   
         <div class="pagination" style="text-align:center">
           <g:if test="${packages}" >
-            <bootstrap:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="Next" prev="Prev" maxsteps="10" total="${num_pkg_rows}" />
+            <bootstrap:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
           </g:if>
         </div>
     </div>

@@ -12,14 +12,14 @@ import="com.k_int.kbplus.RefdataCategory"
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} - Addressbook</title>
+    <title>KB+ ${institution.name} - ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</title>
   </head>
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
         <li>
-        	<g:link controller="home" action="index">Home</g:link>
+        	<g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link>
         	<span class="divider">/</span>
         </li>
         <li>
@@ -27,7 +27,7 @@ import="com.k_int.kbplus.RefdataCategory"
         	<span class="divider">/</span>
         </li>
 		<li>
-			<g:link controller="myInstitutions" action="addressbook" params="${[shortcode:params.shortcode]}">Addressbook</g:link>
+			<g:link controller="myInstitutions" action="addressbook" params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
 		</li>
       </ul>
     </div>
@@ -46,7 +46,7 @@ import="com.k_int.kbplus.RefdataCategory"
 
     <div class="container">
 
-      <h1>${institution?.name} - Addressbook</h1>
+      <h1>${institution?.name} - ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</h1>
 
     </div>
 
@@ -58,7 +58,7 @@ import="com.k_int.kbplus.RefdataCategory"
 			</g:link>	
 		</div>
 		
-		<p>These persons are visible to you due your membership ..</p>
+		<p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')} ..</p>
 		
         <dl>
 			<g:if test="${visiblePersons}">

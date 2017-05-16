@@ -241,7 +241,7 @@ class InplaceTagLib {
    * user typing into the box. Takes advantage of refdataFind and refdataCreate methods on the domain class.
    */ 
   def simpleReferenceTypedown = { attrs, body ->
-    out << "<input type=\"hidden\" name=\"${attrs.name}\" data-domain=\"${attrs.baseClass}\" ${attrs.disabled ?  'disabled="true"' : ''} "
+    out << "<input type=\"hidden\" name=\"${attrs.name}\" data-domain=\"${attrs.baseClass}\" ${attrs.disabled ?  'disabled=\"true\"' : ''} "
     if ( attrs.id ) {
       out << "id=\"${attrs.id}\" "
     }
@@ -260,16 +260,21 @@ class InplaceTagLib {
 
 
   def simpleHiddenRefdata = { attrs, body ->
+    def default_empty = message(code:'default.button.edit.label')
+    def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
     def data_link = createLink(controller:'ajax', action: 'sel2RefdataSearch', params:[id:attrs.refdataCategory,format:'json'])
     // out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${params[attrs.name]}\"/>"
     out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" />"
-    out << "<a href=\"#\" class=\"simpleHiddenRefdata\" data-type=\"select\" data-source=\"${data_link}\" data-hidden-id=\"${attrs.name}\">"
+    out << "<a href=\"#\" class=\"simpleHiddenRefdata\" data-type=\"select\" data-source=\"${data_link}\" data-hidden-id=\"${attrs.name}\" ${emptyText} >"
     out << body()
     out << "</a>";
   }
 
   def simpleHiddenValue = { attrs, body ->
-    out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\" data-type=\"${attrs.type?:'textarea'}\" data-hidden-id=\"${attrs.name}\">${attrs.value?:''}</a>"
+    def default_empty = message(code:'default.button.edit.label')
+    def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+
+    out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\" data-type=\"${attrs.type?:'textarea'}\" data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
     out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
   }
 }

@@ -2,7 +2,7 @@
     <g:if test="${editable}">
 
         <div class="well hide licence-documents-options">
-            <button class="btn btn-danger delete-document" id="delete-doc">Delete Selected Documents</button>
+            <button class="btn btn-danger delete-document" id="delete-doc">${message(code:'template.documents.delete', default:'Delete Selected Documents')}</button>
             <input type="hidden" name="instanceId" value="${instance.id}"/>
             <input type="hidden" name="redirectAction" value="${redirect}"/>
         </div>
@@ -11,12 +11,12 @@
     <table class="table table-striped table-bordered table-condensed licence-documents">
         <thead>
         <tr>
-            <g:if test="${editable}"><th>Select</th></g:if>
-            <th>Title</th>
-            <th>File Name</th>
-            <th>Download</th>
-            <th>Creator</th>
-            <th>Type</th>
+            <g:if test="${editable}"><th>${message(code:'default.select.label', default:'Select')}</th></g:if>
+            <th>${message(code:'title.label', default:'Title')}</th>
+            <th>${message(code:'default.fileName.label', default:'File Name')}</th>
+            <th>${message(code:'default.download.label', default:'Download')}</th>
+            <th>${message(code:'default.creator.label', default:'Creator')}</th>
+            <th>${message(code:'default.type.label', default:'Type')}</th>
         </tr>
         </thead>
         <tbody>
@@ -33,7 +33,7 @@
                     </td>
                     <td>
                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}">Download Doc</g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}">${message(code:'template.documents.download', default:'Download Doc')}</g:link>
                         </g:if>
                     </td>
                     <td>
@@ -46,7 +46,7 @@
         </tbody>
     </table>
     <g:if test="${editable}">          
-      <input type="button" class="btn btn-primary" value="Add new document" data-toggle="modal" href="#modalCreateDocument"/>
+      <input type="button" class="btn btn-primary" value="${message(code:'template.documents.add', default:'Add new document')}" data-toggle="modal" href="#modalCreateDocument"/>
       </g:if>
 </g:form>
 
@@ -65,7 +65,7 @@
     $('.licence-documents input[type="checkbox"]').click(showEditButtons);
 
     $('.licence-documents-options .delete-document').click(function () {
-        if (!confirm('Are you sure you wish to delete these documents?')) {
+        if (!confirm('${message(code:'template.documents.delete.confirm', default:'Are you sure you wish to delete these documents?')}')) {
             $('.licence-documents input:checked').attr('checked', false);
             return false;
         }

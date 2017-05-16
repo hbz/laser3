@@ -10,7 +10,7 @@
     <div class="container">
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="instdash" params="${[shortcode:params.shortcode]}">${institution?.name} Dashboard</g:link> </li>
+        <li> <g:link controller="myInstitutions" action="instdash" params="${[shortcode:params.shortcode]}">${institution?.name} - ${message(code:'menu.institutions.dash', default:'Dashboard')}</g:link> </li>
       </ul>
     </div>
 
@@ -42,10 +42,10 @@
                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.finance', default:'Finance')}</g:link></li>
           </g:if>
           
-          <li><h5>Special:</h5></li>
+          <li><h5>${message(code:'default.special.label', default:'Special')}:</h5></li>
           <li><g:link controller="myInstitutions" 
                                        action="addressbook" 
-                                       params="${[shortcode:params.shortcode]}">Addressbook</g:link></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
         </ul>
       </div>
     </div>
@@ -142,7 +142,7 @@
            <table class="table table-bordered dashboard-widget">
               <thead>
                 <th>
-                  <h5 class="pull-left">Latest Discussions</h5>
+                  <h5 class="pull-left">${message(code:'myinst.dash.forum.label', default:'Latest Discussions')}</h5>
                   <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussions" class="pull-right" />
                 </th>
               </thead>
@@ -174,13 +174,18 @@
             <g:else>
             <tr>
               <td>
-                <p>Recent forum activity not available. Please retry later.</p>
+                <p>${message(code:'myinst.dash.forum.noActivity', default:'Recent forum activity not available. Please retry later.')}</p>
               </td>
             </tr>
             </g:else>
             <tr>
               <td>
-                <a href="${grailsApplication.config.ZenDeskBaseURL}/forums" class="btn btn-primary pull-right">Visit Discussion Forum</a>
+                <g:if test="${!grailsApplication.config.ZenDeskBaseURL.equals('https://projectname.zendesk.com')}">
+                  <a href="${grailsApplication.config.ZenDeskBaseURL}/forums" class="btn btn-primary pull-right">Visit Discussion Forum</a>
+                </g:if>
+                <g:else>
+                  <span class="btn btn-primary pull-right disabled">Visit Discussion Forum</span>
+                </g:else>
               </td>
             </tr>
           </tbody>

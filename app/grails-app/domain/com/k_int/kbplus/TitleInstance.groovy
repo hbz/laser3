@@ -734,14 +734,9 @@ class TitleInstance {
 
     if ( ! found ) {
       def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-      def existing_occurrence = IdentifierOccurrence.findAllByIdentifier(id)
-      if ( existing_occurrence.size() > 0 ) {
-        // Do nothing - already present
-      }
-      else {
-        static_logger.debug("Create new identifier occurrence for tid:${getId()} ns:${ns} value:${value}");
-        new IdentifierOccurrence(identifier:id, ti:this).save(flush:true)
-      }
+
+      static_logger.debug("Create new identifier occurrence for tid:${getId()} ns:${ns} value:${value}");
+      new IdentifierOccurrence(identifier:id, ti:this).save(flush:true)
     }
   }
 

@@ -199,18 +199,18 @@
                   <label for="orgShortcode">${message(code:'licence.details.copy', default:'Copy licence for')}:</label>
                   <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" id="orgShortcode" name="orgShortcode"/>
                               
-                   <g:link name="copyLicenceBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-licence':'Y']}" onclick="return changeLink(this,'Are you sure you want to copy this licence?')" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                   <g:link name="copyLicenceBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-licence':'Y']}" onclick="return changeLink(this,${message(code:'licence.details.copy.confirm')})" class="btn btn-success" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
 
                <label for="linkSubscription">${message(code:'licence.details.sublink', default:'Link to Subscription')}:</label>
 
                <g:form id="linkSubscription" name="linkSubscription" action="linkToSubscription">
                 <input type="hidden" name="licence" value="${license.id}"/>
                 <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription"/>
-                <input type="submit" class="btn btn-success" value="${message(code:'default.button.link.label', default:'Link')}"/>
+                <input type="submit" class="btn btn-success" style="margin-bottom:10px" value="${message(code:'default.button.link.label', default:'Link')}"/>
               </g:form>
 %{--            
           leave this out for now.. it is a bit confusing.
-          <g:link name="deletLicenceBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,'Are you sure you want to delete ${license.reference?:'** No licence reference ** '}?')" params="${[baselicense:license.id,'delete-licence':'Y',shortcode:'replaceme']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
+          <g:link name="deletLicenceBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,${message(code:'licence.details.delete.confirm', args[(license.reference?:'** No licence reference ** ')]?)" params="${[baselicense:license.id,'delete-licence':'Y',shortcode:'replaceme']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
           </g:if>
                   <g:else>
                     ${message(code:'licence.details.not_allowed', default:'Actions available to editors only')}

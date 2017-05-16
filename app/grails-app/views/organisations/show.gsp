@@ -76,7 +76,7 @@
             </dd>
 
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-              ${message(code:'identifier.select.text')}
+              ${message(code:'identifier.select.text', args:['isil:DE-18'])}
             <g:if test="${orgInstance?.ids}">
               <g:each in="${orgInstance.ids}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link></dd>
@@ -118,7 +118,7 @@
           </g:if>
 
           <g:if test="${orgInstance?.links}">
-            <dt><g:message code="org.links.label" default="Other org links" /></dt>
+            <dt><g:message code="org.links.other.label" default="Other org links" /></dt>
             <dd><ul>
               <g:each in="${orgInstance.links}" var="i">
                 <li>
