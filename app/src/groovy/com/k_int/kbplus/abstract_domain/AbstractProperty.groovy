@@ -5,14 +5,6 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.RefdataValue
 import javax.persistence.Transient
 
-/**
- * Created by ioannis on 26/06/2014.
- * Custom properties must always follow the naming convention: Owner + CustomProperty, where owner is the
- * name of owner class and be under com.k_int.kbplus . For example LicenceCustomProperty , SubscriptionCustomProperty.
- * Relevant code in PropertyDefinition, createPropertyValue
- * For change notifications to work, the class containing the custom properties must have a hasMany named
- * customProperties. See PendingChangeController@120 (CustomPropertyChange) 
- */
 abstract class AbstractProperty implements Serializable{
 
     @Transient
@@ -75,7 +67,7 @@ abstract class AbstractProperty implements Serializable{
                 result = null
                 break;
             default:
-                result = "CustomProperty.parseValue failed"
+                result = "AbstractProperty.parseValue failed"
         }
         return result
     }

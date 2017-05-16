@@ -175,7 +175,7 @@ def performAccept(change,httpRequest) {
         }else{
           if(changeDoc.propertyOID){
             def propertyType = genericOIDService.resolveOID(changeDoc.propertyOID).type
-            def newProperty = PropertyDefinition.createPropertyValue(target_object,propertyType)
+            def newProperty = PropertyDefinition.createCustomPropertyValue(target_object,propertyType)
 
             if(changeDoc.type == RefdataValue.toString()){
               def originalRefdata = genericOIDService.resolveOID(changeDoc.propertyOID).refValue;

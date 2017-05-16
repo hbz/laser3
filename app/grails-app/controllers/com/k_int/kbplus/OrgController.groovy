@@ -148,7 +148,7 @@ class OrgController extends AjaxHandler {
             redirect action: 'show', id: params.id
         }
     }
-
+    
     @Override
     def ajax() {
         // TODO: check permissions for operation

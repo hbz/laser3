@@ -7,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
     <title>KB+ <g:message code="default.show.label" args="[entityName]" /></title>
     <r:require module="annotations" />
-    <g:javascript src="custom_properties.js"/>
+    <g:javascript src="properties.js"/>
   </head>
   <body>
 
@@ -26,7 +26,7 @@
     </div>
         <r:script language="JavaScript">
 
-     runCustomPropsJS("<g:createLink controller='ajax' action='lookup'/>");
+     initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");
 
     </r:script>
 

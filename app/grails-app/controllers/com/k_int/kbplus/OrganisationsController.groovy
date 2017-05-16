@@ -8,7 +8,7 @@ import groovy.xml.MarkupBuilder
 import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.*
 
 class OrganisationsController {
 
@@ -36,7 +36,7 @@ class OrganisationsController {
         grails.util.Holders.config.customProperties.org.each{ 
           def entry = it.getValue()
           def type = PropertyDefinition.lookupOrCreateType(entry.name,entry.class,PropertyDefinition.ORG_CONF)
-          def prop = PropertyDefinition.createPropertyValue(orgInstance,type)
+          def prop = PropertyDefinition.createCustomPropertyValue(orgInstance,type)
           prop.note = entry.note
           prop.save()
         }
@@ -133,6 +133,43 @@ class OrganisationsController {
       result
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def additionalInfo() {
+      def result = [:]
+      result.user = User.get(springSecurityService.principal.id)
+      def orgInstance = Org.get(params.id)
+
+      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+        result.editable = true
+      }
+      else {
+        result.editable = orgInstance.hasUserWithRole(result.user,'INST_ADM');
+      }
+
+      if (!orgInstance) {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+        redirect action: 'list'
+        return
+      }
+
+      def ppRules = []
+      result.user?.authorizedOrgs?.each{ org ->
+          def ppr = PrivatePropertyRule.getRule(orgInstance.getClass().getName(), org)
+          if(ppr){
+              ppRules << ppr
+          }
+      }
+      def tmp
+      ppRules.flatten().each{ ppr ->
+          println ppr
+          tmp << ppr.getMatchingProperty(orgInstance.privateProperties)
+      }
+      
+      result.ppRules = ppRules
+      result.orgInstance = orgInstance
+      result
+    }
+    
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def users() {
       def result = [:]

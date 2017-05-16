@@ -6,7 +6,7 @@
     <meta name="layout" content="mmbootstrap">
     <title>KB+ App Config</title>
     <r:require module="annotations" />
-    <g:javascript src="custom_properties.js"/>
+    <g:javascript src="properties.js"/>
 </head>
 <body>
 
@@ -33,7 +33,7 @@
 
 <r:script language="JavaScript">
 
-     runCustomPropsJS("<g:createLink controller='ajax' action='lookup'/>");
+     initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");
 
 </r:script>
 

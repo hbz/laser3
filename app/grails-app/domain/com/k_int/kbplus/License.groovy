@@ -536,7 +536,7 @@ class License implements Comparable<License>{
     def custProp = getCustomPropByName(custPropName)
     if(custProp == null){
       def type = PropertyDefinition.findByName(custPropName,)
-      custProp = PropertyDefinition.createPropertyValue(this,type)
+      custProp = PropertyDefinition.createCustomPropertyValue(this,type)
     }
 
     if ( newVal != null ) {

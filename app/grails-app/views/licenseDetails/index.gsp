@@ -5,7 +5,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-     <g:javascript src="custom_properties.js"/>
+     <g:javascript src="properties.js"/>
     <title>KB+ <g:message code="licence" default="Licence"/></title>
   </head>
 
@@ -245,7 +245,7 @@
         });
       </g:else>
      window.onload = function() {
-     runCustomPropsJS("<g:createLink controller='ajax' action='lookup'/>");
+     initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");
     };
     </r:script>
 

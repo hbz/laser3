@@ -1,7 +1,7 @@
 /**
  * Created by ioannis on 27/06/2014.
  */
-function runCustomPropsJS(ajaxurl){
+function initPropertiesScript(ajaxurl){
     refdatacatsearch(ajaxurl);
     searchProp(ajaxurl);
     showModalOnSelect();
@@ -35,7 +35,7 @@ function refdatacatsearch (ajaxurl){
 
 function searchProp(ajaxurl){
     $("#customPropSelect").select2({
-        placeholder: "Search for a custom property...",
+        placeholder: "Search for a property...",
         minimumInputLength: 0,
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
             url: ajaxurl,

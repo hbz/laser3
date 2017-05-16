@@ -36,7 +36,9 @@ class Org {
       prsLinks: 'org',
       contacts: 'org',
       addresses: 'org',
-      affiliations: 'org' 
+      affiliations: 'org',
+      privateProperties: 'owner',
+      privateProperties: 'tenant'
       ]
 
   static hasMany = [
@@ -48,7 +50,8 @@ class Org {
       contacts:         Contact,
       addresses:        Address,
       affiliations:     UserOrg,
-      customProperties: OrgCustomProperty
+      customProperties:  OrgCustomProperty,
+      privateProperties: OrgPrivateProperty
       ]
 
   static mapping = {

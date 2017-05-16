@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
+import com.k_int.properties.*
 
 class PersonController {
 
@@ -145,6 +147,57 @@ class PersonController {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect action: 'show', id: params.id
         }
+    }
+    
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def additionalInfo() {
+        def personInstance = Person.get(params.id)
+        if (!personInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+            redirect action: 'list'
+            return
+        }
+        
+        def user = User.get(springSecurityService.principal.id)
+        def editable
+        if(SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')) {
+          editable = true
+        }
+        else {
+          editable = true // TODO editable = true 
+        }
+        
+        def ppRules = []
+        user?.authorizedOrgs?.each{ org ->
+            def ppr = PrivatePropertyRule.getRule(personInstance.getClass().getName(), org)
+            if(ppr){
+                ppRules << ppr
+            }
+        }
+        
+        def tmp = []
+        ppRules.flatten().each{ ppr ->
+            println ppr
+            tmp << ppr.getMatchingProperty(personInstance.privateProperties)
+        }
+        /*
+        ppRules.each{ ppr ->
+            
+            def existingProp = personInstance.privateProperties.find{it.type.name == ppr.propertyDefinition.name}
+        
+            if(existingProp == null){
+                newProp = PropertyDefinition.createPrivatePropertyValue(owner, tenant, type)
+                if(newProp.hasErrors()){
+                    log.error(newProp.errors)
+                } else{
+                    log.debug("New private property created: " + newProp.type.name)
+                }
+            } else{
+                error = "A property of this type is already added."
+            }
+        }
+        */
+        [personInstance: personInstance, editable: editable, ppRules: ppRules, tmp: tmp]
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
