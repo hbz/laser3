@@ -19,10 +19,6 @@
                 </div>
                 <div class="span4">
                     <g:render template="/templates/loginDiv"/>
-
-                    <div class="twitter">
-                        <g:render template="twitter" contextPath="/templates"/>
-                    </div>
                 </div>
             </div>
         </div>

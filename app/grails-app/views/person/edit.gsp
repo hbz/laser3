@@ -7,6 +7,7 @@
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
+		<div class="container">
 		<div class="row-fluid">
 
 			<div class="span3">
@@ -72,6 +73,7 @@
 
 			</div>
 
+		</div>
 		</div>
 	</body>
 </html>

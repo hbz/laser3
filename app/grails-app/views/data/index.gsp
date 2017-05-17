@@ -16,7 +16,7 @@
 
     <div class="container">
       <p>
-        JISC KB+ data explorer. Use the links above to navigate the data items imported by the KB+ import process and validate the data.
+        KB+ data explorer. Use the links above to navigate the data items imported by the KB+ import process and validate the data.
       </p>
       <p>
         Browse using the categories above, or search over organisations and titles below.

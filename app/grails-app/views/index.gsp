@@ -8,7 +8,7 @@
   <body>
     <div class="row-fluid">
       <p>
-        JISC KB+ data explorer. Use the links above to navigate the data items imported by the KB+ import process and validate the data.
+        KB+ Data explorer. Use the links above to navigate the data items imported by the KB+ import process and validate the data.
       </p>
       <p>
         Currently, you can review:
