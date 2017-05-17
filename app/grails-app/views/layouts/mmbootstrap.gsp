@@ -419,8 +419,6 @@
       </div>
   </div>
 
-  <tmpl:/layouts/analytics />
-
   <r:layoutResources/>
 
   </body>
