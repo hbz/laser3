@@ -24,7 +24,6 @@
     <tmpl:/layouts/favicon />
 
     <r:layoutResources/>
-
   </head>
 
   <body>
@@ -41,7 +40,7 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-            <g:link controller="home" action="index" class="brand" title="KB+ ${grailsApplication.metadata.'app.version'} / build ${grailsApplication.metadata.'app.buildNumber'}">KB+</g:link>
+            <g:link controller="home" action="index" class="brand" title="LAS:eR ${grailsApplication.metadata.'app.version'} / build ${grailsApplication.metadata.'app.buildNumber'}">LAS:eR</g:link>
             <sec:ifLoggedIn>
                 <ul class="nav">
                 <g:if test="${false}">

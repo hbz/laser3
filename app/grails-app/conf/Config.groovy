@@ -11,6 +11,8 @@ import org.apache.log4j.RollingFileAppender
 // - enable reminder
 hbzMaster = true
 
+// @ApplicationResources
+defaultCssSkin = "hbz.css"
 
 
 customProperties =[
