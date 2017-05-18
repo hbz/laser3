@@ -5,6 +5,16 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.apache.log4j.DailyRollingFileAppender
 import org.apache.log4j.RollingFileAppender
 
+
+// @NotificationsJob
+// - enable notification
+// - enable reminder
+hbzMaster = true
+
+// @ApplicationResources
+defaultCssSkin = "hbz.css"
+
+
 customProperties =[
 "org":["journalAccess":["name":"Public Journal Access","class":String.toString(),"note":"Set the required rights for accessing the public Journals page. For example 'Staff,Student,Public' or leave empty/delete for no public access."]
       ]
@@ -830,8 +840,8 @@ financialImportTSVLoaderMappings = [
 grails.mail.disabled=false //System wide
 grails.mail.poolSize=20 //default 5 emails at a time, then que based system (prereq = async true)
 //grails.mail.overrideAddress="ryan@k-int.com" //Test env only, overrides to and from address
-notifications.email.from='notification@kbplus.ac.uk'
-notifications.email.replyTo='no-reply@kbplus.ac.uk'
+notifications.email.from='wincenter@hbz-nrw.de'
+notifications.email.replyTo='wincenter@hbz-nrw.de'
 notifications.email.genericTemplate=true //If enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
 
 //Finance
