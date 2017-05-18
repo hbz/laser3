@@ -175,14 +175,15 @@ class InplaceTagLib {
       switch ( value.class ) {
         case com.k_int.kbplus.RefdataValue.class:
           if ( value.icon != null ) {
-            result="<span class=\"select-icon ${value.icon}\"></span>${value.value?:'Not set'}"
+            result="<span class=\"select-icon ${value.icon}\"></span>";
+            result += message(code:'refdata.${value.value}', default:"${value.value?: message(code:'refdata.notSet')}")
           }
           else {
-            result=value.value?:'Not set'
+            result = message(code:'refdata.${value.value}', default:"${value.value?: message(code:'refdata.notSet')}")
           }
           break;
         default:
-          result=value.toString();
+          result = message(code:'refdata.${value.toString()}', default:"${value.toString()}")
       }
     }
     result;

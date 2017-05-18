@@ -11,12 +11,12 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="index">${message(code: 'package.show.all')}</g:link><span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
 
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">S{message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
 
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li><g:link action="show" params="${params+[format:'json']}">JSON Export</g:link></li>
@@ -33,8 +33,8 @@
           </g:if>
           ${message(code: 'package.show.view')}:
           <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
-            <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
+            <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
+            <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
           </div>
           &nbsp;
         </li>
@@ -46,7 +46,7 @@
 
 
       <div class="container">
-        <g:if test="${params.asAt}"><h1>Snapshot on ${params.asAt} from </h1></g:if>
+        <g:if test="${params.asAt}"><h1>${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
         <div class="page-header">
           <div>
           <h1><g:if test="${editable}"><span id="packageNameEdit"
@@ -88,8 +88,8 @@
             <h6>
               ${message(code: 'package.show.pkg_information')}
               <span class="btn-group pull-right" data-toggle="buttons-radio">
-                <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
-                <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
+                <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
+                <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
               </span>
               &nbsp;
             </h6>
@@ -236,8 +236,8 @@
                     <option value="${s.sub.id}">${s.sub.name ?: "unnamed subscription ${s.sub.id}"} - ${s.org.name}</option>
                   </g:each>
                 </select><br/>
-                Create Entitlements in Subscription: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true"/><br/>
-                <input id="add_to_sub_submit_id" type="submit"/>
+                ${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" style="vertical-align:text-bottom;"/><br/>
+                <input id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
               </g:form>
             </g:if>
             <g:else>

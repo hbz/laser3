@@ -53,7 +53,7 @@ class Platform {
 
       String norm_name = params.name.trim().toLowerCase();
 
-      platform = Platform.findByNormname(norm_name)
+      platform = Platform.findByNormnameOrPrimaryurl(norm_name, params.primaryUrl)
 
       if ( !platform ) {
         platform = new Platform(impId:java.util.UUID.randomUUID().toString(),

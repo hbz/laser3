@@ -516,7 +516,7 @@ class AjaxController {
           newProp.setRefdataCategory(cat.desc)
           newProp.save(flush:true)    
         }else{
-          error = "Type creation failed. Please select a ref data type."
+          error = message(code:'ajax.addCustPropertyType.error', default:'Type creation failed. Please select a ref data type.')
         }
     }else{
         newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
@@ -555,7 +555,7 @@ class AjaxController {
         log.debug("New Property created: "+newProp.type.name)
       }
     }else{
-      error = "A property of this type is already added."
+      error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
     }
 
     owner.refresh()
@@ -599,11 +599,11 @@ class AjaxController {
         def tip = TitleInstitutionProvider.get(tipID)
         log.debug("Extending tip ${tip.id} with start ${startDate} and end ${endDate}")
         tip.extendCoreExtent(startDate, endDate)
-        params.message = "Core Dates extended"
+        params.message = message(code:'ajax.coreExtend.success', default:'Core Dates extended')
       }
     }catch (Exception e){
         log.error("Error while extending core dates",e)
-        params.message = "Extending of core date failed."
+        params.message = message(code:'ajax.coreExtend.error', default:'Extending of core date failed.')
     }
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
@@ -851,14 +851,15 @@ class AjaxController {
       switch ( value.class ) {
         case com.k_int.kbplus.RefdataValue.class:
           if ( value.icon != null ) {
-            result="<span class=\"select-icon ${value.icon}\"></span>${value.value}"
+            result="<span class=\"select-icon ${value.icon}\"></span>";
+            result += message(code:'refdata.${value.value}', default:"${value.value?: message(code:'refdata.notSet')}")
           }
           else {
-            result=value.value
+            result = message(code:'refdata.${value.value}', default:"${value.value?: message(code:'refdata.notSet')}")
           }
           break;
         default:
-          result=value.toString();
+          result = message(code:'refdata.${value.toString()}', default:"${value.toString()}")
           break;
       }
     }

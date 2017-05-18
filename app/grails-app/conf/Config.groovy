@@ -613,8 +613,6 @@ refdatavalues = [ "User" : [ "Authorized User", "ExternalAcademic", "ExternalLib
 quartzHeartbeat = 'Never'
 // grails.databinding.dateFormats = ['MMddyyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
 
-feature_finance = true
-
 financialImportTSVLoaderMappings = [
   header:[
     defaultTargetClass:'com.k_int.kbplus.CostItem',

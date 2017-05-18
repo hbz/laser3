@@ -39,7 +39,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Subscription</title>
+    <title>KB+ ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
 
   <body>

@@ -18,7 +18,7 @@ class OnixplLicenseCompareController {
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() {
     ArrayList<OnixplLicense> oplList = OnixplLicense.list();
-    [list: oplList, termList: onixPLService.tsComparisonPoints]
+    [list: oplList, termList: onixPLService.getTsComparisonPoints()]
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

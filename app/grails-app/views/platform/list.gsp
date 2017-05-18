@@ -21,8 +21,8 @@
 
 				<div class="container" style="text-align:left">
 					<g:form action="list" method="get" class="form-inline">
-						<label>Search text : </label> <input type="text" name="q" placeholder="enter search term..." value="${params.q?.encodeAsHTML()}"  /> &nbsp;
-						<input type="submit" class="btn btn-primary" value="Search" />
+						<label>${message(code:'default.search.text', default:'Search text')} : </label> <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
+						<input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
 					</g:form><br/>
 				</div>
 
@@ -42,14 +42,14 @@
 							<td>${fieldValue(bean: platformInstance, field: "name")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${platformInstance.id}" class="btn btn-small">Show &raquo;</g:link>
+								<g:link action="show" id="${platformInstance.id}" class="btn btn-small">${message(code:'default.button.show.label', default:'Show')} &raquo;</g:link>
 							</td>
 						</tr>
 					</g:each>
 					</tbody>
 				</table>
 				<div class="pagination">
-					<bootstrap:paginate  action="list" controller="platform" params="${params}" next="Next" prev="Prev" max="${max}" total="${platformInstanceTotal}" />
+					<bootstrap:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${platformInstanceTotal}" />
 				</div>
 			</div>
 

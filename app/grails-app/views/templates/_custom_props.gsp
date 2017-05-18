@@ -118,8 +118,8 @@
         </div>
 
         <div class="modal-footer">
-            <input id="new_cust_prop_add_btn" type="submit" class="btn btn-primary" value="Add">
-            <a href="#" data-dismiss="modal" class="btn btn-primary">Close</a>
+            <input id="new_cust_prop_add_btn" type="submit" class="btn btn-primary" value="${message(code:'default.button.add.label', default:'Add')}">
+            <a href="#" data-dismiss="modal" class="btn btn-primary">${message(code:'default.button.close.label', default:'Close')}</a>
         </div>
     </g:formRemote>
 

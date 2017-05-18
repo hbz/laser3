@@ -2,16 +2,16 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data Manager Dashboard</title>
+    <title>KB+ ${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</title>
   </head>
 
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="dataManager" action="index">Data Manager Dashboard</g:link> <span class="divider">/</span> </li>
-        <li> Deleted Title Management </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</g:link> <span class="divider">/</span> </li>
+        <li> ${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title Management')} </li>
       </ul>
     </div>
 
@@ -28,7 +28,7 @@
     </g:if>
 
     <div class="container">
-      <h2>Deleted Title Management : ${titleInstanceTotal} Deleted Titles</h2>
+      <h2>${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title Management')} : ${titleInstanceTotal} ${message(code:'datamanager.deletedTitleManagement.del_titles', default:'Deleted Titles')}</h2>
     </div>
 
     <div class="container">
@@ -36,7 +36,7 @@
       <table class="table table-bordered table-striped">
         <thead>
           <tr>
-            <g:sortableColumn property="title" title="${message(code: 'title', default: 'Title')}" />
+            <g:sortableColumn property="title" title="${message(code: 'title.label', default: 'Title')}" />
             <th></th>
           </tr>
         </thead>
@@ -50,7 +50,7 @@
       </table>
 
       <div class="pagination">
-        <bootstrap:paginate  action="deletedTitleManagement" controller="dataManager" params="${params}" next="Next" prev="Prev" max="${max}" total="${titleInstanceTotal}" />
+        <bootstrap:paginate  action="deletedTitleManagement" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${titleInstanceTotal}" />
       </div>
     </div>
 

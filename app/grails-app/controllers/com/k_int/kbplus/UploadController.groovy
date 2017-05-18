@@ -90,11 +90,11 @@ class UploadController {
     if ( content_provider_org == null ) {
       log.debug("content_provider_org is present and set to ${content_provider_org}");
       content_provider_org = new Org(name:upload.soProvider.value,impId:java.util.UUID.randomUUID().toString()).save();
-      incrementStatsCounter(upload,'Content Provider Org Created');
+      incrementStatsCounter(upload, message(code:'package.upload.provider_created', default:'Content Provider Org Created'));
     }
     else {
       log.debug("Matched ${content_provider_org} using name ${upload.soProvider.value}");
-      incrementStatsCounter(upload,'Content Provider Org Matched');
+      incrementStatsCounter(upload, message(code:'package.upload.provider_matched', default:'Content Provider Org Matched'));
     }
     
     def pkg_type = RefdataCategory.lookupOrCreate("${RefdataCategory.PKG_TYPE}",'Unknown');
@@ -102,7 +102,8 @@ class UploadController {
     def tipp_current = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,'Current');
 
     def consortium = null;
-    if ( upload.consortium != null )  {
+
+    if (upload.consortium?.value instanceof String && upload.consortium.value.length() > 0)  {
       consortium = Org.findByName(upload.consortium.value) ?: new Org(name:upload.consortium.value).save();
     }
 
@@ -144,12 +145,12 @@ class UploadController {
       }
       else {
         log.error("Problem saving new package");
-        upload.nessages.add("Problem saving new package");
+        upload.messages.add(message(code:'package.upload.save.error', default:'Problem saving new package'));
         new_pkg.errors.each { pe ->
           log.error("Problem saving package: ${pe}");
-          upload.nessages.add("Problem saving package: ${pe}");
+          upload.messages.add(message(code:'package.upload.save.error_pkg', args:[pe]));
         }
-        flash.error="Problem saving new package ${new_pkg.errors}";
+        flash.error= message(code:'package.upload.save.error_new', args:[new_pkg.errors]);
         return
       }
     }
@@ -163,10 +164,10 @@ class UploadController {
         publisher = Org.findByName(tipp.publisher_name)
         if ( publisher == null ) {
           publisher = new Org(name:tipp.publisher_name).save();
-          incrementStatsCounter(upload,'Publisher Org Created');
+          incrementStatsCounter(upload, message(code:'package.upload.pub_created', default:'Publisher Org Created'));
         }
         else {
-          incrementStatsCounter(upload,'Publisher Org Matched');
+          incrementStatsCounter(upload, message(code:'package.upload.pub_matched', default:'Publisher Org Matched'));
         }
       }
 
@@ -193,7 +194,7 @@ class UploadController {
         // Got all the components we need to create a tipp
         def dbtipp = TitleInstancePackagePlatform.findByPkgAndPlatformAndTitle(new_pkg,tipp.host_platform,tipp.title_obj)
         if ( dbtipp == null ) {
-          incrementStatsCounter(upload,'TIPP Created');
+          incrementStatsCounter(upload, message(code:'package.upload.tipp_created', default:'TIPP Created'));
 
           def hybrid_oa_status_value = null;
           if ( tipp.hybrid_oa != null ) {
@@ -269,7 +270,7 @@ class UploadController {
       result = TitleInstance.lookupOrCreateViaIdMap(identifiers, title);
       if ( !result.getPublisher() ) {
         def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');
-        OrgRole.assertOrgTitleLink(publisher, result, pub_role);
+        OrgRole.assertOrgTitleLink(publisher, result, pub_role, null, null);
         result.save();
       }
     }

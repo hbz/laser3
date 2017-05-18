@@ -27,7 +27,7 @@ import="com.k_int.kbplus.RefdataCategory"
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </g:if>
 
-		<p>These persons are visible to you due your membership ..</p>
+		<p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership ..')}</p>
 		
 		<div> 
 			<g:link controller="person" action="create" params="['org.id': orgInstance?.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No').id ]">

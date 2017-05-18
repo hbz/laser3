@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Renewals Upload</title>
+    <title>KB+ ${message(code:'myinst.renewalUpload.label', default:'Renewals Upload')}</title>
   </head>
 
   <body>
     <div class="container">
       <g:form action="importSubscriptionWorksheet" method="post" enctype="multipart/form-data" params="${params}">
         <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/>
-        <button type="submit" class="btn btn-primary"><g:message code="subscription.upload.worksheet" default="Upload New Subscription Taken Worksheet"/></button>
+        <button type="submit" class="btn btn-primary"><g:message code="subscription.upload.worksheet" default="${message(code:'subscription.upload.worksheet', default:'Upload New Subscription Taken Worksheet')}"/></button>
       </g:form>
     </div>
 
@@ -42,24 +42,24 @@
       <g:form  action="processSubscriptionImport" method="post" params="${params}" enctype="multipart/form-data" >
         <div class="container"> 
         <g:if test="${subOrg!=null}">
-          Import will create a subscription for ${subOrg.name}
+          ${message(code:'subscription.import.upload.note', default:'Import will create a subscription for')} ${subOrg.name}
           <input type="hidden" name="orgId" value="${subOrg.id}"/>
         </g:if>
         <hr/>
           <table class="table table-bordered">
             <thead>
               <tr>
-                <td>Title</td>
-                <td>From Pkg</td>
+                <td>${message(code:'title.label', default:'Title')}</td>
+                <td>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</td>
                 <td>ISSN</td>
                 <td>eISSN</td>
-                <td>Start Date</td>
-                <td>Start Volume</td>
-                <td>Start Issue</td>
-                <td>End Date</td>
-                <td>End Volume</td>
-                <td>End Issue</td>
-                <td>Core Medium</td>
+                <td>${message(code:'default.startDate.label', default:'Start Date')}</td>
+                <td>${message(code:'tipp.from_volume', default:'Start Volume')}</td>
+                <td>${message(code:'tipp.from_issue', default:'Start Issue')}</td>
+                <td>${message(code:'default.endDate.label', default:'End Date')}</td>
+                <td>${message(code:'tipp.to_volume', default:'End Volume')}</td>
+                <td>${message(code:'tipp.to_issue', default:'End Issue')}</td>
+                <td>${message(code:'subscription.details.core_medium', default:'Core Medium')}</td>
               </tr>
             </thead>
             <tbody>
@@ -91,7 +91,7 @@
           <input type="hidden" name="ecount" value="${counter}"/>
 
           <div class="pull-right">
-            <button type="submit" class="btn btn-primary">Accept and Process</button>
+            <button type="submit" class="btn btn-primary">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
           </div>
         </div>
       </g:form>
