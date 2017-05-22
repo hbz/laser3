@@ -10,7 +10,7 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="titleDetails" action="show" id="${ti.id}">${message(code:'title.title.label')} ${ti.title}</g:link> </li>
 
         <li class="dropdown pull-right">

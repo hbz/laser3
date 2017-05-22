@@ -291,7 +291,7 @@ class TitleDetailsController {
     
     def ti_cat = RefdataCategory.findByDesc(RefdataCategory.TI_STATUS)
 
-    result.availableStatuses = RefdataValue.findAllByOwner(ti_cat).collect{it.toString()}
+    result.availableStatuses = RefdataValue.findAllByOwner(ti_cat).collect{message(code:'refdata.${it.toString()}')}
     def ti_status = null
     if(params.status){
       if(result.availableStatuses.contains(params.status)){

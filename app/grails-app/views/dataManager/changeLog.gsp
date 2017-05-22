@@ -96,7 +96,7 @@
         ${message(code:'datamanager.changeLog.how_changed')}:
         <input type="checkbox" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.new_items" default="New Items"/> &nbsp;
         <input type="checkbox" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
-        <input  class="btn btn-primary" type="submit"/>
+        <input  class="btn btn-primary" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/>
       </g:form>
 
     </div>

@@ -12,7 +12,7 @@
 	<h2>${message(code:'package.compare', default:'Package Comparison')}</h2>
 	<br/>
       <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="compare">${message(code:'package.compare.compare', default:'Compare')}</g:link></li>
 
@@ -245,6 +245,9 @@
       	width: "90%",
         placeholder: "${message(code:'package.compare.search.ph', default:'Type package name...')}",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { 
             url: '<g:createLink controller='ajax' action='lookup'/>',
             dataType: 'json',

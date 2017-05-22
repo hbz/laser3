@@ -10,7 +10,7 @@
 <body>
 	<div class="container">
 		<ul class="breadcrumb">
-			<li><g:link controller="home" action="index">Home</g:link> <span
+			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
 				class="divider">/</span></li>
 			<li>${message(code:'menu.institutions.comp_onix')}</li>
 		</ul>

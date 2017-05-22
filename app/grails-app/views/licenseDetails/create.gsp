@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap">
-    <title><g:message code="default.edit.label" args="[entityName]" /></title>
+    <title><g:message code="default.edit.label" args="[entityName ?: message(code:'licence.label')]" /></title>
   </head>
   <body>
       <div class="container">
@@ -11,7 +11,7 @@
           <div class="span12">
 
             <div class="page-header">
-              <h1>New Template Licence</h1>
+              <h1>${message(code:'licence.create.label', default:'New Template Licence')}</h1>
             </div>
 
             <g:if test="${flash.message}">
@@ -22,11 +22,11 @@
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
 
-            <p>Use this form to create a new template licence. Enter the new licence reference below, click "create" and you will be redirected to the new licence</p>
+            <p>${message(code:'licence.create.note')}</p>
 
             <p>
-              <g:form action="processNewTemplateLicense"> New licence Reference: <input type="text" name="reference"/>
-              <br/><input type="submit" value="Create"/></g:form>
+              <g:form action="processNewTemplateLicense"> ${message(code:'licence.create.ref', default:'New licence Reference')}: <input type="text" name="reference"/>
+              <br/><input type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/></g:form>
             </p>
 
           </div>

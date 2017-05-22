@@ -181,10 +181,10 @@
             <tr>
               <td>
                 <g:if test="${!grailsApplication.config.ZenDeskBaseURL.equals('https://projectname.zendesk.com')}">
-                  <a href="${grailsApplication.config.ZenDeskBaseURL}/forums" class="btn btn-primary pull-right">Visit Discussion Forum</a>
+                  <a href="${grailsApplication.config.ZenDeskBaseURL}/forums" class="btn btn-primary pull-right">${message(code:'myinst.dash.forum.visit', default:'Visit Discussion Forum')}</a>
                 </g:if>
                 <g:else>
-                  <span class="btn btn-primary pull-right disabled">Visit Discussion Forum</span>
+                  <span class="btn btn-primary pull-right disabled">${message(code:'myinst.dash.forum.visit', default:'Visit Discussion Forum')}</span>
                 </g:else>
               </td>
             </tr>
