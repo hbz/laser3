@@ -11,7 +11,7 @@
 	<li <%='addressbook'== actionName ? ' class="active"' : '' %>>
 		<g:link controller="organisations" action="addressbook" params="${[id:params.id]}">Addressbook</g:link>
 	</li>
-	<li <%='additionalInfo'== actionName ? ' class="active"' : '' %>>
-		<g:link controller="organisations" action="additionalInfo" params="${[id:params.id]}">Additional Information</g:link>
+	<li <%='properties'== actionName ? ' class="active"' : '' %>>
+		<g:link controller="organisations" action="properties" params="${[id:params.id]}">Properties</g:link>
 	</li>
 </ul>

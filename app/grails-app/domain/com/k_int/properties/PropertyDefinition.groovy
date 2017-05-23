@@ -12,17 +12,17 @@ import org.apache.commons.logging.LogFactory
 @Log4j
 class PropertyDefinition {
     @Transient
-    final static String[] AVAILABLE_DESCR =[LIC_PROP, ORG_CONF, SYS_CONF, PRV_PRS_PROP, PRV_ORG_PROP]
+    final static String[] AVAILABLE_DESCR = [LIC_PROP, ORG_CONF, SYS_CONF, PRS_PROP, ORG_PROP]
     @Transient
-    final static String LIC_PROP='Licence Property'
+    final static String LIC_PROP = 'Licence Property'
     @Transient
-    final static String ORG_CONF='Organisation Config'
+    final static String ORG_CONF = 'Organisation Config'
     @Transient
-    final static String SYS_CONF='System Config'
+    final static String SYS_CONF = 'System Config'
     @Transient
-    final static String PRV_PRS_PROP='Private Person Property'
+    final static String PRS_PROP = 'Person Property'
     @Transient
-    final static String PRV_ORG_PROP='Private Organisation Property'
+    final static String ORG_PROP = 'Organisation Property'
     
     String name
     String descr
@@ -166,7 +166,6 @@ class PropertyDefinition {
   def removeProperty() {
     log.debug("Remove");
     PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseCustomProperty c where c.type = ?', [this])
-    // TODO !!!!!!!!!!!!!!!
     PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionCustomProperty c where c.type = ?', [this])
     this.delete();
   }

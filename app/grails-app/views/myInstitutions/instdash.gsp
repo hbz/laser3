@@ -46,6 +46,9 @@
           <li><g:link controller="myInstitutions" 
                                        action="addressbook" 
                                        params="${[shortcode:params.shortcode]}">Addressbook</g:link></li>
+          <li><g:link controller="myInstitutions" 
+                                       action="propertyRules" 
+                                       params="${[shortcode:params.shortcode]}">Manage Propery Rules</g:link></li>
         </ul>
       </div>
     </div>

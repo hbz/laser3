@@ -134,40 +134,50 @@ class OrganisationsController {
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def additionalInfo() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      def orgInstance = Org.get(params.id)
+    def properties() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.id)
 
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
-        result.editable = true
-      }
-      else {
-        result.editable = orgInstance.hasUserWithRole(result.user,'INST_ADM');
-      }
+        if (SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')) {
+            result.editable = true
+        }
+        else {
+            result.editable = orgInstance.hasUserWithRole(result.user, 'INST_ADM');
+        }
 
-      if (!orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-        redirect action: 'list'
-        return
-      }
+        if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
 
-      def ppRules = []
-      result.user?.authorizedOrgs?.each{ org ->
-          def ppr = PrivatePropertyRule.getRule(orgInstance.getClass().getName(), org)
-          if(ppr){
-              ppRules << ppr
-          }
-      }
-      def tmp
-      ppRules.flatten().each{ ppr ->
-          println ppr
-          tmp << ppr.getMatchingProperty(orgInstance.privateProperties)
-      }
-      
-      result.ppRules = ppRules
-      result.orgInstance = orgInstance
-      result
+        // create mandatory OrgPrivateProperties if not existing
+
+        def ppRulesFlat = []
+        result.user?.authorizedOrgs?.each{ org ->
+            def ppr = PrivatePropertyRule.getRules(orgInstance.getClass().getName(), org)
+            if(ppr){
+                ppRulesFlat << ppr
+            }
+        }
+        ppRulesFlat?.flatten().each{ ppr ->
+            def pd = ppr.propertyDefinition
+            def pt = ppr.propertyTenant
+
+            if(!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd, tenant: pt)) {
+                def newProp = PropertyDefinition.createPrivatePropertyValue(orgInstance, pt, pd)
+                if(newProp.hasErrors()){
+                    log.error(newProp.errors)
+                } else{
+                    log.debug("New private property created via private property rule: " + newProp.type.name)
+                }
+            }
+        }
+
+        result.orgInstance = orgInstance
+        result.authorizedOrgs = result.user?.authorizedOrgs
+        result
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

@@ -1,13 +1,7 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import groovy.util.logging.*
-import javax.persistence.Transient
-import javax.validation.UnexpectedTypeException
-import org.apache.commons.logging.LogFactory
 
 @Log4j
 class PrivatePropertyRule {
@@ -29,36 +23,24 @@ class PrivatePropertyRule {
         propertyOwnerType  (nullable:true, blank:false)
         propertyTenant     (nullable:true, blank:false)
     }
-    
-    static getRule(PropertyDefinition propertyDefinition, String propertyOwnerType, Org propertyTenant){
+
+    static belongsTo = [
+        propertyDefinition: PropertyDefinition,
+        propertyTenant: Org
+    ]
+
+    static getAvailablePropertyDescriptions() {
+        return [
+                "com.k_int.kbplus.Org"      : PropertyDefinition.ORG_PROP,
+                "com.k_int.kbplus.Person"   : PropertyDefinition.PRS_PROP
+        ]
+    }
+
+    static getRules(String propertyOwnerType, Org propertyTenant){
         PrivatePropertyRule.findAllWhere(
-            propertyDefinition: propertyDefinition,
             propertyOwnerType: propertyOwnerType,
             propertyTenant: propertyTenant
             )
     }
-    static getRule(String propertyOwnerType, Org propertyTenant){
-        PrivatePropertyRule.findAllWhere(
-            propertyOwnerType: propertyOwnerType,
-            propertyTenant: propertyTenant
-            )
-    }
-    
-    def getMatchingProperty(privateProperties){
-        
-        def result = []
-        privateProperties.each{ pp ->
-            
-            if(pp?.type.id == propertyDefinition.id){
-                if(pp?.tenant.id == propertyTenant.id){
-                    if(pp?.owner.getClass().toString() == propertyOwnerType){
-                        result << pp
-                    }
-                }
-            }
-            
-        }
-        result
-    } 
 }
 

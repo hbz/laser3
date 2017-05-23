@@ -150,7 +150,7 @@ class PersonController {
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def additionalInfo() {
+    def properties() {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
@@ -166,38 +166,31 @@ class PersonController {
         else {
           editable = true // TODO editable = true 
         }
-        
-        def ppRules = []
+
+        // create mandatory PersonPrivateProperties if not existing
+
+        def ppRulesFlat = []
         user?.authorizedOrgs?.each{ org ->
-            def ppr = PrivatePropertyRule.getRule(personInstance.getClass().getName(), org)
+            def ppr = PrivatePropertyRule.getRules(personInstance.getClass().getName(), org)
             if(ppr){
-                ppRules << ppr
+                ppRulesFlat << ppr
             }
         }
-        
-        def tmp = []
-        ppRules.flatten().each{ ppr ->
-            println ppr
-            tmp << ppr.getMatchingProperty(personInstance.privateProperties)
-        }
-        /*
-        ppRules.each{ ppr ->
-            
-            def existingProp = personInstance.privateProperties.find{it.type.name == ppr.propertyDefinition.name}
-        
-            if(existingProp == null){
-                newProp = PropertyDefinition.createPrivatePropertyValue(owner, tenant, type)
+        ppRulesFlat?.flatten().each{ ppr ->
+            def pd = ppr.propertyDefinition
+            def pt = ppr.propertyTenant
+
+            if(!PersonPrivateProperty.findWhere(owner: personInstance, type: pd, tenant: pt)) {
+                def newProp = PropertyDefinition.createPrivatePropertyValue(personInstance, pt, pd)
                 if(newProp.hasErrors()){
                     log.error(newProp.errors)
                 } else{
-                    log.debug("New private property created: " + newProp.type.name)
+                    log.debug("New private property created via private property rule: " + newProp.type.name)
                 }
-            } else{
-                error = "A property of this type is already added."
             }
         }
-        */
-        [personInstance: personInstance, editable: editable, ppRules: ppRules, tmp: tmp]
+
+        [personInstance: personInstance, authorizedOrgs: user?.authorizedOrgs, editable: editable]
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

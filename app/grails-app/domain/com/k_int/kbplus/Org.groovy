@@ -37,8 +37,7 @@ class Org {
       contacts: 'org',
       addresses: 'org',
       affiliations: 'org',
-      privateProperties: 'owner',
-      privateProperties: 'tenant'
+      privateProperties: 'owner'
       ]
 
   static hasMany = [

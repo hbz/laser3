@@ -25,7 +25,7 @@
 	        update="custom_props_div" 
 	        onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')">
 	        
-	    <input type="hidden" name="propIdent" desc="${prop_desc}" id="customPropSelect"/>
+	    <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
 	    <input type="hidden" name="ownerId" value="${ownobj.id}"/>
 	    <input type="hidden" name="editable" value="${editable}"/>
 	    <input type="hidden" name="ownerClass" value="${ownobj.class}"/>

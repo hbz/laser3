@@ -101,6 +101,9 @@
                                <li><g:link controller="myInstitutions" 
                                        		action="addressbook" 
                                        		params="${[shortcode:org.shortcode]}">Addressbook</g:link></li>
+                               <li><g:link controller="myInstitutions" 
+                                       		action="propertyRules" 
+                                       		params="${[shortcode:org.shortcode]}">Manage Property Rules</g:link></li>
                                <li><g:link controller="subscriptionDetails"
                                            action="compare"
                                            params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_sub')} </g:link></li>
