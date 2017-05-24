@@ -285,16 +285,18 @@ class BootStrap {
     setupRefdata();
     log.debug("refdata setup");
 
-    // if ( grailsApplication.config.doDocstoreMigration == true ) {
-    //   docstoreService.migrateToDb();
-    // }
-    addDefaultJasperReports()
-    addDefaultPageMappings()
-    createLicenceProperties()
-    initializeDefaultSettings()
-    log.debug("Init completed....");
+        // if ( grailsApplication.config.doDocstoreMigration == true ) {
+        //   docstoreService.migrateToDb();
+        // }
+        addDefaultJasperReports()
+        addDefaultPageMappings()
+        createLicenceProperties()
+        createPrivateProperties()
+
+        initializeDefaultSettings()
+        log.debug("Init completed....");
    
-  }
+    }
 
   def initializeDefaultSettings(){
     def admObj = SystemAdmin.list()
@@ -320,7 +322,7 @@ class BootStrap {
     [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageHeader",note:" Remove header/footer from csv/xls"],
     [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.2",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageFooter",note:" Remove header/footer from csv/xls"]
     ]
-    createCustomProperties(requiredProps)
+    createPropertyDefinitions(requiredProps)
     requiredProps.each{
       def type = PropertyDefinition.findByNameAndDescr(it.propname,it.descr)
       if(!SystemAdminCustomProperty.findByType(type)){
@@ -348,11 +350,30 @@ class BootStrap {
                          [propname:"Cancellation Allowance", descr:PropertyDefinition.LIC_PROP,type: String.toString()], 
                          [propname:"Notice Period", descr:PropertyDefinition.LIC_PROP,type: String.toString()], 
                          [propname:"Signed", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO']]
-    createCustomProperties(requiredProps)
+
+    createPropertyDefinitions(requiredProps)
     log.debug("createLicenceProperties completed");
   }
-    
-  def createCustomProperties(requiredProps){
+
+    def createPrivateProperties(){
+        def existingOrgProps = OrgPrivateProperty.findAll()
+        def requiredOrgProps = [[propname:"Org Property 1", descr:PropertyDefinition.ORG_PROP, type: String.toString()],
+                                [propname:"Org Property 2", descr:PropertyDefinition.ORG_PROP, type: RefdataValue.toString(), cat:'YNO'],
+                                [propname:"Org Property 3", descr:PropertyDefinition.ORG_PROP, type: RefdataValue.toString(), cat:'OrgSector']]
+
+        createPropertyDefinitions(requiredOrgProps)
+
+        def existingPrsProps = PersonPrivateProperty.findAll()
+        def requiredPrsProps = [[propname:"Person Property 1", descr:PropertyDefinition.PRS_PROP, type: String.toString()],
+                                [propname:"Person Property 2", descr:PropertyDefinition.PRS_PROP, type: RefdataValue.toString(), cat:'YNO'],
+                                [propname:"Person Property 3", descr:PropertyDefinition.PRS_PROP, type: RefdataValue.toString(), cat:'Person Role']]
+
+        createPropertyDefinitions(requiredPrsProps)
+
+        log.debug("createPrivateProperties completed");
+    }
+
+  def createPropertyDefinitions(requiredProps){
 
     requiredProps.each{ default_prop ->
         def existing_prop = PropertyDefinition.findByName(default_prop.propname)

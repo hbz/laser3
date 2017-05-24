@@ -431,7 +431,7 @@ if (base) {
 }
 
 if (!base) {
-  logWatchFile = new File("logs/kbplus.log")
+  logWatchFile = new File("logs/laser.log")
 }
 
 // Log file variable.
