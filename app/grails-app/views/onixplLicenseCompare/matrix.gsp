@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap" />
-<title>KB+</title>
+<title>${message(code:'laser', default:'LAS:eR')}</title>
 </head>
 <body>
 	<div class="container">

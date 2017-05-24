@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Titles - Search</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Titles - Search</title>
   </head>
 
   <body>

@@ -6,7 +6,7 @@
 
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>KB+ Public Licences</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Public Licences</title>
     <r:require module='annotations' />
   </head>
 

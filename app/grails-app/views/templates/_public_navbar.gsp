@@ -15,7 +15,7 @@
                 <g:else>
                     <li id="about">
                 </g:else>
-                <a href="${createLink(uri: '/about')}">About KB+</a>
+                <a href="${createLink(uri: '/about')}">About ${message(code:'laser', default:'LAS:eR')}</a>
             </li>
                 <g:if test="${active.equals("signup")}">
                     <li id="signup" class="active">

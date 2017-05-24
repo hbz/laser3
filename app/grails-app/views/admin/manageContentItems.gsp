@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Manage Content Items</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Manage Content Items</title>
   </head>
 
   <body>
 
     <div class="container">
         <ul class="breadcrumb">
-           <li> <g:link controller="home">KBPlus</g:link> <span class="divider">/</span> </li>
+           <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
            <li>Content Items</li>
         </ul>
     </div>

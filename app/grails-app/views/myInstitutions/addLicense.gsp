@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data import explorer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
   <body>
 

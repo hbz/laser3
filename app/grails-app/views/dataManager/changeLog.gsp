@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data Manager Change Log</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Data Manager Change Log</title>
   </head>
 
   <body>

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Forbidden</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Forbidden</title>
   </head>
 
   <body>

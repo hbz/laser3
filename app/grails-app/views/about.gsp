@@ -9,7 +9,7 @@
 <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
 <div class="container">
-    <h1>About KB+</h1>
+    <h1>About ${message(code:'laser', default:'LAS:eR')}</h1>
 </div>
 
 <div class="container">

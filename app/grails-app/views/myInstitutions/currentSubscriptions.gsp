@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} - Current Subscriptions</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - Current Subscriptions</title>
   </head>
   <body>
 

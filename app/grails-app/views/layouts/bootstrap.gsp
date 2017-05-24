@@ -28,7 +28,7 @@
       <div class="navbar-inner">
         <div class="container">
           <sec:ifLoggedIn>
-            <a class="brand" href="${createLink(uri: '/')}">KB+</a>
+            <a class="brand" href="${createLink(uri: '/')}">${message(code:'laser', default:'LAS:eR')}</a>
           </sec:ifLoggedIn>
           <div class="nav-collapse">
             <ul class="nav">

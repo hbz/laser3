@@ -6,7 +6,7 @@
   <head>
     <meta name="layout" content="mmbootstrap"/>
      <g:javascript src="properties.js"/>
-    <title>KB+ <g:message code="licence" default="Licence"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="licence" default="Licence"/></title>
   </head>
 
   <body>

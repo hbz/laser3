@@ -44,7 +44,7 @@
 
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>KB+ Data import explorer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
         <r:require module='annotations' />
 
   </head>
@@ -91,7 +91,7 @@ This work is published from:
           <div class="well">
             <h4>Cufts style index of subscriptions offered</h4>
             <p>
-              Use the contents of this URI to drive a full crawl of the KB+ subscriptions offered data. Each row gives an identifier that can be used to
+              Use the contents of this URI to drive a full crawl of the ${message(code:'laser', default:'LAS:eR')} subscriptions offered data. Each row gives an identifier that can be used to
               construct individual subscription requests.
             </p>
             <g:link action="idx" params="${[format:'csv']}">Simple CSV</g:link><br/>

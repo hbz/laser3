@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="mmbootstrap"/>
-        <title>KB+ Licence</title>
+        <title>${message(code:'laser', default:'LAS:eR')} Licence</title>
 </head>
 
 <body>

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Renewals Upload</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Renewals Upload</title>
   </head>
 
   <body>

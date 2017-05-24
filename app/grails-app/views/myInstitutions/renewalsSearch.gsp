@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Renewals Generation - Search</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Renewals Generation - Search</title>
   </head>
 
   <body>

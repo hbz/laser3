@@ -2,11 +2,11 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ App Info</title>
+    <title>${message(code:'laser', default:'LAS:eR')} App Info</title>
   </head>
 
   <body>
-    <h1>KBPlus API Calls</h1>
+    <h1>${message(code:'laser', default:'LAS:eR')} API Calls</h1>
 
     <ul>
       <li><g:link action="assertCore">AssertCore</g:link> - assert a JUSP Core status against an institution, title and optionally provider. If no provider is given then

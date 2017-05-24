@@ -68,7 +68,7 @@
             </g:if>
             <g:else>
                 <br/>
-                Existing associations with KB+ licences were maintained.
+                Existing associations with ${message(code:'laser', default:'LAS:eR')} licences were maintained.
             </g:else>
         </g:if>
     <%-- Show the form if no OPL has been created --%>

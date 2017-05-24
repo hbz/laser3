@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="mmbootstrap">
-    <title>KB+ App Config</title>
+    <title>${message(code:'laser', default:'LAS:eR')} App Config</title>
     <r:require module="annotations" />
     <g:javascript src="properties.js"/>
 </head>

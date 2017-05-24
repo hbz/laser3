@@ -10,7 +10,7 @@
   <body>
     <div class="container">
       <p>
-        Use this form to create a new package header record. Each package must have a globally unique identifier. Traditionally, KB+ has formed this identifier
+        Use this form to create a new package header record. Each package must have a globally unique identifier. Traditionally, ${message(code:'laser', default:'LAS:eR')} has formed this identifier
         from the content provider and the package name. Identifier will be defaulted from this values, but must be checked and be unique within the database before
         the create button will activate.
       </p>

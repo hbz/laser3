@@ -94,6 +94,7 @@
     </tbody>
 </table>
 
+<!--
 <div id="cust_prop_add_modal" class="modal hide">
 
     TODO !!! this modal dialog has not been refactored ..
@@ -154,4 +155,4 @@
         </div>
     </g:formRemote>
 
-</div>
+</div> -->

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} :: ${tip?.title?.title} via ${tip?.provider?.name}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: ${tip?.title?.title} via ${tip?.provider?.name}</title>
   </head>
 
   <body>

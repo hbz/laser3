@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Institutional Dash :: ${org?.name}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Institutional Dash :: ${org?.name}</title>
   </head>
 
   <body>

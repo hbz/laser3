@@ -9,7 +9,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Subscription Details</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Subscription Details</title>
 
   </head>
   <body>

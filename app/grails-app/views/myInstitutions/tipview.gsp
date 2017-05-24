@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} - Edit Core Titles</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - Edit Core Titles</title>
   </head>
 
   <body>

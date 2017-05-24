@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Not Found</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Not Found</title>
 </head>
 
 <body>

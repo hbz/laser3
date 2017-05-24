@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Package Planning - Select Candidate Packages</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Package Planning - Select Candidate Packages</title>
   </head>
 
   <body>
