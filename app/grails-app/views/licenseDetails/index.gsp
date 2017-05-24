@@ -30,12 +30,15 @@
 
     <div class="container">
             <div class="row">
- <h6>${message(code:'licence.properties')}</h6>
-              <div id="custom_props_div" class="span12">
-                  <g:render template="/templates/properties/custom" model="${[ ownobj:license,prop_desc:PropertyDefinition.LIC_PROP ]}"/>
-              </div>
-            <br/>
-              <div class="span8">
+                <div class="span12">
+                    <h6>${message(code:'licence.properties')}</h6>
+                    <div id="custom_props_div">
+                        <g:render template="/templates/properties/custom" model="${[ ownobj:license,prop_desc:PropertyDefinition.LIC_PROP ]}"/>
+                    </div>
+                </div>
+                <br/>
+
+                <div class="span8">
   
                 <h6>Information</h6>
 

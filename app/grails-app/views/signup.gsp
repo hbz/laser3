@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>Sign Up | Knowledge Base+</title>
+    <title>Sign Up | ${message(code:'laser', default:'LAS:eR')}</title>
   </head>
 
     <body class="public">

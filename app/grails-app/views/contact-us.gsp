@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>Contact Us | Knowledge Base+</title>
+    <title>Contact Us | ${message(code:'laser', default:'LAS:eR')}</title>
 </head>
 
 <body class="public">

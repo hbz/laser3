@@ -26,7 +26,7 @@
 
             <p>
               <g:form action="processNewTemplateLicense"> New licence Reference: <input type="text" name="reference"/>
-              <br/><input type="submit" value="Create"/></g:form>
+              <br/><input class="btn btn-primary" type="submit" value="Create"/></g:form>
             </p>
 
           </div>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>Terms and Conditions | Knowledge Base+</title>
+    <title>Terms and Conditions | ${message(code:'laser', default:'LAS:eR')}</title>
 </head>
 
 <body class="public">

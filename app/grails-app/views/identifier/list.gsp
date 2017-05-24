@@ -8,6 +8,7 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
+		<div class="container">
 		<div class="row-fluid">
 			
 			<div class="span3">
@@ -40,7 +41,7 @@
 				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
 				</g:if>
 				
-				<table class="table table-striped">
+				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
 						
@@ -71,6 +72,7 @@
 				</div>
 			</div>
 
+		</div>
 		</div>
 	</body>
 </html>

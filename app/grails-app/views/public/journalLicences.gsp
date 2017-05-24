@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>Journals | Knowledge Base+</title>
+    <title>Journals | ${message(code:'laser', default:'LAS:eR')}</title>
 	<r:require modules="onixMatrix" />
 </head>
 
