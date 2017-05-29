@@ -32,10 +32,14 @@
 <table id="custom_props_table" class="table table-bordered">
     <thead>
     <tr>
-        <th>Property</th>
-        <th>Value</th>
-        <th>Notes</th>
-        <th>Delete</th>
+        <th>${message(code:'licence.property.table.property')}</th>
+        <th>${message(code:'licence.property.table.value')}</th>
+        <th>${message(code:'licence.property.table.notes')}</th>
+        <th>${message(code:'licence.property.table.delete')}</th>
+   <%-- <th>Property</th> --%>
+   <%-- <th>Value</th> --%>
+   <%-- <th>Notes</th> --%>
+   <%-- <th>Delete</th> --%>
     </tr>
     </thead>
     <tbody>

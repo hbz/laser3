@@ -1,7 +1,8 @@
   <table class="table table-bordered table-condensed table-striped">
     <thead>
       <tr>
-        <th>Organisation Name</th>
+        <th>${message(code:'licence.organisationName')}</th>
+   <%-- <th>Organisation Name</th> --%>
         <th>Role</th>
         <th>Actions</th>
       </tr>
@@ -24,5 +25,6 @@
     </g:each>
   </table>
   <g:if test="${editmode}">
-    <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >Add Org Link</a>
+    <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >${message(code:'licence.addOrgLink')}</a>
+<%-- <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >Add Org Link</a> --%>
   </g:if>

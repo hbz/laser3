@@ -54,44 +54,51 @@
   
   
                   <dl>
-                      <dt><label class="control-label" for="subscriptions">Linked Subscriptions</label></dt>
+                      <dt><label class="control-label" for="subscriptions">${message(code:'licence.linkedSubscriptions')}</label></dt>
+                 <%-- <dt><label class="control-label" for="subscriptions">Linked Subscriptions</label></dt> --%>
                       <dd>
                         <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                           <g:each in="${license.subscriptions}" var="sub">
                             <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.id} (${sub.name})</g:link><br/>
                           </g:each>
                         </g:if>
-                        <g:else>No currently linked subscriptions.</g:else>
+                        <g:else>${message(code:'licence.noLinkedSubscriptions')}</g:else>
+                   <%-- <g:else>No currently linked subscriptions.</g:else> --%>
                       </dd>
                   </dl>
                 
                   <dl>
-                      <dt><label class="control-label" for="${license.pkgs}">Linked Packages</label></dt>
+                      <dt><label class="control-label" for="${license.pkgs}">${message(code:'licence.linkedPackages')}</label></dt>
+                 <%-- <dt><label class="control-label" for="${license.pkgs}">Linked Packages</label></dt> --%>
                       <dd>
                         <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
                           <g:each in="${license.pkgs}" var="pkg">
                             <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.id} (${pkg.name})</g:link><br/>
                           </g:each>
                         </g:if>
-                        <g:else>No currently linked packages.</g:else>
+                        <g:else>${message(code:'licence.noLinkedPackages')}</g:else>
+                   <%-- <g:else>No currently linked packages.</g:else> --%>
                       </dd>
                   </dl>
                 
       
                   <dl>
-                      <dt><label class="control-label" for="reference">Reference</label></dt>
+                      <dt><label class="control-label" for="reference">${message(code:'licence.reference')}</label></dt>
+                 <%-- <dt><label class="control-label" for="reference">Reference</label></dt> --%>
                       <dd>
                         <g:xEditable owner="${license}" field="reference" id="reference"/>
                       </dd>
                   </dl>
                   <dl>
-                      <dt><label class="control-label" for="contact">Licence Contact</label></dt>
+                      <dt><label class="control-label" for="contact">${message(code:'licence.licenceContact')}</label></dt>
+                 <%-- <dt><label class="control-label" for="contact">Licence Contact</label></dt> --%>
                       <dd>
                         <g:xEditable owner="${license}" field="contact" id="contact"/>
                       </dd>
                   </dl>
                   <dl>
-                      <dt><label class="control-label" for="reference">Status</label></dt>
+                      <dt><label class="control-label" for="reference">${message(code:'licence.status')}</label></dt>
+                 <%-- <dt><label class="control-label" for="reference">Status</label></dt> --%>
                       <dd>
                         <g:xEditableRefData owner="${license}" field="status" config='License Status'/>
                       </dd>
@@ -99,7 +106,8 @@
       
                   <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
                     <dl>
-                        <dt><label class="control-label">ONIX-PL Licence</label></dt>
+                        <dt><label class="control-label">${message(code:'licence.ONIX-PL-Licence')}</label></dt>
+                   <%-- <dt><label class="control-label">ONIX-PL Licence</label></dt> --%>
                         <dd>
                             <g:if test="${license.onixplLicense}">
                                 <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
@@ -115,7 +123,8 @@
                   </sec:ifAnyGranted>
       
                   <dl>
-                      <dt><label class="control-label" for="licenseUrl"><g:message code="licence" default="Licence"/> Url</label></dt>
+                      <dt><label class="control-label" for="licenseUrl"><g:message code="licence" default="Lizenz"/> ${message(code:'licence.Url')}</label></dt>
+                 <%-- <dt><label class="control-label" for="licenseUrl"><g:message code="licence" default="Licence"/> Url</label></dt> --%>
                       <dd>
                         <g:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
                         <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">License Link</a></g:if>
@@ -123,49 +132,56 @@
                   </dl>
       
                   <dl>
-                      <dt><label class="control-label" for="licensorRef">Licensor Ref</label></dt>
+                      <dt><label class="control-label" for="licensorRef">${message(code:'licence.licensorRef')}</label></dt>
+                 <%-- <dt><label class="control-label" for="licensorRef">Licensor Ref</label></dt> --%>
                       <dd>
                         <g:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
                       </dd>
                   </dl>
       
                   <dl>
-                      <dt><label class="control-label" for="licenseeRef">Licensee Ref</label></dt>
+                      <dt><label class="control-label" for="licenseeRef">${message(code:'licence.licenseeRef')}</label></dt>
+                 <%-- <dt><label class="control-label" for="licenseeRef">Licensee Ref</label></dt> --%>
                       <dd>
                         <g:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">Public?</label></dt>
+                      <dt><label class="control-label" for="isPublic">${message(code:'licence.isPublic')}</label></dt>
+                 <%-- <dt><label class="control-label" for="isPublic">Public?</label></dt> --%>
                       <dd>
                         <g:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">Start Date</label></dt>
+                      <dt><label class="control-label" for="isPublic">${message(code:'licence.startDate')}</label></dt>
+                 <%-- <dt><label class="control-label" for="isPublic">Start Date</label></dt> --%>
                       <dd>
                         <g:xEditable owner="${license}" type="date" field="startDate" />
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">End Date</label></dt>
+                      <dt><label class="control-label" for="isPublic">${message(code:'licence.endDate')}</label></dt>
+                 <%-- <dt><label class="control-label" for="isPublic">End Date</label></dt> --%>
                       <dd>
                         <g:xEditable owner="${license}" type="date" field="endDate" />
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="licenseCategory">Licence Category</label></dt>
+                      <dt><label class="control-label" for="licenseCategory">${message(code:'licence.licenceCategory')}</label></dt>
+                 <%-- <dt><label class="control-label" for="licenseCategory">Licence Category</label></dt> --%>
                       <dd>
                         <g:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="licenseeRef">Org Links</label></dt>
+                      <dt><label class="control-label" for="licenseeRef">${message(code:'licence.orgLinks')}</label></dt>
+                 <%-- <dt><label class="control-label" for="licenseeRef">Org Links</label></dt> --%>
                       <dd>
                         <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:license?.orgLinks,editmode:editable]}" />
                       </dd>
@@ -191,7 +207,8 @@
               </div>
               <div class="span4">
                 <div class="well">
-                <label>  <h5>Licence Actions</h5> </label>
+                <label>  <h5>${message(code:'licence.actions')}</h5> </label>
+           <%-- <label>  <h5>Licence Actions</h5> </label> --%>
             <g:if test="${canCopyOrgs}">
                  
                   <label for="orgShortcode">Copy licence for:</label>
@@ -211,7 +228,8 @@
           <g:link name="deletLicenceBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,'Are you sure you want to delete ${license.reference?:'** No licence reference ** '}?')" params="${[baselicense:license.id,'delete-licence':'Y',shortcode:'replaceme']}" class="btn btn-danger">Delete</g:link> --}%
           </g:if>
                   <g:else>
-                    Actions available to editors only
+                    ${message(code:'licence.actionsRestriction')}
+               <%-- Actions available to editors only --%>
                   </g:else>
                  </div>
                 <g:render template="/templates/documents" model="${[ ownobj:license, owntp:'license']}" />
