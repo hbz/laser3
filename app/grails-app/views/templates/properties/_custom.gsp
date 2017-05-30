@@ -18,13 +18,13 @@
 </g:if>
 
 <g:if test="${editable}">
-	<g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" 
-			method="post" 
+	<g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']"
+			method="post"
 			name="cust_prop_add_value"
-	        class="form-inline" 
-	        update="custom_props_div" 
+	        class="form-inline"
+	        update="custom_props_div"
 	        onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')">
-	        
+
 	    <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
 	    <input type="hidden" name="ownerId" value="${ownobj.id}"/>
 	    <input type="hidden" name="editable" value="${editable}"/>
@@ -36,12 +36,12 @@
 <br/>
 <table id="custom_props_table" class="table table-bordered">
     <thead>
-	    <tr>
-	        <th>Property</th>
-	        <th>Value</th>
-	        <th>Notes</th>
-	        <th>Delete</th>
-	    </tr>
+    <tr>
+        <th>${message(code:'licence.property.table.property')}</th>
+        <th>${message(code:'licence.property.table.value')}</th>
+        <th>${message(code:'licence.property.table.notes')}</th>
+        <th>${message(code:'licence.property.table.delete')}</th>
+    </tr>
     </thead>
     <tbody>
     <g:each in="${ownobj.customProperties}" var="prop">
@@ -66,7 +66,7 @@
         </td>
         <td>
             <g:if test="${editable == true}">
-            <g:remoteLink controller="ajax" action="deleteCustomProperty" 
+            <g:remoteLink controller="ajax" action="deleteCustomProperty"
                 before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                 params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
                 onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')" update="custom_props_div">Delete</g:remoteLink>
@@ -79,7 +79,7 @@
 <div id="cust_prop_add_modal" class="modal hide">
 
     <g:formRemote id="create_cust_prop" name="modal_create_cust_prop"
-                  url="[controller: 'ajax', action: 'addCustomPropertyType']" method="post" update="custom_props_div" 
+                  url="[controller: 'ajax', action: 'addCustomPropertyType']" method="post" update="custom_props_div"
                   onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')">
         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
