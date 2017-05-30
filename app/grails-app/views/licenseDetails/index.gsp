@@ -198,17 +198,19 @@
                 <label>  <h5>${message(code:'licence.actions')}</h5> </label>
             <g:if test="${canCopyOrgs}">
                  
-                  <label for="orgShortcode">Copy licence for:</label>
+                  <label for="orgShortcode">${message(code:'licence.copyLicencefor')}:</label>
+             <%-- <label for="orgShortcode">Copy licence for:</label> --%>
                   <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" id="orgShortcode" name="orgShortcode"/>
                               
-                   <g:link name="copyLicenceBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-licence':'Y']}" onclick="return changeLink(this,'Are you sure you want to copy this licence?')" class="btn btn-success">Copy</g:link>
+                   <g:link name="copyLicenceBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-licence':'Y']}" onclick="return changeLink(this,'Are you sure you want to copy this licence?')" class="btn btn-success">${message(code:'licence.button.copy')}</g:link>
 
-               <label for="linkSubscription">Link to Subscription:</label>
+               <label for="linkSubscription">${message(code:'licence.linktoSubscription')}:</label>
+          <%-- <label for="linkSubscription">Link to Subscription:</label> --%>
 
                <g:form id="linkSubscription" name="linkSubscription" action="linkToSubscription">
                 <input type="hidden" name="licence" value="${license.id}"/>
                 <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription"/>
-                <input type="submit" class="btn btn-success"value="Link"/>
+                <input type="submit" class="btn btn-success"value="${message(code:'licence.link')}"/>
               </g:form>
 %{--            
           leave this out for now.. it is a bit confusing.

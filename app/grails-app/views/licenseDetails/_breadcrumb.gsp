@@ -6,7 +6,7 @@
         <li> <g:link controller="licenseDetails" action="index" id="${params.id}"><g:message code="licence.details" default="License Details"/></g:link> </li>
     
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>&nbsp;
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'licence.exports')}<b class="caret"></b></a>&nbsp;
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li>
               <g:link action="index" params="${params+[format:'json']}">Json Export</g:link>
@@ -24,7 +24,7 @@
         </li>
 
         <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+          <li class="pull-right"><span class="badge badge-warning">${message(code:'licence.editable')}</span>&nbsp;</li>
         </g:if>
         <li class="pull-right"><g:annotatedLabel owner="${license}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
       </ul>
