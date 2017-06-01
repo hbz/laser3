@@ -2,7 +2,15 @@ package com.k_int.kbplus
 
 import javax.persistence.Transient
 import com.k_int.ClassUtils
+import org.apache.commons.logging.*
+import groovy.util.logging.*
+import org.apache.commons.logging.LogFactory
+
 class Platform {
+
+  @Transient
+  def grailsApplication
+  static Log static_logger = LogFactory.getLog(Platform)
 
   String impId
   String name
@@ -48,26 +56,37 @@ class Platform {
   def static lookupOrCreatePlatform(Map params=[:]) {
 
     def platform = null;
+    def platform_candidates = null;
 
     if ( params.name && (params.name.trim().length() > 0)  ) {
 
       String norm_name = params.name.trim().toLowerCase();
 
       if( params.primaryUrl && (params.primaryUrl.length() > 0) ){
-        def p_url = params.primaryUrl;
-        platform = Platform.executeQuery("select pl from Platform as pl where normname = ? or primary_url = ?",[norm_name, p_url])
+
+        platform_candidates = Platform.executeQuery("from Platform where normname = ? or primaryUrl = ?",[norm_name, params.primaryUrl])
+
+        if(platform_candidates && platform_candidates.size() == 1){
+          platform = platform_candidates[0]
+        }
       }
       else {
-        platform = Platform.findByNormname(norm_name)
+
+        platform_candidates = Platform.executeQuery("from Platform where normname = :nname or primaryUrl = :nname",[nname: norm_name])
+
+        if(platform_candidates && platform_candidates.size() == 1){
+          platform = platform_candidates[0]
+        }
       }
 
-      if ( !platform ) {
+      if ( !platform && !platform_candidates) {
         platform = new Platform(impId:java.util.UUID.randomUUID().toString(),
                                 name:params.name,
                                 normname:norm_name,
                                 provenance:params.provenance,
                                 primaryUrl:(params.primaryUrl ?: null),
                                 lastmod:System.currentTimeMillis()).save(flush:true)
+
       }
     }
     platform;
