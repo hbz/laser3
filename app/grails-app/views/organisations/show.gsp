@@ -122,11 +122,11 @@
             <dd><ul>
               <g:each in="${orgInstance.links}" var="i">
                 <li>
-                  <g:if test="${i.pkg}"><g:link controller="packageDetails" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.value})</g:link></g:if>
-                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.value})</g:link></g:if>
-                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${i.lic.status?.value})</g:if>
-                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.value})</g:link></g:if>
-                  (${i.roleType?.value}) </li>
+                  <g:if test="${i.pkg}"><g:link controller="packageDetails" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${message(code:"refdata.${i.pkg?.packageStatus?.value}", default:"${i.pkg?.packageStatus?.value}")})</g:link></g:if>
+                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${message(code:"refdata.${i.sub.status?.value}", default:"${i.sub.status?.value}")})</g:link></g:if>
+                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})</g:if>
+                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title} (${message(code:"refdata.${i.title.status?.value}", default:"${i.title.status?.value}")})</g:link></g:if>
+                  (${message(code:"refdata.${i.roleType?.value}", default:"${i.roleType?.value}")}) </li>
               </g:each>
             </ui></dd>
           </g:if>
@@ -151,6 +151,9 @@
       $("#addIdentifierSelect").select2({
         placeholder: "${message(code:'identifier.select.ph')}",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',

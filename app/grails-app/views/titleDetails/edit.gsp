@@ -164,6 +164,9 @@
       $("#addIdentifierSelect").select2({
         placeholder: "${message(code:'identifier.select.ph')}",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',
@@ -186,6 +189,9 @@
       $("#addOrgSelect").select2({
         placeholder: "Search for an org...",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',
@@ -205,6 +211,9 @@
       $("#orgRoleSelect").select2({
         placeholder: "Search for an role...",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',

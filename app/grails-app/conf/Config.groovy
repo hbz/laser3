@@ -507,9 +507,9 @@ log4j = {
       'grails.app.jobs',
       'grails.app.conf.BootStrap',
       //'edu.umn.shibboleth.sp',
-      'com.k_int'
+      'com.k_int',
   // 'org.springframework.security'
-  // 'grails.app.tagLib',
+      'grails.app.taglib.InplaceTagLib'
 
   // info   'com.linkedin.grails'
 }

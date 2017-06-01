@@ -53,14 +53,20 @@ class Platform {
 
       String norm_name = params.name.trim().toLowerCase();
 
-      platform = Platform.findByNormnameOrPrimaryurl(norm_name, params.primaryUrl)
+      if( params.primaryUrl && (params.primaryUrl.length() > 0) ){
+        def p_url = params.primaryUrl;
+        platform = Platform.executeQuery("select pl from Platform as pl where normname = ? or primary_url = ?",[norm_name, p_url])
+      }
+      else {
+        platform = Platform.findByNormname(norm_name)
+      }
 
       if ( !platform ) {
         platform = new Platform(impId:java.util.UUID.randomUUID().toString(),
                                 name:params.name,
                                 normname:norm_name,
                                 provenance:params.provenance,
-                                primaryUrl:params.primaryUrl,
+                                primaryUrl:(params.primaryUrl ?: null),
                                 lastmod:System.currentTimeMillis()).save(flush:true)
       }
     }

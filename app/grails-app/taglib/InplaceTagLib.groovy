@@ -129,7 +129,7 @@ class InplaceTagLib {
 
 
   def xEditableRefData = { attrs, body ->
-    // log.debug("xEditableRefData ${attrs}");
+//     log.debug("xEditableRefData ${attrs}");
     try {
       boolean editable = request.getAttribute('editable')
      
@@ -153,6 +153,7 @@ class InplaceTagLib {
 
         // Here we can register different ways of presenting object references. The most pressing need to be
         // outputting a span containing an icon for refdata fields.
+
         out << renderObjectValue(attrs.owner[attrs.field])
 
         out << "</span></span>"
@@ -171,19 +172,30 @@ class InplaceTagLib {
    */
   def renderObjectValue(value) {
     def result=''
+    def not_set = message(code:'refdata.notSet')
+    def no_ws =''
     if ( value ) {
       switch ( value.class ) {
         case com.k_int.kbplus.RefdataValue.class:
+          no_ws = value.value.replaceAll(' ','')
+
           if ( value.icon != null ) {
             result="<span class=\"select-icon ${value.icon}\"></span>";
-            result += message(code:'refdata.${value.value}', default:"${value.value?: message(code:'refdata.notSet')}")
+            result += message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
           }
           else {
-            result = message(code:'refdata.${value.value}', default:"${value.value?: message(code:'refdata.notSet')}")
+            result = message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
           }
           break;
         default:
-          result = message(code:'refdata.${value.toString()}', default:"${value.toString()}")
+          if(value instanceof String){
+
+          }else{
+            value = value.toString()
+          }
+          no_ws = value.replaceAll(' ','')
+
+          result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
       }
     }
     result;

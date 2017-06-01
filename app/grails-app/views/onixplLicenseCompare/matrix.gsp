@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap" />
-<title>KB+</title>
+<title>LAS:eR ${message(code:'onixplLicence.compare.label', default:'ONIX-PL Licence Compare')} </title>
 </head>
 <body>
 	<div class="container">

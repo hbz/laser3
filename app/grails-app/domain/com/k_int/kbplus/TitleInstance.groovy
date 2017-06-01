@@ -195,57 +195,110 @@ class TitleInstance {
   static def lookupOrCreate(candidate_identifiers, title, enrich) {
     def result = null;
     def lu_ids = []
+    def ti_candidates = []
+    def canonical_ids = []
 
     candidate_identifiers.each { i ->
       def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
+      canonical_ids.add(id)
       static_logger.debug("processing candidate identifier ${i} as ${id}");
 
-      def io = IdentifierOccurrence.findByIdentifier(id)
-      if ( io && io.ti ) {
-        static_logger.debug("located existing title: ${io.ti.id}");
-        result = io.ti;
-      }
-      else {
-        static_logger.debug("No trace of ${id} - add to list to process later on");
-        lu_ids.add(id);
+      def io = IdentifierOccurrence.findAllByIdentifier(id)
+
+      if ( io.size() > 0 ) {
+        static_logger.debug("located existing title(s)");
+        io.each { occ ->
+          if(occ.ti && !ti_candidates.contains(occ.ti)){
+            ti_candidates.add(occ.ti)
+          }
+        }
       }
     }
+    switch (ti_candidates.size()) {
+      case 0:
+        static_logger.debug("No result - creating new title");
+        result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString());
+        result.save(flush:true);
 
-    if (!result) {
-      static_logger.debug("No result - creating new title");
-      result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString());
-      result.save(flush:true);
+        result.ids=[]
 
-      result.ids=[]
-      lu_ids.each {
-        def new_io = new IdentifierOccurrence(identifier:it, ti:result)
-        if ( new_io.save(flush:true) ) {
-          log.debug("Created new IO");
+        lu_ids.each {
+          def new_io = new IdentifierOccurrence(identifier:it, ti:result)
+          if ( new_io.save(flush:true) ) {
+            log.debug("Created new IO");
+          }
+          else {
+            log.error("Problem creating new IO");
+          }
+          // result.ids.add(new IdentifierOccurrence(identifier:it, ti:result));
         }
-        else {
-          log.error("Problem creating new IO");
+
+        if ( ! result.save(flush:true) ) {
+          throw new RuntimeException("Problem creating title instance : ${result.errors?.toString()}");
         }
-        // result.ids.add(new IdentifierOccurrence(identifier:it, ti:result));
-      }
-      if ( ! result.save(flush:true) ) {
-        throw new RuntimeException("Problem creating title instance : ${result.errors?.toString()}");
-      }
+
+        break;
+
+      case 1:
+        static_logger.debug("Found exacly one title for the given identifiers.")
+        result = ti_candidates[0]
+
+        break;
+
+      case {it > 1}:
+        static_logger.debug("Matched multiple titles, looking for full match.")
+        def full_matches = []
+
+        ti_candidates.each { cti ->
+          boolean id_mismatch = false
+
+          cti.ids.each { ctio ->
+            if (!canonical_ids.contains(ctio.identifier)){
+              id_mismatch = true
+            }
+          }
+
+          if (!id_mismatch){
+            full_matches.add(cti)
+          }
+        }
+
+        if (full_matches.size() == 0){
+          static_logger.debug("None of the matches is a full match. Can't decide on one title!")
+        }
+        else if (full_matches.size() == 1) {
+          static_logger.debug("Found exactly one full match.")
+          result = full_matches[0]
+        }
+        else{
+          static_logger.debug("Found multiple existing titles for which all of their identifiers are in the supplied set. Skipping...")
+        }
+
+        break;
     }
-    else {
-      static_logger.debug("Found existing title check for enrich...");
-      if ( enrich ) {
-        static_logger.debug("enrich... current ids = ${result.ids}, non-matching ids = ${lu_ids}");
-        // println("Checking that all identifiers are already present in title");
-        boolean modified = false;
-        // Check that all the identifiers listed are present
-        lu_ids.each { identifier ->
-          static_logger.debug("adding identifier ${identifier.ns.ns}:${identifier.value} - adding");
+
+    if ( result && enrich ) {
+      static_logger.debug("enrich... current ids = ${result.ids}, non-matching ids = ${lu_ids}");
+      // println("Checking that all identifiers are already present in title");
+      boolean modified = false;
+      // Check that all the identifiers listed are present
+      canonical_ids.each { identifier ->
+        static_logger.debug("adding identifier ${identifier.ns.ns}:${identifier.value} - adding");
+        boolean id_present = false
+
+        result.ids.each { rid ->
+          if ( rid.identifier.ns == identifier.ns && rid.identifier.value == identifier.value ){
+            id_present = true
+          }
+        }
+
+        if ( !id_present ){
           def new_io = new IdentifierOccurrence(identifier:identifier, ti:result).save();
           modified=true;
         }
-        if ( modified ) {
-          result.save();
-        }
+      }
+      if ( modified ) {
+        result.save();
       }
     }
 
@@ -256,6 +309,7 @@ class TitleInstance {
   /**
    *  Caller passes in a map like {issn:'nnnn-nnnn',doi:'quyeihdj'} and expects to get back a new title
    *  or one matching any of the identifiers
+   *  - assumes all identifiers to be unique -
    */
   static def lookupOrCreateViaIdMap(candidate_identifiers, title) {
     def result = null;
@@ -273,7 +327,7 @@ class TitleInstance {
           ids.add(id);
 
           // If the namespace is marked as non-unique, we allow repeats. otherwise check for uniqueness
-          if ( id.ns.nonUnique==Boolean.TRUE ) {
+          if ( id.ns.nonUnique == Boolean.TRUE ) {
             // Namespace is marked as non-unique, don't perform a uniqueness check
           }
           else {

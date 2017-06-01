@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>Knowledge Base+</title>
+    <title>LAS:eR</title>
 </head>
 
 <body class="public">

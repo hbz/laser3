@@ -6,6 +6,7 @@ import grails.plugins.springsecurity.Secured
 import grails.converters.*
 import com.k_int.custprops.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.apache.log4j.*
 
 class AjaxController {
     def refdata_config = [
@@ -465,7 +466,9 @@ class AjaxController {
 
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-        result.add([value:"${rowobj.class.name}:${rowobj.id}",text:"${rowobj[config.cols[0]]}"]);
+        def no_ws = rowobj[config.cols[0]].replaceAll(' ','');
+        def local_text = message(code:"refdata.${no_ws}", default:"${rowobj[config.cols[0]]}");
+        result.add([value:"${rowobj.class.name}:${rowobj.id}",text:"${local_text}"]);
       }
     }
     else {
@@ -847,20 +850,31 @@ class AjaxController {
    */
   def renderObjectValue(value) {
     def result=''
+    def not_set = message(code:'refdata.notSet')
+    def no_ws =''
+
     if ( value ) {
       switch ( value.class ) {
         case com.k_int.kbplus.RefdataValue.class:
+          no_ws = value.value.replaceAll(' ','')
+
           if ( value.icon != null ) {
             result="<span class=\"select-icon ${value.icon}\"></span>";
-            result += message(code:'refdata.${value.value}', default:"${value.value?: message(code:'refdata.notSet')}")
+            result += message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
           }
           else {
-            result = message(code:'refdata.${value.value}', default:"${value.value?: message(code:'refdata.notSet')}")
+            result = message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
           }
           break;
         default:
-          result = message(code:'refdata.${value.toString()}', default:"${value.toString()}")
-          break;
+          if(value instanceof String){
+
+          }else{
+            value = value.toString()
+          }
+          no_ws = value.replaceAll(' ','')
+
+          result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
       }
     }
     // log.debug("Result of render: ${value} : ${result}");

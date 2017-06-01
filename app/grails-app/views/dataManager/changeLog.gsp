@@ -89,14 +89,14 @@
         <br/>
 
         ${message(code:'datamanager.changeLog.what_changed')}:
-        <input type="checkbox" name="packages" value="Y" ${params.packages=='Y'?'checked':''}/> <g:message code="package.plural" default="Packages"/> &nbsp;
-        <input type="checkbox" name="licenses" value="Y" ${params.licenses=='Y'?'checked':''}/> <g:message code="licence.plural" default="Licences"/> &nbsp;
-        <input type="checkbox" name="titles" value="Y" ${params.titles=='Y'?'checked':''}/> <g:message code="title.plural" default="Titles"/> &nbsp;
-        <input type="checkbox" name="tipps" value="Y" ${params.tipps=='Y'?'checked':''}/> <g:message code="tipp.plural" default="TIPPs"/> &nbsp; <br/>
+        <input type="checkbox" style="vertical-align:top;" name="packages" value="Y" ${params.packages=='Y'?'checked':''}/> <g:message code="package.plural" default="Packages"/> &nbsp;
+        <input type="checkbox" style="vertical-align:top;" name="licenses" value="Y" ${params.licenses=='Y'?'checked':''}/> <g:message code="licence.plural" default="Licences"/> &nbsp;
+        <input type="checkbox" style="vertical-align:top;" name="titles" value="Y" ${params.titles=='Y'?'checked':''}/> <g:message code="title.plural" default="Titles"/> &nbsp;
+        <input type="checkbox" style="vertical-align:top;" name="tipps" value="Y" ${params.tipps=='Y'?'checked':''}/> <g:message code="tipp.plural" default="TIPPs"/> &nbsp; <br/>
         ${message(code:'datamanager.changeLog.how_changed')}:
-        <input type="checkbox" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.new_items" default="New Items"/> &nbsp;
-        <input type="checkbox" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
-        <input  class="btn btn-primary" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/>
+        <input type="checkbox" style="vertical-align:top;" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.new_items" default="New Items"/> &nbsp;
+        <input type="checkbox" style="vertical-align:top;" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
+        <div><input  class="btn btn-primary" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/></div>
       </g:form>
 
     </div>

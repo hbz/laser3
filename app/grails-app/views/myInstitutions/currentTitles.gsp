@@ -114,7 +114,7 @@
 		        <input type="hidden" name="sort" value="${params.sort}">
 		        <input type="hidden" name="order" value="${params.order}">
 		        <label>${message(code:'default.search.text', default:'Search text')}:</label>
-		        <input name="filter" value="${params.filter}" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
+		        <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
 		        <label>${message(code:'myinst.currentTitles.subs_valid_on', default:'Subscriptions Valid on')}</label>
                         <g:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
 		        &nbsp;<input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}"/>

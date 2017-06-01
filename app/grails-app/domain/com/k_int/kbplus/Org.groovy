@@ -209,6 +209,10 @@ class Org {
 
     if ( result == null ) {
       // log.debug("Create new entry for ${name}");
+      if (sector instanceof String){
+        sector = RefdataCategory.lookupOrCreate('OrgSector', sector)
+      }
+
       result = new Org(
                        name:name, 
                        sector:sector,

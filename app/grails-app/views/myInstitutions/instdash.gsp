@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'myinst.title', default:'KB+ Institutional Dash')} :: ${institution?.name}</title>
+    <title>LAS:eR ${message(code:'myinst.title', default:'Institutional Dash')} :: ${institution?.name}</title>
   </head>
 
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="myInstitutions" action="instdash" params="${[shortcode:params.shortcode]}">${institution?.name} - ${message(code:'menu.institutions.dash', default:'Dashboard')}</g:link> </li>
       </ul>
     </div>
@@ -17,7 +17,7 @@
 
     <div class="container home-page">
       <div class="well">
-        <h1>${institution.name} Dashboard</h1>
+        <h1>${institution.name} - Dashboard</h1>
         <ul class="inline">
           <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
           <li><g:link controller="myInstitutions" 

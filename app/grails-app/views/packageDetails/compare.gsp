@@ -78,10 +78,10 @@
 				<tr>
 					<td>${message(code:'package.compare.filter.add', default:'Add Filter')}</td>
 					<td colspan="2">
-        <input type="checkbox" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.insert', default:'Insert')}&nbsp;
-        <input type="checkbox" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.delete', default:'Delete')}&nbsp;
-        <input type="checkbox" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.update', default:'Update')}&nbsp;
-        <input type="checkbox" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/> ${message(code:'package.compare.filter.no_change', default:'No Change')}&nbsp;
+        <input type="checkbox" name="insrt" style="vertical-align:top" value="Y" ${params.insrt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.insert', default:'Insert')}&nbsp;
+        <input type="checkbox" name="dlt" style="vertical-align:top" value="Y" ${params.dlt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.delete', default:'Delete')}&nbsp;
+        <input type="checkbox" name="updt" style="vertical-align:top" value="Y" ${params.updt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.update', default:'Update')}&nbsp;
+        <input type="checkbox" name="nochng" style="vertical-align:top" value="Y" ${params.nochng=='Y'?'checked':''}/> ${message(code:'package.compare.filter.no_change', default:'No Change')}&nbsp;
 					</td>		
 				</tr>
 			</tbody>

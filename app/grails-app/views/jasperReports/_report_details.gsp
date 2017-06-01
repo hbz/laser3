@@ -7,7 +7,7 @@
 --%>
 
 <div class="well">
-    Report Description: ${reportdesc}
+    ${message(code:'jasper.reports.desc', default:'Report Description')}: ${reportdesc}
 
 </div>
 
@@ -18,12 +18,12 @@
         <thead>
         <tr>
             <th class="text-center" colspan="2">
-                Report Parameters
+                ${message(code:'jasper.reports.params', default:'Report Parameters')}
             </th>
         </tr>
         <tr>
-            <th>Description</th>
-            <th>Value</th>
+            <th>${message(code:'default.description.label', default:'Description')}</th>
+            <th>${message(code:'default.value.label', default:'Value')}</th>
         </tr>
         </thead>
         <tbody>
@@ -58,5 +58,5 @@
         </tr>
         </tbody>
     </table>
-    <g:submitButton name="submit" class="btn-primary" value="Generate Report"/>
+    <g:submitButton name="submit" class="btn-primary" value="${message(code:'jasper.generate.label', default:'Generate Report')}"/>
 </g:form>

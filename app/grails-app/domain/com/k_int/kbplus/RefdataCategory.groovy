@@ -15,12 +15,12 @@ class RefdataCategory {
   }
 
   static def lookupOrCreate(category_name, value) {
-    def cat = RefdataCategory.findByDesc(category_name);
+    def cat = RefdataCategory.findByDescIlike(category_name);
     if ( !cat ) {
       cat = new RefdataCategory(desc:category_name).save();
     }
 
-    def result = RefdataValue.findByOwnerAndValue(cat, value)
+    def result = RefdataValue.findByOwnerAndValueIlike(cat, value)
 
     if ( !result ) {
       new RefdataValue(owner:cat, value:value).save(flush:true);

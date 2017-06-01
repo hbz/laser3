@@ -28,7 +28,7 @@
 	    Search Journal: <input placeholder="Title or Ident. kb: for KB+ ID" name="journal" value="${journal}"/>
 	    Instituion: <input placeholder="Shortcode or KB+ ID" name="org" value="${org}"/>
 	  
-	    <button type="submit">Search</button>
+	    <button type="submit">${message(code:'default.button.search.label', default:'Search')}</button>
 	  </div>
 </div>
 </g:form>

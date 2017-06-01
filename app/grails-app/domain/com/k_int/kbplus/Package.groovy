@@ -430,7 +430,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     if ( ! found ) {
       def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
 
-      static_logger.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
+      log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
       new IdentifierOccurrence(identifier:id, pkg:this).save(flush:true)
     }
   }

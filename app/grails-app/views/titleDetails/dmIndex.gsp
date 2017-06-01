@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${message(code:'title.plural', default:'Titles')} - ${message(code:'default.search.label', default:'Search')}</title>
+    <title>LAS:eR ${message(code:'title.plural', default:'Titles')} - ${message(code:'default.search.label', default:'Search')}</title>
   </head>
 
   <body>

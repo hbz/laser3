@@ -10,7 +10,7 @@
 
     <div class="container">
         <ul class="breadcrumb">
-        <li> <g:link controller="home">${message(code: 'profile.bc.home', default:'KBPlus')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home">${message(code: 'profile.bc.home', default:'LAS:eR')}</g:link> <span class="divider">/</span> </li>
         <li class="active">${message(code: 'profile.bc.profile', default:'Profile')}</li>
       </ul>
     </div>
