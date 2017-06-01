@@ -26,7 +26,7 @@
 
             <p>
               <g:form action="processNewTemplateLicense"> ${message(code:'licence.create.ref', default:'New licence Reference')}: <input type="text" name="reference"/>
-              <br/><input type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/></g:form>
+              <br/><input class="btn btn-primary" type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/></g:form>
             </p>
 
           </div>

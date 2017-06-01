@@ -42,7 +42,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${message(code:'package.plural', default:'Packages')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'package.plural', default:'Packages')}</title>
   </head>
 
   <body>

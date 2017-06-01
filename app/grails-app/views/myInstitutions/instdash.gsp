@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>LAS:eR ${message(code:'myinst.title', default:'Institutional Dash')} :: ${institution?.name}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.title', default:'Institutional Dash')} :: ${institution?.name}</title>
   </head>
 
   <body>
@@ -46,6 +46,9 @@
           <li><g:link controller="myInstitutions" 
                                        action="addressbook" 
                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
+          <li><g:link controller="myInstitutions" 
+                                       action="propertyRules" 
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link></li>
         </ul>
       </div>
     </div>

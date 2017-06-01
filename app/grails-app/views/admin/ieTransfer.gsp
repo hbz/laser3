@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Admin::IE Transfer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Admin::IE Transfer</title>
   </head>
   <body>
   	<div class="container">

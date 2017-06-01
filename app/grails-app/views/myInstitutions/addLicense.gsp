@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${message(code:'myinst.addLicence.label', default:'Data import explorer')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicence.label', default:'Data import explorer')}</title>
   </head>
   <body>
 

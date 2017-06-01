@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} - ${message(code:'myinst.tipview.label', default:'Edit Core Titles')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'myinst.tipview.label', default:'Edit Core Titles')}</title>
   </head>
 
   <body>

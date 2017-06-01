@@ -68,7 +68,7 @@
             </g:if>
             <g:else>
                 <br/>
-                ${message(code:'onix.import.existing', default:'Existing associations with KB+ licences were maintained.')}
+                ${message(code:'onix.import.existing_licences', default:'Existing associations with LAS:eR licences were maintained.')}
             </g:else>
         </g:if>
     <%-- Show the form if no OPL has been created --%>

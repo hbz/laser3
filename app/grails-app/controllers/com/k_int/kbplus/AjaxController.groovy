@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.apache.log4j.*
 
@@ -507,64 +507,148 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
   }
 
-  def addCustPropertyType(){
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def addCustomPropertyType(){
     def newProp
-    def error 
+    def error
     def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
-    def owner =  grailsApplication.getArtefact("Domain",ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+
     if(params.cust_prop_type.equals(RefdataValue.toString())){
-        if(params.refdatacategory){
-          newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
-          def cat = RefdataCategory.get(params.refdatacategory)
-          newProp.setRefdataCategory(cat.desc)
-          newProp.save(flush:true)    
-        }else{
-          error = message(code:'ajax.addCustPropertyType.error', default:'Type creation failed. Please select a ref data type.')
-        }
-    }else{
+      if(params.refdatacategory){
         newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+        def cat = RefdataCategory.get(params.refdatacategory)
+        newProp.setRefdataCategory(cat.desc)
+        newProp.save(flush:true)
+      } else{
+        error = message(code:'ajax.addCustPropertyType.error', default:'Type creation failed. Please select a ref data type.')
+      }
+    } else{
+      newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
     }
-     if(newProp?.hasErrors()){
-        log.error(newProp.errors)
-    }else{
-        if(params.autoAdd == "on" && newProp){
+    if(newProp?.hasErrors()){
+      log.error(newProp.errors)
+    } else{
+      if(params.autoAdd == "on" && newProp){
           params.propIdent = newProp.id.toString()
-          chain( action: "addCustomPropertyValue", params:params)    
-        }
+          chain(action: "addCustomPropertyValue", params:params)
+      }
     }
-    request.setAttribute("editable",params.editable == "true")
+    request.setAttribute("editable", params.editable == "true")
     if(params.redirect){
       flash.newProp = newProp
       flash.error = error
-      redirect(controller:"propertyDefinition",action:"create")
-    }else{
-      render(template: "/templates/custom_props", model:[ownobj:owner, newProp:newProp, error:error])        
+      redirect(controller:"propertyDefinition", action:"create")
+    } else{
+      render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error])
     }
   }
 
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def addPrivatePropertyType(){
+    // TODO has to be refactored to fit private property
+    // TODO this doesnt work !!!
+    // TODO has to be refactored to fit private property
+    def newProp
+    def error
+    def ownerClass = params.ownerClass // we might need this for addPrivatePropertyValue
+    def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    if(params.cust_prop_type.equals(RefdataValue.toString())){
+      if(params.refdatacategory){
+        newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+        def cat = RefdataCategory.get(params.refdatacategory)
+        newProp.setRefdataCategory(cat.desc)
+        newProp.save(flush:true)
+      } else{
+        error = "Type creation failed. Please select a ref data type."
+      }
+    } else{
+      newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+    }
+    if(newProp?.hasErrors()){
+      log.error(newProp.errors)
+    } else{
+      if(params.autoAdd == "on" && newProp){
+        params.propIdent = newProp.id.toString()
+        chain(action: "addPrivatePropertyValue", params:params)
+      }
+    }
+    request.setAttribute("editable", params.editable == "true")
+    if(params.redirect){
+      flash.newProp = newProp
+      flash.error = error
+      redirect(controller:"propertyDefinition", action:"create")
+    } else{
+      render(template: "/templates/properties/private", model:[ownobj:owner, newProp:newProp, error:error])
+    }
+  }
+
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def addCustomPropertyValue(){
     def error
     def newProp
-    def owner =  grailsApplication.getArtefact("Domain",params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-    def type = PropertyDefinition.get(params.propIdent.toLong())
+    def owner = grailsApplication.getArtefact("Domain",params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    def type  = PropertyDefinition.get(params.propIdent.toLong())
 
-    def existingProp = owner.customProperties.find{it.type.name == type.name }
+    def existingProp = owner.customProperties.find{it.type.name == type.name}
 
-    if( existingProp == null ){
-      newProp = PropertyDefinition.createPropertyValue( owner, type)    
+    if(existingProp == null){
+        newProp = PropertyDefinition.createCustomPropertyValue(owner, type)
+        if(newProp.hasErrors()){
+            log.error(newProp.errors)
+        } else{
+            log.debug("New custom property created: " + newProp.type.name)
+        }
+    } else{
+        error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
+    }
+
+    owner.refresh()
+    request.setAttribute("editable", params.editable == "true")
+    render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error])
+  }
+
+  /**
+    * Add domain specific private property
+    * @return
+    */
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def addPrivatePropertyValue(){
+    def error
+    def newProp
+    def tenant = Org.get(params.tenantId)
+    def owner  = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    def type   = PropertyDefinition.get(params.propIdent.toLong())
+
+    def existingProps = owner.privateProperties.findAll {
+      it.owner.id  == owner.id
+      it.type.name == type.name // this sucks due lazy proxy problem
+      it.tenant.id == tenant.id
+    }
+    existingProps.removeAll{it.type.name != type.name} // dubious fix
+
+    if(existingProps.size() == 0){
+      newProp = PropertyDefinition.createPrivatePropertyValue(owner, tenant, type)
       if(newProp.hasErrors()){
         log.error(newProp.errors)
-      }else{
-        log.debug("New Property created: "+newProp.type.name)
+      } else{
+        log.debug("New private property created: " + newProp.type.name)
       }
-    }else{
+    } else{
       error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
     }
 
     owner.refresh()
-    request.setAttribute("editable",params.editable == "true")
-    render(template: "/templates/custom_props",model:[ownobj:owner,newProp:newProp,error:error ])  
-  }  
+    request.setAttribute("editable", params.editable == "true")
+    render(template: "/templates/properties/private", model:[
+            ownobj: owner,
+            tenant: tenant,
+            newProp: newProp,
+            error: error,
+            custom_props_div: "custom_props_div_${tenant.shortcode}", // JS markup id
+            prop_desc: type.descr // form data
+    ])
+  }
 
   def delOrgRole() {
     // log.debug("delOrgRole ${params}");
@@ -574,21 +658,54 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
   }
 
-  def delCustomProperty(){
-      def className = params.propclass.split(" ")[1]
-      def propClass = Class.forName(className)
-      def property = propClass.get(params.id)
-      def owner =  grailsApplication.getArtefact("Domain",params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-      owner.customProperties.remove(property)
-      property.delete(flush:true)
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def deleteCustomProperty(){
+    def className = params.propclass.split(" ")[1]
+    def propClass = Class.forName(className)
+    def property  = propClass.get(params.id)
+    def owner     =  grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    owner.customProperties.remove(property)
+    property.delete(flush:true)
 
-      if(property.hasErrors()){
+    if(property.hasErrors()){
         log.error(property.errors)
-      }else{
-        log.debug("Deleted Custom Property: "+property.type.name)
-      }
-      request.setAttribute("editable", params.editable == "true")
-      render(template: "/templates/custom_props",model:[ownobj:owner, newProp:property])
+    } else{
+        log.debug("Deleted custom property: " + property.type.name)
+    }
+    request.setAttribute("editable", params.editable == "true")
+    render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:property])
+  }
+
+  /**
+    * Delete domain specific private property
+    *
+    * @return
+    */
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def deletePrivateProperty(){
+    def className = params.propclass.split(" ")[1]
+    def propClass = Class.forName(className)
+    def property  = propClass.get(params.id)
+    def tenant    = property.tenant
+    def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    def prop_desc = property.getType().getDescr()
+
+    owner.privateProperties.remove(property)
+    property.delete(flush:true)
+
+    if(property.hasErrors()){
+      log.error(property.errors)
+    } else{
+      log.debug("Deleted private property: " + property.type.name)
+    }
+    request.setAttribute("editable", params.editable == "true")
+    render(template: "/templates/properties/private", model:[
+            ownobj: owner,
+            tenant: tenant,
+            newProp: property,
+            custom_props_div: "custom_props_div_${tenant.shortcode}",  // JS markup id
+            prop_desc: prop_desc // form data
+    ])
   }
 
   def coreExtend(){

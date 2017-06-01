@@ -11,7 +11,7 @@
 <html>
 <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+</title>
+    <title>${message(code:'laser', default:'LAS:eR')}</title>
 </head>
 <body>
 
@@ -33,7 +33,7 @@
     <div class="row">
         <div class="span8">
 
-            <h6>KB+ ${message(code:'licence.information')}</h6>
+            <h6>${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.information')}</h6>
 
             <g:if test="${!onixplLicense}">
             ${message(code:'onix.cannot.find.licence')}

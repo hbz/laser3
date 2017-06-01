@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="mmbootstrap"/>
-        <title>LAS:eR ${message(code:'licence.label', default:'Licence')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.label', default:'Licence')}</title>
 </head>
 
 <body>

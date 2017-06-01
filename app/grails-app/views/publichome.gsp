@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>LAS:eR</title>
+    <title>${message(code:'laser', default:'LAS:eR')}</title>
 </head>
 
 <body class="public">

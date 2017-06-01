@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="mmbootstrap"/>
-        <title>KB+ ${message(code:'subscription.label', default:'Subscription')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
 </head>
 
 <body>
@@ -46,9 +46,5 @@
        <div class="pagination">
         <bootstrap:paginate  action="todo_history" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
       </div>
-
-
- 
-
 </body>
 </html>

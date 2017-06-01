@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Admin::Title Merge</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Admin::Title Merge</title>
   </head>
 
   <body>

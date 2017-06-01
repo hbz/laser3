@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import javax.persistence.Transient
 import java.text.Normalizer
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
 class License implements Comparable<License>{
@@ -536,7 +536,7 @@ class License implements Comparable<License>{
     def custProp = getCustomPropByName(custPropName)
     if(custProp == null){
       def type = PropertyDefinition.findByName(custPropName,)
-      custProp = PropertyDefinition.createPropertyValue(this,type)
+      custProp = PropertyDefinition.createCustomPropertyValue(this,type)
     }
 
     if ( newVal != null ) {

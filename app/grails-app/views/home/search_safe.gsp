@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data import explorer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
 
   <body>
@@ -16,7 +16,7 @@
 
     <div class="container">
       <p>
-        KB+ data explorer. Use the links above to navigate the data items imported by the KB+ import process and validate the data.
+        ${message(code:'laser', default:'LAS:eR')} data explorer. Use the links above to navigate the data items imported by the ${message(code:'laser', default:'LAS:eR')} import process and validate the data.
       </p>
       <p>
         Browse using the categories above, or search over organisations and titles below.

@@ -7,6 +7,6 @@
         <input type="submit" name="kb_core_submit" value="Change status"/>
         </g:if>
         <g:else>
-            <span id="kb_core_error"> Jusp Identifiers ${wrongIDs} don't match KB+ records.</span>
+            <span id="kb_core_error"> Jusp Identifiers ${wrongIDs} don't match ${message(code:'laser', default:'LAS:eR')} records.</span>
         </g:else>
     </g:form>

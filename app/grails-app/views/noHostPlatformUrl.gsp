@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>No Host Platform URL | Knowledge Base+</title>
+    <title>No Host Platform URL | ${message(code:'laser', default:'LAS:eR')}</title>
   </head>
 
     <body class="public">

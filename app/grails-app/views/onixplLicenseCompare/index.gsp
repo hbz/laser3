@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap" />
-<title>LAS:eR ${message(code:'onixplLicence.compare.label', default:'ONIX-PL Licence Comparison')}</title>
+<title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicence.compare.label', default:'ONIX-PL Licence Comparison')}</title>
 
 </head>
 

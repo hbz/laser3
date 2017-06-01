@@ -1,15 +1,15 @@
-%{--To use, add the g:render custom_props inside a div with id=custom_props_div, add g:javascript src=custom_properties.js--}%
-%{--on head of container page, and on window load execute  runCustomPropsJS("<g:createLink controller='ajax' action='lookup'/>");--}%
+%{--To use, add the g:render custom_props inside a div with id=custom_props_div, add g:javascript src=properties.js--}%
+%{--on head of container page, and on window load execute  initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");--}%
 
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.custprops.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
 
 <g:hasErrors bean="${newProp}">
     <bootstrap:alert class="alert-error">
-    <ul>
-        <g:eachError bean="${newProp}" var="error">
-            <li> <g:message error="${error}"/></li>
-        </g:eachError>
-    </ul>
+	    <ul>
+	        <g:eachError bean="${newProp}" var="error">
+	            <li> <g:message error="${error}"/></li>
+	        </g:eachError>
+	    </ul>
     </bootstrap:alert>
 </g:hasErrors>
 
@@ -18,25 +18,29 @@
 </g:if>
 
 <g:if test="${editable}">
-<g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post" name="cust_prop_add_value"
-              class="form-inline" update="custom_props_div" onComplete="runCustomPropsJS('${createLink(controller:'ajax', action:'lookup')}')">
-    <input type="hidden" name="propIdent" desc="${prop_desc}" id="customPropSelect"/>
-    <input type="hidden" name="ownerId" value="${ownobj.id}"/>
-    <input type="hidden" name="editable" value="${editable}"/>
-    <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-    <g:set var="local_prop" value="${message(code:'default.property.label')}"/>
-    <input type="submit" value="${message(code:'default.add.label', args:[local_prop], default:'Add Property')}" class="btn btn-primary btn-small"/>
-</g:formRemote>
+	<g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']"
+			method="post"
+			name="cust_prop_add_value"
+	        class="form-inline"
+	        update="custom_props_div"
+	        onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')">
+
+	    <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
+	    <input type="hidden" name="ownerId" value="${ownobj.id}"/>
+	    <input type="hidden" name="editable" value="${editable}"/>
+	    <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
+	     <input type="submit" value="${message(code:'default.add.label', args:[local_prop], default:'Add Property')}" class="btn btn-primary btn-small"/>
+	</g:formRemote>
 </g:if>
 
 <br/>
 <table id="custom_props_table" class="table table-bordered">
     <thead>
     <tr>
-        <th>${message(code:'default.property.label', default:'Property')}</th>
-        <th>${message(code:'default.value.label', default:'Value')}</th>
-        <th>${message(code:'default.notes.label', default:'Notes')}</th>
-        <th>${message(code:'default.actions.label', default:'Actions')}</th>
+      <th>${message(code:'licence.property.table.property')}</th>
+      <th>${message(code:'licence.property.table.value')}</th>
+      <th>${message(code:'licence.property.table.notes')}</th>
+      <th>${message(code:'licence.property.table.delete')}</th>
     </tr>
     </thead>
     <tbody>
@@ -57,14 +61,15 @@
                 <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
             </g:elseif>
         </td>
-        <td><g:xEditable owner="${prop}" type="textarea" field="note"/>
+        <td>
+        	<g:xEditable owner="${prop}" type="textarea" field="note"/>
         </td>
         <td>
             <g:if test="${editable == true}">
-            <g:remoteLink controller="ajax" action="delCustomProperty" 
+            <g:remoteLink controller="ajax" action="deleteCustomProperty"
                 before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                 params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                onComplete="runCustomPropsJS('${createLink(controller:'ajax', action:'lookup')}')" update="custom_props_div">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
+                onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')" update="custom_props_div">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
             </g:if>
         </td>
         </tr>
@@ -74,8 +79,8 @@
 <div id="cust_prop_add_modal" class="modal hide">
 
     <g:formRemote id="create_cust_prop" name="modal_create_cust_prop"
-                  url="[controller: 'ajax', action: 'addCustPropertyType']" method="post" update="custom_props_div" 
-                  onComplete="runCustomPropsJS('${createLink(controller:'ajax', action:'lookup')}')">
+                  url="[controller: 'ajax', action: 'addCustomPropertyType']" method="post" update="custom_props_div"
+                  onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')">
         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
         <input type="hidden" name="editable" value="${editable}"/>
@@ -90,26 +95,30 @@
 
         <div class="modal-body">
             <dl>
-                <dt><label class="control-label">Property Definition:</label></dt>
+                <dt>
+                	<label class="control-label">Property Definition:</label>
+                </dt>
                 <dd>
-                    <label class="property-label">Name:</label> <input type="text" name="cust_prop_name"/>
+                    <label class="property-label">Name:</label>
+                    <input type="text" name="cust_prop_name" />
                 </dd>
                 <dd>
-                    <label class="property-label">Type:</label> <g:select 
-                        from="${PropertyDefinition.validTypes.entrySet()}"
-                                optionKey="value" optionValue="key"
-                                name="cust_prop_type"
-                                id="cust_prop_modal_select"/>
+                    <label class="property-label">Type:</label>
+                    <g:select from="${PropertyDefinition.validTypes.entrySet()}"
+							optionKey="value" optionValue="key"
+							name="cust_prop_type"
+							id="cust_prop_modal_select" />
                 </dd>
 
                 <div class="hide" id="cust_prop_ref_data_name">
                     <dd>
                         <label class="property-label">Refdata Category:</label>
-                         <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+						<input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
                     </dd>
                 </div>
                 <dd>
-                    <label class="property-label">Context:</label> <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
+                    <label class="property-label">Context:</label>
+                    <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
                 </dd>
                 <dd>
                     Create value for this property: <g:checkBox name="autoAdd" checked="true"/>

@@ -12,7 +12,7 @@ import="com.k_int.kbplus.RefdataCategory"
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} - ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</title>
   </head>
   <body>
 

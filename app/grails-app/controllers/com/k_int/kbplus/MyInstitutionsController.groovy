@@ -8,11 +8,12 @@ import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
+import com.k_int.properties.*
 
 class MyInstitutionsController {
     def dataSource
@@ -2529,10 +2530,8 @@ AND EXISTS (
         result.institution  = Org.findByShortcode(params.shortcode)
         
         def visiblePersons = []
-        
         def prs = Person.findAll("from Person as P where P.tenant = ${result.institution.id}")
-        
-        
+
         prs?.each { p ->
             if(p?.isPublic?.value == 'No'){
                 visiblePersons << p
@@ -2542,5 +2541,83 @@ AND EXISTS (
 
         result
       }
-      
+
+    /**
+     * Display and manage PrivatePropertyRules on myInstitutions
+     *
+     * @return
+     */
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def propertyRules() {
+        def result          = [:]
+        result.user         = User.get(springSecurityService.principal.id)
+        result.institution  = Org.findByShortcode(params.shortcode)
+
+        if('add' == params.cmd) {
+            flash.message = addPropertyRule(params)
+        }
+        else if('delete' == params.cmd) {
+            flash.message = deletePropertyRules(params)
+        }
+        result.pprPropertyDescriptions = PrivatePropertyRule.getAvailablePropertyDescriptions()
+        result.shortcode = params.shortcode
+        result.ppRules = PrivatePropertyRule.findAllWhere([propertyTenant: result.institution])
+
+        result
+    }
+
+    /**
+     * Adding new PrivatePropertyRule if not existing
+     *
+     * @param params
+     * @return
+     */
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    private addPropertyRule(params) {
+        log.debug("adding property rule: " + params)
+
+        def definition = PropertyDefinition.findById(Long.parseLong(params.privatePropertyRule.propertyDefinition.id))
+        def tenant     = Org.findById(Long.parseLong(params.privatePropertyRule.propertyTenant))
+
+        def pprInstance = PrivatePropertyRule.findWhere(
+            propertyDefinition: definition,
+            propertyOwnerType:  params.privatePropertyRule.propertyOwnerType,
+            propertyTenant:     tenant
+        )
+        if(!pprInstance){
+            pprInstance = new PrivatePropertyRule(params.privatePropertyRule)
+
+            if (pprInstance.save(flush: true)){
+                return message(code: 'default.created.message', args:[pprInstance.propertyDefinition.descr, pprInstance.propertyDefinition.name])
+            }
+            else {
+                return message(code: 'default.not.created.message', args:[pprInstance.propertyDefinition.descr, pprInstance.propertyDefinition.name])
+            }
+        }
+    }
+
+    /**
+     * Delete existing PrivatePropertyRules matching on ppr.id and tenant
+     *
+     * @param params
+     * @return
+     */
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    private deletePropertyRules(params) {
+        log.debug("delete property rules: " + params)
+
+        def messages = []
+        def tenant = Org.findByShortcode(params.shortcode)
+        def ruleIds = params.list('propertyRuleDeleteIds')
+
+        ruleIds.each { rid ->
+            def id = Long.parseLong(rid)
+            def pprInstance = PrivatePropertyRule.findWhere(id: id, propertyTenant: tenant)
+            if (pprInstance) {
+                pprInstance.delete(flush: true)
+                messages << message(code: 'default.deleted.message', args:[pprInstance.propertyDefinition.descr, pprInstance.propertyDefinition.name])
+            }
+        }
+        messages
+    }
 }

@@ -33,8 +33,10 @@
 			
 			<div class="span9">
 
+    
 				<div class="page-header">
 					<h1><g:message code="default.show.label" args="[entityName]" /></h1>
+      				<g:render template="nav" contextPath="." />
 				</div>
 
 				<g:if test="${flash.message}">

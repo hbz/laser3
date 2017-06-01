@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${message(code:'licence.current', default:'Current Licences')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.current', default:'Current Licences')}</title>
   </head>
   <body>
 

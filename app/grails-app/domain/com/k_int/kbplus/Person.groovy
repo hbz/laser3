@@ -2,6 +2,8 @@ package com.k_int.kbplus
 
 import java.util.Date
 import java.util.List
+
+import javax.persistence.Transient
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.LogFactory
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Sort
@@ -31,13 +33,15 @@ class Person {
     static mappedBy = [
         roleLinks: 'prs',
         addresses: 'prs',
-        contacts:  'prs'
+        contacts:  'prs',
+        privateProperties: 'owner'
     ]
   
     static hasMany = [
         roleLinks: PersonRole,
         addresses: Address,
-        contacts:  Contact
+        contacts:  Contact,
+        privateProperties: PersonPrivateProperty
     ]
     
     static constraints = {
@@ -161,4 +165,10 @@ class Person {
         
         result
     }
+    
+    /*
+    @Transient
+    def getCustomPropByName(name){
+      return privateProperties.find{it.type.name == name}
+    }*/
 }

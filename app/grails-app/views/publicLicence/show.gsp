@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>KB+ <g:message code="public.licence" default=" PublicLicence"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="public.licence" default=" PublicLicence"/></title>
   </head>
 
   <body>
@@ -40,7 +40,7 @@
             <div class="row">
  <h6>${message(code:'licence.properties')}</h6>
               <div id="custom_props_div" class="span12">
-                  <g:render template="/templates/custom_props" model="${[ ownobj:license ]}"/>
+                  <g:render template="/templates/properties/custom" model="${[ ownobj:license ]}"/>
               </div>
             <br/>
               <div class="span8">

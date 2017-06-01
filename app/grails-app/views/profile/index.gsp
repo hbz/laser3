@@ -3,14 +3,14 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code: 'profile', default: 'KB+ User Profile')}</title>
+    <title>${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
   </head>
 
   <body>
 
     <div class="container">
         <ul class="breadcrumb">
-        <li> <g:link controller="home">${message(code: 'profile.bc.home', default:'LAS:eR')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home">${message(code: 'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li class="active">${message(code: 'profile.bc.profile', default:'Profile')}</li>
       </ul>
     </div>
@@ -133,7 +133,7 @@
       <div class="span6">
         <div class="well">
           <h2>${message(code: 'profile.membership.request', default:'Request new membership')}</h2>
-          <p style="word-break:normal"><g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the KBPlus team for support." />
+          <p style="word-break:normal"><g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
           </p>
 
           <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="form-search" method="get">

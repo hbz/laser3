@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="pubbootstrap"/>
-        <title>Freedom of Information Policy | Knowledge Base+</title>
+        <title>Freedom of Information Policy | ${message(code:'laser', default:'LAS:eR')}</title>
     </head>
 
     <body class="public">

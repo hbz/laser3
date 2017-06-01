@@ -1,13 +1,13 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.custprops.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition" %>
 
 <!doctype html>
 <html>
   <head>
     <meta name="layout" content="mmbootstrap">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>KB+ <g:message code="default.show.label" args="[entityName]" /></title>
+    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
     <r:require module="annotations" />
-    <g:javascript src="custom_properties.js"/>
+    <g:javascript src="properties.js"/>
   </head>
   <body>
 
@@ -21,12 +21,12 @@
 
      <h6>${message(code:'org.properties')}</h6>
               <div id="custom_props_div" class="span12">
-                  <g:render template="/templates/custom_props" model="${[ prop_desc:PropertyDefinition.ORG_CONF,ownobj:orgInstance ]}"/>
+                  <g:render template="/templates/properties/custom" model="${[ prop_desc:PropertyDefinition.ORG_CONF,ownobj:orgInstance ]}"/>
               </div>
     </div>
         <r:script language="JavaScript">
 
-     runCustomPropsJS("<g:createLink controller='ajax' action='lookup'/>");
+     initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");
 
     </r:script>
 

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>${message(code:'public.nav.signUp.label', default:'Sign Up')} | LAS:eR</title>
+    <title>${message(code:'public.nav.signUp.label', default:'Sign Up')} | ${message(code:'laser', default:'LAS:eR')}</title>
   </head>
 
     <body class="public">

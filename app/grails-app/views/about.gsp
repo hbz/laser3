@@ -2,14 +2,14 @@
 <html>
 <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>${message(code:'public.about.label', default:'About')} | LAS:eR</title>
+    <title>${message(code:'public.about.label', default:'About')} | ${message(code:'laser', default:'LAS:eR')}</title>
 </head>
 
 <body class="public">
 <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
 <div class="container">
-    <h1>${message(code:'public.nav.about.label', default:'About KB+')}</h1>
+    <h1>${message(code:'public.nav.about.label', default:'About LAS:eR')}</h1>
 </div>
 
 <div class="container">

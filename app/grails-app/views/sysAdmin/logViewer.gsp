@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap"/>
-<title>KB+ Log Watcher</title>
+<title>${message(code:'laser', default:'LAS:eR')} Log Watcher</title>
 <r:script type="JavaScript" >
   var initScroll = false;
   (function($){

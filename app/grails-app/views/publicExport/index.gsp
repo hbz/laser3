@@ -44,7 +44,7 @@
 
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>${message(code:'public.nav.exports.label', default:'Exports')} | LAS:eR</title>
+    <title>${message(code:'public.nav.exports.label', default:'Exports')} | ${message(code:'laser', default:'LAS:eR')}</title>
         <r:require module='annotations' />
 
   </head>
@@ -80,7 +80,7 @@
           <div class="well">
             <h4>Cufts style index of subscriptions offered</h4>
             <p>
-              Use the contents of this URI to drive a full crawl of the KB+ subscriptions offered data. Each row gives an identifier that can be used to
+              Use the contents of this URI to drive a full crawl of the ${message(code:'laser', default:'LAS:eR')} subscriptions offered data. Each row gives an identifier that can be used to
               construct individual subscription requests.
             </p>
             <g:link action="idx" params="${[format:'csv']}">Simple CSV</g:link><br/>

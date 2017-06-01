@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${message(code:'myinst.renewalSearch.label', default:'Renewals Generation - Search')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.renewalSearch.label', default:'Renewals Generation - Search')}</title>
   </head>
 
   <body>

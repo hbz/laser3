@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
+import com.k_int.properties.*
 
 class PersonController {
 
@@ -145,6 +147,50 @@ class PersonController {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect action: 'show', id: params.id
         }
+    }
+    
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def properties() {
+        def personInstance = Person.get(params.id)
+        if (!personInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+            redirect action: 'list'
+            return
+        }
+        
+        def user = User.get(springSecurityService.principal.id)
+        def editable
+        if(SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')) {
+          editable = true
+        }
+        else {
+          editable = true // TODO editable = true 
+        }
+
+        // create mandatory PersonPrivateProperties if not existing
+
+        def ppRulesFlat = []
+        user?.authorizedOrgs?.each{ org ->
+            def ppr = PrivatePropertyRule.getRules(personInstance.getClass().getName(), org)
+            if(ppr){
+                ppRulesFlat << ppr
+            }
+        }
+        ppRulesFlat?.flatten().each{ ppr ->
+            def pd = ppr.propertyDefinition
+            def pt = ppr.propertyTenant
+
+            if(!PersonPrivateProperty.findWhere(owner: personInstance, type: pd, tenant: pt)) {
+                def newProp = PropertyDefinition.createPrivatePropertyValue(personInstance, pt, pd)
+                if(newProp.hasErrors()){
+                    log.error(newProp.errors)
+                } else{
+                    log.debug("New private property created via private property rule: " + newProp.type.name)
+                }
+            }
+        }
+
+        [personInstance: personInstance, authorizedOrgs: user?.authorizedOrgs, editable: editable]
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

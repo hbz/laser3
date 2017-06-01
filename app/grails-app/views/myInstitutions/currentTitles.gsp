@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} - ${message(code:'title.plural', default:'Titles')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'title.plural', default:'Titles')}</title>
     
     <style>
       .filtering-dropdown-menu {max-height: 400px; overflow: hidden; overflow-y: auto;}

@@ -8,7 +8,7 @@
 <%@ page import="com.k_int.kbplus.JasperReportsController; org.jasper.JasperExportFormat" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>LAS:eR ${message(code:'jasper.reports.label', default:'Jasper Reports')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'jasper.reports.label', default:'Jasper Reports')}</title>
     <meta name="layout" content="mmbootstrap"/>
 </head>
 
