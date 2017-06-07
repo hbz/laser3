@@ -65,6 +65,7 @@ class InplaceTagLib {
     if ( editable == true ) {
       def oid = "${attrs.owner.class.name}:${attrs.owner.id}"
       def id = attrs.id ?: "${oid}:${attrs.field}"
+      def default_empty = message(code:'default.button.edit.label')
 
       out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class?:''}\""
       out << " data-type=\"${attrs.type?:'textarea'}\" data-pk=\"${oid}\""
@@ -83,6 +84,9 @@ class InplaceTagLib {
 
       if (attrs?.emptytext)
           out << " data-emptytext=\"${attrs.emptytext}\""
+      else {
+          out << " data-emptytext=\"${default_empty}\""
+      }
 
       out << " data-url=\"${data_link}\""
       out << ">"
@@ -125,7 +129,7 @@ class InplaceTagLib {
 
 
   def xEditableRefData = { attrs, body ->
-    // log.debug("xEditableRefData ${attrs}");
+//     log.debug("xEditableRefData ${attrs}");
     try {
       boolean editable = request.getAttribute('editable')
      
@@ -137,7 +141,8 @@ class InplaceTagLib {
         def data_link = createLink(controller:dataController, action: dataAction, params:[id:attrs.config,format:'json',oid:oid]).encodeAsHTML()
         def update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
         def id = attrs.id ?: "${oid}:${attrs.field}"
-        def emptyText = attrs?.emptytext? " data-emptytext=\"${attrs.emptytext}\"" : ''
+        def default_empty = message(code:'default.button.edit.label')
+        def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
         out << "<span>"
 
@@ -148,6 +153,7 @@ class InplaceTagLib {
 
         // Here we can register different ways of presenting object references. The most pressing need to be
         // outputting a span containing an icon for refdata fields.
+
         out << renderObjectValue(attrs.owner[attrs.field])
 
         out << "</span></span>"
@@ -166,18 +172,30 @@ class InplaceTagLib {
    */
   def renderObjectValue(value) {
     def result=''
+    def not_set = message(code:'refdata.notSet')
+    def no_ws =''
     if ( value ) {
       switch ( value.class ) {
         case com.k_int.kbplus.RefdataValue.class:
+          no_ws = value.value.replaceAll(' ','')
+
           if ( value.icon != null ) {
-            result="<span class=\"select-icon ${value.icon}\"></span>${value.value?:'Not set'}"
+            result="<span class=\"select-icon ${value.icon}\"></span>";
+            result += message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
           }
           else {
-            result=value.value?:'Not set'
+            result = message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
           }
           break;
         default:
-          result=value.toString();
+          if(value instanceof String){
+
+          }else{
+            value = value.toString()
+          }
+          no_ws = value.replaceAll(' ','')
+
+          result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
       }
     }
     result;
@@ -236,7 +254,7 @@ class InplaceTagLib {
    * user typing into the box. Takes advantage of refdataFind and refdataCreate methods on the domain class.
    */ 
   def simpleReferenceTypedown = { attrs, body ->
-    out << "<input type=\"hidden\" name=\"${attrs.name}\" data-domain=\"${attrs.baseClass}\" ${attrs.disabled ?  'disabled="true"' : ''} "
+    out << "<input type=\"hidden\" name=\"${attrs.name}\" data-domain=\"${attrs.baseClass}\" ${attrs.disabled ?  'disabled=\"true\"' : ''} "
     if ( attrs.id ) {
       out << "id=\"${attrs.id}\" "
     }
@@ -255,16 +273,21 @@ class InplaceTagLib {
 
 
   def simpleHiddenRefdata = { attrs, body ->
+    def default_empty = message(code:'default.button.edit.label')
+    def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
     def data_link = createLink(controller:'ajax', action: 'sel2RefdataSearch', params:[id:attrs.refdataCategory,format:'json'])
     // out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${params[attrs.name]}\"/>"
     out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" />"
-    out << "<a href=\"#\" class=\"simpleHiddenRefdata\" data-type=\"select\" data-source=\"${data_link}\" data-hidden-id=\"${attrs.name}\">"
+    out << "<a href=\"#\" class=\"simpleHiddenRefdata\" data-type=\"select\" data-source=\"${data_link}\" data-hidden-id=\"${attrs.name}\" ${emptyText} >"
     out << body()
     out << "</a>";
   }
 
   def simpleHiddenValue = { attrs, body ->
-    out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\" data-type=\"${attrs.type?:'textarea'}\" data-hidden-id=\"${attrs.name}\">${attrs.value?:''}</a>"
+    def default_empty = message(code:'default.button.edit.label')
+    def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+
+    out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\" data-type=\"${attrs.type?:'textarea'}\" data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
     out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
   }
 }

@@ -42,12 +42,12 @@
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
 
-            <h3>Identifiers</h3>
+            <h3>${message(code:'identifier.plural', default:'Identifiers')}</h3>
 
               <g:each in="${duplicates}" var="entry">
 
                  <bootstrap:alert class="alert-info">
-                 Identifier ${entry.key} used in multiple titles:
+                 ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
                  <ul>
                  <g:each in ="${entry.value}" var="dup_title">
                  <li><g:link controller='titleDetails' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
@@ -60,8 +60,8 @@
                 <tr>
                   <th>${message(code:'title.edit.component_id.label')}</td>
                   <th>${message(code:'title.edit.namespace.label')}</th>
-                  <th>${message(code:'title.edit.identifier.label')}</th>
-                  <th>${message(code:'title.edit.actions.label')}</th>
+                  <th>${message(code:'identifier.label')}</th>
+                  <th>${message(code:'default.actions.label')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -79,7 +79,7 @@
            
             <g:if test="${editable}">
               <g:form controller="ajax" action="addToCollection" class="form-inline" name="add_ident_submit">
-                ${message(code:'title.edit.identifier.select.text')}<br/>
+                ${message(code:'identifier.select.text', args:['eISSN:2190-9180'])}<br/>
                 <input type="hidden" name="__context" value="${ti.class.name}:${ti.id}"/>
                 <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
                 <input type="hidden" name="__recip" value="ti"/>
@@ -116,7 +116,7 @@
                         <td>${t.coverageDepth}</td>
                         <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
                         <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
-                        <td><g:link controller="tipp" action="show" id="${t.id}">Full TIPP record</g:link></td>
+                        <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'title.edit.tipp.show', default:'Full TIPP record')}</g:link></td>
                         </tr>
                     </g:each>
             </table>
@@ -146,7 +146,7 @@
               $("[name='add_ident_submit']").unbind( "submit" )
               $("[name='add_ident_submit']").submit();
             }else if(data.duplicates){
-              var warning = "The following Titles are also associated with this identifier:\n";
+              var warning = "${message(code:'title.edit.duplicate.warn.list', default:'The following Titles are also associated with this identifier')}:\n";
               for(var ti of data.duplicates){
                   warning+= ti.id +":"+ ti.title+"\n";
               }
@@ -164,6 +164,9 @@
       $("#addIdentifierSelect").select2({
         placeholder: "${message(code:'identifier.select.ph')}",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',
@@ -186,6 +189,9 @@
       $("#addOrgSelect").select2({
         placeholder: "Search for an org...",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',
@@ -205,6 +211,9 @@
       $("#orgRoleSelect").select2({
         placeholder: "Search for an role...",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',

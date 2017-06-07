@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="mmbootstrap"/>
-        <title>${message(code:'laser', default:'LAS:eR')} Licence</title>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.label', default:'Licence')}</title>
 </head>
 
 <body>
@@ -12,7 +12,7 @@
     </div>
 
     <div class="container">
-        <h1>${license.licensee?.name} ${license.type?.value} Licence : ${license.reference}</h1>
+        <h1>${license.licensee?.name} ${message(code:"refdata.LicenseType.${license.type?.value}")} ${message(code:'licence.label', default:'Licence')} : ${license.reference}</h1>
 
         <g:render template="nav" />
     </div>
@@ -20,29 +20,29 @@
 
 
     <div class="container">
-      <h2>${message(code:'license.additionalInfo.permissions', default:'Permissions for user')}</h2>
+      <h2>${message(code:'licence.additionalInfo.perms', default:'Permissions for user')}</h2>
       <table  class="table table-striped table-bordered">
       </table>
 
-      <h2>${message(code:'license.additionalInfo.orgsGrant')}</h2>
+      <h2>${message(code:'subscription.details.additionalInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this licence')}</h2>
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>Organisation</th><th>${message(code:'license.additionalInfo.table.rolesandPermissions')}</th>
+          <th>Organisation</th><th>${message(code:'subscription.details.additionalInfo.roles_and_perm', default:'Roles and Permissions')}</th>
         </tr>
         <g:each in="${license.orgLinks}" var="ol">
           <tr>
             <td>${ol.org.name}</td>
             <td>
-                ${message(code:'license.additionalInfo.table.link')} ${ol.id} ${message(code:'license.additionalInfo.table.linkRole')}${ol.roleType?.value}.<br/>
-                ${message(code:'license.additionalInfo.table.roleGrant')}<br/>
+              ${message(code:'subscription.licence.connection', args:[message(code:"refdata.${ol.roleType?.value}", default:"${ol.roleType?.value}")])}<br/>
+              ${message(code:'subscription.details.additionalInfo.role.info', default:'This role grants the following permissions to members of that org whose membership role also includes the permission')}<br/>
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
-                  <li>${sp.perm.code} 
+                  <li>${message(code:"default.perm.${sp.perm.code}", default:"${sp.perm.code}")}
                       <g:if test="${license.checkPermissions(sp.perm.code,user)}">
-                        [Granted]
+                        [${message(code:'default.perm.granted', default:'Granted')}]
                       </g:if>
                       <g:else>
-                        [Not granted]
+                        [${message(code:'default.perm.not_granted', default:'Not granted')}]
                       </g:else>
  
                   </li>
@@ -53,30 +53,30 @@
         </g:each>
       </table>
 
-      <h2>${message(code:'license.additionalInfo.loggedInPerms')}</h2>
+      <h2>${message(code:'subscription.details.user.permissions', default:'Logged in user permissions')}</h2>
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>${message(code:'license.additionalInfo.affiliatedRole')}</th><th>${message(code:'license.additionalInfo.permissions')}</th>
+          <th>${message(code:'subscription.details.additionalInfo.aff_via', default:'Affiliated via Role')}</th><th>${message(code:'default.permissions.label', default:'Permissions')}</th>
         </tr>
         <g:each in="${user.affiliations}" var="ol">
           <g:if test="${((ol.status==1) || (ol.status==3))}">
             <tr>
-              <td>${message(code:'license.additionalInfo.affiliatedTo')} ${ol.org?.name} ${message(code:'license.additionalInfo.withRole')} <g:message code="cv.roles.${ol.formalRole?.authority}"/></td>
+              <td>${message(code:'subscription.details.additionalInfo.aff_to', args:[ol.org?.name])} <g:message code="cv.roles.${ol.formalRole?.authority}"/></td>
               <td>
                 <ul>
                   <g:each in="${ol.formalRole.grantedPermissions}" var="gp">
-                    <li>${gp.perm.code}</li>
+                    <li>${message(code:"default.perm.${gp.perm.code}", default:"${gp.perm.code}")}</li>
                   </g:each>
                 </ul>
               </td>
             </tr>
             <g:each in="${ol.org.outgoingCombos}" var="oc">
               <tr>
-                <td> --&gt; This org is related to ${oc.toOrg.name} ( ${oc.type.value} )</td>
+                <td> --&gt; ${message(code:'subscription.details.additionalInfo.org_rel', args:[oc.toOrg.name,oc.type.value])}</td>
                 <td>
                   <ul>
                     <g:each in="${oc.type.sharedPermissions}" var="gp">
-                      <li>${gp.perm.code}</li>
+                      <li>${message(code:"default.perm.${gp.perm.code}", default:"${gp.perm.code}")}</li>
                     </g:each>
                   </ul>
                 </td>

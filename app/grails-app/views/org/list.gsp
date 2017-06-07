@@ -58,7 +58,8 @@
 						<tr>
 							<g:sortableColumn property="impId" title="${message(code: 'org.impId.label', default: 'Imp Id')}" />
 							<g:sortableColumn property="comment" title="${message(code: 'org.comment.label', default: 'Comment')}" />					
-							<g:sortableColumn property="ipRange" title="${message(code: 'org.ipRange.label', default: 'Ip Range')}" />						
+							<g:sortableColumn property="ipRange" title="${message(code: 'org.ipRange.label', default: 'Ip Range')}" />
+                                                        <g:sortableColumn property="type" title="${message(code: 'org.type.label', default: 'Type')}" />
 							<g:sortableColumn property="sector" title="${message(code: 'org.sector.label', default: 'Sector')}" />
 							<g:sortableColumn property="shortcode" title="${message(code: 'org.shortcode.label', default: 'Shortcode')}" />
 							<g:sortableColumn property="scope" title="${message(code: 'org.scope.label', default: 'Scope')}" />
@@ -70,8 +71,9 @@
 						<tr>
 							<td>${fieldValue(bean: orgInstance, field: "impId")}</td>
 							<td>${fieldValue(bean: orgInstance, field: "comment")}</td>	
-							<td>${fieldValue(bean: orgInstance, field: "ipRange")}</td>					
-							<td>${fieldValue(bean: orgInstance, field: "sector")}</td>						
+							<td>${fieldValue(bean: orgInstance, field: "ipRange")}</td>
+                                                        <td>${orgInstance?.orgType?.value}</td>
+							<td>${orgInstance?.sector?.value}</td>
 							<td>${fieldValue(bean: orgInstance, field: "shortcode")}</td>						
 							<td>${fieldValue(bean: orgInstance, field: "scope")}</td>						
 							<td class="link">

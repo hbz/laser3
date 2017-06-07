@@ -384,7 +384,9 @@ class LicenseDetailsController {
   def userAccessCheck(licence,user,role_str){
     if ( (licence==null || user==null ) || (! licence?.hasPerm(role_str,user) )) {
       log.debug("return 401....");
-      flash.error = "You do not have permission to ${role_str} ${licence?.reference?:'this licence'}. Please request access to ${licence?.licensee?.name?:'licence institution'} on the profile page";
+      def this_licence = message(code:'licence.details.flash.this_licence')
+      def this_inst = message(code:'licence.details.flash.this_inst')
+      flash.error = message(code:'licence.details.flash.error', args:[role_str,(licence?.reference?:this_licence),(licence?.licensee?.name?:this_inst)])
       response.sendError(401);
       return false
     }
@@ -444,7 +446,7 @@ class LicenseDetailsController {
       OnixplLicense opl = OnixplLicense.get(params.opl_id);
       if(! (opl && license)){
         log.error("Something has gone mysteriously wrong. Could not get Licence or OnixLicence. params:${params} license:${license} onix: ${opl}")
-        flash.message = "An error occurred when unlinking the ONIX-PL license";
+        flash.message = message(code:'licence.unlink.error.unknown');
         redirect(action: 'index', id: license.id);
       }
 
@@ -469,9 +471,9 @@ class LicenseDetailsController {
           license.errors.each {
               log.error("License error: " + it);
           }
-          flash.message = "An error occurred when unlinking the ONIX-PL license '${oplTitle}'";
+          flash.message = message(code:'licence.unlink.error.known', args:[oplTitle]);
       } else {
-          flash.message = "The ONIX-PL license '${oplTitle}' was unlinked successfully";
+          flash.message = message(code:'licence.unlink.success', args:[oplTitle]);
       }
       redirect(action: 'index', id: license.id);
   }

@@ -5,12 +5,12 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap" />
-<title>${message(code:'laser', default:'LAS:eR')}</title>
+<title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicence.compare.label', default:'ONIX-PL Licence Compare')} </title>
 </head>
 <body>
 	<div class="container">
 		<ul class="breadcrumb">
-			<li><g:link controller="home" action="index">Home</g:link> <span
+			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
 				class="divider">/</span></li>
 			<li>${message(code:'menu.institutions.comp_onix')}</li>
 		</ul>

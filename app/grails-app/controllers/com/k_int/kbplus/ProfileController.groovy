@@ -34,7 +34,7 @@ class ProfileController {
         def existingRel = UserOrg.find( { org==org && user==user && formalRole==formal_role } )
         if ( existingRel ) {
           log.debug("existing rel");
-          flash.error="You already have a relation with the requested organisation."
+          flash.error= message(code:'profile.processJoinRequest.error', default:"You already have a relation with the requested organisation.")
         }
         else {
           log.debug("Create new user_org entry....");
@@ -66,17 +66,17 @@ class ProfileController {
 
     if ( user.display != params.userDispName ) {
       user.display = params.userDispName
-      flash.message += "User display name updated<br/>"
+      flash.message += message(code:'profile.updateProfile.updated.name', default:"User display name updated<br/>")
     }
 
     if ( user.email != params.email ) {
       def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
       if ( params.email ==~ mailPattern ) {
         user.email = params.email
-        flash.message += "User email address updated<br/>"
+        flash.message += message(code:'profile.updateProfile.updated.email', default:"User email address updated<br/>")
       }
       else {
-        flash.error = "Emails must be of the form user@domain.name<br/>"
+        flash.error = message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
       }
     }
 
@@ -88,13 +88,13 @@ class ProfileController {
         if ( ( l >= 5 ) && ( l <= 100 ) ) {
           Long new_long = new Long(l);
           if ( new_long != user.defaultPageSize ) {
-            flash.message += "User default page size updated<br/>"
+            flash.message += message(code:'profile.updateProfile.updated.pageSize', default:"User default page size updated<br/>")
           }
           user.defaultPageSize = new_long
      
         }
         else {
-          flash.message+="Default page size must be between 5 and 100<br/>";
+          flash.message+= message(code:'profile.updateProfile.updated.pageSize.error', default:"Default page size must be between 5 and 100<br/>");
         }
       }
       catch ( Exception e ) {
@@ -102,7 +102,7 @@ class ProfileController {
     }
 
     if ( params.defaultDash != user.defaultDash?.id.toString() ) {
-      flash.message+="User default dashboard updated<br/>"
+      flash.message+= message(code:'profile.updateProfile.updated.dash', default:"User default dashboard updated<br/>")
       if ( params.defaultDash == '' ) {
         user.defaultDash = null
       }

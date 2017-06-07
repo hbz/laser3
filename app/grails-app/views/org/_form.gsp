@@ -1,13 +1,20 @@
 <%@ page import="com.k_int.kbplus.Org" %>
 
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
+	<label for="name">
+		<g:message code="org.name.label" default="Name" />
 
+	</label>
+	<g:textArea name="name" cols="40" rows="1" maxlength="256" value="${orgInstance?.name}"/>
+
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">
 	<label for="impId">
 		<g:message code="org.impId.label" default="Imp Id" />
-		
+
 	</label>
-	<g:textArea name="impId" cols="40" rows="5" maxlength="256" value="${orgInstance?.impId}"/>
+	<g:textArea name="impId" cols="40" rows="1" maxlength="256" value="${orgInstance?.impId}"/>
 
 </div>
 
@@ -76,7 +83,7 @@
 		
 	</label>
 	<g:select id="orgType" name="orgType.id" 
-		from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('OrgType'))}" 
+		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
 		optionKey="id"
 		optionValue="value" 
 		value="${orgInstance?.orgType?.id}" 
@@ -87,23 +94,26 @@
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="org.status.label" default="Status" />
-		
 	</label>
 	<g:select id="status" name="status.id" 
-		from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('PendingChangeStatus'))}"
+		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('PendingChangeStatus')}"
 		optionKey="id" 
 		optionValue="value" 
 		value="${orgInstance?.status?.id}" 
 		class="many-to-one" noSelection="['null': '']"/>
 
 </div>
-
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
 		
 	</label>
-	<g:select id="membership" name="membership.id" from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('YN'))}" optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="membership" name="membership.id"
+                from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(''YN')}"
+                optionKey="id"
+                value="${orgInstance?.membership?.id}"
+                class="many-to-one"
+                noSelection="['null': '']"/>
 
 </div>
 
@@ -215,7 +225,7 @@
 <!-- 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
 	<label for="links">
-		<g:message code="org.links.label" default="Links" />
+		<g:message code="org.links.other.label" default="Links" />
 		
 	</label>
 	

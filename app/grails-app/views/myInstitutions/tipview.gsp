@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - Edit Core Titles</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'myinst.tipview.label', default:'Edit Core Titles')}</title>
   </head>
 
   <body>
@@ -12,7 +12,7 @@
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}">${institution.name} - Dashboard</g:link> <span class="divider">/</span>  </li>
-        <li> <g:link controller="myInstitutions" action="tipview" params="${[shortcode:params.shortcode]}"> Edit Core Titles (JUSP & KB+) </g:link> </li>
+        <li> <g:link controller="myInstitutions" action="tipview" params="${[shortcode:params.shortcode]}"> ${message(code:'myinst.tipview.label', default:'Edit Core Titles')} (JUSP & KB+) </g:link> </li>
 
       </ul>
     </div>
@@ -33,32 +33,47 @@
           <g:set var="active_filter" value="${nparams.remove('filter')}"/>
 
           <li class="${(active_filter=='core' || active_filter == null)?'active':''}">
-            <g:link action="tipview" params="${nparams + [filter:'core']}">Core</g:link>
+            <g:link action="tipview" params="${nparams + [filter:'core']}">${message(code:'subscription.details.core', default:'Core')}</g:link>
           </li>
-          <li class="${active_filter=='not'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'not']}">Not Core</g:link></li>
-          <li class="${active_filter=='all'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'all']}">All</g:link></li>
+          <li class="${active_filter=='not'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'not']}">${message(code:'myinst.tipview.notCore', default:'Not Core')}</g:link></li>
+          <li class="${active_filter=='all'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'all']}">${message(code:'myinst.tipview.all', default:'All')}</g:link></li>
 
       </ul>
       <div class="row">
         <div class="span12">
           <g:form action="tipview" method="get" params="${[shortcode:params.shortcode]}">
 
-          <div class="well form-horizontal">
-            Search For: <select name="search_for">
-                                <option ${params.search_for=='title' ? 'selected' : ''} value="title">Title</option>
-                    <option ${params.search_for=='provider' ? 'selected' : ''} value="provider">Provider</option>
-                    </select>
-            Name: <input name="search_str" placeholder="Partial terms accepted" value="${params.search_str}"/>
-            Sort: <select name="sort">
-                    <option ${params.sort=='title-title' ? 'selected' : ''} value="title-title">Title</option>
-                    <option ${params.sort=='provider-name' ? 'selected' : ''} value="provider-name">Provider</option>
-                  </select>
-            Order: <select name="order" value="${params.order}">
-                    <option ${params.order=='asc' ? 'selected' : ''} value="asc">Ascending</option>
-                    <option ${params.order=='desc' ? 'selected' : ''} value="desc">Descending</option>
-                  </select>
-                  <input type="hidden" name="filter" value="${params.filter}"/>
-            <button type="submit" name="search">Search</button>
+          <div class="well form-horizontal" style="clear:both">
+            <div style="float:left;margin:8px;">
+              ${message(code:'title.search', default:'Search For')}:
+              <select name="search_for">
+                <option ${params.search_for=='title' ? 'selected' : ''} value="title">${message(code:'title.label', default:'Title')}</option>
+                <option ${params.search_for=='provider' ? 'selected' : ''} value="provider">${message(code:'default.provider.label', default:'Provider')}</option>
+              </select>
+            </div>
+            <div style="float:left;margin:8px;">
+              ${message(code:'default.name.label', default:'Name')}:
+              <input name="search_str" style="padding-left:8px" placeholder="${message(code:'myinst.tipview.search.ph', default:'Partial terms accepted')}" value="${params.search_str}"/>
+            </div>
+            <div style="float:left;margin:8px;">
+              ${message(code:'default.sort.label', default:'Sort')}:
+              <select name="sort">
+                <option ${params.sort=='title-title' ? 'selected' : ''} value="title-title">${message(code:'title.label', default:'Title')}</option>
+                <option ${params.sort=='provider-name' ? 'selected' : ''} value="provider-name">${message(code:'default.provider.label', default:'Provider')}</option>
+              </select>
+            </div>
+            <div style="float:left;margin:8px;">
+              ${message(code:'default.order.label', default:'Order')}:
+              <select name="order" value="${params.order}">
+                <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
+                <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
+              </select>
+              <input type="hidden" name="filter" value="${params.filter}"/>
+            </div>
+            <div style="float:left;margin:8px;">
+              <button type="submit" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
+            </div>
+            <div style="clear:both">
           </div>
           </g:form>
         </div>
@@ -68,9 +83,9 @@
         <table class="table table-bordered table-striped">
           <thead>
             <tr>
-              <th>Title in Package; Title Details</th>
-              <th>Provider</th>
-              <th>Status</th>
+              <th>${message(code:'myinst.tipview.tip_tid', default:'Title in Package; Title Details')}</th>
+              <th>${message(code:'default.provider.label', default:'Provider')}</th>
+              <th>${message(code:'default.status.label', default:'Status')}</th>
             </tr>
           </thead>
           <tbody>
@@ -78,9 +93,9 @@
             <tr>
 
               <td>
-              <g:link controller="myInstitutions" action="tip" params="${[shortcode:params.shortcode]}" id="${tip.id}">${tip?.title?.title} via ${tip?.provider?.name}</g:link>;
+              <g:link controller="myInstitutions" action="tip" params="${[shortcode:params.shortcode]}" id="${tip.id}">${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}</g:link>;
               &nbsp;
-              <g:link controller="titleDetails" action="show" id="${tip?.title?.id}">Link to Title Details</g:link>
+              <g:link controller="titleDetails" action="show" id="${tip?.title?.id}">${message(code:'myinst.tipview.link_to_title', default:'Link to Title Details')}</g:link>
               </td>
               <td>
               <g:link controller="org" action="show" id="${tip?.provider?.id}">${tip?.provider?.name}</g:link>

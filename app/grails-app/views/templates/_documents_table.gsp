@@ -2,8 +2,7 @@
     <g:if test="${editable}">
 
         <div class="well hide licence-documents-options">
-            <button class="btn btn-danger delete-document" id="delete-doc">${message(code:'license.docs.button.delete')}</button>
-       <!-- <button class="btn btn-danger delete-document" id="delete-doc">Delete Selected Documents</button> -->
+            <button class="btn btn-danger delete-document" id="delete-doc">${message(code:'template.documents.delete', default:'Delete Selected Documents')}</button>
             <input type="hidden" name="instanceId" value="${instance.id}"/>
             <input type="hidden" name="redirectAction" value="${redirect}"/>
         </div>
@@ -34,7 +33,7 @@
                     </td>
                     <td>
                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}">Download Doc</g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}">${message(code:'template.documents.download', default:'Download Doc')}</g:link>
                         </g:if>
                     </td>
                     <td>
@@ -66,7 +65,7 @@
     $('.licence-documents input[type="checkbox"]').click(showEditButtons);
 
     $('.licence-documents-options .delete-document').click(function () {
-        if (!confirm('${message(code:'license.document.delete.warning')}')) {
+        if (!confirm('${message(code:'template.documents.delete.confirm', default:'Are you sure you wish to delete these documents?')}')) {
             $('.licence-documents input:checked').attr('checked', false);
             return false;
         }

@@ -4,14 +4,14 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap" />
-<title>${message(code:'laser', default:'LAS:eR')}</title>
+<title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicence.compare.label', default:'ONIX-PL Licence Comparison')}</title>
 
 </head>
 
 <body>
 	<div class="container">
 		<ul class="breadcrumb">
-			<li><g:link controller="home" action="index">Home</g:link> <span
+			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
 				class="divider">/</span></li>
 			<li>${message(code:'menu.institutions.comp_onix')}</li>
 		</ul>
@@ -77,6 +77,9 @@
   	        width: '90%',
 	        placeholder: "${message(code:'onixplLicence.compare.search.ph', default:'Search for a licence...')}",
 	        minimumInputLength: 1,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+                },
 	        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
 	          url: "<g:createLink controller='ajax' action='lookup'/>",
 	          dataType: 'json',

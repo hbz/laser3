@@ -32,7 +32,7 @@ class HomeController {
            params:[shortcode:result.user.defaultDash.shortcode]);
         }
         else {
-          flash.message="Please select an institution to use as your default home dashboard"
+          flash.message= message(code:'profile.dash.not_set', default:'Please select an institution to use as your default home dashboard')
           redirect(controller:'profile', action:'index')
         }
       }

@@ -4,16 +4,16 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - Current Subscriptions</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
   </head>
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}">${institution.name} Current Subscriptions</g:link> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> </li>
           <g:if test="${editable}">
-              <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+              <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
           </g:if>
       </ul>
     </div>
@@ -32,7 +32,7 @@
 
     <div class="container">
 
-      <h1>${institution?.name} - Current Subscriptions</h1>
+      <h1>${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
       <g:render template="subsNav" contextPath="." />
     </div>
@@ -43,21 +43,24 @@
 
 
 
-        <label class="control-label">Search text: </label> 
-        <input type="text" name="q" placeholder="enter search term..." value="${params.q?.encodeAsHTML()}"/>
+        <label class="control-label">${message(code:'default.search.text', default:'Search text')}: </label>
+        <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"/>
             
-        <label class="control-label">Valid On: </label>
+        <label class="control-label">${message(code:'default.valid_on.label', default:'Valid On')}: </label>
         <div class="input-append date">
-          <input class="span2 datepicker-class" size="16" type="text"name="validOn" value="${validOn}">
+          <input class="span2 datepicker-class" size="16" type="text" name="validOn" value="${validOn}">
         </div>
 
-        <label class="control-label">Date: </label>
-        <g:select name="dateBeforeFilter"  style="width: 125px" value="${params.dateBeforeFilter}" from="${['-None-','Renewal Date','End Date']}"/>
-         before
+        <label class="control-label">${message(code:'default.date.label', default:'Date')}: </label>
+        <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
+        <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
+        <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
+        <g:select name="dateBeforeFilter" value="${params.dateBeforeFilter}" from="${[noDate,renewalDate,endDate]}" />
+         ${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}
            <div class="input-append date">
-              <input class="span2 datepicker-class" size="16" type="text"name="dateBeforeVal" value="${params.dateBeforeVal}">
+              <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
           </div>
-        <input type="submit" class="btn btn-primary" value="Search" />
+        <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
       </g:form>
       </div>
     </div>
@@ -67,22 +70,22 @@
         <table class="table table-striped table-bordered table-condensed table-tworow">
           <tr>
             <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'licence.slash.name')}" />
-            <th rowspan="2">Action</th>
+            <th rowspan="2">${message(code:'default.action.label', default:'Action')}</th>
           </tr>
 
           <tr>
-            <th><g:annotatedLabel owner="${institution}" property="linkedPackages">Linked Packages</g:annotatedLabel></th>
-            <th>Consortia</th>
-            <g:sortableColumn params="${params}" property="s.startDate" title="Start Date" />
-            <g:sortableColumn params="${params}" property="s.endDate" title="End Date" />
-            <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="Renewal Date" />
-            <th>Platform</th>
+            <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'licence.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
+            <th>${message(code:'consortium.plural', default:'Consortia')}</th>
+            <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+            <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+            <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
+            <th>${message(code:'tipp.platform', default:'Platform')}</th>
           </tr>
           <g:each in="${subscriptions}" var="s">
             <tr>
               <td colspan="7">
                 <g:link controller="subscriptionDetails" action="index" params="${[shortcode:params.shortcode]}" id="${s.id}">
-                  <g:if test="${s.name}">${s.name}</g:if><g:else>-- Name Not Set  --</g:else>
+                  <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
                   <g:if test="${s.consortia}">( ${s.consortia?.name} )</g:if>
                 </g:link>
                 <g:if test="${s.owner}"> 
@@ -91,19 +94,21 @@
               </td>
               <td rowspan="2">
                 <g:if test="${editable}">
-                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:params.shortcode,basesubscription:s.id]}" onclick="return confirm('Are you sure you want to delete ${s.name?:'this subscription'}?')"class="btn btn-danger">Delete</g:link>
+                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:params.shortcode,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                 </g:if>
               </td>
             </tr>
             <tr>
-              <td><ul>
-                <g:each in="${s.packages}" var="sp">
-                  <li>
-                    <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">${sp.pkg.name}</g:link>
-                  </li>
-                </g:each></ul>
+              <td>
+                <ul>
+                  <g:each in="${s.packages}" var="sp">
+                    <li>
+                      <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">${sp.pkg.name}</g:link>
+                    </li>
+                  </g:each>
+                </ul>
                 <g:if test="${((s.packages==null) || (s.packages.size()==0))}">
-                  <i>None currently, Add packages via <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">Link Package</g:link></i>
+                  <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'myinst.currentSubscriptions.link_pkg', default:'Link Package')}</g:link></i>
                 </g:if>
                 &nbsp;<br/>
                 &nbsp;<br/>
@@ -125,7 +130,7 @@
   
       <div class="pagination" style="text-align:center">
         <g:if test="${subscriptions}" >
-          <bootstrap:paginate  action="currentSubscriptions" controller="myInstitutions" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_sub_rows}" />
+          <bootstrap:paginate  action="currentSubscriptions" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
         </g:if>
       </div>
 

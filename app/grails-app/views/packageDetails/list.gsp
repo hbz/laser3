@@ -22,20 +22,28 @@
       <g:form action="list" method="get" class="form-inline">
         <table>
           <tr>
-            <td >
+            <td>
               <label>${message(code:'package.search.text')} : </label> <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
             </td>
-            <td style="width:30%;">
-              <label>${message(code:'package.search.updated_after')} : </label> <input name="updateStartDate" type="date" value="${params.updateStartDate}"/> &nbsp;
-              <label>${message(code:'package.search.created_after')} : </label> <input name="createStartDate" type="date" value="${params.createStartDate}"/> &nbsp;
+            <td style="width:30%;text-align:right;">
+              <div style="padding:5px 5px;white-space:nowrap;">
+                <label>${message(code:'package.search.updated_after')} : </label> <input name="updateStartDate" type="date" value="${params.updateStartDate}"/>
+              </div>
+              <div style="padding:5px 5px;white-space:nowrap;">
+                <label>${message(code:'package.search.created_after')} : </label> <input name="createStartDate" type="date" value="${params.createStartDate}"/>
+              </div>
             </td>
-            <td style="width:30%;">
-              <label>${message(code:'package.search.updated_before')} : </label> <input name="updateEndDate" type="date" value="${params.updateEndDate}"/> &nbsp;
-              <label>${message(code:'package.search.created_before')} : </label> <input name="createEndDate" type="date" value="${params.createEndDate}"/> &nbsp;
+            <td style="width:30%;text-align:right;">
+              <div style="padding:5px 5px;white-space:nowrap;">
+                <label>${message(code:'package.search.updated_before')} : </label> <input name="updateEndDate" type="date" value="${params.updateEndDate}"/>
+              </div>
+              <div style="padding:5px 5px;white-space:nowrap;">
+                <label>${message(code:'package.search.created_before')} : </label> <input name="createEndDate" type="date" value="${params.createEndDate}"/>
+              </div>
             </td>
-            <td >
-              <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label')}" ></input>
-              <button type="submit" name="format" value="csv" class="btn btn-primary" value="Search">${message(code:'package.search.export.button')}</button>
+            <td>
+              <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label')}" style="margin:5px 5px;"></input>
+              <button type="submit" name="format" value="csv" class="btn btn-primary" value="Search"  style="margin:5px 5px;">${message(code:'package.search.export.button')}</button>
             </td>
           </tr>
         </table>

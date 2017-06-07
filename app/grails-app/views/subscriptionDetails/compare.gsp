@@ -11,22 +11,22 @@
 		<div class="container">
 			<div class="row">
 				<g:if test="${institutionName}">
-				<h2> Compare Subscriptions of ${institutionName}</h2>
+				<h2> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
 				</g:if>
 				<g:else>
-					<h2> Compare Subscriptions</h2>
+					<h2> ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
 				</g:else>
 
 				<br/>
 			      <ul class="breadcrumb">
-			        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span>
-			        <li><g:link controller="subscriptionDetails" action="compare">Compare Subscriptions</g:link></li>
+			        <li><g:link controller="home" action="index">${message(code:'default.home.label',default:'Home')}</g:link> <span class="divider">/</span>
+			        <li><g:link controller="subscriptionDetails" action="compare">${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</g:link></li>
 
 			        <li class="dropdown pull-right">
-			          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
+			          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
 
 			          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-			            <li><g:link action="compare" params="${params+[format:'csv']}">CSV Export</g:link></li>
+			            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
 			            
 			          </ul>
 			        </li>
@@ -40,32 +40,33 @@
 			    </g:if>
 
 				<g:form action="compare" controller="subscriptionDetails" method="GET">
+                                        <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
+                                        <g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
 					<table class="table table-bordered">
 						<thead>
 							<tr>
 								<th></th>
-								<th> Subscription A </th>
-								<th> Subscription B </th>
+								<th> ${message(code:'subscription.label', default:'Subscription')} A </th>
+								<th> ${message(code:'subscription.label', default:'Subscription')} B </th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td>Subscription name </td>
-					<td>Restrict this list to subscriptions starting after- 
+								<td> ${message(code:'subscription.compare.name', default:'Subscription name')} </td>
+					<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
 					<g:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-					and/or ending before- <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> Now select first subscription to compare (Filtered by dates above). Use '%' as wildcard.<br/>
+					${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> ${message(code:'default.compare.select.first', args:[sub_message] )}<br/>
                       <input type="hidden" name="subA" id="subSelectA" value="${subA}"/> 
 					</td>
 					<td> 
-					    Restrict this list to subscriptions starting after- 
+					    ${message(code:'default.compare.restrict.after', args:[subs_message] )}
 					    <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-				and/or ending before- <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
-                          Select second subscription to compare (Filtered by dates above). Use '%' as wildcard.<br/>
+				${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/> ${message(code:'default.compare.select.second', args:[sub_message] )}<br/>
 	                      <input type="hidden" name="subB" id="subSelectB" value="${subB}" />
 					</td>
 							</tr>
 							<tr>
-								<td> Subscriptions on Date</td>
+								<td> ${message(code:'subscription.compare.snapshot', default:'Subscriptions on Date')}</td>
 								<td>
 									<div class="input-append date">
 										<input class="span2" size="16" type="text" name="dateA" id="dateA" value="${params.dateA}"/>
@@ -79,50 +80,51 @@
 									</div>
 								</td>
 						<tr>
-							<td> Add Filter</td>
+							<td> ${message(code:'default.compare.filter.add', default:'Add Filter')}</td>
 							<td colspan="2">
-		        <input type="checkbox" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>  Insert&nbsp;
-		        <input type="checkbox" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/> Delete &nbsp;
-		        <input type="checkbox" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/> Update &nbsp;
-		        <input type="checkbox" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/> No Change &nbsp;
+		        <input type="checkbox" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>  ${message(code:'default.compare.filter.insert', default:'Insert')}&nbsp;
+		        <input type="checkbox" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/> ${message(code:'default.compare.filter.delete', default:'Delete')} &nbsp;
+		        <input type="checkbox" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/> ${message(code:'default.compare.filter.update', default:'Update')} &nbsp;
+		        <input type="checkbox" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/> ${message(code:'default.compare.filter.no_change', default:'No Change')} &nbsp;
 							</td>		
 						</tr>
 							</tr>
 						</tbody>
 					</table>	
-					<input type="submit"class="btn btn-primary" value="Compare"/>			
+					<input type="submit" class="btn btn-primary" value="${message(code:'default.button.compare.label', default:'Compare')}" />
 				</g:form>
 			</div>
 
 			<g:if test="${subInsts?.get(0) && subInsts?.get(1)}">
+                                <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 				<div class="row">
-				<h3>Subscriptions Compared</h3>
+				<h3>${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th>Value</th>
+							<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
 							<th>${subInsts.get(0).name}</th>
 							<th>${subInsts.get(1).name}</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>Date Created</td>
+							<td>${message(code:'default.dateCreated.label', default:'Date Created')}</td>
 							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(0).dateCreated}"/></td>
 							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(1).dateCreated}"/></td>
 						</tr>
 						<tr>
-							<td>Start Date</td>
+							<td>${message(code:'default.startDate.label', default:'Start Date')}</td>
 							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(0).startDate}"/></td>
 							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(1).startDate}"/></td>
 						</tr>
 						<tr>
-							<td>End Date</td>
+							<td>${message(code:'default.endDate.label', default:'End Date')}</td>
 							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(0).endDate}"/></td>
 							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(1).endDate}"/></td>
 						</tr>
 						<tr>
-							<td>Number of IEs</td>
+							<td>${message(code:'subscription.compare.overview.ies', default:'Number of IEs')}</td>
 							<td>${params.countA}</td>
 							<td>${params.countB}</td>
 						</tr>
@@ -140,32 +142,32 @@
 					<input type="hidden" name="updt" value="${params.updt}"/>
 					<input type="hidden" name="nochng" value="${params.nochng}"/>
 					<input type="hidden" name="countA" value="${params.countA}"/>
-					<input type="hidden" name="countB" value="${params.countB}"/>			
+					<input type="hidden" name="countB" value="${params.countB}"/>
 					<table>
 						<tr>
 							<td>
-								Filters - Title: <input name="filter" value="${params.filter}">
+								${message(code:'subscription.compare.filter.title', default:'Filters - Title')}: <input name="filter" value="${params.filter}">
 							</td>
 							<td> <input type="submit" class="btn btn-primary" value="Filter Results" /> </td>
-							<td> <input id="resetFilters" type="submit" class="btn btn-primary" value="Clear" /> </td>
+							<td> <input id="resetFilters" type="submit" class="btn btn-primary" value="${message(code:'default.button.clear.label', default:'Clear')}" /> </td>
 						</tr>
 					</table>
 				</g:form>
 
 				<div class="span6 offset3">
-				<dt class="center">Showing Titles ${offset+1} to ${offset+comparisonMap.size()} of ${unionListSize}</dt>
+				<dt class="center">${message(code:'subscription.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 				</div>
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th> Title </th>
-							<th> ${subInsts.get(0).name} on ${subDates.get(0)}</th>
-							<th> ${subInsts.get(1).name} on ${subDates.get(1)}</th>
+							<th> ${message(code:'title.label', default:'Title')} </th>
+							<th> ${subInsts.get(0).name} ${message(code:'default.on', default:'on')} ${subDates.get(0)}</th>
+							<th> ${subInsts.get(1).name} ${message(code:'default.on', default:'on')} ${subDates.get(1)}</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td><b>Total IEs for query</b></td>
+							<td><b>${message(code:'subscription.compare.results.ies.total', default:'Total IEs for query')}</b></td>
 							<td><b>${listACount}</b></td>
 							<td><b>${listBCount}</b></td>
 						<tr>
@@ -178,7 +180,7 @@
 								
 								<td>
 								<b><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></b> 
-								<i onclick="showMore('${currentTitle.id}')"class="icon-info-sign"></i>
+								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
 								<g:each in="${currentTitle.ids}" var="id">
 				                    <br>${id.identifier.ns.ns}:${id.identifier.value}
@@ -223,8 +225,11 @@
       var subB = {id:'${subInsts?.get(1)?.id}',text:"${subInsts?.get(1)?.name}"};
       $("#subSelect"+filter).select2({
         width: '90%',
-        placeholder: "Type subscription name...",
+        placeholder: "${message(code:'subscription.compare.search.ph', default:'Type subscription name...')}",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { 
             url: '<g:createLink controller='ajax' action='lookup'/>',
             dataType: 'json',

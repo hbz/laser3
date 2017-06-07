@@ -11,9 +11,9 @@
 
     <div class="page-header">
         <g:unless test="${validationResult?.success}">
-            <h1>${message(code: 'onixplLicence.importFor')}
-            <g:if test="${license}">${message(code: 'onixplLicence.forLicence')}  '${license.reference}'</g:if>
-            <g:else>${message(code: 'onixplLicence.forUnspec')} </g:else>
+            <h1>${message(code:'onix.import.licence', default:'Import ONIX-PL Licence')}
+            <g:if test="${license}"> ${message(code:'onix.import.for_licence', args:[license.reference])}</g:if>
+            <g:else> ${message(code:'onix.import.unspec', default:'for unspecified licence')}</g:else>
             </h1>
         </g:unless>
     </div>
@@ -53,22 +53,22 @@
 
         <g:if test="${validationResult.success==true}">
             <div class="alert alert-success">
-                      <h2>Upload successful</h2>
+                      <h2>${message(code:'onix.import.success', default:'Upload successful')}</h2>
 
-                      Imported <b>${upload_filename} (${upload_mime_type})</b>
+                      ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</b>
             <g:if test="${validationResult.license}">
-                and associated with
+                ${message(code:'onix.import.assoc', default:'and associated with')}
                 <g:link action="index"
                         controller="licenseDetails"
                         class="btn btn-info"
                         id="${validationResult.license.id}">
-                    license ${validationResult.license.id}
+                    ${message(code:'licence.label')} ${validationResult.license.id}
                 </g:link>
                 <b>${validationResult.license.reference}.</b>
             </g:if>
             <g:else>
                 <br/>
-                Existing associations with ${message(code:'laser', default:'LAS:eR')} licences were maintained.
+                ${message(code:'onix.import.existing_licences', default:'Existing associations with LAS:eR licences were maintained.')}
             </g:else>
         </g:if>
     <%-- Show the form if no OPL has been created --%>
@@ -77,7 +77,7 @@
                 <g:hiddenField name="license_id" value="${params.license_id!=""?params.license_id:license_id}" />
             <%-- Show overwrite option if there is an existing OPL --%>
                 <g:if test="${existing_opl}">
-                    This ONIX-PL document appears to describe an existing ONIX-PL licence:
+                    ${message(code:'onix.import.dupe', default:'This ONIX-PL document appears to describe an existing ONIX-PL licence')}:
                     <div class="well">
                         <g:link action="index"
                                 controller="onixplLicenseDetails"
@@ -85,13 +85,13 @@
                             ${existing_opl.title}
                         </g:link>
                     </div>
-                    Would you like to replace the existing ONIX-PL licence or create a new record?
+                    ${message(code:'onix.import.replace', default:'Would you like to replace the existing ONIX-PL licence or create a new record?')}
                     <br/>
                     <br/>
                     <button name="replace_opl" id="replace_opl" value="replace"
-                            type="submit" class="btn btn-danger">Replace</button>
+                            type="submit" class="btn btn-danger">${message(code:'default.button.replace.label', default:'Replace')}</button>
                     <button name="replace_opl" id="replace_opl" value="create"
-                            type="submit" class="btn btn-primary">Create New</button>
+                            type="submit" class="btn btn-primary">${message(code:'default.button.create_new.label', default:'Create New')}</button>
 
                     <g:hiddenField name="upload_title" value="${upload_title}" />
                     <g:hiddenField name="uploaded_file" value="${uploaded_file}" />
@@ -109,7 +109,7 @@
                     <input type="file" id="import_file" name="import_file" value="${import_file}"/>
                     <br/>
                     <br/>
-                    <button type="submit" class="btn btn-primary">${message(code: 'onixplLicence.importLicense')}</button>
+                    <button type="submit" class="btn btn-primary">${message(code:'onix.import.import', default:'Import licence')}</button>
                 </g:else>
             </g:form>
         </g:else>
@@ -129,10 +129,11 @@
 
             <%-- Show link to ONIX-PL display if no associated license specified, or multiple ones --%>
                 <g:link action="index"
+                        style="margin-top:10px;"
                         controller="onixplLicenseDetails"
                         class="btn btn-info"
                         id="${validationResult.onixpl_license.id}">
-                    View ${validationResult.replace ? 'updated' : 'new'} ONIX-PL licence</g:link>
+                    ${message(code:'onix.import.view', args:[(validationResult.replace ? message(code:'onix.import.view.updated', default:'updated') : message(code:'onix.import.view.new', default:'new'))])}</g:link>
         </g:if>
         </div>
     </g:if>

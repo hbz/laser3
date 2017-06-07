@@ -507,9 +507,9 @@ log4j = {
       'grails.app.jobs',
       'grails.app.conf.BootStrap',
       //'edu.umn.shibboleth.sp',
-      'com.k_int'
+      'com.k_int',
   // 'org.springframework.security'
-  // 'grails.app.tagLib',
+      'grails.app.taglib.InplaceTagLib'
 
   // info   'com.linkedin.grails'
 }
@@ -622,7 +622,6 @@ refdatavalues = [ "User" : [ "Authorized User", "ExternalAcademic", "ExternalLib
 
 quartzHeartbeat = 'Never'
 // grails.databinding.dateFormats = ['MMddyyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
-
 
 financialImportTSVLoaderMappings = [
   header:[

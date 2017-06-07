@@ -106,7 +106,7 @@
           </g:if>
 
           <g:if test="${orgInstance?.links}">
-            <dt><g:message code="org.links.label" default="Other org links" /></dt>
+            <dt><g:message code="org.links.other.label" default="Other org links" /></dt>
             <dd><ul>
               <g:each in="${orgInstance.links}" var="i">
                 <li>
