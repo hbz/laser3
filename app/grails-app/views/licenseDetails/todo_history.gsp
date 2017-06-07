@@ -22,9 +22,9 @@
       <h3>ToDo History</h3>
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>ToDo Description</th>
-          <th>Outcome</th>
-          <th>Date</th>
+          <th>${message(code:'license.toDoHystory.table.description')}</th>
+          <th>${message(code:'license.toDoHystory.table.outcome')}</th>
+          <th>${message(code:'license.toDoHystory.table.date')}</th>
         </tr>
         <g:if test="${todoHistoryLines}">
           <g:each in="${todoHistoryLines}" var="hl">

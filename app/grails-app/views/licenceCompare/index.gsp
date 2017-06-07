@@ -27,13 +27,12 @@
 				<g:form id="compare" name="compare" action="compare" method="get">
 					<input type="hidden" name="institution" value="${institution?.id}"/>
 					<div>
-						<label for="addIdentifierSelect">Search licence for comparison:</label>
-
+						<label for="addIdentifierSelect">${message(code:'onixplLicence.compare.add_id.label')}</label>
 		                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
 		                <button type="button"class="btn btn-success" id="addToList" >Add</button>
 					</div>
 					
-					<label for="selectedLicences">Licences selected for comparison:</label>
+					<label for="selectedLicences">${message(code:'onixplLicence.compare.selected.label')}</label>
 					
 					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicences" name="selectedLicences" class="compare-license" from="${[]}" multiple="true" />
 			

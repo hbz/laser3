@@ -4,18 +4,19 @@
 
             <input type="hidden" name="redirectAction" value="${redirect}"/>
             <input type="hidden" name="instanceId" value="${instance.id}"/>
-            <input type="submit" class="btn btn-danger delete-document" value="Delete Selected Notes"/>
+            <input type="submit" class="btn btn-danger delete-document" value="${message(code:'license.notes.button.delete')}"/>
+          <!--  <input type="submit" class="btn btn-danger delete-document" value="Delete Selected Notes"/> -->
         </div>
 
     </g:if>
     <table class="table table-striped table-bordered table-condensed licence-documents">
         <thead>
         <tr>
-            <g:if test="${editable}"><th>Select</th></g:if>
-            <th>Title</th>
-            <th>Note</th>
-            <th>Creator</th>
-            <th>Type</th>
+            <g:if test="${editable}"><th>${message(code:'license.notes.table.select')}</th></g:if>
+            <th>${message(code:'license.notes.table.title')}</th>
+            <th>${message(code:'license.notes.table.note')}</th>
+            <th>${message(code:'license.notes.table.creator')}</th>
+            <th>${message(code:'license.notes.table.type')}</th>
         </tr>
         </thead>
         <tbody>
@@ -40,8 +41,8 @@
         </tbody>
     </table>
     <g:if test="${editable}">
-        <input type="button" class="btn btn-primary" value="Add new Note" data-toggle="modal"
-                   href="#modalCreateNote"/>
+        <input type="button" class="btn btn-primary" value="${message(code:'template.addNote')}" data-toggle="modal"
+               href="#modalCreateNote"/>
    </g:if>
 </g:form>
 
@@ -60,7 +61,8 @@
     $('.licence-documents input[type="checkbox"]').click(showEditButtons);
 
     $('.licence-documents-options .delete-document').click(function () {
-        if (!confirm('Are you sure you wish to delete these notes?')) {
+        if (!confirm('${message(code:'license.note.delete.warning')}')) {
+   <%-- if (!confirm('Are you sure you wish to delete these notes?')) { --%>
             $('.licence-documents input:checked').attr('checked', false);
             return false;
         }

@@ -11,9 +11,9 @@
 
     <div class="page-header">
         <g:unless test="${validationResult?.success}">
-            <h1>Import ONIX-PL licence
-            <g:if test="${license}"> for licence '${license.reference}'</g:if>
-            <g:else> for unspecified licence</g:else>
+            <h1>${message(code: 'onixplLicence.importFor')}
+            <g:if test="${license}">${message(code: 'onixplLicence.forLicence')}  '${license.reference}'</g:if>
+            <g:else>${message(code: 'onixplLicence.forUnspec')} </g:else>
             </h1>
         </g:unless>
     </div>
@@ -109,7 +109,7 @@
                     <input type="file" id="import_file" name="import_file" value="${import_file}"/>
                     <br/>
                     <br/>
-                    <button type="submit" class="btn btn-primary">Import licence</button>
+                    <button type="submit" class="btn btn-primary">${message(code: 'onixplLicence.importLicense')}</button>
                 </g:else>
             </g:form>
         </g:else>

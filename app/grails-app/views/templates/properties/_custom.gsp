@@ -29,7 +29,8 @@
 	    <input type="hidden" name="ownerId" value="${ownobj.id}"/>
 	    <input type="hidden" name="editable" value="${editable}"/>
 	    <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-	    <input type="submit" value="Add Property" class="btn btn-primary btn-small"/>
+	    <input type="submit" value="${message(code:'licence.button.addProperty')}" class="btn btn-primary btn-small"/>
+   <%-- <input type="submit" value="Add Property" class="btn btn-primary btn-small"/> --%>
 	</g:formRemote>
 </g:if>
 
@@ -117,8 +118,7 @@
                     </dd>
                 </div>
                 <dd>
-                    <label class="property-label">Context:</label>
-                    <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
+                    <label class="property-label">Context:</label> <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
                 </dd>
                 <dd>
                     Create value for this property: <g:checkBox name="autoAdd" checked="true"/>

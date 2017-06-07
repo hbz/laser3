@@ -20,21 +20,21 @@
 
 
     <div class="container">
-      <h2>Permissions for user</h2>
+      <h2>${message(code:'license.additionalInfo.permissions', default:'Permissions for user')}</h2>
       <table  class="table table-striped table-bordered">
       </table>
 
-      <h2>The following organisations are granted the listed permissions from this licence</h2>
+      <h2>${message(code:'license.additionalInfo.orgsGrant')}</h2>
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>Organisation</th><th>Roles and Permissions</th>
+          <th>Organisation</th><th>${message(code:'license.additionalInfo.table.rolesandPermissions')}</th>
         </tr>
         <g:each in="${license.orgLinks}" var="ol">
           <tr>
             <td>${ol.org.name}</td>
             <td>
-              Connected to this licence through link ${ol.id} link role : ${ol.roleType?.value}.<br/>
-              This role grants the following permissions to members of that org whose membership role also includes the permission<br/>
+                ${message(code:'license.additionalInfo.table.link')} ${ol.id} ${message(code:'license.additionalInfo.table.linkRole')}${ol.roleType?.value}.<br/>
+                ${message(code:'license.additionalInfo.table.roleGrant')}<br/>
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
                   <li>${sp.perm.code} 
@@ -53,15 +53,15 @@
         </g:each>
       </table>
 
-      <h2>Logged in user permissions</h2>
+      <h2>${message(code:'license.additionalInfo.loggedInPerms')}</h2>
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>Affiliated via Role</th><th>Permissions</th>
+          <th>${message(code:'license.additionalInfo.affiliatedRole')}</th><th>${message(code:'license.additionalInfo.permissions')}</th>
         </tr>
         <g:each in="${user.affiliations}" var="ol">
           <g:if test="${((ol.status==1) || (ol.status==3))}">
             <tr>
-              <td>Affiliated to ${ol.org?.name} with role <g:message code="cv.roles.${ol.formalRole?.authority}"/></td>
+              <td>${message(code:'license.additionalInfo.affiliatedTo')} ${ol.org?.name} ${message(code:'license.additionalInfo.withRole')} <g:message code="cv.roles.${ol.formalRole?.authority}"/></td>
               <td>
                 <ul>
                   <g:each in="${ol.formalRole.grantedPermissions}" var="gp">

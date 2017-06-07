@@ -22,7 +22,7 @@
 
        <li class="active"><g:link controller="myInstitutions" 
                                   action="addLicense" 
-                                  params="${[shortcode:params.shortcode]}">Copy from Template</g:link></li>
+                                  params="${[shortcode:params.shortcode]}">${message(code:'licence.copy', default:'Copy from Template')}</g:link></li>
 
         <g:if test="${is_admin}">
           <li><g:link controller="myInstitutions" 
@@ -30,7 +30,6 @@
                                      params="${[shortcode:params.shortcode]}">${message(code:'licence.add.blank')}</g:link></li>
         </g:if>
       </ul>
-
     </div>
 
     <div class="container licence-searches">
@@ -50,7 +49,7 @@
         <g:form action="addLicense" params="${params}" method="get" class="form-inline">
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
-          <label>Filters - ${message(code:'licence.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
+          <label>Filter - ${message(code:'licence.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
           <input type="submit" class="btn btn-primary">
         </g:form>
       </div>
@@ -60,7 +59,8 @@
             <g:if test="${is_admin}">
               <input type="submit" name="copy-licence" value="Copy Selected" class="btn btn-warning" />
             </g:if>
-            <g:else>Sorry, you must have editor role to be able to add licences</g:else>
+            <g:else>${message(code:'licence.add.message.role')}</g:else>
+       <%-- <g:else>Sorry, you must have editor role to be able to add licences</g:else> --%>
           </div>
       </div>
 
@@ -83,10 +83,10 @@
             <thead>
               <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'licence.name')}" />
-                <th>Licensor</th>
-                <g:sortableColumn params="${params}" property="startDate" title="Start Date" />
-                <g:sortableColumn params="${params}" property="endDate" title="End Date" />
-                <th>Action</th>
+                <g:sortableColumn params="${params}" property="licensor" title="${message(code:'licence.licensor.label')}" />
+                <g:sortableColumn params="${params}" property="startDate" title="${message(code:'licence.start_date')}" />
+                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'licence.end_date')}" />
+                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'user.action')}" />
               </tr>
             </thead>
             <tbody>
@@ -103,13 +103,14 @@
                       </ul>
                     </g:if>
                     <g:else>
-                      <br/>No linked packages.
+                        <br/>${message(code:'licence.noLinkedPackages')}
+                     <%-- <br/>No linked packages. --%>
                     </g:else>
                   </td>
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.endDate}"/></td>
-                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">Copy</g:link></td>
+                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">${message(code:'licence.button.copy')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>

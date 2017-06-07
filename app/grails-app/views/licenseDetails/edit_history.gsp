@@ -19,16 +19,16 @@
     </div>
 
     <div class="container">
-      <h3>Edit history</h3>
+      <h3>${message(code:'licence.editHistory', default:'Edit history')}</h3>
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>Event ID</th>
-          <th>Person</th>
-          <th>Date</th>
-          <th>Event</th>
-          <th>Field</th>
-          <th>Old Value</th>
-          <th>New Value</th>
+          <th>${message(code:'license.editHystory.table.eventID', default:'Event ID')}</th>
+          <th>${message(code:'license.editHystory.table.person', default:'Person')}</th>
+          <th>${message(code:'license.editHystory.table.date', default:'Date')}</th>
+          <th>${message(code:'license.editHystory.table.event', default:'Event')}</th>
+          <th>${message(code:'license.editHystory.table.field', default:'Field')}</th>
+          <th>${message(code:'license.editHystory.table.oldValue', default:'Old Value')}</th>
+          <th>${message(code:'license.editHystory.table.newValue', default:'New Value')}</th>
         </tr>
         <g:if test="${historyLines}">
           <g:each in="${historyLines}" var="hl">

@@ -123,14 +123,14 @@
                       </ul>
                     </g:if>
                     <g:else>
-                      <br/>No linked subscriptions.
+                     < <br/>${message(code:'licence.noLinkedSubscriptions', default:'No linked subscriptions')}
                     </g:else>
                   </td>
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.endDate}"/></td>
                   <td>
-                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">Copy</g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">${message(code:'licence.button.copy', default:'Copy')}</g:link>
                     <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'licence.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No Licence Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-licence':'Y']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                   </td>
                 </tr>

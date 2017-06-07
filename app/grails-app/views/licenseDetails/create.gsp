@@ -11,7 +11,7 @@
           <div class="span12">
 
             <div class="page-header">
-              <h1>New Template Licence</h1>
+              <h1>${message(code: 'license.template.new')}</h1>
             </div>
 
             <g:if test="${flash.message}">
@@ -22,11 +22,11 @@
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
 
-            <p>Use this form to create a new template licence. Enter the new licence reference below, click "create" and you will be redirected to the new licence</p>
+            <p>${message(code: 'license.template.howto')}</p>
 
             <p>
-              <g:form action="processNewTemplateLicense"> New licence Reference: <input type="text" name="reference"/>
-              <br/><input class="btn btn-primary" type="submit" value="Create"/></g:form>
+              <g:form action="processNewTemplateLicense">${message(code: 'license.template.label')} : <input type="text" name="reference"/>
+              <br/><input class="btn btn-primary" type="submit" value="${message(code: 'default.button.create.label')}"/></g:form>
             </p>
 
           </div>
