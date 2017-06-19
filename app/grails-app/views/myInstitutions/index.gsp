@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data import explorer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
 
   <body>
@@ -68,7 +68,7 @@
                     <g:if test="${n.alert.sharingLevel==2}">Shared with KB+ Community</g:if>
                     <g:elseif test="${n.alert.sharingLevel==1}">JC Only</g:elseif>
                     <g:else>Private</g:else>
-) By ${n.owner.user?.displayName} on <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${n.alert.createTime}" /></i></div>
+) By ${n.owner.user?.displayName} on <g:formatDate formatName="default.date.format.notime" date="${n.alert.createTime}" /></i></div>
               </td>
             </tr>
           </g:each>

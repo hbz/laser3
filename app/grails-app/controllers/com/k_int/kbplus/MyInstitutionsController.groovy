@@ -8,11 +8,12 @@ import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
+import com.k_int.properties.*
 
 class MyInstitutionsController {
     def dataSource
@@ -81,7 +82,7 @@ class MyInstitutionsController {
         def list_order = params.order ?: 'asc'
 
         if (current_inst && !checkUserIsMember(result.user, current_inst)) {
-            flash.error = "You do not have permission to view ${current_inst.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[current_inst.name]);
             response.sendError(401)
             return;
         }
@@ -158,7 +159,7 @@ class MyInstitutionsController {
         result.transforms = grailsApplication.config.licenceTransforms
 
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
@@ -330,7 +331,7 @@ class MyInstitutionsController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
@@ -404,16 +405,16 @@ class MyInstitutionsController {
         def dateBeforeFilter = null;
         def dateBeforeFilterVal = null;
         if(params.dateBeforeFilter && params.dateBeforeVal){
-            if(params.dateBeforeFilter == "Renewal Date"){
+            if(params.dateBeforeFilter == message(code:'default.renewalDate.label', default:'Renewal Date')){
                 dateBeforeFilter = " and s.manualRenewalDate < ?"
-            }else if (params.dateBeforeFilter == "End Date"){
+            }else if (params.dateBeforeFilter == message(code:'default.endDate.label', default:'End Date')){
                 dateBeforeFilter = " and s.endDate < ?"
             }
             dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
         }
 
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
+            flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
@@ -490,7 +491,7 @@ class MyInstitutionsController {
 
         // if ( !checkUserHasRole(result.user, result.institution, 'INST_ADM') ) {
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have admin permissions to access ${result.institution.name} pages. Please request access on the profile page";
+            flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
             response.sendError(401)
             result.is_admin = false;
             // render(status: '401', text:"You do not have permission to add subscriptions to ${result.institution.name}. Please request editor access on the profile page");
@@ -670,7 +671,7 @@ class MyInstitutionsController {
         def org = Org.findByShortcode(params.shortcode)
 
         if (!checkUserHasRole(user, org, 'INST_ADM')) {
-            flash.error = "You do not have edit permission to access ${org.name} pages. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
             return;
@@ -689,9 +690,9 @@ class MyInstitutionsController {
             } else {
                 log.error("Problem saving org links to license ${org.errors}");
             }
+            flash.message = message(code: 'license.created.message')
+            redirect controller: 'licenseDetails', action: 'index', params: params, id: licenseInstance.id
         }
-        flash.message = message(code: 'license.created.message', args: [message(code: 'licence', default: 'Licence'), licenseInstance.id])
-        redirect controller: 'licenseDetails', action: 'index', params: params, id: licenseInstance.id
     }
 
     def newLicense(params) {
@@ -699,7 +700,7 @@ class MyInstitutionsController {
         def org = Org.findByShortcode(params.shortcode)
 
         if (!checkUserHasRole(user, org, 'INST_ADM')) {
-            flash.error = "You do not have permission to access ${org.name} pages. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
             return;
@@ -709,7 +710,7 @@ class MyInstitutionsController {
 
         if (!baseLicense?.hasPerm("view", user)) {
             log.debug("return 401....");
-            flash.error = "You do not have permission to view the selected license. Please request access on the profile page";
+            flash.error = message(code:'myinst.newLicence.error', default:'You do not have permission to view the selected license. Please request access on the profile page');
             response.sendError(401)
 
         }else{
@@ -718,7 +719,7 @@ class MyInstitutionsController {
                 log.error("Problem saving license ${copyLicence.errors}");
                 render view: 'editLicense', model: [licenseInstance: copyLicence]
             }else{
-                flash.message = message(code: 'license.created.message', args: [message(code: 'licence', default: 'Licence'), copyLicence.id])
+                flash.message = message(code: 'license.created.message')
                 redirect controller: 'licenseDetails', action: 'index', params: params, id: copyLicence.id
             }
         }
@@ -731,7 +732,7 @@ class MyInstitutionsController {
         result.institution = Org.findByShortcode(params.shortcode)
 
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
             return;
@@ -750,7 +751,7 @@ class MyInstitutionsController {
                 license.status = deletedStatus
                 license.save(flush: true);
             } else {
-                flash.error = "Unable to delete - The selected license has attached subscriptions marked as Current"
+                flash.error = message(code:'myinst.deleteLicence.error', default:'Unable to delete - The selected license has attached subscriptions marked as Current')
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -789,7 +790,7 @@ class MyInstitutionsController {
         def institution = Org.findByShortcode(params.shortcode)
 
         if (!checkUserIsMember(user, institution)) {
-            flash.error = "You do not have permission to view ${institution.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
             return;
@@ -835,7 +836,7 @@ class MyInstitutionsController {
         result.transforms = grailsApplication.config.titlelistTransforms
 
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
@@ -1160,7 +1161,7 @@ AND EXISTS (
         def institution = Org.findByShortcode(params.shortcode)
 
         if (!checkUserIsMember(user, institution)) {
-            flash.error = "You do not have permission to view ${institution.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
             return;
@@ -1202,7 +1203,7 @@ AND EXISTS (
                 subscription.status = deletedStatus
                 subscription.save(flush: true);
             } else {
-                flash.error = "Unable to delete - The selected license has attached subscriptions"
+                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${result.subscription} without perms")
@@ -1229,7 +1230,7 @@ AND EXISTS (
         result.user = springSecurityService.getCurrentUser()
 
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result?.institution?.name?:'The selected institution.'}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[(result?.institution?.name?: message(code:'myinst.error.noMember.ph', default:'the selected institution'))]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
             return;
@@ -1420,7 +1421,7 @@ AND EXISTS (
             if (item_to_add) {
                 result.add(item_to_add)
             } else {
-                flash.message = "Folder contains item that cannot be found";
+                flash.message = message(code:'myinst.materialiseFolder.error', default:'Folder contains item that cannot be found');
             }
         }
         result
@@ -1912,11 +1913,11 @@ AND EXISTS (
         result.institution = Org.findByShortcode(params.shortcode)
 
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
         } else if (!result.institution.hasUserWithRole(result.user, "INST_ADM")) {
-            flash.error = "Renewals Upload screen is not available to read-only users."
+            flash.error = message(code:'myinst.renewalUpload.error.noAdmin', default:'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
         }
@@ -1933,7 +1934,7 @@ AND EXISTS (
             if (input_stream.available() != 0) {
                 processRenewalUpload(input_stream, upload_filename, result)
             } else {
-                flash.error = "You haven't selected a worksheet for upload."
+                flash.error = message(code:'myinst.renewalUpload.error.noSelect');
             }
         }
 
@@ -1952,9 +1953,9 @@ AND EXISTS (
                 wb = new HSSFWorkbook(input_stream);
             } catch (IOException e) {
                 if (e.getMessage().contains("Invalid header signature")) {
-                    flash.error = "Error creating workbook. Possible causes: document format, corrupted file."
+                    flash.error = message(code:'myinst.processRenewalUpload.error.invHeader', default:'Error creating workbook. Possible causes: document format, corrupted file.')
                 } else {
-                    flash.error = "Error creating workbook."
+                    flash.error = message(code:'myinst.processRenewalUpload.error', default:'Error creating workbook')
                 }
                 log.debug("Error creating workbook from input stream. ", e)
                 return result;
@@ -1974,7 +1975,7 @@ AND EXISTS (
                 original_sub = genericOIDService.resolveOID(original_sub_id)
                 if(!original_sub.hasPerm("view",user)){
                     original_sub = null;
-                    flash.error = "Can't access original subscription documents. Please verify you have the required access rights."
+                    flash.error = message(code:'myinst.processRenewalUpload.error.access')
                 }
             }
             result.additionalInfo = [sub_startDate:sub_startDate,sub_endDate:sub_endDate,sub_name:original_sub?.name?:'',sub_id:original_sub?.id?:'']
@@ -2042,7 +2043,7 @@ AND EXISTS (
                                     result.entitlements.add(entitlement_info)
                                 } else {
                                     log.error("TIPP not found in package.");
-                                    flash.error = "You have selected an invalid title/package combination for title ${title_id_long}";
+                                    flash.error = message(code:'myinst.processRenewalUpload.error.tipp', args:[title_id_long]);
                                 }
                             }
                         }
@@ -2073,7 +2074,7 @@ AND EXISTS (
         result.institution = Org.findByShortcode(params.shortcode)
 
         if (!checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
             return;
@@ -2520,5 +2521,103 @@ AND EXISTS (
         result.usage = Fact.findAllByRelatedTitleAndSupplierAndInst(result.tip.title,result.tip.provider,result.tip.institution)
       }
       result
+    }
+    
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])  
+    def addressbook() {
+        def result          = [:]
+        result.user         = User.get(springSecurityService.principal.id)
+        result.institution  = Org.findByShortcode(params.shortcode)
+        
+        def visiblePersons = []
+        def prs = Person.findAll("from Person as P where P.tenant = ${result.institution.id}")
+
+        prs?.each { p ->
+            if(p?.isPublic?.value == 'No'){
+                visiblePersons << p
+            }
+        }
+        result.visiblePersons = visiblePersons
+
+        result
+      }
+
+    /**
+     * Display and manage PrivatePropertyRules on myInstitutions
+     *
+     * @return
+     */
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def propertyRules() {
+        def result          = [:]
+        result.user         = User.get(springSecurityService.principal.id)
+        result.institution  = Org.findByShortcode(params.shortcode)
+
+        if('add' == params.cmd) {
+            flash.message = addPropertyRule(params)
+        }
+        else if('delete' == params.cmd) {
+            flash.message = deletePropertyRules(params)
+        }
+        result.pprPropertyDescriptions = PrivatePropertyRule.getAvailablePropertyDescriptions()
+        result.shortcode = params.shortcode
+        result.ppRules = PrivatePropertyRule.findAllWhere([propertyTenant: result.institution])
+
+        result
+    }
+
+    /**
+     * Adding new PrivatePropertyRule if not existing
+     *
+     * @param params
+     * @return
+     */
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    private addPropertyRule(params) {
+        log.debug("adding property rule: " + params)
+
+        def definition = PropertyDefinition.findById(Long.parseLong(params.privatePropertyRule.propertyDefinition.id))
+        def tenant     = Org.findById(Long.parseLong(params.privatePropertyRule.propertyTenant))
+
+        def pprInstance = PrivatePropertyRule.findWhere(
+            propertyDefinition: definition,
+            propertyOwnerType:  params.privatePropertyRule.propertyOwnerType,
+            propertyTenant:     tenant
+        )
+        if(!pprInstance){
+            pprInstance = new PrivatePropertyRule(params.privatePropertyRule)
+
+            if (pprInstance.save(flush: true)){
+                return message(code: 'default.created.message', args:[pprInstance.propertyDefinition.descr, pprInstance.propertyDefinition.name])
+            }
+            else {
+                return message(code: 'default.not.created.message', args:[pprInstance.propertyDefinition.descr, pprInstance.propertyDefinition.name])
+            }
+        }
+    }
+
+    /**
+     * Delete existing PrivatePropertyRules matching on ppr.id and tenant
+     *
+     * @param params
+     * @return
+     */
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    private deletePropertyRules(params) {
+        log.debug("delete property rules: " + params)
+
+        def messages = []
+        def tenant = Org.findByShortcode(params.shortcode)
+        def ruleIds = params.list('propertyRuleDeleteIds')
+
+        ruleIds.each { rid ->
+            def id = Long.parseLong(rid)
+            def pprInstance = PrivatePropertyRule.findWhere(id: id, propertyTenant: tenant)
+            if (pprInstance) {
+                pprInstance.delete(flush: true)
+                messages << message(code: 'default.deleted.message', args:[pprInstance.propertyDefinition.descr, pprInstance.propertyDefinition.name])
+            }
+        }
+        messages
     }
 }

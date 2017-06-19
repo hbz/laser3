@@ -1,5 +1,5 @@
 <div class="well documents">
-  <h5>${message(code:'template.documents', default: 'Documents')}</h5>
+  <h5>${message(code:'licence.documents', default: 'Documents')}</h5>
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">
       <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
@@ -16,7 +16,8 @@
     </g:each>
   </ul>
   <g:if test="${editable}">
-    <input type="submit" class="btn btn-primary" value="${message(code:'template.documents.add', default: 'Add new document')}" data-toggle="modal" href="#modalCreateDocument" />
+    <input type="submit" class="btn btn-primary" value="${message(code:'licence.addNewDocument', default: 'Add new document')}" data-toggle="modal" href="#modalCreateDocument" />
+<%-- <input type="submit" class="btn btn-primary" value="Add new document" data-toggle="modal" href="#modalCreateDocument" /> --%>
   </g:if>
 </div>
 <g:render template="/templates/addDocument"  />

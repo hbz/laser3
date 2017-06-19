@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.*;
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 import grails.util.Holders
 
 class AdminController {

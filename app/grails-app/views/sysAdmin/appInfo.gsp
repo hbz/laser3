@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ App Info</title>
+    <title>${message(code:'laser', default:'LAS:eR')} App Info</title>
 </head>
 
 <body>
@@ -26,6 +26,10 @@
     <table class="table table-bordered">
         <tr><td>Currently Running</td><td>${dataloadService.update_running}</td></tr>
         <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
+    </table>
+    <h2>Global Data Sync</h2>
+    <table class="table table-bordered">
+        <tr><td>Currently Running</td><td>${globalSourceSyncService.running}</td></tr>
     </table>
     <h2>JUSP Sync Service</h2>
     <table class="table table-bordered">

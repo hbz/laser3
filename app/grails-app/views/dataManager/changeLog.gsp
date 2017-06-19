@@ -2,21 +2,21 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data Manager Change Log</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</title>
   </head>
 
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="dataManager" action="index">Data Manager Change Log</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="dataManager" action="changeLog">DM Change log</g:link> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</g:link> </li>
 
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">CSV Export</g:link></li>
+            <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
           </ul>
         </li>
 
@@ -36,8 +36,8 @@
     </g:if>
 
     <div class="container">
-      <h2>Data Manager Change Log</h2>
-      <h6>Change Log <span class="pull-right">${num_hl} changes</span></h6>
+      <h2>${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
+      <h6>${message(code:'menu.institutions.change_log', default:'Change Log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
       <g:form action="changeLog" controller="dataManager" method="get">
         ${message(code:'datamanager.changeLog.from_date')}:
             <div class="input-append date">
@@ -89,14 +89,14 @@
         <br/>
 
         ${message(code:'datamanager.changeLog.what_changed')}:
-        <input type="checkbox" name="packages" value="Y" ${params.packages=='Y'?'checked':''}/> <g:message code="package.plural" default="Packages"/> &nbsp;
-        <input type="checkbox" name="licenses" value="Y" ${params.licenses=='Y'?'checked':''}/> <g:message code="licence.plural" default="Licences"/> &nbsp;
-        <input type="checkbox" name="titles" value="Y" ${params.titles=='Y'?'checked':''}/> <g:message code="title.plural" default="Titles"/> &nbsp;
-        <input type="checkbox" name="tipps" value="Y" ${params.tipps=='Y'?'checked':''}/> <g:message code="tipp.plural" default="TIPPs"/> &nbsp; <br/>
+        <input type="checkbox" style="vertical-align:top;" name="packages" value="Y" ${params.packages=='Y'?'checked':''}/> <g:message code="package.plural" default="Packages"/> &nbsp;
+        <input type="checkbox" style="vertical-align:top;" name="licenses" value="Y" ${params.licenses=='Y'?'checked':''}/> <g:message code="licence.plural" default="Licences"/> &nbsp;
+        <input type="checkbox" style="vertical-align:top;" name="titles" value="Y" ${params.titles=='Y'?'checked':''}/> <g:message code="title.plural" default="Titles"/> &nbsp;
+        <input type="checkbox" style="vertical-align:top;" name="tipps" value="Y" ${params.tipps=='Y'?'checked':''}/> <g:message code="tipp.plural" default="TIPPs"/> &nbsp; <br/>
         ${message(code:'datamanager.changeLog.how_changed')}:
-        <input type="checkbox" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.new_items" default="New Items"/> &nbsp;
-        <input type="checkbox" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
-        <input  class="btn btn-primary" type="submit"/>
+        <input type="checkbox" style="vertical-align:top;" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.new_items" default="New Items"/> &nbsp;
+        <input type="checkbox" style="vertical-align:top;" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
+        <div><input  class="btn btn-primary" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/></div>
       </g:form>
 
     </div>
@@ -108,7 +108,7 @@
       <div class="container alert-warn">
 
       <g:link action="changeLog"> 
-         <input type="button" value="Clear Search" class="btn btn-danger">${message(code:'default.button.clear_search.label')}</input>
+         <input type="button" value="${message(code:'default.button.clear_search.label', default:'Clear Search')}" class="btn btn-danger">${message(code:'default.button.clear_search.label')}</input>
       </g:link>
 
         <table class="table table-bordered">
@@ -145,7 +145,7 @@
 
       <div class="pagination" style="text-align:center">
         <g:if test="${historyLines != null}" >
-          <bootstrap:paginate  action="changeLog" controller="dataManager" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${num_hl}" />
+          <bootstrap:paginate  action="changeLog" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
       </div>
 

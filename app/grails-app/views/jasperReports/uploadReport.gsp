@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>KB+ Upload Jasper Reports</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Upload Jasper Reports</title>
     <meta name="layout" content="mmbootstrap"/>
 
 </head>

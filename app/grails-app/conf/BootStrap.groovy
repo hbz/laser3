@@ -1,7 +1,7 @@
 import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
@@ -43,6 +43,10 @@ class BootStrap {
     RefdataCategory.lookupOrCreate('AddressType', 'Billing address');
     RefdataCategory.lookupOrCreate('AddressType', 'Delivery address');
 
+    RefdataCategory.lookupOrCreate('ContactContentType', 'Mail');
+    RefdataCategory.lookupOrCreate('ContactContentType', 'Phone');
+    RefdataCategory.lookupOrCreate('ContactContentType', 'Fax');
+    
     RefdataCategory.lookupOrCreate('ContactType', 'Personal');
     RefdataCategory.lookupOrCreate('ContactType', 'Job-related');
     // TODO
@@ -74,6 +78,14 @@ class BootStrap {
     RefdataCategory.lookupOrCreate('OrgSector', 'Higher Education');
     RefdataCategory.lookupOrCreate('OrgSector', 'Publisher');
     
+    RefdataCategory.lookupOrCreate('Person Function', 'General contact person');
+    
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific licence editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific subscription editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific package editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific cluster editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific title editor');
+    
     def cons_combo = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium');
 
     def or_licensee_role   = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
@@ -83,11 +95,6 @@ class BootStrap {
     def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Owner');
     def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Member');
     
-    RefdataCategory.lookupOrCreate('Person Role', 'General contact person');
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific licence editor');
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific subscription editor');
-    RefdataCategory.lookupOrCreate('Person Role', 'Specific package editor');
-
     OrgPermShare.assertPermShare(view_permission, or_licensee_role);
     OrgPermShare.assertPermShare(edit_permission, or_licensee_role);
     OrgPermShare.assertPermShare(view_permission, or_subscriber_role);
@@ -278,16 +285,18 @@ class BootStrap {
     setupRefdata();
     log.debug("refdata setup");
 
-    // if ( grailsApplication.config.doDocstoreMigration == true ) {
-    //   docstoreService.migrateToDb();
-    // }
-    addDefaultJasperReports()
-    addDefaultPageMappings()
-    createLicenceProperties()
-    initializeDefaultSettings()
-    log.debug("Init completed....");
+        // if ( grailsApplication.config.doDocstoreMigration == true ) {
+        //   docstoreService.migrateToDb();
+        // }
+        addDefaultJasperReports()
+        addDefaultPageMappings()
+        createLicenceProperties()
+        createPrivateProperties()
+
+        initializeDefaultSettings()
+        log.debug("Init completed....");
    
-  }
+    }
 
   def initializeDefaultSettings(){
     def admObj = SystemAdmin.list()
@@ -313,7 +322,7 @@ class BootStrap {
     [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageHeader",note:" Remove header/footer from csv/xls"],
     [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.2",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageFooter",note:" Remove header/footer from csv/xls"]
     ]
-    createCustomProperties(requiredProps)
+    createPropertyDefinitions(requiredProps)
     requiredProps.each{
       def type = PropertyDefinition.findByNameAndDescr(it.propname,it.descr)
       if(!SystemAdminCustomProperty.findByType(type)){
@@ -341,11 +350,30 @@ class BootStrap {
                          [propname:"Cancellation Allowance", descr:PropertyDefinition.LIC_PROP,type: String.toString()], 
                          [propname:"Notice Period", descr:PropertyDefinition.LIC_PROP,type: String.toString()], 
                          [propname:"Signed", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO']]
-    createCustomProperties(requiredProps)
+
+    createPropertyDefinitions(requiredProps)
     log.debug("createLicenceProperties completed");
   }
-    
-  def createCustomProperties(requiredProps){
+
+    def createPrivateProperties(){
+        def existingOrgProps = OrgPrivateProperty.findAll()
+        def requiredOrgProps = [[propname:"Org Property 1", descr:PropertyDefinition.ORG_PROP, type: String.toString()],
+                                [propname:"Org Property 2", descr:PropertyDefinition.ORG_PROP, type: RefdataValue.toString(), cat:'YNO'],
+                                [propname:"Org Property 3", descr:PropertyDefinition.ORG_PROP, type: RefdataValue.toString(), cat:'OrgSector']]
+
+        createPropertyDefinitions(requiredOrgProps)
+
+        def existingPrsProps = PersonPrivateProperty.findAll()
+        def requiredPrsProps = [[propname:"Person Property 1", descr:PropertyDefinition.PRS_PROP, type: String.toString()],
+                                [propname:"Person Property 2", descr:PropertyDefinition.PRS_PROP, type: RefdataValue.toString(), cat:'YNO'],
+                                [propname:"Person Property 3", descr:PropertyDefinition.PRS_PROP, type: RefdataValue.toString(), cat:'Person Role']]
+
+        createPropertyDefinitions(requiredPrsProps)
+
+        log.debug("createPrivateProperties completed");
+    }
+
+  def createPropertyDefinitions(requiredProps){
 
     requiredProps.each{ default_prop ->
         def existing_prop = PropertyDefinition.findByName(default_prop.propname)

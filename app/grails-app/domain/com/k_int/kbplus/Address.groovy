@@ -18,9 +18,9 @@ class Address {
     String city
     String state
     String country
-    RefdataValue type
-    Person prs
-    Org    org
+    RefdataValue type   // RefdataCategory 'AddressType'
+    Person prs          // person related contact; exclusive with org
+    Org    org          // org related contact; exclusive with prs
     
     static mapping = {
         id       column:'adr_id'
@@ -56,38 +56,37 @@ class Address {
     
     @Override
     String toString() {
-        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + ')'
+        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type?.value
     }
     
+    // TODO implement existing check (lookup)
     static def lookupOrCreate(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
         
+        def info   = "saving new address: ${type}"
         def result = null
         
-        def hqlStreet1 = Address.hqlHelper(street1)
-        def hqlStreet2 = Address.hqlHelper(street2)
-        def hqlPostbox = Address.hqlHelper(postbox)
-        def hqlZipcode = Address.hqlHelper(zipcode)
-        def hqlCity    = Address.hqlHelper(city)
-        def hqlState   = Address.hqlHelper(state)
-        def hqlCountry = Address.hqlHelper(country)
-        def hqlType    = Address.hqlHelper(type)
-        def hqlPrs     = Address.hqlHelper(person)
-        def hqlOrg     = Address.hqlHelper(organisation)
-        
-        def query = "from Address a where a.org ${hqlOrg[1]} and a.prs ${hqlPrs[1]} and a.zipcode ${hqlZipcode[1]} and lower(a.city) ${hqlCity[1]} "
-        query = query + "and ((lower(a.street_1) ${hqlStreet1[1]} and a.street_2 ${hqlStreet2[1]}) or a.pob ${hqlPostbox[1]})"
-        
-        def queryParams = [hqlOrg[0], hqlPrs[0], hqlZipcode[0], hqlCity[0].toLowerCase(), hqlStreet1[0].toLowerCase(), hqlStreet2[0], hqlPostbox[0]]
-        queryParams.removeAll([null, ''])
-        
-        log.debug(query)
-        log.debug('@ ' + queryParams)
-        
-        def a = Address.executeQuery(query, queryParams)
-       
-        if(!a && type){
-            LogFactory.getLog(this).debug('trying to save new address')
+        if(person && organisation){
+            type = RefdataValue.findByValue("Job-related")
+        }
+
+        def check = Address.findAllWhere(
+            street_1: street1,
+            street_2: street2,
+            pob:      postbox,
+            zipcode:  zipcode,
+            city:     city,
+            state:    state,
+            country:  country,
+            type:     type,
+            prs:      person,
+            org:      organisation
+        ).sort({id: 'asc'})
             
+        if(check.size()>0){
+            result = check.get(0)
+            info += " > ignored/duplicate"
+        }
+        else{
             result = new Address(
                 street_1: street1,
                 street_2: street2,
@@ -104,27 +103,12 @@ class Address {
             if(!result.save()){
                 result.errors.each{ println it }
             }
-        }
-        else {
-            // TODO catch multiple results
-            if(a.size() > 0){
-                result = a[0]
+            else {
+                info += " > ok"
             }
-        }        
+        }
+             
+        LogFactory.getLog(this).debug(info)
         result   
-    }
-    
-    /**
-     * 
-     * @param obj
-     * @return list with two elements for building hql query
-     */
-    static List hqlHelper(obj){
-        
-        def result = []
-        result.add(obj ? obj : '')
-        result.add(obj ? '= ?' : 'is null')
-        
-        result
     }
 }

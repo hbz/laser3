@@ -36,7 +36,8 @@ class Org {
       prsLinks: 'org',
       contacts: 'org',
       addresses: 'org',
-      affiliations: 'org' 
+      affiliations: 'org',
+      privateProperties: 'owner'
       ]
 
   static hasMany = [
@@ -48,7 +49,8 @@ class Org {
       contacts:         Contact,
       addresses:        Address,
       affiliations:     UserOrg,
-      customProperties: OrgCustomProperty
+      customProperties:  OrgCustomProperty,
+      privateProperties: OrgPrivateProperty
       ]
 
   static mapping = {
@@ -209,6 +211,10 @@ class Org {
 
     if ( result == null ) {
       // log.debug("Create new entry for ${name}");
+      if (sector instanceof String){
+        sector = RefdataCategory.lookupOrCreate('OrgSector', sector)
+      }
+
       result = new Org(
                        name:name, 
                        sector:sector,

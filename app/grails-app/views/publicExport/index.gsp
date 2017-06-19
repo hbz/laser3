@@ -44,7 +44,7 @@
 
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>KB+ Data import explorer</title>
+    <title>${message(code:'public.nav.exports.label', default:'Exports')} | ${message(code:'laser', default:'LAS:eR')}</title>
         <r:require module='annotations' />
 
   </head>
@@ -56,7 +56,7 @@
 
 
   <div class="container">
-      <h1>Exports</h1>
+      <h1>${message(code:'public.nav.exports.label', default:'Exports')}</h1>
     </div>
 
     <div class="container">
@@ -68,17 +68,6 @@
     href="http://creativecommons.org/publicdomain/zero/1.0/">
    <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
  </a>
- <br />
- To the extent possible under law,
- <a rel="dct:publisher"
-    href="http://www.kbplus.ac.uk/exports">
-   <span property="dct:title">JISC Collections</span></a>
- has waived all copyright and related or neighboring rights to
- <span property="dct:title">KBPlus Public Exports</span>.
-This work is published from:
-<span property="vcard:Country" datatype="dct:ISO3166"
-     content="GB" about="www.kbplus.ac.uk/exports">
- United Kingdom</span>.
 </p>
 
         </div>
@@ -91,7 +80,7 @@ This work is published from:
           <div class="well">
             <h4>Cufts style index of subscriptions offered</h4>
             <p>
-              Use the contents of this URI to drive a full crawl of the KB+ subscriptions offered data. Each row gives an identifier that can be used to
+              Use the contents of this URI to drive a full crawl of the ${message(code:'laser', default:'LAS:eR')} subscriptions offered data. Each row gives an identifier that can be used to
               construct individual subscription requests.
             </p>
             <g:link action="idx" params="${[format:'csv']}">Simple CSV</g:link><br/>
@@ -120,26 +109,26 @@ This work is published from:
         <div class="span12">
         <ul class="nav nav-pills">
           <g:set var="active_filter" value="${params.filter}"/>
-          <li class="${(active_filter != 'current')?'active':''}"><g:link action="index">All Packages</g:link></li>
+          <li class="${(active_filter != 'current')?'active':''}"><g:link action="index">${message(code:'package.show.all', default:'All Packages')}</g:link></li>
 
-          <li class="${active_filter=='current'?'active':''}"><g:link action="index" params="${ [filter:'current',endYear:"[ ${new Date().year +1900} TO 2100]"]}">Current Packages</g:link></li>
+          <li class="${active_filter=='current'?'active':''}"><g:link action="index" params="${ [filter:'current',endYear:"[ ${new Date().year +1900} TO 2100]"]}">${message(code:'package.show.current', default:'Current Packages')}</g:link></li>
 
 
       </ul>
           <div class="well form-horizontal">
-            Search Term: <input name="q" placeholder="Add &quot;&quot; for exact match" value="${params.q}"/>
-            Sort: <select name="sort">
-                    <option ${params.sort=='sortname' ? 'selected' : ''} value="sortname">Package Name</option>
-                    <option ${params.sort=='_score' ? 'selected' : ''} value="_score">Score</option>
-                    <option ${params.sort=='lastModified' ? 'selected' : ''} value="lastModified">Last Modified</option>
+            ${message(code:'default.search.term', default:'Search Term')}: <input name="q" placeholder="${message(code:'packageDetails.index.search.ph')}" value="${params.q}"/>
+            ${message(code:'default.sort.label', default:'Sort')}: <select name="sort">
+                    <option ${params.sort=='sortname' ? 'selected' : ''} value="sortname">${message(code:'packageDetails.index.search.sort.name', default:'Package Name')}</option>
+                    <option ${params.sort=='_score' ? 'selected' : ''} value="_score">${message(code:'packageDetails.index.search.sort.score', default:'Score')}</option>
+                    <option ${params.sort=='lastModified' ? 'selected' : ''} value="lastModified">${message(code:'packageDetails.index.search.sort.modified', default:'Last Modified')}</option>
                   </select>
-            Order: <select name="order" value="${params.order}">
-                    <option ${params.order=='asc' ? 'selected' : ''} value="asc">Ascending</option>
-                    <option ${params.order=='desc' ? 'selected' : ''} value="desc">Descending</option>
+            ${message(code:'default.order.label', default:'Order')}: <select name="order" value="${params.order}">
+                    <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
+                    <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
                   </select>
-            Modified After: <g:simpleHiddenValue  id="lastUpdated" value="${params.lastUpdated}" name="lastUpdated" type="date"/>
+            ${message(code:'default.search.modified_after', default:'Modified After')}: <g:simpleHiddenValue  id="lastUpdated" value="${params.lastUpdated}" name="lastUpdated" type="date"/>
  
-            <button type="submit" name="search" value="yes">Search</button>
+            <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
           </div>
         </div>
       </div>
@@ -189,14 +178,14 @@ This work is published from:
           <div class="well">
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
-                    <g:if test=" ${params.int('offset')}">
-                   Showing Results ${params.int('offset') + 1} - ${resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))} of ${resultsTotal}
+                  <g:if test=" ${params.int('offset')}">
+                    ${message(code:'default.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
                   </g:if>
                   <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                      Showing Results 1 - ${resultsTotal < params.int('max') ? resultsTotal : params.int('max')} of ${resultsTotal}
+                    ${message(code:'default.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
                   </g:elseif>
                   <g:else>
-                    Showing ${resultsTotal} Results
+                    ${message(code:'default.search.no_pagiantion.text', args:[resultsTotal])}
                   </g:else>
                 </div>
 
@@ -204,11 +193,11 @@ This work is published from:
                   <table class="table table-bordered table-striped">
                     <thead>
                       <tr style="white-space: nowrap">
-                      <g:sortableColumn property="sortname" title="Package Name" params="${params}" />
-                      <g:sortableColumn property="consortiaName" title="Consortium" params="${params}"/>
-                      <g:sortableColumn property="startDate" title="Start Date" params="${params}" />
-                      <g:sortableColumn property="endDate" title="End Date" params="${params}" />
-                      <g:sortableColumn property="lastModified" title="Last Modified" params="${params}" />
+                      <g:sortableColumn property="sortname" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
+                      <g:sortableColumn property="consortiaName" title="${message(code:'consortium.label', default:'Consortium')}" params="${params}"/>
+                      <g:sortableColumn property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" params="${params}" />
+                      <g:sortableColumn property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" params="${params}" />
+                      <g:sortableColumn property="lastModified" title="${message(code:'packageDetails.index.search.sort.modified', default:'Last Modified')}" params="${params}" />
                       <th>Export</th>
                     </thead>
                     <tbody>
@@ -216,7 +205,7 @@ This work is published from:
                         <tr>
                           <td>${hit.getSource().name}
                               <!--(${hit.score})-->
-                              <span>(${hit.getSource().titleCount?:'Unknown number of'} titles)</span>
+                              <span>(${hit.getSource().titleCount?:'Unknown number of'} ${message(code:'title.plural', default:'Titles')})</span>
                           <ul>
                           <g:each in="${hit.getSource().identifiers}" var="ident">
                             <li>${ident}</li>
@@ -235,7 +224,7 @@ This work is published from:
                           
                           <td>  
         <div class="dropdown">
-            <a class="dropdown-toggle badge" data-toggle="dropdown" href="#">Formats<i class="fa fa-caret-down"></i> </a>
+            <a class="dropdown-toggle badge" data-toggle="dropdown" href="#">${message(code:'default.formats.label', default:'Formats')}<i class="fa fa-caret-down"></i> </a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
             <li><g:link action="pkg" params="${[format:'json',id:hit.getSource().dbId]}">JSON</g:link></li>  
             <li><g:link action="pkg" params="${[format:'xml',id: hit.getSource().dbId]}">XML Export</g:link></li>

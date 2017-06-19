@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.PropertyDefinition
 import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils

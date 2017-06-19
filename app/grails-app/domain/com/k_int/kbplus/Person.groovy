@@ -3,10 +3,10 @@ package com.k_int.kbplus
 import java.util.Date
 import java.util.List
 
+import javax.persistence.Transient
 import groovy.util.logging.Log4j
-
 import org.apache.commons.logging.LogFactory
-
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Sort
 import groovy.util.logging.*
 
 @Log4j
@@ -15,7 +15,9 @@ class Person {
     String       first_name
     String       middle_name
     String       last_name
-    RefdataValue gender
+    RefdataValue gender     // RefdataCategory 'Gender'
+    Org          tenant
+    RefdataValue isPublic   // RefdataCategory 'YN'
     
     static mapping = {
         id          column:'prs_id'
@@ -23,78 +25,110 @@ class Person {
         first_name  column:'prs_first_name'
         middle_name column:'prs_middle_name'
         last_name   column:'prs_last_name'
-        gender      column:'prs_gender'
+        gender      column:'prs_gender_rv_fk'
+        tenant      column:'prs_tenant_fk'
+        isPublic    column:'prs_is_public_rv_fk'
     }
     
     static mappedBy = [
         roleLinks: 'prs',
-        contacts:  'prs'
+        addresses: 'prs',
+        contacts:  'prs',
+        privateProperties: 'owner'
     ]
   
     static hasMany = [
         roleLinks: PersonRole,
-        contacts:  Contact
+        addresses: Address,
+        contacts:  Contact,
+        privateProperties: PersonPrivateProperty
     ]
     
     static constraints = {
         first_name  (nullable:false, blank:false)
-        middle_name (nullable:true,  blank:true)
+        middle_name (nullable:true,  blank:false)
         last_name   (nullable:false, blank:false)
         gender      (nullable:true)
+        tenant      (nullable:true)
+        isPublic    (nullable:true)
     }
     
-    static getAllRefdataValues() {
-        RefdataCategory.getAllRefdataValues('Gender')
+    static getAllRefdataValues(String category) {
+        RefdataCategory.getAllRefdataValues(category)
     }
     
     @Override
     String toString() {
         last_name + ', ' + first_name + ' ' + middle_name + ' (' + id + ')'
     }
+    
+    // TODO implement existing check (lookup)
+    // TODO implement responsibilityType
+    static def lookupOrCreateWithPersonRole(firstName, middleName, lastName, gender, tenant, isPublic, org, functionType) {
         
-    static def lookupOrCreate(firstName, middleName, lastName, gender, org, roleType) {
-        
+        def info = "saving new person: ${firstName} ${middleName} ${lastName}"
         def resultPerson = null
         def resultPersonRole = null
-        
-        def hqlFirstName  = Person.hqlHelper(firstName)
-        def hqlMiddleName = Person.hqlHelper(middleName)
-        def hqlLastName   = Person.hqlHelper(lastName)
-        def hqlGender     = Person.hqlHelper(gender)
-        def hqlOrg        = Person.hqlHelper(org)
-        def hqlRoleType   = Person.hqlHelper(roleType)
-               
-        def query = "select p from Person p, PersonRole pr where p = pr.prs "
-        query = query + "and pr.org ${hqlOrg[1]} and pr.roleType ${hqlRoleType[1]} "
-        query = query + "and lower(p.first_name) ${hqlFirstName[1]} and lower(p.middle_name) ${hqlMiddleName[1]} and lower(p.last_name) ${hqlLastName[1]}"
-
-        def queryParams = [hqlOrg[0], hqlRoleType[0], hqlFirstName[0].toLowerCase(), hqlMiddleName[0].toLowerCase(), hqlLastName[0].toLowerCase()]
-        queryParams.removeAll([null, ''])
-        
-        log.debug(query)
-        log.debug('@ ' + queryParams)
-        
-        def p = Person.executeQuery(query, queryParams)
-        
-        if(!p){
-            LogFactory.getLog(this).debug("trying to save new person: ${firstName} ${middleName} ${lastName}")
+ 
+        // TODO: ugly mapping fallback
+        if(middleName=='')
+            middleName = null
             
+        def check = Person.findAllWhere(
+            first_name:  firstName,
+            middle_name: middleName,
+            last_name:   lastName,
+            gender:      gender,
+            tenant:      tenant,
+            isPublic:    isPublic, 
+            ).sort({id: 'asc'})
+            
+        if(check.size()>0){
+            resultPerson = check.get(0)
+            info += " > ignored/duplicate"
+        }
+        else{
             resultPerson = new Person(
                 first_name:  firstName,
                 middle_name: middleName,
                 last_name:   lastName,
-                gender:      gender
+                gender:      gender,
+                tenant:      tenant,
+                isPublic:    isPublic
                 )
                 
             if(!resultPerson.save()){
                 resultPerson.errors.each{ println it }
             }
+            else {
+                info += " > ok"
+            }
+        }
+        LogFactory.getLog(this).debug(info)
+        
+        if(resultPerson){
+            info = "saving new personRole: ${resultPerson} - ${functionType} - ${org}"
             
-            if(resultPerson && org && roleType){
-                LogFactory.getLog(this).debug("trying to save new personRole: ${resultPerson} - ${roleType} - ${org}")
+            check = PersonRole.findAllWhere(
+                functionType:   functionType,
+                prs:        resultPerson,
+                lic:        null,
+                org:        org,
+                cluster:    null,
+                pkg:        null,
+                sub:        null,
+                title:      null,
+                start_date: null,
+                end_date:   null
+                ).sort({id: 'asc'})
                 
+            if(check.size()>0){
+                resultPersonRole = check.get(0)
+                info += " > ignored/duplicate"
+            }
+            else{   
                 resultPersonRole = new PersonRole(
-                    roleType:   roleType,
+                    functionType:   functionType,
                     prs:        resultPerson,
                     lic:        null,
                     org:        org,
@@ -109,14 +143,12 @@ class Person {
                 if(!resultPersonRole.save()){
                     resultPersonRole.errors.each{ println it }
                 }
+                else {
+                    info += " > ok"
+                }
             }
+            LogFactory.getLog(this).debug(info)
         }
-        else {
-            // TODO catch multiple results
-            if(p.size() > 0){
-                resultPerson = p[0]
-            }
-        }      
         resultPerson      
     }
     
@@ -133,4 +165,10 @@ class Person {
         
         result
     }
+    
+    /*
+    @Transient
+    def getCustomPropByName(name){
+      return privateProperties.find{it.type.name == name}
+    }*/
 }

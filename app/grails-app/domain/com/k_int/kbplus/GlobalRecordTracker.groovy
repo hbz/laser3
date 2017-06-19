@@ -18,7 +18,7 @@ class GlobalRecordTracker {
   static mapping = {
                          id column:'grt_id'
                     version column:'grt_version'
-                     source column:'grt_owner_fk'
+                      owner column:'grt_owner_fk'
                  identifier column:'grt_identifier'
                    localOid column:'grt_local_oid'
                        name column:'grt_name', type:'text'

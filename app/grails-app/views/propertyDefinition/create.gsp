@@ -1,10 +1,10 @@
 <!doctype html>
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.custprops.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
 
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Manage Custom Properties</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Manage Custom Properties</title>
   </head>
      <g:set var="entityName" value="${message(code: 'propertyDefinition.label', default: 'PropertyDefinition')}"/>
 <body>
@@ -60,7 +60,7 @@
    
 
       <p>Use the following form to create additional property definitions. Property definition names are unique.</p>
-       <g:form id="create_cust_prop" url="[controller: 'ajax', action: 'addCustPropertyType']" >
+       <g:form id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
           <input type="hidden" name="redirect" value="yes"/>
           <input type="hidden" name="ownerClass" value="${this.class}"/>
 

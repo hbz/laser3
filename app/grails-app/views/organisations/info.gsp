@@ -5,7 +5,7 @@
   <head>
     <meta name="layout" content="mmbootstrap">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>KB+ <g:message code="default.show.label" args="[entityName]" /></title>
+    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
     <div class="container">
@@ -25,20 +25,35 @@
             <dt><g:message code="org.name.label" default="Name" /></dt>
             
               <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
-            
           </g:if>
         
-          <g:if test="${orgInstance?.addresses}">
-                  <dl>
-                          <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-                          <dd><ul>
-                                  <g:each in="${orgInstance.addresses}" var="a">
-                                          <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
-                                  </g:each>
-                          </ul></dd>
-                  </dl>
-          </g:if>
-        
+			<g:if test="${orgInstance?.addresses}">
+				<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
+				<g:each in="${orgInstance?.addresses}" var="a">
+					<g:if test="${a.org}">
+						<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+					</g:if>
+				</g:each>
+			</g:if>
+		
+			<g:if test="${orgInstance?.contacts}">
+				<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
+				<g:each in="${orgInstance?.contacts}" var="c">
+					<g:if test="${c.org}">
+						<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+					</g:if>
+				</g:each>
+			</g:if>
+
+        	<g:if test="${orgInstance?.prsLinks}">
+				<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+				<g:each in="${orgInstance?.prsLinks}" var="pl">
+					<g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">		
+						<g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+					</g:if>
+				</g:each>
+			</g:if>
+		
           <g:if test="${orgInstance?.ipRange}">
             <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
             
@@ -91,15 +106,16 @@
           </g:if>
 
           <g:if test="${orgInstance?.links}">
-            <dt><g:message code="org.links.label" default="Other org links" /></dt>
+            <dt><g:message code="org.links.other.label" default="Other org links" /></dt>
             <dd><ul>
               <g:each in="${orgInstance.links}" var="i">
                 <li>
-                  <g:if test="${i.pkg}"><g:link controller="package" action="show" id="${i.pkg.id}">Package: ${i.pkg.name}</g:link></g:if>
-                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">Subscription: ${i.sub.name}</g:link></g:if>
-                  <g:if test="${i.lic}">Licence: ${i.lic.id}</g:if>
-                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">Title: ${i.title?.title}</g:link></g:if>
-                  (${i.roleType?.value}) </li>
+                  <g:if test="${i.pkg}"><g:link controller="package" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name}</g:link></g:if>
+                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">${messsage(code:'subscription.label', default:'Subscription')}: ${i.sub.name}</g:link></g:if>
+                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id}</g:if>
+                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title?.title}</g:link></g:if>
+                  <g:set var="roletype_refdata" value="${i.roleType?.value.replaceAll(/\s/,'')}"/>
+                  (${message(code:"refdata.${roletype_refdata}", default:"${i.roleType?.value}")}) </li>
               </g:each>
             </ui></dd>
           </g:if>

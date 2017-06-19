@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} :: Financial Information</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: Financial Information</title>
   </head>
 
   <body>

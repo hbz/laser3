@@ -4,7 +4,7 @@
   <head>
     <meta name="layout" content="mmbootstrap">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>KB+ <g:message code="default.show.label" args="[entityName]" /></title>
+    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
 
@@ -46,22 +46,19 @@
                 </ul>
                 </g:if>
             </td>
-            <td>${userOrg[0].formalRole?.authority}</td>
+            <td><g:message code="cv.roles.${userOrg[0].formalRole?.authority}"/></td>
             <td>
-              <g:if test="${userOrg[0].status==0}">Pending</g:if>
-              <g:if test="${userOrg[0].status==1}">Approved</g:if>
-              <g:if test="${userOrg[0].status==2}">Rejected</g:if>
-              <g:if test="${userOrg[0].status==3}">Auto Approved</g:if>
+              <g:message code="cv.membership.status.${userOrg[0].status}" />
             </td>
             <td>
               <g:if test="${editable}">
               <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
-                <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">Revoke</g:link>
+                <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
               </g:if>
               <g:else>
-                <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">Allow</g:link>
+                <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">${message(code:'default.button.allow.label', default:'Allow')}</g:link>
               </g:else>
-              <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">Delete Link</g:link>
+              <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">${message(code:'default.button.delete_link.label', default:'Delete Link')}</g:link>
             </g:if>
             </td>
           </tr>

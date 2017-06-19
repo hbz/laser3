@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Admin::TIPP Transfer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Admin::TIPP Transfer</title>
   </head>
   <body>
     <div class="container">

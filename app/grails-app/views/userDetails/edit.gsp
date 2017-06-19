@@ -93,6 +93,9 @@
       $("#userRoleSelect").select2({
         placeholder: "Search for an role...",
         minimumInputLength: 0,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',

@@ -10,7 +10,7 @@
 	<body>
 		<div class="row-fluid">
 			
-			<div class="span3">
+			<div class="span2">
 				<div class="well">
 					<ul class="nav nav-list">
 						<li class="nav-header">${entityName}</li>

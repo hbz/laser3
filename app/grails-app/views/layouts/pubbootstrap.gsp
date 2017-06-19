@@ -23,8 +23,7 @@
 
     <g:layoutHead/>
     <r:layoutResources/>
-
-    <tmpl:/layouts/analytics />
+   
   </head>
 
   <body class="public">
@@ -36,16 +35,6 @@
      'UserRole': 'ROLE_USER'
     }];
   </script>
-<!-- Google Tag Manager - Placed here as instructed by MB 20/01/2016, made aware of possible negative impacts -->
-<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-5BMV57"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-5BMV57');</script>
-<!-- End Google Tag Manager -->
-
     <g:layoutBody/>
     
     <div id="Footer">
@@ -54,9 +43,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               <div class="container">
                   <div>
                       <ul class="footer-sublinks nav">
-                          <li><a href="${createLink(uri: '/terms-and-conditions')}">Terms & Conditions</a></li>
-                          <li><a href="${createLink(uri: '/privacy-policy')}">Privacy Policy</a></li>
-                          <li><a href="${createLink(uri: '/freedom-of-information-policy')}">Freedom of Information Policy</a></li>
+                          <li><a href="${createLink(uri: '/terms-and-conditions')}">${message(code:'default.termsAndCond.label', default:'Terms & Conditions')}</a></li>
+                          <li><a href="${createLink(uri: '/privacy-policy')}">${message(code:'default.privacy.label', default:'Privacy Policy')}</a></li>
+                          <li><a href="${createLink(uri: '/freedom-of-information-policy')}">${message(code:'default.foi.label', default:'Freedom of Information Policy')}</a></li>
                       </ul>
                   </div>
               </div>

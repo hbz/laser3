@@ -105,10 +105,10 @@ public class PackageIngestService {
       }
       else {
         log.error("Problem saving new package");
-        upload.nessages.add("Problem saving new package");
+        upload.messages.add("Problem saving new package");
         new_pkg.errors.each { pe ->
           log.error("Problem saving package: ${pe}");
-          upload.nessages.add("Problem saving package: ${pe}");
+          upload.messages.add("Problem saving package: ${pe}");
         }
         flash.error="Problem saving new package ${new_pkg.errors}";
         return
@@ -216,7 +216,7 @@ public class PackageIngestService {
     def result = TitleInstance.lookupOrCreateViaIdMap(identifiers, title);
     if ( !result.getPublisher() ) {
       def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');
-      OrgRole.assertOrgTitleLink(publisher, result, pub_role);
+      OrgRole.assertOrgTitleLink(publisher, result, pub_role, null, null);
       result.save();
     }
 
@@ -630,7 +630,7 @@ public class PackageIngestService {
 
   def findTitleIdentifierIntersection(idlist) {
     def matched_title_ids = []
-    def identifiers_to_check = ["eissn", "issn", "doi", "isbn"]
+    def identifiers_to_check = ["eissn", "issn", "doi", "isbn", "zdb"]
     idlist.each { id ->
       if ( identifiers_to_check.contains(id.key) ) {
         def title = TitleInstance.findByIdentifier([[namespace:id.key,value:id.value]])

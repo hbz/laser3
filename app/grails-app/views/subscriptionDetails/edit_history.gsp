@@ -2,15 +2,15 @@
 <html>
     <head>
         <meta name="layout" content="mmbootstrap"/>
-        <title>KB+ Subscription</title>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
 </head>
 
 <body>
 
     <div class="container">
         <ul class="breadcrumb">
-            <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-            <li>Subscriptions</li>
+            <li> <g:link controller="home" action="index">${message(code:'default.home', default:'Home')}</g:link> <span class="divider">/</span> </li>
+            <li>${message(code:'subscription.plural', default:'Subscriptions')}</li>
         </ul>
     </div>
 
@@ -20,16 +20,16 @@
     </div>
 
     <div class="container">
-      <h3>Subscription history</h3>
+      <h3>${message(code:'subscription.details.edit_history.label', default:'Subscription history')}</h3>
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>Event ID</th>
-          <th>Person</th>
-          <th>Date</th>
-          <th>Event</th>
-          <th>Field</th>
-          <th>Old Value</th>
-          <th>New Value</th>
+          <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
+          <th>${message(code:'default.person.label', default:'Person')}</th>
+          <th>${message(code:'default.date.label', default:'Date')}</th>
+          <th>${message(code:'default.event.label', default:'Event')}</th>
+          <th>${message(code:'default.field.label', default:'Field')}</th>
+          <th>${message(code:'default.oldValue.label', default:'Old Value')}</th>
+          <th>${message(code:'default.newValue.label', default:'New Value')}</th>
         </tr>
         <g:if test="${historyLines}">
           <g:each in="${historyLines}" var="hl">
@@ -46,7 +46,7 @@
         </g:if>
       </table>
        <div class="pagination">
-        <bootstrap:paginate  action="edit_history" controller="subscriptionDetails" params="${params}" next="Next" prev="Prev" max="${max}" total="${historyLinesTotal}" />
+        <bootstrap:paginate  action="edit_history" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
       </div>
     </div>
 

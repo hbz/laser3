@@ -11,18 +11,18 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="platform" action="index">All Platforms</g:link><span class="divider">/</span></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="platform" action="index">${message(code:'platform.show.all', default:'All Platforms')}</g:link><span class="divider">/</span></li>
         <li><g:link controller="platform" action="show" id="${platformInstance.id}">${platformInstance.name}</g:link></li>
 
         <li class="pull-right">
           <g:if test="${editable}">
-            <span class="badge badge-warning">Editable</span>&nbsp;
+            <span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;
           </g:if>
           View:
           <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="platform" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
-            <g:link controller="platform" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
+            <g:link controller="platform" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
+            <g:link controller="platform" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
           </div>
           &nbsp;
          </li>
@@ -49,24 +49,24 @@
 
         <fieldset class="inline-lists">
             <dl>
-              <dt>Platform Name</dt>
+              <dt>${message(code:'platform.name', default:'Platform Name')}</dt>
               <dd> <g:xEditable owner="${platformInstance}" field="name"/></dd>
             </dl>
 
             <dl>
-              <dt>Primary URL</dt>
+              <dt>${message(code:'platform.primaryUrl', default:'Primary URL')}</dt>
               <dd> <g:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>
             </dl>
 
             <dl>
-              <dt>Service Provider</dt>
+              <dt>${message(code:'platform.serviceProvider', default:'Service Provider')}</dt>
               <dd>
                 <g:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="YN"/>
               </dd>
             </dl>
 
             <dl>
-              <dt>Software Provider</dt>
+              <dt>${message(code:'platform.softwareProvider', default:'Software Provider')}</dt>
               <dd>
                 <g:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="YN"/>
               </dd>
@@ -75,12 +75,12 @@
             <g:if test="${params.mode=='advanced'}">
 
               <dl>
-                <dt>Type</dt>
+                <dt>${message(code:'platform.type', default:'Type')}</dt>
                 <dd> <g:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
               </dl>
 
               <dl>
-                <dt>Status</dt>
+                <dt>${message(code:'platform.status', default:'Status')}</dt>
                 <dd> <g:xEditableRefData owner="${platformInstance}" field="status" config="UsageStatus"/></dd>
               </dl>
 
@@ -89,14 +89,13 @@
         </fieldset>
 
         <dl>
-          <dt>Availability of titles in this platform by package</dt>
+          <dt>${message(code:'platform.show.availability', default:'Availability of titles in this platform by package')}</dt>
           <dd>
           <table border="1" cellspacing="5" cellpadding="5">
             <tr>
-              <th rowspan="2" style="width: 10%;">Title</th>
-              <th rowspan="2" style="width: 20%;">ISSN</th>
-              <th rowspan="2" style="width: 10%;">eISSN</th>
-              <th colspan="${packages.size()}">Provided by package</th>
+              <th rowspan="2" style="width: 25%;">${message(code:'title.label', default:'Title')}</th>
+              <th rowspan="2" style="width: 20%;">${message(code:'identifier.plural', default:'Identifiers')}</th>
+              <th colspan="${packages.size()}">${message(code:'platform.show.provided_by', default:'Provided by package')}</th>
             </tr>
             <tr>
               <g:each in="${packages}" var="p">
@@ -106,18 +105,21 @@
             <g:each in="${titles}" var="t">
               <tr>
                 <td style="text-align:left;"><g:link controller="titleInstance" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
-                <td>${t?.title?.getIdentifierValue('ISSN')}</td>
-                <td>${t?.title?.getIdentifierValue('eISSN')}</td>
+                <td>
+                  <g:each in="${t.title.ids}" var="tid">
+                    <div><span>${tid.identifier.ns.ns}</span>: <span>${tid.identifier.value}</span></div>
+                  </g:each>
+                </td>
                 <g:each in="${crosstab[t.position]}" var="tipp">
                   <g:if test="${tipp}">
-                    <td>from: <g:formatDate format="dd MMM yyyy" date="${tipp.startDate}"/> 
-                          <g:if test="${tipp.startVolume}"> / volume: ${tipp.startVolume} </g:if>
-                          <g:if test="${tipp.startIssue}"> / issue: ${tipp.startIssue} </g:if> <br/>
-                        to:  <g:formatDate format="dd MMM yyyy" date="${tipp.endDate}"/> 
-                          <g:if test="${tipp.endVolume}"> / volume: ${tipp.endVolume}</g:if>
-                          <g:if test="${tipp.endIssue}"> / issue: ${tipp.endIssue}</g:if> <br/>
-                        coverage Depth: ${tipp.coverageDepth}</br>
-                      <g:link controller="titleInstancePackagePlatform" action="show" id="${tipp.id}">Full TIPP Details</g:link>
+                    <td>${message(code:'platform.show.from', default:'from')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.startDate}"/>
+                          <g:if test="${tipp.startVolume}"> / ${message(code:'tipp.volume', default:'volume')}: ${tipp.startVolume} </g:if>
+                          <g:if test="${tipp.startIssue}"> / ${message(code:'tipp.issue', default:'issue')}: ${tipp.startIssue} </g:if> <br/>
+                        ${message(code:'platform.show.to', default:'to')}:  <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.endDate}"/>
+                          <g:if test="${tipp.endVolume}"> / ${message(code:'tipp.volume', default:'volume')}: ${tipp.endVolume}</g:if>
+                          <g:if test="${tipp.endIssue}"> / ${message(code:'tipp.issue', default:'issue')}: ${tipp.endIssue}</g:if> <br/>
+                        ${message(code:'tipp.coverage_depth', default:'coverage Depth')}: ${tipp.coverageDepth}</br>
+                      <g:link controller="titleInstancePackagePlatform" action="show" id="${tipp.id}">${message(code:'platform.show.full_tipp', default:'Full TIPP Details')}</g:link>
                     </g:if>
                     <g:else>
                       <td></td>

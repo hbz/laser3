@@ -1,4 +1,8 @@
-<%@ page import="com.k_int.kbplus.Person" %>
+<%@ page
+import="com.k_int.kbplus.Org"  
+import="com.k_int.kbplus.Person" 
+import="com.k_int.kbplus.PersonRole" 
+%>
 
 
 
@@ -35,7 +39,7 @@
 		
 	</label>
 	<g:select id="gender" name="gender" 
-		from="${com.k_int.kbplus.Person.getAllRefdataValues()}"
+		from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
     	optionKey="id"
     	optionValue="value"
         value="${personInstance?.gender?.id}"
@@ -45,43 +49,121 @@
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
 	<label for="contacts">
 		<g:message code="person.contacts.label" default="Contacts" />
-		
 	</label>
-	
-<ul class="one-to-many">
-<g:each in="${personInstance?.contacts?}" var="c">
-    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
-</g:each>
-<li class="add">
-<g:link controller="contact" action="create" params="['person.id': personInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}</g:link>
-</li>
-</ul>
+	<ul class="one-to-many">
+		<g:each in="${personInstance?.contacts?}" var="c">
+		    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+		</g:each>
+		<li class="add">
+		<g:link controller="contact" action="create" params="['prs.id': personInstance?.id]">
+			${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
+		</g:link>
+		</li>
+	</ul>
 </div>
 
-<h3>Person-to-Org-and-X-with-Role</h3>
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
+	<label for="contacts">
+		<g:message code="person.addresses.label" default="Addresses" />
+	</label>
+	<ul class="one-to-many">
+		<g:each in="${personInstance?.addresses?}" var="a">
+		    <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+		</g:each>
+		<li class="add">
+		<g:link controller="address" action="create" params="['prs.id': personInstance?.id]">
+			${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}
+		</g:link>
+		</li>
+	</ul>
+</div>
 
-<div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-lic" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-pkg" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-sub" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-title" class="ui-ajax"></div>
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
+	<label for="org">
+		<g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
+		<span class="required-indicator">*</span>		
+	</label>
+	<g:select id="tenant" name="tenant.id" from="${userMemberships}" 
+		optionKey="id" value="${personInstance?.tenant?.id}" />
+</div>
 
-<g:if test="${personInstance?.id != null}">
+<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
+	<label for="isPublic">
+		<g:message code="person.isPublic.label" default="IsPublic" />
+		<span class="required-indicator">*</span>	
+	</label>
+	<g:select id="isPublic" name="isPublic" 
+		from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
+    	optionKey="id"
+    	optionValue="value"
+        value="${personInstance?.isPublic?.id}" />
+</div>
+
+<div id="person-role-manager">
+
+	<div class="person-role-function-manager">
+		<h3>Functions</h3>
+		
+		<g:select class="values"
+			name="ignore-functionType-selector"
+		    from="${PersonRole.getAllRefdataValues('Person Function')}" 
+		    optionKey="id" 
+		    optionValue="value" /> 
+		    
+		<button class="add-person-role" type="button">Add</button>
+		
+		<div class="workspace">
+			<h4>* New</h4>
+			<div class="adding"></div>
+			<h4>Existing</h4>
+			<div class="existing"></div>			
+		</div>
+	</div>
+	
+	
+	<div class="person-role-responsibility-manager">
+		<h3>Responsibilities</h3>
+		
+		<g:select class="values"
+			name="ignore-responsibilityType-selector"
+		    from="${PersonRole.getAllRefdataValues('Person Responsibility')}" 
+		    optionKey="id" 
+		    optionValue="value" /> 
+		    
+		<button class="add-person-role" type="button">Add</button>
+
+		<div class="workspace">
+			<h4>* New</h4>
+			<div class="adding"></div>
+			<h4>Existing</h4>
+			<div class="existing"></div>			
+		</div>
+	</div>
+	
 	<script>
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=cluster").done(function(data){
-			$("#ui-placeholder-cluster").append(data);
+		$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=func').done(function(data){
+			$('.person-role-function-manager .workspace .existing').append(data);
 		});
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=lic").done(function(data){
-			$("#ui-placeholder-lic").append(data);
-		});
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=pkg").done(function(data){
-			$("#ui-placeholder-pkg").append(data);
-		});
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=sub").done(function(data){
-			$("#ui-placeholder-sub").append(data);
-		});
-		$.get("${webRequest.baseUrl}/person/ajax/${personInstance.id}?type=title").done(function(data){
-			$("#ui-placeholder-title").append(data);
-		});
+		$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=resp').done(function(data){
+			$('.person-role-responsibility-manager .workspace .existing').append(data);
+		});		
+
+
+		$('.person-role-function-manager .add-person-role').click(function(){		
+			var tt = $('.person-role-function-manager .values').val()
+			
+			$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=func&roleTypeId=' + tt + '&org=${params?.org?.id}').done(function(data){
+				$('.person-role-function-manager .workspace .adding').append(data);
+			});
+		})
+		
+		$('.person-role-responsibility-manager .add-person-role').click(function(){
+			var tt = $('.person-role-responsibility-manager .values').val()
+			
+			$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=resp&roleTypeId=' + tt + '&org=${params?.org?.id}').done(function(data){
+				$('.person-role-responsibility-manager .workspace .adding').append(data);
+			});
+		})
 	</script>
-</g:if>
+	
+</div>

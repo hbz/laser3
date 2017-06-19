@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Admin::Identifier Same-As Upload</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Admin::Identifier Same-As Upload</title>
   </head>
 
   <body>

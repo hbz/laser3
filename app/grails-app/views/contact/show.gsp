@@ -8,6 +8,7 @@
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
+		<div class="container">
 		<div class="row-fluid">
 			
 			<div class="span3">
@@ -43,18 +44,18 @@
 				
 <div class="inline-lists">
 				<dl>			
-					<g:if test="${contactInstance?.mail}">
-						<dt><g:message code="contact.mail.label" default="Mail" /></dt>
+					<g:if test="${contactInstance?.contentType}">
+						<dt><g:message code="contact.contentType.label" default="ContentType" /></dt>
 						
-							<dd><g:fieldValue bean="${contactInstance}" field="mail"/></dd>
+							<dd><g:fieldValue bean="${contactInstance}" field="contentType"/></dd>
 						
 					</g:if>
 				</dl>
 				<dl>
-					<g:if test="${contactInstance?.phone}">
-						<dt><g:message code="contact.phone.label" default="Phone" /></dt>
+					<g:if test="${contactInstance?.content}">
+						<dt><g:message code="contact.content.label" default="Content" /></dt>
 						
-							<dd><g:fieldValue bean="${contactInstance}" field="phone"/></dd>
+							<dd><g:fieldValue bean="${contactInstance}" field="content"/></dd>
 						
 					</g:if>
 				</dl>
@@ -83,6 +84,19 @@
 					</g:if>
 				
 				</dl>
+				
+				<dl class="debug-only">
+					<g:if test="${contactInstance?.prs?.tenant}">
+						<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
+					</g:if>
+				</dl>
+				<dl class="debug-only">
+					<g:if test="${contactInstance?.prs?.isPublic}">
+						<dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${contactInstance?.prs?.isPublic?.id}">${contactInstance?.prs?.isPublic?.encodeAsHTML()}</g:link></dd>
+					</g:if>
+				</dl>
 </div>
 				<g:form>
 					<g:hiddenField name="id" value="${contactInstance?.id}" />
@@ -100,6 +114,7 @@
 
 			</div>
 
+		</div>
 		</div>
 	</body>
 </html>

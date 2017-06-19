@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Titles - Search</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'title.plural', default:'Titles')} - ${message(code:'default.search.label', default:'Search')}</title>
   </head>
 
   <body>
@@ -10,8 +10,8 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="titleDetails" action="dmIndex">Data Manager Titles View</g:link></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="titleDetails" action="dmIndex">${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}</g:link></li>
       </ul>
     </div>
 
@@ -22,10 +22,10 @@
       <div class="row">
         <div class="span12">
           <div class="well container">
-            Title : <input name="q" placeholder="Search title" value="${params.q}"/> (Search on title text and identifiers)
-            Status : <g:select name="status" from="${availableStatuses}" noSelection="${['null':'-Any Status-']}" value="${params.status}"/>
+            ${message(code:'title.label', default:'Title')} : <input name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/> (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})
+            ${message(code:'default.status.label', default:'Status')} : <g:select name="status" from="${availableStatuses}" noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}" value="${params.status}"/>
            
-            <button type="submit" name="search" value="yes">Search</button>
+            <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
             <div class="pull-right">
             </div>
           </div>
@@ -40,13 +40,13 @@
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
                   <g:if test="${params.int('offset')}">
-                   Showing Results ${params.int('offset') + 1} - ${totalHits < (params.int('max') + params.int('offset')) ? totalHits : (params.int('max') + params.int('offset'))} of ${totalHits}
+                   ${message(code:'default.search.offset.text', args:[(params.int('offset') + 1),(totalHits < (params.int('max') + params.int('offset')) ? totalHits : (params.int('max') + params.int('offset'))),totalHits])}
                   </g:if>
                   <g:elseif test="${totalHits && totalHits > 0}">
-                    Showing Results 1 - ${totalHits < params.int('max') ? totalHits : params.int('max')} of ${totalHits}
+                    ${message(code:'default.search.no_offset.text', args:[(totalHits < params.int('max') ? totalHits : params.int('max')),totalHits])}
                   </g:elseif>
                   <g:else>
-                    Showing ${totalHits} Results
+                    ${message(code:'default.search.no_pagiantion.text', args:[totalHits])}
                   </g:else>
                 </div>
 
@@ -54,10 +54,10 @@
                   <table class="table table-bordered table-striped">
                     <thead>
                       <tr>
-                      <th style="white-space:nowrap">Title</th>
-                      <th style="white-space:nowrap">Publisher</th>
-                      <th style="white-space:nowrap">Identifiers</th>
-                      <th style="white-space:nowrap">Status</th>
+                      <th style="white-space:nowrap">${message(code:'title.label', default:'Title')}</th>
+                      <th style="white-space:nowrap">${message(code:'title.publisher.label', default:'Publisher')}</th>
+                      <th style="white-space:nowrap">${message(code:'indentifier.plural', default:'Identifiers')}</th>
+                      <th style="white-space:nowrap">${message(code:'default.status.label', default:'Status')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -75,7 +75,12 @@
                           <td>
                             <ul>
                               <g:each in="${hit.ids}" var="id">
-                                <li>${id.identifier.ns.ns} ${id.identifier.value}</li>
+                                <g:if test="${id.identifier.ns.ns == 'originediturl'}">
+                                  <li>${id.identifier.ns.ns}: <a href="${id.identifier.value}">GOKb-URL</a></li>
+                                </g:if>
+                                <g:else>
+                                  <li>${id.identifier.ns.ns}: ${id.identifier.value}</li>
+                                </g:else>
                               </g:each>
                             </ul>
                           </td>
@@ -90,7 +95,7 @@
              </g:if>
              <div class="paginateButtons" style="text-align:center">
                 <g:if test="${hits}" >
-                  <span><g:paginate controller="titleDetails" action="dmIndex" params="${params}" next="Next" prev="Prev" maxsteps="10" total="${totalHits}" /></span>
+                  <span><g:paginate controller="titleDetails" action="dmIndex" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${totalHits}" /></span>
                 </g:if>
               </div>
           </div>

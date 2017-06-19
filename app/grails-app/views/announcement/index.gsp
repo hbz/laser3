@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data import explorer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicence.label', default:'Data import explorer')}</title>
   </head>
 
   <body>
@@ -43,10 +43,10 @@
             <td><strong>${ra.title}</strong> <br/>
             ${ra.content} 
             <g:if test="${ra.user != null}">
-              <span class="pull-right">${message(code:'announcement.posted_by.label', default:'posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em> on <g:formatDate date="${ra.dateCreated}" format="yyyy-MM-dd hh:mm a"/></span>
+              <span class="pull-right">${message(code:'announcement.posted_by.label', default:'posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em> ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></span>
             </g:if>
             <g:else>
-              <span class="pull-right">${message(code:'announcement.posted_auto.label', default:'posted automatically on')} <g:formatDate date="${ra.dateCreated}" format="yyyy-MM-dd hh:mm a"/></span>
+              <span class="pull-right">${message(code:'announcement.posted_auto.label', default:'posted automatically on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></span>
             </g:else>
           </tr>
         </g:each>

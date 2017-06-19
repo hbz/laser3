@@ -2,14 +2,14 @@
 <html>
 <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>About | Knowledge Base+</title>
+    <title>${message(code:'public.about.label', default:'About')} | ${message(code:'laser', default:'LAS:eR')}</title>
 </head>
 
 <body class="public">
 <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
 <div class="container">
-    <h1>About KB+</h1>
+    <h1>${message(code:'public.nav.about.label', default:'About LAS:eR')}</h1>
 </div>
 
 <div class="container">
@@ -20,10 +20,6 @@
 
         <div class="span4">
             <g:render template="/templates/loginDiv"/>
-
-            <div class="twitter">
-                <g:render template="twitter" contextPath="/templates"/>
-            </div>
         </div>
     </div>
 </div>

@@ -42,7 +42,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${message(code:'package.plural', default:'Packages')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'package.plural', default:'Packages')}</title>
   </head>
 
   <body>
@@ -50,7 +50,7 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link></li>
       </ul>
     </div>

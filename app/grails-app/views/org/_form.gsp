@@ -83,7 +83,7 @@
 		
 	</label>
 	<g:select id="orgType" name="orgType.id" 
-		from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('OrgType'))}" 
+		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
 		optionKey="id"
 		optionValue="value" 
 		value="${orgInstance?.orgType?.id}" 
@@ -96,7 +96,7 @@
 		<g:message code="org.status.label" default="Status" />
 	</label>
 	<g:select id="status" name="status.id" 
-		from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('PendingChangeStatus'))}"
+		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('PendingChangeStatus')}"
 		optionKey="id" 
 		optionValue="value" 
 		value="${orgInstance?.status?.id}" 
@@ -108,7 +108,12 @@
 		<g:message code="org.membership.label" default="Membership" />
 		
 	</label>
-	<g:select id="membership" name="membership.id" from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('YN'))}" optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="membership" name="membership.id"
+                from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(''YN')}"
+                optionKey="id"
+                value="${orgInstance?.membership?.id}"
+                class="many-to-one"
+                noSelection="['null': '']"/>
 
 </div>
 
@@ -220,7 +225,7 @@
 <!-- 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
 	<label for="links">
-		<g:message code="org.links.label" default="Links" />
+		<g:message code="org.links.other.label" default="Links" />
 		
 	</label>
 	
@@ -254,7 +259,7 @@
 </div>
 -->
 
-<h3>Org-to-X-with-PersonRole</h3>
+<h3>Org-to-X-with-PersonRole (Demo only)</h3>
 <p>TODO</p>
 
 <g:if test="${orgInstance?.prsLinks}">
@@ -284,7 +289,7 @@
 				</dl>
 			</g:if>
 			
-<h3>Org-to-X-with-Role</h3>
+<h3>Org-to-X-with-Role (Demo only)</h3>
 
 <div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>
 <div id="ui-placeholder-lic" class="ui-ajax"></div><hr/>

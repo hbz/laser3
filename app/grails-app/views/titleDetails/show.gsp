@@ -10,7 +10,7 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="titleDetails" action="show" id="${ti.id}">${message(code:'title.title.label')} ${ti.title}</g:link> </li>
 
         <li class="dropdown pull-right">
@@ -99,8 +99,8 @@
               <tbody>
                 <g:each in="${ti.orgs}" var="org">
                   <tr>
-                    <td>${org.id}</td>
-                    <td>${org.org.name}</td>
+                    <td>${org.org.id}</td>
+                    <td><g:link controller="organisations" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.value}</td>
                     <td>
                       <g:xEditable owner="${org}" type="date" field="startDate"/>
@@ -134,14 +134,14 @@
                     <td>
                       <g:each in="${th.participants}" var="p">
                         <g:if test="${p.participantRole=='from'}">
-                          <g:link controller="titleDetails" action="show" id="${p.participant.id}">${p.participant.title}</g:link><br/>
+                          <g:link controller="titleDetails" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br/>
                         </g:if>
                       </g:each>
                     </td>
                     <td>
                       <g:each in="${th.participants}" var="p">
                         <g:if test="${p.participantRole=='to'}">
-                          <g:link controller="titleDetails" action="show" id="${p.participant.id}">${p.participant.title}</g:link><br/>
+                          <g:link controller="titleDetails" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br/>
                         </g:if>
                       </g:each>
                     </td>

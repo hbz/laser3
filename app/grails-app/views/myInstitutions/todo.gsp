@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ ${institution.name} ToDo List</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} ${message(code:'myinst.todo.list', default:'ToDo List')}</title>
   </head>
 
   <body>
@@ -11,17 +11,17 @@
       <ul class="breadcrumb">
         <li> <g:link controller="myInstitutions"
                      action="instdash"
-                     params="${[shortcode:params.shortcode]}">${institution.name} Dashboard</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="todo" params="${[shortcode:params.shortcode]}">ToDo List (${num_todos} Items)</g:link> </li>
+                     params="${[shortcode:params.shortcode]}">${institution.name} ${message(code:'menu.institutions.dash', default:'Dashboard')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="myInstitutions" action="todo" params="${[shortcode:params.shortcode]}">${message(code:'myinst.todo.list', default:'ToDo List')} (${num_todos} ${message(code:'myinst.todo.items', default:'Items')})</g:link> </li>
       </ul>
     </div>
 
     <div class="container home-page">
-      <h1>ToDo Items ${params.offset?:1} to ${java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)} of ${num_todos}</h1>
+      <h1>${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}</h1>
    
       <div class="pagination" style="text-align:center">
         <g:if test="${todos!=null}" >
-          <bootstrap:paginate  action="todo" controller="myInstitutions" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_todos}" />
+          <bootstrap:paginate  action="todo" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
         </g:if>
       </div>
 
@@ -38,8 +38,8 @@
                       </g:else>
                     </strong><br/>
                     <span class="badge badge-warning">${todo.num_changes}</span> 
-                    <span>Change(s) between <g:formatDate date="${todo.earliest}" format="yyyy-MM-dd hh:mm a"/></span>
-                    <span>and <g:formatDate date="${todo.latest}" format="yyyy-MM-dd hh:mm a"/></span><br/>
+                    <span>${message(code:'myinst.change_from', default:'Change(s) between')} <g:formatDate date="${todo.earliest}" format="yyyy-MM-dd hh:mm a"/></span>
+                    <span>${message(coe:'myinst.change_to', default:'and')} <g:formatDate date="${todo.latest}" format="yyyy-MM-dd hh:mm a"/></span><br/>
                   </td>
                 </tr>
               </g:each>
@@ -47,7 +47,7 @@
 
       <div class="pagination" style="text-align:center">
         <g:if test="${todos!=null}" >
-          <bootstrap:paginate  action="todo" controller="myInstitutions" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_todos}" />
+          <bootstrap:paginate  action="todo" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
         </g:if>
       </div>
 

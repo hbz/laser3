@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>Journals | Knowledge Base+</title>
+    <title>Journals | ${message(code:'laser', default:'LAS:eR')}</title>
 	<r:require modules="onixMatrix" />
 </head>
 
@@ -25,10 +25,10 @@
 
 <g:form action="journalLicences" method="get">
 <div class="well form-horizontal">
-	    Search Journal: <input placeholder="Title or Ident. kb: for KB+ ID" name="journal" value="${journal}"/>
-	    Instituion: <input placeholder="Shortcode or KB+ ID" name="org" value="${org}"/>
+	    Search Journal: <input placeholder="Title or Ident. kb: for ${message(code:'laser', default:'LAS:eR')} ID" name="journal" value="${journal}"/>
+	    Instituion: <input placeholder="Shortcode or ${message(code:'laser', default:'LAS:eR')} ID" name="org" value="${org}"/>
 	  
-	    <button type="submit">Search</button>
+	    <button type="submit">${message(code:'default.button.search.label', default:'Search')}</button>
 	  </div>
 </div>
 </g:form>

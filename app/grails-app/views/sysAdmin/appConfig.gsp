@@ -1,12 +1,12 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.custprops.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition" %>
 
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="mmbootstrap">
-    <title>KB+ App Config</title>
+    <title>${message(code:'laser', default:'LAS:eR')} App Config</title>
     <r:require module="annotations" />
-    <g:javascript src="custom_properties.js"/>
+    <g:javascript src="properties.js"/>
 </head>
 <body>
 
@@ -18,7 +18,7 @@
 
     <h6>${message(code:'sys.properties')}</h6>
     <div id="custom_props_div" class="span12">
-        <g:render template="/templates/custom_props" model="${[ prop_desc:PropertyDefinition.SYS_CONF,ownobj:adminObj ]}"/>
+        <g:render template="/templates/properties/custom" model="${[ prop_desc:PropertyDefinition.SYS_CONF,ownobj:adminObj ]}"/>
     </div>
     <g:form action="appConfig" method="POST">
         <input type="submit" name="one"class="btn"value="Refresh"  />
@@ -33,7 +33,7 @@
 
 <r:script language="JavaScript">
 
-     runCustomPropsJS("<g:createLink controller='ajax' action='lookup'/>");
+     initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");
 
 </r:script>
 

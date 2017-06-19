@@ -2,22 +2,22 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'myinst.title', default:'KB+ Institutional Dash')} :: ${institution?.name}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.title', default:'Institutional Dash')} :: ${institution?.name}</title>
   </head>
 
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="instdash" params="${[shortcode:params.shortcode]}">${institution?.name} Dashboard</g:link> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="myInstitutions" action="instdash" params="${[shortcode:params.shortcode]}">${institution?.name} - ${message(code:'menu.institutions.dash', default:'Dashboard')}</g:link> </li>
       </ul>
     </div>
 
 
     <div class="container home-page">
       <div class="well">
-        <h1>${institution.name} Dashboard</h1>
+        <h1>${institution.name} - Dashboard</h1>
         <ul class="inline">
           <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
           <li><g:link controller="myInstitutions" 
@@ -41,6 +41,14 @@
                                        action="finance"
                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.finance', default:'Finance')}</g:link></li>
           </g:if>
+          
+          <li><h5>${message(code:'default.special.label', default:'Special')}:</h5></li>
+          <li><g:link controller="myInstitutions" 
+                                       action="addressbook" 
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
+          <li><g:link controller="myInstitutions" 
+                                       action="propertyRules" 
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link></li>
         </ul>
       </div>
     </div>
@@ -84,8 +92,7 @@
                           <g:link controller="licenseDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
                         </g:else>
                       </p>
-
-                      <p>${message(code:'myinst.change_from', default:'Changes between')} <g:formatDate date="${todo.earliest}" format="yyyy-MM-dd hh:mm a"/></span> ${message(code:'myinst.change_to', default:'and')} <g:formatDate date="${todo.latest}" format="yyyy-MM-dd hh:mm a"/></p>
+                      <p>${message(code:'myinst.change_from', default:'Changes between')} <g:formatDate date="${todo.earliest}" formatName="default.date.format"/></span> ${message(code:'myinst.change_to', default:'and')} <g:formatDate date="${todo.latest}" formatName="default.date.format"/></p>
                     </div>
                   </td>
                 </tr>
@@ -117,9 +124,9 @@
                       <p><strong>${ra.title}</strong></p>
                       <div>
                         <span class="widget-content">${ra.content}</span>
-                        <div class="see-more"><a href="">[ See More ]</a></div>
+                        <div class="see-more"><a href="">[ ${message(code:'default.button.see_more.label', default:'See More')} ]</a></div>
                       </div> 
-                      <p>${message(code:'myinst.ann.posted_by', default:'Posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em> ${message(code:'myinst.ann.posted_on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="yyyy-MM-dd hh:mm a"/></p>
+                      <p>${message(code:'myinst.ann.posted_by', default:'Posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em> ${message(code:'myinst.ann.posted_on', default:'on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></p>
                     </div>
                   </td>
                 </tr>
@@ -137,7 +144,7 @@
            <table class="table table-bordered dashboard-widget">
               <thead>
                 <th>
-                  <h5 class="pull-left">Latest Discussions</h5>
+                  <h5 class="pull-left">${message(code:'myinst.dash.forum.label', default:'Latest Discussions')}</h5>
                   <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussions" class="pull-right" />
                 </th>
               </thead>
@@ -153,7 +160,7 @@
                         <p><strong>${fa.title}</strong></p>
                         <p>
                         <g:if test="${fa.result_type=='topic'}">
-                          <g:formatDate date="${fa.updated_at}" format="yyyy-MM-dd hh:mm a"/>
+                          <g:formatDate date="${fa.updated_at}"  formatName="default.date.format"/>
                           <a href="${grailsApplication.config.ZenDeskBaseURL}/entries/${fa.id}">View Topic</a>
                           <a href="${grailsApplication.config.ZenDeskBaseURL}/entries/${fa.id}" title="View Topic (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
                         </g:if>
@@ -169,13 +176,18 @@
             <g:else>
             <tr>
               <td>
-                <p>Recent forum activity not available. Please retry later.</p>
+                <p>${message(code:'myinst.dash.forum.noActivity', default:'Recent forum activity not available. Please retry later.')}</p>
               </td>
             </tr>
             </g:else>
             <tr>
               <td>
-                <a href="${grailsApplication.config.ZenDeskBaseURL}/forums" class="btn btn-primary pull-right">Visit Discussion Forum</a>
+                <g:if test="${!grailsApplication.config.ZenDeskBaseURL.equals('https://projectname.zendesk.com')}">
+                  <a href="${grailsApplication.config.ZenDeskBaseURL}/forums" class="btn btn-primary pull-right">${message(code:'myinst.dash.forum.visit', default:'Visit Discussion Forum')}</a>
+                </g:if>
+                <g:else>
+                  <span class="btn btn-primary pull-right disabled">${message(code:'myinst.dash.forum.visit', default:'Visit Discussion Forum')}</span>
+                </g:else>
               </td>
             </tr>
           </tbody>
@@ -200,10 +212,10 @@
 
          $('.see-more').click(function(e) {
 
-           if ($(this).text() == "[ See More ]") {
+           if ($(this).text() == "[ ${message(code:'default.button.see_more.label', default:'See More')} ]") {
              e.preventDefault();
              $(this).parent().find('.widget-content').trigger('destroy');
-             $(this).html("<a href=\"\">[ See Less ]</a>");
+             $(this).html("<a href=\"\">[ ${message(code:'default.button.see_less.label', default:'See Less')} ]</a>");
 
            } else {
              e.preventDefault();
@@ -216,7 +228,7 @@
                  }
                }
              });
-             $(this).html("<a href=\"\">[ See More ]</a>");
+             $(this).html("<a href=\"\">[ ${message(code:'default.button.see_more.label', default:'See More')} ]</a>");
            }
 
 

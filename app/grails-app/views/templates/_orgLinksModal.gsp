@@ -89,7 +89,7 @@
     function validateAddOrgRole() {
       if ( $('#orm_orgRole').val() == '' ) {
         // alert('hello "'+ $('#orm_orgRole').val()+'"'); 
-        return confirm(${message(code:'template.orgLinksModal.warn')});
+        return confirm("${message(code:'template.orgLinksModal.warn')}");
       }
 
       return true;

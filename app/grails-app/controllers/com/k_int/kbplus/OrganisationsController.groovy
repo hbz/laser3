@@ -8,7 +8,7 @@ import groovy.xml.MarkupBuilder
 import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import com.k_int.custprops.PropertyDefinition
+import com.k_int.properties.*
 
 class OrganisationsController {
 
@@ -36,7 +36,7 @@ class OrganisationsController {
         grails.util.Holders.config.customProperties.org.each{ 
           def entry = it.getValue()
           def type = PropertyDefinition.lookupOrCreateType(entry.name,entry.class,PropertyDefinition.ORG_CONF)
-          def prop = PropertyDefinition.createPropertyValue(orgInstance,type)
+          def prop = PropertyDefinition.createCustomPropertyValue(orgInstance,type)
           prop.note = entry.note
           prop.save()
         }
@@ -133,6 +133,53 @@ class OrganisationsController {
       result
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def properties() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.id)
+
+        if (SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')) {
+            result.editable = true
+        }
+        else {
+            result.editable = orgInstance.hasUserWithRole(result.user, 'INST_ADM');
+        }
+
+        if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        // create mandatory OrgPrivateProperties if not existing
+
+        def ppRulesFlat = []
+        result.user?.authorizedOrgs?.each{ org ->
+            def ppr = PrivatePropertyRule.getRules(orgInstance.getClass().getName(), org)
+            if(ppr){
+                ppRulesFlat << ppr
+            }
+        }
+        ppRulesFlat?.flatten().each{ ppr ->
+            def pd = ppr.propertyDefinition
+            def pt = ppr.propertyTenant
+
+            if(!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd, tenant: pt)) {
+                def newProp = PropertyDefinition.createPrivatePropertyValue(orgInstance, pt, pd)
+                if(newProp.hasErrors()){
+                    log.error(newProp.errors)
+                } else{
+                    log.debug("New private property created via private property rule: " + newProp.type.name)
+                }
+            }
+        }
+
+        result.orgInstance = orgInstance
+        result.authorizedOrgs = result.user?.authorizedOrgs
+        result
+    }
+    
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def users() {
       def result = [:]
@@ -288,4 +335,36 @@ class OrganisationsController {
       redirect action: 'users', id: params.id
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addressbook() {
+      def result = [:]
+      result.user = User.get(springSecurityService.principal.id)
+      
+      def orgInstance = Org.get(params.id)
+      if (!orgInstance) {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+        redirect action: 'list'
+        return
+      }    
+      
+      def membershipOrgIds = []
+      result.user?.authorizedOrgs?.each{ org ->
+          membershipOrgIds << org.id
+      }
+      
+      def visiblePersons = []
+      orgInstance?.prsLinks.each { pl ->
+          if(pl.prs?.isPublic?.value == 'No'){
+              if(pl.prs?.tenant?.id && membershipOrgIds.contains(pl.prs?.tenant?.id)){
+                  if(!visiblePersons.contains(pl.prs)){
+                      visiblePersons << pl.prs
+                  }
+              }
+          }
+      }
+      result.visiblePersons = visiblePersons
+      
+      result.orgInstance = orgInstance
+      result
+    }
 }

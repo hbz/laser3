@@ -14,12 +14,24 @@ class ApiService {
      */
     GPathResult importOrg(GPathResult xml){
         
+        def rdcYN = RefdataCategory.findByDesc('YN')
+        def rdcContactContentType = RefdataCategory.findByDesc('ContactContentType')
+
+        def overrideTenant
+        def overrideIsPublic
+        
+        if(xml.override?.tenant?.text()){
+            overrideTenant   = Org.findByShortcode(xml.override.tenant.text())
+            overrideIsPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'No')
+            
+            log.info("OVERRIDING TENANT: ${overrideTenant}")
+        }
+        
         xml.institution.each{ inst ->
 
             def identifiers = [:]
             def org         = null
-            def person      = null
-            
+
             def title = normString(inst.title.text())
             def subscriperGroup = inst.subscriper_group ? normString(inst.subscriper_group.text()) : ''
             
@@ -88,47 +100,78 @@ class ApiService {
                 }
                 
                 // adding contact persons
+                def person
+                
+                // overrides
+                def tenant   = org
+                def isPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'Yes')
+                
+                if(overrideTenant){
+                    tenant = overrideTenant
+                }
+                if(overrideIsPublic){
+                    isPublic = overrideIsPublic
+                }
+                
                 def cpList    = flattenToken(inst.contactperson)
                 def mailList  = flattenToken(inst.email)
                 def phoneList = flattenToken(inst.telephone)
+                def faxList   = flattenToken(inst.fax)
                          
                 cpList.eachWithIndex{ token, i ->
-                    
-                    def cpText    = cpList[i]    ? cpList[i].text()    : ''
-                    def mailText  = mailList[i]  ? mailList[i].text()  : ''
-                    def phoneText = phoneList[i] ? phoneList[i].text() : ''
-                    
+   
                     // adding person
+                    def cpText = cpList[i] ? cpList[i].text() : ''
                     def cpParts = normString(cpText).replaceAll("(Herr|Frau)", "").trim().split(" ")
   
                     firstName  = cpParts[0].trim()
-                    middleName = cpParts.size() > 2 ? cpParts[1..cpParts.size() - 2].join(" ") : ''
+                    middleName = (cpParts.size() > 2) ? (cpParts[1..cpParts.size() - 2].join(" ")) : ""
                     lastName   = cpParts[cpParts.size() - 1].trim()
-  
+                    
                     // create if no match found
                     if(firstName != '' && lastName != ''){
-                        person = Person.lookupOrCreate(
+                        person = Person.lookupOrCreateWithPersonRole(
                             firstName,
                             middleName,
                             lastName,
                             null /* gender */,
-                            org,
+                            tenant,
+                            isPublic,
+                            org, /* needed for person_role */
                             RefdataValue.findByValue("General contact person")
                             )
                             
-                        // adding contact
-                        email     = normString(mailText)
-                        telephone = phoneText.replaceAll("(/|-|\\(|\\))", "").replaceAll("\\s+", "")
-    
-                        if(email != '' || telephone != ''){
+                        // adding contacts
                             
-                            // create if no match found
+                        def mailText  = mailList[i]  ? mailList[i].text()  : ''
+                        def phoneText = phoneList[i] ? phoneList[i].text() : ''
+                        def faxText   = faxList[i]   ? faxList[i].text()   : ''
+
+                        if(mailText != '' ){
                             Contact.lookupOrCreate(
-                                email,
-                                telephone,
+                                normString(mailText),
+                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Mail'),
                                 RefdataValue.findByValue("Job-related"),
                                 person,
-                                org
+                                null /* person contact only */
+                                )
+                        }
+                        if(phoneText != ''){
+                            Contact.lookupOrCreate(
+                                normString(phoneText),
+                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Phone'),
+                                RefdataValue.findByValue("Job-related"),
+                                person,
+                                null /* person contact only */
+                                )
+                        }
+                        if(faxText != ''){
+                            Contact.lookupOrCreate(
+                                normString(faxText),
+                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Fax'),
+                                RefdataValue.findByValue("Job-related"),
+                                person,
+                                null /* person contact only */
                                 )
                         }
                     }     

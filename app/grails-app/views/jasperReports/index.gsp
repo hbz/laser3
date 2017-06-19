@@ -8,7 +8,7 @@
 <%@ page import="com.k_int.kbplus.JasperReportsController; org.jasper.JasperExportFormat" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>KB+ Jasper Reports</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'jasper.reports.label', default:'Jasper Reports')}</title>
     <meta name="layout" content="mmbootstrap"/>
 </head>
 
@@ -17,8 +17,8 @@
 <div class="container">
 
         <ul class="breadcrumb">
-            <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-            <li><g:link controller="jasperReports" action="index">Jasper Reports</g:link> <span
+            <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
+            <li><g:link controller="jasperReports" action="index">${message(code:'jasper.reports.label', default:'Jasper Reports')}</g:link> <span
                     class="divider">/</span></li>
         </ul>
 
@@ -31,13 +31,13 @@
 
         <div class="inline-lists">
             <dl>
-                <dt>Selected Report:</dt>
+                <dt>${message(code:'jasper.reports.selected', default:'Selected Report')}:</dt>
                 <dd>
                     <span>
                         <g:select id="available_reports" name="report_name" from="${available_reports}"/>
                     </span>
                 </dd>
-                <dt>Download Format:</dt>
+                <dt>${message(code:'jasper.reports.format', default:'Download Format')}:</dt>
                 <dd>
                     <span>
                         <g:select id="selectRepFormat" name="rep_format" from="${available_formats}"/>
@@ -89,7 +89,7 @@
     function createSelect2Search(objectId, className) {
         $(objectId).select2({
             width: "90%",
-            placeholder: "Type name...",
+            placeholder: "${message(code:'jasper.reports.search.ph', default:'Type name...')}",
             minimumInputLength: 1,
             ajax: { 
                 url: '<g:createLink controller='ajax' action='lookup'/>',

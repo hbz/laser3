@@ -2,21 +2,21 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Data import explorer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
 
   <body>
 
     <div class="container">
         <ul class="breadcrumb">
-        <li> <g:link controller="home">KBPlus</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li class="active">Search</li>
       </ul>
     </div>
 
     <div class="container">
       <p>
-        JISC KB+ data explorer. Use the links above to navigate the data items imported by the KB+ import process and validate the data.
+        ${message(code:'laser', default:'LAS:eR')} data explorer. Use the links above to navigate the data items imported by the ${message(code:'laser', default:'LAS:eR')} import process and validate the data.
       </p>
       <p>
         Browse using the categories above, or search over organisations and titles below.

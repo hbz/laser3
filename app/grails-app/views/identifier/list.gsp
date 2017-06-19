@@ -10,7 +10,7 @@
 	<body>
 		<div class="row-fluid">
 			
-			<div class="span3">
+			<div class="span2">
 				<div class="well">
 					<ul class="nav nav-list">
 						<li class="nav-header">${entityName}</li>
@@ -40,7 +40,7 @@
 				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
 				</g:if>
 				
-				<table class="table table-striped">
+				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
 						

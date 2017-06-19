@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Login</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Login</title>
 </head>
 
 <body>

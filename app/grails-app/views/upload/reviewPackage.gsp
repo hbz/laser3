@@ -10,7 +10,7 @@
       <div class="container">
 
         <div class="page-header">
-          <h1>Package - Manual Upload</h1>
+          <h1>${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
         </div>
 
         <g:if test="${flash.message}">
@@ -32,23 +32,23 @@
         </g:hasErrors>
 
         <g:form action="reviewPackage" method="post" enctype="multipart/form-data">
-            Updload File: <input type="file" id="soFile" name="soFile"/><br/>
+            ${message(code:'package.upload.file', default:'Upload File')}: <input type="file" id="soFile" name="soFile"/><br/>
 
-            Doc Style: <select name="docstyle">
-              <option value="csv" selected>Comma Separated</option>
-              <option value="tsv">Tab Separated</option>
-            </select></br/>
+            ${message(code:'package.upload.docStyle', default:'Doc Style')}: <select name="docstyle">
+              <option value="csv" selected>${message(code:'package.upload.docStyle.csv', default:'Comma Separated')}</option>
+              <option value="tsv">${message(code:'package.upload.docStyle.tsv', default:'Tab Separated')}</option>
+            </select></br>
 
-            Override Character Set Test: <input type="checkbox" name="OverrideCharset" checked="false"/>
+            ${message(code:'package.upload.override', default:'Override Character Set Test')}: <input style="vertical-align:text-bottom;margin-right:10px;" type="checkbox" name="OverrideCharset" checked="false"/>
 
-            <button type="submit" class="btn btn-primary">Upload SO</button>
+            <button type="submit" class="btn btn-primary">${message(code:'package.upload.upload', default:'Upload Package')}</button>
         </g:form>
         
         <br/>
 
         <g:if test="${validationResult}">
           <g:if test="${validationResult.stats != null}">
-            <h3>Stats</h3>
+            <h3>${message(code:'default.stats.label', default:'Stats')}</h3>
             <ul>
               <g:each in="${validationResult?.stats}" var="msg">
                 <li>${msg.key} = ${msg.value}</li>
@@ -63,12 +63,12 @@
           <hr/>
 
           <g:if test="${validationResult.processFile==true}">
-            <bootstrap:alert class="alert-success">File passed validation checks, new SO details follow:<br/>
-              <g:link controller="packageDetails" action="show" id="${validationResult.new_pkg_id}">New Package Details</g:link><br/>
+            <bootstrap:alert class="alert-success">${message(code:'package.upload.passed', default:'File passed validation checks, new SO details follow')}:<br/>
+              <g:link controller="packageDetails" action="show" id="${validationResult.new_pkg_id}">${message(code:'package.upload.details', default:'New Package Details')}</g:link><br/>
             </bootstrap:alert>
           </g:if>
           <g:else>
-            <div class="alert alert-error">File failed validation checks, details follow</div>
+            <div class="alert alert-error">${message(code:'package.upload.failed', default:'File failed validation checks, details follow')}</div>
           </g:else>
           <table class="table">
             <tbody>

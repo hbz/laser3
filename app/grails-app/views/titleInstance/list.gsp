@@ -32,7 +32,7 @@
 				</div>
 			</div>
 
-			<div class="span10">
+			<div class="span9">
 				
 				<div class="page-header">
 					<h1><g:message code="default.list.label" args="[entityName]" /></h1>

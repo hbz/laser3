@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>KB+ Admin::Package Delete</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Admin::Package Delete</title>
     <r:require module='annotations' />
   </head>
 

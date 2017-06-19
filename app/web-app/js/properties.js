@@ -1,18 +1,24 @@
-/**
- * Created by ioannis on 27/06/2014.
- */
-function runCustomPropsJS(ajaxurl){
-    refdatacatsearch(ajaxurl);
-    searchProp(ajaxurl);
-    showModalOnSelect();
-    showHideRefData();
-    hideModalOnSubmit();
+
+function initPropertiesScript(ajaxurl, contextId){
+    // fallback for hardcoded id
+    if(!contextId){
+        contextId = "#custom_props_div"
+    }
+    console.log( "initPropertiesScript " + ajaxurl + " : " + contextId)
+
+    refdatacatsearch(ajaxurl, contextId);
+    searchProp(ajaxurl, contextId);
+    showModalOnSelect(contextId);
+    showHideRefData(contextId);
+    hideModalOnSubmit(contextId);
     //Needs to run to make the xEditable visible
     $('.xEditableValue').editable();
     $('.xEditableManyToOne').editable();
 }
 
-function refdatacatsearch (ajaxurl){
+function refdatacatsearch (ajaxurl, contextId){
+    console.log( "refdatacatsearch " + ajaxurl + " : " + contextId)
+
     $("#cust_prop_refdatacatsearch").select2({
         placeholder: "Type category...",
         minimumInputLength: 1,
@@ -33,9 +39,13 @@ function refdatacatsearch (ajaxurl){
     });
 }
 
-function searchProp(ajaxurl){
-    $("#customPropSelect").select2({
-        placeholder: "Search for a custom property...",
+function searchProp(ajaxurl, contextId){
+    console.log( "searchProp " + ajaxurl + " : " + contextId)
+    // store
+    var desc = $(contextId + " .customPropSelect").attr('desc')
+
+    $(contextId + " .customPropSelect").select2({
+        placeholder: "Search for a property...",
         minimumInputLength: 0,
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
             url: ajaxurl,
@@ -43,9 +53,9 @@ function searchProp(ajaxurl){
             data: function (term, page) {
                 return {
                     q: term, // search term
-                    desc:$("#customPropSelect").attr('desc'),
+                    desc: desc,
                     page_limit: 10,
-                    baseClass:'com.k_int.custprops.PropertyDefinition'
+                    baseClass:'com.k_int.properties.PropertyDefinition'
                 };
             },
             results: function (data, page) {
@@ -56,9 +66,13 @@ function searchProp(ajaxurl){
             return {id:-1, text:"New Property: "+term};
         }
     });
-    }
-function showModalOnSelect(){
-    $("#customPropSelect").on("select2-selecting", function(e) {
+}
+
+// TODO -refactoring
+function showModalOnSelect(contextId){
+    console.log( "showModalOnSelect " + contextId)
+
+    $(contextId + " .customPropSelect").on("select2-selecting", function(e) {
         if(e.val == -1){
             var selectedText = e.object.text;
             selectedText = selectedText.replace("New Property: ","")
@@ -67,9 +81,11 @@ function showModalOnSelect(){
 
         }
     });
-    }
+}
+// TODO -refactoring
+function showHideRefData(contextId) {
+    console.log( "showHideRefData " + contextId)
 
-function showHideRefData() {
     $('#cust_prop_modal_select').change(function() {
         var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
         if( selectedText == "class com.k_int.kbplus.RefdataValue") {
@@ -78,10 +94,12 @@ function showHideRefData() {
             $("#cust_prop_ref_data_name").hide();
         }
     });
-    }
+}
+// TODO -refactoring
+function hideModalOnSubmit(contextId){
+    console.log( "hideModalOnSubmit " + contextId)
 
-function hideModalOnSubmit(){
     $("#new_cust_prop_add_btn").click(function(){
         $('#cust_prop_add_modal').modal('hide');
     });
-    }
+}

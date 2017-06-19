@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.*
 /*
  *  Implementing new rectypes..
  *  the reconciler closure is responsible for reconciling the previous version of a record and the latest version
- *  the converter is respnsible for creating the map strucuture passed to the reconciler. It needs to return a [:] sorted appropriate
+ *  the converter is responsible for creating the map structure passed to the reconciler. It needs to return a [:] sorted appropriate
  *  to the work the reconciler will need to do (Often this includes sorting lists)
  */
 
@@ -35,11 +35,14 @@ class GlobalSourceSyncService {
       log.debug("Checking title has ${it.namespace}:${it.value}");
       title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
     }
+    title_instance.save(flush: true);
 
-    if ( ( newtitle.publishers != null ) && ( title_instance.getPublisher() == null ) ) {
+    if ( newtitle.publishers != null ) {
       newtitle.publishers.each { pub ->
+//         def publisher_identifiers = pub.identifiers
         def publisher_identifiers = []
-        def publisher = Org.lookupOrCreate(pub.name , 'publisher', null, publisher_identifiers, null)
+        def orgSector = RefdataCategory.lookupOrCreate('OrgSector', 'Publisher')
+        def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null)
         def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');
         def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         def start_date
@@ -121,6 +124,12 @@ class GlobalSourceSyncService {
       def publisher = [:]
       publisher.name = pub.name.text()
       publisher.status = pub.status.text()
+//       if ( pub.identifiers)
+//         publisher.identifiers = []
+//
+//         pub.identifiers.identifier.each { pub_id ->
+//           publisher.identifiers.add(id.'@namespace'.text():id.'@value'.text())
+//         }
 
       if(pub.startDate){
         publisher.startDate = pub.startDate.text()
@@ -135,6 +144,7 @@ class GlobalSourceSyncService {
     md.gokb.title.identifiers.identifier.each { id ->
       result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
     }
+    result.parsed_rec.identifiers.add([namespace:'uri',value:md.gokb.title.'@id'.text()]);
 
     md.gokb.title.history?.historyEvent.each { he ->
       def history_statement = [:]
@@ -150,6 +160,7 @@ class GlobalSourceSyncService {
         hef.identifiers.identifier.each { i ->
           new_history_statement.ids.add([namespace:i.'@namespace'.text(), value:i.'@value'.text()])
         }
+        new_history_statement.ids.add([namespace:'uri',value:hef.internalId.text()]);
         history_statement.from.add(new_history_statement);
       }
 
@@ -160,6 +171,7 @@ class GlobalSourceSyncService {
         het.identifiers.identifier.each { i ->
           new_history_statement.ids.add([namespace:i.'@namespace'.text(), value:i.'@value'.text()])
         }
+        new_history_statement.ids.add([namespace:'uri',value:het.internalId.text()]);
         history_statement.to.add(new_history_statement);
       }
 
@@ -184,10 +196,16 @@ class GlobalSourceSyncService {
     def paymentType = RefdataCategory.lookupOrCreate('Package.PaymentType',(newpkg?.paymentType)?:'Unknown');
     def global = RefdataCategory.lookupOrCreate('Package.Global',(newpkg?.global)?:'Unknown');
     def isPublic = RefdataCategory.lookupOrCreate('YN','Yes');
+    def ref_pprovider = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider')
 
     // Firstly, make sure that there is a package for this record
     if ( grt.localOid != null ) {
       pkg = genericOIDService.resolveOID(grt.localOid)
+
+      newpkg.identifiers.each {
+        log.debug("Checking package has ${it.namespace}:${it.value}");
+        pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
+      }
     }
     else {
       // create a new package
@@ -214,6 +232,20 @@ class GlobalSourceSyncService {
 
       if ( pkg.save() ) {
         log.debug("Saved Package as com.k_int.kbplus.Package:${pkg.id}!")
+
+        newpkg.identifiers.each {
+          log.debug("Checking package has ${it.namespace}:${it.value}");
+          pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
+        }
+
+        if ( newpkg.packageProvider ) {
+
+          def orgRole = RefdataCategory.lookupOrCreate('Organisational Role', 'Content Provider')
+          def provider = Org.lookupOrCreate(newpkg.packageProvider , null , null, [:], null)
+
+          OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
+        }
+
         grt.localOid = "com.k_int.kbplus.Package:${pkg.id}"
         grt.save()
       }
@@ -409,7 +441,14 @@ class GlobalSourceSyncService {
     result.parsed_rec = [:]
     result.parsed_rec.packageName = md.gokb.package.name.text()
     result.parsed_rec.packageId = md.gokb.package.'@id'.text()
+    result.parsed_rec.packageProvider = md.gokb.package.nominalProvider.text()
     result.parsed_rec.tipps = []
+    result.parsed_rec.identifiers = []
+
+    md.gokb.package.identifiers.identifier.each { id ->
+      result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
+    }
+
     int ctr=0
     md.gokb.package.TIPPs.TIPP.each { tip ->
       log.debug("Processing tipp ${ctr++} from package ${result.parsed_rec.packageId} - ${result.title} (source:${synctask.uri})");
@@ -476,6 +515,7 @@ class GlobalSourceSyncService {
         log.debug("Checking title has ${it.namespace}:${it.value}");
         title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
       }
+      title_instance.save(flush: true)
 
 
       log.debug("Creating new global record tracker... for title ${title_instance}");

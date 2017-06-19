@@ -4,14 +4,14 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap" />
-<title>KB+</title>
+<title>${message(code:'laser', default:'LAS:eR')}</title>
 
 </head>
 
 <body>
 	<div class="container">
 		<ul class="breadcrumb">
-			<li><g:link controller="home" action="index">Home</g:link> <span
+			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
 				class="divider">/</span></li>
 			<li>${message(code:'menu.institutions.comp_lic')}</li>
 		</ul>
@@ -27,18 +27,18 @@
 				<g:form id="compare" name="compare" action="compare" method="get">
 					<input type="hidden" name="institution" value="${institution?.id}"/>
 					<div>
-						<label for="addIdentifierSelect">Search licence for comparison:</label>
+                                                <label for="addIdentifierSelect">${message(code:'onixplLicence.compare.add_id.label', default:'Search licence for comparison:')}</label>
 
-		                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
-		                <button type="button"class="btn btn-success" id="addToList" >Add</button>
+                                                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
+                                                <button type="button" style="margin-top:10px" class="btn btn-success" id="addToList" >${message(code:'default.button.add.label', default:'Add')}</button>
 					</div>
 					
-					<label for="selectedLicences">Licences selected for comparison:</label>
+					<label for="selectedLicences">${message(code:'onixplLicence.compare.selected.label', default:'Licences selected for comparison:')}</label>
 					
 					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicences" name="selectedLicences" class="compare-license" from="${[]}" multiple="true" />
 			
 					<div>
-					  <input id="submitButton" disabled='true' type="submit" value="Compare"  name="Compare" class="btn btn-primary" />
+					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="btn btn-primary" />
 					</div>
 				</g:form>
 			</div>
@@ -70,7 +70,10 @@
 
 	      $("#addIdentifierSelect").select2({
   	        width: '90%',
-	        placeholder: "Search for a licence...",
+	        placeholder: "${message(code:'onixplLicence.compare.search.ph', default:'Search for a licence...')}",
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+                },
 	        minimumInputLength: 1,
 	        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
 	          url: "<g:createLink controller='ajax' action='lookup'/>",

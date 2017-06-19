@@ -8,6 +8,7 @@
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
+		<div class="container">
 		<div class="row-fluid">
 			
 			<div class="span3">
@@ -125,6 +126,19 @@
 					</g:if>
 				
 				</dl>
+
+				<dl class="debug-only">
+					<g:if test="${addressInstance?.prs?.tenant}">
+						<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${addressInstance?.prs?.tenant?.id}">${addressInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
+					</g:if>
+				</dl>
+				<dl class="debug-only">
+					<g:if test="${addressInstance?.prs?.isPublic}">
+						<dt><g:message code="person.tenant.label" default="IsPublic (derived from Prs)" /></dt>
+						<dd><g:link controller="org" action="show" id="${addressInstance?.prs?.isPublic?.id}">${addressInstance?.prs?.isPublic?.encodeAsHTML()}</g:link></dd>
+					</g:if>
+				</dl>
 </div>
 				<g:form>
 					<g:hiddenField name="id" value="${addressInstance?.id}" />
@@ -142,6 +156,7 @@
 
 			</div>
 
+		</div>
 		</div>
 	</body>
 </html>

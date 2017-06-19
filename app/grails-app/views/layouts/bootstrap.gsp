@@ -28,7 +28,7 @@
       <div class="navbar-inner">
         <div class="container">
           <sec:ifLoggedIn>
-            <a class="brand" href="${createLink(uri: '/')}">KB+</a>
+            <a class="brand" href="${createLink(uri: '/')}">${message(code:'laser', default:'LAS:eR')}</a>
           </sec:ifLoggedIn>
           <div class="nav-collapse">
             <ul class="nav">
@@ -121,7 +121,7 @@
     </div>
 
     <div class="support-tab">
-        <a href="mailto:kbplus@jisc-collections.ac.uk?subject=KBPlus%20Support%20Query"><i class="icon-question-sign icon-white"></i>Support Queries</a>
+        <a href="mailto:TODO"><i class="icon-question-sign icon-white"></i>Support Queries</a>
     </div>
             
   <r:layoutResources/>

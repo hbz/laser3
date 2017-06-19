@@ -8,6 +8,7 @@
     <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
+	DEPRECATED
     <div class="row-fluid">
       
       <div class="span2">
@@ -149,14 +150,14 @@
                                 	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
                                 </g:if>
                                 <g:if test="${p.pkg}">
-                                	<g:link controller="package" action="show" id="${p.pkg.id}">Package: ${p.pkg.name}</g:link>
+                                	<g:link controller="package" action="show" id="${p.pkg.id}">${message(code:'package.label', default:'Package')}: ${p.pkg.name}</g:link>
                                 </g:if>
                                 <g:if test="${p.sub}">
-                                	<g:link controller="subscription" action="show" id="${p.sub.id}">Subscription: ${p.sub.name}</g:link>
+                                	<g:link controller="subscription" action="show" id="${p.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${p.sub.name}</g:link>
                                 </g:if>
-                                <g:if test="${p.lic}">Licence: ${p.lic.id}</g:if>
+                                <g:if test="${p.lic}">${message(code:'licence.label', default:'Licence')}: ${p.lic.id}</g:if>
                                 <g:if test="${p.title}">
-                                	<g:link controller="titleInstance" action="show" id="${p.title.id}">Title: ${p.title.title}</g:link>
+                                	<g:link controller="titleInstance" action="show" id="${p.title.id}">${message(code:'title.label', default:'Title')}: ${p.title.title}</g:link>
                                 </g:if> 
 						 	</li>
 						</g:each>
@@ -166,17 +167,17 @@
 
               <g:if test="${orgInstance?.links}">
                   <dl>
-                      <dt><g:message code="org.links.label" default="Other org links" /></dt>
+                      <dt><g:message code="org.links.other.label" default="Other org links" /></dt>
                       <dd><ul>
                           <g:each in="${orgInstance.links}" var="i">
                               <li>
                               	${i.roleType?.value} - 
                               
-                                  <g:if test="${i.pkg}">    <g:link controller="package" action="show" id="${i.pkg.id}">Package: ${i.pkg.name}</g:link></g:if>
+                                  <g:if test="${i.pkg}">    <g:link controller="package" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name}</g:link></g:if>
                                   <g:if test="${i.cluster}"><g:link controller="cluster" action="show" id="${i.cluster.id}">Cluster: ${i.cluster.name}</g:link></g:if>
-                                  <g:if test="${i.sub}">    <g:link controller="subscription" action="show" id="${i.sub.id}">Subscription: ${i.sub.name}</g:link></g:if>
-                                  <g:if test="${i.lic}">Licence: ${i.lic.id}</g:if>
-                                  <g:if test="${i.title}">  <g:link controller="titleInstance" action="show" id="${i.title.id}">Title: ${i.title.title}</g:link></g:if>
+                                  <g:if test="${i.sub}">    <g:link controller="subscription" action="show" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}</g:link></g:if>
+                                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id}</g:if>
+                                  <g:if test="${i.title}">  <g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title}</g:link></g:if>
                               </li>
                           </g:each>
                       </ul></dd>

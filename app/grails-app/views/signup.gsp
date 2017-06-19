@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>Sign Up | Knowledge Base+</title>
+    <title>${message(code:'public.nav.signUp.label', default:'Sign Up')} | ${message(code:'laser', default:'LAS:eR')}</title>
   </head>
 
     <body class="public">
     <g:render template="public_navbar" contextPath="/templates" model="['active':'signup']"/>
 
         <div class="container">
-            <h1>How can institutions get involved?</h1>
+            <h1>${message(code:'public.signUp.label', default:'How can institutions get involved?')}</h1>
         </div>
 
         <div class="container">
@@ -19,10 +19,6 @@
                 </div>
                 <div class="span4">
                     <g:render template="/templates/loginDiv"/>
-
-                    <div class="twitter">
-                        <g:render template="twitter" contextPath="/templates"/>
-                    </div>
                 </div>
             </div>
         </div>

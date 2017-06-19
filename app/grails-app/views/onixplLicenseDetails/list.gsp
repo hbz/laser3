@@ -40,7 +40,7 @@
 						
 							<th class="header"><g:message code="onixplLicense.title.label" default="Title" /></th>
 
-                            <th class="header"><g:message code="onixplLicense.licenses.label" default="KB+ ${message(code:'licence.plural')}" /></th>
+                            <th class="header"><g:message code="onixplLicense.licenses.label" default="${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.plural')}" /></th>
 
                             <g:sortableColumn property="Type" title="${message(code: 'onixplLicence.type.label', default: 'Type')}" />
 

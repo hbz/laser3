@@ -338,23 +338,24 @@ class TitleInstancePackagePlatform {
   
   public String getAvailabilityStatusAsString() {
 	  def result = null
+	  def loc = LocaleContextHolder.locale
 	  Date as_at = new Date();
 	  def tipp_access_start_date = getDerivedAccessStartDate()
 	  def tipp_access_end_date = getDerivedAccessEndDate()
 	  
 	  if ( tipp_access_end_date == null ) {
-		result = "Current(*)";
+		result = messageSource.getMessage("refdata.Current", null, "Current", loc) + "(*)";
 	  }
 	  else if ( as_at < tipp_access_start_date ) {
 		// expected
-		result = "Expected";
+		result = messageSource.getMessage("refdata.Expected", null, "Expected", loc);
 	  }
 	  else if ( as_at > tipp_access_end_date ) {
 		// expired
-		result = "Expired";
+		result = messageSource.getMessage("refdata.Expired", null, "Expired", loc);
 	  }
 	  else {
-		result = "Current";
+		result = messageSource.getMessage("refdata.Current", null, "Current", loc);
 	  }
 	  result
   }
