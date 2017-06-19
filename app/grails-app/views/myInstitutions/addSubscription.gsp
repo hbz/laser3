@@ -63,8 +63,8 @@
                       <g:link controller="packageDetails" action="show" id="${p.id}">${p.name}</g:link>
                     </td>
                     <td>${p.getConsortia()?.name}</td>
-                    <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${p.startDate}"/></td>
-                    <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${p.endDate}"/></td>
+                    <td><g:formatDate formatName="default.date.format.notime" date="${p.startDate}"/></td>
+                    <td><g:formatDate formatName="default.date.format.notime" date="${p.endDate}"/></td>
                     <td>
                       ${p.nominalPlatform?.name}<br/>
                     </td>

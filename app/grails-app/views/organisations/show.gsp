@@ -89,7 +89,7 @@
               <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
               <input type="hidden" name="__recip" value="org"/>
               <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-              <input type="submit" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small"/>
+              <input type="submit" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small" style="vertical-align:text-bottom;"/>
             </g:form>
           </g:if>
 
@@ -122,11 +122,26 @@
             <dd><ul>
               <g:each in="${orgInstance.links}" var="i">
                 <li>
-                  <g:if test="${i.pkg}"><g:link controller="packageDetails" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${message(code:"refdata.${i.pkg?.packageStatus?.value}", default:"${i.pkg?.packageStatus?.value}")})</g:link></g:if>
-                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${message(code:"refdata.${i.sub.status?.value}", default:"${i.sub.status?.value}")})</g:link></g:if>
-                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})</g:if>
-                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title} (${message(code:"refdata.${i.title.status?.value}", default:"${i.title.status?.value}")})</g:link></g:if>
-                  (${message(code:"refdata.${i.roleType?.value}", default:"${i.roleType?.value}")}) </li>
+                  <g:if test="${i.pkg}">
+                    <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
+                      ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${message(code:"refdata.${i.pkg?.packageStatus?.value}", default:"${i.pkg?.packageStatus?.value}")})
+                    </g:link>
+                  </g:if>
+                  <g:if test="${i.sub}">
+                    <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
+                      ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${message(code:"refdata.${i.sub.status?.value}", default:"${i.sub.status?.value}")})
+                    </g:link>
+                  </g:if>
+                  <g:if test="${i.lic}">
+                    ${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})
+                  </g:if>
+                  <g:if test="${i.title}">
+                    <g:link controller="titleInstance" action="show" id="${i.title.id}">
+                      ${message(code:'title.label', default:'Title')}: ${i.title.title} (${message(code:"refdata.${i.title.status?.value}", default:"${i.title.status?.value}")})
+                    </g:link>
+                  </g:if>
+                  <g:set var="roletype_refdata" value="${i.roleType?.value.replaceAll(/\s/,'')}"/>
+                  (${message(code:"refdata.${roletype_refdata}", default:"${i.roleType?.value}")}) </li>
               </g:each>
             </ui></dd>
           </g:if>

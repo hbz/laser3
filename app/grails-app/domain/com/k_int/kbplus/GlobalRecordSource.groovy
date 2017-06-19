@@ -60,7 +60,14 @@ class GlobalRecordSource {
 
   @Transient
   static def removeSource(source_id) {
-    GlobalRecordSource.executeUpdate("delete GlobalRecordTracker grt where grt.owner.source.id = ?",[source_id])
+    def rel_info = GlobalRecordSource.executeQuery("select gri from GlobalRecordInfo as gri where gri.source.id = ?",[source_id])
+
+    if(rel_info.size() > 0){
+      rel_info.each { gri ->
+        GlobalRecordSource.executeUpdate("delete GlobalRecordTracker grt where grt.owner = ?",[gri])
+      }
+    }
+
     GlobalRecordSource.executeUpdate("delete GlobalRecordInfo gri where gri.source.id = ?",[source_id])
     GlobalRecordSource.executeUpdate("delete GlobalRecordSource grs where grs.id = ?",[source_id])
   }

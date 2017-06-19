@@ -111,8 +111,8 @@
                     </g:else>
                   </td>
                   <td>${l.licensor?.name}</td>
-                  <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.startDate}"/></td>
-                  <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.endDate}"/></td>
+                  <td><g:formatDate formatName="default.date.format.notime" date="${l.startDate}"/></td>
+                  <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
                   <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
                 </tr>
               </g:each>

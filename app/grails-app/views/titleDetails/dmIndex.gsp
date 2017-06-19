@@ -75,7 +75,12 @@
                           <td>
                             <ul>
                               <g:each in="${hit.ids}" var="id">
-                                <li>${id.identifier.ns.ns} ${id.identifier.value}</li>
+                                <g:if test="${id.identifier.ns.ns == 'originediturl'}">
+                                  <li>${id.identifier.ns.ns}: <a href="${id.identifier.value}">GOKb-URL</a></li>
+                                </g:if>
+                                <g:else>
+                                  <li>${id.identifier.ns.ns}: ${id.identifier.value}</li>
+                                </g:else>
                               </g:each>
                             </ul>
                           </td>

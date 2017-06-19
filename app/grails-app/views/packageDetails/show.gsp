@@ -140,7 +140,7 @@
                       <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
                       <input type="hidden" name="__recip" value="pkg"/>
                       <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                      <input type="submit" value="${message(code: 'identifier.select.add')}" class="btn btn-primary btn-small"/>
+                      <input type="submit" value="${message(code: 'identifier.select.add')}" class="btn btn-primary btn-small" style="vertical-align:text-bottom;"/>
                     </g:form>
                   </g:if>
 
@@ -409,7 +409,9 @@
                        </li>
                      </g:each>
                    </ul>
-                   <span title="${t.availabilityStatusExplanation}">Access: ${t.availabilityStatus?.value}</span>
+                   <span title="${t.availabilityStatusExplanation}">
+                    ${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}
+                  </span>
                    <g:if test="${params.mode=='advanced'}">
                      <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
                      <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />

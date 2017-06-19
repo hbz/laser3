@@ -105,10 +105,10 @@
                   </tr>
                   <g:each in="${titleInstanceInstance.tipps}" var="t">
                       <tr>
-                          <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/></td>
+                          <td><g:formatDate formatName="default.date.format.notime" date="${t.startDate}"/></td>
                       <td>${t.startVolume}</td>
                       <td>${t.startIssue}</td>
-                      <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.endDate}"/></td>
+                      <td><g:formatDate format="default.date.format.notime" date="${t.endDate}"/></td>
                       <td>${t.endVolume}</td>
                       <td>${t.endIssue}</td>
                       <td>${t.coverageDepth}</td>
