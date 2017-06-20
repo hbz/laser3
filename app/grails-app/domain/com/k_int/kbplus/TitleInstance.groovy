@@ -257,7 +257,7 @@ class TitleInstance {
         if ( cti.ids.size() > 2 && full_match ){
           full_matches.add(cti)
         }
-        else if ( origin_match == true ) {
+        else if ( origin_match == true && (intersection >= 2 || name_match) ) {
           origin_matches.add(cti)
         }
         else if( intersection >= 2 || name_match ){
@@ -842,7 +842,7 @@ class TitleInstance {
 
     if ( !found ) {
       def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence where io.identifier = ? and io.ti = ?", [id,this])
+      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?", [id,this])
 
       static_logger.debug("Create new identifier occurrence for tid:${getId()} ns:${ns} value:${value}");
 
