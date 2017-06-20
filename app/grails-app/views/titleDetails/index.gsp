@@ -10,7 +10,7 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
         <li><g:link controller="titleDetails" action="index">${message(code: 'menu.institutions.all_titles')}</g:link></li>
       </ul>
     </div>
@@ -76,7 +76,9 @@
                           </td>
                           <td>
                             <g:each in="${hit.getSource().identifiers}" var="id">
-                              <div style="white-space:nowrap"><span>${id.type}:</span><span>${id.value}</span></div>
+                              <g:if test="${id.type != 'originediturl'}">
+                                <div style="white-space:nowrap"><span>${id.type}:</span><span>${id.value}</span></div>
+                              </g:if>
                             </g:each>
                           </td>
                         </tr>
