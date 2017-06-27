@@ -257,11 +257,13 @@ class TitleInstance {
         if ( cti.ids.size() > 2 && full_match ){
           full_matches.add(cti)
         }
-        else if ( origin_match == true && (intersection >= 2 || name_match) ) {
-          origin_matches.add(cti)
-        }
         else if( intersection >= 2 || name_match ){
-          good_matches.add(cti)
+          if(origin_match){
+            origin_matches.add(cti)
+          }
+          else{
+            good_matches.add(cti)
+          }
         }
       }
 

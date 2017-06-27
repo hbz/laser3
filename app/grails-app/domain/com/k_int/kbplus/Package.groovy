@@ -429,9 +429,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     if ( ! found ) {
       def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?", [id,this])
 
-      log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
-      new IdentifierOccurrence(identifier:id, pkg:this).save(flush:true)
+      if ( !id_occ || id_occ.size() == 0 ){
+        log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
+        new IdentifierOccurrence(identifier:id, pkg:this).save(flush:true)
+      }
     }
   }
 
