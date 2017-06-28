@@ -10,14 +10,14 @@
 
    <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${issueEntitlementInstance?.subscription.subscriber}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}"> ${issueEntitlementInstance?.subscription.subscriber.name} Subscriptions</g:link> <span class="divider">/</span> </li>
+          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}"> ${issueEntitlementInstance?.subscription.subscriber.name} - ${message(code:'subscrition.plural', default:'Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${issueEntitlementInstance?.subscription.id}">${issueEntitlementInstance?.subscription.name}</g:link>  <span class="divider">/</span> </li>
         <li> <g:link controller="issueEntitlement" action="show" id="${issueEntitlementInstance?.id}">${issueEntitlementInstance?.tipp.title.title}</g:link> </li>
         <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable.label', default:'Editable')}</span>&nbsp;</li>
         </g:if>
       </ul>
     </div>

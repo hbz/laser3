@@ -140,7 +140,7 @@
                       <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
                       <input type="hidden" name="__recip" value="pkg"/>
                       <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                      <input type="submit" value="${message(code: 'identifier.select.add')}" class="btn btn-primary btn-small" style="vertical-align:text-bottom;"/>
+                      <input type="submit" value="${message(code: 'identifier.select.add')}" class="btn btn-primary btn-small"/>
                     </g:form>
                   </g:if>
 
@@ -358,8 +358,6 @@
                         </td>
                       </tr>
                     </g:if>
-
-
                   </table>
                   <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
                   <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
@@ -394,14 +392,14 @@
                      <g:each in="${t.title.distinctEventList()}" var="h">
                        <li>
 
-                         ${message(code:'title.history.label', default:'Title History')}: <g:formatDate date="${h.event.eventDate}" format="yyyy-MM-dd"/><br/>
+                         ${message(code:'title.history.label', default:'Title History')}: <g:formatDate date="${h.event.eventDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/><br/>
 
                          <g:each status="st" in="${h.event.fromTitles()}" var="the">
                             <g:if test="${st>0}">, </g:if>
                             <g:link controller="titleDetails" action="show" id="${the.id}">${the.title}</g:link>
                             <g:if test="${the.isInPackage(packageInstance)}">(✔)</g:if><g:else>(✘)</g:else>
                          </g:each>
-                         Became
+                         ${message(code:'package.show.became', default:'Became')}
                          <g:each status="st" in="${h.event.toTitles()}" var="the"><g:if test="${st>0}">, </g:if>
                             <g:link controller="titleDetails" action="show" id="${the.id}">${the.title}</g:link>
                             <g:if test="${the.isInPackage(packageInstance)}">(✔)</g:if><g:else>(✘)</g:else>
@@ -527,7 +525,7 @@
 
       function confirmSubmit() {
         if ( $('#bulkOperationSelect').val() === 'remove' ) {
-          var agree=confirm("Are you sure you wish to continue?");
+          var agree=confirm("${message(code:'default.continue.confirm', default:'Are you sure you wish to continue?')}");
           if (agree)
             return true ;
           else
@@ -540,7 +538,7 @@
         placeholder: "${message(code:'identifier.select.ph', default:'Search for an identifier...')}",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",

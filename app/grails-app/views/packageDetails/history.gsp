@@ -18,8 +18,8 @@
 
 <div class="container">
     <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">All Packages</g:link><span class="divider">/</span></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
     </ul>
 </div>
@@ -44,13 +44,13 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <td>Name</td>
-              <td>Actor</td>
-              <td>Event name</td>
-              <td>Property</td>
-              <td>Old</td>
-              <td>New</td>
-              <td>date</td>
+              <td>${message(code:'event.component', default:'Name')}</td>
+              <td>${message(code:'event.actor', default:'Actor')}</td>
+              <td>${message(code:'event.name', default:'Event name')}</td>
+              <td>${message(code:'event.property', default:'Property')}</td>
+              <td>${message(code:'event.old', default:'Old')}</td>
+              <td>${message(code:'event.new', default:'New')}</td>
+              <td>${message(code:'default.date.label', default:'Date')}</td>
             </tr>
           </thead>
           <tbody>
@@ -64,7 +64,7 @@
                 <td>${hl.propertyName}</td>
                 <td>${hl.oldValue}</td>
                 <td>${hl.newValue}</td>
-                <td><g:formatDate format="yyyy-MM-dd" date="${hl.lastUpdated}"/></td>
+                <td style="white-space:nowrap;"><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.lastUpdated}"/></td>
               </tr>
             </g:each>
           </tbody>
@@ -74,7 +74,7 @@
 
       <div class="pagination" style="text-align:center">
         <g:if test="${historyLines != null}" >
-          <bootstrap:paginate  action="history" controller="packageDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${num_hl}" />
+          <bootstrap:paginate  action="history" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
       </div>
 

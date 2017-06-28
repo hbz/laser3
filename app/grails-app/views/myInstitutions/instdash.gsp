@@ -121,12 +121,13 @@
                       <img src="${resource(dir: 'images', file: 'icon_announce.png')}" alt="Annoucement" />
                     </div>
                     <div class="pull-right message">
-                      <p><strong>${ra.title}</strong></p>
+                      <g:set var="ann_nws" value="${ra.title.replaceAll(' ','')}" />
+                      <p><strong>${message(code:"announcement.${ann_nws}", default:"${ra.title}")}</strong></p>
                       <div>
                         <span class="widget-content">${ra.content}</span>
                         <div class="see-more"><a href="">[ ${message(code:'default.button.see_more.label', default:'See More')} ]</a></div>
                       </div> 
-                      <p>${message(code:'myinst.ann.posted_by', default:'Posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em> ${message(code:'myinst.ann.posted_on', default:'on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></p>
+                      <p>${message(code:'myinst.ann.posted_by', default:'Posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em><div> ${message(code:'myinst.ann.posted_on', default:'on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></div></p>
                     </div>
                   </td>
                 </tr>

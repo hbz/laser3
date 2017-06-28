@@ -130,7 +130,7 @@
           <dd>${tipp.platform.name}</dd>
         </dl>
         <dl>
-          <dt>${message(code:'tipp.add_platforms', default:'Additional Platforms')}</td>
+          <dt style="margin-top:10px">${message(code:'tipp.add_platforms', default:'Additional Platforms')}</td>
           <dd>
             <table class="table">
               <thead>

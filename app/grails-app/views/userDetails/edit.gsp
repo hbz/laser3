@@ -28,16 +28,16 @@
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
           </g:if>
 
-          <h3>Affiliations</h3>
+          <h3>${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 
           <table class="table table-bordered">
             <thead>
               <tr>
-                <th>Id</td>
-                <th>Org</td>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>${message(code:'user.id', default:'Id')}</td>
+                <th>${message(code:'user.org', default:'Org')}</td>
+                <th>${message(code:'user.role', default:'Role')}</th>
+                <th>${message(code:'user.status', default:'Status')}</th>
+                <th>${message(code:'user.actions', default:'Actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -46,27 +46,27 @@
                   <td>${af.id}</td>
                   <td>${af.org.name}</td>
                   <td>${af.formalRole?.authority}</td>
-                  <td>${['Pending','Approved','Rejected','Auto Approved'][af.status]}</td>
-                  <td><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ui.class.name}:${ui.id}",contextProperty:"affiliations",targetOid:"${af.class.name}:${af.id}"]}'>Delete Affiliation</g:link></td>
+                  <td>${message(code:"cv.membership.status.${af.status}")}</td>
+                  <td><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ui.class.name}:${ui.id}",contextProperty:"affiliations",targetOid:"${af.class.name}:${af.id}"]}'>${message(code:'default.delete.label', args:[message(code:'user.affiliation', default:'Affiliation')], default:'Delete Affiliation')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>
           </table>
 
-          <h3>Roles</h3>
+          <h3>${message(code:'user.role.plural', default:'Roles')}</h3>
 
           <table class="table table-bordered">
             <thead>
               <tr>
-                <th>Role</td>
-                <th>Actions</th>
+                <th>${message(code:'user.role', default:'Role')}</td>
+                <th>${message(code:'user.actions', default:'Actions')}</th>
               </tr>
             </thead>
             <tbody>
               <g:each in="${ui.roles}" var="rl">
                 <tr>
                   <td>${rl.role.authority}</td>
-                  <td><g:link controller="ajax" action="removeUserRole" params='${[user:"${ui.class.name}:${ui.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'>Delete Role</g:link></td>
+                  <td><g:link controller="ajax" action="removeUserRole" params='${[user:"${ui.class.name}:${ui.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'>${message(code:'default.delete.label', args:[message(code:'user.role', default: 'Role')], default:'Delete Role')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>
@@ -77,7 +77,7 @@
               <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.auth.UserRole"/>
               <input type="hidden" name="__recip" value="user"/>
               <input type="hidden" name="role" id="userRoleSelect"/>
-              <input type="submit" value="Add Role..."/>
+              <input type="submit" value="${message(code:'user.role.add', default:'Add Role...')}"/>
             </g:form>
         </div>
       </div>
@@ -91,7 +91,7 @@
       $('.xEditableValue').editable();
 
       $("#userRoleSelect").select2({
-        placeholder: "Search for an role...",
+        placeholder: "${message(code:'user.role.search.ph', default:'Search for an role...')}",
         minimumInputLength: 0,
         formatInputTooShort: function () {
             return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";

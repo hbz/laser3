@@ -11,15 +11,15 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">All Packages</g:link><span class="divider">/</span></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
 
         <li class="pull-right">
           View:
           <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="packageDetails" action="${params.action}" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
-            <g:link controller="packageDetails" action="${params.action}" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
+            <g:link controller="packageDetails" action="${params.action}" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
+            <g:link controller="packageDetails" action="${params.action}" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
           </div>
           &nbsp;
         </li>
@@ -39,7 +39,7 @@
                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if><g:else>${packageInstance.name}</g:else></h1>
             <g:render template="nav" contextPath="." />
             <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-            <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>Mention this package in an announcement</g:link>
+            <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
             </sec:ifAnyGranted>
             <g:if test="${forum_url != null}">
               <a href="${forum_url}">| Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
@@ -67,7 +67,7 @@
     <div class="container">
 
         <dl>
-          <dt>Titles (${offset+1} to ${lasttipp}  of ${num_tipp_rows})
+          <dt>${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])}
 
           </dt>
           <dd>
@@ -78,12 +78,12 @@
             <tr>
               <th>&nbsp;</th>
               <th>&nbsp;</th>
-              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="Title" />
-              <th style="">Platform</th>
-              <th style="">Identifiers</th>
-              <th style="">Coverage Start</th>
-              <th style="">Coverage End</th>
-              <th style="">Coverage Depth</th>
+              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+              <th style="">${message(code:'tipp.platform', default:'Platform')}</th>
+              <th style="">${message(code:'identifier.plural', default:'Identifiers')}</th>
+              <th style="">${message(code:'tipp.coverage_start', default:'Coverage Start')}</th>
+              <th style="">${message(code:'tipp.coverage_end', default:'Coverage End')}</th>
+              <th style="">${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</th>
             </tr>
             </thead>
             <tbody>
@@ -95,23 +95,23 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
                    ${t.title.title} 
-                   <g:link controller="titleDetails" action="show" id="${t.title.id}">(Title)</g:link>
-                   <g:link controller="tipp" action="show" id="${t.id}">(TIPP)</g:link><br/>
-                   <span title="${t.availabilityStatusExplanation}">Access: ${t.availabilityStatus?.value}</span>
+                   <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
+                   <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
+                   <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
                    <g:if test="${params.action == 'previous'}">
-                    <br/> Access End: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                    <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                    <g:else>
-                   <br/> Access Start: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
+                   <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
                    </g:else>
                     <g:if test="${params.mode=='advanced'}">
                      <g:if test="${params.action == 'previous'}">
-                     <br/> Access Start: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
+                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
                      </g:if>
                      <g:else>
-                      <br/> Access End: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                      <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
                      </g:else>
-                       <br/> Record Status: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
+                       <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
@@ -129,15 +129,15 @@
                 </td>
 
                 <td style="white-space: nowrap">
-                  Date: <g:xEditable owner="${t}" type="date" field="startDate" /><br/>
-                  Volume: <g:xEditable owner="${t}" field="startVolume" /><br/>
-                  Issue: <g:xEditable owner="${t}" field="startIssue" />     
+                  ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                  ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="startVolume" /><br/>
+                  ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="startIssue" />
                 </td>
 
                 <td style="white-space: nowrap"> 
-                   Date: <g:xEditable owner="${t}" type="date" field="endDate" /><br/>
-                   Volume: <g:xEditable owner="${t}" field="endVolume" /><br/>
-                   Issue: <g:xEditable owner="${t}" field="endIssue" />
+                   ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                   ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="endVolume" /><br/>
+                   ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="endIssue" />
                 </td>
                 <td>
                   <g:xEditable owner="${t}" field="coverageDepth" />
@@ -146,7 +146,7 @@
 
               <g:if test="${hasCoverageNote==true}">
                 <tr>
-                  <td colspan="6">coverageNote: ${t.coverageNote}</td>
+                  <td colspan="6">${message(code:'tipp.coverage_note', default:'Coverage Note')}: ${t.coverageNote}</td>
                 </tr>
               </g:if>
 
@@ -159,7 +159,7 @@
 
         <div class="pagination" style="text-align:center">
           <g:if test="${titlesList}" >
-            <bootstrap:paginate  action="${params.action}" controller="packageDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${num_tipp_rows}" />
+            <bootstrap:paginate  action="${params.action}" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
         </div>
 
@@ -169,7 +169,7 @@
         
         <g:form controller="ajax" action="addToCollection">
           <fieldset>
-            <legend><h3>Add A Title To This Package</h3></legend>
+            <legend><h3>${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
             <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
             <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
             <input type="hidden" name="__recip" value="pkg"/>
@@ -177,13 +177,13 @@
             <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
             <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
 
-            <label>Title To Add</label>
+            <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
             <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
             <span class="help-block"></span>
-            <label>Platform For Added Title</label>
+            <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
             <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
             <span class="help-block"></span>
-            <button type="submit" class="btn">Add Title...</button>
+            <button type="submit" class="btn">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
           </fieldset>
         </g:form>
 
@@ -209,7 +209,7 @@
 
       function confirmSubmit() {
         if ( $('#bulkOperationSelect').val() === 'remove' ) {
-          var agree=confirm("Are you sure you wish to continue?");
+          var agree=confirm("${message(code:'default.continue.confirm', default:'Are you sure you wish to continue?')}");
           if (agree)
             return true ;
           else

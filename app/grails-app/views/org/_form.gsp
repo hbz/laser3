@@ -109,7 +109,7 @@
 		
 	</label>
 	<g:select id="membership" name="membership.id"
-                from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(''YN')}"
+                from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN')}"
                 optionKey="id"
                 value="${orgInstance?.membership?.id}"
                 class="many-to-one"
@@ -120,7 +120,7 @@
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'affiliations', 'error')} ">
 	<label for="affiliations">
 		<g:message code="org.affiliations.label" default="Affiliations" />
-		
+
 	</label>
 	
 <ul class="one-to-many">

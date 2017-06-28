@@ -35,19 +35,19 @@
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'ids', 'error')} ">
-	<label for="ids">
-		<g:message code="org.ids.label" default="Ids" />
-		
-	</label>
+  <label for="ids">
+    <g:message code="org.ids.label" default="Ids" />
+
+  </label>
 	
-<ul class="one-to-many">
-<g:each in="${orgInstance?.ids?}" var="i">
-    <li><g:link controller="identifierOccurrence" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
-</g:each>
-<li class="add">
-<g:link controller="identifierOccurrence" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'identifierOccurrence.label', default: 'IdentifierOccurrence')])}</g:link>
-</li>
-</ul>
+  <ul class="one-to-many">
+    <g:each in="${orgInstance?.ids?}" var="i">
+        <li><g:link controller="identifierOccurrence" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
+    </g:each>
+    <li class="add">
+    <g:link controller="identifierOccurrence" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'identifierOccurrence.label', default: 'IdentifierOccurrence')])}</g:link>
+    </li>
+  </ul>
 
 </div>
 

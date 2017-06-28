@@ -22,15 +22,15 @@
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
           </g:if>
 
-          <h3>Affiliations</h3>
+          <h3>${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 
           <table class="table table-bordered">
             <thead>
               <tr>
-                <th>Id</td>
-                <th>Org</td>
-                <th>Role</th>
-                <th>Status</th>
+                <th>${message(code:'user.id', default:'Id')}</td>
+                <th>${message(code:'user.org', default:'Org')}</td>
+                <th>${message(code:'user.role', default:'Role')}</th>
+                <th>${message(code:'user.status', default:'Status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -39,18 +39,18 @@
                   <td>${af.id}</td>
                   <td>${af.org.name}</td>
                   <td>${af.formalRole?.authority}</td>
-                  <td>${['Pending','Approved','Rejected','Auto Approved'][af.status]}</td>
+                  <td>${message(code:"cv.membership.status.${af.status}")}</td>
                 </tr>
               </g:each>
             </tbody>
           </table>
 
-          <h3>Roles</h3>
+          <h3>${message(code:'user.role.plural', default:'Roles')}</h3>
 
           <table class="table table-bordered">
             <thead>
               <tr>
-                <th>Role</td>
+                <th>${message(code:'user.role', default:'Role')}</td>
               </tr>
             </thead>
             <tbody>
