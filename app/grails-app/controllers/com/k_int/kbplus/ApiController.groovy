@@ -16,11 +16,16 @@ import grails.plugins.springsecurity.Secured
 import grails.converters.*
 import groovy.json.JsonBuilder
 import grails.converters.JSON
+import org.springframework.http.HttpStatus
 
 class ApiController {
 
     def springSecurityService
     ApiService apiService
+
+    ApiController(){
+        super()
+    }
 
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def index() {
@@ -221,9 +226,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         render result as JSON
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    // @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
     def orgsImport() {
-        log.info("SIMPLE orgsImport() ..")
+        log.info("SIMPLE orgsImport() .. ROLE_API_WRITER required")
 
         def xml = new XmlSlurper().parseText(request.reader.text)
         assert xml instanceof groovy.util.slurpersupport.GPathResult
@@ -234,63 +239,87 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         render xml
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
-    def get() {
-        log.debug("bottleneck GET .." + params)
+    //@Secured(['ROLE_API_READER', 'IS_AUTHENTICATED_FULLY'])
+    def v0() {
+        log.debug("todo .. ROLE_API_READER required : " + params)
+        def result
+        def objType = params.get('objType')
+        def qtype   = params.get('qtype')
+        def qid     = params.get('qid')
 
-        if(params.get('obj') == 'subscription'){
-            getSubscription(params.get('identifier'), params.get('id'))
+        if ('GET' == request.method) {
+            response.setContentType("application/json")
+
+            if(objType.equalsIgnoreCase('subscription')) {
+                result = getSubscription(qtype, qid)
+            }
+            else if(objType.equalsIgnoreCase('organisation')) {
+                result = getOrganisation(qtype, qid)
+            }
+            else if(objType.equalsIgnoreCase('license')) {
+                result = getLicense(qtype, qid)
+            }
+            else {
+                result = apiService.NOT_IMPLEMENTED
+            }
+
+            println result
+
+            if(apiService.NOT_IMPLEMENTED == result) {
+                response.status = HttpStatus.NOT_IMPLEMENTED.value()
+                result = new JSON(["message": "service not implemented"])
+            }
+            else if(apiService.BAD_REQUEST == result) {
+                response.status = HttpStatus.BAD_REQUEST.value()
+                result = new JSON(["message": "invalid identifier", "qtype": qtype])
+            }
+            else if(!result) {
+                response.status = HttpStatus.NOT_FOUND.value()
+                result = new JSON(["message": "not found", "qtype": qtype, "qid": qid])
+            }
+
+            render result.toString(true)
         }
-        else if(params.get('obj') == 'organisation'){
-            getOrganisation(params.get('identifier'), params.get('id'))
-        }
-        else if(params.get('obj') == 'license'){
-            getLicense(params.get('identifier'), params.get('id'))
+        else if ('POST' == request.method) {
+            log.debug("todo .. ROLE_API_WRITER required : " + params)
+            response.status = HttpStatus.METHOD_NOT_ALLOWED.value()
+            result = new JSON(["message": "method not allowed"])
         }
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
-    def put() {
-        log.debug("bottleneck PUT .." + params)
-    }
-
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     private getSubscription(String identifier, String value) {
-        log.info("SIMPLE getSubscription() ..")
-
         def obj
-        if(identifier == 'id') {
+        if(identifier.equalsIgnoreCase('id')) {
             obj = Subscription.findWhere(id: Long.parseLong(value))
         }
-        def result = apiService.getSubscriptionAsJson(obj)
-        render result
+        else {
+            return apiService.BAD_REQUEST
+        }
+        apiService.getSubscription(obj)
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     private getOrganisation(String identifier, String value) {
-        log.info("SIMPLE getOrganisation() ..")
-
         def obj
-        if(identifier == 'id') {
+        if(identifier.equalsIgnoreCase('id')) {
             obj = Org.findWhere(id: Long.parseLong(value))
         }
-        else if(identifier == 'shortcode') {
+        else if(identifier.equalsIgnoreCase('shortcode')) {
             obj = Org.findWhere(shortcode: value)
         }
-        def result = apiService.getOrganisationAsJson(obj)
-        render result
+        else {
+            return apiService.BAD_REQUEST
+        }
+        apiService.getOrganisation(obj)
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     private getLicense(String identifier, String value) {
-        log.info("SIMPLE getLicense() ..")
-
         def obj
-        if(identifier == 'id') {
+        if(identifier.equalsIgnoreCase('id')) {
             obj = License.findWhere(id: Long.parseLong(value))
         }
-        def result = apiService.getLicenseAsJson(obj)  // TODO: download
-        render result
+        else {
+            return apiService.BAD_REQUEST
+        }
+        apiService.getLicense(obj)  // TODO: download
     }
 }
-

@@ -41,16 +41,16 @@ class Org {
       ]
 
   static hasMany = [
-      ids:              IdentifierOccurrence, 
-      outgoingCombos:   Combo,  
-      incomingCombos:   Combo,
-      links:            OrgRole,
-      prsLinks:         PersonRole,
-      contacts:         Contact,
-      addresses:        Address,
-      affiliations:     UserOrg,
-      customProperties:  OrgCustomProperty,
-      privateProperties: OrgPrivateProperty
+      ids:                IdentifierOccurrence,
+      outgoingCombos:     Combo,
+      incomingCombos:     Combo,
+      links:              OrgRole,
+      prsLinks:           PersonRole,
+      contacts:           Contact,
+      addresses:          Address,
+      affiliations:       UserOrg,
+      customProperties:   OrgCustomProperty,
+      privateProperties:  OrgPrivateProperty
       ]
 
   static mapping = {

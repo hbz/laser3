@@ -18,13 +18,18 @@ class UrlMappings {
 
         "/ajax/$action?/$id?"(controller: 'ajax')
 
-        // new api
-        //"/api/org"(resource: "orgApi")
-        "/api/get/$obj/$identifier/$id"(controller: 'api', action: 'get')
-        //"/api/put/$obj/$identifier/$id"(controller: 'api', action: 'put')
+        // new custom api
+        "/api/v0/$objType"      (controller: 'api', action: 'v0')
+        "/api/current"          (uri: '/rest/v0/laser.yaml')
+        "/api/docs"             (uri: '/vendor/swagger-ui/index.html')
+        "/api/swagger-ui.css"   (uri: '/vendor/swagger-ui/swagger-ui.css')
+        "/api/swagger-ui.js"    (uri: '/vendor/swagger-ui/swagger-ui.js')
+        "/api/swagger-ui-bundle.js" (uri: '/vendor/swagger-ui/swagger-ui-bundle.js')
+        "/api/swagger-ui-standalone-preset.js" (uri: '/vendor/swagger-ui/swagger-ui-standalone-preset.js')
 
         // "/"(controller:"home")
         "/"(view: "/publichome")
+
 
         "/about"(view: "/about")
         "/terms-and-conditions"(view: "/terms-and-conditions")

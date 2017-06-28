@@ -9,7 +9,7 @@ import org.apache.log4j.RollingFileAppender
 // @NotificationsJob
 // - enable notification
 // - enable reminder
-hbzMaster = true
+//hbzMaster = true
 
 // @ApplicationResources
 defaultCssSkin = "hbz.css"
@@ -374,13 +374,14 @@ grails.hibernate.cache.queries = true
 
 // set per-environment serverURL stem for creating absolute links
 environments {
-  development {
-    grails.logging.jul.usebridge = true
-  }
-  production {
-    grails.logging.jul.usebridge = false
-    // TODO: grails.serverURL = "http://www.changeme.com"
-  }
+    development {
+        grails.logging.jul.usebridge = true
+        grails.serverURL = "http://localhost:8080/demo"
+    }
+    production {
+        grails.logging.jul.usebridge = false
+        grails.serverURL = "http://laser-dev.hbz.nrw.de" // TODO: remind to change if deploy on live server
+    }
 }
 
 grails.cache.config = {

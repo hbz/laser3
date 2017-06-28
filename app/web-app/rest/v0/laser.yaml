@@ -1,0 +1,757 @@
+---
+swagger: '2.0'
+info:
+  version: 0.1
+  title: LAS:er API
+  description: First scratch
+
+host: "localhost:8080"
+basePath: /demo/api/v0
+schemes:
+  - http
+
+paths:
+
+  /license:
+    get:
+      summary: Find license by identifier
+      parameters:
+        - in: query
+          name: qtype
+          required: true
+          type: string
+          description: Type of identifier for this query
+        - in: query
+          name: qid
+          required: true
+          type: string
+          description: Identifier for this query
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid type of identifier
+        404:
+          description: Valid request, but license not found
+
+  /organisation:
+    get:
+      summary: Find organisation by identifier
+      parameters:
+        - in: query
+          name: qtype
+          required: true
+          type: string
+          description: Type of identifier for this query
+        - in: query
+          name: qid
+          required: true
+          type: string
+          description: Identifier for this query
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Organisation"
+        400:
+          description: Invalid type of identifier
+        404:
+          description: Valid request, but organisation not found
+
+  /subscription:
+    get:
+      summary: Find subscription by identifier
+      parameters:
+        - in: query
+          name: qtype
+          required: true
+          type: string
+          description: Type of identifier for this query
+        - in: query
+          name: qid
+          required: true
+          type: string
+          description: Identifier for this query
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Subscription"
+        400:
+          description: Invalid type identifier
+        404:
+          description: Valid request, but subscription not found
+
+definitions:
+
+  #valid
+  Address:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 761
+      street1:
+        type: string
+        example: "Jülicher Straße"
+      street2:
+        type: string
+        example: "6"
+      pob:
+        type: string
+        example: "270451"
+      zipcode:
+        type: string
+        example: "50674"
+      city:
+        type: string
+        example: "Köln"
+      state:
+        type: string
+        example: "Nordrhein-Westfalen"
+      country:
+        type: string
+        example: "Deutschland"
+      type:
+        type: string
+        description: Mapping RefdataCategory "AddressType"
+        enum:
+          ["Postal address", "Billing address", "Delivery address"]
+        example: "Postal address"
+
+  Cluster:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 37
+      definition:
+        type: string
+      name:
+        type: string
+
+  ClusterStub:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 38
+      definition:
+        type: string
+      name:
+        type: string
+
+  #valid
+  Contact:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 2419
+      category: # mapping attr contentType
+        type: string
+        description: Mapping RefdataCategory "ContactContentType"
+        enum:
+          ["Mail", "Phone", "Fax"]
+        example: "Mail"
+      content:
+        type: string
+        example: "info-hbz@hbz-nrw.de"
+      type:
+        type: string
+        description: Mapping RefdataCategory "ContactType"
+        enum:
+          ["Job-related", "Personal"]
+        example: "Job-related"
+
+  CostItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 997
+      billingCurrency:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+        example: "EUR - Euro Member Countries"
+      costDescription:
+        type: string
+      costInBillingCurrency:
+        type: double
+        example: 2523.16
+      costInLocalCurrency:
+        type: double
+        example: 1871.10
+      costItemCategory:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+        example: "Price"
+      costItemElement:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+        example: "Content"
+      costItemStatus:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+        example: "Actual"
+      dateCreated:
+        type: string
+        format: date
+      datePaid:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date
+      includeInSubscription:
+        type: String
+        description: Could be boolean
+      invoice:
+        $ref: "#/definitions/Invoice"
+      issueEntitlement:
+        $ref: "#/definitions/IssueEntitlement"
+      lastUpdated:
+        type: string
+        format: date
+      order:
+        $ref: "#/definitions/Order"
+      owner:
+        $ref: "#/definitions/OrganisationStub"
+      package: # mapping attr subPkg
+        $ref: "#/definitions/PackageStub"
+      reference:
+        type: string
+      sub:
+        $ref: "#/definitions/SubscriptionStub"
+      startDate:
+        type: string
+        format: date
+      taxCode:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+        example: "On Invoice"
+
+  DocContext:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 9723
+      doctype:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+        example: "General"
+      owner:
+        $ref: "#/definitions/Document"
+
+  Document:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 7751
+      filename:
+        type: string
+        example: "springer_2015.csv"
+      mimetype:
+        type: string
+        example: "text/csv"
+      title:
+        type: string
+        example: "Übersicht 2015"
+      type:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+        example: "General"
+      uuid:
+        type: string
+        example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
+
+  #valid
+  Identifier:
+    type: object
+    properties:
+      namespace:
+        type: string
+        example: "ISIL"
+      value:
+        type: string
+        example: "DE-605"
+
+  #valid
+  Invoice:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1026
+      dateOfPayment:
+        type: string
+        format: date
+      dateOfInvoice:
+        type: string
+        format: date
+      datePassedToFinance:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date
+      invoiceNumber:
+        type: string
+        example: "0816-Bestellung"
+      owner:
+        $ref: "#/definitions/OrganisationStub"
+      startDate:
+        type: string
+        format: date
+
+  IssueEntitlement:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 21586
+      accessStartDate:
+        type: string
+        format: date
+      accessEndDate:
+        type: string
+        format: date
+      coreStatusStart:
+        type: string
+        format: date
+      coreStatusEnd:
+        type: string
+        format: date
+      coreStatus:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+      coverageDepth:
+        type: string
+      coverageNote:
+        type: string
+      endDate:
+        type: string
+        format: date
+      endVolume:
+        type: string
+      endIssue:
+        type: string
+      embargo:
+        type: string
+      ieReason:
+        type: string
+      medium:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+      startVolume:
+        type: string
+      startIssue:
+        type: string
+      startDate:
+        type: string
+        format: date
+      status:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+      subscription:
+        $ref: "#/definitions/SubscriptionStub"
+      tipp:
+        $ref: "#/definitions/TitleInstancePackagePlatform"
+
+  License:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 111
+      contact:
+        type: string
+      licenseUrl:
+        type: string
+      reference:
+       type: string
+
+  LicenseStub:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 112
+      contact:
+        type: string
+      licenseUrl:
+        type: string
+      reference:
+       type: string
+
+  Order:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 9605
+      orderNumber:
+        type: string
+        example: "0816-Bestellung"
+      owner:
+        $ref: "#/definitions/OrganisationStub"
+
+  Organisation:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 437
+      addresses:
+        type: array
+        items:
+          $ref: "#/definitions/Address"
+      comment:
+        type: string
+      contacts:
+        type: array
+        items:
+          $ref: "#/definitions/Contact"
+      identifiers: # mapping attr ids
+        type: array
+        items:
+          $ref: "#/definitions/Identifier"
+      name:
+        type: string
+        example: "Hochschulbibliothekszentrum NRW"
+      persons: # mapping attr prsLinks
+        type: array
+        items:
+          $ref: "#/definitions/Person"
+      properties: # mapping attr customProperties
+        type: array
+        items:
+          $ref: "#/definitions/Property"
+      scope:
+        type: string
+      sector:
+        type: string
+        description: Mapping RefdataCategory "OrgSector"
+        enum:
+          ["Higher Education", "Publisher"]
+        example: "Higher Education"
+      shortcode:
+        type: string
+      type:
+        type: string
+        description: Mapping RefdataCategory "OrgType"
+        enum:
+          ["Consortium", "Institution", "Other"]
+        example: "Institution"
+
+  OrganisationStub:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1781
+      name:
+        type: string
+        example: "Hochschulbibliothekszentrum NRW"
+      identifiers: # mapping attr ids
+        type: array
+        items:
+          $ref: "#/definitions/Identifier"
+      shortcode:
+        type: string
+        example: "hochschulbibliothekszentrum_nrw"
+
+  OrganisationRole:
+    properties:
+      id:
+        type: integer
+        example: 653
+      cluster:
+        $ref: "#/definitions/ClusterStub"
+      endDate:
+        type: string
+        format: date
+      license:
+        $ref: "#/definitions/LicenseStub"
+      organisation:
+        $ref: "#/definitions/OrganisationStub"
+      package:
+        $ref: "#/definitions/PackageStub"
+      roleType:
+        type: string
+        description: Mapping RefdataCategory "Organisational Role"
+        enum:
+          []
+      startDate:
+        type: string
+        format: date
+      subscription:
+        $ref: "#/definitions/SubscriptionStub"
+      title:
+        $ref: "#/definitions/TitleStub"
+
+  Package:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 918
+      identifier:
+        type: string
+      name:
+        type: string
+      vendorURL:
+        type: string
+
+  PackageStub:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 75
+      identifier:
+        type: string
+      name:
+        type: string
+      vendorURL:
+        type: string
+
+  #valid
+  Person:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1019
+      addresses:
+        type: array
+        items:
+          $ref: "#/definitions/Address"
+      contacts:
+        type: array
+        items:
+          $ref: "#/definitions/Contact"
+      firstName:
+        type: string
+        example: "Berta"
+      gender:
+        type: string
+        description: Mapping RefdataCategory "Gender"
+        enum:
+          ["Female", "Male"]
+        example: "Female"
+      isPublic:
+        type: string
+        description: Mapping RefdataCategory "YN"
+        enum:
+          ["Yes", "No"]
+        example: "Yes"
+      lastName:
+        type: string
+        example: "Bauhaus"
+      middleName:
+        type: string
+      roles:
+        type: array
+        items:
+          $ref: "#/definitions/PersonRole"
+
+  PersonRole:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 29013
+      cluster:
+        $ref: "#/definitions/ClusterStub"
+      endDate:
+        type: string
+        format: date
+      functionType:
+        type: string
+        description: |
+          Exclusive with responsibilityType |
+          Mapping RefdataCategory "Person Function"
+        enum:
+          ["General contact person"]
+        example: "General contact person"
+      license:
+        $ref: "#/definitions/LicenseStub"
+      organisation:
+        $ref: "#/definitions/OrganisationStub"
+      package:
+        $ref: "#/definitions/PackageStub"
+      responsibilityType:
+        type: string
+        description: |
+          Exclusive with functionType |
+          Mapping RefdataCategory "Person Responsibility"
+        enum:
+          ["Specific licence editor", "Specific subscription editor", "Specific package editor", "Specific cluster editor", "Specific title editor"]
+        example: "Specific licence editor"
+      startDate:
+        type: string
+        format: date
+      subscription:
+        $ref: "#/definitions/SubscriptionStub"
+      title:
+        $ref: "#/definitions/TitleStub"
+
+  Property:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 7083
+      description: # mapping attr descr
+        type: string
+      name:
+        type: string
+      note:
+        type: string
+      value: # mapping attr stringValue, intValue, decValue, refValue
+        type: string
+
+  Subscription:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 816
+      cancellationAllowances:
+        type: string
+      dateCreated:
+        type: string
+        format: date
+      documents:
+        type: array
+        items:
+          $ref: "#/definitions/DocContext"
+      endDate:
+        type: string
+        format: date
+      identifier:
+        type: string
+      identifiers: # mapping attr ids
+        type: array
+        items:
+          $ref: "#/definitions/Identifier"
+      impId:
+        type: string
+      instanceOf:
+        $ref: "#/definitions/SubscriptionStub"
+      isPublic:
+        type: string
+        description: Mapping RefdataCategory "YN"
+        enum:
+          ["Yes", "No"]
+      issueEntitlements:
+        type: array
+        items:
+          $ref: "#/definitions/IssueEntitlement"
+      isSlaved:
+        type: string
+        description: Mapping RefdataCategory "YN"
+        enum:
+          ["Yes", "No"]
+      lastUpdated:
+        type: string
+        format: date
+      manualRenewalDate:
+        type: string
+        format: date
+      name:
+        type: string
+      noticePeriod:
+        type: string
+      owner:
+        $ref: "#/definitions/LicenseStub"
+      persons:
+        type: array
+        items:
+          $ref: "#/definitions/Person" # mapping prsLinks
+      properties:
+        type: array
+        items:
+          $ref: "#/definitions/Property" # mapping customProperties
+      relations:
+        type: array
+        items:
+          $ref: "#/definitions/OrganisationRole" # mapping orgRelations
+      startDate:
+        type: string
+        format: date
+      status:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+      type:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          []
+
+  SubscriptionStub:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 91
+      identifier:
+        type: string
+      identifiers: # mapping attr ids
+        type: array
+        items:
+          $ref: "#/definitions/Identifier"
+      name:
+        type: string
+
+  Title:
+    type: object
+    properties:
+      id:
+        type: integer
+
+  TitleStub:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 39157
+
+  TitleInstancePackagePlatform:
+    type: object
+    description: TODO
+    properties:
+      id:
+        type: integer
+        example: 51254
