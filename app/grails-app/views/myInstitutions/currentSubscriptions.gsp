@@ -114,9 +114,9 @@
                 &nbsp;<br/>
               </td>
               <td>${s.getConsortia()?.name}</td>
-              <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${s.startDate}"/></td>
-              <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${s.endDate}"/></td>
-              <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${s.renewalDate}"/></td>
+              <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
+              <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
+              <td><g:formatDate formatName="default.date.format.notime" date="${s.renewalDate}"/></td>
               <td>
                 <g:each in="${s.instanceOf?.packages}" var="sp">
                   ${sp.pkg?.nominalPlatform?.name}<br/>

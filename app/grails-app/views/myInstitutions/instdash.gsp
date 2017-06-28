@@ -92,8 +92,7 @@
                           <g:link controller="licenseDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
                         </g:else>
                       </p>
-
-                      <p>${message(code:'myinst.change_from', default:'Changes between')} <g:formatDate date="${todo.earliest}" format="yyyy-MM-dd hh:mm a"/></span> ${message(code:'myinst.change_to', default:'and')} <g:formatDate date="${todo.latest}" format="yyyy-MM-dd hh:mm a"/></p>
+                      <p>${message(code:'myinst.change_from', default:'Changes between')} <g:formatDate date="${todo.earliest}" formatName="default.date.format"/></span> ${message(code:'myinst.change_to', default:'and')} <g:formatDate date="${todo.latest}" formatName="default.date.format"/></p>
                     </div>
                   </td>
                 </tr>
@@ -125,9 +124,9 @@
                       <p><strong>${ra.title}</strong></p>
                       <div>
                         <span class="widget-content">${ra.content}</span>
-                        <div class="see-more"><a href="">[ See More ]</a></div>
+                        <div class="see-more"><a href="">[ ${message(code:'default.button.see_more.label', default:'See More')} ]</a></div>
                       </div> 
-                      <p>${message(code:'myinst.ann.posted_by', default:'Posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em> ${message(code:'myinst.ann.posted_on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="yyyy-MM-dd hh:mm a"/></p>
+                      <p>${message(code:'myinst.ann.posted_by', default:'Posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em> ${message(code:'myinst.ann.posted_on', default:'on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></p>
                     </div>
                   </td>
                 </tr>
@@ -161,7 +160,7 @@
                         <p><strong>${fa.title}</strong></p>
                         <p>
                         <g:if test="${fa.result_type=='topic'}">
-                          <g:formatDate date="${fa.updated_at}" format="yyyy-MM-dd hh:mm a"/>
+                          <g:formatDate date="${fa.updated_at}"  formatName="default.date.format"/>
                           <a href="${grailsApplication.config.ZenDeskBaseURL}/entries/${fa.id}">View Topic</a>
                           <a href="${grailsApplication.config.ZenDeskBaseURL}/entries/${fa.id}" title="View Topic (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
                         </g:if>
@@ -213,10 +212,10 @@
 
          $('.see-more').click(function(e) {
 
-           if ($(this).text() == "[ See More ]") {
+           if ($(this).text() == "[ ${message(code:'default.button.see_more.label', default:'See More')} ]") {
              e.preventDefault();
              $(this).parent().find('.widget-content').trigger('destroy');
-             $(this).html("<a href=\"\">[ See Less ]</a>");
+             $(this).html("<a href=\"\">[ ${message(code:'default.button.see_less.label', default:'See Less')} ]</a>");
 
            } else {
              e.preventDefault();
@@ -229,7 +228,7 @@
                  }
                }
              });
-             $(this).html("<a href=\"\">[ See More ]</a>");
+             $(this).html("<a href=\"\">[ ${message(code:'default.button.see_more.label', default:'See More')} ]</a>");
            }
 
 

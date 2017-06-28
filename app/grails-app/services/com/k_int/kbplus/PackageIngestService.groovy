@@ -630,7 +630,7 @@ public class PackageIngestService {
 
   def findTitleIdentifierIntersection(idlist) {
     def matched_title_ids = []
-    def identifiers_to_check = ["eissn", "issn", "doi", "isbn"]
+    def identifiers_to_check = ["eissn", "issn", "doi", "isbn", "zdb"]
     idlist.each { id ->
       if ( identifiers_to_check.contains(id.key) ) {
         def title = TitleInstance.findByIdentifier([[namespace:id.key,value:id.value]])

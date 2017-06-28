@@ -29,7 +29,7 @@
 	    <input type="hidden" name="ownerId" value="${ownobj.id}"/>
 	    <input type="hidden" name="editable" value="${editable}"/>
 	    <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-	     <input type="submit" value="${message(code:'default.add.label', args:[local_prop], default:'Add Property')}" class="btn btn-primary btn-small"/>
+            <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="btn btn-primary btn-small"/>
 	</g:formRemote>
 </g:if>
 

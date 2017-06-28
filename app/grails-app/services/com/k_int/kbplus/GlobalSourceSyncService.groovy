@@ -35,6 +35,7 @@ class GlobalSourceSyncService {
       log.debug("Checking title has ${it.namespace}:${it.value}");
       title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
     }
+    title_instance.save(flush: true);
 
     if ( newtitle.publishers != null ) {
       newtitle.publishers.each { pub ->
@@ -143,6 +144,7 @@ class GlobalSourceSyncService {
     md.gokb.title.identifiers.identifier.each { id ->
       result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
     }
+    result.parsed_rec.identifiers.add([namespace:'uri',value:md.gokb.title.'@id'.text()]);
 
     md.gokb.title.history?.historyEvent.each { he ->
       def history_statement = [:]
@@ -158,6 +160,7 @@ class GlobalSourceSyncService {
         hef.identifiers.identifier.each { i ->
           new_history_statement.ids.add([namespace:i.'@namespace'.text(), value:i.'@value'.text()])
         }
+        new_history_statement.ids.add([namespace:'uri',value:hef.internalId.text()]);
         history_statement.from.add(new_history_statement);
       }
 
@@ -168,6 +171,7 @@ class GlobalSourceSyncService {
         het.identifiers.identifier.each { i ->
           new_history_statement.ids.add([namespace:i.'@namespace'.text(), value:i.'@value'.text()])
         }
+        new_history_statement.ids.add([namespace:'uri',value:het.internalId.text()]);
         history_statement.to.add(new_history_statement);
       }
 
@@ -511,6 +515,7 @@ class GlobalSourceSyncService {
         log.debug("Checking title has ${it.namespace}:${it.value}");
         title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
       }
+      title_instance.save(flush: true)
 
 
       log.debug("Creating new global record tracker... for title ${title_instance}");

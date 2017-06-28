@@ -8,10 +8,9 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="container">
 		<div class="row-fluid">
 
-			<div class="span3">
+			<div class="span2">
 				<div class="well">
 					<ul class="nav nav-list">
 						<li class="nav-header">${entityName}</li>
@@ -89,7 +88,6 @@
 				<div class="pagination">
 					<bootstrap:paginate total="${licenseInstanceTotal}" />
 				</div>
-			</div>
 			</div>
 		</div>
 	</body>
