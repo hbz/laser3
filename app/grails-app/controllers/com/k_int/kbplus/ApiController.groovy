@@ -9,7 +9,9 @@ import com.k_int.kbplus.auth.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.hslf.model.*;
+import org.apache.poi.hslf.model.*
+
+import java.sql.Blob;
 import java.text.SimpleDateFormat
 import com.k_int.kbplus.auth.*;
 import grails.plugins.springsecurity.Secured
@@ -243,39 +245,58 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     def v0() {
         log.debug("todo .. ROLE_API_READER required : " + params)
         def result
-        def objType = params.get('objType')
-        def qtype   = params.get('qtype')
-        def qid     = params.get('qid')
+        def obj     = params.get('obj')
+        def query   = params.get('query')
+        def value   = params.get('q', '')
 
         if ('GET' == request.method) {
             response.setContentType("application/json")
 
-            if(objType.equalsIgnoreCase('subscription')) {
-                result = getSubscription(qtype, qid)
-            }
-            else if(objType.equalsIgnoreCase('organisation')) {
-                result = getOrganisation(qtype, qid)
-            }
-            else if(objType.equalsIgnoreCase('license')) {
-                result = getLicense(qtype, qid)
+            if(!value) {
+                result = apiService.BAD_REQUEST
             }
             else {
-                result = apiService.NOT_IMPLEMENTED
+                if('document'.equalsIgnoreCase(obj)) {
+                    result = getDocument(query, value)
+                    if(result instanceof Doc) {
+                        // TODO
+                        if(result.contentType == 3) {
+                            response.contentType = result.mimeType
+                            response.setHeader('Content-disposition', 'attachment; filename="' + result.title + '"')
+                            response.outputStream << result.getBlobData()
+                            response.outputStream.flush()
+                            return
+                        }
+                    }
+                }
+                else if('license'.equalsIgnoreCase(obj)) {
+                    result = getLicense(query, value)
+                }
+                else if('organisation'.equalsIgnoreCase(obj)) {
+                    result = getOrganisation(query, value)
+                }
+                else if('package'.equalsIgnoreCase(obj)) {
+                    result = getPackage(query, value)
+                }
+                else if('subscription'.equalsIgnoreCase(obj)) {
+                    result = getSubscription(query, value)
+                }
+                else {
+                    result = apiService.NOT_IMPLEMENTED
+                }
             }
-
-            println result
 
             if(apiService.NOT_IMPLEMENTED == result) {
                 response.status = HttpStatus.NOT_IMPLEMENTED.value()
-                result = new JSON(["message": "service not implemented"])
+                result = new JSON(["message": "service not implemented", "obj": obj])
             }
             else if(apiService.BAD_REQUEST == result) {
                 response.status = HttpStatus.BAD_REQUEST.value()
-                result = new JSON(["message": "invalid identifier", "qtype": qtype])
+                result = new JSON(["message": "invalid or missing identifier", "obj": obj, "query": query])
             }
             else if(!result) {
                 response.status = HttpStatus.NOT_FOUND.value()
-                result = new JSON(["message": "not found", "qtype": qtype, "qid": qid])
+                result = new JSON(["message": "object not found", "obj": obj, "query": query, "q": value])
             }
 
             render result.toString(true)
@@ -287,23 +308,41 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
     }
 
-    private getSubscription(String identifier, String value) {
+    private getDocument(String query, String value) {
         def obj
-        if(identifier.equalsIgnoreCase('id')) {
-            obj = Subscription.findWhere(id: Long.parseLong(value))
+        if('id'.equalsIgnoreCase(query)) {
+            obj = Doc.findWhere(id: Long.parseLong(value))
+        }
+        else if('uuid'.equalsIgnoreCase(query)) {
+            obj = Doc.findWhere(uuid: value)
         }
         else {
             return apiService.BAD_REQUEST
         }
-        apiService.getSubscription(obj)
+        obj
     }
 
-    private getOrganisation(String identifier, String value) {
+    private getLicense(String query, String value) {
         def obj
-        if(identifier.equalsIgnoreCase('id')) {
+
+        if('id'.equalsIgnoreCase(query)) {
+            obj = License.findWhere(id: Long.parseLong(value))
+        }
+        else if('impId'.equalsIgnoreCase(query)) {
+            obj = License.findWhere(impId: value)
+        }
+        else {
+            return apiService.BAD_REQUEST
+        }
+        apiService.getLicense(obj)
+    }
+
+    private getOrganisation(String query, String value) {
+        def obj
+        if('id'.equalsIgnoreCase(query)) {
             obj = Org.findWhere(id: Long.parseLong(value))
         }
-        else if(identifier.equalsIgnoreCase('shortcode')) {
+        else if('shortcode'.equalsIgnoreCase(query)) {
             obj = Org.findWhere(shortcode: value)
         }
         else {
@@ -312,14 +351,34 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         apiService.getOrganisation(obj)
     }
 
-    private getLicense(String identifier, String value) {
+    private getPackage(String query, String value) {
         def obj
-        if(identifier.equalsIgnoreCase('id')) {
-            obj = License.findWhere(id: Long.parseLong(value))
+        if('id'.equalsIgnoreCase(query)) {
+            obj = Package.findWhere(id: Long.parseLong(value))
+        }
+        else if('identifier'.equalsIgnoreCase(query)) {
+            obj = Package.findWhere(identifier: value)
+        }
+        else if('impId'.equalsIgnoreCase(query)) {
+            obj = Package.findWhere(impId: value)
         }
         else {
             return apiService.BAD_REQUEST
         }
-        apiService.getLicense(obj)  // TODO: download
+        apiService.getPackage(obj)
+    }
+
+    private getSubscription(String query, String value) {
+        def obj
+        if('id'.equalsIgnoreCase(query)) {
+            obj = Subscription.findWhere(id: Long.parseLong(value))
+        }
+        else if('impId'.equalsIgnoreCase(query)) {
+            obj = Subscription.findWhere(impId: value)
+        }
+        else {
+            return apiService.BAD_REQUEST
+        }
+        apiService.getSubscription(obj)
     }
 }

@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.api.v0.export.LicenseService
-import com.k_int.kbplus.api.v0.export.OrgService
-import com.k_int.kbplus.api.v0.export.SubscriptionService
+import com.k_int.kbplus.api.v0.export.*
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
@@ -15,6 +13,7 @@ class ApiService {
 
     LicenseService licenseService
     OrgService orgService
+    PkgService pkgService
     SubscriptionService subscriptionService
 
     /**
@@ -226,18 +225,18 @@ class ApiService {
 
     /**
      *
-     * @param com.k_int.kbplus.Subscription sub
+     * @param com.k_int.kbplus.License lic
      * @return grails.converters.JSON
      */
-    JSON getSubscription(Subscription sub){
-        if (!sub) {
-            return sub
+    JSON getLicense(License lic){
+        if (!lic) {
+            return lic
         }
 
         def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
         def allowedContactTypes = ["Job-related", "Personal"]
 
-        def result = subscriptionService.resolveSubscription(sub, allowedAddressTypes, allowedContactTypes)
+        def result = licenseService.resolveLicense(lic, allowedAddressTypes, allowedContactTypes)
 
         new JSON(result)
     }
@@ -262,12 +261,37 @@ class ApiService {
 
     /**
      *
-     * @param com.k_int.kbplus.License lic
+     * @param com.k_int.kbplus.Package pkg
      * @return grails.converters.JSON
      */
-    JSON getLicense(License lic){
-        def result = licenseService.resolveLicense(lic)
+    JSON getPackage(Package pkg) {
+        if (!pkg) {
+            return pkg
+        }
 
-        new JSON(lic)
+        def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
+        def allowedContactTypes = ["Job-related", "Personal"]
+
+        def result = pkgService.resolvePackage(pkg, allowedAddressTypes, allowedContactTypes)
+
+        new JSON(result)
+    }
+
+    /**
+     *
+     * @param com.k_int.kbplus.Subscription sub
+     * @return grails.converters.JSON
+     */
+    JSON getSubscription(Subscription sub){
+        if (!sub) {
+            return sub
+        }
+
+        def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
+        def allowedContactTypes = ["Job-related", "Personal"]
+
+        def result = subscriptionService.resolveSubscription(sub, allowedAddressTypes, allowedContactTypes)
+
+        new JSON(result)
     }
 }
