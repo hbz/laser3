@@ -4,8 +4,10 @@ info:
   version: 0.1
   title: LAS:eR API
   description: First scratch
+  contact: david.klober@hbz-nrw.de
 
-basePath: /api/v0
+#basePath: /demo/api/v0 # development
+basePath: /api/v0 # prod
 schemes:
   - http
 
@@ -14,41 +16,31 @@ paths:
   /document:
     get:
       summary: Find document by identifier
+      description: >
+        Supported are queries by following identifiers: *id* and *uuid*
       parameters:
-        - in: query
-          name: query
-          required: true
-          type: string
-          description: Type of identifier for this query
-        - in: query
-          name: q
-          required: true
-          type: string
-          description: Identifier for this query
+        $ref: "#definitions/PathParameters"
       produces:
         - application/*
       responses:
         200:
           description: OK
         400:
-          description: Invalid type of/or missing identifier
+          description: Invalid or missing identifier
+        401:
+          description: Request is not authorized
         404:
           description: Valid request, but document not found
+        501:
+          description: Request is not implemented
 
   /license:
     get:
       summary: Find license by identifier
+      description: >
+        Supported are queries by following identifiers: *id* and *impId*
       parameters:
-        - in: query
-          name: query
-          required: true
-          type: string
-          description: Type of identifier for this query
-        - in: query
-          name: q
-          required: true
-          type: string
-          description: Identifier for this query
+        $ref: "#definitions/PathParameters"
       produces:
         - application/json
       responses:
@@ -57,25 +49,22 @@ paths:
           schema:
             $ref: "#/definitions/License"
         400:
-          description: Invalid type of/or missing identifier
+          description: Invalid or missing identifier
           example:
+        401:
+          description: Request is not authorized
         404:
           description: Valid request, but license not found
+        501:
+          description: Request is not implemented
 
   /organisation:
     get:
       summary: Find organisation by identifier
+      description: >
+        Supported are queries by following identifiers: *id*, *impId* and *shortcode*
       parameters:
-        - in: query
-          name: query
-          required: true
-          type: string
-          description: Type of identifier for this query
-        - in: query
-          name: q
-          required: true
-          type: string
-          description: Identifier for this query
+        $ref: "#definitions/PathParameters"
       produces:
         - application/json
       responses:
@@ -84,24 +73,21 @@ paths:
           schema:
             $ref: "#/definitions/Organisation"
         400:
-          description: Invalid type of/or missing identifier
+          description: Invalid or missing identifier
+        401:
+          description: Request is not authorized
         404:
           description: Valid request, but organisation not found
+        501:
+          description: Request is not implemented
 
   /package:
     get:
       summary: Find packge by identifier
+      description: >
+        Supported are queries by following identifiers: *id*, *identifier* and *impId*
       parameters:
-        - in: query
-          name: query
-          required: true
-          type: string
-          description: Type of identifier for this query
-        - in: query
-          name: q
-          required: true
-          type: string
-          description: Identifier for this query
+        $ref: "#definitions/PathParameters"
       produces:
         - application/json
       responses:
@@ -110,25 +96,22 @@ paths:
           schema:
             $ref: "#/definitions/Package"
         400:
-          description: Invalid type of/or missing identifier
+          description: Invalid or missing identifier
           example:
+        401:
+          description: Request is not authorized
         404:
           description: Valid request, but license not found
+        501:
+          description: Request is not implemented
 
   /subscription:
     get:
       summary: Find subscription by identifier
+      description: >
+        Supported are queries by following identifiers: *id*, *identifier* and *impId*
       parameters:
-        - in: query
-          name: query
-          required: true
-          type: string
-          description: Type of identifier for this query
-        - in: query
-          name: q
-          required: true
-          type: string
-          description: Identifier for this query
+        $ref: "#definitions/PathParameters"
       produces:
         - application/json
       responses:
@@ -137,13 +120,16 @@ paths:
           schema:
             $ref: "#/definitions/Subscription"
         400:
-          description: Invalid type of/or missing identifier
+          description: Invalid or missing identifier
+        401:
+          description: Request is not authorized
         404:
           description: Valid request, but subscription not found
+        501:
+          description: Request is not implemented
 
 definitions:
 
-  #valid
   Address:
     type: object
     properties:
@@ -208,7 +194,6 @@ definitions:
       name:
         type: string
 
-  #valid
   Contact:
     type: object
     properties:
@@ -333,7 +318,6 @@ definitions:
         type: string
         example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
 
-  #valid
   Identifier:
     type: object
     properties:
@@ -344,7 +328,6 @@ definitions:
         type: string
         example: "DE-605"
 
-  #valid
   Invoice:
     type: object
     properties:
@@ -582,6 +565,7 @@ definitions:
       lastmod:
         type: string
         format: date
+        example: "2016-05-10T13:18:47Z"
       title:
         type: string
 #      licenses:
@@ -621,6 +605,8 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Identifier"
+      impId:
+        type: string
       name:
         type: string
         example: "Hochschulbibliothekszentrum NRW"
@@ -642,6 +628,7 @@ definitions:
         example: "Higher Education"
       shortcode:
         type: string
+        example: "Hochschulbibliothekszentrum_NRW"
       status:
         type: string
         description: Mapping RefdataCategory
@@ -667,9 +654,11 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Identifier"
+      impId:
+        type: string
       shortcode:
         type: string
-        example: "hochschulbibliothekszentrum_nrw"
+        example: "Hochschulbibliothekszentrum_NRW"
 
   OrganisationRole:
     properties:
@@ -683,6 +672,7 @@ definitions:
       endDate:
         type: string
         format: date
+        example: "2011-08-31T23:55:59Z"
       license:
         $ref: "#/definitions/LicenseStub"
         description: |
@@ -703,6 +693,7 @@ definitions:
       startDate:
         type: string
         format: date
+        example: "2011-03-01T08:00:00Z"
       subscription:
         $ref: "#/definitions/SubscriptionStub"
         description: |
@@ -735,6 +726,7 @@ definitions:
       dateCreated:
         type: string
         format: date
+        example: "2011-01-01T11:12:31"
       documents:
         type: array
         items:
@@ -751,12 +743,14 @@ definitions:
         type: string
       identifier:
         type: string
+        example: "5d83bbbe-2a26-4eef-8708-6d6b86fd8453"
       identifiers: # mapping attr ids
         type: array
         items:
           $ref: "#/definitions/Identifier"
       impId:
         type: string
+        example: "e6b41905-f1aa-4d0c-8533-e39f30220f65"
       isPublic:
         type: string
         description: Mapping RefdataCategory
@@ -824,6 +818,7 @@ definitions:
         example: 75
       identifier:
         type: string
+        example: "04bf5766-bf45-4b9e-afe1-d89de46f6c66"
       name:
         type: string
       vendorURL:
@@ -839,6 +834,7 @@ definitions:
         type: string
       impId:
         type: string
+        example: "9d5c918a-851f-4639-a6a1-e2dd124c2e02"
       lastUpdated:
         type: string
       name:
@@ -938,6 +934,7 @@ definitions:
       endDate:
         type: string
         format: date
+        example: "2016-12-31T23:00:00Z"
       functionType:
         type: string
         description: |
@@ -969,6 +966,7 @@ definitions:
       startDate:
         type: string
         format: date
+        example: "2016-01-01T00:00:00Z"
       subscription:
         description: |
           Exclusive with cluster, license, organisation, package and title
@@ -1015,12 +1013,14 @@ definitions:
         format: date
       identifier:
         type: string
+        example: "1038ac38-eb21-4bf0-ab7e-fe8b8ba34b6c"
       identifiers: # mapping attr ids
         type: array
         items:
           $ref: "#/definitions/Identifier"
       impId:
         type: string
+        example: "ff74dd15-e27f-48a2-b2d7-f02389e62639"
       instanceOf:
         $ref: "#/definitions/SubscriptionStub"
       isPublic:
@@ -1083,6 +1083,7 @@ definitions:
         example: 91
       identifier:
         type: string
+        example: "1038ac38-eb21-4bf0-ab7e-fe8b8ba34b6c"
       identifiers: # mapping attr ids
         type: array
         items:
@@ -1105,7 +1106,7 @@ definitions:
           $ref: "#/definitions/Identifier"
       impId:
         type: string
-        example: "Das_gute_Buch"
+        example: "daccb411-e7c6-4048-addf-1d2ccf35817f"
       keyTitle:
         type: string
         example: "Das gute Buch"
@@ -1192,6 +1193,7 @@ definitions:
           []
       impId:
         type: string
+        example: "c920188c-a7f8-54f6-80b5-e0161df3d360"
       masterTipp:
         $ref: "#/definitions/TitleInstancePackagePlatformStub"
       option:
@@ -1242,3 +1244,20 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Identifier"
+
+  PathParameters:
+    - in: query
+      name: q
+      required: true
+      type: string
+      description: Identifier for this query
+    - in: query
+      name: v
+      required: true
+      type: string
+      description: Value for this query
+    - in: header
+      name: Authorization
+      required: true
+      type: string
+      description: hmac-sha256 generated auth header

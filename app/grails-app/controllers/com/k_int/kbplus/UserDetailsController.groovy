@@ -8,6 +8,8 @@ import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 import grails.gorm.*
 
+import java.security.MessageDigest
+
 class UserDetailsController {
 
     def springSecurityService
@@ -65,6 +67,21 @@ class UserDetailsController {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'Org'), params.id])
         redirect action: 'list'
         return
+    }
+    else {
+        // check if api key and secret are existing
+        def readRole  = UserRole.findAllWhere(user: userInstance, role: Role.findByAuthority('ROLE_API_READER'))
+        def writeRole = UserRole.findAllWhere(user: userInstance, role: Role.findByAuthority('ROLE_API_WRITER'))
+        if((readRole || writeRole)){
+            if(! userInstance.apikey){
+                def seed1 = Math.abs(new Random().nextFloat()).toString().getBytes()
+                userInstance.apikey = MessageDigest.getInstance("MD5").digest(seed1).encodeHex().toString().take(16)
+            }
+            if(! userInstance.apisecret){
+                def seed2 = Math.abs(new Random().nextFloat()).toString().getBytes()
+                userInstance.apisecret = MessageDigest.getInstance("MD5").digest(seed2).encodeHex().toString().take(16)
+            }
+        }
     }
     result.ui = userInstance
     result

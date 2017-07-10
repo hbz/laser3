@@ -6,35 +6,41 @@
     <link rel="stylesheet" href="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui.css')}" type="text/css">
     <title>${message(code:'laser', default:'LAS:eR')} REST API</title>
     <style>
-        html
-        {
+        html {
             box-sizing: border-box;
             overflow: -moz-scrollbars-vertical;
             overflow-y: scroll;
         }
         *,
-        *:before,
-        *:after
-        {
+        *:before, *:after {
             box-sizing: inherit;
         }
         body {
           margin:0;
-          background: #fafafa;
+          background: #fff;
         }
         #swagger-ui .topbar {
+            padding: 0px 30px;
+            background-color: #004678;
+        }
+        #swagger-ui .topbar .link,
+        #swagger-ui .topbar .download-url-wrapper {
             display: none;
         }
+        #swagger-ui .topbar .ui-box {
+            padding: 5px 10px;
+        }
+        #swagger-ui .topbar .ui-box input {
+            padding: 4px 6px;
+        }
         #swagger-ui .information-container pre.base-url + a,
-        #swagger-ui .information-container .description
-        {
+        #swagger-ui .information-container .description {
             display: none;
         }
     </style>
 </head>
 
 <body>
-
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="position:absolute;width:0;height:0">
     <defs>
       <symbol viewBox="0 0 20 20" id="unlocked">
@@ -69,30 +75,61 @@
     </defs>
   </svg>
 
-  <div id="swagger-ui"></div>
+    <div id="swagger-ui"></div>
 
-  <script src="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui-bundle.js')}"> </script>
-  <script src="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui-standalone-preset.js')}"> </script>
+    <script src="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui-bundle.js')}"> </script>
+    <script src="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui-standalone-preset.js')}"> </script>
+    <script src="${resource(dir: 'vendor/cryptoJS-v3.1.2/rollups', file: 'hmac-sha256.js')}"> </script>
+    <script src="${resource(dir: 'js', file: 'jquery-3.2.1.min.js')}"> </script>
 
-  <script>
-      window.onload = function() {
-        // Build a system
-        const ui = SwaggerUIBundle({
-          url: "http://localhost:8080/demo/api/spec",
-          dom_id: '#swagger-ui',
-          presets: [
-            SwaggerUIBundle.presets.apis,
-            SwaggerUIStandalonePreset
-          ],
-          plugins: [
-            SwaggerUIBundle.plugins.DownloadUrl
-          ],
-          layout: "StandaloneLayout"
-        })
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: "http://http://laser-dev.hbz-nrw.de/api/spec", // production
+                //url: "http://localhost:8080/demo/api/spec", // develop
+                dom_id: '#swagger-ui',
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout"
+            })
 
-        window.ui = ui
-      }
-  </script>
+            window.ui = ui
+
+            setTimeout(function(){
+                jQuery('.topbar-wrapper').append('<span class="ui-box"><input name="apiKey" type="text" placeholder="Your API Key" value="${apiKey}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box"><input name="apiSecret" type="password" placeholder="Your API Secret" value="${apiSecret}"></span>')
+
+                jQuery('.opblock').delegate('input', 'change', function() {
+                    genDigist(jQuery(this).parents('.parameters').first())
+                })
+
+            }, 1200)
+
+            // todo: change full path dynamically
+            // todo: set authorization via shadow dom
+
+            function genDigist(div) {
+                var key     = jQuery('.topbar input[name=apiKey]').val().trim()
+                var secret  = jQuery('.topbar input[name=apiSecret]').val().trim()
+                var method  = "GET"
+                var path    = "/api/v0" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
+                var timestamp = ""
+                var nounce    = ""
+                var query   = "q=" + jQuery(div).find('input[placeholder="q - Identifier for this query"]').val().trim()
+                    + "&v=" + jQuery(div).find('input[placeholder="v - Value for this query"]').val().trim()
+                var body    = ""
+                var algorithm = "hmac-sha256"
+                var digest    = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, secret)
+                var authorization = "hmac " + key + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
+                jQuery(div).find('input[placeholder="Authorization - hmac-sha256 generated auth header"]').val(authorization).attr('value', authorization).focus().select()
+            }
+        }
+    </script>
 </body>
 
 </html>

@@ -25,11 +25,15 @@ beans = {
     ediAuthTokenMap = ref('ediAuthTokenMap')
   }
   
-  // apiauthFilter(com.k_int.kbplus.filter.ApiauthFilter){
+  //apiauthFilter(com.k_int.kbplus.filter.ApiauthFilter){
   //   authenticationManager = ref("authenticationManager")
   //   rememberMeServices = ref("rememberMeServices")
   //   springSecurityService = ref("springSecurityService")
-  // }
+  //}
+
+  // controls api access via hmac
+  apiFilter(com.k_int.kbplus.filter.ApiFilter){
+  }
 
   // preAuthFilter(org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter) {
   //   principalRequestHeader = 'remoteUser'
