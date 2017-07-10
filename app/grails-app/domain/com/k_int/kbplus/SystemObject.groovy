@@ -21,7 +21,7 @@ class SystemObject {
   @Transient
   def getNotificationEndpoints() {
     def result = []
-    if (  announcementsForumId != null ) {
+    if ( announcementsForumId != null ) {
       result.add([ service:'zendesk.forum', remoteid:this.announcementsForumId ]);
     }
     result;

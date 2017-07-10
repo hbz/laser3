@@ -38,7 +38,7 @@ class EnrichmentService implements ApplicationContextAware {
       result.packagesInLastWeek = []
       doDuplicateTitleDetection(result)
       addPackagesAddedInLastWeek(result)
-//       sendEmail(result)
+      sendEmail(result)
     }
     catch ( Exception e ) {
       log.error("Problem in housekeeping",e);
@@ -76,12 +76,16 @@ class EnrichmentService implements ApplicationContextAware {
     def engine = new SimpleTemplateEngine()
     def tmpl = engine.createTemplate(emailTemplateFile).make(result)
     def content = tmpl.toString()
-
-    mailService.sendMail {
-      to 'ian.ibbotson@k-int.com'
-      from 'ian.ibbotson@k-int.com'
-      subject 'KBPlus Housekeeping Results'
-      html content
+    def systemEmail = grailsApplication.config?.systemEmail ?: null
+    if (systemEmail){
+      mailService.sendMail {
+        to systemEmail
+        from systemEmail
+        subject 'KBPlus Housekeeping Results'
+        html content
+      }
+    }else{
+      log.debug("No system Email defined.")
     }
   }
 

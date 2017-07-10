@@ -3,7 +3,7 @@
 
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">×</button>
-    <h3>Core Dates for ${tip?.title?.title}</h3>
+    <h3>${message(code:'template.coreAssertionsModal.label', args:[tip?.title?.title], default:"Core Dates for ${tip?.title?.title}")}</h3>
   </div>
 
   <div class="modal-body">
@@ -12,13 +12,13 @@
       <bootstrap:alert class="alert-info">${message}</bootstrap:alert>
     </g:if>
 
-    <p>Edit existing core dates using the table below. Click the start and end dates to modify them and then the tick to accept your change. Once finished, click the Done button below</p>
+    <p>${message(code:'template.coreAssertionsModal.note', default:'Edit existing core dates using the table below. Click the start and end dates to modify them and then the tick to accept your change. Once finished, click the Done button below')}</p>
     
     <table class="table table-bordered">
       <thead>
-        <th>Core Start Date</th>
-        <th>Core End Date</th>
-        <th>Action</th>
+        <th>${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}</th>
+        <th>${message(code:'subscription.details.coreEndDate', default:'Core End Date')}</th>
+        <th>${message(code:'default.action.lable', default:'Action')}</th>
       </thead>
       <tbody>
          <g:each in="${coreDates}" var="coreDate">
@@ -32,7 +32,7 @@
               <td>
               <g:if test="${editable == 'true' || editable == true}">
                 <g:remoteLink url="[controller: 'ajax', action: 'deleteCoreDate', params:[tipID:tipID,title:title,coreDateID:coreDate.id]]" method="get" name="show_core_assertion_modal" 
-                before="hideModal()" onComplete="showCoreAssertionModal()" update="magicArea" class="delete-coreDate">Delete </g:remoteLink>
+                before="hideModal()" onComplete="showCoreAssertionModal()" update="magicArea" class="delete-coreDate">${message(code:'default.button.delete.label', default:'Delete')} </g:remoteLink>
                 </g:if>
               </td>
             </tr>
@@ -42,9 +42,8 @@
 
 
     <div class="well" style="word-break: normal;">
-      <h4>Add new core date range</h4>
-      <p>Use this form to add new core date ranges. Set the start date and optionally an end date then click apply. If the dates you specify overlap with existing core dates
-        in the table above they will be merged into a single core statement, otherwise a new line will be added to the table.</p>
+      <h4>${message(code:'template.coreAssertionsModal.addDate', default:'Add new core date range')}</h4>
+      <p>${message(code:'template.coreAssertionsModal.addDate.note', default:'Use this form to add new core date ranges. Set the start date and optionally an end date then click apply. If the dates you specify overlap with existing core dates in the table above they will be merged into a single core statement, otherwise a new line will be added to the table.')}</p>
       
       <g:formRemote  name="coreExtendForm" url="[controller: 'ajax', action: 'coreExtend']" before="hideModal()" onComplete="showCoreAssertionModal()" update="magicArea">
         <input type="hidden" name="tipID" value="${tipID}"/>
@@ -52,15 +51,15 @@
         <table style="width:100%">
           <tr>
             <td>
-              <label class="property-label">Core Start:</label> 
+              <label class="property-label">${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}:</label>
               <g:simpleHiddenValue  id="coreStartDate" name="coreStartDate" type="date"/>
             </td>
             <td>
-             <label class="property-label">Core End:</label> 
+             <label class="property-label">${message(code:'subscription.details.coreEndDate', default:'Core End Date')}:</label>
               <g:simpleHiddenValue id="coreEndDate" name="coreEndDate" type="date"/>
             </td>
             <td>
-              <input type="submit" value="Apply" class="btn btn-primary btn-small pull-right"/>&nbsp;
+              <input type="submit" value="${message(code:'default.button.apply.label', default:'Apply')}" class="btn btn-primary btn-small pull-right"/>&nbsp;
             </td>
           </tr>
         </table>
@@ -70,7 +69,7 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" data-dismiss="modal">Done</button>
+    <button type="button" data-dismiss="modal">${message(code:'default.done', default:'Done')}</button>
   </div>
 
 </div>

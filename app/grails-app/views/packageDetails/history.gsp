@@ -64,7 +64,7 @@
                 <td>${hl.propertyName}</td>
                 <td>${hl.oldValue}</td>
                 <td>${hl.newValue}</td>
-                <td style="white-space:nowrap;"><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.lastUpdated}"/></td>
+                <td style="white-space:nowrap;"><g:formatDate format="${message(code:'default.date.format', default:'yyyy-MM-dd')}" date="${hl.lastUpdated}"/></td>
               </tr>
             </g:each>
           </tbody>

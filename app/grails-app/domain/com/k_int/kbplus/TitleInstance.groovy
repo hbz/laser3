@@ -215,7 +215,7 @@ class TitleInstance {
         if ( io.size() > 0 ) {
           static_logger.debug("located existing title(s)");
           io.each { occ ->
-            if(occ.ti && !ti_candidates.contains(occ.ti)){
+            if(occ.ti && occ.ti.status?.value == 'Current' && !ti_candidates.contains(occ.ti)){
               ti_candidates.add(occ.ti)
             }
           }
@@ -233,86 +233,103 @@ class TitleInstance {
 
       def full_matches = []
       def origin_matches = []
-      def good_matches = []
+      def name_matches = []
 
       ti_candidates.each { cti ->
         def intersection = 0
         boolean full_match = true
         boolean name_match = (cti.title == title ? true : false)
         boolean origin_match = false
+        boolean origin_uri_match = false
 
         cti.ids.each { ctio ->
 
-          if ( !canonical_ids.contains(ctio.identifier) ){
-            full_match = false
-          }else{
-            intersection++;
-          }
-
-          if ( ctio.identifier.ns.ns.toLowerCase() == 'uri' && ctio.identifier.value == origin_uri ){
+          if ( ctio.identifier.ns.ns == 'originediturl' && canonical_ids.contains(ctio.identifier) ){
             origin_match = true
           }
+          else if ( !canonical_ids.contains(ctio.identifier) ){
+            if ( ctio.identifier.ns.ns != 'originediturl' && ctio.identifier.ns.ns != 'uri'){
+              full_match = false
+            }
+          }else{
+
+            if ( ctio.identifier.ns.ns == 'uri' && canonical_ids.contains(ctio.identifier) ){
+              origin_uri_match = true
+            }
+            intersection++;
+          }
+        }
+        if ( origin_match ) {
+          if( !result ) {
+            result = cti
+            valid_match = true
+            log.debug("Matched TI by originediturl.")
+          }else{
+            log.warn("Multiple TIs with the same originediturl found: ${result} AND ${cti}! This should not be possible!")
+          }
         }
 
-        if ( cti.ids.size() > 2 && full_match ){
+        if ( full_match ){
           full_matches.add(cti)
         }
-        else if( intersection >= 2 || name_match ){
-          if(origin_match){
-            origin_matches.add(cti)
+
+        if ( intersection >= 2 && origin_uri_match ){
+          origin_matches.add(cti)
+        }
+
+        if ( name_match ){
+          name_matches.add(cti)
+        }
+      }
+
+      if ( !valid_match ){
+        if ( full_matches.size() == 0 ){
+          static_logger.debug("None of the matches is a full match. Looking for partial matches..")
+
+          if ( origin_matches.size() == 1 ){
+            static_logger.debug("Found one acceptable match! (By origin URI)")
+            result = origin_matches[0]
+            valid_match = true
+          }
+          else if ( name_matches.size() == 1 ){
+            static_logger.debug("Found one acceptable match! (Name match and 1 identical ID)")
+            result = name_matches[0]
+            valid_match = true
+          }
+          else {
+            static_logger.debug("Could not find an acceptable match..")
+          }
+        }
+        else if ( full_matches.size() == 1 ) {
+          static_logger.debug("Found exactly one full match.")
+          result = full_matches[0]
+          valid_match = true
+        }
+        else{
+          static_logger.debug("Found multiple full matches, trying to narrow down the list..")
+
+          if ( origin_matches.size() == 1 ){
+            static_logger.debug("Matched title by origin uri");
+            result = origin_matches[0]
+            valid_match = true
+          }
+          else if ( name_matches.size() == 1 ) {
+            static_logger.debug("Found one acceptable match! (Name match and 1 identical ID)")
+            result = name_matches[0]
+            valid_match = true
           }
           else{
-            good_matches.add(cti)
+            static_logger.debug("Could not match a candidate. Skipping title...")
+            skip_creation = true
           }
-        }
-      }
-
-      if (full_matches.size() == 0){
-        static_logger.debug("None of the matches is a full match. Looking for partial matches..")
-
-        if(origin_matches.size() == 1){
-          static_logger.debug("Found one acceptable match! (By origin URI)")
-          result = origin_matches[0]
-          valid_match = true
-        }
-        else if(good_matches.size() == 1){
-          static_logger.debug("Found one acceptable match! (Name match or more than 1 identical ID)")
-          result = good_matches[0]
-          valid_match = true
-        }
-        else {
-          static_logger.debug("Could not find an acceptable match..")
-        }
-      }
-      else if (full_matches.size() == 1) {
-        static_logger.debug("Found exactly one full match.")
-        result = full_matches[0]
-        valid_match = true
-      }
-      else{
-        static_logger.debug("Found multiple full matches, checking for name match..")
-        def name_matches = []
-
-        ti_candidates.each { tic ->
-          if(tic.title == title){
-            name_matches.add(tic)
-          }
-        }
-
-        if(name_matches.size() == 1){
-          static_logger.debug("Matched title by name");
-          result = name_matches[0]
-          valid_match = true
-        }else{
-          static_logger.debug("Could not match a candidate by name. Skipping title...")
-          skip_creation = true
         }
       }
     }
 
     if (!valid_match && !skip_creation) {
       static_logger.debug("No valid match - creating new title");
-      result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString());
+      def ti_status = RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Current")
+      result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
       result.save(flush:true, failOnError: true);
 
       result.ids=[]

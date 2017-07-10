@@ -24,8 +24,8 @@ public class GokbDiffEngine {
       // println("packageId consistent");
     }
 
-    oldpkg.tipps.sort { it.titleId }
-    newpkg.tipps.sort { it.titleId }
+    oldpkg.tipps.sort { it.tippId }
+    newpkg.tipps.sort { it.tippId }
 
     def ai = oldpkg.tipps.iterator();
     def bi = newpkg.tipps.iterator();
@@ -37,30 +37,38 @@ public class GokbDiffEngine {
 
       if ( tippa != null &&
            tippb != null &&
-           tippa.titleId == tippb.titleId ) {
+           tippa.tippId == tippb.tippId ) {
 
         def tipp_diff = getTippDiff(tippa, tippb)
 
-        if ( tipp_diff.size() == 0 ) {
+        if ( tippb.status != 'Current'){
+          deletedTippClosure(ctx, tippa, auto_accept)
+          System.out.println("Title "+tippa+" Was removed from the package");
+          tippa = ai.hasNext() ? ai.next() : null;
+        }
+        else if ( tipp_diff.size() == 0 ) {
           tippUnchangedClosure(ctx, tippa);
+
+          tippa = ai.hasNext() ? ai.next() : null
+          tippb = bi.hasNext() ? bi.next() : null
         } 
         else {
           // See if any of the actual properties are null
           println("Got tipp diffs: ${tipp_diff}");
           updatedTippClosure(ctx, tippb, tippa, tipp_diff, auto_accept)
-        }
 
-        tippa = ai.hasNext() ? ai.next() : null
-        tippb = bi.hasNext() ? bi.next() : null
+          tippa = ai.hasNext() ? ai.next() : null
+          tippb = bi.hasNext() ? bi.next() : null
+        }
       }
       else if ( ( tippb != null ) && ( tippa == null ) ) {
-        System.out.println("Title "+tippb+" Was added to the package");
+        System.out.println("TIPP "+tippb+" Was added to the package");
         newTippClosure(ctx, tippb, auto_accept)
         tippb = bi.hasNext() ? bi.next() : null;
       }
       else {
         deletedTippClosure(ctx, tippa, auto_accept)
-        System.out.println("Title "+tippa+" Was removed from the package");
+        System.out.println("TIPP "+tippa+" Was removed from the package");
         tippa = ai.hasNext() ? ai.next() : null;
       }
     }

@@ -168,26 +168,48 @@
                 </g:form>
 
             <table class="table">
+              <thead>
               <tr>
-                <th>${message(code:'tipp.from_date', default:'From Date')}</th><th>${message(code:'tipp.from_vol', default:'From Volume')}</th><th>${message(code:'tipp.from_iss', default:'From Issue')}</th>
-                <th>${message(code:'tipp.to_date', default:'To Date')}</th><th>${message(code:'tipp.to_vol', default:'To Volume')}</th><th>${message(code:'tipp.to_iss', default:'To Issue')}</th><th>${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</th>
-                <th>${message(code:'platform.label', default:'Platform')}</th><th>${message(code:'package.label', default:'Package')}</th><th>${message(code:'default.actions.label', default:'Actions')}</th>
+                <th>${message(code:'tipp.coverage_start')}</th>
+                <th>${message(code:'tipp.coverage_end')}</th>
+                <th>${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</th>
+                <th>${message(code:'platform.label', default:'Platform')}</th>
+                <th>${message(code:'package.label', default:'Package')}</th>
+                <th>${message(code:'default.actions.label', default:'Actions')}</th>
               </tr>
+              </thead>
+              <tbody>
               <g:each in="${tippList}" var="t">
                 <tr>
-                  <td><g:formatDate format="dd MMM yyyy" date="${t.startDate}"/></td>
-                  <td>${t.startVolume}</td>
-                  <td>${t.startIssue}</td>
-                  <td><g:formatDate format="dd MMM yyyy" date="${t.endDate}"/></td>
-                  <td>${t.endVolume}</td>
-                  <td>${t.endIssue}</td>
+                  <td>
+                    <div>
+                      <span>${message(code:'default.date.label', default:'Date')}: <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.startDate}"/></span>
+                    </div>
+                    <div>
+                      <span>${message(code:'tipp.volume', default:'Volume')}: ${t.startVolume}</span>
+                    </div>
+                    <div>
+                      <span>${message(code:'tipp.issue', default:'Issue')}: ${t.startIssue}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <span>${message(code:'default.date.label', default:'Date')}: <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.endDate}"/></span>
+                    </div>
+                    <div>
+                      <span>${message(code:'tipp.volume', default:'Volume')}: ${t.endVolume}</span>
+                    </div>
+                    <div>
+                      <span>${message(code:'tipp.issue', default:'Issue')}: ${t.endIssue}</span>
+                    </div>
+                  </td>
                   <td>${t.coverageDepth}</td>
                   <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
                   <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name} (${t.pkg.contentProvider?.name})</g:link></td>
                   <td></td>
                 </tr>
               </g:each>
-
+              </tbody>
             </table>
             </dd>
             </dl>

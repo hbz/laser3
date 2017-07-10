@@ -202,9 +202,11 @@ class GlobalSourceSyncService {
     if ( grt.localOid != null ) {
       pkg = genericOIDService.resolveOID(grt.localOid)
 
-      newpkg.identifiers.each {
-        log.debug("Checking package has ${it.namespace}:${it.value}");
-        pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
+      if( pkg ) {
+        newpkg.identifiers.each {
+          log.debug("Checking package has ${it.namespace}:${it.value}");
+          pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
+        }
       }
     }
     else {
@@ -269,6 +271,7 @@ class GlobalSourceSyncService {
         new_tipp.platform = plat_instance;
         new_tipp.title = title_instance;
         new_tipp.status = tipp_status;
+        new_tipp.impId = tipp.tippId;
 
         // We rely upon there only being 1 coverage statement for now, it seems likely this will need
         // to change in the future.
@@ -286,7 +289,17 @@ class GlobalSourceSyncService {
         // }
         new_tipp.hostPlatformURL=tipp.url;
 
-        new_tipp.save();
+        new_tipp.save(flush:true, failOnError:true);
+
+        if (tipp.tippId){
+          def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
+
+          if(tipp_id){
+            def tipp_io = new IdentifierOccurrence(identifier:tipp_id, tipp:new_tipp).save(flush:true)
+          }else{
+            log.error("Error creating identifier instance for new TIPP!")
+          }
+        }
       }
       else {
         println("Register new tipp event for user to accept or reject");
@@ -296,6 +309,7 @@ class GlobalSourceSyncService {
                            pkg:[id:ctx.id],
                            platform:[id:plat_instance.id],
                            title:[id:title_instance.id],
+                           impId:tipp.tippId,
                            status:[id:tipp_status.id],
                            startDate:((cov.startDate != null ) && ( cov.startDate.length() > 0 ) ) ? sdf.parse(cov.startDate) : null,
                            startVolume:cov.startVolume,
@@ -326,7 +340,7 @@ class GlobalSourceSyncService {
       // Find title with ID tipp... in package ctx
       def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name)
 
-      def db_tipp = ctx.tipps.find { it.title.id == title_of_tipp_to_update.id }
+      def db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
 
       if ( db_tipp != null) {
         changes.each { chg ->
@@ -457,12 +471,14 @@ class GlobalSourceSyncService {
                        name:tip.title.name.text(), 
                        identifiers:[]
                      ],
+                     status:tip.status?.text()?: 'Current',
                      titleId:tip.title.'@id'.text(),
                      platform:tip.platform.name.text(),
                      platformId:tip.platform.'@id'.text(),
                      coverage:[],
                      url:tip.url.text(),
-                     identifiers:[]
+                     identifiers:[],
+                     tippId:tip.'@id'.text()
                    ];
 
       tip.coverage.each { cov ->
@@ -483,13 +499,15 @@ class GlobalSourceSyncService {
       }
       newtip.title.identifiers.add([namespace:'uri',value:newtip.titleId]);
 
+      newtip.identifiers.add([namespace:'uri',value:newtip.tippId]);
+
       log.debug("Harmonise identifiers");
       harmoniseTitleIdentifiers(newtip);
 
       result.parsed_rec.tipps.add(newtip)
     }
 
-    result.parsed_rec.tipps.sort{it.titleId}
+    result.parsed_rec.tipps.sort{it.tippId}
     log.debug("Rec conversion for package returns object with title ${result.parsed_rec.title} and ${result.parsed_rec.tipps?.size()} tipps");
     return result
   }

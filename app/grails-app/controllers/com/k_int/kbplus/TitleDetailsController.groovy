@@ -81,7 +81,7 @@ class TitleDetailsController {
     def identifiers = title.ids.collect{it.identifier}
     identifiers.each{ident ->
       ident.occurrences.each{
-        if(it.ti != title && it.ti!=null){
+        if(it.ti != title && it.ti!=null && it.ti.status?.value == 'Current'){
           if(duplicates."${ident.ns.ns}:${ident.value}"){
             duplicates."${ident.ns.ns}:${ident.value}" += [it.ti]
           }else{
