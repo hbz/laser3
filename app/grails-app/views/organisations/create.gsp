@@ -29,7 +29,7 @@
 				</div>
 			</div>
 			
-			<div class="span9">
+			<div class="span8">
 
 				<div class="page-header">
 					<h1><g:message code="default.create.label" args="[entityName]" /></h1>
@@ -62,7 +62,7 @@
 						</fieldset>
 					</g:form>
 				</fieldset>
-				
+
 			</div>
 
 		</div>

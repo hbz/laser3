@@ -12,8 +12,13 @@ class MessageService {
       result=internalGetMessage(key)
     }
 
-    if ( result == null )
-      result = "No value currently available for key ${key}(${locale}). Please set in Admin -> Manage Content Items"
+    if ( result == null ) {
+      result = internalGetMessage('kbplus.key.text.empty', locale)
+
+      if( result == null ){
+        result = "No message set for this key."
+      }
+    }
 
     return result;
   }

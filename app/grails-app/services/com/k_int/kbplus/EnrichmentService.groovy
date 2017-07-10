@@ -38,7 +38,7 @@ class EnrichmentService implements ApplicationContextAware {
       result.packagesInLastWeek = []
       doDuplicateTitleDetection(result)
       addPackagesAddedInLastWeek(result)
-      sendEmail(result)
+//       sendEmail(result)
     }
     catch ( Exception e ) {
       log.error("Problem in housekeeping",e);

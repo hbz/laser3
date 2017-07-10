@@ -437,7 +437,7 @@ class SubscriptionDetailsController {
         result.institutionName = Org.findByShortcode(params.shortcode).name
         log.debug("FIND ORG NAME ${result.institutionName}")
       }
-      flash.message = "Please select two subscriptions for comparison"
+      flash.message = message(code:'subscription.compare.note', default:"Please select two subscriptions for comparison")
     }
     result
   }

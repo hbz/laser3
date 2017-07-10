@@ -29,7 +29,7 @@
 	    <input type="hidden" name="ownerId" value="${ownobj.id}"/>
 	    <input type="hidden" name="editable" value="${editable}"/>
 	    <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-	    <input type="submit" value="Add Property" class="btn btn-primary btn-small"/>
+            <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="btn btn-primary btn-small"/>
 	</g:formRemote>
 </g:if>
 
@@ -37,10 +37,10 @@
 <table id="custom_props_table" class="table table-bordered">
     <thead>
     <tr>
-        <th>${message(code:'licence.property.table.property')}</th>
-        <th>${message(code:'licence.property.table.value')}</th>
-        <th>${message(code:'licence.property.table.notes')}</th>
-        <th>${message(code:'licence.property.table.delete')}</th>
+      <th>${message(code:'licence.property.table.property')}</th>
+      <th>${message(code:'licence.property.table.value')}</th>
+      <th>${message(code:'licence.property.table.notes')}</th>
+      <th>${message(code:'licence.property.table.delete')}</th>
     </tr>
     </thead>
     <tbody>
@@ -69,7 +69,7 @@
             <g:remoteLink controller="ajax" action="deleteCustomProperty"
                 before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                 params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')" update="custom_props_div">Delete</g:remoteLink>
+                onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')" update="custom_props_div">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
             </g:if>
         </td>
         </tr>
@@ -117,8 +117,7 @@
                     </dd>
                 </div>
                 <dd>
-                    <label class="property-label">Context:</label>
-                    <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
+                    <label class="property-label">Context:</label> <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
                 </dd>
                 <dd>
                     Create value for this property: <g:checkBox name="autoAdd" checked="true"/>
@@ -127,8 +126,8 @@
         </div>
 
         <div class="modal-footer">
-            <input id="new_cust_prop_add_btn" type="submit" class="btn btn-primary" value="Add">
-            <a href="#" data-dismiss="modal" class="btn btn-primary">Close</a>
+            <input id="new_cust_prop_add_btn" type="submit" class="btn btn-primary" value="${message(code:'default.button.add.label', default:'Add')}">
+            <a href="#" data-dismiss="modal" class="btn btn-primary">${message(code:'default.button.close.label', default:'Close')}</a>
         </div>
     </g:formRemote>
 

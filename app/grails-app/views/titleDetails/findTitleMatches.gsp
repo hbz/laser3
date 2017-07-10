@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap">
-    <title><g:message code="default.edit.label" args="[entityName]" /></title>
+    <title><g:message code="default.edit.label" args="[entityName ?: message(code:'title.label')]" /></title>
   </head>
   <body>
       <div class="container">
@@ -22,13 +22,12 @@
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
 
-            <p>Please enter the new title below. Close matches will then be reported to ensure the title is not already present. After confirming
-               you wish the new title to be added you can create the new title and move to the edit screen</p>
+            <p>${message(code:'title.findTitleMatches.note')}</p>
 
             <g:form controller="titleDetails" action="findTitleMatches" method="GET" class="form-inline">
-                <label>Proposed Title:</label> 
+                <label>${message(code:'title.findTitleMatches.proposed', default:'Proposed Title')}:</label>
                 <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
-                <input type="submit" value="Search" class="btn btn-primary">
+                <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="btn btn-primary">
             </g:form>
 
             <br/>
@@ -38,16 +37,16 @@
                 <table class="table table-bordered">
                   <thead>
                     <tr>
-                      <th>Title</th>
-                      <th>Identifiers</th>
-                      <th>Orgs</th>
-                      <th>key</th>
+                      <th>${message(code:'title.label', default:'Title')}</th>
+                      <th>${message(code:'indentifier.plural', default:'Identifiers')}</th>
+                      <th>${message(code:'org.plural', default:'Orgs')}</th>
+                      <th>${message(code:'default.key.label', default:'Key')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <g:each in="${titleMatches}" var="titleInstance">
                       <tr>
-                        <td>${titleInstance.title} <g:link controller="titleDetails" action="edit" id="${titleInstance.id}">(edit)</g:link></td>
+                        <td>${titleInstance.title} <g:link controller="titleDetails" action="edit" id="${titleInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
                         <td><ul><g:each in="${titleInstance.ids}" var="id"><li>${id.identifier.ns.ns}:${id.identifier.value}</li></g:each></ul></td>
                         <td>
                           <ul>
@@ -62,17 +61,13 @@
                   </tbody>
                 </table>
                 <bootstrap:alert class="alert-info">
-                  The title <em>"${params.proposedTitle}"</em> matched one or more records in the database. You can still create another title with this name using the button below,
-                  but please do confirm this really is a new title for the system before proceeding.
+                  ${message(code:'title.findTitleMatches.match', args:[params.proposedTitle])}
                 </bootstrap:alert>
-                <g:link controller="titleDetails" action="createTitle" class="btn btn-warning" params="${[title:params.proposedTitle]}">Create New Title for <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="btn btn-warning" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
               </g:if>
               <g:else>
-                <bootstrap:alert class="alert-info">There were no matches for the title string <em>\"${params.proposedTitle}\"<em>. This is a good sign that the title
-                      you wish to create does not exist in the database. However,
-                      cases such as mis-spellings, alternate word spacing and abbreviations may not be caught. To ensure the highest quality database,
-                      please double check the title for the previous variants. Click the button below when you are sure the current title does not already exist.</bootstrap:alert>
-                <g:link controller="titleDetails" action="createTitle" class="btn btn-success" params="${[title:params.proposedTitle]}">Create New Title for <em>"${params.proposedTitle}"</em></g:link>
+                <bootstrap:alert class="alert-info">${message(code:'title.findTitleMatches.no_match', args:[params.proposedTitle])}</bootstrap:alert>
+                <g:link controller="titleDetails" action="createTitle" class="btn btn-success" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
               </g:else>
 
 

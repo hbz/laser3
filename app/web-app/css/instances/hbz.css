@@ -6413,7 +6413,7 @@ dl > dt {
 */
 .well {
   padding: 10px;
-  word-break: break-all;
+  word-break: normal;
 }
 .well > form {
   margin: 0;
@@ -6936,6 +6936,14 @@ dt > label {
 .navbar-fixed-top {
 	background-color: #004678;
 }
+
+.nav-pills + .nav-pills {
+    margin-top: -15px;
+}
+.badge > a {
+    color: #FFF;
+}
+
 .debug-only {
 	background-color: #ffeecc;
 }

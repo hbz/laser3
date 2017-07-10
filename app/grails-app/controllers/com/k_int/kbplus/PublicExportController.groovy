@@ -174,9 +174,9 @@ class PublicExportController {
     def dateFilter = null
     def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
     def today = new Date()
-    if(packageInstance.startDate > today){
+    if(packageInstance.startDate && packageInstance.startDate > today){
       dateFilter = packageInstance.startDate
-    }else if(packageInstance.endDate < today){
+    }else if(packageInstance.endDate && packageInstance.endDate < today){
       dateFilter = packageInstance.endDate
     }else{
       dateFilter = today

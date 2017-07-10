@@ -53,10 +53,22 @@ class OrgRole {
 
         link = new OrgRole(title:ptitle, org:porg, roleType:prole)
 
+        def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
         if(pstart){
+          if(pstart instanceof Date){
+
+          }else{
+            pstart = sdf.parse(pstart)
+          }
           link.startDate = pstart
         }
         if(pend){
+          if(pend instanceof Date){
+
+          }else{
+            pend = sdf.parse(pend)
+          }
           link.endDate = pend
         }
 

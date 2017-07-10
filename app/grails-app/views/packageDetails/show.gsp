@@ -11,12 +11,12 @@
 
     <div class="container">
       <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="index">${message(code: 'package.show.all')}</g:link><span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
 
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
 
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li><g:link action="show" params="${params+[format:'json']}">JSON Export</g:link></li>
@@ -33,8 +33,8 @@
           </g:if>
           ${message(code: 'package.show.view')}:
           <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
-            <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
+            <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
+            <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
           </div>
           &nbsp;
         </li>
@@ -46,7 +46,7 @@
 
 
       <div class="container">
-        <g:if test="${params.asAt}"><h1>Snapshot on ${params.asAt} from </h1></g:if>
+        <g:if test="${params.asAt}"><h1>${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
         <div class="page-header">
           <div>
           <h1><g:if test="${editable}"><span id="packageNameEdit"
@@ -88,8 +88,8 @@
             <h6>
               ${message(code: 'package.show.pkg_information')}
               <span class="btn-group pull-right" data-toggle="buttons-radio">
-                <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">Basic</g:link>
-                <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">Advanced</g:link>
+                <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
+                <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
               </span>
               &nbsp;
             </h6>
@@ -122,7 +122,12 @@
                           <tr>
                             <td>${io.id}</td>
                             <td>${io.identifier.ns.ns}</td>
-                            <td>${io.identifier.value}</td>
+                            <g:if test="${io.identifier.value =~ /^http/}">
+                              <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
+                            </g:if>
+                            <g:else>
+                              <td>${io.identifier.value}</td>
+                            </g:else>
                           </tr>
                       </g:each>
                      
@@ -135,7 +140,7 @@
                       <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
                       <input type="hidden" name="__recip" value="pkg"/>
                       <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                      <input type="submit" value="${message(code: 'identifier.select.add')}" class="btn btn-primary btn-small"/>
+                      <input type="submit" value="${message(code: 'identifier.select.add')}" class="btn btn-primary btn-small" style="vertical-align:text-bottom;"/>
                     </g:form>
                   </g:if>
 
@@ -236,8 +241,8 @@
                     <option value="${s.sub.id}">${s.sub.name ?: "unnamed subscription ${s.sub.id}"} - ${s.org.name}</option>
                   </g:each>
                 </select><br/>
-                Create Entitlements in Subscription: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true"/><br/>
-                <input id="add_to_sub_submit_id" type="submit"/>
+                ${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" style="vertical-align:text-bottom;"/><br/>
+                <input id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
               </g:form>
             </g:if>
             <g:else>
@@ -256,18 +261,17 @@
       <br/>
       <p>
         <span class="pull-right">
-          Currently
           <g:if test="${unfiltered_num_tipp_rows == num_tipp_rows}">
-            Showing all TIPPs
+            ${message(code:'package.show.filter.off')}
           </g:if>
           <g:else>
-            Showing filtered list of ${num_tipp_rows} from a total of ${unfiltered_num_tipp_rows} TIPPs
+            ${message(code:'package.show.filter.on', args:[num_tipp_rows,unfiltered_num_tipp_rows])}
           </g:else>
         </span>
         ${message(code: 'package.show.pagination', args: [(offset+1),lasttipp,num_tipp_rows])} (
-        <g:if test="${params.mode=='advanced'}">Includes Expected or Expired titles, switch to the <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}">Basic</g:link> view to hide them
+        <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link>
         </g:if>
-        <g:else>Expected or Expired titles are not shown, use the <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}">Advanced</g:link> view to see them
+        <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}">${message(code:'default.advanced', default:'Advanced')}</g:link>
         </g:else>
           )
      </p>
@@ -277,18 +281,18 @@
              <input type="hidden" name="sort" value="${params.sort}">
              <input type="hidden" name="order" value="${params.order}">
              <input type="hidden" name="mode" value="${params.mode}">
-             <label>Filters - Title:</label> <input name="filter" value="${params.filter}"/>
-             <label>Coverage note:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/><br/>
-              <label>Coverage Starts Before:</label> 
+             <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
+             <label>${message(code:'tipp.coverage_note', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/><br/>
+              <label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
               <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>, &nbsp;
-              <label>Ends After:</label>
+              <label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
               <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>, &nbsp;
               <g:if test="${params.mode!='advanced'}">
-                <label>Show package contents on specific date:</label>
+                <label>${message(code:'package.show.atDate', default:'Show package contents on specific date')}:</label>
                 <g:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
               </g:if>
 
-             <input type="submit" class="btn btn-primary pull-right" value="Filter Results" />
+             <input type="submit" class="btn btn-primary pull-right" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
           </g:form>
         </div>
           <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
@@ -311,66 +315,66 @@
               <th colspan="7">
                 <g:if test="${editable}">
                   <select id="bulkOperationSelect" name="bulkOperation" class="input-xxlarge">
-                    <option value="edit">Batch Edit Selected Rows Using the following values</option>
-                    <option value="remove">Batch Remove Selected Rows</option>
+                    <option value="edit">${message(code:'package.show.batch.edit.label', default:'Batch Edit Selected Rows Using the following values')}</option>
+                    <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
                   </select>
                   <br/>
                   <table class="table table-bordered">
                     <tr>
-                      <td>Coverage Start Date: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/> 
-                          <input type="checkbox" name="clear_start_date"/> (Check to clear)</td>
-                      <td>Start Volume: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
-                          <input type="checkbox" name="clear_start_volume"/>(Check to clear)</td>
-                      <td>Start Issue: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
-                          <input type="checkbox" name="clear_start_issue"/>(Check to clear)</td>
+                      <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
+                          <input type="checkbox" name="clear_start_date"/> (${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                      <td>${message(code:'tipp.from_volume', default:'Start Volume')}: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
+                          <input type="checkbox" name="clear_start_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                      <td>${message(code:'tipp.from_issue', default:'Start Issue')}: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                          <input type="checkbox" name="clear_start_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <tr>
-                      <td>Coverage End Date:  <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
-                          <input type="checkbox" name="clear_end_date"/>(Check to clear)</td>
-                      <td>End Volume: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
-                          <input type="checkbox" name="clear_end_volume"/>(Check to clear)</td>
-                      <td>End Issue: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
-                          <input type="checkbox" name="clear_end_issue"/>(Check to clear)</td>
+                      <td>${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
+                          <input type="checkbox" name="clear_end_date"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                      <td>${message(code:'tipp.to_volume', default:'End Volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+                          <input type="checkbox" name="clear_end_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                      <td>${message(code:'tipp.to_issue', default:'End Issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+                          <input type="checkbox" name="clear_end_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <tr>
-                       <td>Host Platform URL: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
-                          <input type="checkbox" name="clear_hostPlatformURL"/>(Check to clear)</td>
+                       <td>${message(code:'tipp.platform_url', default:'Host Platform URL')}: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
+                          <input type="checkbox" name="clear_hostPlatformURL"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                         </td>
-                      <td>Coverage Note: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
-                          <input type="checkbox" name="clear_coverage_note"/>(Check to clear)</td>
-                      <td>Embargo:  <g:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
-                          <input type="checkbox" name="clear_embargo"/>(Check to clear)</td>
+                      <td>${message(code:'tipp.coverage_note', default:'Coverage Note')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+                          <input type="checkbox" name="clear_coverage_note"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                      <td>${message(code:'tipp.embargo', default:'Embargo')}:  <g:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
+                          <input type="checkbox" name="clear_embargo"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <g:if test="${params.mode=='advanced'}">
                       <tr>
-                        <td>Delayed OA: <g:simpleHiddenRefdata id="bulk_delayedOA" name="bulk_delayedOA" refdataCategory="TitleInstancePackagePlatform.DelayedOA"/>
-                          <input type="checkbox" name="clear_delayedOA"/>(Check to clear)</td>
+                        <td>${message(code:'tipp.delayedOA', default:'Delayed OA')}: <g:simpleHiddenRefdata id="bulk_delayedOA" name="bulk_delayedOA" refdataCategory="TitleInstancePackagePlatform.DelayedOA"/>
+                          <input type="checkbox" name="clear_delayedOA"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                         </td>
-                        <td>Hybrid OA: <g:simpleHiddenRefdata id="bulk_hybridOA" name="bulk_hybridOA" refdataCategory="TitleInstancePackagePlatform.HybridOA"/>
-                          <input type="checkbox" name="clear_hybridOA"/>(Check to clear)</td>
+                        <td>${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <g:simpleHiddenRefdata id="bulk_hybridOA" name="bulk_hybridOA" refdataCategory="TitleInstancePackagePlatform.HybridOA"/>
+                          <input type="checkbox" name="clear_hybridOA"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                         </td>
-                        <td>Payment: <g:simpleHiddenRefdata id="bulk_payment" name="bulk_payment" refdataCategory="TitleInstancePackagePlatform.PaymentType"/>
-                          <input type="checkbox" name="clear_payment"/>(Check to clear)</td>
+                        <td>${message(code:'tipp.paymentType', default:'Payment')}: <g:simpleHiddenRefdata id="bulk_payment" name="bulk_payment" refdataCategory="TitleInstancePackagePlatform.PaymentType"/>
+                          <input type="checkbox" name="clear_payment"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                         </td>
                       </tr>
                     </g:if>
 
 
                   </table>
-                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">Apply Batch Changes (Selected)</button>
-                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">Apply Batch Changes (All in filtered list)</button>
+                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
+                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
                 </g:if>
               </th>
             </tr>
             <tr>
               <th>&nbsp;</th>
               <th>&nbsp;</th>
-              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="Title" />
-              <th style="">Platform</th>
-              <th style="">Hybrid OA</th>
-              <th style="">Identifiers</th>
-              <th style="">Coverage Start</th>
-              <th style="">Coverage End</th>
+              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+              <th style="">${message(code:'tipp.platform', default:'Platform')}</th>
+              <th style="">${message(code:'tipp.hybridOA', default:'Hybrid OA')}</th>
+              <th style="">${message(code:'identifier.plural', default:'Identifiers')}</th>
+              <th style="">${message(code:'tipp.coverage_start', default:'Coverage Start')}</th>
+              <th style="">${message(code:'tipp.coverage_end', default:'Coverage End')}</th>
             </tr>
 
 
@@ -384,13 +388,13 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
                    <b>${t.title.title}</b>
-                   <g:link controller="titleDetails" action="show" id="${t.title.id}">(Title)</g:link>
-                   <g:link controller="tipp" action="show" id="${t.id}">(TIPP)</g:link><br/>
+                   <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
+                   <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <ul>
                      <g:each in="${t.title.distinctEventList()}" var="h">
                        <li>
 
-                         Title History: <g:formatDate date="${h.event.eventDate}" format="yyyy-MM-dd"/><br/>
+                         ${message(code:'title.history.label', default:'Title History')}: <g:formatDate date="${h.event.eventDate}" format="yyyy-MM-dd"/><br/>
 
                          <g:each status="st" in="${h.event.fromTitles()}" var="the">
                             <g:if test="${st>0}">, </g:if>
@@ -405,11 +409,13 @@
                        </li>
                      </g:each>
                    </ul>
-                   <span title="${t.availabilityStatusExplanation}">Access: ${t.availabilityStatus?.value}</span>
+                   <span title="${t.availabilityStatusExplanation}">
+                    ${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}
+                  </span>
                    <g:if test="${params.mode=='advanced'}">
-                     <br/> Record Status: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
-                     <br/> Access Start: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
-                     <br/> Access End: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                     <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
+                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
+                     <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
@@ -427,7 +433,7 @@
                   <g:each in="${t.title.ids}" var="id">
                     <g:if test="${id.identifier.ns.hide != true}">
                       <g:if test="${id.identifier.ns.ns == 'originediturl'}">
-                        ${id.identifier.ns.ns}: <a href="${id.identifier.value}">Open Link</a>
+                        ${id.identifier.ns.ns}: <a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a>
                       </g:if>
                       <g:else>
                         ${id.identifier.ns.ns}:${id.identifier.value}
@@ -438,15 +444,15 @@
                 </td>
 
                 <td style="white-space: nowrap">
-                  Date: <g:xEditable owner="${t}" type="date" field="startDate" /><br/>
-                  Volume: <g:xEditable owner="${t}" field="startVolume" /><br/>
-                  Issue: <g:xEditable owner="${t}" field="startIssue" />     
+                  ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                  ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="startVolume" /><br/>
+                  ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="startIssue" />
                 </td>
 
                 <td style="white-space: nowrap"> 
-                   Date: <g:xEditable owner="${t}" type="date" field="endDate" /><br/>
-                   Volume: <g:xEditable owner="${t}" field="endVolume" /><br/>
-                   Issue: <g:xEditable owner="${t}" field="endIssue" />
+                   ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                   ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="endVolume" /><br/>
+                   ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="endIssue" />
                 </td>
               </tr>
 
@@ -454,10 +460,10 @@
                <tr>
                   <td colspan="8">coverageNote: ${t.coverageNote}
                   <g:if test="${params.mode=='advanced'}">
-                    <br/> Host Platform URL: <g:xEditable owner="${t}" field="hostPlatformURL" />
-                    <br/> Delayed OA: <g:xEditableRefData owner="${t}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/> &nbsp;
-                    Hybrid OA: <g:xEditableRefData owner="${t}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/> &nbsp;
-                    Payment: <g:xEditableRefData owner="${t}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/> &nbsp;
+                    <br/> ${message(code:'tipp.platform_url', default:'Host Platform URL')}: <g:xEditable owner="${t}" field="hostPlatformURL" />
+                    <br/> ${message(code:'tipp.delayedOA', default:'Delayed OA')}: <g:xEditableRefData owner="${t}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/> &nbsp;
+                    ${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <g:xEditableRefData owner="${t}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/> &nbsp;
+                    ${message(code:'tipp.paymentType', default:'Payment')}: <g:xEditableRefData owner="${t}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/> &nbsp;
                   </g:if>
                   </td>
                 </tr>
@@ -471,7 +477,7 @@
 
         <div class="pagination" style="text-align:center">
           <g:if test="${titlesList}" >
-            <bootstrap:paginate  action="show" controller="packageDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${num_tipp_rows}" />
+            <bootstrap:paginate  action="show" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
         </div>
 
@@ -481,7 +487,7 @@
         
         <g:form controller="ajax" action="addToCollection">
           <fieldset>
-            <legend>Add A Title To This Package</legend>
+            <legend>${message(code:'package.show.title.add', default:'Add A Title To This Package')}</legend>
             <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
             <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
             <input type="hidden" name="__recip" value="pkg"/>
@@ -489,13 +495,13 @@
             <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
             <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
 
-            <label>Title To Add</label>
+            <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
             <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
             <span class="help-block"></span>
-            <label>Platform For Added Title</label>
+            <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
             <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
             <span class="help-block"></span>
-            <button type="submit" class="btn">Add Title...</button>
+            <button type="submit" class="btn">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
           </fieldset>
         </g:form>
 
@@ -531,8 +537,11 @@
 
       <g:if test="${editable}">
       $("#addIdentifierSelect").select2({
-        placeholder: "Search for an identifier...",
+        placeholder: "${message(code:'identifier.select.ph', default:'Search for an identifier...')}",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',

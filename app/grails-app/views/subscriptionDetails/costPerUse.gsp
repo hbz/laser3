@@ -5,18 +5,18 @@
 <html>
   <head>
       <meta name="layout" content="mmbootstrap"/>
-      <title>${message(code:'laser', default:'LAS:eR')} Subscription</title>
+      <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
   <body>
 
     <div class="container">
         <ul class="breadcrumb">
-            <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+            <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
             <g:if test="${subscription.subscriber}">
-                <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscription.subscriber.shortcode]}"> ${subscription.subscriber.name} Current Subscriptions</g:link> <span class="divider">/</span> </li>
+                <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscription.subscriber.shortcode]}"> ${subscription.subscriber.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
             </g:if>
-            <li> <g:link controller="subscriptionDetails" action="index" id="${subscription.id}">Subscription ${subscription.id} Details</g:link> <span class="divider">/</span> </li>
-            <li> <g:link controller="subscriptionDetails" action="costPerUse" id="${subscription.id}">Subscription ${subscription.id} Cost Per Use</g:link> </li>
+            <li> <g:link controller="subscriptionDetails" action="index" id="${subscription.id}">${message(code:'subscription.label', default:'Subscription')} ${subscription.id} - ${message(code:'default.details.label', default:'Details')}</g:link> <span class="divider">/</span> </li>
+            <li> <g:link controller="subscriptionDetails" action="costPerUse" id="${subscription.id}">${message(code:'subscription.label', default:'Subscription')} ${subscription.id} - ${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')}</g:link> </li>
         </ul>
     </div>
 
@@ -29,7 +29,7 @@
     </g:if>
 
     <div class="container">
-        <h1>Cost Per Use :: ${subscription.name}</h1>
+        <h1>${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')} :: ${subscription.name}</h1>
         <g:render template="nav"  />
     </div>
 
@@ -38,10 +38,10 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>Invoice Number</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Invoice Total</th>
+              <th>${message(code:'financials.invoice_number', default:'Invoice Number')}</th>
+              <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
+              <th>${message(code:'default.endDate.label', default:'End Date')}</th>
+              <th>${message(code:'financials.invoice_total', default:'Invoice Total')}</th>
             </tr>
           </thead>
           <tbody>
@@ -50,17 +50,17 @@
                 <td>${ci.invoice.invoiceNumber}</td>
                 <td><g:formatDate date="${ci.invoice.startDate}" format="yyyy-MM-dd"/></td>
                 <td><g:formatDate date="${ci.invoice.endDate}" format="yyyy-MM-dd"/></td>
-                <td><span class="pull-right"><g:formatNumber number="${ci.total}" format="#,###,###.##" /></span></td>
+                <td><span class="pull-right"><g:formatNumber number="${ci.total}" groupingUsed="true" type="currency"/></span></td>
               </tr>
               <tr>
-                <td colspan="4">Total usage for this invoice period: <g:formatNumber number="${ci.total_usage_for_sub}" format="###,###,###"/> gives an overall cost per use of 
-                       <strong><g:formatNumber number="${ci.overall_cost_per_use}" format="#,###,###.##" /></strong></td>
+                <td colspan="4">Total usage for this invoice period: <g:formatNumber number="${ci.total_usage_for_sub}"  groupingUsed="true"/> gives an overall cost per use of
+                       <strong><g:formatNumber number="${ci.overall_cost_per_use}" groupingUsed="true"  type="currency"/></strong></td>
               </tr>
               <g:each in="${ci.usage}" var="u">
                 <tr>
                   <td colspan="3"><span class="pull-right">Apportionment for usage period ${u[0]}/${u[1]}</span></td>
-                  <td><span class="pull-right">${u[2]} @ <g:formatNumber number="${ci.overall_cost_per_use}" format="#,###,###.##" />
-                       = <g:formatNumber number="${ci.overall_cost_per_use * Integer.parseInt(u[2])}" format="#,###,###.##" /></span></td>
+                  <td><span class="pull-right">${u[2]} @ <g:formatNumber number="${ci.overall_cost_per_use}"  groupingUsed="true" type="currency"/>
+                       = <g:formatNumber number="${ci.overall_cost_per_use * Integer.parseInt(u[2])}"  groupingUsed="true" type="currency"/></span></td>
 
                 </tr>
               </g:each>

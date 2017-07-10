@@ -7,6 +7,7 @@ class SysAdminController {
     def zenDeskSyncService
     def juspSyncService
     def dataloadService
+    def globalSourceSyncService
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
     def appConfig() {
@@ -28,8 +29,9 @@ class SysAdminController {
 
         result.juspSyncService=[:]
         result.dataloadService=[:]
+        result.globalSourceSyncService=[:]
+        result.globalSourceSyncService.running=globalSourceSyncService.running
         result.juspSyncService.running=juspSyncService.running
-
         result.juspSyncService.submitCount=juspSyncService.submitCount
         result.juspSyncService.completedCount=juspSyncService.completedCount
         result.juspSyncService.newFactCount=juspSyncService.newFactCount

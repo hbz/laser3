@@ -7,7 +7,7 @@
                     <li id="home" class="active">
                 </g:if>
                 <g:else><li id="home"></g:else>
-                <a href="${createLink(uri: '/')}">Home</a>
+                <a href="${createLink(uri: '/')}">${message(code:'default.home.label', default:'Home')}</a>
             </li>
                 <g:if test="${active.equals("about")}">
                     <li id="about" class="active">
@@ -15,7 +15,7 @@
                 <g:else>
                     <li id="about">
                 </g:else>
-                <a href="${createLink(uri: '/about')}">About ${message(code:'laser', default:'LAS:eR')}</a>
+                <a href="${createLink(uri: '/about')}">${message(code:'public.nav.about.label', default:'About LAS:eR')}</a>
             </li>
                 <g:if test="${active.equals("signup")}">
                     <li id="signup" class="active">
@@ -26,11 +26,11 @@
 
                 </g:else>
 
-                <a href="${createLink(uri: '/signup')}">Sign Up</a>
+                <a href="${createLink(uri: '/signup')}">${message(code:'public.nav.signUp.label', default:'Sign Up')}</a>
             </li>
                
           <li class="${active.equals('publicExport')?'active':''}">
-                            <a href="${createLink(uri: '/publicExport')}">Exports</a>
+                            <a href="${createLink(uri: '/publicExport')}">${message(code:'public.nav.exports.label', default:'Exports')}</a>
 
             </li>
                 <g:if test="${active.equals("contact")}">
@@ -42,7 +42,7 @@
 
                 </g:else>
 
-                <a href="${createLink(uri: '/contact-us')}">Contact Us</a>
+                <a href="${createLink(uri: '/contact-us')}">${message(code:'public.nav.contact.label', default:'Contact Us')}</a>
             </li>
             </ul>
         </div>

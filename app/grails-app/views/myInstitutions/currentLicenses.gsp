@@ -8,8 +8,8 @@
 
     <div class="container">
         <ul class="breadcrumb">
-            <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-           <li> <g:link controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}">${institution.name} ${message(code:'licence.current')}</g:link> </li>
+            <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+           <li> <g:link controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'licence.current')}</g:link> </li>
            <g:if test="${is_admin}">
               <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
           </g:if>
@@ -110,10 +110,11 @@
             <tbody>
               <g:each in="${licenses}" var="l">
                 <tr>
-                  <td><g:link action="index"
-                              controller="licenseDetails" 
-                              id="${l.id}">${l.reference?:message(code:'missingLicenseReference', default:'** No Licence Reference Set **')}</g:link>
-                   <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
+                  <td>
+                    <g:link action="index" controller="licenseDetails" id="${l.id}">
+                      ${l.reference?:message(code:'missingLicenseReference', default:'** No Licence Reference Set **')}
+                    </g:link>
+                    <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
                       <ul>
                         <g:each in="${l.subscriptions}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
@@ -123,14 +124,14 @@
                       </ul>
                     </g:if>
                     <g:else>
-                      <br/>No linked subscriptions.
+                      <br/>${message(code:'myinst.currentLicenses.no_subs', default:'No linked subscriptions.')}
                     </g:else>
                   </td>
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.endDate}"/></td>
                   <td>
-                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">Copy</g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
                     <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'licence.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No Licence Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-licence':'Y']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                   </td>
                 </tr>

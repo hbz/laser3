@@ -2,15 +2,15 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Data Manager Dashboard</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</title>
   </head>
 
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="dataManager" action="index">Data Manager Dashboard</g:link> </li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</g:link> </li>
       </ul>
     </div>
 
@@ -27,7 +27,7 @@
     </g:if>
 
     <div class="container">
-      <h2>Data Manager Dashboard</h2>
+      <h2>${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h2>
     </div>
 
     <g:if test="${pendingChanges?.size() > 0}">
@@ -36,8 +36,8 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <td>Info</td>
-              <td>Action</td>
+              <td>${message(code:'default.info.label', default:'Info')}</td>
+              <td>${message(code:'default.action.label', default:'Action')}</td>
             </tr>
           </thead>
           <tbody>
@@ -56,8 +56,8 @@
     </g:if>
     <g:else>
       <div class="container alert-warn">
-        <h6>No pending package changes</h6>
-      </div class="container alert-warn">
+        <h6>${message(code:'datamanager.none_pending.label', default:'No pending package changes')}</h6>
+      </div>
     </g:else>
 
   </body>

@@ -3,14 +3,14 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
   </head>
   <body>
 
     <div class="container">
       <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li>Subscription Details</li>
+        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+        <li>${message(code:'subscription.details.label', default:'Subscription Details')}</li>
       </ul>
     </div>
 

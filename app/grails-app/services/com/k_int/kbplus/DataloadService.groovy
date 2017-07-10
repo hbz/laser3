@@ -399,7 +399,7 @@ class DataloadService {
     result;
   }
 
-  def assertOrgTitleLink(porg, ptitle, prole) {
+  def assertOrgTitleLink(porg, ptitle, prole, pstart, pend) {
     // def link = OrgRole.findByTitleAndOrgAndRoleType(ptitle, porg, prole) ?: new OrgRole(title:ptitle, org:porg, roleType:prole).save();
     def link = OrgRole.find{ title==ptitle && org==porg && roleType==prole }
     if ( ! link ) {

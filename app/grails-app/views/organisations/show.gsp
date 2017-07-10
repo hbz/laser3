@@ -22,34 +22,34 @@
 
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
-              <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
+            <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
 				
-				<g:if test="${orgInstance?.addresses}">
-					<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-					<g:each in="${orgInstance?.addresses}" var="a">
-						<g:if test="${a.org}">
-							<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
-						</g:if>
-					</g:each>
-				</g:if>
-			
-				<g:if test="${orgInstance?.contacts}">
-					<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
-					<g:each in="${orgInstance?.contacts}" var="c">
-						<g:if test="${c.org}">
-							<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
-						</g:if>
-					</g:each>
-				</g:if>
-			
-				<g:if test="${orgInstance?.prsLinks}">
-					<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
-					<g:each in="${orgInstance?.prsLinks}" var="pl">
-						<g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">		
-							<g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
-						</g:if>
-					</g:each>
-				</g:if>
+            <g:if test="${orgInstance?.addresses}">
+                    <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
+                    <g:each in="${orgInstance?.addresses}" var="a">
+                            <g:if test="${a.org}">
+                                    <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+                            </g:if>
+                    </g:each>
+            </g:if>
+
+            <g:if test="${orgInstance?.contacts}">
+                    <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
+                    <g:each in="${orgInstance?.contacts}" var="c">
+                            <g:if test="${c.org}">
+                                    <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+                            </g:if>
+                    </g:each>
+            </g:if>
+
+            <g:if test="${orgInstance?.prsLinks}">
+                    <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+                    <g:each in="${orgInstance?.prsLinks}" var="pl">
+                            <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
+                                    <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+                            </g:if>
+                    </g:each>
+            </g:if>
 
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
               <dd>
@@ -76,7 +76,7 @@
             </dd>
 
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-              ${message(code:'identifier.select.text')}
+              ${message(code:'identifier.select.text', args:['isil:DE-18'])}
             <g:if test="${orgInstance?.ids}">
               <g:each in="${orgInstance.ids}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link></dd>
@@ -89,7 +89,7 @@
               <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
               <input type="hidden" name="__recip" value="org"/>
               <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-              <input type="submit" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small"/>
+              <input type="submit" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small" style="vertical-align:text-bottom;"/>
             </g:form>
           </g:if>
 
@@ -118,15 +118,30 @@
           </g:if>
 
           <g:if test="${orgInstance?.links}">
-            <dt><g:message code="org.links.label" default="Other org links" /></dt>
+            <dt><g:message code="org.links.other.label" default="Other org links" /></dt>
             <dd><ul>
               <g:each in="${orgInstance.links}" var="i">
                 <li>
-                  <g:if test="${i.pkg}"><g:link controller="packageDetails" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.value})</g:link></g:if>
-                  <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.value})</g:link></g:if>
-                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${i.lic.status?.value})</g:if>
-                  <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.value})</g:link></g:if>
-                  (${i.roleType?.value}) </li>
+                  <g:if test="${i.pkg}">
+                    <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
+                      ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${message(code:"refdata.${i.pkg?.packageStatus?.value}", default:"${i.pkg?.packageStatus?.value}")})
+                    </g:link>
+                  </g:if>
+                  <g:if test="${i.sub}">
+                    <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
+                      ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${message(code:"refdata.${i.sub.status?.value}", default:"${i.sub.status?.value}")})
+                    </g:link>
+                  </g:if>
+                  <g:if test="${i.lic}">
+                    ${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})
+                  </g:if>
+                  <g:if test="${i.title}">
+                    <g:link controller="titleInstance" action="show" id="${i.title.id}">
+                      ${message(code:'title.label', default:'Title')}: ${i.title.title} (${message(code:"refdata.${i.title.status?.value}", default:"${i.title.status?.value}")})
+                    </g:link>
+                  </g:if>
+                  <g:set var="roletype_refdata" value="${i.roleType?.value.replaceAll(/\s/,'')}"/>
+                  (${message(code:"refdata.${roletype_refdata}", default:"${i.roleType?.value}")}) </li>
               </g:each>
             </ui></dd>
           </g:if>
@@ -151,6 +166,9 @@
       $("#addIdentifierSelect").select2({
         placeholder: "${message(code:'identifier.select.ph')}",
         minimumInputLength: 1,
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
           dataType: 'json',

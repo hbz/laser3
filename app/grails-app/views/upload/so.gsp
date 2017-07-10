@@ -37,7 +37,7 @@
             Doc Style: <select name="docstyle">
               <option value="csv" selected>Comma Separated</option>
               <option value="tsv">Tab Separated</option>
-            </select></br/>
+            </select></br>
 
             Override Character Set Test: <input type="checkbox" name="OverrideCharset" checked="false"/>
 

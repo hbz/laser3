@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Institutional Dash :: ${org?.name}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.title', default:'Institutional Dash')} :: ${org?.name}</title>
   </head>
 
   <body>
@@ -13,7 +13,7 @@
       <div class="row">
         <div class="span4">
           <div class="well">
-            <h6>Licences</h6>
+            <h6>${message(code:'licence.plural', default:'Licences')}</h6>
             <dl>
               <g:each in="${user.authorizedOrgs}" var="org">
                 <dd><g:link controller="myInstitutions" 
@@ -25,7 +25,7 @@
         </div>
         <div class="span4">
           <div class="well">
-            <h6>Subscriptions</h6>
+            <h6>${message(code:'subscription.plural', default:'Subscriptions')}</h6>
             <dl>
               <g:each in="${user.authorizedOrgs}" var="org">
                 <dd><g:link controller="myInstitutions" 
@@ -37,7 +37,7 @@
         </div>
         <div class="span4">
           <div class="well">
-            <h6>Titles</h6>
+            <h6>${message(code:'title.plural', default:'Titles')}</h6>
             <dl>
               <g:each in="${user.authorizedOrgs}" var="org">
                 <dd><g:link controller="myInstitutions" 
@@ -66,7 +66,7 @@
     <g:if test="${staticAlerts.size() > 0}">
       <div class="container">
         <table class="table table-bordered">
-          <tr><th>System Alert</th></tr>
+          <tr><th>${message(code:'sysAlert.label', default:'System Alert')}</th></tr>
           <g:each in="${staticAlerts}" var="sa">
             <tr>
               <td>
@@ -87,30 +87,30 @@
       <table class="table table-bordered">
           <thead>
               <tr>
-                  <th colspan="6">Alerted item</th>
+                  <th colspan="6">${message(code:'sysAlert.item.label', default:'Alerted item')}</th>
               </tr>
           </thead>
         <tr class="no-background">
-          <th>Note</th>
-          <th>Comments</th>
+          <th>${message(code:'sysAlert.note', default:'Note')}</th>
+          <th>${message(code:'sysAlert.comments', default:'Comments')}</th>
         </tr>
         <g:each in="${userAlerts}" var="ua">
           <tr>
             <td colspan="2">
               <g:if test="${ua.rootObj.class.name=='com.k_int.kbplus.License'}">
-                <span class="label label-info">Licence</span>
+                <span class="label label-info">${message(code:'licence.label', default:'Licence')}</span>
                 <em><g:link action="index"
                         controller="licenseDetails" 
                         id="${ua.rootObj.id}">${ua.rootObj.reference}</g:link></em>
               </g:if>
               <g:elseif test="${ua.rootObj.class.name=='com.k_int.kbplus.Subscription'}">
-                <span class="label label-info">Subscription</span>
+                <span class="label label-info">${message(code:'subscription.label', default:'Subscription')}</span>
                 <em><g:link action="index"
                         controller="subscriptionDetails" 
                         id="${ua.rootObj.id}">${ua.rootObj.name}</g:link></em>
               </g:elseif>
               <g:elseif test="${ua.rootObj.class.name=='com.k_int.kbplus.Package'}">
-                <span class="label label-info">Package</span>
+                <span class="label label-info">$message(code:'package.label', default:'Package')}</span>
                 <em><g:link action="show"
                         controller="packageDetails" 
                         id="${ua.rootObj.id}">${ua.rootObj.name}</g:link></em>

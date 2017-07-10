@@ -419,6 +419,25 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
   }
 
+  def checkAndAddMissingIdentifier(ns,value) {
+    boolean found = false
+    this.ids.each {
+      if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
+        found = true
+      }
+    }
+
+    if ( ! found ) {
+      def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?", [id,this])
+
+      if ( !id_occ || id_occ.size() == 0 ){
+        log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
+        new IdentifierOccurrence(identifier:id, pkg:this).save(flush:true)
+      }
+    }
+  }
+
   public static String generateSortName(String input_title) {
     if(!input_title) return null
     def s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()

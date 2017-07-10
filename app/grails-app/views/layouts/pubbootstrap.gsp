@@ -43,9 +43,9 @@
               <div class="container">
                   <div>
                       <ul class="footer-sublinks nav">
-                          <li><a href="${createLink(uri: '/terms-and-conditions')}">Terms & Conditions</a></li>
-                          <li><a href="${createLink(uri: '/privacy-policy')}">Privacy Policy</a></li>
-                          <li><a href="${createLink(uri: '/freedom-of-information-policy')}">Freedom of Information Policy</a></li>
+                          <li><a href="${createLink(uri: '/terms-and-conditions')}">${message(code:'default.termsAndCond.label', default:'Terms & Conditions')}</a></li>
+                          <li><a href="${createLink(uri: '/privacy-policy')}">${message(code:'default.privacy.label', default:'Privacy Policy')}</a></li>
+                          <li><a href="${createLink(uri: '/freedom-of-information-policy')}">${message(code:'default.foi.label', default:'Freedom of Information Policy')}</a></li>
                       </ul>
                   </div>
               </div>

@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Renewals Upload</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.renewalUpload.label', default:'Renewals Upload')}</title>
   </head>
 
   <body>
     <div class="container">
       <g:form action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
         <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/>
-        <button type="submit" class="btn btn-primary">Upload Renewals Worksheet</button>
+        <button type="submit" class="btn btn-primary">${message(code:'myinst.renewalUpload.upload', default:'Upload Renewals Worksheet')}</button>
       </g:form>
     </div>
 
@@ -42,27 +42,27 @@
 
         <div class="container">
         <hr/>
-          Uploaded worksheet will create a new subscription taken for ${institution.name} based on the following rows...<br/>
+          ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br/>
           <table class="table table-bordered">
             <tbody>
             <input type="hidden" name="subscription.start_date" value="${additionalInfo?.sub_startDate}"/>
             <input type="hidden" name="subscription.end_date" value="${additionalInfo?.sub_endDate}"/>
             <input type="hidden" name="subscription.copy_docs" value="${additionalInfo?.sub_id}"/>
 
-              <tr><th>Select</th><th >Subscription Properties</th><th>Value</th></tr>
+              <tr><th>${message(code:'default.select.label', default:'Select')}</th><th >${message(code:'myinst.renewalUpload.props', default:'Subscription Properties')}</th><th>${message(code:'default.value.label', default:'Value')}</th></tr>
               <tr>
                 <th><g:checkBox name="subscription.copyStart" value="${true}" /></th>
-                <th>Start Date</th>
+                <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
                 <td>${additionalInfo?.sub_startDate}</td>
               </tr>
               <tr>
                 <th><g:checkBox name="subscription.copyEnd" value="${true}" /></th>
-                <th>End Date</th>
+                <th>${message(code:'default.endDate.label', default:'End Date')}</th>
                 <td>${additionalInfo?.sub_endDate}</td>
               </tr>
               <tr>
                 <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
-                <th>Copy Documents and Notes from Subscription</th>
+                <th>${message(code:'myinst.renewalUpload.copy', default:'Copy Documents and Notes from Subscription')}</th>
                 <td>${additionalInfo?.sub_name}</td>
               </tr>
             </tbody>
@@ -70,17 +70,17 @@
           <table class="table table-bordered">
             <thead>
               <tr>
-                <td>Title</td>
-                <td>From Pkg</td>
+                <td>${message(code:'title.label', default:'Title')}</td>
+                <td>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</td>
                 <td>ISSN</td>
                 <td>eISSN</td>
-                <td>Start Date</td>
-                <td>Start Volume</td>
-                <td>Start Issue</td>
-                <td>End Date</td>
-                <td>End Volume</td>
-                <td>End Issue</td>
-                <td>Core Medium</td>
+                <td>${message(code:'default.startDate.label', default:'Start Date')}</td>
+                <td>${message(code:'tipp.from_volume', default:'Start Volume')}</td>
+                <td>${message(code:'tipp.from_issue', default:'Start Issue')}</td>
+                <td>${message(code:'default.endDate.label', default:'End Date')}</td>
+                <td>${message(code:'tipp.to_volume', default:'End Volume')}</td>
+                <td>${message(code:'tipp.to_issue', default:'End Issue')}</td>
+                <td>${message(code:'subscription.details.core_medium', default:'Core Medium')}</td>
               </tr>
             </thead>
             <tbody>
@@ -96,10 +96,10 @@
                   <td><g:link controller="packageDetails" action="show" id="${e.base_entitlement.pkg.id}">${e.base_entitlement.pkg.name}(${e.base_entitlement.pkg.id})</g:link></td>
                   <td>${e.base_entitlement.title.getIdentifierValue('ISSN')}</td>
                   <td>${e.base_entitlement.title.getIdentifierValue('eISSN')}</td>
-                  <td>${e.start_date} (Default:<g:formatDate format="dd MMMM yyyy" date="${e.base_entitlement.startDate}"/>)</td>
+                  <td>${e.start_date} (Default:<g:formatDate  formatName="default.date.format.notime" date="${e.base_entitlement.startDate}"/>)</td>
                   <td>${e.base_entitlement.startVolume}</td>
                   <td>${e.base_entitlement.startIssue}</td>
-                  <td>${e.end_date} (Default:<g:formatDate format="dd MMMM yyyy" date="${e.base_entitlement.endDate}"/>)</td>
+                  <td>${e.end_date} (Default:<g:formatDate formatName="default.date.format.notime" date="${e.base_entitlement.endDate}"/>)</td>
                   <td>${e.base_entitlement.endVolume}</td>
                   <td>${e.base_entitlement.endIssue}</td>
                   <td>${e.core_status?:'N'}</td>
@@ -109,7 +109,7 @@
           </table>
 
           <div class="pull-right">
-            <button type="submit" class="btn btn-primary">Accept and Process</button>
+            <button type="submit" class="btn btn-primary">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
           </div>
         </div>
         <input type="hidden" name="ecount" value="${counter}"/>
