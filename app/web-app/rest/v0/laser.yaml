@@ -1,25 +1,47 @@
 ---
-swagger: '2.0'
+swagger: "2.0"
 info:
-  version: 0.1
+  version: "0.1"
   title: LAS:eR API
   description: First scratch
-  contact: david.klober@hbz-nrw.de
+  contact:
+    email: david.klober@hbz-nrw.de
 
 #basePath: /demo/api/v0 # development
 basePath: /api/v0 # prod
 schemes:
   - http
 
-paths:
+parameters:
+  q:
+    in: query
+    name: q
+    required: true
+    type: string
+    description: Identifier for this query
+  v:
+    in: query
+    name: v
+    required: true
+    type: string
+    description: Value for this query
+  authorization:
+    in: header
+    name: Authorization
+    required: true
+    type: string
+    description: hmac-sha256 generated auth header
 
+paths:
   /document:
     get:
       summary: Find document by identifier
       description: >
         Supported are queries by following identifiers: *id* and *uuid*
       parameters:
-        $ref: "#definitions/PathParameters"
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/authorization"
       produces:
         - application/*
       responses:
@@ -40,7 +62,9 @@ paths:
       description: >
         Supported are queries by following identifiers: *id* and *impId*
       parameters:
-        $ref: "#definitions/PathParameters"
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/authorization"
       produces:
         - application/json
       responses:
@@ -50,7 +74,6 @@ paths:
             $ref: "#/definitions/License"
         400:
           description: Invalid or missing identifier
-          example:
         401:
           description: Request is not authorized
         404:
@@ -64,7 +87,9 @@ paths:
       description: >
         Supported are queries by following identifiers: *id*, *impId* and *shortcode*
       parameters:
-        $ref: "#definitions/PathParameters"
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/authorization"
       produces:
         - application/json
       responses:
@@ -87,7 +112,9 @@ paths:
       description: >
         Supported are queries by following identifiers: *id*, *identifier* and *impId*
       parameters:
-        $ref: "#definitions/PathParameters"
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/authorization"
       produces:
         - application/json
       responses:
@@ -97,7 +124,6 @@ paths:
             $ref: "#/definitions/Package"
         400:
           description: Invalid or missing identifier
-          example:
         401:
           description: Request is not authorized
         404:
@@ -111,7 +137,9 @@ paths:
       description: >
         Supported are queries by following identifiers: *id*, *identifier* and *impId*
       parameters:
-        $ref: "#definitions/PathParameters"
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/authorization"
       produces:
         - application/json
       responses:
@@ -129,7 +157,6 @@ paths:
           description: Request is not implemented
 
 definitions:
-
   Address:
     type: object
     properties:
@@ -226,33 +253,35 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
         example: "EUR - Euro Member Countries"
       costDescription:
         type: string
       costInBillingCurrency:
-        type: double
+        type: number
+        format: double
         example: 2523.16
       costInLocalCurrency:
-        type: double
+        type: number
+        format: double
         example: 1871.10
       costItemCategory:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
         example: "Price"
       costItemElement:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
         example: "Content"
       costItemStatus:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
         example: "Actual"
       dateCreated:
         type: string
@@ -264,7 +293,7 @@ definitions:
         type: string
         format: date
       includeInSubscription:
-        type: String
+        type: string
         description: Could be boolean
       invoice:
         $ref: "#/definitions/Invoice"
@@ -290,7 +319,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
         example: "On Invoice"
 
   Document:
@@ -312,7 +341,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
         example: "General"
       uuid:
         type: string
@@ -377,7 +406,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       coverageDepth:
         type: string
       coverageNote:
@@ -397,7 +426,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       startVolume:
         type: string
       startIssue:
@@ -409,7 +438,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       subscription:
         $ref: "#/definitions/SubscriptionStub"
       tipp:
@@ -443,7 +472,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       lastmod:
         type: string
         format: date
@@ -454,7 +483,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       licenseUrl:
         type: string
       licensorRef:
@@ -500,7 +529,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       subscriptions:
         type: array
         items:
@@ -509,7 +538,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
 
         #result.incomingLinks        = exportHelperService.resolveLinks(lic.incomingLinks) // com.k_int.kbplus.Link
         #result.outgoinglinks        = exportHelperService.resolveLinks(lic.outgoinglinks) // com.k_int.kbplus.Link
@@ -540,19 +569,19 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       status:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       toLic:
         $ref: "#definitions/LicenseStub"
       type:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
 
   OnixplLicense:
     type: object
@@ -633,7 +662,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       type:
         type: string
         description: Mapping RefdataCategory "OrgType"
@@ -689,7 +718,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory "Organisational Role"
         enum:
-          []
+          [""]
       startDate:
         type: string
         format: date
@@ -715,14 +744,14 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       cancellationAllowances:
         type: string
       consistent:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       dateCreated:
         type: string
         format: date
@@ -738,7 +767,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       forumId:
         type: string
       identifier:
@@ -755,7 +784,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       lastUpdated:
         type: string
         format: date
@@ -773,22 +802,22 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       packageScope:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       packageStatus:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       packageType:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       persons: # mapping attr prsLinks
         type: array
         items:
@@ -849,22 +878,22 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       softwareProvider:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       status:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       type:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
 
   PlatformStub:
     type: object
@@ -1068,12 +1097,12 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       type:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
 
   SubscriptionStub:
     type: object
@@ -1123,7 +1152,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       title:
         type: string
         example: "Das gute Buch"
@@ -1131,7 +1160,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
 
   TitleStub:
     type: object
@@ -1173,7 +1202,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       derivedFrom:
         $ref: "#/definitions/TitleInstancePackagePlatformStub"
       embargo:
@@ -1190,7 +1219,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       impId:
         type: string
         example: "c920188c-a7f8-54f6-80b5-e0161df3d360"
@@ -1200,14 +1229,14 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       package:
         $ref: "#/definitions/PackageStub"
       payment:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       platform:
         $ref: "#/definitions/PlatformStub"
       rectype:
@@ -1222,12 +1251,12 @@ definitions:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       statusReason:
         type: string
         description: Mapping RefdataCategory
         enum:
-          []
+          [""]
       subscription:
         $ref: "#/definitions/SubscriptionStub"
       title:
@@ -1244,20 +1273,3 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Identifier"
-
-  PathParameters:
-    - in: query
-      name: q
-      required: true
-      type: string
-      description: Identifier for this query
-    - in: query
-      name: v
-      required: true
-      type: string
-      description: Value for this query
-    - in: header
-      name: Authorization
-      required: true
-      type: string
-      description: hmac-sha256 generated auth header

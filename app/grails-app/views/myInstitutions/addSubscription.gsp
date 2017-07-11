@@ -54,7 +54,7 @@
                   <g:sortableColumn params="${params}" property="p.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                   <g:sortableColumn params="${params}" property="p.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                   <th>${message(code:'tipp.platform', default:'Platform')}</th>
-                  <th>${message(code:'licence.label' default:'License')}</th>
+                  <th>${message(code:'licence.label', default:'License')}</th>
                 </tr>
                 <g:each in="${packages}" var="p">
                   <tr>

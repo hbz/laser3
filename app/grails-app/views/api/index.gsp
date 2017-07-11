@@ -85,8 +85,7 @@
     <script>
         window.onload = function() {
             const ui = SwaggerUIBundle({
-                url: "http://http://laser-dev.hbz-nrw.de/api/spec", // production
-                //url: "http://localhost:8080/demo/api/spec", // develop
+                url: "${grailsApplication.config.grails.serverURL}/api/spec",
                 dom_id: '#swagger-ui',
                 presets: [
                     SwaggerUIBundle.presets.apis,

@@ -109,7 +109,7 @@
 		
 	</label>
 	<g:select id="membership" name="membership.id"
-                from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(''YN')}"
+                from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN')}"
                 optionKey="id"
                 value="${orgInstance?.membership?.id}"
                 class="many-to-one"

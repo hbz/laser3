@@ -380,7 +380,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://laser-dev.hbz.nrw.de" // TODO: remind to change if deploy on live server
+        grails.serverURL = "http://laser-dev.hbz-nrw.de" // TODO: remind to change if deploy on other server
     }
 }
 
