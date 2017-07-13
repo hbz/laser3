@@ -1,50 +1,72 @@
 package com.k_int.kbplus.api.v0.export
 
 import com.k_int.kbplus.*
-import com.k_int.xml.XMLDoc
 import groovy.util.logging.Log4j
-
-import javax.persistence.Transient
 
 @Log4j
 class ExportHelperService {
 
+    final static NO_CONSTRAINT          = "NO_CONSTRAINT"
+
     // type of stub to return
-    final static LICENSE_STUB       = "LICENSE_STUB"
-    final static PACKAGE_STUB       = "PACKAGE_STUB"
-    final static SUBSCRIPTION_STUB  = "SUBSCRIPTION_STUB"
+    final static LICENSE_STUB           = "LICENSE_STUB"
+    final static PACKAGE_STUB           = "PACKAGE_STUB"
+    final static SUBSCRIPTION_STUB      = "SUBSCRIPTION_STUB"
 
     // resolving type
-    final static SUBPKG_PACKAGE      = "SUBPKG_PACKAGE"
-    final static SUBPKG_SUBSCRIPTION = "SUBPKG_SUBSCRIPTION"
+    final static SUBPKG_PACKAGE         = "SUBPKG_PACKAGE"
+    final static SUBPKG_SUBSCRIPTION    = "SUBPKG_SUBSCRIPTION"
 
     // ignoring relation source
-    final static IGNORE_CLUSTER        = "IGNORE_CLUSTER"
-    final static IGNORE_LICENSE        = "IGNORE_LICENSE"
-    final static IGNORE_ORGANISATION   = "IGNORE_ORGANISATION"
-    final static IGNORE_PACKAGE        = "IGNORE_PACKAGE"
-    final static IGNORE_SUBSCRIPTION   = "IGNORE_SUBSCRIPTION"
-    final static IGNORE_TITLE          = "IGNORE_TITLE"
+    final static IGNORE_CLUSTER         = "IGNORE_CLUSTER"
+    final static IGNORE_LICENSE         = "IGNORE_LICENSE"
+    final static IGNORE_ORGANISATION    = "IGNORE_ORGANISATION"
+    final static IGNORE_PACKAGE         = "IGNORE_PACKAGE"
+    final static IGNORE_SUBSCRIPTION    = "IGNORE_SUBSCRIPTION"
+    final static IGNORE_TITLE           = "IGNORE_TITLE"
 
-    def resolveStubs(list, type) {
+    // ################### HELPER ###################
+
+    def hasAccess(def orgRoles, Org context) {
+        def hasAccess = false
+
+        orgRoles?.each { orgRole ->
+            // TODO check orgRole.roleType
+            if (orgRole.getOrg().id == context?.id) {
+                hasAccess = true
+            }
+        }
+
+        hasAccess
+    }
+
+    /**
+     * Resolving list<type> of items to stubs. Delegate context to gain access
+     *
+     * @param list
+     * @param type
+     * @param com.k_int.kbplus.Org context
+     * @return
+     */
+    def resolveStubs(def list, def type, Org context) {
         def result = []
         if(list) {
             list.each { it ->
                 if(LICENSE_STUB == type) {
-                    result << resolveLicenseStub(it)
+                    result << resolveLicenseStub(it, context)
                 }
                 else if(PACKAGE_STUB == type) {
-                    result << resolvePackageStub(it)
+                    result << resolvePackageStub(it, context)
                 }
                 else if(SUBSCRIPTION_STUB == type) {
-                    result << resolveSubscriptionStub(it)
+                    result << resolveSubscriptionStub(it, context)
                 }
             }
         }
         result
     }
 
-    // === Stubs === //
+    // ################### STUBS ###################
 
     def resolveClusterStub(Cluster cluster) {
         def result = [:]
@@ -56,39 +78,93 @@ class ExportHelperService {
         return cleanUp(result, true, true)
     }
 
-    def resolveLicenseStub(License lic) {
+    def resolveLicenseStub(License lic, Org context) {
         def result = [:]
-        if(lic) {
+        def hasAccess = false
+
+        if (!lic) {
+            return null
+        }
+
+        lic.getOrgLinks().each { orgRole ->
+            // TODO check orgRole.roleType
+            if (orgRole.getOrg().id == context?.id) {
+                hasAccess = true
+            }
+        }
+        if (hasAccess) {
             result.id           = lic.id
             result.contact      = lic.contact
             result.licenseUrl   = lic.licenseUrl
             result.reference    = lic.reference
+
+            result = cleanUp(result, true, true)
         }
-        return cleanUp(result, true, true)
+
+        return (hasAccess ? result : ApiService.FORBIDDEN)
     }
 
-    def resolveOrganisationStub(Org org) {
+    /**
+     *
+     * @param com.k_int.kbplus.Org org
+     * @param com.k_int.kbplus.Org context
+     * @return MAP | ApiService.FORBIDDEN
+     */
+    def resolveOrganisationStub(Org org, Org context) {
         def result = [:]
-        if(org) {
+        def hasAccess = false
+
+        if (!org) {
+            return null
+        }
+
+        // TODO check orgRole.roleType
+        if (org.id == context?.id) {
+            hasAccess = true
+        }
+        if (hasAccess) {
             result.id             = org.id
             result.name           = org.name
             result.shortcode      = org.shortcode
 
             // References
             result.identifiers    = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+            result = cleanUp(result, true, true)
         }
-        return cleanUp(result, true, true)
+
+        return (hasAccess ? result : ApiService.FORBIDDEN)
     }
 
-    def resolvePackageStub(Package pkg) {
+    /**
+     *
+     * @param com.k_int.kbplus.Package pkg
+     * @param com.k_int.kbplus.Org context
+     * @return MAP | ApiService.FORBIDDEN
+     */
+    def resolvePackageStub(Package pkg, Org context) {
         def result = [:]
-        if(pkg) {
+        def hasAccess = false
+
+        if (!pkg) {
+            return null
+        }
+
+        pkg.getOrgs().each { orgRole ->
+            // TODO check orgRole.roleType
+            if (orgRole.getOrg().id == context?.id) {
+                hasAccess = true
+            }
+        }
+        if (hasAccess) {
             result.id           = pkg.id
             result.name         = pkg.name
             result.identifier   = pkg.identifier
             result.vendorURL    = pkg.vendorURL
+
+            result = cleanUp(result, true, true)
         }
-        return cleanUp(result, true, true)
+
+        return (hasAccess ? result : ApiService.FORBIDDEN)
     }
 
     def resolvePlatformStub(Platform pform) {
@@ -101,39 +177,60 @@ class ExportHelperService {
         return cleanUp(result, true, true)
     }
 
-    def resolveSubscriptionStub(Subscription sub) {
+    /**
+     *
+     * @param com.k_int.kbplus.Subscription sub
+     * @param com.k_int.kbplus.Org context
+     * @return MAP | ApiService.FORBIDDEN
+     */
+    def resolveSubscriptionStub(Subscription sub, Org context) {
         def result = [:]
-        if(sub) {
+        def hasAccess = false
+
+        if (!sub) {
+            return null
+        }
+
+        sub.getOrgRelations().each { orgRole ->
+            // TODO check orgRole.roleType
+            if (orgRole.getOrg().id == context?.id) {
+                hasAccess = true
+            }
+        }
+        if (hasAccess) {
             result.id           = sub.id
             result.name         = sub.name
             result.identifier   = sub.identifier
 
             // References
             result.identifiers  = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
+
+            result = cleanUp(result, true, true)
         }
-        return cleanUp(result, true, true)
+
+        return (hasAccess ? result : ApiService.FORBIDDEN)
     }
 
-    def resolveSubscriptionPackageStub(SubscriptionPackage subpkg, resolver) {
+    def resolveSubscriptionPackageStub(SubscriptionPackage subpkg, resolver, Org context) {
         if(subpkg) {
             if(SUBPKG_PACKAGE == resolver) {
-                return resolvePackageStub(subpkg.pkg)
+                return resolvePackageStub(subpkg.pkg, context)
             }
             else if(SUBPKG_SUBSCRIPTION == resolver) {
-                return resolveSubscriptionStub(subpkg.subscription)
+                return resolveSubscriptionStub(subpkg.subscription, context)
             }
         }
         return null
     }
 
-    def resolveSubscriptionPackageStubs(list, resolver) {
+    def resolveSubscriptionPackageStubs(def list, def resolver, Org context) {
         def result = [:]
-        if(!list) {
-            return result
+        if (!list) {
+            return null
         }
 
         list.each { it -> // com.k_int.kbplus.SubscriptionPackage
-            result << resolveSubscriptionPackageStub(it, resolver)
+            result << resolveSubscriptionPackageStub(it, resolver, context)
         }
         result
     }
@@ -148,7 +245,6 @@ class ExportHelperService {
         }
 
         return cleanUp(result, true, true)
-        result
     }
 
     def resolveTitleStub(TitleInstance title) {
@@ -164,7 +260,7 @@ class ExportHelperService {
         return cleanUp(result, true, true)
     }
 
-    // === full Objects === //
+    // ################### FULL OBJECTS ###################
 
     def resolveAddresses(list, allowedTypes) {
         def result = []
@@ -185,7 +281,7 @@ class ExportHelperService {
 
             tmp = cleanUp(tmp, true, false)
 
-            if(allowedTypes.contains(it.type?.value)) {
+            if(NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
                 result << tmp
             }
         }
@@ -228,7 +324,7 @@ class ExportHelperService {
 
             tmp = cleanUp(tmp, true, false)
 
-            if(allowedTypes.contains(it.type?.value)) {
+            if(NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
                 result << tmp
             }
         }
@@ -295,24 +391,30 @@ class ExportHelperService {
         result
     }
 
+    /**
+     * Access rights due wrapping resource
+     *
+     * @param com.k_int.kbplus.Doc doc
+     * @return Map
+     */
     def resolveDocument(Doc doc) {
         def result = [:]
-        if(!doc) {
-            return result
+
+        if(doc) {
+            result.content  = doc.content
+            result.filename = doc.filename
+            result.mimeType = doc.mimeType
+            result.title    = doc.title
+            result.uuid     = doc.uuid
+
+            // RefdataValues
+            result.type     = doc.type?.value
         }
-        result.content   = doc.content
-        result.filename  = doc.filename
-        result.mimeType  = doc.mimeType
-        result.title     = doc.title
-        result.uuid      = doc.uuid
 
-        // RefdataValues
-        result.type      = doc.type?.value
-
-        return cleanUp(result, true, false)
+        return cleanUp(result, true, true)
     }
 
-    def resolveDocuments(list) {
+    def resolveDocuments(def list) {
         def result = []
         list.each { it -> // com.k_int.kbplus.DocContext
             result << resolveDocument(it.owner)
@@ -337,7 +439,7 @@ class ExportHelperService {
     def resolveInvoice(Invoice invoice) {
         def result = [:]
         if(!invoice) {
-            return result
+            return null
         }
         result.id                  = invoice.id
         result.dateOfPayment       = invoice.dateOfPayment
@@ -356,8 +458,8 @@ class ExportHelperService {
     def resolveIssueEntitlement(IssueEntitlement ie) {
         // TODO: implement
         def result = [:]
-        if(!ie) {
-            return result
+        if (!ie) {
+            return null
         }
 
         result.accessStartDate  = ie.accessStartDate
@@ -401,7 +503,7 @@ class ExportHelperService {
     def resolveLink(Link link) {
         def result = [:]
         if (!link) {
-            return result
+            return null
         }
         result.id   = link.id
 
@@ -426,26 +528,51 @@ class ExportHelperService {
         result
     }
 
-    def resolveOnixplLicense(OnixplLicense opl) {
+    /**
+     * Access rights due wrapping license
+     *
+     * @param com.k_int.kbplus.OnixplLicense opl
+     * @param com.k_int.kbplus.License lic
+     * @param com.k_int.kbplus.Org context
+     * @return Map | ApiService.FORBIDDEN
+     */
+    def resolveOnixplLicense(OnixplLicense opl, License lic, Org context) {
         def result = [:]
-        if(opl) {
-            result.id           = opl.id
-            result.lastmod      = opl.lastmod
-            result.title        = opl.title
+        def hasAccess = false
+
+        if (!opl) {
+            return null
+        }
+
+        if (opl.getLicenses().contains(lic)) {
+            lic.orgLinks.each { orgRole ->
+                // TODO check orgRole.roleType
+                if (orgRole.getOrg().id == context?.id) {
+                    hasAccess = true
+                }
+            }
+        }
+
+        if (hasAccess) {
+            result.id       = opl.id
+            result.lastmod  = opl.lastmod
+            result.title    = opl.title
 
             // References
             result.document = resolveDocument(opl.doc) // com.k_int.kbplus.Doc
             //result.licenses = resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
             //result.xml = opl.xml // XMLDoc // TODO
+            result = cleanUp(result, true, true)
         }
-        return cleanUp(result, true, true)
+
+        return (hasAccess ? result : ApiService.FORBIDDEN)
     }
 
     // valid
     def resolveOrder(Order order) {
         def result = [:]
-        if(!order) {
-            return result
+        if (!order) {
+            return null
         }
         result.id           = order.id
         result.orderNumber  = order.orderNumber
@@ -456,7 +583,7 @@ class ExportHelperService {
         return cleanUp(result, true, true)
     }
 
-    def resolveOrgLinks(list, ignoreRelationType) { // TODO
+    def resolveOrgLinks(def list, ignoreRelationType, Org context) { // TODO
         def result = []
 
         list.each { it ->   // com.k_int.kbplus.OrgRole
@@ -470,19 +597,19 @@ class ExportHelperService {
 
             // References
             if (it.org && (IGNORE_ORGANISATION != ignoreRelationType)) {
-                tmp.organisation = resolveOrganisationStub(it.org) // com.k_int.kbplus.Org
+                tmp.organisation = resolveOrganisationStub(it.org, context) // com.k_int.kbplus.Org
             }
             if (it.cluster && (IGNORE_CLUSTER != ignoreRelationType)) {
                 tmp.cluster = resolveClusterStub(it.cluster) // com.k_int.kbplus.Cluster
             }
             if (it.lic && (IGNORE_LICENSE != ignoreRelationType)) {
-                tmp.license = resolveLicenseStub(it.lic) // com.k_int.kbplus.License
+                tmp.license = resolveLicenseStub(it.lic, context) // com.k_int.kbplus.License
             }
             if (it.pkg && (IGNORE_PACKAGE != ignoreRelationType)) {
-                tmp.package = resolvePackageStub(it.pkg) // com.k_int.kbplus.Package
+                tmp.package = resolvePackageStub(it.pkg, context) // com.k_int.kbplus.Package
             }
             if (it.sub && (IGNORE_SUBSCRIPTION != ignoreRelationType)) {
-                tmp.subscription = resolveSubscriptionStub(it.sub) // com.k_int.kbplus.Subscription
+                tmp.subscription = resolveSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
             }
             if (it.title && (IGNORE_TITLE != ignoreRelationType)) {
                 tmp.title = resolveTitleStub(it.title) // com.k_int.kbplus.TitleInstance
@@ -493,7 +620,29 @@ class ExportHelperService {
         result
     }
 
+    @Deprecated
     def resolvePerson(Person prs, allowedContactTypes, allowedAddressTypes) {
+        def result             = [:]
+
+        if (prs) {
+            result.id              = prs.id
+            result.firstName       = prs.first_name
+            result.middleName      = prs.middle_name
+            result.lastName        = prs.last_name
+
+            // RefdataValues
+            result.gender          = prs.gender?.value
+            result.isPublic        = prs.isPublic?.value
+
+            // References
+            result.contacts     = resolveContacts(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
+            result.addresses    = resolveAddresses(prs.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
+            // TODO: result.properties   = resolvePrivateProperties(prs.privateProperties) // com.k_int.kbplus.PersonPrivateProperty
+        }
+        return cleanUp(result, true, true)
+    }
+    // NEU
+    def resolvePerson(Person prs, allowedContactTypes, allowedAddressTypes, Org context) {
         def result             = [:]
 
         if(prs) {
@@ -509,7 +658,7 @@ class ExportHelperService {
             // References
             result.contacts     = resolveContacts(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
             result.addresses    = resolveAddresses(prs.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
-            // TODO: result.properties   = resolvePrivateProperties(prs.privateProperties) // com.k_int.kbplus.PersonPrivateProperty
+            result.properties   = resolvePrivateProperties(prs.privateProperties, context) // com.k_int.kbplus.PersonPrivateProperty
         }
         return cleanUp(result, true, true)
     }
@@ -539,14 +688,15 @@ class ExportHelperService {
         return cleanUp(result, true, true)
     }
 
+    @Deprecated
     def resolvePrivateProperties(list) {
         def result = []
 
         list.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
             def tmp             = [:]
             tmp.id              = it.id
-            tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
+            tmp.name            = it.type?.name  // com.k_int.kbplus.PropertyDefinition.String
+            tmp.description     = it.type?.descr // com.k_int.kbplus.PropertyDefinition.String
             tmp.tenant          = resolveOrganisationStub(it.tenant) // com.k_int.kbplus.Org
             tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
             tmp.note            = it.note
@@ -556,7 +706,27 @@ class ExportHelperService {
         }
         result
     }
+    // NEU
+    def resolvePrivateProperties(def list, Org context) { // TODO check context
+        def result = []
 
+        list.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
+            def tmp             = [:]
+            tmp.id              = it.id
+            tmp.name            = it.type?.name  // com.k_int.kbplus.PropertyDefinition.String
+            tmp.description     = it.type?.descr // com.k_int.kbplus.PropertyDefinition.String
+            tmp.tenant          = resolveOrganisationStub(it.tenant) // com.k_int.kbplus.Org
+            tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
+            tmp.note            = it.note
+
+            if(it.tenant?.id == context.id) {
+                result << cleanUp(tmp, true, false)
+            }
+        }
+        result
+    }
+
+    @Deprecated
     def resolveProperties(object) {
         def cp = resolveCustomProperties(object.customProperties)
         def pp = resolvePrivateProperties(object.privateProperties)
@@ -564,7 +734,16 @@ class ExportHelperService {
         pp.each { cp << it }
         cp
     }
+    // NEU
+    def resolveProperties(def generic, Org context) {
+        def cp = resolveCustomProperties(generic.customProperties)
+        def pp = resolvePrivateProperties(generic.privateProperties, context)
 
+        pp.each { cp << it }
+        cp
+    }
+
+    @Deprecated
     def resolvePrsLinks(list, allowedAddressTypes, allowedContactTypes, showFunctions, showResponsibilities) {
         def result = []
 
@@ -634,10 +813,76 @@ class ExportHelperService {
         result
     }
 
+    // NEU
+    def resolvePrsLinks(def list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
+        def result = []
+
+        list.each { it ->
+
+            // nested prs
+            if(it.prs) {
+                def x = it.prs.id
+                def person = result.find {it.id == x}
+
+                if(!person) {
+                    person = resolvePerson(it.prs, allowedAddressTypes, allowedContactTypes, context) // com.k_int.kbplus.Person
+
+                    // export public
+                    if("No" != person.isPublic?.value?.toString()) {
+                        result << person
+                    }
+                    // or private if tenant = context
+                    else {
+                        if(it.prs.tenant?.id == context.id) {
+                            result << person
+                        }
+                    }
+                }
+
+                if(!person.roles) {
+                    person.roles = []
+                }
+
+                def role                    = [:] // com.k_int.kbplus.PersonRole
+                role.id                     = it.id
+                role.startDate              = it.start_date
+                role.endDate                = it.end_date
+
+                // RefdataValues
+                role.functionType           = it.functionType?.value
+                role.responsibilityType     = it.responsibilityType?.value
+
+                role = cleanUp(role, true, false)
+                person.roles << role
+
+                // References
+                if (it.org) {
+                    role.organisation = resolveOrganisationStub(it.org) // com.k_int.kbplus.Org
+                }
+                if (it.cluster) {
+                    role.cluster = resolveClusterStub(it.cluster) // com.k_int.kbplus.Cluster
+                }
+                if (it.lic) {
+                    role.license = resolveLicenseStub(it.lic, context) // com.k_int.kbplus.License
+                }
+                if (it.pkg) {
+                    role.package = resolvePackageStub(it.pkg, context) // com.k_int.kbplus.Package
+                }
+                if (it.sub) {
+                    role.subscription = resolveSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
+                }
+                if (it.title) {
+                    role.title = resolveTitleStub(it.title) // com.k_int.kbplus.TitleInstance
+                }
+            }
+        }
+        result
+    }
+
     def resolveTipp(TitleInstancePackagePlatform tipp) {
         def result = [:]
         if(!tipp) {
-            return result
+            return null
         }
         result.id               = tipp.id
         result.accessStartDate  = tipp.accessStartDate
@@ -693,7 +938,7 @@ class ExportHelperService {
     def resolveTitle(TitleInstance title) {
         def result = [:]
         if (!title) {
-            return result
+            return null
         }
 
         result.id               = title.id
@@ -738,36 +983,5 @@ class ExportHelperService {
             while (values.remove([]));
         }
         list
-    }
-
-    /**
-     *
-     * @param s
-     * @return trimmed string with multiple whitespaces removed
-     */
-    private String normString(String str){
-        if(!str)
-            return ""
-
-        str = str.replaceAll("\\s+", " ").trim()
-        str
-    }
-
-    /**
-     *
-     * @param obj
-     * @return list with children of given object or object if no children
-     */
-    private List flattenToken(Object obj){
-        def result = []
-
-        obj?.token?.each{ token ->
-            result << token
-        }
-        if(result.size() == 0 && obj){
-            result << obj
-        }
-
-        result
     }
 }

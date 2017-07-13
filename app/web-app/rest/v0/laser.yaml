@@ -12,6 +12,7 @@ basePath: /api/v0 # prod
 schemes:
   - http
 
+### parameters ###
 parameters:
   q:
     in: query
@@ -25,6 +26,12 @@ parameters:
     required: true
     type: string
     description: Value for this query
+  context:
+    in: query
+    name: context
+    required: false
+    type: string
+    description: Optional information if user has multiple memberships
   authorization:
     in: header
     name: Authorization
@@ -32,6 +39,20 @@ parameters:
     type: string
     description: hmac-sha256 generated auth header
 
+### responses ##
+responses:
+  ok:
+    description: OK
+  badRequest:
+    description: Invalid or missing identifier/value
+  notAuthorized:
+    description: Request is not authorized
+  forbidden:
+    description: Forbidden access to this resource
+  notImplemented:
+    description: Request not implemented
+
+### endpoints ###
 paths:
   /document:
     get:
@@ -41,20 +62,25 @@ paths:
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
       produces:
         - application/*
       responses:
         200:
-          description: OK
+          $ref: "#/responses/ok"
+          schema:
+            $ref: "#/definitions/Document"
         400:
-          description: Invalid or missing identifier
+          $ref: "#/responses/badRequest"
         401:
-          description: Request is not authorized
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
         404:
           description: Valid request, but document not found
         501:
-          description: Request is not implemented
+          $ref: "#/responses/notImplemented"
 
   /license:
     get:
@@ -64,6 +90,7 @@ paths:
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
       produces:
         - application/json
@@ -73,13 +100,15 @@ paths:
           schema:
             $ref: "#/definitions/License"
         400:
-          description: Invalid or missing identifier
+          $ref: "#/responses/badRequest"
         401:
-          description: Request is not authorized
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
         404:
           description: Valid request, but license not found
         501:
-          description: Request is not implemented
+          $ref: "#/responses/notImplemented"
 
   /organisation:
     get:
@@ -89,6 +118,7 @@ paths:
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
       produces:
         - application/json
@@ -98,13 +128,15 @@ paths:
           schema:
             $ref: "#/definitions/Organisation"
         400:
-          description: Invalid or missing identifier
+          $ref: "#/responses/badRequest"
         401:
-          description: Request is not authorized
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
         404:
           description: Valid request, but organisation not found
         501:
-          description: Request is not implemented
+          $ref: "#/responses/notImplemented"
 
   /package:
     get:
@@ -114,6 +146,7 @@ paths:
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
       produces:
         - application/json
@@ -123,13 +156,15 @@ paths:
           schema:
             $ref: "#/definitions/Package"
         400:
-          description: Invalid or missing identifier
+          $ref: "#/responses/badRequest"
         401:
-          description: Request is not authorized
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
         404:
           description: Valid request, but license not found
         501:
-          description: Request is not implemented
+          $ref: "#/responses/notImplemented"
 
   /subscription:
     get:
@@ -139,6 +174,7 @@ paths:
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
       produces:
         - application/json
@@ -148,14 +184,17 @@ paths:
           schema:
             $ref: "#/definitions/Subscription"
         400:
-          description: Invalid or missing identifier
+          $ref: "#/responses/badRequest"
         401:
-          description: Request is not authorized
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
         404:
           description: Valid request, but subscription not found
         501:
-          description: Request is not implemented
+          $ref: "#/responses/notImplemented"
 
+### objects ###
 definitions:
   Address:
     type: object
@@ -464,10 +503,10 @@ definitions:
         format: date
       impId:
         type: string
-      incomingLinks:
-        type: array
-        items:
-          $ref: "#/definitions/Link"
+#      incomingLinks:
+#        type: array
+#        items:
+#          $ref: "#/definitions/Link"
       isPublic:
         type: string
         description: Mapping RefdataCategory
@@ -502,18 +541,18 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/OrganisationRole" # resolved OrgRole
-      outgoingLinks:
-        type: array
-        items:
-          $ref: "#/definitions/Link"
-      packages:
-        type: array
-        items:
-          $ref: "#/definitions/PackageStub"
-      persons: # mapping attr prsLinks
-        type: array
-        items:
-          $ref: "#/definitions/Person" # resolved PersonRole
+#      outgoingLinks:
+#        type: array
+#        items:
+#          $ref: "#/definitions/Link"
+#      packages:
+#        type: array
+#        items:
+#          $ref: "#/definitions/PackageStub"
+#      persons: # mapping attr prsLinks
+#        type: array
+#        items:
+#          $ref: "#/definitions/Person" # resolved PersonRole
       properties: # mapping attr customProperties
         type: array
         items:
@@ -539,10 +578,6 @@ definitions:
         description: Mapping RefdataCategory
         enum:
           [""]
-
-        #result.incomingLinks        = exportHelperService.resolveLinks(lic.incomingLinks) // com.k_int.kbplus.Link
-        #result.outgoinglinks        = exportHelperService.resolveLinks(lic.outgoinglinks) // com.k_int.kbplus.Link
-
 
   LicenseStub:
     type: object
@@ -1220,6 +1255,10 @@ definitions:
         description: Mapping RefdataCategory
         enum:
           [""]
+      identifiers: # mapping attr ids
+        type: array
+        items:
+          $ref: "#/definitions/Identifier"
       impId:
         type: string
         example: "c920188c-a7f8-54f6-80b5-e0161df3d360"

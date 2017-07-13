@@ -9,13 +9,11 @@ class LicenseService {
     ExportHelperService exportHelperService
 
     /**
-     *
      * @param com.k_int.kbplus.License lic
-     * @param allowedAddressTypes
-     * @param allowedContactTypes
+     * @param com.k_int.kbplus.Org context
      * @return
      */
-    def resolveLicense(License lic, allowedAddressTypes, allowedContactTypes){
+    def resolveLicense(License lic, Org context){
         def result = [:]
 
         result.id               = lic.id
@@ -42,19 +40,23 @@ class LicenseService {
         result.type             = lic.type?.value
 
         // References
+        // TODO support private properties, when implemented
         result.properties       = exportHelperService.resolveCustomProperties(lic.customProperties) // com.k_int.kbplus.LicenseCustomProperty
         result.documents        = exportHelperService.resolveDocuments(lic.documents) // com.k_int.kbplus.DocContext
-        result.incomingLinks    = exportHelperService.resolveLinks(lic.incomingLinks) // com.k_int.kbplus.Link
-        result.onixplLicense    = exportHelperService.resolveOnixplLicense(lic.onixplLicense) // com.k_int.kbplus.OnixplLicense
-        result.outgoinglinks    = exportHelperService.resolveLinks(lic.outgoinglinks) // com.k_int.kbplus.Link
-        result.organisations    = exportHelperService.resolveOrgLinks(lic.orgLinks, exportHelperService.IGNORE_LICENSE) // com.k_int.kbplus.OrgRole
+        result.onixplLicense    = exportHelperService.resolveOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+        result.subscriptions    = exportHelperService.resolveStubs(lic.subscriptions, exportHelperService.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
 
-        result.packages         = exportHelperService.resolveStubs(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
-        result.persons          = exportHelperService.resolvePrsLinks(
-                lic.prsLinks, allowedAddressTypes, allowedContactTypes, true, false
+        // TODO
+        result.organisations    = exportHelperService.resolveOrgLinks(lic.orgLinks, exportHelperService.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+
+
+        //result.incomingLinks    = exportHelperService.resolveLinks(lic.incomingLinks) // com.k_int.kbplus.Link
+        //result.outgoinglinks    = exportHelperService.resolveLinks(lic.outgoinglinks) // com.k_int.kbplus.Link
+        //result.packages         = exportHelperService.resolveStubs(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
+        /*result.persons          = exportHelperService.resolvePrsLinks(
+                lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
-        result.subscriptions    = exportHelperService.resolveStubs(lic.subscriptions, exportHelperService.SUBSCRIPTION_STUB) // com.k_int.kbplus.Subscription
-
+        */
         return exportHelperService.cleanUp(result, true, true)
     }
 }

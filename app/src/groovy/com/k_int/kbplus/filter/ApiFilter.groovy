@@ -3,6 +3,7 @@ package com.k_int.kbplus.filter
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.UserRole
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.springframework.web.filter.GenericFilterBean
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
@@ -17,6 +18,7 @@ import com.k_int.kbplus.auth.User
 
 class ApiFilter extends GenericFilterBean {
 
+    @Transactional
     @Override
     void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
@@ -26,6 +28,7 @@ class ApiFilter extends GenericFilterBean {
         // ignore non api calls
         if(request.getServletPath().startsWith('/api/v')) {
             def isAuthorized = false
+            def checksum
 
             def method = request.getMethod()
             def path   = request.getServletPath()
@@ -52,7 +55,7 @@ class ApiFilter extends GenericFilterBean {
                         def apiUser = User.findByApikey(key)
                         def apiSecret = apiUser.apisecret
 
-                        def check = hmac(
+                        checksum = hmac(
                                 method +    // http-method
                                 path +      // uri
                                 timestamp + // timestamp
@@ -61,22 +64,22 @@ class ApiFilter extends GenericFilterBean {
                                 "",         // body
                                 apiSecret)
 
-                        isAuthorized = (check == digest)
+                        isAuthorized = (checksum == digest)
 
                         // checking role permission
 
                         def readRole  = UserRole.findAllWhere(user: apiUser, role: Role.findByAuthority('ROLE_API_READER'))
                         def writeRole = UserRole.findAllWhere(user: apiUser, role: Role.findByAuthority('ROLE_API_WRITER'))
 
-                        if("GET" == method) {
-                            if(!readRole) {
-                                isAuthorized = false
-                            }
+                        if("GET" == method && readRole.isEmpty()) {
+                            isAuthorized = false
                         }
-                        else if("POST" == method) {
-                            if(!writeRole) {
-                                isAuthorized = false
-                            }
+                        else if("POST" == method && writeRole.isEmpty()) {
+                            isAuthorized = false
+                        }
+                        else {
+                            // store authorized user
+                            servletRequest.setAttribute('authorizedApiUser', apiUser)
                         }
                     }
                 }
@@ -89,7 +92,7 @@ class ApiFilter extends GenericFilterBean {
                 request.getRequestDispatcher(path).forward(servletRequest, servletResponse)
                 return
             } else {
-                println "INVALID authorization: " + authorization
+                println "INVALID authorization: " + authorization + " < " + checksum
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
                 response.setContentType("application/json")
 

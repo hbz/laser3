@@ -37,6 +37,10 @@
         #swagger-ui .information-container .description {
             display: none;
         }
+        #swagger-ui textarea.curl {
+            color: #666;
+            background-color: #fff;
+        }
     </style>
 </head>
 
@@ -119,8 +123,10 @@
                 var path    = "/api/v0" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
                 var timestamp = ""
                 var nounce    = ""
+                var context = jQuery(div).find('input[placeholder="context - Optional information if user has multiple memberships"]').val().trim()
                 var query   = "q=" + jQuery(div).find('input[placeholder="q - Identifier for this query"]').val().trim()
-                    + "&v=" + jQuery(div).find('input[placeholder="v - Value for this query"]').val().trim()
+                            + "&v=" + jQuery(div).find('input[placeholder="v - Value for this query"]').val().trim()
+                            + (context ? "&context=" + context : '')
                 var body    = ""
                 var algorithm = "hmac-sha256"
                 var digest    = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, secret)

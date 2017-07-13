@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.api.v0.export.*
+import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
@@ -8,7 +9,8 @@ import groovy.util.slurpersupport.GPathResult
 @Log4j
 class ApiService {
 
-    static final BAD_REQUEST = "BAD_REQUEST"
+    static final FORBIDDEN       = "FORBIDDEN"
+    static final BAD_REQUEST     = "BAD_REQUEST"
     static final NOT_IMPLEMENTED = "NOT_IMPLEMENTED"
 
     LicenseService licenseService
@@ -225,66 +227,121 @@ class ApiService {
 
     /**
      *
-     * @param com.k_int.kbplus.License lic
-     * @return grails.converters.JSON
+     * @param com.k_int.kbplus.Doc doc
+     * @param com.k_int.kbplus.auth.User
+     * @param com.k_int.kbplus.Org context
+     * @return doc | ApiService.FORBIDDEN
      */
-    JSON getLicense(License lic){
+    def resolveDocument(Doc doc, User user, Org context){
+        if (!doc) {
+            return null
+        }
+        def hasAccess = false
+
+        DocContext.findAllByOwner(doc).each{ dc ->
+            if(dc.license) {
+                dc.getLicense().getOrgLinks().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if(orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
+                    }
+                }
+            }
+            if(dc.pkg) {
+                dc.getPkg().getOrgs().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if(orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
+                    }
+                }
+            }
+            if(dc.subscription) {
+                dc.getSubscription().getOrgRelations().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if(orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
+                    }
+                }
+            }
+        }
+        return (hasAccess ? doc : FORBIDDEN)
+    }
+
+    /**
+     *
+     * @param com.k_int.kbplus.License lic
+     * @param com.k_int.kbplus.auth.User
+     * @param com.k_int.kbplus.Org context
+     * @return grails.converters.JSON | ApiService.FORBIDDEN
+     */
+    def resolveLicense(License lic, User user, Org context){
         if (!lic) {
-            return lic
+            return null
+        }
+        def hasAccess = false
+
+        lic.orgLinks.each{ orgRole ->
+            if(orgRole.getOrg().id == context?.id) {
+                hasAccess = true
+            }
         }
 
-        def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
-        def allowedContactTypes = ["Job-related", "Personal"]
+        def result = []
+        if(hasAccess) {
+            // TODO check orgRole.roleType
+            result = licenseService.resolveLicense(lic, context)
+        }
 
-        def result = licenseService.resolveLicense(lic, allowedAddressTypes, allowedContactTypes)
-
-        new JSON(result)
+        return (hasAccess ? new JSON(result) : FORBIDDEN)
     }
 
     /**
      *
      * @param com.k_int.kbplus.Org org
-     * @return grails.converters.JSON
+     * @param com.k_int.kbplus.auth.User
+     * @param com.k_int.kbplus.Org context
+     * @return grails.converters.JSON | ApiService.FORBIDDEN
      */
-    JSON getOrganisation(Org org) {
+    def resolveOrganisation(Org org, User user, Org context) {
         if (!org) {
-            return org
+            return null
         }
+        def hasAccess = true
+        def result = orgService.resolveOrganisation(org, context)
 
-        def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
-        def allowedContactTypes = ["Job-related"]
-
-        def result = orgService.resolveOrganisation(org, allowedAddressTypes, allowedContactTypes)
-
-        new JSON(result)
+        return (hasAccess ? new JSON(result) : FORBIDDEN)
     }
 
     /**
      *
      * @param com.k_int.kbplus.Package pkg
-     * @return grails.converters.JSON
+     * @param com.k_int.kbplus.auth.User
+     * @param com.k_int.kbplus.Org context
+     * @return grails.converters.JSON | ApiService.FORBIDDEN
      */
-    JSON getPackage(Package pkg) {
+    def resolvePackage(Package pkg, User user, Org context) {
         if (!pkg) {
-            return pkg
+            return null
         }
+        def hasAccess = true
+        //def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
+        //def allowedContactTypes = ["Job-related", "Personal"]
 
-        def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
-        def allowedContactTypes = ["Job-related", "Personal"]
+        def result = pkgService.resolvePackage(pkg, context)
 
-        def result = pkgService.resolvePackage(pkg, allowedAddressTypes, allowedContactTypes)
-
-        new JSON(result)
+        return (hasAccess ? new JSON(result) : FORBIDDEN)
     }
 
     /**
      *
      * @param com.k_int.kbplus.Subscription sub
+     * @param com.k_int.kbplus.auth.User
+     * @param com.k_int.kbplus.Org context
      * @return grails.converters.JSON
      */
-    JSON getSubscription(Subscription sub){
+    def resolveSubscription(Subscription sub, User user, Org context){
         if (!sub) {
-            return sub
+            return null
         }
 
         def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]

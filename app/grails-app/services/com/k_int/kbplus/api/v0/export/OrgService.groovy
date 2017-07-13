@@ -9,13 +9,11 @@ class OrgService {
     ExportHelperService exportHelperService
 
     /**
-     *
      * @param com.k_int.kbplus.Org org
-     * @param allowedAddressTypes
-     * @param allowedContactTypes
+     * @param com.k_int.kbplus.Org context
      * @return
      */
-    def resolveOrganisation(Org org, allowedAddressTypes, allowedContactTypes) {
+    def resolveOrganisation(Org org, Org context) {
         def result = [:]
 
         result.id           = org.id
@@ -30,15 +28,14 @@ class OrgService {
         result.status       = org.status?.value
 
         // References
-        result.addresses            = exportHelperService.resolveAddresses(org.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
-        result.contacts             = exportHelperService.resolveContacts(org.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
-        result.identifiers          = exportHelperService.resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.persons              = exportHelperService.resolvePrsLinks(
-                org.prsLinks, allowedAddressTypes, allowedContactTypes, true, false
+        result.addresses    = exportHelperService.resolveAddresses(org.addresses, exportHelperService.NO_CONSTRAINT) // com.k_int.kbplus.Address
+        result.contacts     = exportHelperService.resolveContacts(org.contacts, exportHelperService.NO_CONSTRAINT) // com.k_int.kbplus.Contact
+        result.identifiers  = exportHelperService.resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.persons      = exportHelperService.resolvePrsLinks(
+                org.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
 
-        result.properties           = exportHelperService.resolveProperties(org) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
-
+        result.properties   = exportHelperService.resolveProperties(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
 
         //result.affiliations         = org.affiliations // com.k_int.kblpus.UserOrg
         //result.incomingCombos       = org.incomingCombos // com.k_int.kbplus.Combo
