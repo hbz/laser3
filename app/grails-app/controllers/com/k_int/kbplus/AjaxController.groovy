@@ -535,11 +535,17 @@ class AjaxController {
       }
     }
     request.setAttribute("editable", params.editable == "true")
-    if(params.redirect){
+    if(params.reloadReferer){
+      flash.newProp = newProp
+      flash.error = error
+      redirect(url: params.reloadReferer)
+    }
+    else if(params.redirect){
       flash.newProp = newProp
       flash.error = error
       redirect(controller:"propertyDefinition", action:"create")
-    } else{
+    }
+    else{
       render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error])
     }
   }

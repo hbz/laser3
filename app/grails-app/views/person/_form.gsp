@@ -54,12 +54,26 @@ import="com.k_int.kbplus.PersonRole"
 		<g:each in="${personInstance?.contacts?}" var="c">
 		    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
 		</g:each>
+        <!--
 		<li class="add">
-		<g:link controller="contact" action="create" params="['prs.id': personInstance?.id]">
-			${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
-		</g:link>
-		</li>
+            <g:link controller="contact" action="create" params="['prs.id': personInstance?.id]">
+                ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
+            </g:link>
+        </li>
+        -->
+        <input class="btn btn-primary" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+               data-toggle="modal" href="#addContactModal" type="submit">
 	</ul>
+
+    <div id="addContactModal" class="modal hide">
+        <g:formRemote name="remoteContactForm"
+                      update="updateMeContact"
+                      url="[controller: 'contact', action: 'create']">
+            <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
+        </g:formRemote>
+    </div>
+
+    <div id="updateMeContact"></div>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
@@ -70,12 +84,26 @@ import="com.k_int.kbplus.PersonRole"
 		<g:each in="${personInstance?.addresses?}" var="a">
 		    <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
 		</g:each>
+        <!--
 		<li class="add">
-		<g:link controller="address" action="create" params="['prs.id': personInstance?.id]">
-			${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}
-		</g:link>
-		</li>
+            <g:link controller="address" action="create" params="['prs.id': personInstance?.id]">
+                ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}
+            </g:link>
+        </li>
+        -->
+        <input class="btn btn-primary" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
+               data-toggle="modal" href="#addAddressModal" type="submit">
 	</ul>
+
+    <div id="addAddressModal" class="modal hide">
+        <g:formRemote name="remoteAddressForm"
+                      update="updateMeAddress"
+                      url="[controller: 'address', action: 'create']">
+            <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
+        </g:formRemote>
+    </div>
+
+    <div id="updateMeAddress"></div>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
@@ -165,5 +193,5 @@ import="com.k_int.kbplus.PersonRole"
 			});
 		})
 	</script>
-	
+
 </div>
