@@ -288,8 +288,7 @@ class ApiService {
 
         def result = []
         if(hasAccess) {
-            // TODO check orgRole.roleType
-            result = licenseService.resolveLicense(lic, context)
+            result = licenseService.resolveLicense(lic, ExportHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : FORBIDDEN)
@@ -324,10 +323,17 @@ class ApiService {
             return null
         }
         def hasAccess = true
-        //def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
-        //def allowedContactTypes = ["Job-related", "Personal"]
 
-        def result = pkgService.resolvePackage(pkg, context)
+        //pkg.orgs.each{ orgRole ->
+        //    if(orgRole.getOrg().id == context?.id) {
+        //        hasAccess = true
+        //    }
+        //}
+
+        def result = []
+        if (hasAccess) {
+            result = pkgService.resolvePackage(pkg, context) // TODO check orgRole.roleType
+        }
 
         return (hasAccess ? new JSON(result) : FORBIDDEN)
     }
@@ -343,12 +349,19 @@ class ApiService {
         if (!sub) {
             return null
         }
+        def hasAccess = false
 
-        def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
-        def allowedContactTypes = ["Job-related", "Personal"]
+        sub.orgRelations.each{ orgRole ->
+            if(orgRole.getOrg().id == context?.id) {
+                hasAccess = true
+            }
+        }
 
-        def result = subscriptionService.resolveSubscription(sub, allowedAddressTypes, allowedContactTypes)
+        def result = []
+        if (hasAccess) {
+            result = subscriptionService.resolveSubscription(sub, context) // TODO check orgRole.roleType
+        }
 
-        new JSON(result)
+        return (hasAccess ? new JSON(result) : FORBIDDEN)
     }
 }

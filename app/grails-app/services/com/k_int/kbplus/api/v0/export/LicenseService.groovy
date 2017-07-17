@@ -10,10 +10,11 @@ class LicenseService {
 
     /**
      * @param com.k_int.kbplus.License lic
+     * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    def resolveLicense(License lic, Org context){
+    def resolveLicense(License lic, def ignoreRelation, Org context){
         def result = [:]
 
         result.id               = lic.id
@@ -34,21 +35,29 @@ class LicenseService {
         result.sortableReference= lic.sortableReference
 
         // RefdataValues
+
         result.isPublic         = lic.isPublic?.value
         result.licenseCategory  = lic.licenseCategory?.value
         result.status           = lic.status?.value
         result.type             = lic.type?.value
 
         // References
+
         // TODO support private properties, when implemented
         result.properties       = exportHelperService.resolveCustomProperties(lic.customProperties) // com.k_int.kbplus.LicenseCustomProperty
         result.documents        = exportHelperService.resolveDocuments(lic.documents) // com.k_int.kbplus.DocContext
         result.onixplLicense    = exportHelperService.resolveOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
-        result.subscriptions    = exportHelperService.resolveStubs(lic.subscriptions, exportHelperService.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
 
-        // TODO
-        result.organisations    = exportHelperService.resolveOrgLinks(lic.orgLinks, exportHelperService.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+        if (ignoreRelation != exportHelperService.IGNORE_ALL) {
+            if (ignoreRelation != exportHelperService.IGNORE_SUBSCRIPTION) {
+                result.subscriptions = exportHelperService.resolveStubs(lic.subscriptions, exportHelperService.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+            }
+            if (ignoreRelation != exportHelperService.IGNORE_LICENSE) {
+                result.organisations = exportHelperService.resolveOrgLinks(lic.orgLinks, exportHelperService.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+            }
+        }
 
+        // Ignored
 
         //result.incomingLinks    = exportHelperService.resolveLinks(lic.incomingLinks) // com.k_int.kbplus.Link
         //result.outgoinglinks    = exportHelperService.resolveLinks(lic.outgoinglinks) // com.k_int.kbplus.Link

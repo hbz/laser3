@@ -1,5 +1,6 @@
 package com.k_int.kbplus.api.v0.export
 
+import com.k_int.kbplus.Org
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -8,13 +9,11 @@ class PkgService {
     ExportHelperService exportHelperService
 
     /**
-     *
      * @param com.k_int.kbplus.Package pkg
-     * @param allowedAddressTypes
-     * @param allowedContactTypes
+     * @param com.k_int.kbplus.Org context
      * @return
      */
-    def resolvePackage(com.k_int.kbplus.Package pkg, allowedAddressTypes, allowedContactTypes) {
+    def resolvePackage(com.k_int.kbplus.Package pkg, Org context) {
         def result = [:]
 
         result.id               = pkg.id
@@ -33,6 +32,7 @@ class PkgService {
         result.startDate        = pkg.startDate
 
         // RefdataValues
+
         result.packageType      = pkg.packageType?.value
         result.packageStatus    = pkg.packageStatus?.value
         result.packageListStatus = pkg.packageListStatus?.value
@@ -43,19 +43,21 @@ class PkgService {
         result.packageScope     = pkg.packageScope?.value
 
         // References
+
         result.documents        = exportHelperService.resolveDocuments(pkg.documents) // com.k_int.kbplus.DocContext
         result.identifiers      = exportHelperService.resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.license          = exportHelperService.resolveLicenseStub(pkg.license) // com.k_int.kbplus.License
+        result.license          = exportHelperService.resolveLicenseStub(pkg.license, context) // com.k_int.kbplus.License
         result.nominalPlatform  = exportHelperService.resolvePlatform(pkg.nominalPlatform) // com.k_int.kbplus.Platform
-        result.organisations    = exportHelperService.resolveOrgLinks(pkg.orgs, exportHelperService.IGNORE_PACKAGE) // com.k_int.kbplus.OrgRole
-        // TODO
+        result.organisations    = exportHelperService.resolveOrgLinks(pkg.orgs, exportHelperService.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
+        result.subscriptions    = exportHelperService.resolveSubscriptionPackageStubs(pkg.subscriptions, exportHelperService.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
+        result.tipps            = exportHelperService.resolveTipps(pkg.tipps, exportHelperService.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+
+        // Ignored
+        /*
         result.persons          = exportHelperService.resolvePrsLinks(
-                pkg.prsLinks, allowedAddressTypes, allowedContactTypes, true, false
+                pkg.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
-
-        result.subscriptions    = exportHelperService.resolveSubscriptionPackageStubs(pkg.subscriptions ,exportHelperService.SUBPKG_SUBSCRIPTION) // com.k_int.kbplus.SubscriptionPackage
-        result.tipps            = exportHelperService.resolveTipps(pkg.tipps) // com.k_int.kbplus.TitleInstancePackagePlatform
-
+        */
         return exportHelperService.cleanUp(result, true, true)
     }
 }

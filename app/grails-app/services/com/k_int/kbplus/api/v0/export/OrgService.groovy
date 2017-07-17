@@ -23,11 +23,13 @@ class OrgService {
         result.shortcode    = org.shortcode
 
         // RefdataValues
+
         result.sector       = org.sector?.value
         result.type         = org.orgType?.value
         result.status       = org.status?.value
 
         // References
+
         result.addresses    = exportHelperService.resolveAddresses(org.addresses, exportHelperService.NO_CONSTRAINT) // com.k_int.kbplus.Address
         result.contacts     = exportHelperService.resolveContacts(org.contacts, exportHelperService.NO_CONSTRAINT) // com.k_int.kbplus.Contact
         result.identifiers  = exportHelperService.resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
@@ -36,6 +38,8 @@ class OrgService {
         ) // com.k_int.kbplus.PersonRole
 
         result.properties   = exportHelperService.resolveProperties(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+
+        // Ignored
 
         //result.affiliations         = org.affiliations // com.k_int.kblpus.UserOrg
         //result.incomingCombos       = org.incomingCombos // com.k_int.kbplus.Combo
