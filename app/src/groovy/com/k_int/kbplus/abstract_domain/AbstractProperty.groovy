@@ -8,7 +8,7 @@ import javax.persistence.Transient
 abstract class AbstractProperty implements Serializable{
 
     @Transient
-    def controlledProperties = ['stringValue','intValue','decValue','refValue','note']
+    def controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note']
     String          stringValue
     Integer         intValue
     BigDecimal      decValue
@@ -16,8 +16,9 @@ abstract class AbstractProperty implements Serializable{
     String          note = ""
     
     static mapping = {
-       note type: 'text'
+        note         type: 'text'
     }
+
     static constraints = {
         stringValue(nullable: true)
         intValue(nullable: true)

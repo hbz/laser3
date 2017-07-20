@@ -127,6 +127,7 @@ class LicenseDetailsController {
       }
     }
   }
+
   def getAvailableSubscriptions(licence,user){
     def licenceInstitutions = licence?.orgLinks?.findAll{ orgRole ->
       orgRole.roleType?.value == "Licensee"
