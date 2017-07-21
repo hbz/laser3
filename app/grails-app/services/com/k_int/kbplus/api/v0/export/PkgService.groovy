@@ -1,12 +1,31 @@
 package com.k_int.kbplus.api.v0.export
 
+import com.k_int.kbplus.ApiService
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
 import groovy.util.logging.Log4j
 
 @Log4j
 class PkgService {
 
     ExportHelperService exportHelperService
+
+    static def findPackage(String query, String value) {
+        def obj
+        if('id'.equalsIgnoreCase(query)) {
+            obj = Package.findWhere(id: Long.parseLong(value))
+        }
+        else if('identifier'.equalsIgnoreCase(query)) {
+            obj = Package.findWhere(identifier: value)
+        }
+        else if('impId'.equalsIgnoreCase(query)) {
+            obj = Package.findWhere(impId: value)
+        }
+        else {
+            obj = ApiService.BAD_REQUEST
+        }
+        obj
+    }
 
     /**
      * @param com.k_int.kbplus.Package pkg

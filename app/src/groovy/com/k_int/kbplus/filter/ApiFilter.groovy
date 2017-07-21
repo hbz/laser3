@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.UserRole
 import grails.converters.JSON
 import grails.transaction.Transactional
+import org.apache.commons.io.IOUtils
 import org.springframework.web.filter.GenericFilterBean
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
@@ -33,7 +34,15 @@ class ApiFilter extends GenericFilterBean {
             def method = request.getMethod()
             def path   = request.getServletPath()
             def query  = request.getQueryString()
+            def body   = IOUtils.toString(request.getReader())
 
+            /*def test = ''
+            for (int j = 0; j < body.length(); j++) {
+                test += Character.codePointAt(body, j)
+            }
+
+
+                println test*/
             String authorization = request.getHeader('Authorization')
             try {
                 if (authorization) {
@@ -61,25 +70,12 @@ class ApiFilter extends GenericFilterBean {
                                 timestamp + // timestamp
                                 nounce +    // nounce
                                 query +     // parameter
-                                "",         // body
+                                body,         // body
                                 apiSecret)
 
                         isAuthorized = (checksum == digest)
-
-                        // checking role permission
-
-                        def readRole  = UserRole.findAllWhere(user: apiUser, role: Role.findByAuthority('ROLE_API_READER'))
-                        def writeRole = UserRole.findAllWhere(user: apiUser, role: Role.findByAuthority('ROLE_API_WRITER'))
-
-                        if("GET" == method && readRole.isEmpty()) {
-                            isAuthorized = false
-                        }
-                        else if("POST" == method && writeRole.isEmpty()) {
-                            isAuthorized = false
-                        }
-                        else {
-                            // store authorized user
-                            servletRequest.setAttribute('authorizedApiUser', apiUser)
+                        if(isAuthorized) {
+                            request.setAttribute('authorizedApiUser', apiUser)
                         }
                     }
                 }

@@ -81,7 +81,6 @@ class ExportHelperService {
         if(cluster) {
             result.id           = cluster.id
             result.name         = cluster.name
-            result.definition   = cluster.definition
         }
         return cleanUp(result, true, true)
     }
@@ -102,9 +101,9 @@ class ExportHelperService {
         }
         if (hasAccess) {
             result.id           = lic.id
-            result.contact      = lic.contact
-            result.licenseUrl   = lic.licenseUrl
+            result.impId        = lic.impId
             result.reference    = lic.reference
+            result.sortableReference = lic.sortableReference
 
             result = cleanUp(result, true, true)
         }
@@ -131,12 +130,13 @@ class ExportHelperService {
             hasAccess = true
         }
         if (hasAccess) {
-            result.id             = org.id
-            result.name           = org.name
-            result.shortcode      = org.shortcode
+            result.id           = org.id
+            result.name         = org.name
+            result.shortcode    = org.shortcode
 
             // References
-            result.identifiers    = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+            result.identifiers = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+
             result = cleanUp(result, true, true)
         }
 
@@ -167,7 +167,10 @@ class ExportHelperService {
             result.id           = pkg.id
             result.name         = pkg.name
             result.identifier   = pkg.identifier
-            result.vendorURL    = pkg.vendorURL
+            result.impId        = pkg.impId
+
+            // References
+            result.identifiers = resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
 
             result = cleanUp(result, true, true)
         }
@@ -179,6 +182,7 @@ class ExportHelperService {
         def result = [:]
         if(pform) {
             result.id           = pform.id
+            result.impId        = pform.impId
             result.name         = pform.name
             result.normname     = pform.normname
         }
@@ -209,9 +213,10 @@ class ExportHelperService {
             result.id           = sub.id
             result.name         = sub.name
             result.identifier   = sub.identifier
+            result.impId        = sub.impId
 
             // References
-            result.identifiers  = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
+            result.identifiers = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
 
             result = cleanUp(result, true, true)
         }
@@ -246,12 +251,13 @@ class ExportHelperService {
     def resolveTitleStub(TitleInstance title) {
         def result = [:]
 
-        result.id             = title.id
-        result.title          = title.title
-        result.normTitle      = title.normTitle
+        result.id           = title.id
+        result.impId        = title.impId
+        result.title        = title.title
+        result.normTitle    = title.normTitle
 
         // References
-        result.identifiers  = resolveIdentifiers(title.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers = resolveIdentifiers(title.ids) // com.k_int.kbplus.IdentifierOccurrence
 
         return cleanUp(result, true, true)
     }
@@ -382,6 +388,7 @@ class ExportHelperService {
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
             tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
             tmp.note            = it.note
+            tmp.isPublic        = "Yes" // derived to substitute private properties tentant
 
             tmp = cleanUp(tmp, true, false)
             result << tmp
@@ -505,7 +512,7 @@ class ExportHelperService {
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
      * @return
-     */
+
     def resolveIssueEntitlements(def list, def ignoreRelation, Org context) {
         def result = []
         if(list) {
@@ -515,7 +522,7 @@ class ExportHelperService {
         }
         result
     }
-
+*/
     /**
      *
      * @param list
@@ -760,11 +767,12 @@ class ExportHelperService {
             tmp.id              = it.id
             tmp.name            = it.type?.name  // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr // com.k_int.kbplus.PropertyDefinition.String
-            tmp.tenant          = resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
+            //tmp.tenant          = resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
             tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
             tmp.note            = it.note
 
             if(it.tenant?.id == context.id) {
+                tmp.isPublic    = "No" // derived to substitute tentant
                 result << cleanUp(tmp, true, false)
             }
         }

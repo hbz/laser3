@@ -119,15 +119,38 @@
             function genDigist(div) {
                 var key     = jQuery('.topbar input[name=apiKey]').val().trim()
                 var secret  = jQuery('.topbar input[name=apiSecret]').val().trim()
-                var method  = "GET"
+                var method  = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
                 var path    = "/api/v0" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
                 var timestamp = ""
                 var nounce    = ""
                 var context = jQuery(div).find('input[placeholder="context - Optional information if user has multiple memberships"]').val().trim()
-                var query   = "q=" + jQuery(div).find('input[placeholder="q - Identifier for this query"]').val().trim()
+                var query     = ""
+                var body      = ""
+
+                if(method == "GET") {
+                    query = "q=" + jQuery(div).find('input[placeholder="q - Identifier for this query"]').val().trim()
                             + "&v=" + jQuery(div).find('input[placeholder="v - Value for this query"]').val().trim()
                             + (context ? "&context=" + context : '')
-                var body    = ""
+                }
+                else if(method == "POST") {
+                    query = (context ? "&context=" + context : '')
+                    body = jQuery(div).find('.body-param > textarea').val().trim()
+
+                    console.log(key)
+                    console.log(method)
+                    console.log(path)
+                    console.log(timestamp)
+                    console.log(nounce)
+                    console.log(query)
+                    console.log(body)
+
+                    /*var test = ''
+                    for(j = 0; j < body.length; j++) {
+                        test += body.charCodeAt(j);
+                    }
+                    console.log(test)*/
+                }
+
                 var algorithm = "hmac-sha256"
                 var digest    = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, secret)
                 var authorization = "hmac " + key + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm

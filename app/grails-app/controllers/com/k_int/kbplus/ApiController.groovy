@@ -1,5 +1,9 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.api.v0.export.LicenseService
+import com.k_int.kbplus.api.v0.export.OrgService
+import com.k_int.kbplus.api.v0.export.PkgService
+import com.k_int.kbplus.api.v0.export.SubscriptionService
 import org.apache.poi.hslf.model.*
 import com.k_int.kbplus.auth.*
 import grails.converters.JSON
@@ -241,18 +245,34 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
      */
     def v0() {
         log.debug("api call v0 : " + params)
+
         def result
+        def hasRole = false
+
         def obj     = params.get('obj')
         def query   = params.get('q')
         def value   = params.get('v', '')
         def context = params.get('context')
+        def method  = request.getMethod()
 
-        // define context
+        Org contextOrg = null
+        User user = (User) request.getAttribute('authorizedApiUser')
 
-        def contextOrg
-        def user
-        if(request.getAttribute('authorizedApiUser')){
-            user = (User) request.getAttribute('authorizedApiUser')
+        if(user){
+            // checking role permission
+
+            if("GET" == method) {
+                def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_READER'))
+                hasRole = !readRole.isEmpty()
+                println "GET: " + hasRole
+            }
+            else if("POST" == method) {
+                def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_WRITER'))
+                hasRole = !writeRole.isEmpty()
+                println "POST: " + hasRole
+            }
+
+            // getting context
 
             if(context) {
                 user.authorizedAffiliations.each { uo -> //  com.k_int.kbplus.auth.UserOrg
@@ -268,20 +288,21 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             }
         }
 
+        if (!contextOrg || !hasRole) {
+            result = apiService.FORBIDDEN
+        }
+        else if (!value) {
+            result = apiService.BAD_REQUEST
+        }
+
         // delegate api calls
 
         if ('GET' == request.method) {
             response.setContentType("application/json")
 
-            if (!contextOrg) {
-                result = apiService.FORBIDDEN
-            }
-            else if (!value) {
-                result = apiService.BAD_REQUEST
-            }
-            else {
+            if (!result) {
                 if ('document'.equalsIgnoreCase(obj)) {
-                    result = getDocument(query, value)
+                    result = apiService.findDocument(query, value)
                     if(apiService.BAD_REQUEST != result){
                         result = apiService.resolveDocument(result, user, contextOrg)
                     }
@@ -297,25 +318,25 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     }
                 }
                 else if ('license'.equalsIgnoreCase(obj)) {
-                    result = getLicense(query, value)
+                    result = LicenseService.findLicense(query, value)
                     if(apiService.BAD_REQUEST != result){
                         result = apiService.resolveLicense(result, user, contextOrg)
                     }
                 }
                 else if ('organisation'.equalsIgnoreCase(obj)) {
-                    result = getOrganisation(query, value)
+                    result = OrgService.findOrganisation(query, value)
                     if(apiService.BAD_REQUEST != result) {
-                        result = apiService.resolveOrganisation(result, user, contextOrg)
+                        result = apiService.getOrganisation(result, user, contextOrg)
                     }
                 }
                 else if ('package'.equalsIgnoreCase(obj)) {
-                    result = getPackage(query, value)
+                    result = PkgService.findPackage(query, value)
                     if(apiService.BAD_REQUEST != result) {
                         result = apiService.resolvePackage(result, user, contextOrg)
                     }
                 }
                 else if ('subscription'.equalsIgnoreCase(obj)) {
-                    result = getSubscription(query, value)
+                    result = SubscriptionService.findSubscription(query, value)
                     if(apiService.BAD_REQUEST != result){
                         result = apiService.resolveSubscription(result, user, contextOrg)
                     }
@@ -325,31 +346,25 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 }
             }
 
-            // responses
+            // response
 
-            if (apiService.FORBIDDEN == result) {
-                response.status = HttpStatus.FORBIDDEN.value()
-                if(contextOrg) {
-                    result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode])
-                }
-                else {
-                    result = new JSON(["message": "forbidden", "obj": obj, "context": context])
-                }
-            }
-            else if (apiService.NOT_IMPLEMENTED == result) {
-                response.status = HttpStatus.NOT_IMPLEMENTED.value()
-                result = new JSON(["message": "service not implemented", "obj": obj])
-            }
-            else if (apiService.BAD_REQUEST == result) {
-                response.status = HttpStatus.BAD_REQUEST.value()
-                result = new JSON(["message": "invalid or missing identifier", "obj": obj, "q": query, "context": context])
-            }
-            else if (!result) {
-                response.status = HttpStatus.NOT_FOUND.value()
-                result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context])
-            }
+            result = buildResult(obj, query, value, context, contextOrg, result)
 
-            //} else if ('POST' == request.method) {
+/*        } else if ('POST' == request.method) {
+
+            if (!result) {
+                if ('organisation'.equalsIgnoreCase(obj)) {
+                    log.debug(request.reader.text)
+
+                    def data = new JSON().parse(request.reader.text)
+                    println data
+
+                    result = OrgService.findOrganisation(data)
+                } else {
+                    result = apiService.NOT_IMPLEMENTED
+                }
+            }
+*/
         } else {
             response.status = HttpStatus.METHOD_NOT_ALLOWED.value()
             result = new JSON(["message": "method not allowed"])
@@ -358,89 +373,30 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         render result.toString(true)
     }
 
-    private getDocument(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Doc.findWhere(id: Long.parseLong(value))
-        }
-        else if('uuid'.equalsIgnoreCase(query)) {
-            obj = Doc.findWhere(uuid: value)
-        }
-        else {
-            obj = apiService.BAD_REQUEST
-        }
-        obj
-    }
+    private buildResult(def obj, def query, def value, def context, def contextOrg, def result) {
 
-    private getLicense(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = License.findWhere(id: Long.parseLong(value))
+        if (apiService.FORBIDDEN == result) {
+            response.status = HttpStatus.FORBIDDEN.value()
+            if(contextOrg) {
+                result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode])
+            }
+            else {
+                result = new JSON(["message": "forbidden", "obj": obj, "context": context])
+            }
         }
-        else if('impId'.equalsIgnoreCase(query)) {
-            obj = License.findWhere(impId: value)
+        else if (apiService.NOT_IMPLEMENTED == result) {
+            response.status = HttpStatus.NOT_IMPLEMENTED.value()
+            result = new JSON(["message": "service not implemented", "obj": obj])
         }
-        else {
-            obj = apiService.BAD_REQUEST
+        else if (apiService.BAD_REQUEST == result) {
+            response.status = HttpStatus.BAD_REQUEST.value()
+            result = new JSON(["message": "invalid or missing identifier", "obj": obj, "q": query, "context": context])
         }
-        obj
-    }
+        else if (!result) {
+            response.status = HttpStatus.NOT_FOUND.value()
+            result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context])
+        }
 
-    private getOrganisation(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Org.findWhere(id: Long.parseLong(value))
-        }
-        else if('impId'.equalsIgnoreCase(query)) {
-            obj = Org.findWhere(impId: value)
-        }
-        else if('shortcode'.equalsIgnoreCase(query)) {
-            obj = Org.findWhere(shortcode: value)
-        }
-        else {
-            obj = apiService.BAD_REQUEST
-        }
-        obj
-    }
-
-    private getPackage(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Package.findWhere(id: Long.parseLong(value))
-        }
-        else if('identifier'.equalsIgnoreCase(query)) {
-            obj = Package.findWhere(identifier: value)
-        }
-        else if('impId'.equalsIgnoreCase(query)) {
-            obj = Package.findWhere(impId: value)
-        }
-        else {
-            obj = apiService.BAD_REQUEST
-        }
-        obj
-    }
-
-    /**
-     * API endpoint delegates
-     *
-     * @param query
-     * @param value
-     * @return
-     */
-    private getSubscription(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Subscription.findWhere(id: Long.parseLong(value))
-        }
-        else if('identifier'.equalsIgnoreCase(query)) {
-            obj = Subscription.findWhere(identifier: value)
-        }
-        else if('impId'.equalsIgnoreCase(query)) {
-            obj = Subscription.findWhere(impId: value)
-        }
-        else {
-            obj = apiService.BAD_REQUEST
-        }
-        obj
+        result
     }
 }

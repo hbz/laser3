@@ -8,6 +8,23 @@ class SubscriptionService {
 
     ExportHelperService exportHelperService
 
+    static def findSubscription(String query, String value) {
+        def obj
+        if('id'.equalsIgnoreCase(query)) {
+            obj = Subscription.findWhere(id: Long.parseLong(value))
+        }
+        else if('identifier'.equalsIgnoreCase(query)) {
+            obj = Subscription.findWhere(identifier: value)
+        }
+        else if('impId'.equalsIgnoreCase(query)) {
+            obj = Subscription.findWhere(impId: value)
+        }
+        else {
+            obj = ApiService.BAD_REQUEST
+        }
+        obj
+    }
+
     /**
      * @param com.k_int.kbplus.Subscription sub
      * @param com.k_int.kbplus.Org context

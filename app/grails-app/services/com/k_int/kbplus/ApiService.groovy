@@ -225,11 +225,30 @@ class ApiService {
         result
     }
 
+
+    def get() {
+
+    }
+
+    def post() {
+
+    }
+
+    def findDocument(String query, String value) {
+        def obj
+        if('id'.equalsIgnoreCase(query)) {
+            obj = Doc.findWhere(id: Long.parseLong(value))
+        }
+        else if('uuid'.equalsIgnoreCase(query)) {
+            obj = Doc.findWhere(uuid: value)
+        }
+        else {
+            obj = BAD_REQUEST
+        }
+        obj
+    }
+
     /**
-     *
-     * @param com.k_int.kbplus.Doc doc
-     * @param com.k_int.kbplus.auth.User
-     * @param com.k_int.kbplus.Org context
      * @return doc | ApiService.FORBIDDEN
      */
     def resolveDocument(Doc doc, User user, Org context){
@@ -268,10 +287,6 @@ class ApiService {
     }
 
     /**
-     *
-     * @param com.k_int.kbplus.License lic
-     * @param com.k_int.kbplus.auth.User
-     * @param com.k_int.kbplus.Org context
      * @return grails.converters.JSON | ApiService.FORBIDDEN
      */
     def resolveLicense(License lic, User user, Org context){
@@ -295,27 +310,19 @@ class ApiService {
     }
 
     /**
-     *
-     * @param com.k_int.kbplus.Org org
-     * @param com.k_int.kbplus.auth.User
-     * @param com.k_int.kbplus.Org context
      * @return grails.converters.JSON | ApiService.FORBIDDEN
      */
-    def resolveOrganisation(Org org, User user, Org context) {
+    def getOrganisation(Org org, User user, Org context) {
         if (!org) {
             return null
         }
         def hasAccess = true
-        def result = orgService.resolveOrganisation(org, context)
+        def result = orgService.getOrganisation(org, context)
 
         return (hasAccess ? new JSON(result) : FORBIDDEN)
     }
 
     /**
-     *
-     * @param com.k_int.kbplus.Package pkg
-     * @param com.k_int.kbplus.auth.User
-     * @param com.k_int.kbplus.Org context
      * @return grails.converters.JSON | ApiService.FORBIDDEN
      */
     def resolvePackage(Package pkg, User user, Org context) {
@@ -339,11 +346,7 @@ class ApiService {
     }
 
     /**
-     *
-     * @param com.k_int.kbplus.Subscription sub
-     * @param com.k_int.kbplus.auth.User
-     * @param com.k_int.kbplus.Org context
-     * @return grails.converters.JSON
+     * @return grails.converters.JSON | ApiService.FORBIDDEN
      */
     def resolveSubscription(Subscription sub, User user, Org context){
         if (!sub) {

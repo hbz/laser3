@@ -8,6 +8,20 @@ class LicenseService {
 
     ExportHelperService exportHelperService
 
+    static def findLicense(String query, String value) {
+        def obj
+        if('id'.equalsIgnoreCase(query)) {
+            obj = License.findWhere(id: Long.parseLong(value))
+        }
+        else if('impId'.equalsIgnoreCase(query)) {
+            obj = License.findWhere(impId: value)
+        }
+        else {
+            obj = ApiService.BAD_REQUEST
+        }
+        obj
+    }
+
     /**
      * @param com.k_int.kbplus.License lic
      * @param ignoreRelation

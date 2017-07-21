@@ -1,6 +1,7 @@
 package com.k_int.kbplus.api.v0.export
 
 import com.k_int.kbplus.*
+import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -8,12 +9,29 @@ class OrgService {
 
     ExportHelperService exportHelperService
 
+    static def findOrganisation(String query, String value) {
+        def obj
+        if('id'.equalsIgnoreCase(query)) {
+            obj = Org.findWhere(id: Long.parseLong(value))
+        }
+        else if('impId'.equalsIgnoreCase(query)) {
+            obj = Org.findWhere(impId: value)
+        }
+        else if('shortcode'.equalsIgnoreCase(query)) {
+            obj = Org.findWhere(shortcode: value)
+        }
+        else {
+            obj = ApiService.BAD_REQUEST
+        }
+        obj
+    }
+
     /**
      * @param com.k_int.kbplus.Org org
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    def resolveOrganisation(Org org, Org context) {
+    def getOrganisation(Org org, Org context) {
         def result = [:]
 
         result.id           = org.id
