@@ -29,7 +29,7 @@
 	    <input type="hidden" name="ownerId" value="${ownobj.id}"/>
 	    <input type="hidden" name="editable" value="${editable}"/>
 	    <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-            <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="btn btn-primary btn-small"/>
+        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="btn btn-primary btn-small"/>
 	</g:formRemote>
 </g:if>
 
@@ -39,6 +39,7 @@
     <tr>
       <th>${message(code:'licence.property.table.property')}</th>
       <th>${message(code:'licence.property.table.value')}</th>
+      <th>${message(code:'licence.property.table.paragraph')}</th>
       <th>${message(code:'licence.property.table.notes')}</th>
       <th>${message(code:'licence.property.table.delete')}</th>
     </tr>
@@ -61,6 +62,12 @@
                 <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
             </g:elseif>
         </td>
+            %{-- <g:elseif test="${prop.type.type == Integer.toString()}">   // prüfen, ob property hat paragraph --}%
+                <td>
+                    <g:xEditable owner="${prop}" type="text" field="paragraph"/>
+                </td>
+            %{-- </g:elseif> --}%
+
         <td>
         	<g:xEditable owner="${prop}" type="textarea" field="note"/>
         </td>

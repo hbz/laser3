@@ -1,10 +1,59 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import javax.persistence.Transient
 
 class LicenseCustomProperty extends CustomProperty {
+
+  // %{-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Begin Copied From Class AbstractProperty <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< --}%
+  @Transient
+  String          paragraph
+
+    static mapping = {
+        paragraph    type: 'text'
+        note         type: 'text'
+    }
+
+    static constraints = {
+    stringValue(nullable: true)
+    intValue(nullable: true)
+    decValue(nullable: true)
+    refValue(nullable: true)
+    paragraph(nullable: true)
+    note(nullable: true)
+  }
+
+  @Transient
+  def getValueType(){
+    if(stringValue) return "stringValue"
+    if(intValue) return "intValue"
+    if(decValue) return "decValue"
+    if(refValue) return "refValue"
+    if(paragraph) return "paragraph"
+  }
+
+  @Override
+  public String toString(){
+    if(stringValue) return stringValue
+    if(intValue) return intValue.toString()
+    if(decValue) return decValue.toString()
+    if(refValue) return refValue.toString()
+    if(paragraph) return paragraph
+  }
+
+  def copyValueAndNote(newProp){
+    if(stringValue) newProp.stringValue = stringValue
+    else if(intValue) newProp.intValue = intValue
+    else if(decValue) newProp.decValue = decValue
+    else if(paragraph) newProp.paragraph = paragraph
+    else if(refValue) newProp.refValue = refValue
+    newProp.note = note
+    newProp
+  }
+  // %{-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End Copied From Class AbstractProperty <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< --}%
+
   @Transient
   def grailsApplication
 
