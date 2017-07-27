@@ -33,8 +33,7 @@
         #swagger-ui .topbar .ui-box input {
             padding: 4px 6px;
         }
-        #swagger-ui .information-container pre.base-url + a,
-        #swagger-ui .information-container .description {
+        #swagger-ui .information-container pre.base-url + a {
             display: none;
         }
         #swagger-ui textarea.curl {
@@ -107,7 +106,7 @@
                 jQuery('.topbar-wrapper').append('<span class="ui-box"><input name="apiKey" type="text" placeholder="Your API Key" value="${apiKey}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box"><input name="apiSecret" type="password" placeholder="Your API Secret" value="${apiSecret}"></span>')
 
-                jQuery('.opblock').delegate('input', 'change', function() {
+                jQuery('.opblock').delegate('input, textarea', 'change', function() {
                     genDigist(jQuery(this).parents('.parameters').first())
                 })
 
@@ -129,32 +128,21 @@
 
                 if(method == "GET") {
                     query = "q=" + jQuery(div).find('input[placeholder="q - Identifier for this query"]').val().trim()
+                    //query   = "q=" + jQuery(div).find('select').val()
                             + "&v=" + jQuery(div).find('input[placeholder="v - Value for this query"]').val().trim()
                             + (context ? "&context=" + context : '')
                 }
                 else if(method == "POST") {
                     query = (context ? "&context=" + context : '')
-                    body = jQuery(div).find('.body-param > textarea').val().trim()
-
-                    console.log(key)
-                    console.log(method)
-                    console.log(path)
-                    console.log(timestamp)
-                    console.log(nounce)
-                    console.log(query)
-                    console.log(body)
-
-                    /*var test = ''
-                    for(j = 0; j < body.length; j++) {
-                        test += body.charCodeAt(j);
-                    }
-                    console.log(test)*/
+                    body  = jQuery(div).find('.body-param > textarea').val().trim()
                 }
 
                 var algorithm = "hmac-sha256"
                 var digest    = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, secret)
                 var authorization = "hmac " + key + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
-                jQuery(div).find('input[placeholder="Authorization - hmac-sha256 generated auth header"]').val(authorization).attr('value', authorization).focus().select()
+
+                console.log(authorization)
+                jQuery(div).find('input[placeholder="Authorization - hmac-sha256 generated auth header"]').val(authorization).attr('value', authorization)
             }
         }
     </script>

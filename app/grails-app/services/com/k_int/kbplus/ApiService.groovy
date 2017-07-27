@@ -1,22 +1,14 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.api.v0.export.*
-import com.k_int.kbplus.auth.User
-import grails.converters.JSON
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
 @Log4j
 class ApiService {
 
-    static final FORBIDDEN       = "FORBIDDEN"
-    static final BAD_REQUEST     = "BAD_REQUEST"
-    static final NOT_IMPLEMENTED = "NOT_IMPLEMENTED"
-
-    LicenseService licenseService
-    OrgService orgService
-    PkgService pkgService
-    SubscriptionService subscriptionService
+    static final FORBIDDEN          = "FORBIDDEN"
+    static final BAD_REQUEST        = "BAD_REQUEST"
+    static final NOT_IMPLEMENTED    = "NOT_IMPLEMENTED"
 
     /**
      *
@@ -223,148 +215,5 @@ class ApiService {
         }
         
         result
-    }
-
-
-    def get() {
-
-    }
-
-    def post() {
-
-    }
-
-    def findDocument(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Doc.findWhere(id: Long.parseLong(value))
-        }
-        else if('uuid'.equalsIgnoreCase(query)) {
-            obj = Doc.findWhere(uuid: value)
-        }
-        else {
-            obj = BAD_REQUEST
-        }
-        obj
-    }
-
-    /**
-     * @return doc | ApiService.FORBIDDEN
-     */
-    def resolveDocument(Doc doc, User user, Org context){
-        if (!doc) {
-            return null
-        }
-        def hasAccess = false
-
-        DocContext.findAllByOwner(doc).each{ dc ->
-            if(dc.license) {
-                dc.getLicense().getOrgLinks().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-            if(dc.pkg) {
-                dc.getPkg().getOrgs().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-            if(dc.subscription) {
-                dc.getSubscription().getOrgRelations().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-        }
-        return (hasAccess ? doc : FORBIDDEN)
-    }
-
-    /**
-     * @return grails.converters.JSON | ApiService.FORBIDDEN
-     */
-    def resolveLicense(License lic, User user, Org context){
-        if (!lic) {
-            return null
-        }
-        def hasAccess = false
-
-        lic.orgLinks.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
-            }
-        }
-
-        def result = []
-        if(hasAccess) {
-            result = licenseService.resolveLicense(lic, ExportHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
-        }
-
-        return (hasAccess ? new JSON(result) : FORBIDDEN)
-    }
-
-    /**
-     * @return grails.converters.JSON | ApiService.FORBIDDEN
-     */
-    def getOrganisation(Org org, User user, Org context) {
-        if (!org) {
-            return null
-        }
-        def hasAccess = true
-        def result = orgService.getOrganisation(org, context)
-
-        return (hasAccess ? new JSON(result) : FORBIDDEN)
-    }
-
-    /**
-     * @return grails.converters.JSON | ApiService.FORBIDDEN
-     */
-    def resolvePackage(Package pkg, User user, Org context) {
-        if (!pkg) {
-            return null
-        }
-        def hasAccess = true
-
-        //pkg.orgs.each{ orgRole ->
-        //    if(orgRole.getOrg().id == context?.id) {
-        //        hasAccess = true
-        //    }
-        //}
-
-        def result = []
-        if (hasAccess) {
-            result = pkgService.resolvePackage(pkg, context) // TODO check orgRole.roleType
-        }
-
-        return (hasAccess ? new JSON(result) : FORBIDDEN)
-    }
-
-    /**
-     * @return grails.converters.JSON | ApiService.FORBIDDEN
-     */
-    def resolveSubscription(Subscription sub, User user, Org context){
-        if (!sub) {
-            return null
-        }
-        def hasAccess = false
-
-        sub.orgRelations.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
-            }
-        }
-
-        def result = []
-        if (hasAccess) {
-            result = subscriptionService.resolveSubscription(sub, context) // TODO check orgRole.roleType
-        }
-
-        return (hasAccess ? new JSON(result) : FORBIDDEN)
     }
 }

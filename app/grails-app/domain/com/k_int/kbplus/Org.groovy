@@ -83,36 +83,39 @@ class Org {
     membership(nullable:true, blank:true, maxSize:128);
   }
 
-  def beforeInsert() {
-    if ( !shortcode ) {
-      shortcode = generateShortcode(name);
-    }
-  }
-
-  def beforeUpdate() {
-    if ( !shortcode ) {
-      shortcode = generateShortcode(name);
-    }
-  }
-
-  def generateShortcode(name) {
-    def candidate = StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
-    return incUntilUnique(candidate);
-  }
-
-  def incUntilUnique(name) {
-    def result = name;
-    if ( Org.findByShortcode(result) ) {
-      // There is already a shortcode for that identfier
-      int i = 2;
-      while ( Org.findByShortcode("${name}_${i}") ) {
-        i++
-      }
-      result = "${name}_${i}"
+    def beforeInsert() {
+        if ( !shortcode ) {
+            shortcode = generateShortcode(name);
+        }
     }
 
-    result;
-  }
+    def beforeUpdate() {
+        if ( !shortcode ) {
+            shortcode = generateShortcode(name);
+        }
+    }
+
+    static generateShortcodeFunction(name) {
+        return StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
+    }
+
+    def generateShortcode(name) {
+        def candidate = Org.generateShortcodeFunction(name)
+        return incUntilUnique(candidate);
+    }
+
+    def incUntilUnique(name) {
+        def result = name;
+        if ( Org.findByShortcode(result) ) {
+            // There is already a shortcode for that identfier
+            int i = 2;
+            while ( Org.findByShortcode("${name}_${i}") ) {
+                i++
+            }
+            result = "${name}_${i}"
+        }
+        result;
+    }
 
   static def lookupByIdentifierString(idstr) {
 

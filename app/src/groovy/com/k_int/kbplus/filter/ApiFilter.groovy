@@ -34,15 +34,8 @@ class ApiFilter extends GenericFilterBean {
             def method = request.getMethod()
             def path   = request.getServletPath()
             def query  = request.getQueryString()
-            def body   = IOUtils.toString(request.getReader())
+            def body   = IOUtils.toString(request.getInputStream())
 
-            /*def test = ''
-            for (int j = 0; j < body.length(); j++) {
-                test += Character.codePointAt(body, j)
-            }
-
-
-                println test*/
             String authorization = request.getHeader('Authorization')
             try {
                 if (authorization) {
@@ -69,13 +62,14 @@ class ApiFilter extends GenericFilterBean {
                                 path +      // uri
                                 timestamp + // timestamp
                                 nounce +    // nounce
-                                query +     // parameter
+                                        (query ? URLDecoder.decode(query) : '') + // parameter
                                 body,         // body
                                 apiSecret)
 
                         isAuthorized = (checksum == digest)
                         if(isAuthorized) {
                             request.setAttribute('authorizedApiUser', apiUser)
+                            request.setAttribute('authorizedApiUsersPostBody', body)
                         }
                     }
                 }

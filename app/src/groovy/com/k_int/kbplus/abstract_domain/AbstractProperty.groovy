@@ -1,5 +1,6 @@
 package com.k_int.kbplus.abstract_domain
 
+import com.k_int.kbplus.RefdataCategory
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.License
 import com.k_int.kbplus.RefdataValue
@@ -42,6 +43,7 @@ abstract class AbstractProperty implements Serializable{
         if(decValue) return decValue.toString()
         if(refValue) return refValue.toString()
     }
+
     def copyValueAndNote(newProp){
         if(stringValue) newProp.stringValue = stringValue
         else if(intValue) newProp.intValue = intValue
@@ -73,7 +75,23 @@ abstract class AbstractProperty implements Serializable{
         return result
     }
 
-  public String getValue() {
-    return toString()
-  }
+    def setValue(value, type, rdc) {
+
+        if (type == Integer.toString()) {
+            intValue = parseValue(value, type)
+        }
+        else if (type == BigDecimal.toString()) {
+            decValue = parseValue(value, type)
+        }
+        else if (type == String.toString()) {
+            stringValue = parseValue(value, type)
+        }
+        else if (type == RefdataValue.toString()) {
+            refValue = RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc(rdc), value.toString())
+        }
+    }
+
+    public String getValue() {
+        return toString()
+    }
 }

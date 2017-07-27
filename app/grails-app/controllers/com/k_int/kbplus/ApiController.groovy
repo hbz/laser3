@@ -1,18 +1,16 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.api.v0.export.LicenseService
-import com.k_int.kbplus.api.v0.export.OrgService
-import com.k_int.kbplus.api.v0.export.PkgService
-import com.k_int.kbplus.api.v0.export.SubscriptionService
-import org.apache.poi.hslf.model.*
+import com.k_int.kbplus.api.v0.MainService
 import com.k_int.kbplus.auth.*
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 import org.springframework.http.HttpStatus
 
 class ApiController {
 
     def springSecurityService
     ApiService apiService
+    MainService mainService
 
     ApiController(){
         super()
@@ -31,7 +29,7 @@ class ApiController {
         result
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def uploadBibJson() {
         def result = [:]
         log.debug("uploadBibJson");
@@ -83,7 +81,7 @@ class ApiController {
 
     // Assert a core status against a title/institution. Creates TitleInstitutionProvider objects
     // For all known combinations.
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def assertCore() {
         // Params:     inst - [namespace:]code  Of an org [mandatory]
         //            title - [namespace:]code  Of a title [mandatory]
@@ -225,7 +223,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         render result as JSON
     }
 
-    //@Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
     def orgsImport() {
         log.info("SIMPLE orgsImport() .. ROLE_API_WRITER required")
 
@@ -253,20 +251,19 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         def query   = params.get('q')
         def value   = params.get('v', '')
         def context = params.get('context')
-        def method  = request.getMethod()
 
         Org contextOrg = null
         User user = (User) request.getAttribute('authorizedApiUser')
 
-        if(user){
+        if( user){
             // checking role permission
 
-            if("GET" == method) {
+            if ("GET" == request.method) {
                 def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_READER'))
                 hasRole = !readRole.isEmpty()
                 println "GET: " + hasRole
             }
-            else if("POST" == method) {
+            else if ("POST" == request.method) {
                 def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_WRITER'))
                 hasRole = !writeRole.isEmpty()
                 println "POST: " + hasRole
@@ -274,40 +271,38 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             // getting context
 
-            if(context) {
+            if (context) {
                 user.authorizedAffiliations.each { uo -> //  com.k_int.kbplus.auth.UserOrg
                     def org = Org.findWhere(id: uo.org.id, shortcode: params.get('context'))
-                    if(org) {
+                    if (org) {
                         contextOrg = org
                     }
                 }
             }
-            else if(user.authorizedAffiliations.size() == 1) {
+            else if (user.authorizedAffiliations.size() == 1) {
                 def uo = user.authorizedAffiliations[0]
                 contextOrg = Org.findWhere(id: uo.org.id)
             }
         }
 
         if (!contextOrg || !hasRole) {
-            result = apiService.FORBIDDEN
+            result = mainService.FORBIDDEN
         }
-        else if (!value) {
-            result = apiService.BAD_REQUEST
+        else if (!obj) {
+            result = mainService.BAD_REQUEST
         }
 
         // delegate api calls
 
-        if ('GET' == request.method) {
-            response.setContentType("application/json")
+        if (!result) {
+            if ('GET' == request.method) {
+                if (!query || !value) {
+                    result = mainService.BAD_REQUEST
+                }
+                else {
+                    result = mainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg)
 
-            if (!result) {
-                if ('document'.equalsIgnoreCase(obj)) {
-                    result = apiService.findDocument(query, value)
-                    if(apiService.BAD_REQUEST != result){
-                        result = apiService.resolveDocument(result, user, contextOrg)
-                    }
                     if (result instanceof Doc) {
-                        // TODO
                         if (result.contentType == 3) {
                             response.contentType = result.mimeType
                             response.setHeader('Content-disposition', 'attachment; filename="' + result.title + '"')
@@ -317,82 +312,69 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                         }
                     }
                 }
-                else if ('license'.equalsIgnoreCase(obj)) {
-                    result = LicenseService.findLicense(query, value)
-                    if(apiService.BAD_REQUEST != result){
-                        result = apiService.resolveLicense(result, user, contextOrg)
-                    }
-                }
-                else if ('organisation'.equalsIgnoreCase(obj)) {
-                    result = OrgService.findOrganisation(query, value)
-                    if(apiService.BAD_REQUEST != result) {
-                        result = apiService.getOrganisation(result, user, contextOrg)
-                    }
-                }
-                else if ('package'.equalsIgnoreCase(obj)) {
-                    result = PkgService.findPackage(query, value)
-                    if(apiService.BAD_REQUEST != result) {
-                        result = apiService.resolvePackage(result, user, contextOrg)
-                    }
-                }
-                else if ('subscription'.equalsIgnoreCase(obj)) {
-                    result = SubscriptionService.findSubscription(query, value)
-                    if(apiService.BAD_REQUEST != result){
-                        result = apiService.resolveSubscription(result, user, contextOrg)
-                    }
+            }
+            else if ('POST' == request.method) {
+                def postBody = request.getAttribute("authorizedApiUsersPostBody")
+                def data = (postBody ? new JSON().parse(postBody) : null)
+
+                if (!data) {
+                    result = MainService.BAD_REQUEST
                 }
                 else {
-                    result = apiService.NOT_IMPLEMENTED
+                    result = mainService.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
-
-            // response
-
-            result = buildResult(obj, query, value, context, contextOrg, result)
-
-/*        } else if ('POST' == request.method) {
-
-            if (!result) {
-                if ('organisation'.equalsIgnoreCase(obj)) {
-                    log.debug(request.reader.text)
-
-                    def data = new JSON().parse(request.reader.text)
-                    println data
-
-                    result = OrgService.findOrganisation(data)
-                } else {
-                    result = apiService.NOT_IMPLEMENTED
-                }
+            else {
+                result = mainService.NOT_IMPLEMENTED
             }
-*/
-        } else {
-            response.status = HttpStatus.METHOD_NOT_ALLOWED.value()
-            result = new JSON(["message": "method not allowed"])
         }
 
+        result = buildResponse(obj, query, value, context, contextOrg, result)
+
+        response.setContentType("application/json")
         render result.toString(true)
     }
 
-    private buildResult(def obj, def query, def value, def context, def contextOrg, def result) {
+    private buildResponse(def obj, def query, def value, def context, def contextOrg, def result) {
 
-        if (apiService.FORBIDDEN == result) {
+        // POST
+
+        if (result instanceof HashMap) {
+            if (mainService.CREATED == result['result']) {
+                response.status = HttpStatus.CREATED.value()
+                result = new JSON(["message": "resource successfully created", "debug": result['debug']])
+            }
+            else if (mainService.CONFLICT == result['result']) {
+                response.status = HttpStatus.CONFLICT.value()
+                result = new JSON(["message": "conflict with existing resource", "debug": result['debug']])
+            }
+            else if (mainService.INTERNAL_SERVER_ERROR == result['result']) {
+                response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+                result = new JSON(["message": "resource not created", "debug": result['debug']])
+            }
+        }
+
+        // GET
+
+        else if (mainService.FORBIDDEN == result) {
             response.status = HttpStatus.FORBIDDEN.value()
-            if(contextOrg) {
+            if (contextOrg) {
                 result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode])
             }
             else {
                 result = new JSON(["message": "forbidden", "obj": obj, "context": context])
             }
         }
-        else if (apiService.NOT_IMPLEMENTED == result) {
+        else if (mainService.NOT_IMPLEMENTED == result) {
             response.status = HttpStatus.NOT_IMPLEMENTED.value()
-            result = new JSON(["message": "service not implemented", "obj": obj])
+            result = new JSON(["message": "not implemented", "method": request.method, "obj": obj])
         }
-        else if (apiService.BAD_REQUEST == result) {
+        else if (mainService.BAD_REQUEST == result) {
             response.status = HttpStatus.BAD_REQUEST.value()
-            result = new JSON(["message": "invalid or missing identifier", "obj": obj, "q": query, "context": context])
+            result = new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context])
         }
-        else if (!result) {
+
+        if (!result) {
             response.status = HttpStatus.NOT_FOUND.value()
             result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context])
         }

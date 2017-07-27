@@ -1,14 +1,15 @@
 ---
 swagger: "2.0"
 info:
-  version: "0.3"
+  version: "0.4"
   title: LAS:eR API
-  description: First scratch
+  description: >
+    Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
   contact:
     email: david.klober@hbz-nrw.de
 
-#basePath: /demo/api/v0 # development
-basePath: /api/v0 # prod
+basePath: /demo/api/v0 # development
+#basePath: /api/v0 # prod
 schemes:
   - http
 
@@ -20,6 +21,14 @@ parameters:
     required: true
     type: string
     description: Identifier for this query
+#    enum:
+#      - id
+#      - identifier
+#      - impId
+#      - uuid
+#      - name
+#      - namespace:identifier
+#      - shortcode
   v:
     in: query
     name: v
@@ -45,10 +54,16 @@ responses:
     description: OK
   badRequest:
     description: Invalid or missing identifier/value
-  notAuthorized:
-    description: Request is not authorized
+  conflict:
+    description: Conflict with existing resource
+  created:
+    description: Resource successfully created
   forbidden:
     description: Forbidden access to this resource
+  internalServerError:
+    description: Resource not created
+  notAuthorized:
+    description: Request is not authorized
   notImplemented:
     description: Request not implemented
 
@@ -110,7 +125,7 @@ paths:
     get:
       summary: Find organisation by identifier
       description: >
-        Supported are queries by following identifiers: *id*, *impId* and *shortcode*
+        Supported are queries by following identifiers: *id*, *impId*, *identifier*, *shortcode*. Identifier value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -132,28 +147,32 @@ paths:
         404:
           description: Valid request, but organisation not found
 
-#    post:
-#      summary: Create organisation
-#      parameters:
-#        - $ref: "#/parameters/context"
-#        - $ref: "#/parameters/authorization"
-#        - in: body
-#          name: body
-#          required: true
-#          schema:
-#            $ref: "#/definitions/Organisation"
-#          description: Object data
-#      consumes:
-#        - "application/json"
-#      produces:
-#        - application/json
-#      responses:
-#        200:
-#          description: OK
-#        401:
-#          $ref: "#/responses/notAuthorized"
-#        403:
-#          $ref: "#/responses/forbidden"
+    post:
+      summary: Create organisation
+      parameters:
+        - $ref: "#/parameters/context"
+        - $ref: "#/parameters/authorization"
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/Organisation"
+          description: Object data
+      consumes:
+        - "application/json"
+      produces:
+        - application/json
+      responses:
+        201:
+          $ref: "#/responses/created"
+        400:
+          $ref: "#/responses/badRequest"
+        401:
+          $ref: "#/responses/notAuthorized"
+        409:
+          $ref: "#/responses/conflict"
+        500:
+          $ref: "#/responses/internalServerError"
 
   /package:
     get:
@@ -242,7 +261,7 @@ definitions:
         readOnly: true
       name:
         type: string
-        example: "Hochschulbibliothekszentrum NRW"
+        example: "Hochschulbibliothekszentrum des Landes NRW"
       identifiers: # mapping attr ids
         type: array
         items:
@@ -250,7 +269,7 @@ definitions:
       shortcode:
         type: string
         readOnly: true
-        example: "Hochschulbibliothekszentrum_NRW"
+        example: "Hochschulbibliothekszentrum_des_Landes_NRW"
 
   PackageStub:
     type: object
@@ -1121,9 +1140,8 @@ definitions:
           $ref: "#/definitions/Property"
       roles:
         type: array
-        readOnly: true
         items:
-          $ref: "#/definitions/PersonRole"
+          $ref: "#/definitions/PersonRole_as_Function"
 
   PersonRole:
     type: object
@@ -1131,54 +1149,66 @@ definitions:
       id:
         type: integer
         readOnly: true
-      cluster:
-        description: |
-          Exclusive with license, organisation, package, subscription and title
-        $ref: "#/definitions/ClusterStub"
       endDate:
         type: string
         format: date
         example: "2016-12-31T23:00:00Z"
-      functionType:
-        type: string
-        description: |
-          Exclusive with responsibilityType |
-          Mapping RefdataCategory "Person Function"
-        enum:
-          ["General contact person"]
-        example: "General contact person"
-      license:
-        description: |
-          Exclusive with cluster, organisation, package, subscription and title
-        $ref: "#/definitions/LicenseStub"
-      organisation:
-        description: |
-          Exclusive with cluster, license, package, subscription and title
-        $ref: "#/definitions/OrganisationStub"
-      package:
-        description: |
-          Exclusive with cluster, license, organisation, subscription and title
-        $ref: "#/definitions/PackageStub"
-      responsibilityType:
-        type: string
-        description: |
-          Exclusive with functionType |
-          Mapping RefdataCategory "Person Responsibility"
-        enum:
-          ["Specific licence editor", "Specific subscription editor", "Specific package editor", "Specific cluster editor", "Specific title editor"]
-        example: "Specific licence editor"
       startDate:
         type: string
         format: date
         example: "2016-01-01T00:00:00Z"
-      subscription:
-        description: |
-          Exclusive with cluster, license, organisation, package and title
-        $ref: "#/definitions/SubscriptionStub"
-      title:
-        description: |
-          Exclusive with cluster, license, organisation, package and subscription
-        $ref: "#/definitions/TitleStub"
+
+  PersonRole_as_Function:
+    allOf:
+      - $ref: "#/definitions/PersonRole"
+      - type: object
+        properties:
+          functionType:
+            type: string
+            description: |
+              Exclusive with responsibilityType |
+              Mapping RefdataCategory "Person Function"
+            enum:
+              ["General contact person"]
+            example: "General contact person"
+
+  PersonRole_as_Responsibility:
+    allOf:
+      - $ref: "#/definitions/PersonRole"
+      - type: object
+        properties:
+          cluster:
+            description: |
+              Exclusive with license, organisation, package, subscription and title
+            $ref: "#/definitions/ClusterStub"
+          license:
+            description: |
+              Exclusive with cluster, organisation, package, subscription and title
+            $ref: "#/definitions/LicenseStub"
+          organisation:
+            description: |
+              Exclusive with cluster, license, package, subscription and title
+            $ref: "#/definitions/OrganisationStub"
+          package:
+            description: |
+              Exclusive with cluster, license, organisation, subscription and title
+            $ref: "#/definitions/PackageStub"
+          responsibilityType:
+            type: string
+            description: |
+              Exclusive with functionType |
+              Mapping RefdataCategory "Person Responsibility"
+            enum:
+              ["Specific licence editor", "Specific subscription editor", "Specific package editor", "Specific cluster editor", "Specific title editor"]
+            example: "Specific licence editor"
+          subscription:
+            description: |
+              Exclusive with cluster, license, organisation, package and title
+            $ref: "#/definitions/SubscriptionStub"
+          title:
+            description: |
+              Exclusive with cluster, license, organisation, package and subscription
+                  $ref: "#/definitions/TitleStub"
 
   Property:
     type: object
@@ -1188,10 +1218,13 @@ definitions:
         readOnly: true
       description: # mapping attr descr
         type: string
+        example: "Licence Property"
       name:
         type: string
+        example: "Remote Access"
       note:
         type: string
+        example: "This is an important note"
   #    tenant:
   #      $ref: "#/definitions/OrganisationStub"
   #      description: If set, this property is *private*
@@ -1203,6 +1236,7 @@ definitions:
         example: "Yes"
       value: # mapping attr stringValue, intValue, decValue, refValue
         type: string
+        example: "No"
 
   Subscription:
     allOf:
