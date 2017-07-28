@@ -10,33 +10,32 @@
   </head>
 
   <body>
-    <div class="container">
-        <ul class="breadcrumb">
-          <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-          <li> <g:link controller="myInstitutions" action="currentTitles" params="[shortcode:params.shortcode]">${institution.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</g:link> </li>
-          <li class="dropdown pull-right">
-            <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">
-              ${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
-            <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-	            <li>
-	              <g:link action="currentTitles" params="${params+[format:'csv']}">CSV</g:link>
-	            </li>
-	            <li>
-	              <g:link action="currentTitles" params="${params+[format:'json']}">JSON</g:link>
-	            </li>
-	            <li>
-	              <g:link action="currentTitles" params="${params+[format:'xml',shortcode:params.shortcode]}">XML</g:link>
-	            </li>
 
-              <g:each in="${transforms}" var="transkey,transval">
-                <li><g:link action="currentTitles" id="${params.id}" params="${params+[format:'xml',transformId:transkey]}"> ${transval.name}</g:link></li>
-              </g:each>
+    <laser:breadcrumbs>
+        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <laser:crumb message="myinst.currentTitles.label" class="active" />
+        <li class="dropdown pull-right">
+            <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">
+                ${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
+            <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
+                <li>
+                    <g:link action="currentTitles" params="${params+[format:'csv']}">CSV</g:link>
+                </li>
+                <li>
+                    <g:link action="currentTitles" params="${params+[format:'json']}">JSON</g:link>
+                </li>
+                <li>
+                    <g:link action="currentTitles" params="${params+[format:'xml',shortcode:params.shortcode]}">XML</g:link>
+                </li>
+
+                <g:each in="${transforms}" var="transkey,transval">
+                    <li><g:link action="currentTitles" id="${params.id}" params="${params+[format:'xml',transformId:transkey]}"> ${transval.name}</g:link></li>
+                </g:each>
 
             </ul>
-          </li>
-        </ul>
-    </div>
-    
+        </li>
+    </laser:breadcrumbs>
+
     <g:if test="${flash.message}">
       <div class="container">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>

@@ -8,15 +8,13 @@
   </head>
   <body>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> </li>
-          <g:if test="${editable}">
-              <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
-          </g:if>
-      </ul>
-    </div>
+  <laser:breadcrumbs>
+    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+    <laser:crumb message="myinst.currentSubscriptions.label" class="active" />
+    <g:if test="${editable}">
+      <laser:crumbAsBadge message="default.editable" class="badge-warning" />
+    </g:if>
+  </laser:breadcrumbs>
 
    <g:if test="${flash.message}">
       <div class="container">

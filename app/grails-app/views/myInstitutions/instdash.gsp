@@ -8,7 +8,7 @@
   <body>
 
     <laser:breadcrumbs>
-        <laser:crumb controller="myInstitutions" action="instdash" params="${[shortcode:params.shortcode]}" text="${institution?.name}" message="menu.institutions.dash" class="active" />
+        <laser:crumb text="${institution?.name}" class="active" />
     </laser:breadcrumbs>
 
     <div class="container home-page">

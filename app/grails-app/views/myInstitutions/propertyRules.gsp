@@ -10,21 +10,10 @@
     </head>
     <body>
 
-        <div class="container">
-            <ul class="breadcrumb">
-                <li>
-        	        <g:link controller="home" action="index">${message(code: 'default.home.label', default: 'Home')}</g:link>
-        	        <span class="divider">/</span>
-                </li>
-            <li>
-        	    <g:link controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}">${institution.name}</g:link>
-        	    <span class="divider">/</span>
-            </li>
-		    <li>
-			    <g:link controller="myInstitutions" action="propertyRules" params="${[shortcode:params.shortcode]}">${message(code: 'menu.institutions.manage_props', default: 'Manage Property Rules')}</g:link>
-		    </li>
-        </ul>
-    </div>
+    <laser:breadcrumbs>
+        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <laser:crumb message="menu.institutions.manage_props" class="active" />
+    </laser:breadcrumbs>
 
     <g:if test="${flash.message}">
         <div class="container">

@@ -6,18 +6,12 @@
   </head>
 
   <body>
-    <div class="container">
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}">${institution.name} - Dashboard</g:link> <span class="divider">/</span>  </li>
-        <li> <g:link controller="myInstitutions" action="tipview" params="${[shortcode:params.shortcode]}"> ${message(code:'myinst.tipview.label', default:'Edit Core Titles')} (JUSP & KB+) </g:link> </li>
+    <laser:breadcrumbs>
+      <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+      <laser:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
+    </laser:breadcrumbs>
 
-      </ul>
-    </div>
-
-    </div>
       <div class="container">
 
 

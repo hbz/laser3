@@ -48,4 +48,13 @@ class BreadCrumbsTagLib {
         }
         out << '</li>'
     }
+
+    def crumbAsBadge = { attrs, body ->
+
+        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+
+        out << '<li class="pull-right">'
+        out << '<span class="badge ' + attrs.class + '">' + lbMessage + '</span>'
+        out << '</li>'
+    }
 }
