@@ -340,17 +340,20 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         // POST
 
         if (result instanceof HashMap) {
-            if (mainService.CREATED == result['result']) {
-                response.status = HttpStatus.CREATED.value()
-                result = new JSON(["message": "resource successfully created", "debug": result['debug']])
-            }
-            else if (mainService.CONFLICT == result['result']) {
-                response.status = HttpStatus.CONFLICT.value()
-                result = new JSON(["message": "conflict with existing resource", "debug": result['debug']])
-            }
-            else if (mainService.INTERNAL_SERVER_ERROR == result['result']) {
-                response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
-                result = new JSON(["message": "resource not created", "debug": result['debug']])
+
+            switch(result['result']) {
+                case mainService.CREATED:
+                    response.status = HttpStatus.CREATED.value()
+                    result = new JSON(["message": "resource successfully created", "debug": result['debug']])
+                    break
+                case mainService.CONFLICT:
+                    response.status = HttpStatus.CONFLICT.value()
+                    result = new JSON(["message": "conflict with existing resource", "debug": result['debug']])
+                    break
+                case mainService.INTERNAL_SERVER_ERROR:
+                    response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+                    result = new JSON(["message": "resource not created", "debug": result['debug']])
+                    break
             }
         }
 

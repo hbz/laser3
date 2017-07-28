@@ -36,22 +36,22 @@ class MainService {
                 result = getDocument((Doc) result, user, contextOrg)
             }
         } else if ('license'.equalsIgnoreCase(obj)) {
-            result = findLicenseBy(query, value) // null or license
+            result = licenseService.findLicenseBy(query, value) // null or license
             if (result && BAD_REQUEST != result) {
                 result = getLicense((License) result, user, contextOrg)
             }
         } else if ('organisation'.equalsIgnoreCase(obj)) {
-            result = findOrganisationBy(query, value) // null or organisation
+            result = orgService.findOrganisationBy(query, value) // null or organisation
             if (result && BAD_REQUEST != result) {
                 result = getOrganisation((Org) result, user, contextOrg)
             }
         } else if ('package'.equalsIgnoreCase(obj)) {
-            result = findPackageBy(query, value) // null or package
+            result = pkgService.findPackageBy(query, value) // null or package
             if (result && BAD_REQUEST != result) {
                 result = getPackage((Package) result, user, contextOrg)
             }
         } else if ('subscription'.equalsIgnoreCase(obj)) {
-            result = findSubscriptionBy(query, value) // null or subscription
+            result = subscriptionService.findSubscriptionBy(query, value) // null or subscription
             if (result && BAD_REQUEST != result) {
                 result = getSubscription((Subscription) result, user, contextOrg)
             }
@@ -71,9 +71,9 @@ class MainService {
             // check existing resources
 
             def check = []
-            check << findOrganisationBy('shortcode', Org.generateShortcodeFunction(data.name.trim()))
+            check << orgService.findOrganisationBy('shortcode', Org.generateShortcodeFunction(data.name.trim()))
             data.identifiers?.each{ it ->
-                check << findOrganisationBy('identifier', it.namespace + ":" + it.value)
+                check << orgService.findOrganisationBy('identifier', it.namespace + ":" + it.value)
             }
             check.removeAll([null, BAD_REQUEST])
 
@@ -89,101 +89,23 @@ class MainService {
         result
     }
 
+
     /**
-     * @return Doc | FORBIDDEN
+     * @return Doc | BAD_REQUEST
      */
     def findDocumentBy(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Doc.findWhere(id: Long.parseLong(value))
-        }
-        else if('uuid'.equalsIgnoreCase(query)) {
-            obj = Doc.findWhere(uuid: value)
-        }
-        else {
-            obj = BAD_REQUEST
-        }
-        obj
-    }
 
-    /**
-     * @return License | FORBIDDEN
-     */
-    def findLicenseBy(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = License.findWhere(id: Long.parseLong(value))
+        switch(query) {
+            case 'id':
+                return Doc.findWhere(id: Long.parseLong(value))
+                break
+            case 'uuid':
+                return Doc.findWhere(uuid: value)
+                break
+            default:
+                return BAD_REQUEST
+                break
         }
-        else if('impId'.equalsIgnoreCase(query)) {
-            obj = License.findWhere(impId: value)
-        }
-        else {
-            obj = BAD_REQUEST
-        }
-        obj
-    }
-
-    /**
-     * @return Org | FORBIDDEN
-     */
-    def findOrganisationBy(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Org.findWhere(id: Long.parseLong(value))
-        }
-        else if('impId'.equalsIgnoreCase(query)) {
-            obj = Org.findWhere(impId: value)
-        }
-        else if('identifier'.equalsIgnoreCase(query)) {
-            obj = Org.lookupByIdentifierString(value)
-        }
-        else if('shortcode'.equalsIgnoreCase(query)) {
-            obj = Org.findWhere(shortcode: value)
-        }
-        else {
-            obj = BAD_REQUEST
-        }
-        obj
-    }
-
-    /**
-     * @return Package | FORBIDDEN
-     */
-    def findPackageBy(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Package.findWhere(id: Long.parseLong(value))
-        }
-        else if('identifier'.equalsIgnoreCase(query)) { // != identifiers
-            obj = Package.findWhere(identifier: value)
-        }
-        else if('impId'.equalsIgnoreCase(query)) {
-            obj = Package.findWhere(impId: value)
-        }
-        else {
-            obj = BAD_REQUEST
-        }
-        obj
-    }
-
-    /**
-     * @return Subscription | FORBIDDEN
-     */
-    def findSubscriptionBy(String query, String value) {
-        def obj
-        if('id'.equalsIgnoreCase(query)) {
-            obj = Subscription.findWhere(id: Long.parseLong(value))
-        }
-        else if('identifier'.equalsIgnoreCase(query)) { // != identifiers
-            obj = Subscription.findWhere(identifier: value)
-        }
-        else if('impId'.equalsIgnoreCase(query)) {
-            obj = Subscription.findWhere(impId: value)
-        }
-        else {
-            obj = BAD_REQUEST
-        }
-        obj
     }
 
     /**
