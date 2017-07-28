@@ -8,12 +8,9 @@
 
   <body>
 
-    <div class="container">
-        <ul class="breadcrumb">
-        <li> <g:link controller="home">${message(code: 'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li class="active">${message(code: 'profile.bc.profile', default:'Profile')}</li>
-      </ul>
-    </div>
+    <laser:breadcrumbs>
+        <laser:crumb message="profile.bc.profile" class="active"/>
+    </laser:breadcrumbs>
 
   <g:if test="${flash.error}">
       <div class="container">

@@ -7,12 +7,9 @@
   </head>
   <body>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li>${message(code:'subscription.details.label', default:'Subscription Details')}</li>
-      </ul>
-    </div>
+    <laser:breadcrumbs>
+        <laser:crumb message="subscription.details.label" class="active"/>
+    </laser:breadcrumbs>
 
     <div class="container">
 

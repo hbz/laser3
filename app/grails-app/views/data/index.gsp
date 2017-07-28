@@ -7,12 +7,10 @@
 
   <body>
 
-    <div class="container">
-        <ul class="breadcrumb">
-        <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li class="active">Search</li>
-      </ul>
-    </div>
+    <laser:breadcrumbs>
+        <laser:crumb text="Search" class="active" />
+    </laser:breadcrumbs>
+
 
     <div class="container">
       <p>
