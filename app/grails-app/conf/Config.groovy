@@ -14,7 +14,10 @@ import org.apache.log4j.RollingFileAppender
 // @ApplicationResources
 defaultCssSkin = "hbz.css"
 
+// FEATURE-CONFIG:
+
 localauth = true
+feature_finance = true
 
 customProperties =[
 "org":["journalAccess":["name":"Public Journal Access","class":String.toString(),"note":"Set the required rights for accessing the public Journals page. For example 'Staff,Student,Public' or leave empty/delete for no public access."]

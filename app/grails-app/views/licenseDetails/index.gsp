@@ -192,8 +192,8 @@
                       </dd>
                   </dl>
 
-                  <div class="clearfix"></div
->              </div>
+                  <div class="clearfix"></div>
+                </div>
               </div>
               <div class="span4">
                 <div class="well">
