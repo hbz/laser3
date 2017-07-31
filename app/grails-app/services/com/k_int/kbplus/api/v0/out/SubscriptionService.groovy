@@ -3,6 +3,7 @@ package com.k_int.kbplus.api.v0.out
 import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class SubscriptionService {
@@ -37,6 +38,8 @@ class SubscriptionService {
      */
     def resolveSubscription(Subscription sub, Org context){
         def result = [:]
+
+        sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 
         result.id                   = sub.id
         result.cancellationAllowances = sub.cancellationAllowances

@@ -332,6 +332,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         result = buildResponse(obj, query, value, context, contextOrg, result)
 
         response.setContentType("application/json")
+        response.setCharacterEncoding("UTF-8")
+        response.setHeader("Debug-Result-Length", result.toString().length().toString())
+
         render result.toString(true)
     }
 

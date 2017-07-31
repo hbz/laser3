@@ -4,6 +4,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.api.v0.MainService
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class PkgService {
@@ -39,6 +40,8 @@ class PkgService {
      */
     def resolvePackage(com.k_int.kbplus.Package pkg, Org context) {
         def result = [:]
+
+        pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
 
         result.id               = pkg.id
         result.autoAccept       = pkg.autoAccept

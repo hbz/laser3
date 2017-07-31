@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
 import com.k_int.kbplus.api.v0.in.ImportHelperService
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
 
@@ -44,6 +45,8 @@ class OrgService {
      */
     def getOrganisation(Org org, Org context) {
         def result = [:]
+
+        org = GrailsHibernateUtil.unwrapIfProxy(org)
 
         result.id           = org.id
         result.comment      = org.comment

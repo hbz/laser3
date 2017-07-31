@@ -790,6 +790,7 @@ class ExportHelperService {
 
     def resolvePrsLinks(def list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
         def result = []
+        def tmp = []
 
         list.each { it ->
 
@@ -803,18 +804,14 @@ class ExportHelperService {
 
                     // export public
                     if("No" != person.isPublic?.value?.toString()) {
-                        result << person
+                        tmp << person
                     }
                     // or private if tenant = context
                     else {
                         if(it.prs.tenant?.id == context.id) {
-                            result << person
+                            tmp << person
                         }
                     }
-                }
-
-                if(!person.roles) {
-                    person.roles = []
                 }
 
                 def role                    = [:] // com.k_int.kbplus.PersonRole
@@ -826,14 +823,13 @@ class ExportHelperService {
                 role.functionType           = it.functionType?.value
                 //role.responsibilityType     = it.responsibilityType?.value
 
-                role = cleanUp(role, true, false)
-
+                if(!person.roles) {
+                    person.roles = []
+                }
                 if (role.functionType) {
-                    person.roles << role
+                    person.roles << cleanUp(role, true, false)
                 }
-                else {
-                    result.remove(person)
-                }
+
 
                 // TODO responsibilityType
                 /*if (role.responsibilityType) {
@@ -860,6 +856,14 @@ class ExportHelperService {
                 }*/
             }
         }
+
+        // export only persons with valid roles
+        tmp.each{ person ->
+            if (! person.roles.isEmpty()) {
+                result << person
+            }
+        }
+
         result
     }
 

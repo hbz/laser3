@@ -141,8 +141,12 @@
                 var digest    = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, secret)
                 var authorization = "hmac " + key + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
 
-                console.log(authorization)
-                jQuery(div).find('input[placeholder="Authorization - hmac-sha256 generated auth header"]').val(authorization).attr('value', authorization)
+                var input = jQuery(div).find('input[placeholder="Authorization - hmac-sha256 generated auth header"]')
+                jQuery(input).val(authorization).attr('value', authorization).focus().select()
+                try {
+                    document.execCommand('copy')
+                    console.log('copied authorization to clipboard: ' + authorization)
+                } catch(e) {}
             }
         }
     </script>

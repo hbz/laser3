@@ -3,6 +3,7 @@ package com.k_int.kbplus.api.v0.out
 import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class LicenseService {
@@ -35,6 +36,8 @@ class LicenseService {
      */
     def resolveLicense(License lic, def ignoreRelation, Org context){
         def result = [:]
+
+        lic = GrailsHibernateUtil.unwrapIfProxy(lic)
 
         result.id               = lic.id
         result.contact          = lic.contact
