@@ -93,10 +93,10 @@
             </div>
             <div class="span4">
                 <br />
-                <div class="well">
-                    <input class="btn btn-primary" value="${message(code:'propertyDefinition.create_new.label', default:'Create new property definition')}"
-                        data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
-                </div>
+                <laser:card title="propertyDefinition.create_new.label" class="card-grey">
+                    <input class="btn btn-primary" value="${message(code:'default.button.create_new.label')}"
+                           data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
+                </laser:card>
             </div>
         </div>
     </div>

@@ -196,8 +196,8 @@
                 </div>
               </div>
               <div class="span4">
-                <div class="well">
-                <label>  <h5>${message(code:'licence.actions', default:'Licence Actions')}</h5> </label>
+                <laser:card title="licence.actions" class="card-grey">
+
             <g:if test="${canCopyOrgs}">
                  
                   <label for="orgShortcode">${message(code:'licence.copyLicencefor', default:'Copy licence for')}:</label>
@@ -221,7 +221,7 @@
                   <g:else>
                     ${message(code:'licence.details.not_allowed', default:'Actions available to editors only')}
                   </g:else>
-                 </div>
+                 </laser:card>
                 <g:render template="/templates/documents" model="${[ ownobj:license, owntp:'license']}" />
                 <g:render template="/templates/notes"  model="${[ ownobj:license, owntp:'license']}" />
               </div>

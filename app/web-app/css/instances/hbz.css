@@ -6923,7 +6923,6 @@ dl > dt {
 .editable-empty, .editable-empty:hover {
 	color: orange;
 }
-
 .container > .span12 {
 	margin-left: 0;
 }
@@ -6963,4 +6962,22 @@ body #modalCreateNote
 
 body #modalCreateNote textarea {
     width: 97%;
+}
+
+
+/* bootstrap 4 */
+
+.card.card-grey .card-title {
+    margin-top: 0;
+    font-weight: normal;
+    font-size: 1.2em;
+}
+.card.card-grey .card-block {
+    padding: 10px;
+}
+.card.card-grey {
+    margin-bottom: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #D1DDE9;
+    border-radius: 0;
 }

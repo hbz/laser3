@@ -1,5 +1,7 @@
 package de.laser
 
+// Bootstrap 2
+
 class BreadCrumbsTagLib {
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]

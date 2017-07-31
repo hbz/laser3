@@ -1,5 +1,4 @@
-<div class="well documents">
-  <h5>${message(code:'licence.documents', default: 'Documents')}</h5>
+<laser:card title="licence.documents" class="card-grey documents">
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">
       <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
@@ -19,6 +18,6 @@
     <input type="submit" class="btn btn-primary" value="${message(code:'licence.addNewDocument', default: 'Add new document')}" data-toggle="modal" href="#modalCreateDocument" />
 <%-- <input type="submit" class="btn btn-primary" value="Add new document" data-toggle="modal" href="#modalCreateDocument" /> --%>
   </g:if>
-</div>
+</laser:card>
 <g:render template="/templates/addDocument"  />
 

@@ -28,7 +28,13 @@ modules = {
     resource url:'css/bootstrap-editable.css'
     resource url:'css/select2.css'
     resource url:"css/instances/${Holders.config.defaultCssSkin?:'standard.css'}"
+
+    // upgrade to bootstrap 4 (tmp)
+    resource url:'css/bootstrap_tmp/bs4_card.css'
+    // ..
+
     resource url:'css/style.css'
+
     resource url: 'js/inline-content.js'
     resource url:'js/bootstrap.min.js'
     resource url:'js/bootstrap-editable.min.js'
@@ -40,6 +46,8 @@ modules = {
     resource url:'js/dataTables.scroller.js'
     resource url:'js/jquery.dotdotdot.min.js'
     resource url:'js/kbplusapp.js.gsp'
+
+
   }
   annotations {
     dependsOn 'kbplus'

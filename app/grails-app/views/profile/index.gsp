@@ -140,11 +140,10 @@
       </div>
     </div>
 
-    <div class="container"><div class="row-fluid">
+    <div class="container">
+    <div class="row-fluid">
       <div class="span6">
-        <div class="well">
-          <h2>${message(code: 'profile.membership.existing', default:'Existing Memberships')}</h2>
-
+        <laser:card title="profile.membership.existing" class="card-grey">
           <table class="table table-striped table-bordered table-condensed" style="word-break:normal;">
             <thead>
               <tr>
@@ -167,12 +166,12 @@
               </g:each>
             </tbody>
           </table>
-        </div>
+        </laser:card>
       </div>
 
       <div class="span6">
-        <div class="well">
-          <h2>${message(code: 'profile.membership.request', default:'Request new membership')}</h2>
+        <laser:card title="profile.membership.request" class="card-grey">
+
           <p style="word-break:normal"><g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
           </p>
 
@@ -192,10 +191,10 @@
 
             <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="btn btn-primary btn-small">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
           </g:form>
-        </div>
-      </div>
-    </div></div>
-
+        </laser:card>
+      </div><!--.span6-->
+    </div><!--.row-fluid-->
+    </div><!--.container-->
 
     <g:if test="${grailsApplication.config.feature.notifications}">
 
