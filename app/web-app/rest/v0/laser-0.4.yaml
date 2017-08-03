@@ -1,39 +1,17 @@
 ---
 swagger: "2.0"
 info:
-  version: "0.5"
+  version: "0.4"
   title: LAS:eR API
   description: >
     Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
   contact:
     email: david.klober@hbz-nrw.de
 
-#basePath: /demo/api/v0 # development
-basePath: /api/v0 # prod
+basePath: /demo/api/v0 # development
+#basePath: /api/v0 # prod
 schemes:
   - http
-
-tags:
-  - name: Documents
-    description: ""
-    externalDocs:
-      url: http://wiki1.hbz-nrw.de/display/ERM/Home
-  - name: Licenses
-    description: ""
-    externalDocs:
-      url: http://wiki1.hbz-nrw.de/display/ERM/Home
-  - name: Organisations
-    description: ""
-    externalDocs:
-      url: http://wiki1.hbz-nrw.de/display/ERM/Home
-  - name: Packages
-    description: ""
-    externalDocs:
-      url: http://wiki1.hbz-nrw.de/display/ERM/Home
-  - name: Subscriptions
-    description: ""
-    externalDocs:
-      url: http://wiki1.hbz-nrw.de/display/ERM/Home
 
 ### parameters ###
 parameters:
@@ -93,8 +71,6 @@ responses:
 paths:
   /document:
     get:
-      tags:
-        - Documents
       summary: Find document by identifier
       description: >
         Supported are queries by following identifiers: *id* and *uuid*
@@ -121,8 +97,6 @@ paths:
 
   /license:
     get:
-      tags:
-        - Licenses
       summary: Find license by identifier
       description: >
         Supported are queries by following identifiers: *id* and *impId*
@@ -146,41 +120,9 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but license not found
-    post:
-      tags:
-        - Licenses
-      summary: Create license
-      #TODO:  description: Organisations and Subscriptions will NOT be _created_, but _linked_ if found
-      #description: Organisations will NOT be _created_, but _linked_ if found
-      parameters:
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: "#/definitions/License"
-          description: Object data
-      consumes:
-        - "application/json"
-      produces:
-        - application/json
-      responses:
-        201:
-          $ref: "#/responses/created"
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        409:
-          $ref: "#/responses/conflict"
-        500:
-          $ref: "#/responses/internalServerError"
 
   /organisation:
     get:
-      tags:
-        - Organisations
       summary: Find organisation by identifier
       description: >
         Supported are queries by following identifiers: *id*, *impId*, *identifier*, *shortcode*. Identifier value has to be defined like this: _isil:DE-123_
@@ -204,11 +146,9 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but organisation not found
+
     post:
-      tags:
-        - Organisations
       summary: Create organisation
-      description: Organisation will NOT be created, if one organisation with same name AND namespace-identifier exists
       parameters:
         - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
@@ -236,8 +176,6 @@ paths:
 
   /package:
     get:
-      tags:
-        - Packages
       summary: Find packge by identifier
       description: >
         Supported are queries by following identifiers: *id*, *identifier* and *impId*
@@ -264,8 +202,6 @@ paths:
 
   /subscription:
     get:
-      tags:
-      - Subscriptions
       summary: Find subscription by identifier
       description: >
         Supported are queries by following identifiers: *id*, *identifier* and *impId*
@@ -500,6 +436,85 @@ definitions:
           ["Job-related", "Personal"]
         example: "Job-related"
 
+  CostItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      billingCurrency:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          [""]
+        example: "EUR - Euro Member Countries"
+      costDescription:
+        type: string
+      costInBillingCurrency:
+        type: number
+        format: double
+        example: 2523.16
+      costInLocalCurrency:
+        type: number
+        format: double
+        example: 1871.10
+      costItemCategory:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          [""]
+        example: "Price"
+      costItemElement:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          [""]
+        example: "Content"
+      costItemStatus:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          [""]
+        example: "Actual"
+      dateCreated:
+        type: string
+        format: date
+      datePaid:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date
+      includeInSubscription:
+        type: string
+        description: Could be boolean
+      invoice:
+        $ref: "#/definitions/Invoice"
+      issueEntitlement:
+        $ref: "#/definitions/IssueEntitlement"
+      lastUpdated:
+        type: string
+        format: date
+      order:
+        $ref: "#/definitions/Order"
+      owner:
+        $ref: "#/definitions/OrganisationStub"
+      package: # mapping attr subPkg
+        $ref: "#/definitions/PackageStub" # resolved subscriptionPackages
+      reference:
+        type: string
+      sub:
+        $ref: "#/definitions/SubscriptionStub"
+      startDate:
+        type: string
+        format: date
+      taxCode:
+        type: string
+        description: Mapping RefdataCategory
+        enum:
+          [""]
+        example: "On Invoice"
+
   Document:
     type: object
     properties:
@@ -523,7 +538,6 @@ definitions:
         example: "General"
       uuid:
         type: string
-        readOnly: true
         example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
 
   Identifier:
@@ -531,10 +545,37 @@ definitions:
     properties:
       namespace:
         type: string
-        example: "isil"
+        example: "ISIL"
       value:
         type: string
         example: "DE-605"
+
+  Invoice:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      dateOfPayment:
+        type: string
+        format: date
+      dateOfInvoice:
+        type: string
+        format: date
+      datePassedToFinance:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date
+      invoiceNumber:
+        type: string
+        example: "0816-Bestellung"
+      owner:
+        $ref: "#/definitions/OrganisationStub"
+      startDate:
+        type: string
+        format: date
 
   IssueEntitlement:
     type: object
@@ -606,16 +647,13 @@ definitions:
           dateCreated:
             type: string
             format: date
-            readOnly: true
           documents:
             type: array
-            readOnly: true
             items:
               $ref: "#/definitions/Document" # resolved DocContext
           endDate:
             type: string
             format: date
-            example: "2011-08-31 23:55:59"
     #      incomingLinks:
     #        type: array
     #        items:
@@ -628,11 +666,9 @@ definitions:
           lastmod:
             type: string
             format: date
-            example: "2011-01-15 12:01:02"
           lastUpdated:
             type: string
             format: date
-            readOnly: true
           licenseCategory:
             type: string
             description: Mapping RefdataCategory
@@ -651,13 +687,11 @@ definitions:
           noticePeriod:
             type: string
           onixplLicense:
-            readOnly: true # bug fixed due #/definitions/OnixplLicense.readOnly:true
             $ref: "#/definitions/OnixplLicense"
           organisations: # mapping attr orgRelations
             type: array
-            readOnly: true # TODO support
             items:
-              $ref: "#/definitions/OrganisationRole_only_Org" # resolved OrgRole
+              $ref: "#/definitions/OrganisationRole" # resolved OrgRole
     #      outgoingLinks:
     #        type: array
     #        items:
@@ -677,7 +711,6 @@ definitions:
           startDate:
             type: string
             format: date
-            example: "2010-01-01 00:00:00"
           status:
             type: string
             description: Mapping RefdataCategory
@@ -685,7 +718,6 @@ definitions:
               [""]
           subscriptions:
             type: array
-            readOnly: true # TODO support
             items:
               $ref: "#/definitions/SubscriptionStub"
           type:
@@ -704,10 +736,8 @@ definitions:
           dateCreated:
             type: string
             format: date
-            readOnly: true
           documents:
             type: array
-            readOnly: true
             items:
               $ref: "#/definitions/Document" # resolved DocContext
           endDate:
@@ -728,7 +758,6 @@ definitions:
           lastUpdated:
             type: string
             format: date
-            readOnly: true
           licenseCategory:
             type: string
             description: Mapping RefdataCategory
@@ -747,7 +776,6 @@ definitions:
           noticePeriod:
             type: string
           onixplLicense:
-            readOnly: true # bug fixed due #/definitions/OnixplLicense.readOnly:true
             $ref: "#/definitions/OnixplLicense"
     #      outgoingLinks:
     #        type: array
@@ -807,7 +835,6 @@ definitions:
 
   OnixplLicense:
     type: object
-    readOnly: true
     properties:
       id:
         type: integer
@@ -817,13 +844,25 @@ definitions:
       lastmod:
         type: string
         format: date
-        example: "2016-05-10 13:18:47"
+        example: "2016-05-10T13:18:47Z"
       title:
         type: string
 #      licenses:
 #        type: array
 #        items:
 #          $ref: "#/definitions/LicenseStub"
+
+  Order:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      orderNumber:
+        type: string
+        example: "0816-Bestellung"
+      owner:
+        $ref: "#/definitions/OrganisationStub"
 
   Organisation:
     allOf:
@@ -872,62 +911,31 @@ definitions:
               ["Consortium", "Institution", "Other"]
             example: "Institution"
 
-#  OrganisationRole:
-#    properties:
-#      id:
-#        type: integer
-#        readOnly: true
-#      cluster:
-#        $ref: "#/definitions/ClusterStub"
-#        description: |
-#          Exclusive with license, organisation, package, subscription and title
-#      endDate:
-#        type: string
-#        format: date
-#        example: "2011-08-31 23:55:59"
-#      license:
-#        $ref: "#/definitions/LicenseStub"
-#        description: |
-#          Exclusive with cluster, organisation, package, subscription and title
-#      organisation:
-#        $ref: "#/definitions/OrganisationStub"
-#        description: |
-#          Exclusive with cluster, license, package, subscription and title
-#      package:
-#        $ref: "#/definitions/PackageStub"
-#        description: |
-#          Exclusive with cluster, license, organisation, subscription and title
-#      roleType:
-#        type: string
-#        description: Mapping RefdataCategory "Organisational Role"
-#        enum:
-#          [""]
-#      startDate:
-#        type: string
-#        format: date
-#        example: "2011-03-01 08:00:00"
-#      subscription:
-#        $ref: "#/definitions/SubscriptionStub"
-#        description: |
-#          Exclusive with cluster, license, organisation, package and title
-#      title:
-#        $ref: "#/definitions/TitleStub"
-#        description: |
-#          Exclusive with cluster, license, organisation, package and subscription
-
-  OrganisationRole_only_Org:
+  OrganisationRole:
     properties:
       id:
         type: integer
         readOnly: true
+      cluster:
+        $ref: "#/definitions/ClusterStub"
+        description: |
+          Exclusive with license, organisation, package, subscription and title
       endDate:
         type: string
         format: date
-        example: "2011-08-31 23:55:59"
+        example: "2011-08-31T23:55:59Z"
+      license:
+        $ref: "#/definitions/LicenseStub"
+        description: |
+          Exclusive with cluster, organisation, package, subscription and title
       organisation:
         $ref: "#/definitions/OrganisationStub"
         description: |
           Exclusive with cluster, license, package, subscription and title
+      package:
+        $ref: "#/definitions/PackageStub"
+        description: |
+          Exclusive with cluster, license, organisation, subscription and title
       roleType:
         type: string
         description: Mapping RefdataCategory "Organisational Role"
@@ -936,7 +944,15 @@ definitions:
       startDate:
         type: string
         format: date
-        example: "2011-03-01 08:00:00"
+        example: "2011-03-01T08:00:00Z"
+      subscription:
+        $ref: "#/definitions/SubscriptionStub"
+        description: |
+          Exclusive with cluster, license, organisation, package and title
+      title:
+        $ref: "#/definitions/TitleStub"
+        description: |
+          Exclusive with cluster, license, organisation, package and subscription
 
   Package:
     allOf:
@@ -990,7 +1006,7 @@ definitions:
           organisations: # mapping attr orgs
             type: array
             items:
-              $ref: "#/definitions/OrganisationRole_only_Org"
+              $ref: "#/definitions/OrganisationRole"
           packageListStatus:
             type: string
             description: Mapping RefdataCategory
@@ -1136,11 +1152,11 @@ definitions:
       endDate:
         type: string
         format: date
-        example: "2016-12-31 23:00:00"
+        example: "2016-12-31T23:00:00Z"
       startDate:
         type: string
         format: date
-        example: "2016-01-01 00:00:00"
+        example: "2016-01-01T00:00:00Z"
 
   PersonRole_as_Function:
     allOf:
@@ -1268,7 +1284,7 @@ definitions:
           organisations: # mapping attr orgRelations
             type: array
             items:
-              $ref: "#/definitions/OrganisationRole_only_Org"
+              $ref: "#/definitions/OrganisationRole"
           packages:
             type: array
             items:

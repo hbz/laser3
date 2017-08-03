@@ -2,14 +2,24 @@ package com.k_int.kbplus.api.v0.in
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
-import com.k_int.kbplus.api.v0.out.LicenseService
+import com.k_int.kbplus.api.v0.OrgService
 import com.k_int.properties.PropertyDefinition
 import groovy.util.logging.Log4j
 
 @Log4j
-class ImportHelperService {
+class InHelperService {
+
+    OrgService orgService
 
     // ##### HELPER #####
+
+    def getValidDateFormat(def value) {
+        // TODO: check and format date
+
+        def date = new Date()
+        date = date.parse("yyyy-MM-dd HH:mm:ss", value)
+        date
+    }
 
     def getRefdataValue(def value, String category) {
         // TODO
@@ -93,7 +103,7 @@ class ImportHelperService {
             person.addresses = getAddresses(it.addresses, null, person)
             person.contacts  = getContacts(it.contacts, null, person)
 
-            def properties = getProperties(it.properties, null, person, contextOrg)
+            def properties = getProperties(it.properties, person, contextOrg)
             person.privateProperties = properties['private']
 
             // PersonRoles
@@ -134,7 +144,47 @@ class ImportHelperService {
         idenfifierOccurences
     }
 
-    def getProperties(def data, Org ownerOrg, Person ownerPerson, Org contextOrg) {
+    def getOrgLinks(def data, def owner) {
+
+        def result = []
+
+        data.each { it ->   // com.k_int.kbplus.OrgRole
+
+            // check existing resources
+            def check = []
+            def org
+            it.organisation?.identifiers?.each { orgIdent ->
+                check << orgService.findOrganisationBy('identifier', orgIdent.namespace + ":" + orgIdent.value)
+            }
+            check.removeAll([null, MainService.BAD_REQUEST])
+            check.each { orgCandidate ->
+                if (orgCandidate.name.equals(it.organisation?.name)?.trim())  {
+                    org = orgCandidate
+                }
+
+            }
+            if (org) {
+                // todo CHECK permissions to create orgRole
+
+                def orgRole = new OrgRole(
+                        org:        org,
+                        endDate:    it.endDate,
+                        startDate:  it.startDate,
+                        roleType:   getRefdataValue(it.roleType, "Organisational Role")
+                )
+                if (owner instanceof License) {
+                    orgRole.lic = owner
+                }
+
+                if (orgRole.roleType) {
+                    result << orgRole
+                }
+            }
+        }
+        result
+    }
+
+    def getProperties(def data, def owner, Org contextOrg) {
         def properties = [
                 'custom': [],
                 'private': []
@@ -146,28 +196,41 @@ class ImportHelperService {
             // Custom or Private?
             def isPublic = getRefdataValue(it.isPublic?.value,"YN")
             if ("No".equalsIgnoreCase(isPublic?.value)) {
-                if (ownerOrg) {
+                if (owner instanceof Org) {
                     property = new OrgPrivateProperty(
-                            owner: ownerOrg,
+                            owner:  owner,
                             tenant: contextOrg,
-                            note: it.note
+                            note:   it.note
                     )
                     properties['private'] << property
                 }
-                else if (ownerPerson) {
+                else if (owner instanceof Person) {
                     property = new PersonPrivateProperty(
-                            owner: ownerPerson,
+                            owner:  owner,
                             tenant: contextOrg,
-                            note: it.note
+                            note:   it.note
                     )
                     properties['private'] << property
+                }
+                else if (owner instanceof License) {
+                    // not supported: no LicensePrivateProperties
                 }
             }
             else {
-                if (ownerOrg) {
+                if (owner instanceof Org) {
                     property = new OrgCustomProperty(
-                            owner: ownerOrg,
-                            note: it.note
+                            owner: owner,
+                            note:  it.note
+                    )
+                    properties['custom'] << property
+                }
+                else if (owner instanceof Person) {
+                    // not supported: no PersonCustomProperties
+                }
+                else if (owner instanceof License) {
+                    property = new LicenseCustomProperty(
+                            owner: owner,
+                            note:  it.note
                     )
                     properties['custom'] << property
                 }
@@ -180,5 +243,9 @@ class ImportHelperService {
             }
         }
         properties
+    }
+
+    def getSubscriptions(def data, Org ownerOrg) {
+
     }
 }

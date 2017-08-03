@@ -1,27 +1,28 @@
 package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.api.v0.out.*
+import com.k_int.kbplus.api.v0.in.InService
 import com.k_int.kbplus.auth.User
-import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 @Log4j
 class MainService {
 
-    static final CREATED            = "CREATED"         // 201
-    static final BAD_REQUEST        = "BAD_REQUEST"     // 400
-    static final FORBIDDEN          = "FORBIDDEN"       // 403
-    static final CONFLICT           = "CONFLICT"        // 409
+    static final CREATED                = "CREATED"         // 201
+    static final BAD_REQUEST            = "BAD_REQUEST"     // 400
+    static final FORBIDDEN              = "FORBIDDEN"       // 403
+    static final CONFLICT               = "CONFLICT"        // 409
     static final INTERNAL_SERVER_ERROR  = "INTERNAL_SERVER_ERROR" // 500
     static final NOT_IMPLEMENTED        = "NOT_IMPLEMENTED" // 501
 
+    InService inService
+
+    DocService docService
     LicenseService licenseService
     OrgService orgService
     PkgService pkgService
@@ -31,29 +32,29 @@ class MainService {
         def result
 
         if ('document'.equalsIgnoreCase(obj)) {
-            result = findDocumentBy(query, value) // null or doc
+            result = docService.findDocumentBy(query, value) // null or doc
             if (result && BAD_REQUEST != result) {
-                result = getDocument((Doc) result, user, contextOrg)
+                result = docService.getDocument((Doc) result, user, contextOrg)
             }
         } else if ('license'.equalsIgnoreCase(obj)) {
             result = licenseService.findLicenseBy(query, value) // null or license
             if (result && BAD_REQUEST != result) {
-                result = getLicense((License) result, user, contextOrg)
+                result = licenseService.getLicense((License) result, user, contextOrg)
             }
         } else if ('organisation'.equalsIgnoreCase(obj)) {
             result = orgService.findOrganisationBy(query, value) // null or organisation
             if (result && BAD_REQUEST != result) {
-                result = getOrganisation((Org) result, user, contextOrg)
+                result = orgService.getOrganisation((Org) result, user, contextOrg)
             }
         } else if ('package'.equalsIgnoreCase(obj)) {
             result = pkgService.findPackageBy(query, value) // null or package
             if (result && BAD_REQUEST != result) {
-                result = getPackage((Package) result, user, contextOrg)
+                result = pkgService.getPackage((Package) result, user, contextOrg)
             }
         } else if ('subscription'.equalsIgnoreCase(obj)) {
             result = subscriptionService.findSubscriptionBy(query, value) // null or subscription
             if (result && BAD_REQUEST != result) {
-                result = getSubscription((Subscription) result, user, contextOrg)
+                result = subscriptionService.getSubscription((Subscription) result, user, contextOrg)
             }
         }
         else {
@@ -69,147 +70,30 @@ class MainService {
         if ('organisation'.equalsIgnoreCase(obj)) {
 
             // check existing resources
-
             def check = []
-            check << orgService.findOrganisationBy('shortcode', Org.generateShortcodeFunction(data.name.trim()))
-            data.identifiers?.each{ it ->
-                check << orgService.findOrganisationBy('identifier', it.namespace + ":" + it.value)
+            def org
+            data.identifiers?.each { orgIdent ->
+                check << orgService.findOrganisationBy('identifier', orgIdent.namespace + ":" + orgIdent.value) // TODO returns null if multiple matches !!
             }
             check.removeAll([null, BAD_REQUEST])
-
-            if (! check.isEmpty()) {
+            check.each { orgCandidate ->
+                if (orgCandidate.name.equals(data.name.trim()))  {
+                    org = orgCandidate
+                }
+            }
+            if (org) {
                 return ['result': CONFLICT, 'debug': check]
             }
 
-            result = orgService.postOrganisation(data, contextOrg)
+            result = inService.importOrganisation(data, contextOrg)
+        }
+        else if ('license'.equalsIgnoreCase(obj)) {
+
+            result = inService.importLicense(data, contextOrg)
         }
         else {
             result = NOT_IMPLEMENTED
         }
         result
-    }
-
-
-    /**
-     * @return Doc | BAD_REQUEST
-     */
-    def findDocumentBy(String query, String value) {
-
-        switch(query) {
-            case 'id':
-                return Doc.findWhere(id: Long.parseLong(value))
-                break
-            case 'uuid':
-                return Doc.findWhere(uuid: value)
-                break
-            default:
-                return BAD_REQUEST
-                break
-        }
-    }
-
-    /**
-     * @return Doc | FORBIDDEN
-     */
-    def getDocument(Doc doc, User user, Org context){
-        def hasAccess = false
-
-        DocContext.findAllByOwner(doc).each{ dc ->
-            if(dc.license) {
-                dc.getLicense().getOrgLinks().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-            if(dc.pkg) {
-                dc.getPkg().getOrgs().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-            if(dc.subscription) {
-                dc.getSubscription().getOrgRelations().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                    }
-                }
-            }
-        }
-        return (hasAccess ? doc : FORBIDDEN)
-    }
-
-    /**
-     * @return grails.converters.JSON | FORBIDDEN
-     */
-    def getLicense(License lic, User user, Org context){
-        def hasAccess = false
-
-        lic.orgLinks.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
-            }
-        }
-
-        def result = []
-        if(hasAccess) {
-            result = licenseService.resolveLicense(lic, ExportHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
-        }
-
-        return (hasAccess ? new JSON(result) : FORBIDDEN)
-    }
-
-    /**
-     * @return grails.converters.JSON | FORBIDDEN
-     */
-    def getOrganisation(Org org, User user, Org context) {
-        def hasAccess = true
-        def result = orgService.getOrganisation(org, context)
-
-        return (hasAccess ? new JSON(result) : FORBIDDEN)
-    }
-
-    /**
-     * @return grails.converters.JSON | FORBIDDEN
-     */
-    def getPackage(Package pkg, User user, Org context) {
-        def hasAccess = true
-
-        //pkg.orgs.each{ orgRole ->
-        //    if(orgRole.getOrg().id == context?.id) {
-        //        hasAccess = true
-        //    }
-        //}
-
-        def result = []
-        if (hasAccess) {
-            result = pkgService.resolvePackage(pkg, context) // TODO check orgRole.roleType
-        }
-
-        return (hasAccess ? new JSON(result) : FORBIDDEN)
-    }
-
-    /**
-     * @return grails.converters.JSON | FORBIDDEN
-     */
-    def getSubscription(Subscription sub, User user, Org context){
-        def hasAccess = false
-
-        sub.orgRelations.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
-            }
-        }
-
-        def result = []
-        if (hasAccess) {
-            result = subscriptionService.resolveSubscription(sub, context) // TODO check orgRole.roleType
-        }
-
-        return (hasAccess ? new JSON(result) : FORBIDDEN)
     }
 }
