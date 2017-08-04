@@ -133,5 +133,48 @@ class InService {
      */
     def importSubscription(JSONObject data, Org context) {
 
+        def sub
+        Subscription.withTransaction { TransactionStatus status ->
+
+            try {
+                sub = new Subscription(
+                        name:                   data.name,
+                        cancellationAllowances: data.cancellationAllowances,
+                        identifier:             data.identifier,
+                )
+                sub.startDate   = inHelperService.getValidDateFormat(data.startDate)
+                sub.endDate     = inHelperService.getValidDateFormat(data.endDate)
+                sub.manualRenewalDate = inHelperService.getValidDateFormat(data.manualRenewalDate)
+
+                // RefdataValues
+                sub.isSlaved  = inHelperService.getRefdataValue(data.isSlaved, "YN")
+                sub.isPublic  = inHelperService.getRefdataValue(data.isPublic, "YN")
+                sub.status    = inHelperService.getRefdataValue(data.isSlaved, "Subscription Status")
+                sub.type      = inHelperService.getRefdataValue(data.isSlaved, "Organisational Role")
+
+                // References
+                def properties       = inHelperService.getProperties(data.properties, sub, context)
+                sub.customProperties = properties['custom']
+                sub.ids              = inHelperService.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
+
+                // TODO
+                //def organisations = inHelperService.getOrgLinks(data.organisations, sub)
+                //sub.orgRelations = organisations
+
+                // not supported: documents
+                // not supported: derivedSubscriptions
+                // not supported: instanceOf
+                // not supported: license
+                // not supported: packages
+            }
+            catch (Exception e) {
+                log.error("Error while importing SUBSCRIPTION via API; rollback forced")
+                log.error(e)
+                status.setRollbackOnly()
+                return ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
+            }
+        }
+
+        return ['result': MainService.CREATED, 'debug': sub]
     }
 }

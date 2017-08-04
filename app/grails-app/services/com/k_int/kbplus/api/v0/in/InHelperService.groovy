@@ -129,15 +129,15 @@ class InHelperService {
         result
     }
 
-    def getIdentifiers(def data, Org ownerOrg) {
+    def getIdentifiers(def data, def owner) {
         def idenfifierOccurences = []
 
         data.each { it ->
             def identifier = Identifier.lookupOrCreateCanonicalIdentifier(it.namespace, it.value)
             def idenfifierOccurence = new IdentifierOccurrence(
-                    identifier: identifier,
-                    org: ownerOrg
+                    identifier: identifier
             )
+            idenfifierOccurence.setOwner(owner)
             idenfifierOccurences << idenfifierOccurence
         }
 

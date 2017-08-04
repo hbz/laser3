@@ -91,9 +91,20 @@ class MainService {
 
             result = inService.importLicense(data, contextOrg)
         }
+        else if ('subscription'.equalsIgnoreCase(obj)) {
+
+            // TODO: check existing resources via ns:identifier
+            def sub = subscriptionService.findSubscriptionBy('identifier', data.identifier)
+            if (sub) {
+                return ['result': CONFLICT, 'debug': sub]
+            }
+
+            result = inService.importSubscription(data, contextOrg)
+        }
         else {
             result = NOT_IMPLEMENTED
         }
         result
     }
+
 }

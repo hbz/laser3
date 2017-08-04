@@ -23,7 +23,7 @@ class OrgService {
             case 'impId':
                 return Org.findWhere(impId: value)
                 break
-            case 'identifier':
+            case 'ns:identifier':
                 return Org.lookupByIdentifierString(value)
                 break
             case 'shortcode':

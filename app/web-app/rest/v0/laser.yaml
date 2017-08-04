@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  version: "0.5"
+  version: "0.6"
   title: LAS:eR API
   description: >
     Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
@@ -149,7 +149,7 @@ paths:
     post:
       tags:
         - Licenses
-      summary: Create license
+      summary: Create license (work in progess)
       #TODO:  description: Organisations and Subscriptions will NOT be _created_, but _linked_ if found
       #description: Organisations will NOT be _created_, but _linked_ if found
       parameters:
@@ -162,7 +162,7 @@ paths:
             $ref: "#/definitions/License"
           description: Object data
       consumes:
-        - "application/json"
+        - application/json
       produces:
         - application/json
       responses:
@@ -183,7 +183,7 @@ paths:
         - Organisations
       summary: Find organisation by identifier
       description: >
-        Supported are queries by following identifiers: *id*, *impId*, *identifier*, *shortcode*. Identifier value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *id*, *impId*, *ns:identifier*, *shortcode*. Ns:identifier value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -219,7 +219,7 @@ paths:
             $ref: "#/definitions/Organisation"
           description: Object data
       consumes:
-        - "application/json"
+        - application/json
       produces:
         - application/json
       responses:
@@ -289,6 +289,36 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but subscription not found
+    post:
+      tags:
+        - Subscriptions
+      summary: Create Subscription (work in progess)
+      #TODO:  description: Organisations and Subscriptions will NOT be _created_, but _linked_ if found
+      #description: Organisations will NOT be _created_, but _linked_ if found
+      parameters:
+        - $ref: "#/parameters/context"
+        - $ref: "#/parameters/authorization"
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/Subscription"
+          description: Object data
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        201:
+          $ref: "#/responses/created"
+        400:
+          $ref: "#/responses/badRequest"
+        401:
+          $ref: "#/responses/notAuthorized"
+        409:
+          $ref: "#/responses/conflict"
+        500:
+          $ref: "#/responses/internalServerError"
 
 definitions:
 
@@ -389,6 +419,12 @@ definitions:
         example: "ff74dd15-e27f-48a2-b2d7-f02389e62639"
       name:
         type: string
+
+  SubscriptionStub_at_Subscription:
+    allOf:
+      - $ref: "#/definitions/SubscriptionStub"
+      - type: object
+        readOnly: true
 
   TitleInstancePackagePlatformStub:
     type: object
@@ -698,6 +734,7 @@ definitions:
     allOf:
       - $ref: "#/definitions/LicenseStub"
       - type: object
+        readOnly: true
         properties:
           contact:
             type: string
@@ -1232,15 +1269,18 @@ definitions:
           dateCreated:
             type: string
             format: date
+            readOnly: true
           documents:
             type: array
+            readOnly: true
             items:
               $ref: "#/definitions/Document" # resolved DocContext
           endDate:
             type: string
             format: date
           instanceOf:
-            $ref: "#/definitions/SubscriptionStub"
+            readOnly: true # bug fixed due #/definitions/SubscriptionStub_at_Subscription.readOnly:true
+            $ref: "#/definitions/SubscriptionStub_at_Subscription"
           isPublic:
             type: string
             description: Mapping RefdataCategory "YN"
@@ -1252,13 +1292,16 @@ definitions:
     #          $ref: "#/definitions/IssueEntitlement"
           isSlaved:
             type: string
+            readOnly: true
             description: Mapping RefdataCategory "YN"
             enum:
               ["Yes", "No"]
           lastUpdated:
             type: string
             format: date
+            readOnly: true
           license: # mapping owner
+            readOnly: true # bug fixed due #/definitions/License_at_Subscription.readOnly:true
             $ref: "#/definitions/License_at_Subscription"
           manualRenewalDate:
             type: string
@@ -1267,10 +1310,12 @@ definitions:
             type: string
           organisations: # mapping attr orgRelations
             type: array
+            readOnly: true
             items:
               $ref: "#/definitions/OrganisationRole_only_Org"
           packages:
             type: array
+            readOnly: true
             items:
               $ref: "#/definitions/Package_at_Subscription"
     #      persons: # mapping attr prsLinks

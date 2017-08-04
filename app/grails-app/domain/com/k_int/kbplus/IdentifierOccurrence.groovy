@@ -35,10 +35,18 @@ class IdentifierOccurrence {
      pkg(nullable:true)
      sub(nullable:true)
   }
-  
-  String toString() {
-    "IdentifierOccurrence(${id} - ti:${ti}, org:${org}, tipp:${tipp}, pkg:${pkg}, sub:${sub}";
-  }
+
+    def setOwner(def owner) {
+        org  = owner instanceof Org ? owner : org
+        pkg  = owner instanceof Package ? owner : pkg
+        sub  = owner instanceof Subscription ? owner : sub
+        tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
+        ti   = owner instanceof TitleInstance ? owner : ti
+    }
+
+    String toString() {
+        "IdentifierOccurrence(${id} - ti:${ti}, org:${org}, tipp:${tipp}, pkg:${pkg}, sub:${sub}";
+    }
 
   @Transient
   def onSave = {
