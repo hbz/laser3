@@ -1,5 +1,6 @@
 package com.k_int.kbplus.api.v0
 
+import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.api.v0.out.OutService
@@ -13,24 +14,32 @@ class PkgService {
     OutService outService
 
     /**
-     * @return Package | BAD_REQUEST
+     * @return Package | BAD_REQUEST | PRECONDITION_FAILED
      */
     def findPackageBy(String query, String value) {
+        def result
 
         switch(query) {
             case 'id':
-                return Package.findWhere(id: Long.parseLong(value))
+                result = Package.findAllWhere(id: Long.parseLong(value))
                 break
             case 'identifier':
-                return Package.findWhere(identifier: value) // != identifiers
+                result = Package.findAllWhere(identifier: value) // != identifiers
                 break
             case 'impId':
-                return Package.findWhere(impId: value)
+                result = Package.findAllWhere(impId: value)
+                break
+            case 'ns:identifier':
+                result = Identifier.lookupObjectsByIdentifierString(new Package(), value)
                 break
             default:
                 return MainService.BAD_REQUEST
                 break
         }
+        if (result) {
+            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+        }
+        result
     }
 
     /**

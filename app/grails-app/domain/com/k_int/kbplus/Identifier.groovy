@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 class Identifier {
 
   IdentifierNamespace ns
@@ -62,12 +65,36 @@ class Identifier {
     result
   }
 
-  static def refdataCreate(value) {
-    // value is String[] arising from  value.split(':');
-    if ( ( value.length == 4 ) && ( value[2] != '' ) && ( value[3] != '' ) )
-      return lookupOrCreateCanonicalIdentifier(value[2],value[3]);
+    static def refdataCreate(value) {
+        // value is String[] arising from  value.split(':');
+        if ( ( value.length == 4 ) && ( value[2] != '' ) && ( value[3] != '' ) )
+            return lookupOrCreateCanonicalIdentifier(value[2],value[3]);
 
-    return null;
-  }
+        return null;
+    }
 
+    static def lookupObjectsByIdentifierString(def object, String identifierString) {
+        def result = null
+
+        def objType = object.getClass().getSimpleName()
+        LogFactory.getLog(this).debug("lookupByIdentifierString(${objType}, ${identifierString})")
+
+        if (objType) {
+
+            def idstrParts = identifierString.split(':');
+            switch (idstrParts.size()) {
+                case 1:
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as io where io.identifier.value = ?', [idstrParts[0]])
+                    break
+                case 2:
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as io where io.identifier.value = ? and io.identifier.ns.ns = ?', [idstrParts[1], idstrParts[0]])
+                    break
+                default:
+                    break
+            }
+            LogFactory.getLog(this).debug("components: ${idstrParts} : ${result}");
+        }
+
+        result
+    }
 }

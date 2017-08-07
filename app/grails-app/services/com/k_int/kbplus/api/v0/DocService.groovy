@@ -13,21 +13,26 @@ class DocService {
     OutService outService
 
     /**
-     * @return Doc | BAD_REQUEST
+     * @return Doc | BAD_REQUEST | PRECONDITION_FAILED
      */
     def findDocumentBy(String query, String value) {
+        def result
 
         switch(query) {
             case 'id':
-                return Doc.findWhere(id: Long.parseLong(value))
+                result = Doc.findAllWhere(id: Long.parseLong(value))
                 break
             case 'uuid':
-                return Doc.findWhere(uuid: value)
+                result = Doc.findAllWhere(uuid: value)
                 break
             default:
                 return MainService.BAD_REQUEST
                 break
         }
+        if (result) {
+            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+        }
+        result
     }
 
     /**

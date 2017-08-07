@@ -10,6 +10,7 @@ info:
 
 #basePath: /demo/api/v0 # development
 basePath: /api/v0 # prod
+
 schemes:
   - http
 
@@ -88,6 +89,8 @@ responses:
     description: Request is not authorized
   notImplemented:
     description: Request not implemented
+  preconditionFailed:
+    description: Multiple matches
 
 ### endpoints ###
 paths:
@@ -146,6 +149,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but license not found
+        412:
+          $ref: "#/responses/preconditionFailed"
     post:
       tags:
         - Licenses
@@ -204,6 +209,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but organisation not found
+        412:
+          $ref: "#/responses/preconditionFailed"
     post:
       tags:
         - Organisations
@@ -240,7 +247,7 @@ paths:
         - Packages
       summary: Find packge by identifier
       description: >
-        Supported are queries by following identifiers: *id*, *identifier* and *impId*
+        Supported are queries by following identifiers: *id*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -261,6 +268,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but license not found
+        412:
+          $ref: "#/responses/preconditionFailed"
 
   /subscription:
     get:
@@ -268,7 +277,7 @@ paths:
       - Subscriptions
       summary: Find subscription by identifier
       description: >
-        Supported are queries by following identifiers: *id*, *identifier* and *impId*
+        Supported are queries by following identifiers: *id*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -289,6 +298,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but subscription not found
+        412:
+          $ref: "#/responses/preconditionFailed"
     post:
       tags:
         - Subscriptions
@@ -691,7 +702,6 @@ definitions:
             $ref: "#/definitions/OnixplLicense"
           organisations: # mapping attr orgRelations
             type: array
-            readOnly: true # TODO support
             items:
               $ref: "#/definitions/OrganisationRole_only_Org" # resolved OrgRole
     #      outgoingLinks:
@@ -1310,7 +1320,6 @@ definitions:
             type: string
           organisations: # mapping attr orgRelations
             type: array
-            readOnly: true
             items:
               $ref: "#/definitions/OrganisationRole_only_Org"
           packages:

@@ -13,21 +13,26 @@ class LicenseService {
     OutService outService
 
     /**
-     * @return License | BAD_REQUEST
+     * @return License | BAD_REQUEST | PRECONDITION_FAILED
      */
     def findLicenseBy(String query, String value) {
+        def result
 
         switch(query) {
             case 'id':
-                return License.findWhere(id: Long.parseLong(value))
+                result = License.findAllWhere(id: Long.parseLong(value))
                 break
             case 'impId':
-                return License.findWhere(impId: value)
+                result = License.findAllWhere(impId: value)
                 break
             default:
                 return MainService.BAD_REQUEST
                 break
         }
+        if (result) {
+            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+        }
+        result
     }
 
     /**

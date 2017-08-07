@@ -1,5 +1,6 @@
 package com.k_int.kbplus.api.v0
 
+import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.api.v0.out.OutService
 import com.k_int.kbplus.auth.User
@@ -12,27 +13,32 @@ class OrgService {
     OutService outService
 
     /**
-     * @return Org | BAD_REQUEST
+     * @return Org | BAD_REQUEST | PRECONDITION_FAILED
      */
     def findOrganisationBy(String query, String value) {
+        def result
 
         switch(query) {
             case 'id':
-                return Org.findWhere(id: Long.parseLong(value))
+                result = Org.findAllWhere(id: Long.parseLong(value))
                 break
             case 'impId':
-                return Org.findWhere(impId: value)
+                result = Org.findAllWhere(impId: value)
                 break
             case 'ns:identifier':
-                return Org.lookupByIdentifierString(value)
+                result = Identifier.lookupObjectsByIdentifierString(new Org(), value)
                 break
             case 'shortcode':
-                return Org.findWhere(shortcode: value)
+                result = Org.findAllWhere(shortcode: value)
                 break
             default:
                 return MainService.BAD_REQUEST
                 break
         }
+        if (result) {
+            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+        }
+        result
     }
 
     /**

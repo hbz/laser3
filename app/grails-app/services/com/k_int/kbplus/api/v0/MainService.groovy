@@ -17,6 +17,7 @@ class MainService {
     static final BAD_REQUEST            = "BAD_REQUEST"     // 400
     static final FORBIDDEN              = "FORBIDDEN"       // 403
     static final CONFLICT               = "CONFLICT"        // 409
+    static final PRECONDITION_FAILED    = "PRECONDITION_FAILED"   // 412
     static final INTERNAL_SERVER_ERROR  = "INTERNAL_SERVER_ERROR" // 500
     static final NOT_IMPLEMENTED        = "NOT_IMPLEMENTED" // 501
 
@@ -32,28 +33,28 @@ class MainService {
         def result
 
         if ('document'.equalsIgnoreCase(obj)) {
-            result = docService.findDocumentBy(query, value) // null or doc
-            if (result && BAD_REQUEST != result) {
+            result = docService.findDocumentBy(query, value)
+            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = docService.getDocument((Doc) result, user, contextOrg)
             }
         } else if ('license'.equalsIgnoreCase(obj)) {
-            result = licenseService.findLicenseBy(query, value) // null or license
-            if (result && BAD_REQUEST != result) {
+            result = licenseService.findLicenseBy(query, value)
+            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = licenseService.getLicense((License) result, user, contextOrg)
             }
         } else if ('organisation'.equalsIgnoreCase(obj)) {
-            result = orgService.findOrganisationBy(query, value) // null or organisation
-            if (result && BAD_REQUEST != result) {
+            result = orgService.findOrganisationBy(query, value)
+            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = orgService.getOrganisation((Org) result, user, contextOrg)
             }
         } else if ('package'.equalsIgnoreCase(obj)) {
-            result = pkgService.findPackageBy(query, value) // null or package
-            if (result && BAD_REQUEST != result) {
+            result = pkgService.findPackageBy(query, value)
+            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = pkgService.getPackage((Package) result, user, contextOrg)
             }
         } else if ('subscription'.equalsIgnoreCase(obj)) {
-            result = subscriptionService.findSubscriptionBy(query, value) // null or subscription
-            if (result && BAD_REQUEST != result) {
+            result = subscriptionService.findSubscriptionBy(query, value)
+            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = subscriptionService.getSubscription((Subscription) result, user, contextOrg)
             }
         }
@@ -70,19 +71,21 @@ class MainService {
         if ('organisation'.equalsIgnoreCase(obj)) {
 
             // check existing resources
-            def check = []
-            def org
-            data.identifiers?.each { orgIdent ->
-                check << orgService.findOrganisationBy('identifier', orgIdent.namespace + ":" + orgIdent.value) // TODO returns null if multiple matches !!
-            }
-            check.removeAll([null, BAD_REQUEST])
-            check.each { orgCandidate ->
-                if (orgCandidate.name.equals(data.name.trim()))  {
-                    org = orgCandidate
+            def conflict = false
+
+            data.identifiers?.each { ident ->
+                def hits = orgService.findOrganisationBy('ns:identifier', ident.namespace + ":" + ident.value)
+                if (hits == PRECONDITION_FAILED || hits instanceof Org) {
+                    conflict = true
                 }
             }
-            if (org) {
-                return ['result': CONFLICT, 'debug': check]
+            def hits = orgService.findOrganisationBy('name', data.name.trim())
+            if (hits == PRECONDITION_FAILED || hits instanceof Org) {
+                conflict = true
+            }
+
+            if (conflict) {
+                return ['result': CONFLICT, 'debug': 'debug']
             }
 
             result = inService.importOrganisation(data, contextOrg)
@@ -93,10 +96,22 @@ class MainService {
         }
         else if ('subscription'.equalsIgnoreCase(obj)) {
 
-            // TODO: check existing resources via ns:identifier
-            def sub = subscriptionService.findSubscriptionBy('identifier', data.identifier)
-            if (sub) {
-                return ['result': CONFLICT, 'debug': sub]
+            // check existing resources
+            def conflict = false
+
+            data.identifiers?.each { ident ->
+                def hits = subscriptionService.findSubscriptionBy('ns:identifier', ident.namespace + ":" + ident.value)
+                if (hits == PRECONDITION_FAILED || hits instanceof Subscription) {
+                    conflict = true
+                }
+            }
+            def hits = subscriptionService.findSubscriptionBy('identifier', data.identifier)
+            if (hits == PRECONDITION_FAILED || hits instanceof Subscription) {
+                conflict = true
+            }
+
+            if (conflict) {
+                return ['result': CONFLICT, 'debug': 'debug']
             }
 
             result = inService.importSubscription(data, contextOrg)
@@ -107,4 +122,16 @@ class MainService {
         result
     }
 
+    /*
+    def hasAffiliation(User user, Org org, Org context) {
+        def hit = false
+
+        user.authorizedAffiliations.each { uo -> //  com.k_int.kbplus.auth.UserOrg
+            def affOrg = Org.findWhere(id: uo.org.id)
+            if (affOrg == context) {
+                hit = true
+            }
+        }
+        hit
+    }*/
 }

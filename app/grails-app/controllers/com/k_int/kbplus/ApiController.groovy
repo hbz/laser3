@@ -379,6 +379,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             response.status = HttpStatus.BAD_REQUEST.value()
             result = new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context])
         }
+        else if (mainService.PRECONDITION_FAILED == result) {
+            response.status = HttpStatus.PRECONDITION_FAILED.value()
+            result = new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context])
+        }
 
         if (!result) {
             response.status = HttpStatus.NOT_FOUND.value()

@@ -52,13 +52,10 @@ class InService {
                 // not supported: license.documents
                 // not supported: license.onixplLicense
 
-                //def organisations = inHelperService.getOrgLinks(data.organisations, license)
-                //license.orgLinks = organisations
+                license.orgLinks = inHelperService.getOrgLinks(data.organisations, license, context)
 
-                //TODO
+                // TODO: set subscription.owner = license
                 //def subscriptions = inHelperService.getSubscriptions(data.subscriptions)
-                //license.orgLinks = organisations
-
 
                 license.save(flush: true)
             }
@@ -157,9 +154,7 @@ class InService {
                 sub.customProperties = properties['custom']
                 sub.ids              = inHelperService.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
 
-                // TODO
-                //def organisations = inHelperService.getOrgLinks(data.organisations, sub)
-                //sub.orgRelations = organisations
+                sub.orgRelations     = inHelperService.getOrgLinks(data.organisations, sub, context)
 
                 // not supported: documents
                 // not supported: derivedSubscriptions

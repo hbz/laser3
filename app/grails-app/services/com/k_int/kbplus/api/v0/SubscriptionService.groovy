@@ -12,24 +12,32 @@ class SubscriptionService {
     OutService outService
 
     /**
-     * @return Subscription | BAD_REQUEST
+     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED
      */
     def findSubscriptionBy(String query, String value) {
+        def result
 
         switch(query) {
             case 'id':
-                return Subscription.findWhere(id: Long.parseLong(value))
+                result = Subscription.findAllWhere(id: Long.parseLong(value))
                 break
             case 'identifier':
-                return Subscription.findWhere(identifier: value) // != identifiers
+                result = Subscription.findAllWhere(identifier: value) // != identifiers
                 break
             case 'impId':
-                return Subscription.findWhere(impId: value)
+                result = Subscription.findAllWhere(impId: value)
+                break
+            case 'ns:identifier':
+                result = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
                 break
             default:
                 return MainService.BAD_REQUEST
                 break
         }
+        if (result) {
+            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+        }
+        result
     }
 
     /**
