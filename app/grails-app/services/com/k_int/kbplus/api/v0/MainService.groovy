@@ -5,7 +5,7 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.api.v0.in.InService
+import com.k_int.kbplus.api.v0.base.InService
 import com.k_int.kbplus.auth.User
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject

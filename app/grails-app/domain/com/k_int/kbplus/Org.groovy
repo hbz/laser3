@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.domain.BaseDomainComponent
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import groovy.util.logging.*
@@ -9,28 +10,28 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import javax.persistence.Transient
 
 @Log4j
-class Org {
+class Org extends BaseDomainComponent {
 
-  String name
-  String impId
-  String comment
-  String ipRange
-  String scope
-  Date dateCreated
-  Date lastUpdated
-  String categoryId
+    String name
+    String impId
+    String comment
+    String ipRange
+    String scope
+    Date dateCreated
+    Date lastUpdated
+    String categoryId
 
-  RefdataValue orgType
-  RefdataValue sector
-  RefdataValue status
-  RefdataValue membership
-  
-  // Used to generate friendly semantic URLs
-  String shortcode
+    RefdataValue orgType
+    RefdataValue sector
+    RefdataValue status
+    RefdataValue membership
 
-  Set ids = []
+    // Used to generate friendly semantic URLs
+    String shortcode
 
-  static mappedBy = [
+    Set ids = []
+
+    static mappedBy = [
       ids:      'org', 
       outgoingCombos: 'fromOrg', 
       incomingCombos: 'toOrg',
@@ -42,7 +43,7 @@ class Org {
       privateProperties: 'owner'
       ]
 
-  static hasMany = [
+    static hasMany = [
       ids:                IdentifierOccurrence,
       outgoingCombos:     Combo,
       incomingCombos:     Combo,
@@ -55,9 +56,10 @@ class Org {
       privateProperties:  OrgPrivateProperty
       ]
 
-  static mapping = {
+    static mapping = {
             id column:'org_id'
        version column:'org_version'
+     globalUID column:'org_guid'
          impId column:'org_imp_id', index:'org_imp_id_idx'
           name column:'org_name', index:'org_name_idx'
        comment column:'org_comment'
@@ -69,32 +71,37 @@ class Org {
         sector column:'org_sector_rv_fk'
         status column:'org_status_rv_fk'
     membership column:'org_membership'
-  }
+    }
 
-  static constraints = {
-          name(nullable:true, blank:false,maxSize:256);
-         impId(nullable:true, blank:true, maxSize:256);
-       comment(nullable:true, blank:true, maxSize:2048);
-       ipRange(nullable:true, blank:true, maxSize:1024);
-        sector(nullable:true, blank:true);
-     shortcode(nullable:true, blank:true, maxSize:128);
-         scope(nullable:true, blank:true, maxSize:128);
-    categoryId(nullable:true, blank:true, maxSize:128);
-       orgType(nullable:true, blank:true, maxSize:128);
-        status(nullable:true, blank:true);
-    membership(nullable:true, blank:true, maxSize:128);
-  }
+    static constraints = {
+       globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+            name(nullable:true, blank:false,maxSize:256);
+           impId(nullable:true, blank:true, maxSize:256);
+         comment(nullable:true, blank:true, maxSize:2048);
+         ipRange(nullable:true, blank:true, maxSize:1024);
+          sector(nullable:true, blank:true);
+       shortcode(nullable:true, blank:true, maxSize:128);
+           scope(nullable:true, blank:true, maxSize:128);
+      categoryId(nullable:true, blank:true, maxSize:128);
+         orgType(nullable:true, blank:true, maxSize:128);
+          status(nullable:true, blank:true);
+      membership(nullable:true, blank:true, maxSize:128);
+    }
 
+    @Override
     def beforeInsert() {
         if ( !shortcode ) {
             shortcode = generateShortcode(name);
         }
+        super.beforeInsert()
     }
 
+    @Override
     def beforeUpdate() {
         if ( !shortcode ) {
             shortcode = generateShortcode(name);
         }
+        super.beforeUpdate()
     }
 
     static generateShortcodeFunction(name) {

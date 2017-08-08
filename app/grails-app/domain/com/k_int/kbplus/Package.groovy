@@ -1,9 +1,10 @@
 package com.k_int.kbplus
 
+import de.laser.domain.BaseDomainComponent
 import java.text.Normalizer
 import javax.persistence.Transient
 
-class Package {
+class Package extends BaseDomainComponent {
 
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
@@ -55,6 +56,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   static mapping = {
                       id column:'pkg_id'
                  version column:'pkg_version'
+               globalUID column:'pkg_guid'
               identifier column:'pkg_identifier'
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
@@ -80,6 +82,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
   static constraints = {
+                 globalUID(nullable:true, blank:false, unique:true, maxSize:256)
                packageType(nullable:true, blank:false)
              packageStatus(nullable:true, blank:false)
            nominalPlatform(nullable:true, blank:false)
@@ -407,17 +410,19 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
-  def beforeInsert() {
-    if ( name != null ) {
-      sortName = generateSortName(name)
+    def beforeInsert() {
+        if ( name != null ) {
+            sortName = generateSortName(name)
+        }
+        super.beforeInsert()
     }
-  }
 
-  def beforeUpdate() {
-    if ( name != null ) {
-      sortName = generateSortName(name)
+    def beforeUpdate() {
+        if ( name != null ) {
+            sortName = generateSortName(name)
+        }
+        super.beforeUpdate()
     }
-  }
 
   def checkAndAddMissingIdentifier(ns,value) {
     boolean found = false

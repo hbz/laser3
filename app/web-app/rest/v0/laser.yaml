@@ -37,6 +37,7 @@ tags:
       url: http://wiki1.hbz-nrw.de/display/ERM/Home
 
 ### parameters ###
+
 parameters:
   q:
     in: query
@@ -72,6 +73,7 @@ parameters:
     description: hmac-sha256 generated auth header
 
 ### responses ##
+
 responses:
   ok:
     description: OK
@@ -93,6 +95,7 @@ responses:
     description: Multiple matches
 
 ### endpoints ###
+
 paths:
   /document:
     get:
@@ -100,7 +103,7 @@ paths:
         - Documents
       summary: Find document by identifier
       description: >
-        Supported are queries by following identifiers: *id* and *uuid*
+        Supported are queries by following identifiers: *uuid*
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -128,7 +131,7 @@ paths:
         - Licenses
       summary: Find license by identifier
       description: >
-        Supported are queries by following identifiers: *id* and *impId*
+        Supported are queries by following identifiers: *globalUID* and *impId*
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -156,7 +159,7 @@ paths:
         - Licenses
       summary: Create license (work in progess)
       #TODO:  description: Organisations and Subscriptions will NOT be _created_, but _linked_ if found
-      #description: Organisations will NOT be _created_, but _linked_ if found
+      description: Organisations will NOT be _created_, but _linked_ if found
       parameters:
         - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
@@ -188,7 +191,7 @@ paths:
         - Organisations
       summary: Find organisation by identifier
       description: >
-        Supported are queries by following identifiers: *id*, *impId*, *ns:identifier*, *shortcode*. Ns:identifier value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID*, *impId*, *ns:identifier* and *shortcode*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -247,7 +250,7 @@ paths:
         - Packages
       summary: Find packge by identifier
       description: >
-        Supported are queries by following identifiers: *id*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -277,7 +280,7 @@ paths:
       - Subscriptions
       summary: Find subscription by identifier
       description: >
-        Supported are queries by following identifiers: *id*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -305,7 +308,7 @@ paths:
         - Subscriptions
       summary: Create Subscription (work in progess)
       #TODO:  description: Organisations and Subscriptions will NOT be _created_, but _linked_ if found
-      #description: Organisations will NOT be _created_, but _linked_ if found
+      description: Organisations will NOT be _created_, but _linked_ if found
       parameters:
         - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
@@ -334,6 +337,7 @@ paths:
 definitions:
 
   ### stubs ###
+
   ClusterStub:
     type: object
     properties:
@@ -346,9 +350,10 @@ definitions:
   LicenseStub:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "license:7e1e667b-77f0-4495-a1dc-a45ab18c1410"
       impId:
         type: string
         readOnly: true
@@ -361,9 +366,10 @@ definitions:
   OrganisationStub:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "org:d64b3dc9-1c1f-4470-9e2b-ae3c341ebc3c"
       name:
         type: string
         example: "Hochschulbibliothekszentrum des Landes NRW"
@@ -379,9 +385,10 @@ definitions:
   PackageStub:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
       identifier:
         type: string
         example: "5d83bbbe-2a26-4eef-8708-6d6b86fd8453"
@@ -399,9 +406,10 @@ definitions:
   PlatformStub:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "platform:9d5c918a-55d0-4197-f22d-a418c14105ab"
       impId:
         type: string
         readOnly: true
@@ -414,9 +422,10 @@ definitions:
   SubscriptionStub:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "subscription:3026078c-bdf1-4309-ba51-a9ea5f7fb234"
       identifier:
         type: string
         example: "1038ac38-eb21-4bf0-ab7e-fe8b8ba34b6c"
@@ -441,9 +450,10 @@ definitions:
     type: object
     description: TODO
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "titleinstancepackageplatform:9d5c918a-80b5-a121-a7f8-b05ac53004a"
       identifiers: # mapping attr ids
         type: array
         items:
@@ -456,9 +466,10 @@ definitions:
   TitleStub:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "title:eeb41a3b-a2c5-0e32-b7f8-3581d2ccf17f"
       identifiers: # mapping attr ids
         type: array
         items:
@@ -475,12 +486,13 @@ definitions:
         example: "Das_gute_Buch"
 
   ### full objects ###
+
   Address:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
+#      id:
+#        type: integer
+#        readOnly: true
       street1:
         type: string
         example: "Jülicher Straße"
@@ -528,9 +540,9 @@ definitions:
   Contact:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
+#      id:
+#        type: integer
+#        readOnly: true
       category: # mapping attr contentType
         type: string
         description: Mapping RefdataCategory "ContactContentType"
@@ -550,9 +562,9 @@ definitions:
   Document:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
+#      id:
+#        type: integer
+#        readOnly: true
       filename:
         type: string
         example: "springer_2015.csv"
@@ -586,9 +598,10 @@ definitions:
   IssueEntitlement:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "issueentitlement:af045a3c-0e32-a681-c21d-3cf17f581d2c"
       accessStartDate:
         type: string
         format: date
@@ -826,39 +839,39 @@ definitions:
             enum:
               [""]
 
-  Link:
-    type: object
-    properties:
-      id:
-        type: integer
-        readOnly: true
-      fromLic:
-        $ref: "#definitions/LicenseStub"
-      isSlaved:
-        type: string
-        description: Mapping RefdataCategory
-        enum:
-          [""]
-      status:
-        type: string
-        description: Mapping RefdataCategory
-        enum:
-          [""]
-      toLic:
-        $ref: "#definitions/LicenseStub"
-      type:
-        type: string
-        description: Mapping RefdataCategory
-        enum:
-          [""]
+#  Link:
+#    type: object
+#    properties:
+#      id:
+#        type: integer
+#        readOnly: true
+#      fromLic:
+#        $ref: "#definitions/LicenseStub"
+#      isSlaved:
+#        type: string
+#        description: Mapping RefdataCategory
+#        enum:
+#          [""]
+#      status:
+#        type: string
+#        description: Mapping RefdataCategory
+#        enum:
+#          [""]
+#      toLic:
+#        $ref: "#definitions/LicenseStub"
+#      type:
+#        type: string
+#        description: Mapping RefdataCategory
+#        enum:
+#          [""]
 
   OnixplLicense:
     type: object
     readOnly: true
     properties:
-      id:
-        type: integer
-        readOnly: true
+#      id:
+#        type: integer
+#        readOnly: true
       document: # mapping attr doc
         $ref: "#definitions/Document"
       lastmod:
@@ -964,9 +977,9 @@ definitions:
 
   OrganisationRole_only_Org:
     properties:
-      id:
-        type: integer
-        readOnly: true
+#      id:
+#        type: integer
+#        readOnly: true
       endDate:
         type: string
         format: date
@@ -1082,9 +1095,10 @@ definitions:
   Package_at_Subscription:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
       identifier:
         type: string
         example: "04bf5766-bf45-4b9e-afe1-d89de46f6c66"
@@ -1134,9 +1148,10 @@ definitions:
   Person:
     type: object
     properties:
-      id:
-        type: integer
+      globalUID:
+        type: string
         readOnly: true
+        example: "person:a45a3cf0-f3ad-f231-d5ab-fc1d217f583c"
       addresses:
         type: array
         items:
@@ -1177,9 +1192,9 @@ definitions:
   PersonRole:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
+#      id:
+#        type: integer
+#        readOnly: true
       endDate:
         type: string
         format: date
@@ -1239,14 +1254,14 @@ definitions:
           title:
             description: |
               Exclusive with cluster, license, organisation, package and subscription
-                  $ref: "#/definitions/TitleStub"
+            $ref: "#/definitions/TitleStub"
 
   Property:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
+#      id:
+#        type: integer
+#        readOnly: true
       description: # mapping attr descr
         type: string
         example: "Licence Property"

@@ -1,7 +1,7 @@
 package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.out.OutService
+import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -21,8 +21,11 @@ class SubscriptionService {
             case 'id':
                 result = Subscription.findAllWhere(id: Long.parseLong(value))
                 break
+            case 'globalUID':
+                result = Subscription.findAllWhere(globalUID: Long.parseLong(value))
+                break
             case 'identifier':
-                result = Subscription.findAllWhere(identifier: value) // != identifiers
+                result = Subscription.findAllWhere(identifier: value)
                 break
             case 'impId':
                 result = Subscription.findAllWhere(impId: value)

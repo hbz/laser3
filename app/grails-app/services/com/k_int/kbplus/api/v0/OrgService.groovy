@@ -2,7 +2,7 @@ package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.api.v0.out.OutService
+import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -21,6 +21,9 @@ class OrgService {
         switch(query) {
             case 'id':
                 result = Org.findAllWhere(id: Long.parseLong(value))
+                break
+            case 'globalUID':
+                result = Org.findAllWhere(globalUID: Long.parseLong(value))
                 break
             case 'impId':
                 result = Org.findAllWhere(impId: value)

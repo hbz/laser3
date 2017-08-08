@@ -1,8 +1,8 @@
 package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.out.OutHelperService
-import com.k_int.kbplus.api.v0.out.OutService
+import com.k_int.kbplus.api.v0.base.OutHelperService
+import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -21,6 +21,9 @@ class LicenseService {
         switch(query) {
             case 'id':
                 result = License.findAllWhere(id: Long.parseLong(value))
+                break
+            case 'globalUID':
+                result = License.findAllWhere(globalUID: Long.parseLong(value))
                 break
             case 'impId':
                 result = License.findAllWhere(impId: value)

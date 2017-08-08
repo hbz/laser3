@@ -1,4 +1,4 @@
-package com.k_int.kbplus.api.v0.in
+package com.k_int.kbplus.api.v0.base
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
@@ -22,7 +22,6 @@ class InHelperService {
     }
 
     def getRefdataValue(def value, String category) {
-        // TODO
         if (value && category) {
             def rdCategory = RefdataCategory.findByDesc(category)
             def rdValue = RefdataValue.findByOwnerAndValue(rdCategory, value.toString())
@@ -103,7 +102,7 @@ class InHelperService {
             person.addresses = getAddresses(it.addresses, null, person)
             person.contacts  = getContacts(it.contacts, null, person)
 
-            def properties = getProperties(it.properties, person, contextOrg)
+            def properties = getProperties(it.properties, person, contextOrg) // TODO: not implemented
             person.privateProperties = properties['private']
 
             // PersonRoles
@@ -186,4 +185,68 @@ class InHelperService {
         }
         result
     }
+
+    // TODO
+    /*
+    def getProperties(def data, def owner, Org contextOrg) {
+        def properties = [
+                'custom': [],
+                'private': []
+        ]
+
+        data.each { it ->
+            def property
+
+            // Custom or Private?
+            def isPublic = getRefdataValue(it.isPublic?.value,"YN")
+            if ("No".equalsIgnoreCase(isPublic?.value)) {
+                if (owner instanceof Org) {
+                    property = new OrgPrivateProperty(
+                            owner:  owner,
+                            tenant: contextOrg,
+                            note:   it.note
+                    )
+                    properties['private'] << property
+                }
+                else if (owner instanceof Person) {
+                    property = new PersonPrivateProperty(
+                            owner:  owner,
+                            tenant: contextOrg,
+                            note:   it.note
+                    )
+                    properties['private'] << property
+                }
+                else if (owner instanceof License) {
+                    // not supported: no LicensePrivateProperties
+                }
+            }
+            else {
+                if (owner instanceof Org) {
+                    property = new OrgCustomProperty(
+                            owner: owner,
+                            note:  it.note
+                    )
+                    properties['custom'] << property
+                }
+                else if (owner instanceof Person) {
+                    // not supported: no PersonCustomProperties
+                }
+                else if (owner instanceof License) {
+                    property = new LicenseCustomProperty(
+                            owner: owner,
+                            note:  it.note
+                    )
+                    properties['custom'] << property
+                }
+            }
+
+            if (property) {
+                def propertyDefinition = PropertyDefinition.findByDescrAndName(data.description, data.name)
+                property.type = propertyDefinition
+                property.setValue(it.value, propertyDefinition.type, propertyDefinition.refdataCategory)
+            }
+        }
+        properties
+    }
+    */
 }

@@ -3,7 +3,7 @@ package com.k_int.kbplus.api.v0
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.api.v0.out.OutService
+import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -23,8 +23,11 @@ class PkgService {
             case 'id':
                 result = Package.findAllWhere(id: Long.parseLong(value))
                 break
+            case 'globalUID':
+                result = Package.findAllWhere(globalUID: Long.parseLong(value))
+                break
             case 'identifier':
-                result = Package.findAllWhere(identifier: value) // != identifiers
+                result = Package.findAllWhere(identifier: value)
                 break
             case 'impId':
                 result = Package.findAllWhere(impId: value)

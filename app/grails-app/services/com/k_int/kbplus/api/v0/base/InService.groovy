@@ -1,4 +1,4 @@
-package com.k_int.kbplus.api.v0.in
+package com.k_int.kbplus.api.v0.base
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
@@ -46,7 +46,7 @@ class InService {
                 license.type             = inHelperService.getRefdataValue(data.type, "License Type")
 
                 // References
-                def properties           = inHelperService.getProperties(data.properties, license, context)
+                def properties           = inHelperService.getProperties(data.properties, license, context) // TODO: not implemented
                 license.customProperties = properties['custom']
 
                 // not supported: license.documents
@@ -98,7 +98,7 @@ class InService {
                 org.contacts  = inHelperService.getContacts(data.contacts, org, null)
                 org.ids       = inHelperService.getIdentifiers(data.identifiers, org) // implicit creation of identifier and namespace
 
-                def properties        = inHelperService.getProperties(data.properties, org, context)
+                def properties        = inHelperService.getProperties(data.properties, org, context) // TODO: not implemented
                 org.customProperties  = properties['custom']
                 org.privateProperties = properties['private']
 
@@ -150,7 +150,7 @@ class InService {
                 sub.type      = inHelperService.getRefdataValue(data.isSlaved, "Organisational Role")
 
                 // References
-                def properties       = inHelperService.getProperties(data.properties, sub, context)
+                def properties       = inHelperService.getProperties(data.properties, sub, context) // TODO: not implemented
                 sub.customProperties = properties['custom']
                 sub.ids              = inHelperService.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
 

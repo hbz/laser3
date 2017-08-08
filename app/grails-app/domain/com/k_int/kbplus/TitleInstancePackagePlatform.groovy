@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.domain.BaseDomainComponent
+
 import javax.persistence.Transient
  
 import org.hibernate.proxy.HibernateProxy
@@ -8,7 +10,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.apache.commons.logging.*
 import groovy.time.TimeCategory
 
-class TitleInstancePackagePlatform {
+class TitleInstancePackagePlatform extends BaseDomainComponent {
   @Transient
   def grailsLinkGenerator
 
@@ -75,6 +77,7 @@ class TitleInstancePackagePlatform {
 
   static mapping = {
                 id column:'tipp_id'
+         globalUID column:'tipp_guid'
            rectype column:'tipp_rectype'
            version column:'tipp_version'
                pkg column:'tipp_pkg_fk', index: 'tipp_idx'
@@ -105,38 +108,45 @@ class TitleInstancePackagePlatform {
      accessEndDate column:'tipp_access_end_date'
   }
 
-  static constraints = {
-    startDate(nullable:true, blank:true);
-    startVolume(nullable:true, blank:true);
-    startIssue(nullable:true, blank:true);
-    endDate(nullable:true, blank:true);
-    endVolume(nullable:true, blank:true);
-    endIssue(nullable:true, blank:true);
-    embargo(nullable:true, blank:true);
-    coverageDepth(nullable:true, blank:true);
-    coverageNote(nullable:true, blank:true);
-    impId(nullable:true, blank:true);
-    status(nullable:true, blank:false);
-    delayedOA(nullable:true, blank:false);
-    hybridOA(nullable:true, blank:false);
-    statusReason(nullable:true, blank:false);
-    payment(nullable:true, blank:false);
-    option(nullable:true, blank:false);
-    sub(nullable:true, blank:false);
-    hostPlatformURL(nullable:true, blank:true, maxSize:2048);
-    derivedFrom(nullable:true, blank:true);
-    coreStatusStart(nullable:true, blank:true);
-    coreStatusEnd(nullable:true, blank:true);
-    accessStartDate(nullable:true, blank:true);
-    accessEndDate(nullable:true, blank:true);
-  }
+    static constraints = {
+        globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+        startDate(nullable:true, blank:true);
+        startVolume(nullable:true, blank:true);
+        startIssue(nullable:true, blank:true);
+        endDate(nullable:true, blank:true);
+        endVolume(nullable:true, blank:true);
+        endIssue(nullable:true, blank:true);
+        embargo(nullable:true, blank:true);
+        coverageDepth(nullable:true, blank:true);
+        coverageNote(nullable:true, blank:true);
+        impId(nullable:true, blank:true);
+        status(nullable:true, blank:false);
+        delayedOA(nullable:true, blank:false);
+        hybridOA(nullable:true, blank:false);
+        statusReason(nullable:true, blank:false);
+        payment(nullable:true, blank:false);
+        option(nullable:true, blank:false);
+        sub(nullable:true, blank:false);
+        hostPlatformURL(nullable:true, blank:true, maxSize:2048);
+        derivedFrom(nullable:true, blank:true);
+        coreStatusStart(nullable:true, blank:true);
+        coreStatusEnd(nullable:true, blank:true);
+        accessStartDate(nullable:true, blank:true);
+        accessEndDate(nullable:true, blank:true);
+    }
 
-  def beforeUpdate(){
-    touchPkgLastUpdated()
-  }
-  def beforeInsert() {
-    touchPkgLastUpdated()
-  }
+    @Override
+    def beforeUpdate(){
+        touchPkgLastUpdated()
+
+        super.beforeUpdate()
+    }
+    @Override
+    def beforeInsert() {
+        touchPkgLastUpdated()
+
+        super.beforeInsert()
+    }
 
   @Transient
   def touchPkgLastUpdated(){

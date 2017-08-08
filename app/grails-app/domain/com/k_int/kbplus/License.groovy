@@ -1,12 +1,14 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
+import de.laser.domain.BaseDomainComponent
+
 import javax.persistence.Transient
 import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License implements Comparable<License>{
+class License extends BaseDomainComponent implements Comparable<License>{
 
   @Transient
   def grailsApplication
@@ -73,6 +75,7 @@ class License implements Comparable<License>{
   static mapping = {
                      id column:'lic_id'
                 version column:'lic_version'
+              globalUID column:'lic_guid'
                  status column:'lic_status_rv_fk'
                    type column:'lic_type_rv_fk'
                 contact column:'lic_contact'          
@@ -95,27 +98,28 @@ class License implements Comparable<License>{
          pendingChanges sort: 'ts', order: 'asc'
   }
 
-  static constraints = {
-    status(nullable:true, blank:false)
-    type(nullable:true, blank:false)
-    impId(nullable:true, blank:false)
-    reference(nullable:true, blank:true)
-    sortableReference(nullable:true, blank:true)
-    isPublic(nullable:true, blank:true)
-    noticePeriod(nullable:true, blank:true)
-    licenseUrl(nullable:true, blank:true)
-    licensorRef(nullable:true, blank:true)
-    licenseeRef(nullable:true, blank:true)
-    licenseType(nullable:true, blank:true)
-    licenseStatus(nullable:true, blank:true)
-    lastmod(nullable:true, blank:true)
-    onixplLicense(nullable: true, blank: true)
-    licenseCategory(nullable: true, blank: true)
-    startDate(nullable: true, blank: true)
-    endDate(nullable: true, blank: true)
-    lastUpdated(nullable: true, blank: true)
-    contact(nullable:true,blank:true)
- }
+    static constraints = {
+        globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+        status(nullable:true, blank:false)
+        type(nullable:true, blank:false)
+        impId(nullable:true, blank:false)
+        reference(nullable:true, blank:true)
+        sortableReference(nullable:true, blank:true)
+        isPublic(nullable:true, blank:true)
+        noticePeriod(nullable:true, blank:true)
+        licenseUrl(nullable:true, blank:true)
+        licensorRef(nullable:true, blank:true)
+        licenseeRef(nullable:true, blank:true)
+        licenseType(nullable:true, blank:true)
+        licenseStatus(nullable:true, blank:true)
+        lastmod(nullable:true, blank:true)
+        onixplLicense(nullable: true, blank: true)
+        licenseCategory(nullable: true, blank: true)
+        startDate(nullable: true, blank: true)
+        endDate(nullable: true, blank: true)
+        lastUpdated(nullable: true, blank: true)
+        contact(nullable:true,blank:true)
+    }
 
   def getLicensor() {
     def result = null;
@@ -354,23 +358,27 @@ class License implements Comparable<License>{
     }
   }
 
-  def beforeInsert() {
-    if ( reference != null ) {
-      sortableReference = generateSortableReference(reference)
+    @Override
+    def beforeInsert() {
+        if ( reference != null ) {
+            sortableReference = generateSortableReference(reference)
+        }
+        if (impId == null) {
+            impId = java.util.UUID.randomUUID().toString();
+        }
+        super.beforeInsert()
     }
-    if (impId == null) {
-      impId = java.util.UUID.randomUUID().toString();
-    }
-  }
 
-  def beforeUpdate() {
-    if ( reference != null ) {
-      sortableReference = generateSortableReference(reference)
+    @Override
+    def beforeUpdate() {
+        if ( reference != null ) {
+            sortableReference = generateSortableReference(reference)
+        }
+        if (impId == null) {
+            impId = java.util.UUID.randomUUID().toString();
+        }
+        super.beforeUpdate()
     }
-    if (impId == null) {
-      impId = java.util.UUID.randomUUID().toString();
-    }
-  }
 
 
   public static String generateSortableReference(String input_title) {

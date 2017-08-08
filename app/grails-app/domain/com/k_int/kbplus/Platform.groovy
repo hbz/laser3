@@ -1,12 +1,14 @@
 package com.k_int.kbplus
 
+import de.laser.domain.BaseDomainComponent
+
 import javax.persistence.Transient
 import com.k_int.ClassUtils
 import org.apache.commons.logging.*
 import groovy.util.logging.*
 import org.apache.commons.logging.LogFactory
 
-class Platform {
+class Platform extends BaseDomainComponent {
 
   @Transient
   def grailsApplication
@@ -30,6 +32,7 @@ class Platform {
 
   static mapping = {
                 id column:'plat_id'
+         globalUID column:'plat_guid'
            version column:'plat_version'
              impId column:'plat_imp_id', index:'plat_imp_id_idx'
               name column:'plat_name'
@@ -44,6 +47,7 @@ class Platform {
   }
 
   static constraints = {
+    globalUID(nullable:true, blank:false, unique:true, maxSize:256)
     impId(nullable:true, blank:false)
     primaryUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
