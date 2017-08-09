@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
 import javax.persistence.Transient
- 
-
 
 class IdentifierOccurrence {
 
@@ -11,11 +9,11 @@ class IdentifierOccurrence {
   Identifier identifier
 
   static belongsTo = [
-    ti:TitleInstance,
-    org:Org,
-    tipp:TitleInstancePackagePlatform,
-    pkg:Package,
-    sub:Subscription
+    ti:     TitleInstance,
+    org:    Org,
+    tipp:   TitleInstancePackagePlatform,
+    pkg:    Package,
+    sub:    Subscription
   ]
 
   static mapping = {
@@ -36,7 +34,10 @@ class IdentifierOccurrence {
      sub(nullable:true)
   }
 
-    def setOwner(def owner) {
+    /**
+     * Generic setter
+     */
+    def setReference(def owner) {
         org  = owner instanceof Org ? owner : org
         pkg  = owner instanceof Package ? owner : pkg
         sub  = owner instanceof Subscription ? owner : sub

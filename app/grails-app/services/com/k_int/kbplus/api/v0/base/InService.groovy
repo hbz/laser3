@@ -18,12 +18,12 @@ class InService {
      * @return
      */
     def importLicense(JSONObject data, Org context) {
+        def result = []
 
-        def license
         License.withTransaction { TransactionStatus status ->
 
             try {
-                license = new License(
+                def license = new License(
                         contact:            data.contact,
                         licenseUrl:         data.licenseUrl,
                         licensorRef:        data.licensorRef,
@@ -46,11 +46,14 @@ class InService {
                 license.type             = inHelperService.getRefdataValue(data.type, "License Type")
 
                 // References
-                def properties           = inHelperService.getProperties(data.properties, license, context) // TODO: not implemented
+                def properties           = inHelperService.getProperties(data.properties, license, context)
                 license.customProperties = properties['custom']
 
                 // not supported: license.documents
                 // not supported: license.onixplLicense
+
+                // TO CHECK: save license before saving orgLinks
+                license.save()
 
                 license.orgLinks = inHelperService.getOrgLinks(data.organisations, license, context)
 
@@ -58,16 +61,16 @@ class InService {
                 //def subscriptions = inHelperService.getSubscriptions(data.subscriptions)
 
                 license.save(flush: true)
+                result = ['result': MainService.CREATED, 'debug': license]
             }
             catch (Exception e) {
                 log.error("Error while importing LICENSE via API; rollback forced")
                 log.error(e)
                 status.setRollbackOnly()
-                return ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
+                result = ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
             }
         }
-
-        return ['result': MainService.CREATED, 'debug': license]
+        result
     }
 
     /**
@@ -77,12 +80,12 @@ class InService {
      * @return
      */
     def importOrganisation(JSONObject data, Org context) {
+        def result = []
 
-        def org
         Org.withTransaction { TransactionStatus status ->
 
             try {
-                org = new Org(
+                def org = new Org(
                         name: data.name,
                         comment: data.comment,
                         scope: data.scope
@@ -98,28 +101,31 @@ class InService {
                 org.contacts  = inHelperService.getContacts(data.contacts, org, null)
                 org.ids       = inHelperService.getIdentifiers(data.identifiers, org) // implicit creation of identifier and namespace
 
-                def properties        = inHelperService.getProperties(data.properties, org, context) // TODO: not implemented
+                def properties        = inHelperService.getProperties(data.properties, org, context)
                 org.customProperties  = properties['custom']
                 org.privateProperties = properties['private']
 
-                def personsAndRoles = inHelperService.getPersonsAndRoles(data.persons, org, context)
-                org.prsLinks        = personsAndRoles['personRoles']
+                // MUST: save org before saving persons and prsLinks
+                org.save()
 
+                def personsAndRoles = inHelperService.getPersonsAndRoles(data.persons, org, context)
                 personsAndRoles['persons'].each { p ->
-                    (Person) p.save() // save persons before saving prsLinks
+                    (Person) p.save() // MUST: save persons before saving prsLinks
                 }
 
+                org.prsLinks        = personsAndRoles['personRoles']
+
                 org.save(flush: true)
+                result = ['result': MainService.CREATED, 'debug': org]
             }
             catch (Exception e) {
                 log.error("Error while importing ORG via API; rollback forced")
                 log.error(e)
                 status.setRollbackOnly()
-                return ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
+                result = ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
             }
         }
-
-        return ['result': MainService.CREATED, 'debug': org]
+        result
     }
 
     /**
@@ -129,12 +135,12 @@ class InService {
      * @return
      */
     def importSubscription(JSONObject data, Org context) {
+        def result = []
 
-        def sub
         Subscription.withTransaction { TransactionStatus status ->
 
             try {
-                sub = new Subscription(
+                def sub = new Subscription(
                         name:                   data.name,
                         cancellationAllowances: data.cancellationAllowances,
                         identifier:             data.identifier,
@@ -150,9 +156,12 @@ class InService {
                 sub.type      = inHelperService.getRefdataValue(data.isSlaved, "Organisational Role")
 
                 // References
-                def properties       = inHelperService.getProperties(data.properties, sub, context) // TODO: not implemented
+                def properties       = inHelperService.getProperties(data.properties, sub, context)
                 sub.customProperties = properties['custom']
                 sub.ids              = inHelperService.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
+
+                // TO CHECK: save subscriptions before saving orgRelations
+                sub.save()
 
                 sub.orgRelations     = inHelperService.getOrgLinks(data.organisations, sub, context)
 
@@ -161,15 +170,18 @@ class InService {
                 // not supported: instanceOf
                 // not supported: license
                 // not supported: packages
+
+                sub.save(flush: true)
+                result = ['result': MainService.CREATED, 'debug': sub]
             }
             catch (Exception e) {
                 log.error("Error while importing SUBSCRIPTION via API; rollback forced")
                 log.error(e)
+
                 status.setRollbackOnly()
-                return ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
+                result = ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
             }
         }
-
-        return ['result': MainService.CREATED, 'debug': sub]
+        result
     }
 }

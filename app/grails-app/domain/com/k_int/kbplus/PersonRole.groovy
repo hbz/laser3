@@ -46,7 +46,19 @@ class PersonRole {
         start_date  (nullable:true)
         end_date    (nullable:true)
     }
-    
+
+    /**
+     * Generic setter
+     */
+    def setReference(def owner) {
+        lic     = owner instanceof License ? owner : lic
+        org     = owner instanceof Org ? owner : org
+        cluster = owner instanceof Cluster ? owner : cluster
+        pkg     = owner instanceof Package ? owner : pkg
+        sub     = owner instanceof Subscription ? owner : sub
+        title   = owner instanceof TitleInstance ? owner : title
+    }
+
     static getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }

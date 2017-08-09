@@ -102,7 +102,7 @@ class InHelperService {
             person.addresses = getAddresses(it.addresses, null, person)
             person.contacts  = getContacts(it.contacts, null, person)
 
-            def properties = getProperties(it.properties, person, contextOrg) // TODO: not implemented
+            def properties = getProperties(it.properties, person, contextOrg)
             person.privateProperties = properties['private']
 
             // PersonRoles
@@ -136,7 +136,7 @@ class InHelperService {
             def idenfifierOccurence = new IdentifierOccurrence(
                     identifier: identifier
             )
-            idenfifierOccurence.setOwner(owner)
+            idenfifierOccurence.setReference(owner)
             idenfifierOccurences << idenfifierOccurence
         }
 
@@ -172,22 +172,27 @@ class InHelperService {
                         startDate:  getValidDateFormat(it.startDate),
                         roleType:   getRefdataValue(it.roleType, "Organisational Role")
                 )
-                if (owner instanceof License) {
-                    orgRole.lic = owner
+                orgRole.setReference(owner)
+
+                // check permission to use org for orgRole
+                // currently only if org equals context
+                if (org.id == context.id) {
+                    if (orgRole.roleType) {
+                        result << orgRole
+                    }
                 }
-                if (orgRole.roleType) {
-                    result << orgRole
+                else {
+                    log.debug("IGNORED: create new orgRole due lack of permission")
                 }
             }
             else {
-                log.debug("IGNORE: create new orgRole")
+                log.debug("IGNORED: create new orgRole")
             }
         }
+        // TODO: check permissions for org
         result
     }
 
-    // TODO
-    /*
     def getProperties(def data, def owner, Org contextOrg) {
         def properties = [
                 'custom': [],
@@ -216,9 +221,7 @@ class InHelperService {
                     )
                     properties['private'] << property
                 }
-                else if (owner instanceof License) {
-                    // not supported: no LicensePrivateProperties
-                }
+                // not supported: no LicensePrivateProperties
             }
             else {
                 if (owner instanceof Org) {
@@ -228,9 +231,6 @@ class InHelperService {
                     )
                     properties['custom'] << property
                 }
-                else if (owner instanceof Person) {
-                    // not supported: no PersonCustomProperties
-                }
                 else if (owner instanceof License) {
                     property = new LicenseCustomProperty(
                             owner: owner,
@@ -238,6 +238,7 @@ class InHelperService {
                     )
                     properties['custom'] << property
                 }
+                // not supported: no PersonCustomProperties
             }
 
             if (property) {
@@ -245,8 +246,10 @@ class InHelperService {
                 property.type = propertyDefinition
                 property.setValue(it.value, propertyDefinition.type, propertyDefinition.refdataCategory)
             }
+            else {
+                log.debug('property not supported: ' + owner + ' < '+ data)
+            }
         }
         properties
     }
-    */
 }

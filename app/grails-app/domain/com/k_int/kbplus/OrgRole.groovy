@@ -41,8 +41,19 @@ class OrgRole {
     startDate   (nullable:true, blank:false)
     endDate     (nullable:true, blank:false)
   }
-  
-  
+
+    /**
+     * Generic setter
+     */
+    def setReference(def owner) {
+        org     = owner instanceof Org ? owner : org
+        pkg     = owner instanceof Package ? owner : pkg
+        lic     = owner instanceof License ? owner : lic
+        sub     = owner instanceof Subscription ? owner : sub
+        cluster = owner instanceof Cluster ? owner : cluster
+        title   = owner instanceof TitleInstance ? owner : title
+    }
+
   static def assertOrgTitleLink(porg, ptitle, prole, pstart, pend) {
     // def link = OrgRole.findByTitleAndOrgAndRoleType(ptitle, porg, prole) ?: new OrgRole(title:ptitle, org:porg, roleType:prole).save();
 
