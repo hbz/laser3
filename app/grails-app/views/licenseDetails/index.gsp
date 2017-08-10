@@ -73,7 +73,10 @@
                                     <tr>
                                         <td>${io.identifier.ns.ns}</td>
                                         <td>${io.identifier.value}</td>
-                                        <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${license.class.name}:${license.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'default.delete.label', args:[identifier_label], default:'Delete Identifier')}</g:link></g:if></td>
+                                        <td><g:if test="${editable}">
+                                            <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${license.class.name}:${license.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>
+                                                ${message(code:'default.delete.label', args:["${message(code:'identifier.label')}"])}</g:link>
+                                        </g:if></td>
                                     </tr>
                                 </g:each>
                                 </tbody>
