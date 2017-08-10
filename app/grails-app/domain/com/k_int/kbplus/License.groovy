@@ -47,29 +47,33 @@ class License extends BaseDomainComponent implements Comparable<License>{
   Date dateCreated
   Date lastUpdated
 
+  Set ids = []
+
   static hasOne = [onixplLicense: OnixplLicense]
 
   static hasMany = [
-    pkgs:         Package, 
-    subscriptions:Subscription, 
-    documents:    DocContext,
-    orgLinks:     OrgRole,
-    prsLinks:     PersonRole,
-    outgoinglinks:Link,
-    incomingLinks:Link,
-    pendingChanges:PendingChange,
-    customProperties:LicenseCustomProperty
+          ids: IdentifierOccurrence,
+          pkgs:         Package,
+          subscriptions:Subscription,
+          documents:    DocContext,
+          orgLinks:     OrgRole,
+          prsLinks:     PersonRole,
+          outgoinglinks:Link,
+          incomingLinks:Link,
+          pendingChanges:PendingChange,
+          customProperties:LicenseCustomProperty
   ]
 
-  static mappedBy = [ 
-                      pkgs:          'license',
-                      subscriptions: 'owner',
-                      documents:     'license',
-                      orgLinks:      'lic',
-                      prsLinks:      'lic',
-                      outgoinglinks: 'fromLic',
-                      incomingLinks: 'toLic',
-                      pendingChanges:'license',
+  static mappedBy = [
+          ids:           'lic',
+          pkgs:          'license',
+          subscriptions: 'owner',
+          documents:     'license',
+          orgLinks:      'lic',
+          prsLinks:      'lic',
+          outgoinglinks: 'fromLic',
+          incomingLinks: 'toLic',
+          pendingChanges:'license',
   ]
 
   static mapping = {

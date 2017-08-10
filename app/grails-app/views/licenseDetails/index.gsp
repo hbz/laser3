@@ -46,7 +46,6 @@
 
                 <div class="inline-lists">
 
-  
                 <g:hasErrors bean="${titleInstanceInstance}">
                   <bootstrap:alert class="alert-error">
                   <ul>
@@ -56,8 +55,40 @@
                   </ul>
                   </bootstrap:alert>
                 </g:hasErrors>
-  
-  
+
+                    <dl>
+                        <dt><g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel></dt>
+                        <dd>
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>${message(code:'default.authority.label', default:'Authority')}</th>
+                                    <th>${message(code:'default.identifier.label', default:'Identifier')}</th>
+                                    <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
+                                <g:each in="${license.ids}" var="io">
+                                    <tr>
+                                        <td>${io.identifier.ns.ns}</td>
+                                        <td>${io.identifier.value}</td>
+                                        <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${license.class.name}:${license.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'default.delete.label', args:[identifier_label], default:'Delete Identifier')}</g:link></g:if></td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
+                            <g:if test="${editable}">
+
+                                <laser:formAddIdentifier owner="${license}" buttonText="${message(code:'licence.edit.identifier.select.add')}"
+                                                         uniqueCheck="yes" uniqueWarningText="${message(code:'licence.edit.duplicate.warn.list')}">
+                                    ${message(code:'identifier.select.text', args:['gasco-lic:0815'])}
+                                </laser:formAddIdentifier>
+
+                            </g:if>
+                        </dd>
+                    </dl>
+
                   <dl>
                       <dt><label class="control-label" for="subscriptions">${message(code:'licence.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
                       <dd>

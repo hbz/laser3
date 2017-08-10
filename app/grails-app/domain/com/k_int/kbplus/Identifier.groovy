@@ -41,6 +41,8 @@ class Identifier {
     Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save(flush:true);
   }
 
+
+    // called from AjaxController.lookup
   static def refdataFind(params) {
     def result = [];
     def ql = null;

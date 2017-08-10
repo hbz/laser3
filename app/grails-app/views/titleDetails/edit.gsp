@@ -78,15 +78,15 @@
 
            
             <g:if test="${editable}">
-              <g:form controller="ajax" action="addToCollection" class="form-inline" name="add_ident_submit">
-                ${message(code:'identifier.select.text', args:['eISSN:2190-9180'])}<br/>
-                <input type="hidden" name="__context" value="${ti.class.name}:${ti.id}"/>
-                <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
-                <input type="hidden" name="__recip" value="ti"/>
-                <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                <input type="submit" value="${message(code:'title.edit.identifier.select.add')}" class="btn btn-primary btn-small"/><br/>
-              </g:form>
+
+                <laser:formAddIdentifier owner="${ti}" buttonText="${message(code:'title.edit.identifier.select.add')}"
+                                         uniqueCheck="yes" uniqueWarningText="${message(code:'title.edit.duplicate.warn.list')}">
+                    ${message(code:'identifier.select.text', args:['eISSN:2190-9180'])}
+                </laser:formAddIdentifier>
+
             </g:if>
+
+
             <h3>${message(code:'title.edit.orglink')}</h3>
 
           <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:ti?.orgs,editmode:editable]}" />
@@ -135,56 +135,7 @@
   <r:script language="JavaScript">
 
     $(function(){
-
-
-      $("[name='add_ident_submit']").submit(function( event ) {
-        event.preventDefault();
-        $.ajax({
-          url: "<g:createLink controller='ajax' action='validateIdentifierUniqueness'/>?identifier="+$("input[name='identifier']").val()+"&owner="+"${ti.class.name}:${ti.id}",
-          success: function(data) {
-            if(data.unique){
-              $("[name='add_ident_submit']").unbind( "submit" )
-              $("[name='add_ident_submit']").submit();
-            }else if(data.duplicates){
-              var warning = "${message(code:'title.edit.duplicate.warn.list', default:'The following Titles are also associated with this identifier')}:\n";
-              for(var ti of data.duplicates){
-                  warning+= ti.id +":"+ ti.title+"\n";
-              }
-              var accept = confirm(warning);
-              if(accept){
-                $("[name='add_ident_submit']").unbind( "submit" )
-                $("[name='add_ident_submit']").submit();
-              }
-            }
-          },
-        });
-      });
-
       <g:if test="${editable}">
-      $("#addIdentifierSelect").select2({
-        placeholder: "${message(code:'identifier.select.ph')}",
-        minimumInputLength: 1,
-        formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
-        },
-        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-          url: "<g:createLink controller='ajax' action='lookup'/>",
-          dataType: 'json',
-          data: function (term, page) {
-              return {
-                  q: term, // search term
-                  page_limit: 10,
-                  baseClass:'com.k_int.kbplus.Identifier'
-              };
-          },
-          results: function (data, page) {
-            return {results: data.values};
-          }
-        },
-        createSearchChoice:function(term, data) {
-          return {id:'com.k_int.kbplus.Identifier:__new__:'+term,text:"New - "+term};
-        }
-      });
 
       $("#addOrgSelect").select2({
         placeholder: "Search for an org...",
@@ -230,9 +181,6 @@
         }
       });
       </g:if>
-
-
-
     });
 
     function validateAddOrgForm() {

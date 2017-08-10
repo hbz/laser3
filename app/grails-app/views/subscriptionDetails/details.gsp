@@ -89,16 +89,13 @@
                          </g:each>
                        </tbody>
                      </table>
-           <g:if test="${editable}">
-              <g:form controller="ajax" action="addToCollection" class="form-inline" name="add_ident_submit">
-                ${message(code:'identifier.select.text', args:['JC:66454'])}<br/>
-                <input type="hidden" name="__context" value="${subscriptionInstance.class.name}:${subscriptionInstance.id}"/>
-                <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
-                <input type="hidden" name="__recip" value="sub"/>
-                <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                <input type="submit" id="addIdentBtn" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small"/><br/>
-              </g:form>
-            </g:if>
+                       <g:if test="${editable}">
+
+                           <laser:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
+                              ${message(code:'identifier.select.text', args:['JC:66454'])}
+                           </laser:formAddIdentifier>
+
+                        </g:if>
                    </dd>
                </dl>
 
@@ -209,7 +206,6 @@
       
       <g:if test="${editable}">
 
-
       $(document).ready(function() {
            
         $(".announce").click(function(){
@@ -226,58 +222,6 @@
         $('#collapseableSubDetails').on('hide', function() {
             $('.hidden-license-details i').removeClass('icon-minus').addClass('icon-plus');
         });
-
-
-        <g:if test="${editable}">
-          $("[name='add_ident_submit']").submit(function( event ) {
-            event.preventDefault();
-            $.ajax({
-              url: "<g:createLink controller='ajax' action='validateIdentifierUniqueness'/>?identifier="+$("input[name='identifier']").val()+"&owner="+"${subscriptionInstance.class.name}:${subscriptionInstance.id}",
-              success: function(data) {
-                if(data.unique){
-                  $("[name='add_ident_submit']").unbind( "submit" )
-                  $("[name='add_ident_submit']").submit();
-                }else if(data.duplicates){
-                  var warning = "${message(code:'subscription.details.details.duplicate.warn', default:'The following Subscriptions are also associated with this identifier')}:\n";
-                  for(var ti of data.duplicates){
-                      warning+= ti.id +":"+ ti.title+"\n";
-                  }
-                  var accept = confirm(warning);
-                  if(accept){
-                    $("[name='add_ident_submit']").unbind( "submit" )
-                    $("[name='add_ident_submit']").submit();
-                  }
-                }
-              },
-            });
-          });
-
-          $("#addIdentifierSelect").select2({
-            placeholder: "${message(code:'identifier.select.ph', default:'Search for an identifier...')}",
-            minimumInputLength: 1,
-            formatInputTooShort: function () {
-                return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
-            },
-            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-              url: "<g:createLink controller='ajax' action='lookup'/>",
-              dataType: 'json',
-              data: function (term, page) {
-                  return {
-                      q: term, // search term
-                      page_limit: 10,
-                      baseClass:'com.k_int.kbplus.Identifier'
-                  };
-              },
-              results: function (data, page) {
-                return {results: data.values};
-              }
-            },
-            createSearchChoice:function(term, data) {
-              return {id:'com.k_int.kbplus.Identifier:__new__:'+term,text:"New - "+term};
-            }
-          });
-        </g:if>
-
       });
 
       </g:if>
