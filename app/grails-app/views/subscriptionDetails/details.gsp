@@ -54,6 +54,11 @@
             <br/>
             <h6>${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
             <div class="inline-lists"> 
+              <dl><dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
+                  <dd>
+                      <g:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' />
+                  </dd>
+              </dl>
               <dl><dt>${message(code:'licence')}</dt><dd><g:if test="${subscriptionInstance.subscriber}">
                         <g:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
                         <g:if test="${subscriptionInstance.owner != null}">(<g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>)</g:if>

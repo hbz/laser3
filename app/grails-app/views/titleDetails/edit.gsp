@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Package" %>
+<%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -17,7 +18,9 @@
                         data-pk="${ti.class.name}:${ti.id}"
                         data-name="title" 
                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                        data-original-title="${ti.title}">${ti.title}</span></g:if><g:else>${ti.title}</g:else></h1>
+                        data-original-title="${ti.title}">${ti.title}</span></g:if>
+                  <g:else>${ti.title}</g:else>
+              </h1>
             </div>
 
             <g:if test="${flash.message}">
@@ -41,6 +44,8 @@
             <g:if test="${flash.error}">
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
+            
+            <h3>${message(code:'default.status.label')}:<span style="color:initial;cursor:pointer;"> <g:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></span></h3>
 
             <h3>${message(code:'identifier.plural', default:'Identifiers')}</h3>
 

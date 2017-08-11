@@ -13,7 +13,7 @@
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${subscriptionInstance.subscriber}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
+          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.label', default:'Subscription Details')}</g:link> </li>
         
@@ -179,13 +179,14 @@
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
                    ${message(code:'default.access.label', default:'Access')}: ${message(code:"refdata.${ie.availabilityStatus?.value}", default:"${ie.availabilityStatus?.value}")}<br/>
                    ${message(code:'tipp.coverage_note', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote?:'')}<br/>
+                   ${message(code:'tipp.platform', default:'Platform')}: ${ie.tipp?.platform.name?:message(code:'refdata.Unknown')}
                    <g:if test="${ie.availabilityStatus?.value=='Expected'}">
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessStartDate}"/>
                    </g:if>
                    <g:if test="${ie.availabilityStatus?.value=='Expired'}">
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessEndDate}"/>
                    </g:if>
-                   <g:if test="${params.mode=='advanced'}">
+                   <g:if test="${params.mode=='advanced' && editable}">
                      <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
                      <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
                    </g:if>

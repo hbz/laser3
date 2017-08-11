@@ -31,6 +31,10 @@ class GlobalSourceSyncService {
       return
     }
     
+    if(newtitle.status != 'Current'){
+      title_instance.status = RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, 'Deleted')
+    }
+    
     newtitle.identifiers.each {
       log.debug("Checking title has ${it.namespace}:${it.value}");
       title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
@@ -116,6 +120,7 @@ class GlobalSourceSyncService {
     result.parsed_rec.identifiers = []
     result.parsed_rec.history = []
     result.parsed_rec.publishers = []
+    result.parsed_rec.status = md.gokb.title.status.text()
 
     result.title = md.gokb.title.name.text()
     result.parsed_rec.title = md.gokb.title.name.text()
@@ -201,7 +206,13 @@ class GlobalSourceSyncService {
     // Firstly, make sure that there is a package for this record
     if ( grt.localOid != null ) {
       pkg = genericOIDService.resolveOID(grt.localOid)
-
+      
+      if( pkg && newpkg.status != 'Current' ){
+        def pkg_del_status = RefdataCategory.lookupOrCreate('Package Status', 'Deleted');
+        
+        pkg.packageStatus = pkg_del_status
+      }
+      
       if( pkg ) {
         newpkg.identifiers.each {
           log.debug("Checking package has ${it.namespace}:${it.value}");
@@ -458,6 +469,7 @@ class GlobalSourceSyncService {
     result.parsed_rec.packageProvider = md.gokb.package.nominalProvider.text()
     result.parsed_rec.tipps = []
     result.parsed_rec.identifiers = []
+    result.parsed_rec.status = md.gokb.package.status.text()
 
     md.gokb.package.identifiers.identifier.each { id ->
       result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])

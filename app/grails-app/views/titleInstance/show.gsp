@@ -53,9 +53,11 @@
             <g:if test="${titleInstanceInstance?.ids}">
                 <dl>
                     <dt><g:message code="title.identifiers.label" default="Ids" /></dt>
-                    <g:each in="${titleInstanceInstance.ids}" var="i">
-                        <dd>${i.identifier.ns.ns}:${i.identifier.value}</dd>
-                    </g:each>
+                    <dd>
+                      <g:each in="${titleInstanceInstance.ids}" var="i">
+                          <div>${i.identifier.ns.ns}:${i.identifier.value}</div>
+                      </g:each>
+                    </dd>
                 </dl>
             </g:if>
 

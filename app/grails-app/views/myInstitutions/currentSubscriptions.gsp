@@ -11,7 +11,7 @@
     <div class="container">
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> </li>
+        <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}">${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> </li>
           <g:if test="${editable}">
               <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
           </g:if>
@@ -93,19 +93,24 @@
                 </g:if>
               </td>
               <td rowspan="2">
-                <g:if test="${editable}">
-                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:params.shortcode,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
+                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:params.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                 </g:if>
               </td>
             </tr>
             <tr>
               <td>
                 <ul>
-                  <g:each in="${s.packages}" var="sp">
-                    <li>
-                      <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">${sp.pkg.name}</g:link>
-                    </li>
+                  <g:each in="${s.packages}" var="sp" status="ind">
+                    <g:if test="${ind < 10}">
+                      <li>
+                        <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">${sp.pkg.name}</g:link>
+                      </li>
+                    </g:if>
                   </g:each>
+                  <g:if test="${s.packages.size() > 10}">
+                    <div>...and ${s.packages.size() - 10} other packages</div>
+                  </g:if>
                 </ul>
                 <g:if test="${((s.packages==null) || (s.packages.size()==0))}">
                   <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'myinst.currentSubscriptions.link_pkg', default:'Link Package')}</g:link></i>

@@ -111,6 +111,15 @@ class Subscription {
     result
   }
 
+  def getAllSubscribers() {
+    def result = [];
+    orgRelations.each { or ->
+      if ( or?.roleType?.value=='Subscriber' )
+        result.add(or.org)
+    }
+    result
+  }
+  
   def getProvider() {
     def result = null;
     orgRelations.each { or ->
@@ -267,9 +276,14 @@ class Subscription {
   static def refdataFind(params) {
     def result = [];
 
-    def hqlString = "select sub from Subscription sub where lower(sub.name) like ? "
-    def hqlParams = [((params.q ? params.q.toLowerCase() : '' ) + "%")]
+    def hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
+    def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    def cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+    def sub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+    def viableRoles = [cons_role, sub_role]
+    
+    hqlParams.put('viableRoles', viableRoles)
 
     if(params.hasDate ){
 
@@ -277,12 +291,12 @@ class Subscription {
       def endDate = params.endDate.length() > 1 ? sdf.parse(params.endDate)  : null
 
       if(startDate){
-          hqlString += " AND sub.startDate >= ? "
-          hqlParams += startDate
+          hqlString += " AND sub.startDate >= :startDate "
+          hqlParams.put('startDate', startDate)
       }
       if(endDate){
-        hqlString += " AND sub.endDate <= ? "
-        hqlParams += endDate
+        hqlString += " AND sub.endDate <= :endDate "
+        hqlParams.put('endDate', endDate)
         }
     }
 
@@ -291,8 +305,8 @@ class Subscription {
     }
 
     if(params.inst_shortcode && params.inst_shortcode.length() > 1){
-      hqlString += " AND exists ( select orgs from sub.orgRelations orgs where orgs.org.shortcode = ? AND orgs.roleType.value = 'Subscriber' ) "
-      hqlParams += params.inst_shortcode
+      hqlString += " AND exists ( select orgs from sub.orgRelations orgs where orgs.org.shortcode = :inst AND orgs.roleType IN (:viableRoles) ) "
+      hqlParams.put('inst', params.inst_shortcode)
     }
 
 

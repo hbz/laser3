@@ -164,7 +164,7 @@
                                 </g:else>
                               </g:if>
                               <g:else>
-                                  ${message(code:'packageDetails.index.result.titles.unknown', default:'Unknown number of titles')}
+                                  ${message(code:'packageDetails.index.result.titles.unknown', default:'Unknown number of TIPPs')}
                               </g:else>
                             )</span>
                           </td>

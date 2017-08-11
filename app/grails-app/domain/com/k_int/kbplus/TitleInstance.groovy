@@ -824,7 +824,7 @@ class TitleInstance {
 
   def getInstitutionalCoverageSummary(institution, dateformat, date_restriction) {
     def sdf = new java.text.SimpleDateFormat(dateformat)
-    def qry = "select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o where ie.tipp.title = :title and o.org = :institution AND o.roleType.value = 'Subscriber' AND ie.subscription.status.value != 'Deleted' AND ie.status != 'Deleted'"
+    def qry = "select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o where ie.tipp.title = :title and o.org = :institution AND (o.roleType.value = 'Subscriber' OR o.roleType.value = 'Subscription Consortia') AND ie.subscription.status.value != 'Deleted' AND ie.status != 'Deleted'"
     def qry_params = ['title':this, institution:institution]
 
     if ( date_restriction ) {

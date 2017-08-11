@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue"; com.k_int.kbplus.Combo %>
 
 <!doctype html>
 <html>

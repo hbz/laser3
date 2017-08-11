@@ -53,38 +53,38 @@
               <span class="add-on"><i class="icon-th"></i></span> 
             </div>
         <div class="dropdown">
-        ${message(code:'datamanager.changeLog.actor')} :
-        <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">
-            ${message(code:'datamanager.changeLog.actor_select')}
-            <b class="caret"></b>
-        </a>
-        <ul class="dropdown-checkboxes dropdown-menu" role="menu">
-            <li>
-                <label class="checkbox">
-                    <input type="checkbox" name="change_actor_PEOPLE" value="Y"
-                    ${params.change_actor_PEOPLE == "Y" ? 'checked' : ''} >
-                    ${message(code:'datamanager.changeLog.actor_select.all_real')}
-                </label>
-            </li>
-            <li>
-                <label class="checkbox">
-                    <input type="checkbox" name="change_actor_ALL" value="Y"
-                    ${params.change_actor_ALL == "Y" ? 'checked' : ''} >
-                    ${message(code:'datamanager.changeLog.actor_select.all_system')}
-                </label>
-            </li>
-            <g:each in="${actors}" var="a">
-
-               <li>
+          <span style="vertical-align:bottom;">${message(code:'datamanager.changeLog.actor')} :<span>
+          <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">
+              ${message(code:'datamanager.changeLog.actor_select')}
+              <b class="caret"></b>
+          </a>
+          <ul class="dropdown-checkboxes dropdown-menu" role="menu">
+              <li>
                   <label class="checkbox">
-                      <input type="checkbox" name="change_actor_${a[0]}" value="Y"
-                        ${params."change_actor_${a[0]}" == "Y" ? 'checked' : ''} >
-                        ${a[1]}
-                  </label>                
+                      <input type="checkbox" name="change_actor_PEOPLE" value="Y"
+                      ${params.change_actor_PEOPLE == "Y" ? 'checked' : ''} >
+                      ${message(code:'datamanager.changeLog.actor_select.all_real')}
+                  </label>
               </li>
-            </g:each>
-        </ul>
-      </div>
+              <li>
+                  <label class="checkbox">
+                      <input type="checkbox" name="change_actor_ALL" value="Y"
+                      ${params.change_actor_ALL == "Y" ? 'checked' : ''} >
+                      ${message(code:'datamanager.changeLog.actor_select.all_system')}
+                  </label>
+              </li>
+              <g:each in="${actors}" var="a">
+
+                <li>
+                    <label class="checkbox">
+                        <input type="checkbox" name="change_actor_${a[0]}" value="Y"
+                          ${params."change_actor_${a[0]}" == "Y" ? 'checked' : ''} >
+                          ${a[1]}
+                    </label>                
+                </li>
+              </g:each>
+          </ul>
+        </div>
 
         <br/>
 
@@ -106,11 +106,11 @@
     <g:if test="${formattedHistoryLines?.size() > 0}">
 
       <div class="container alert-warn">
-
+      <p>
       <g:link action="changeLog"> 
-         <input type="button" value="${message(code:'default.button.clear_search.label', default:'Clear Search')}" class="btn btn-danger">${message(code:'default.button.clear_search.label')}</input>
+         <input type="button" value="${message(code:'default.button.clear_search.label', default:'Clear Search')}" class="btn btn-danger" />
       </g:link>
-
+      </p>
         <table class="table table-bordered">
           <thead>
             <tr>

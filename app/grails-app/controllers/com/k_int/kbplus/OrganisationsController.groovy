@@ -265,6 +265,12 @@ class OrganisationsController {
                   return
               }
           }
+          
+          if (params.fromOrg){
+            addOrgCombo()
+            render view: 'edit', model: [orgInstance: orgInstance]
+            return
+          }
 
           orgInstance.properties = params
 
@@ -273,7 +279,7 @@ class OrganisationsController {
               return
           }
 
-      flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+          flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
           redirect action: 'show', id: orgInstance.id
       break
     }
@@ -321,6 +327,25 @@ class OrganisationsController {
         uo.save();
       }
       redirect action: 'users', id: params.id
+    }
+    
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addOrgCombo() {
+      def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
+      def fromOrg = Org.get(params.fromOrg)
+      def toOrg = Org.get(params.toOrg)
+      log.debug("Processing combo creation between ${fromOrg} AND ${toOrg}")
+      def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])
+      
+      if ( !dupe ){
+        def consLink = new Combo(fromOrg:fromOrg,
+                                 toOrg:toOrg,
+                                 status:null,
+                                 type:comboType).save()
+                                 
+      }else{
+        flash.message = "This Combo already exists!"
+      }
     }
 
 

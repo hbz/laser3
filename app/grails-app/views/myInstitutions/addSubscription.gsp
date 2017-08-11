@@ -8,7 +8,7 @@
 
     <div class="container">
       <ul class="breadcrumb">
-         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="myInstitutions"  action="addSubscription" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</g:link> </li>
       </ul>
     </div>

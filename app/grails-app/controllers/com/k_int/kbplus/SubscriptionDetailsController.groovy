@@ -57,6 +57,7 @@ class SubscriptionDetailsController {
 
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance = Subscription.get(params.id)
+    result.shortcode = params.shortcode;
 
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
@@ -990,13 +991,25 @@ class SubscriptionDetailsController {
 
     if ( params.addType && ( params.addType != '' ) ) {
       def pkg_to_link = Package.get(params.addId)
+      def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ",[result.subscriptionInstance])
       log.debug("Add package ${params.addType} to subscription ${params}");
+
       if ( params.addType == 'With' ) {
         pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+        sub_instances.each {
+          pkg_to_link.addToSubscription(it, true)
+        }
+
         redirect action:'index', id:params.id
       }
       else if ( params.addType == 'Without' ) {
         pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+        sub_instances.each {
+          pkg_to_link.addToSubscription(it, false)
+        }
+
         redirect action:'addEntitlements', id:params.id
       }
     }
