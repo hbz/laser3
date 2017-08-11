@@ -118,7 +118,7 @@ class PropertyDefinition {
         def result = []
         def ql = null
         if(!params.desc || params.desc == "*"){
-            if(!params.desc)log.error("Search PropertyDefinition without Description ${params}");
+            if(!params.desc)log.error("Search PropertyDefinition without Description ${params}")
             ql = findAllByNameIlike("${params.q}%",params)
         }else{
             ql = findAllByNameIlikeAndDescr("${params.q}%",params.desc, params)

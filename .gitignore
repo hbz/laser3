@@ -10,4 +10,5 @@ RemoteSystemTempFiles
 .classpath
 .directory
 .project
+*.war
 out/
