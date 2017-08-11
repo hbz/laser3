@@ -8,9 +8,9 @@ class CardTagLib {
 
     static namespace = "laser"
 
-    // <laser:panel title="">
+    // <laser:card title="" class="some_css_class">
     //
-    // <laser:panel>
+    // <laser:card>
 
 
     def card = { attrs, body ->

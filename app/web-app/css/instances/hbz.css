@@ -6955,6 +6955,11 @@ body #modalCreateNote textarea {
     width: 97%;
 }
 
+/* identifier forms */
+
+form.form-inline > * {
+  margin: 0 10px 10px 0;
+}
 
 /* bootstrap 4 */
 

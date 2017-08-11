@@ -176,13 +176,20 @@
                              <g:link controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link></li>
                          <li <%= ( ( 'licenseImport'== controllerName ) && ( 'doImport'==actionName ) ) ? ' class="active"' : '' %>>
                              <g:link controller="licenseImport" action="doImport">${message(code:'onix.import.licence')}</g:link></li>
+
                        <li class="divider"></li>
+
                        <li <%= ( ( 'titleDetails'== controllerName ) && ( 'findTitleMatches'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link></li>
                        <li <%= ( ( 'licenseDetails'== controllerName ) && ( 'create'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="licenseDetails" action="create">${message(code:'licence.new')}</g:link></li>
                        <li <%= ( ( 'platform'== controllerName ) && ( 'create'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link></li>
+
+                         <li class="divider"></li>
+
+                         <li <%= ( ( 'dataManager'== controllerName ) && ( 'namespaces'==actionName ) ) ? ' class="active"' : '' %>>
+                             <g:link controller="dataManager" action="namespaces">${message(code:'menu.datamanager.manageIdentifierNamespaces')}</g:link></li>
                        <li class="divider"></li>
 
                         <li<%= ( ( 'subscriptionDetails'== controllerName ) && ( 'compare'==actionName ) ) ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"

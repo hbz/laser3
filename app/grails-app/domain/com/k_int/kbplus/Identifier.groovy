@@ -41,8 +41,6 @@ class Identifier {
     Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save(flush:true);
   }
 
-
-    // called from AjaxController.lookup
   static def refdataFind(params) {
     def result = [];
     def ql = null;
@@ -66,6 +64,21 @@ class Identifier {
 
     result
   }
+    // called from AjaxController.lookup2
+    static def refdataFind2(params) {
+        def result = []
+        if (params.q.contains(':')) {
+            def qp = params.q.split(':');
+            def namespace = IdentifierNamespace.findByNsIlike(qp[0]);
+            if (namespace && qp.size() == 2) {
+                def ql = Identifier.findAllByNsAndValueIlike(namespace,"${qp[1]}%")
+                ql.each { id ->
+                    result.add([id:"${id.class.name}:${id.id}", text:"${id.value}"])
+                }
+            }
+        }
+        result
+    }
 
     static def refdataCreate(value) {
         // value is String[] arising from  value.split(':');

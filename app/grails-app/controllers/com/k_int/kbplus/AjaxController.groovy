@@ -752,6 +752,7 @@ class AjaxController {
     if(date) date.delete(flush:true)
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
+
   def lookup() {
     // log.debug("AjaxController::lookup ${params}");
     def result = [:]
@@ -768,6 +769,20 @@ class AjaxController {
     //                 [id:'Person:23',text:'Jim'],
     //                 [id:'Person:22',text:'Jimmy'],
     //                 [id:'Person:3',text:'JimBob']]
+    render result as JSON
+  }
+
+  // used only from IdentifierTabLib.formAddIdentifier
+  def lookup2() {
+    def result = [:]
+    def domain_class = grailsApplication.getArtefact('Domain', params.baseClass)
+    if (domain_class) {
+      result.values = domain_class.getClazz().refdataFind2(params);
+    }
+    else {
+      log.error("Unable to locate domain class ${params.baseClass}");
+      result.values=[]
+    }
     render result as JSON
   }
 
