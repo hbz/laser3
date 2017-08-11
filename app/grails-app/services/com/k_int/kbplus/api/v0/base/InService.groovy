@@ -44,6 +44,7 @@ class InService {
                 license.licenseCategory  = inHelperService.getRefdataValue(data.licenseCategory, "LicenseCategory")
                 license.status           = inHelperService.getRefdataValue(data.status, "License Status")
                 license.type             = inHelperService.getRefdataValue(data.type, "License Type")
+                license.ids              = inHelperService.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
 
                 // References
                 def properties           = inHelperService.getProperties(data.properties, license, context)

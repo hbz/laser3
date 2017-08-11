@@ -107,6 +107,9 @@ class OutHelperService {
             result.reference    = lic.reference
             result.sortableReference = lic.sortableReference
 
+            // References
+            result.identifiers = resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
+
             result = cleanUp(result, true, true)
         }
 
@@ -379,6 +382,10 @@ class OutHelperService {
             tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
             tmp.note            = it.note
             tmp.isPublic        = "Yes" // derived to substitute private properties tentant
+
+            if (it instanceof LicenseCustomProperty) {
+                tmp.paragraph = it.paragraph
+            }
 
             tmp = cleanUp(tmp, true, false)
             result << tmp

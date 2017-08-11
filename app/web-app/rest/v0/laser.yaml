@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  version: "0.6"
+  version: "0.7"
   title: LAS:eR API
   description: >
     Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
@@ -131,7 +131,7 @@ paths:
         - Licenses
       summary: Find license by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID* and *impId*
+        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -250,7 +250,7 @@ paths:
         - Packages
       summary: Find packge by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -280,7 +280,7 @@ paths:
       - Subscriptions
       summary: Find subscription by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -358,6 +358,10 @@ definitions:
         type: string
         readOnly: true
         example: "47bf5716-af45-7b7d-bfe1-189ab51f6c66"
+      identifiers: # mapping attr ids
+        type: array
+        items:
+          $ref: "#/definitions/Identifier"
       reference:
         type: string
       sortableReference:
@@ -440,7 +444,7 @@ definitions:
       name:
         type: string
 
-  SubscriptionStub_at_Subscription:
+  SubscriptionStub(inSubscription):
     allOf:
       - $ref: "#/definitions/SubscriptionStub"
       - type: object
@@ -490,9 +494,6 @@ definitions:
   Address:
     type: object
     properties:
-#      id:
-#        type: integer
-#        readOnly: true
       street1:
         type: string
         example: "Jülicher Straße"
@@ -540,9 +541,6 @@ definitions:
   Contact:
     type: object
     properties:
-#      id:
-#        type: integer
-#        readOnly: true
       category: # mapping attr contentType
         type: string
         description: Mapping RefdataCategory "ContactContentType"
@@ -562,9 +560,6 @@ definitions:
   Document:
     type: object
     properties:
-#      id:
-#        type: integer
-#        readOnly: true
       filename:
         type: string
         example: "springer_2015.csv"
@@ -716,7 +711,7 @@ definitions:
           organisations: # mapping attr orgRelations
             type: array
             items:
-              $ref: "#/definitions/OrganisationRole_only_Org" # resolved OrgRole
+              $ref: "#/definitions/OrganisationRole(onlyOrgRelation)" # resolved OrgRole
     #      outgoingLinks:
     #        type: array
     #        items:
@@ -732,7 +727,7 @@ definitions:
           properties: # mapping attr customProperties
             type: array
             items:
-              $ref: "#/definitions/Property"
+              $ref: "#/definitions/Property(LicenceProperty)"
           startDate:
             type: string
             format: date
@@ -753,7 +748,7 @@ definitions:
             enum:
               [""]
 
-  License_at_Subscription:
+  License(inSubscription):
     allOf:
       - $ref: "#/definitions/LicenseStub"
       - type: object
@@ -824,7 +819,7 @@ definitions:
           properties: # mapping attr customProperties
             type: array
             items:
-              $ref: "#/definitions/Property"
+              $ref: "#/definitions/Property(LicenceProperty)"
           startDate:
             type: string
             format: date
@@ -975,11 +970,8 @@ definitions:
 #        description: |
 #          Exclusive with cluster, license, organisation, package and subscription
 
-  OrganisationRole_only_Org:
+  OrganisationRole(onlyOrgRelation):
     properties:
-#      id:
-#        type: integer
-#        readOnly: true
       endDate:
         type: string
         format: date
@@ -1050,7 +1042,7 @@ definitions:
           organisations: # mapping attr orgs
             type: array
             items:
-              $ref: "#/definitions/OrganisationRole_only_Org"
+              $ref: "#/definitions/OrganisationRole(onlyOrgRelation)"
           packageListStatus:
             type: string
             description: Mapping RefdataCategory
@@ -1088,11 +1080,11 @@ definitions:
           tipps:
             type: array
             items:
-              $ref: "#/definitions/TitleInstancePackagePlatform_at_Package"
+              $ref: "#/definitions/TitleInstancePackagePlatform(inPackage)"
           vendorURL:
             type: string
 
-  Package_at_Subscription:
+  Package(inSubscription):
     type: object
     properties:
       globalUID:
@@ -1187,14 +1179,11 @@ definitions:
       roles:
         type: array
         items:
-          $ref: "#/definitions/PersonRole_as_Function"
+          $ref: "#/definitions/PersonRole(usedAsFunction)"
 
   PersonRole:
     type: object
     properties:
-#      id:
-#        type: integer
-#        readOnly: true
       endDate:
         type: string
         format: date
@@ -1204,7 +1193,7 @@ definitions:
         format: date
         example: "2016-01-01 00:00:00"
 
-  PersonRole_as_Function:
+  PersonRole(usedAsFunction):
     allOf:
       - $ref: "#/definitions/PersonRole"
       - type: object
@@ -1218,7 +1207,7 @@ definitions:
               ["General contact person"]
             example: "General contact person"
 
-  PersonRole_as_Responsibility:
+  PersonRole(usedAsResponsibility):
     allOf:
       - $ref: "#/definitions/PersonRole"
       - type: object
@@ -1284,6 +1273,15 @@ definitions:
         type: string
         example: "No"
 
+  Property(LicenceProperty):
+    allOf:
+      - $ref: "#/definitions/Property"
+      - type: object
+        properties:
+          paragraph:
+            type: string
+            example: "This is an important licence paragraph"
+
   Subscription:
     allOf:
       - $ref: "#/definitions/SubscriptionStub"
@@ -1304,8 +1302,8 @@ definitions:
             type: string
             format: date
           instanceOf:
-            readOnly: true # bug fixed due #/definitions/SubscriptionStub_at_Subscription.readOnly:true
-            $ref: "#/definitions/SubscriptionStub_at_Subscription"
+            readOnly: true # bug fixed due #/definitions/SubscriptionStub(inSubscription).readOnly:true
+            $ref: "#/definitions/SubscriptionStub(inSubscription)"
           isPublic:
             type: string
             description: Mapping RefdataCategory "YN"
@@ -1326,8 +1324,8 @@ definitions:
             format: date
             readOnly: true
           license: # mapping owner
-            readOnly: true # bug fixed due #/definitions/License_at_Subscription.readOnly:true
-            $ref: "#/definitions/License_at_Subscription"
+            readOnly: true # bug fixed due #/definitions/License(inSubscription).readOnly:true
+            $ref: "#/definitions/License(inSubscription)"
           manualRenewalDate:
             type: string
             format: date
@@ -1336,12 +1334,12 @@ definitions:
           organisations: # mapping attr orgRelations
             type: array
             items:
-              $ref: "#/definitions/OrganisationRole_only_Org"
+              $ref: "#/definitions/OrganisationRole(onlyOrgRelation)"
           packages:
             type: array
             readOnly: true
             items:
-              $ref: "#/definitions/Package_at_Subscription"
+              $ref: "#/definitions/Package(inSubscription)"
     #      persons: # mapping attr prsLinks
     #        type: array
     #        items:
@@ -1471,7 +1469,7 @@ definitions:
           title:
             $ref: "#/definitions/TitleStub"
 
-  TitleInstancePackagePlatform_at_Package:
+  TitleInstancePackagePlatform(inPackage):
     allOf:
       - $ref: "#/definitions/TitleInstancePackagePlatformStub"
       - type: object

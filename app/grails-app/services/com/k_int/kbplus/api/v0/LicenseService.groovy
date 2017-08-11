@@ -28,6 +28,9 @@ class LicenseService {
             case 'impId':
                 result = License.findAllWhere(impId: value)
                 break
+            case 'ns:identifier':
+                result = Identifier.lookupObjectsByIdentifierString(new License(), value)
+                break
             default:
                 return MainService.BAD_REQUEST
                 break

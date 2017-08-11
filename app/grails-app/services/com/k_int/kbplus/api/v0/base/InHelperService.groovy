@@ -233,8 +233,9 @@ class InHelperService {
                 }
                 else if (owner instanceof License) {
                     property = new LicenseCustomProperty(
-                            owner: owner,
-                            note:  it.note
+                            owner:     owner,
+                            note:      it.note,
+                            paragraph: it.paragraph
                     )
                     properties['custom'] << property
                 }
