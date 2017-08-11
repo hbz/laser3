@@ -9,11 +9,15 @@ import org.apache.log4j.RollingFileAppender
 // @NotificationsJob
 // - enable notification
 // - enable reminder
-hbzMaster = true
+//hbzMaster = true
 
 // @ApplicationResources
 defaultCssSkin = "hbz.css"
 
+// FEATURE-CONFIG:
+
+localauth = true
+feature_finance = true
 
 customProperties =[
 "org":["journalAccess":["name":"Public Journal Access","class":String.toString(),"note":"Set the required rights for accessing the public Journals page. For example 'Staff,Student,Public' or leave empty/delete for no public access."]
@@ -374,13 +378,14 @@ grails.hibernate.cache.queries = true
 
 // set per-environment serverURL stem for creating absolute links
 environments {
-  development {
-    grails.logging.jul.usebridge = true
-  }
-  production {
-    grails.logging.jul.usebridge = false
-    // TODO: grails.serverURL = "http://www.changeme.com"
-  }
+    development {
+        grails.logging.jul.usebridge = true
+        grails.serverURL = "http://localhost:8080/demo"
+    }
+    production {
+        grails.logging.jul.usebridge = false
+        grails.serverURL = "http://laser-dev.hbz-nrw.de" // TODO: remind to change if deploy on other server
+    }
 }
 
 grails.cache.config = {

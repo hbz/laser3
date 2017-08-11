@@ -6,6 +6,12 @@
   </head>
 
   <body>
+
+    <laser:breadcrumbs>
+        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <laser:crumb message="menu.institutions.gen_renewals" class="active" />
+    </laser:breadcrumbs>
+
     <div class="container">
       <g:form action="renewalsSearch" method="get" params="${params}">
       <input type="hidden" name="offset" value="${params.offset}"/>

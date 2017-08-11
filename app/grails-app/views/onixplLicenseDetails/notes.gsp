@@ -7,6 +7,7 @@
 
 <body>
 
+<!-- REMOVE; not tested
     <div class="container">
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
@@ -22,6 +23,19 @@
 
       </ul>
     </div>
+-->
+
+    <laser:breadcrumbs>
+        <g:if test="${onixplLicense.license.licensee}">
+            <laser:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:onixplLicense.license.licensee.shortcode]}" text="${onixplLicense.license.licensee.name} Current Licences" />
+        </g:if>
+        <laser:crumb controller="onixplLicenseDetails" action="index" id="${params.id}" text="ONIX-PL License Details" />
+        <laser:crumb controller="onixplLicenseDetails" action="notes" id="${params.id}" text="License Notes" />
+        <g:if test="${editable}">
+            <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+        </g:if>
+    </laser:breadcrumbs>
+
 
     <div class="container">
         <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} Licence : <span id="reference" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>

@@ -7,13 +7,9 @@
 
   <body>
 
-
-    <div class="container">
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="titleDetails" action="index">${message(code: 'menu.institutions.all_titles')}</g:link></li>
-      </ul>
-    </div>
+    <laser:breadcrumbs>
+      <laser:crumb controller="titleDetails" action="index" message="menu.institutions.all_titles" />
+    </laser:breadcrumbs>
 
     <div class="container">
       <div class="well">

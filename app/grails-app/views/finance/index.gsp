@@ -16,7 +16,8 @@
 <g:set var="currency"         scope="page" value="${com.k_int.kbplus.CostItem.orderedCurrency()}"/>
 
 
-<div class="container-fluid">
+<div class="container">
+
     <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
         <li>
@@ -45,6 +46,9 @@
         </li>
     </ul>
 </div>
+
+<br/>
+<br/>
 
 <div style="padding-left: 2%" hidden="hidden" class="loadingData">
     <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>

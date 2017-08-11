@@ -1,32 +1,35 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
 @Log4j
 class ApiService {
 
+    static final FORBIDDEN          = "FORBIDDEN"
+    static final BAD_REQUEST        = "BAD_REQUEST"
+    static final NOT_IMPLEMENTED    = "NOT_IMPLEMENTED"
+
     /**
-     * 
+     *
      * @param xml
      * @return
      */
     GPathResult importOrg(GPathResult xml){
-        
+
         def rdcYN = RefdataCategory.findByDesc('YN')
         def rdcContactContentType = RefdataCategory.findByDesc('ContactContentType')
 
         def overrideTenant
         def overrideIsPublic
-        
+
         if(xml.override?.tenant?.text()){
             overrideTenant   = Org.findByShortcode(xml.override.tenant.text())
             overrideIsPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'No')
-            
+
             log.info("OVERRIDING TENANT: ${overrideTenant}")
         }
-        
+
         xml.institution.each{ inst ->
 
             def identifiers = [:]
@@ -34,16 +37,16 @@ class ApiService {
 
             def title = normString(inst.title.text())
             def subscriperGroup = inst.subscriper_group ? normString(inst.subscriper_group.text()) : ''
-            
+
             log.info("importing org: ${title}")
-            
+
             def firstName, middleName, lastName
             def email, telephone
             def street1, street2
-            
+
             // store identifiers
             def tmp = [:]
-            
+
             if(inst.uid){
                 tmp.put("uid", normString(inst.uid.text()))
             }
@@ -51,17 +54,17 @@ class ApiService {
                 tmp.put("isil", normString(inst.sigel.text()))
             }
             if(inst.user_name){
-                tmp.put("wib", normString(inst.user_name.text())) 
+                tmp.put("wib", normString(inst.user_name.text()))
             }
             tmp.each{ k, v ->
-                if(v != '') 
+                if(v != '')
                     identifiers.put(k, v)
             }
             
             // find org by identifier or name (Org.lookupOrCreate)
-            org = Org.lookupOrCreate(title, subscriperGroup, null, identifiers, null) 
+            org = Org.lookupOrCreate(title, subscriperGroup, null, identifiers, null)
             if(org){
-                
+
                 // adding new identifiers
                 identifiers.each{ k,v ->
                     def ns   = IdentifierNamespace.findByNsIlike(k)
@@ -69,7 +72,7 @@ class ApiService {
                         new IdentifierOccurrence(org:org, identifier:Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
                     }
                 }
-                
+
                 // adding address
                 if(inst.zip && inst.city){
                     def stParts = normString(inst.street.text())
@@ -119,7 +122,7 @@ class ApiService {
                 def faxList   = flattenToken(inst.fax)
                          
                 cpList.eachWithIndex{ token, i ->
-   
+
                     // adding person
                     def cpText = cpList[i] ? cpList[i].text() : ''
                     def cpParts = normString(cpText).replaceAll("(Herr|Frau)", "").trim().split(" ")
@@ -127,7 +130,7 @@ class ApiService {
                     firstName  = cpParts[0].trim()
                     middleName = (cpParts.size() > 2) ? (cpParts[1..cpParts.size() - 2].join(" ")) : ""
                     lastName   = cpParts[cpParts.size() - 1].trim()
-                    
+
                     // create if no match found
                     if(firstName != '' && lastName != ''){
                         person = Person.lookupOrCreateWithPersonRole(
@@ -140,7 +143,7 @@ class ApiService {
                             org, /* needed for person_role */
                             RefdataValue.findByValue("General contact person")
                             )
-                            
+
                         // adding contacts
                             
                         def mailText  = mailList[i]  ? mailList[i].text()  : ''
@@ -195,7 +198,7 @@ class ApiService {
         str = str.replaceAll("\\s+", " ").trim()
         str
     }
-    
+
     /**
      * 
      * @param obj

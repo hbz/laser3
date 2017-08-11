@@ -3356,10 +3356,8 @@ input[type="submit"].btn.btn-mini {
 }
 .nav-tabs > li > a,
 .nav-pills > li > a {
-  padding-right: 12px;
-  padding-left: 12px;
-  margin-right: 2px;
-  line-height: 14px;
+    padding: 2px 5px;
+    margin-right: 5px;
 }
 .nav-tabs {
   border-bottom: 1px solid #ddd;
@@ -3368,8 +3366,6 @@ input[type="submit"].btn.btn-mini {
   margin-bottom: -1px;
 }
 .nav-tabs > li > a {
-  padding-top: 8px;
-  padding-bottom: 8px;
   line-height: 20px;
   border: 1px solid transparent;
   -webkit-border-radius: 4px 4px 0 0;
@@ -3390,8 +3386,6 @@ input[type="submit"].btn.btn-mini {
   cursor: default;
 }
 .nav-pills > li > a {
-  padding-top: 8px;
-  padding-bottom: 8px;
   margin-top: 2px;
   margin-bottom: 2px;
 }
@@ -6636,7 +6630,7 @@ dl > dt {
 .navbar-inner {
   background-repeat: no-repeat;
   background-position: right top;
-  font-size: 0.9m;
+  font-size: 1em;
 }
 .navbar-fixed-top,
 .navbar-fixed-bottom {
@@ -6670,22 +6664,19 @@ dl > dt {
   border-top-color: #fff;
   border-bottom-color: #fff;
 }
-.nav-pills > li > a {
-	border-bottom: 2px solid #fff;
-}
+
 .nav-pills > .active > a {
-	color: #333;
-	background-color: #fff;
-  	border-color: #9fc7e0;
-}
-.nav-pills > li > a:hover {
-	background-color: #fff;
-	border-color: #9fc7e0;
+	color: #fff;
+    background-color: #29547e;
 }
 .nav-pills > .active > a:hover {
-	color: #333;
-	background-color: #fff;
-	border-color: #29547e;
+    color: #fff;
+    background-color: #BB5679;
+}
+.nav-pills > li > a:hover {
+    color: #fff;
+    background-color: #9FC7E0;
+    border: none;
 }
 /* Navigation in the footer
 
@@ -6923,7 +6914,6 @@ dl > dt {
 .editable-empty, .editable-empty:hover {
 	color: orange;
 }
-
 .container > .span12 {
 	margin-left: 0;
 }
@@ -6963,4 +6953,28 @@ body #modalCreateNote
 
 body #modalCreateNote textarea {
     width: 97%;
+}
+
+/* identifier forms */
+
+form.form-inline > * {
+  margin: 0 10px 10px 0;
+}
+
+/* bootstrap 4 */
+
+.card.card-grey .card-title {
+    margin-top: 0;
+    padding: 5px 0;
+    font-weight: normal;
+    font-size: 1.2em;
+}
+.card.card-grey .card-block {
+    padding: 10px;
+}
+.card.card-grey {
+    margin-bottom: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #D1DDE9;
+    border-radius: 0;
 }

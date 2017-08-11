@@ -1,7 +1,10 @@
 package com.k_int.kbplus
+
+import de.laser.domain.BaseDomainComponent
+
 import javax.persistence.Transient
 
-class IssueEntitlement implements Comparable {
+class IssueEntitlement extends BaseDomainComponent implements Comparable {
 
   Date accessStartDate
   Date accessEndDate
@@ -34,6 +37,7 @@ class IssueEntitlement implements Comparable {
 
   static mapping = {
                 id column:'ie_id'
+         globalUID column:'ie_guid'
            version column:'ie_version'
             status column:'ie_status_rv_fk'
       subscription column:'ie_subscription_fk'
@@ -58,26 +62,27 @@ class IssueEntitlement implements Comparable {
   }
 
   static constraints = {
-    status(nullable:true, blank:false)
-    subscription(nullable:true, blank:false)
-    tipp(nullable:true, blank:false)
-    startDate(nullable:true, blank:true);
-    startVolume(nullable:true, blank:true);
-    startIssue(nullable:true, blank:true);
-    endDate(nullable:true, blank:true);
-    endVolume(nullable:true, blank:true);
-    endIssue(nullable:true, blank:true);
-    embargo(nullable:true, blank:true);
-    coverageDepth(nullable:true, blank:true);
-    coverageNote(nullable:true, blank:true);
+    globalUID     (nullable:true, blank:false, unique:true, maxSize:256)
+    status        (nullable:true, blank:false)
+    subscription  (nullable:true, blank:false)
+    tipp          (nullable:true, blank:false)
+    startDate     (nullable:true, blank:true);
+    startVolume   (nullable:true, blank:true);
+    startIssue    (nullable:true, blank:true);
+    endDate       (nullable:true, blank:true);
+    endVolume     (nullable:true, blank:true);
+    endIssue      (nullable:true, blank:true);
+    embargo       (nullable:true, blank:true);
+    coverageDepth (nullable:true, blank:true);
+    coverageNote  (nullable:true, blank:true);
     // coreTitle(nullable:true, blank:true);
-    ieReason(nullable:true, blank:true);
+    ieReason      (nullable:true, blank:true);
     coreStatusStart(nullable:true, blank:true);
-    coreStatusEnd(nullable:true, blank:true);
-    coreStatus(nullable:true, blank:true);
+    coreStatusEnd (nullable:true, blank:true);
+    coreStatus    (nullable:true, blank:true);
     accessStartDate(nullable:true, blank:true);
-    accessEndDate(nullable:true, blank:true);
-    medium(nullable:true, blank:true);
+    accessEndDate (nullable:true, blank:true);
+    medium        (nullable:true, blank:true);
   }
 
   public Date getDerivedAccessStartDate() {

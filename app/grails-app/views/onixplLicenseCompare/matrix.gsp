@@ -8,13 +8,10 @@
 <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicence.compare.label', default:'ONIX-PL Licence Compare')} </title>
 </head>
 <body>
-	<div class="container">
-		<ul class="breadcrumb">
-			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
-				class="divider">/</span></li>
-			<li>${message(code:'menu.institutions.comp_onix')}</li>
-		</ul>
-	</div>
+
+	<laser:breadcrumbs>
+		<laser:crumb message="menu.institutions.comp_onix" class="active"/>
+	</laser:breadcrumbs>
 
 	<div class="container">
 		<h1>${message(code:'menu.institutions.comp_onix')}</h1>

@@ -18,11 +18,11 @@ ul.dropdown-checkboxes {
   overflow-y: scroll;
   white-space: pre-wrap;
   white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
+  /*white-space: -pre-wrap;*/
   white-space: -o-pre-wrap;
   word-wrap: break-word;
   display:block;
-  
+  /*
   pre {
     float:none;
     display:block;
@@ -34,7 +34,7 @@ ul.dropdown-checkboxes {
       margin:0;
       padding:10px;
     }
-  }
+  }*/
 }
 
 td.danger {
@@ -930,27 +930,28 @@ th.desc a {
 }
 
 .rotate {
-     -moz-transform: rotate(-90.0deg);  /* FF3.5+ */
-       -o-transform: rotate(-90.0deg);  /* Opera 10.5 */
-  -webkit-transform: rotate(-90.0deg);  /* Saf3.1+, Chrome */
-             filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083);  /* IE6,IE7 */
-         -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)"; /* IE8 */
+    -moz-transform: rotate(-90.0deg); /* FF3.5+ */
+    -o-transform: rotate(-90.0deg); /* Opera 10.5 */
+    -webkit-transform: rotate(-90.0deg); /* Saf3.1+, Chrome */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
 
+/* IE8 */
 
 /* Financial - myInstitutions/shortcode/finance */
 th a.sortable {
     background-position: right;
     background-repeat: no-repeat;
     padding-right: 1.1em;
-    text-decoration: underline!important;
+    text-decoration: underline !important;
 }
 
 th a.asc {
-    background-image: url(../images/skin/sorted_asc.gif) no-repeat!important;
+    background-image: url(../images/skin/sorted_asc.gif) no-repeat !important;
 }
 
 th a.desc {
-    background-image: url(../images/skin/sorted_desc.gif) no-repeat!important;
+    background-image: url(../images/skin/sorted_desc.gif) no-repeat !important;
 }
 
 th a.sortable {

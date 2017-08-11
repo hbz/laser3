@@ -6,12 +6,10 @@
   </head>
   <body>
 
-    <div class="container">
-        <ul class="breadcrumb">
-            <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-           <li> <g:link controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'licence.copy', default:'Copy from Template')}</g:link> </li>
-        </ul>
-    </div>
+    <laser:breadcrumbs>
+        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <laser:crumb message="licence.copy" class="active" />
+    </laser:breadcrumbs>
 
     <div class="container">
       <h1>${institution?.name} - ${message(code:'licence.plural', default:'Licences')}</h1>

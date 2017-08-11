@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.domain.BaseDomainComponent
+
 import java.util.Date
 import java.util.List
 
@@ -10,7 +12,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Sort
 import groovy.util.logging.*
 
 @Log4j
-class Person {
+class Person extends BaseDomainComponent {
 
     String       first_name
     String       middle_name
@@ -21,6 +23,7 @@ class Person {
     
     static mapping = {
         id          column:'prs_id'
+        globalUID   column:'prs_guid'
         version     column:'prs_version'
         first_name  column:'prs_first_name'
         middle_name column:'prs_middle_name'
@@ -45,6 +48,7 @@ class Person {
     ]
     
     static constraints = {
+        globalUID   (nullable:true,  blank:false, unique:true, maxSize:256)
         first_name  (nullable:false, blank:false)
         middle_name (nullable:true,  blank:false)
         last_name   (nullable:false, blank:false)
@@ -71,7 +75,7 @@ class Person {
         def resultPersonRole = null
  
         // TODO: ugly mapping fallback
-        if(middleName=='')
+        if (middleName=='')
             middleName = null
             
         def check = Person.findAllWhere(
@@ -83,7 +87,7 @@ class Person {
             isPublic:    isPublic, 
             ).sort({id: 'asc'})
             
-        if(check.size()>0){
+        if (check.size()>0) {
             resultPerson = check.get(0)
             info += " > ignored/duplicate"
         }
@@ -97,7 +101,7 @@ class Person {
                 isPublic:    isPublic
                 )
                 
-            if(!resultPerson.save()){
+            if (!resultPerson.save()) {
                 resultPerson.errors.each{ println it }
             }
             else {
@@ -106,7 +110,7 @@ class Person {
         }
         LogFactory.getLog(this).debug(info)
         
-        if(resultPerson){
+        if (resultPerson) {
             info = "saving new personRole: ${resultPerson} - ${functionType} - ${org}"
             
             check = PersonRole.findAllWhere(
@@ -122,11 +126,11 @@ class Person {
                 end_date:   null
                 ).sort({id: 'asc'})
                 
-            if(check.size()>0){
+            if (check.size()>0) {
                 resultPersonRole = check.get(0)
                 info += " > ignored/duplicate"
             }
-            else{   
+            else {
                 resultPersonRole = new PersonRole(
                     functionType:   functionType,
                     prs:        resultPerson,
@@ -140,7 +144,7 @@ class Person {
                     end_date:   null
                     )
                     
-                if(!resultPersonRole.save()){
+                if (!resultPersonRole.save()) {
                     resultPersonRole.errors.each{ println it }
                 }
                 else {

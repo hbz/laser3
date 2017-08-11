@@ -1,18 +1,19 @@
 package com.k_int.kbplus
 
+import de.laser.domain.BaseDomainComponent
+
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import javax.persistence.Transient
- 
 import org.apache.commons.logging.*
 import java.text.Normalizer
 import groovy.util.logging.*
 import org.apache.commons.logging.LogFactory
 
 @Log4j
-class TitleInstance {
+class TitleInstance extends BaseDomainComponent {
 
   @Transient
   def grailsApplication
@@ -50,6 +51,7 @@ class TitleInstance {
 
   static mapping = {
            id column:'ti_id'
+    globalUID column:'ti_guid'
         title column:'ti_title', type:'text'
     normTitle column:'ti_norm_title', type:'text'
      keyTitle column:'ti_key_title', type:'text'
@@ -62,14 +64,15 @@ class TitleInstance {
 
   }
 
-  static constraints = {
-    status(nullable:true, blank:false);
-    type(nullable:true, blank:false);
-    title(nullable:true, blank:false,maxSize:2048);
-    normTitle(nullable:true, blank:false,maxSize:2048);
-    sortTitle(nullable:true, blank:false,maxSize:2048);
-    keyTitle(nullable:true, blank:false,maxSize:2048);
-  }
+    static constraints = {
+        globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+        status(nullable:true, blank:false);
+        type(nullable:true, blank:false);
+        title(nullable:true, blank:false,maxSize:2048);
+        normTitle(nullable:true, blank:false,maxSize:2048);
+        sortTitle(nullable:true, blank:false,maxSize:2048);
+        keyTitle(nullable:true, blank:false,maxSize:2048);
+    }
 
   String getIdentifierValue(idtype) {
     def result=null
@@ -458,21 +461,25 @@ class TitleInstance {
 
   }
 
-  def beforeInsert() {
-    if ( title != null ) {
-      normTitle = generateNormTitle(title)
-      keyTitle = generateKeyTitle(title)
-      sortTitle = generateSortTitle(title)
+    @Override
+    def beforeInsert() {
+        if (title != null) {
+            normTitle = generateNormTitle(title)
+            keyTitle = generateKeyTitle(title)
+            sortTitle = generateSortTitle(title)
+        }
+        super.beforeInsert()
     }
-  }
 
-  def beforeUpdate() {
-    if ( title != null ) {
-      normTitle = generateNormTitle(title)
-      keyTitle = generateKeyTitle(title)
-      sortTitle = generateSortTitle(title)
+    @Override
+    def beforeUpdate() {
+        if (title != null) {
+            normTitle = generateNormTitle(title)
+            keyTitle = generateKeyTitle(title)
+            sortTitle = generateSortTitle(title)
+        }
+        super.beforeUpdate()
     }
-  }
 
 
   public static String generateSortTitle(String input_title) {

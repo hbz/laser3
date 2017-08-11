@@ -535,11 +535,17 @@ class AjaxController {
       }
     }
     request.setAttribute("editable", params.editable == "true")
-    if(params.redirect){
+    if(params.reloadReferer){
+      flash.newProp = newProp
+      flash.error = error
+      redirect(url: params.reloadReferer)
+    }
+    else if(params.redirect){
       flash.newProp = newProp
       flash.error = error
       redirect(controller:"propertyDefinition", action:"create")
-    } else{
+    }
+    else{
       render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error])
     }
   }
@@ -746,6 +752,7 @@ class AjaxController {
     if(date) date.delete(flush:true)
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
+
   def lookup() {
     // log.debug("AjaxController::lookup ${params}");
     def result = [:]
@@ -762,6 +769,20 @@ class AjaxController {
     //                 [id:'Person:23',text:'Jim'],
     //                 [id:'Person:22',text:'Jimmy'],
     //                 [id:'Person:3',text:'JimBob']]
+    render result as JSON
+  }
+
+  // used only from IdentifierTabLib.formAddIdentifier
+  def lookup2() {
+    def result = [:]
+    def domain_class = grailsApplication.getArtefact('Domain', params.baseClass)
+    if (domain_class) {
+      result.values = domain_class.getClazz().refdataFind2(params);
+    }
+    else {
+      log.error("Unable to locate domain class ${params.baseClass}");
+      result.values=[]
+    }
     render result as JSON
   }
 
@@ -842,27 +863,14 @@ class AjaxController {
     def result = [:]
     def owner = resolveOID2(params.owner)
     def identifier = resolveOID2(params.identifier)
-    def owner_type = null
-    switch(owner.class){
-      case Subscription:
-        owner_type = "sub"
-        break;
-      case(TitleInstance):
-        owner_type = "ti"
-        break;
-      case (Package):
-        owner_type = "pkg"
-        break;
-      case TitleInstancePackagePlatform:
-        owner_type = "tipp"
-        break;
-      case Org:
-        owner_type = "org"
-        break
-      default:
-        log.error("Unexpected Identifier Owner ${owner.class}")
-        return null
-    }    
+
+    def owner_type = IdentifierOccurrence.getAttributeName(owner)
+    if (!owner_type) {
+      log.error("Unexpected Identifier Owner ${owner.class}")
+      return null
+    }
+
+    // TODO: BUG !? multiple occurrences on the same object allowed
     def duplicates = identifier?.occurrences.findAll{it."${owner_type}" != owner && it."${owner_type}" != null}?.collect{it."${owner_type}"}
     if(duplicates){
       result.duplicates = duplicates

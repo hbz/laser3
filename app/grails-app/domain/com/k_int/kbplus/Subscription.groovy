@@ -1,11 +1,10 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
+import de.laser.domain.BaseDomainComponent;
 import javax.persistence.Transient
 
-
-
-class Subscription {
+class Subscription extends BaseDomainComponent {
 
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
@@ -68,6 +67,7 @@ class Subscription {
   static mapping = {
                   id column:'sub_id'
              version column:'sub_version'
+           globalUID column:'sub_guid'
               status column:'sub_status_rv_fk'
                 type column:'sub_type_rv_fk'
                owner column:'sub_owner_license_fk'
@@ -85,6 +85,7 @@ class Subscription {
   }
 
   static constraints = {
+    globalUID(nullable:true, blank:false, unique:true, maxSize:256)
     status(nullable:true, blank:false)
     type(nullable:true, blank:false)
     owner(nullable:true, blank:false)
@@ -216,10 +217,12 @@ class Subscription {
     }
   }
 
+  @Override
   def beforeInsert() {
     if (impId == null) {
       impId = java.util.UUID.randomUUID().toString();
     }
+    super.beforeInsert()
   }
 
   @Transient

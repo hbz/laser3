@@ -1,34 +1,37 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.domain.BaseDomainComponent
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import groovy.util.logging.*
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 import javax.persistence.Transient
 
 @Log4j
-class Org {
+class Org extends BaseDomainComponent {
 
-  String name
-  String impId
-  String comment
-  String ipRange
-  String scope
-  Date dateCreated
-  Date lastUpdated
-  String categoryId
+    String name
+    String impId
+    String comment
+    String ipRange
+    String scope
+    Date dateCreated
+    Date lastUpdated
+    String categoryId
 
-  RefdataValue orgType
-  RefdataValue sector
-  RefdataValue status
-  RefdataValue membership
-  
-  // Used to generate friendly semantic URLs
-  String shortcode
+    RefdataValue orgType
+    RefdataValue sector
+    RefdataValue status
+    RefdataValue membership
 
-  Set ids = []
+    // Used to generate friendly semantic URLs
+    String shortcode
 
-  static mappedBy = [
+    Set ids = []
+
+    static mappedBy = [
       ids:      'org', 
       outgoingCombos: 'fromOrg', 
       incomingCombos: 'toOrg',
@@ -40,22 +43,23 @@ class Org {
       privateProperties: 'owner'
       ]
 
-  static hasMany = [
-      ids:              IdentifierOccurrence, 
-      outgoingCombos:   Combo,  
-      incomingCombos:   Combo,
-      links:            OrgRole,
-      prsLinks:         PersonRole,
-      contacts:         Contact,
-      addresses:        Address,
-      affiliations:     UserOrg,
-      customProperties:  OrgCustomProperty,
-      privateProperties: OrgPrivateProperty
+    static hasMany = [
+      ids:                IdentifierOccurrence,
+      outgoingCombos:     Combo,
+      incomingCombos:     Combo,
+      links:              OrgRole,
+      prsLinks:           PersonRole,
+      contacts:           Contact,
+      addresses:          Address,
+      affiliations:       UserOrg,
+      customProperties:   OrgCustomProperty,
+      privateProperties:  OrgPrivateProperty
       ]
 
-  static mapping = {
+    static mapping = {
             id column:'org_id'
        version column:'org_version'
+     globalUID column:'org_guid'
          impId column:'org_imp_id', index:'org_imp_id_idx'
           name column:'org_name', index:'org_name_idx'
        comment column:'org_comment'
@@ -67,79 +71,73 @@ class Org {
         sector column:'org_sector_rv_fk'
         status column:'org_status_rv_fk'
     membership column:'org_membership'
-  }
-
-  static constraints = {
-          name(nullable:true, blank:false,maxSize:256);
-         impId(nullable:true, blank:true, maxSize:256);
-       comment(nullable:true, blank:true, maxSize:2048);
-       ipRange(nullable:true, blank:true, maxSize:1024);
-        sector(nullable:true, blank:true);
-     shortcode(nullable:true, blank:true, maxSize:128);
-         scope(nullable:true, blank:true, maxSize:128);
-    categoryId(nullable:true, blank:true, maxSize:128);
-       orgType(nullable:true, blank:true, maxSize:128);
-        status(nullable:true, blank:true);
-    membership(nullable:true, blank:true, maxSize:128);
-  }
-
-  def beforeInsert() {
-    if ( !shortcode ) {
-      shortcode = generateShortcode(name);
-    }
-  }
-
-  def beforeUpdate() {
-    if ( !shortcode ) {
-      shortcode = generateShortcode(name);
-    }
-  }
-
-  def generateShortcode(name) {
-    def candidate = StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
-    return incUntilUnique(candidate);
-  }
-
-  def incUntilUnique(name) {
-    def result = name;
-    if ( Org.findByShortcode(result) ) {
-      // There is already a shortcode for that identfier
-      int i = 2;
-      while ( Org.findByShortcode("${name}_${i}") ) {
-        i++
-      }
-      result = "${name}_${i}"
     }
 
-    result;
-  }
-
-  static def lookupByIdentifierString(idstr) {
-
-    LogFactory.getLog(this).debug("lookupByIdentifierString(${idstr})");
-
-    def result = null;
-    def qr = null;
-    def idstr_components = idstr.split(':');
-    switch ( idstr_components.size() ) {
-      case 1:
-        qr = TitleInstance.executeQuery('select t from Org as t join t.ids as io where io.identifier.value = ?',[idstr_components[0]])
-        break;
-      case 2:
-        qr = TitleInstance.executeQuery('select t from Org as t join t.ids as io where io.identifier.value = ? and io.identifier.ns.ns = ?',[idstr_components[1],idstr_components[0]])
-        break;
-      default:
-        break;
+    static constraints = {
+       globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+            name(nullable:true, blank:false,maxSize:256);
+           impId(nullable:true, blank:true, maxSize:256);
+         comment(nullable:true, blank:true, maxSize:2048);
+         ipRange(nullable:true, blank:true, maxSize:1024);
+          sector(nullable:true, blank:true);
+       shortcode(nullable:true, blank:true, maxSize:128);
+           scope(nullable:true, blank:true, maxSize:128);
+      categoryId(nullable:true, blank:true, maxSize:128);
+         orgType(nullable:true, blank:true, maxSize:128);
+          status(nullable:true, blank:true);
+      membership(nullable:true, blank:true, maxSize:128);
     }
 
-    LogFactory.getLog(this).debug("components: ${idstr_components} : ${qr}");
-
-    if ( ( qr ) && ( qr.size() == 1 ) ) {
-      result = qr.get(0);
+    @Override
+    def beforeInsert() {
+        if ( !shortcode ) {
+            shortcode = generateShortcode(name);
+        }
+        super.beforeInsert()
     }
 
-    result
-  }
+    @Override
+    def beforeUpdate() {
+        if ( !shortcode ) {
+            shortcode = generateShortcode(name);
+        }
+        super.beforeUpdate()
+    }
+
+    static generateShortcodeFunction(name) {
+        return StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
+    }
+
+    def generateShortcode(name) {
+        def candidate = Org.generateShortcodeFunction(name)
+        return incUntilUnique(candidate);
+    }
+
+    def incUntilUnique(name) {
+        def result = name;
+        if ( Org.findByShortcode(result) ) {
+            // There is already a shortcode for that identfier
+            int i = 2;
+            while ( Org.findByShortcode("${name}_${i}") ) {
+                i++
+            }
+            result = "${name}_${i}"
+        }
+        result;
+    }
+
+    static def lookupByIdentifierString(idstr) {
+        LogFactory.getLog(this).debug("lookupByIdentifierString(${idstr})")
+
+        def result = null
+        def qr = Identifier.lookupObjectsByIdentifierString(new Org(), idstr)
+
+        if (qr && (qr.size() == 1)) {
+            //result = qr.get(0);
+            result = GrailsHibernateUtil.unwrapIfProxy( qr.get(0) ) // fix: unwrap proxy
+        }
+        result
+    }
 
   def getIdentifierByType(idtype) {
     def result = null

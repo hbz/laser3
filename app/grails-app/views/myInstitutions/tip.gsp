@@ -77,7 +77,7 @@
             </tbody>
           </table>
 
-          <h4>${message(code:'myinst.tip.addUsage', default:'Add usage information)}</h4>
+          <h4>${message(code:'myinst.tip.addUsage', default:'Add usage information')}</h4>
           <g:form action="tip" params="${[shortcode:params.shortcode]}" id="${params.id}">
             ${message(code:'myinst.tip.usageDate', default:'Usage Date')} : <input type="date" name="usageDate"/><br/>
             ${message(code:'myinst.tip.usageRecord', default:'Usage Record')} : <input type="text" name="usageValue"/><br/>

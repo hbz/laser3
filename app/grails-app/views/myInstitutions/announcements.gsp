@@ -7,12 +7,9 @@
 
   <body>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="announcements" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'menu.datamanager.ann', default:'Announcements')}</g:link> </li>
-      </ul>
-    </div>
+  <laser:breadcrumbs>
+    <laser:crumb controller="myInstitutions" action="announcements" params="${[shortcode:params.shortcode]}" text="${institution.name}" message="menu.datamanager.ann" />
+  </laser:breadcrumbs>
 
 
     <div class="container home-page">

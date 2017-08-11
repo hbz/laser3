@@ -135,13 +135,10 @@
                   </table>
 
                   <g:if test="${editable}">
-                    <g:form controller="ajax" action="addToCollection" class="form-inline">
-                      <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
-                      <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
-                      <input type="hidden" name="__recip" value="pkg"/>
-                      <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-                      <input type="submit" value="${message(code: 'identifier.select.add')}" class="btn btn-primary btn-small"/>
-                    </g:form>
+
+                      <laser:formAddIdentifier owner="${packageInstance}">
+                      </laser:formAddIdentifier>
+
                   </g:if>
 
                 </dd>
@@ -532,33 +529,6 @@
             return false ;
         }
       }
-
-      <g:if test="${editable}">
-      $("#addIdentifierSelect").select2({
-        placeholder: "${message(code:'identifier.select.ph', default:'Search for an identifier...')}",
-        minimumInputLength: 1,
-        formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
-        },
-        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-          url: "<g:createLink controller='ajax' action='lookup'/>",
-          dataType: 'json',
-          data: function (term, page) {
-              return {
-                  q: term, // search term
-                  page_limit: 10,
-                  baseClass:'com.k_int.kbplus.Identifier'
-              };
-          },
-          results: function (data, page) {
-            return {results: data.values};
-          }
-        },
-        createSearchChoice:function(term, data) {
-          return {id:'com.k_int.kbplus.Identifier:__new__:'+term,text:term};
-        }
-      });
-      </g:if>
      
       <g:if test="${params.asAt && params.asAt.length() > 0}"> $(function() {
         document.body.style.background = "#fcf8e3";

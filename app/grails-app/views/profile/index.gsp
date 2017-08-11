@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role" %>
 <!doctype html>
 <html>
   <head>
@@ -8,12 +8,9 @@
 
   <body>
 
-    <div class="container">
-        <ul class="breadcrumb">
-        <li> <g:link controller="home">${message(code: 'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li class="active">${message(code: 'profile.bc.profile', default:'Profile')}</li>
-      </ul>
-    </div>
+    <laser:breadcrumbs>
+        <laser:crumb message="profile.bc.profile" class="active"/>
+    </laser:breadcrumbs>
 
   <g:if test="${flash.error}">
       <div class="container">
@@ -53,46 +50,89 @@
     </div>
 
     <div class="container">
-      <div class="span12">
-        <g:form action="updateProfile" class="form-inline">
-          <dl class="dl-horizontal">
+        <div class="row">
 
-          <div class="control-group">
-            <dt>${message(code: 'profile.display', default:'Display Name')}</dt>
-            <dd><input type="text" name="userDispName" value="${user.display}"/></dd>
-          </div>
+            <div class="span6">
+                <g:form action="updateProfile" class="form-inline">
+                    <dl class="dl-horizontal">
 
-          <div class="control-group">
-            <dt>${message(code: 'profile.email', default:'Email Address')}</dt>
-            <dd><input type="text" name="email" value="${user.email}"/></dd>
-          </div>
+                    <div class="control-group">
+                        <dt>${message(code: 'profile.display', default:'Display Name')}</dt>
+                        <dd><input type="text" name="userDispName" value="${user.display}"/></dd>
+                    </div>
 
-          <div class="control-group">
-            <dt>${message(code: 'profile.pagesize', default:'Default Page Size')}</dt>
-            <dd><input type="text" name="defaultPageSize" value="${user.defaultPageSize}"/></dd>
-          </div>
+                    <div class="control-group">
+                        <dt>${message(code: 'profile.email', default:'Email Address')}</dt>
+                        <dd><input type="text" name="email" value="${user.email}"/></dd>
+                    </div>
 
-          <div class="control-group">
-            <dt>${message(code: 'profile.dash', default:'Default Dashboard')}</dt>
-            <dd>
-              <select name="defaultDash" value="${user.defaultDash?.id}">
-                <g:each in="${user.authorizedOrgs}" var="o">
-                  <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
-                </g:each>
-              </select>
-            </dd>
-          </div>
+                    <div class="control-group">
+                        <dt>${message(code: 'profile.pagesize', default:'Default Page Size')}</dt>
+                        <dd><input type="text" name="defaultPageSize" value="${user.defaultPageSize}"/></dd>
+                    </div>
 
-          <div class="control-group">
-            <dt></dt>
-            <dd><input type="submit" value="${message(code: 'profile.update.button', default:'Update Profile')}" class="btn btn-primary"/></dd>
-          </div>
+                    <div class="control-group">
+                        <dt>${message(code: 'profile.dash', default:'Default Dashboard')}</dt>
+                        <dd>
+                            <select name="defaultDash" value="${user.defaultDash?.id}">
+                                <g:each in="${user.authorizedOrgs}" var="o">
+                                    <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
+                                </g:each>
+                            </select>
+                        </dd>
+                    </div>
 
-          <p style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</p>
-        </g:form>
-      </div>
-    </div>
+                    <div class="control-group">
+                        <dt></dt>
+                        <dd><input type="submit" value="${message(code: 'profile.update.button', default:'Update Profile')}" class="btn btn-primary"/></dd>
+                    </div>
 
+                    <p style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</p>
+                </g:form>
+            </div><!-- .span6 -->
+
+            <div class="span6">
+                <g:form action="updatePassword" class="form-inline">
+                    <dl class="dl-horizontal">
+
+                        <div class="control-group">
+                            <dt>${message(code: 'profile.password.current', default:'Current Password')}</dt>
+                            <dd><input type="password" name="passwordCurrent" value=""/></dd>
+                        </div>
+                        <div class="control-group">
+                            <dt>${message(code: 'profile.password.new', default:'New Password')}</dt>
+                            <dd><input type="text" name="passwordNew" value=""/></dd>
+                        </div>
+                        <div class="control-group">
+                            <dt></dt>
+                            <dd><input type="submit" value="${message(code: 'profile.password.update.button', default:'Update Password')}" class="btn btn-primary"/></dd>
+                        </div>
+                </g:form>
+            </div><!-- .span6 -->
+        </div><!-- .row -->
+    </div><!-- .container -->
+
+    <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+
+        <div class="container">
+            <div class="span12">
+                <h1>${message(code: 'api.label', default:'API')}</h1>
+                <dl class="dl-horizontal">
+                    <dt>${message(code: 'api.apikey.label', default:'API-Key')}</dt>
+                    <dd>
+                       <input type="text" readonly="readonly" value="${user.apikey}">
+                    </dd>
+                    <dt>${message(code: 'api.apisecret.label', default:'API-Secret')}</dt>
+                    <dd>
+                        <input type="text" readonly="readonly" value="${user.apisecret}">
+                    </dd>
+                    <dd>
+                        <g:link controller="api" action="index">&rArr; ${message(code:'api.linkTo', default:'Visit API')}</g:link>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </g:if>
 
     <div class="container">
       <div class="span12">
@@ -100,11 +140,10 @@
       </div>
     </div>
 
-    <div class="container"><div class="row-fluid">
+    <div class="container">
+    <div class="row-fluid">
       <div class="span6">
-        <div class="well">
-          <h2>${message(code: 'profile.membership.existing', default:'Existing Memberships')}</h2>
-
+        <laser:card title="profile.membership.existing" class="card-grey">
           <table class="table table-striped table-bordered table-condensed" style="word-break:normal;">
             <thead>
               <tr>
@@ -127,12 +166,12 @@
               </g:each>
             </tbody>
           </table>
-        </div>
+        </laser:card>
       </div>
 
       <div class="span6">
-        <div class="well">
-          <h2>${message(code: 'profile.membership.request', default:'Request new membership')}</h2>
+        <laser:card title="profile.membership.request" class="card-grey">
+
           <p style="word-break:normal"><g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
           </p>
 
@@ -152,10 +191,10 @@
 
             <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="btn btn-primary btn-small">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
           </g:form>
-        </div>
-      </div>
-    </div></div>
-
+        </laser:card>
+      </div><!--.span6-->
+    </div><!--.row-fluid-->
+    </div><!--.container-->
 
     <g:if test="${grailsApplication.config.feature.notifications}">
 

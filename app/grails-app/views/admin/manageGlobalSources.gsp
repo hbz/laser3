@@ -7,12 +7,9 @@
 
   <body>
 
-    <div class="container">
-        <ul class="breadcrumb">
-           <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-           <li>Global Sources</li>
-        </ul>
-    </div>
+    <laser:breadcrumbs>
+      <laser:crumb text="Global Sources" class="active" />
+    </laser:breadcrumbs>
 
     <g:if test="${flash.message}">
       <div class="container">

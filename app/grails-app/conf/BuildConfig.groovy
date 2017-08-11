@@ -166,7 +166,7 @@ grails.project.dependency.resolution = {
         runtime ":executor:0.3"
         runtime ":markdown:1.1.1"
         runtime ":quartz:1.0.1"
-        compile ":grails-melody:1.53.0"
+        //compile ":grails-melody:1.53.0"
         // runtime "com.k-int:domain-model-oai-pmh:0.1"
         compile ":jsonp:0.2"
 

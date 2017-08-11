@@ -7,12 +7,10 @@
 
   <body>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="admin" action="userMerge">User Merge </g:link> </li>
-      </ul>
-    </div>
+    <laser:breadcrumbs>
+        <laser:crumb controller="admin" action="userMerge" text="User Merge" />
+    </laser:breadcrumbs>
+
 
   <div class="container">
    <div class="span8">

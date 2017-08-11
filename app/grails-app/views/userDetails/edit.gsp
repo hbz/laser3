@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org" %>
+<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.auth.Role" %>
 <!doctype html>
 <html>
   <head>
@@ -81,6 +81,20 @@
             </g:form>
         </div>
       </div>
+
+        <div class="row">
+            <div class="span12">
+                <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+                    <h3>${message(code: 'api.label', default:'API')}</h3>
+
+                    <p>${message(code: 'api.apikey.label', default:'API-Key')}</p>
+                    <input type="text" readonly="readonly" value="${ui.apikey}">
+
+                    <p>${message(code: 'api.apisecret.label', default:'API-Secret')}</p>
+                    <input type="text" readonly="readonly" value="${ui.apisecret}">
+                </g:if>
+            </div>
+        </div>
     </div>
 
 

@@ -10,14 +10,14 @@ import com.k_int.kbplus.auth.*;
 
 class ProfileController {
 
-  def springSecurityService
+    def springSecurityService
+    def passwordEncoder
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.editable = true
-
     result
   }
 
@@ -116,7 +116,29 @@ class ProfileController {
 
     redirect(action: "index")
   }
-  
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def updatePassword() {
+        def user = User.get(springSecurityService.principal.id)
+        flash.message = ""
+
+        if (passwordEncoder.isPasswordValid(user.password, params.passwordCurrent, null)) {
+            if (params.passwordNew.trim().size() < 5) {
+                flash.message += message(code:'profile.password.update.enterValidNewPassword', default:"Please enter new password (min. 5 chars)")
+            } else {
+                user.password = params.passwordNew
+
+                if (user.save()) {
+                    flash.message += message(code:'profile.password.update.success', default:"Password succesfully updated")
+                }
+            }
+
+        } else {
+            flash.message += message(code:'profile.password.update.enterValidCurrentPassword', default:"Please enter valid current password")
+        }
+        redirect(action: "index")
+    }
+
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def addTransforms() {
 

@@ -24,6 +24,27 @@ class DataManagerController {
     result
   }
 
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def namespaces() {
+
+    def identifierNamespaceInstance = new IdentifierNamespace(params)
+    switch (request.method) {
+      case 'GET':
+        break
+      case 'POST':
+        if (!identifierNamespaceInstance.save(flush: true)) {
+          return
+        }
+        else {
+          flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.id])
+        }
+        break
+    }
+    render view: 'namespaces', model: [
+            identifierNamespaceInstance: identifierNamespaceInstance,
+            identifierNamespaces: IdentifierNamespace.where{}.sort('ns')
+    ]
+  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def changeLog() { 

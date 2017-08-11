@@ -21,7 +21,7 @@ The parameter system-actions-enabled (true by default) enables some system actio
 /*
 Turn on Grails Service monitoring by adding 'spring' in displayed-counters parameter.
  */
-javamelody.'displayed-counters' = 'http,sql,error,log,spring,jsp'
+//javamelody.'displayed-counters' = 'http,sql,error,log,spring,jsp'
 
 
 

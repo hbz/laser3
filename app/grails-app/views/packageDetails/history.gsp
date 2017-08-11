@@ -16,6 +16,7 @@
 
 <body>
 
+<!-- REMOVE; not tested
 <div class="container">
     <ul class="breadcrumb">
         <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
@@ -23,6 +24,11 @@
         <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
     </ul>
 </div>
+-->
+    <laser:breadcrumbs>
+        <laser:crumb controller="packageDetails" action="index" text="All Packages" />
+        <laser:crumb controller="packageDetails" action="show" id="${packageInstance.id}" text="${packageInstance.name}" />
+    </laser:breadcrumbs>
 
 <g:if test="${flash.message}">
     <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
