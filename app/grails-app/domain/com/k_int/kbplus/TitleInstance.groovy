@@ -65,7 +65,7 @@ class TitleInstance extends BaseDomainComponent {
   }
 
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         status(nullable:true, blank:false);
         type(nullable:true, blank:false);
         title(nullable:true, blank:false,maxSize:2048);

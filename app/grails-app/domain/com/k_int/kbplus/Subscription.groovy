@@ -85,7 +85,7 @@ class Subscription extends BaseDomainComponent {
   }
 
   static constraints = {
-    globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+    globalUID(nullable:true, blank:false, unique:true, maxSize:255)
     status(nullable:true, blank:false)
     type(nullable:true, blank:false)
     owner(nullable:true, blank:false)

@@ -103,7 +103,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
   }
 
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         status(nullable:true, blank:false)
         type(nullable:true, blank:false)
         impId(nullable:true, blank:false)

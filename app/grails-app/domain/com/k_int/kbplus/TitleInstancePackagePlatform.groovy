@@ -109,7 +109,7 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
   }
 
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         startDate(nullable:true, blank:true);
         startVolume(nullable:true, blank:true);
         startIssue(nullable:true, blank:true);

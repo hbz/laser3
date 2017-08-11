@@ -47,7 +47,7 @@ class Platform extends BaseDomainComponent {
   }
 
   static constraints = {
-    globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+    globalUID(nullable:true, blank:false, unique:true, maxSize:255)
     impId(nullable:true, blank:false)
     primaryUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)

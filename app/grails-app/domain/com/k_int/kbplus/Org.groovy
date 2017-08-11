@@ -74,7 +74,7 @@ class Org extends BaseDomainComponent {
     }
 
     static constraints = {
-       globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+       globalUID(nullable:true, blank:false, unique:true, maxSize:255)
             name(nullable:true, blank:false,maxSize:256);
            impId(nullable:true, blank:true, maxSize:256);
          comment(nullable:true, blank:true, maxSize:2048);

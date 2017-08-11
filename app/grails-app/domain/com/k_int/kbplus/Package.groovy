@@ -82,7 +82,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
   static constraints = {
-                 globalUID(nullable:true, blank:false, unique:true, maxSize:256)
+                 globalUID(nullable:true, blank:false, unique:true, maxSize:255)
                packageType(nullable:true, blank:false)
              packageStatus(nullable:true, blank:false)
            nominalPlatform(nullable:true, blank:false)
