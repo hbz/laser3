@@ -88,9 +88,33 @@ class InstitutionsService {
       for (unionTitle in unionList){
        
         def objA = mapA.get(unionTitle)
-        def objB = mapB.get(unionTitle)     
+        def objB = mapB.get(unionTitle)
+        def comparison = null
 
-        def comparison = objA?.compare(objB);
+        if(objA.getClass() == ArrayList || objB.getClass() == ArrayList){
+          if(objA && !objB){
+            comparison = -1
+          }
+          else if(objA && objB && objA.size() == objB.size()){
+            def tipp_matches = 0
+
+            objA.each { a ->
+              objB.each { b ->
+                if(a.compare(b) == 0){
+                  tipp_matches++;
+                }
+              }
+            }
+
+            if(tipp_matches == objA.size()){
+              comparison = 0
+            }else{
+              comparison = 1
+            }
+          }
+        }else{
+          comparison = objA?.compare(objB);
+        }
         def value = null;
 
         if(delete && comparison == -1 ) value = [objA,null, "danger"];

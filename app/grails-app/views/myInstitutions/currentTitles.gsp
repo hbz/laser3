@@ -132,7 +132,7 @@
           <table  class="table table-striped table-bordered">
 
             <tr>
-              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="Title" />
+              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
               <th>ISSN</th>
               <th>eISSN</th>
               <th>${message(code:'subscription.details.startDate', default:'Earliest Date')}</th>
@@ -152,7 +152,7 @@
                 <g:set var="title_coverage_info" value="${ti.getInstitutionalCoverageSummary(institution, session.sessionPreferences?.globalDateFormat, date_restriction)}" />
 
                 <td  style="white-space:nowrap">${title_coverage_info.earliest}</td>
-                <td  style="white-space:nowrap">${title_coverage_info.latest ?: 'To Current'}</td>
+                <td  style="white-space:nowrap">${title_coverage_info.latest ?: message(code:'myinst.currentTitles.to_current', default:'To Current')}</td>
                 <td>
                   <g:each in="${title_coverage_info.ies}" var="ie">
                       <p>
@@ -195,7 +195,7 @@
 	            <div class="accordion-inner">
 	              <table  class="table table-striped table-bordered">
 	                <tr>
-	                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="Title" />
+	                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
 	                  <th>ISSN</th>
 	                  <th>eISSN</th>
 	                  <th>${message(code:'subscription.details.startDate', default:'Earliest Date')}</th>

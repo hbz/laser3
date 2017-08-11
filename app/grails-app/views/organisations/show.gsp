@@ -76,7 +76,9 @@
             </dd>
 
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-              ${message(code:'identifier.select.text', args:['isil:DE-18'])}
+              <p>
+                ${message(code:'identifier.select.text', args:['isil:DE-18'])}
+              </p>
             <g:if test="${orgInstance?.ids}">
               <g:each in="${orgInstance.ids}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link></dd>
@@ -89,7 +91,7 @@
               <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence"/>
               <input type="hidden" name="__recip" value="org"/>
               <input type="hidden" name="identifier" id="addIdentifierSelect"/>
-              <input type="submit" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small" style="vertical-align:text-bottom;"/>
+              <input type="submit" value="${message(code:'identifier.select.add', default:'Add Identifier...')}" class="btn btn-primary btn-small"/>
             </g:form>
           </g:if>
 

@@ -250,31 +250,41 @@ class PackageDetailsController {
             if(!params.countA){
               def countHQL = "select count(elements(pkg.tipps)) from Package pkg where pkg.id = ?"
               params.countA = Package.executeQuery(countHQL, [result.pkgInsts.get(0).id])
+              log.debug("countA is ${params.countA}")
               params.countB = Package.executeQuery(countHQL, [result.pkgInsts.get(1).id])
+              log.debug("countB is ${params.countB}")
             }
           }catch(IllegalArgumentException e){
             request.message = e.getMessage()
             return
           }
-          result.listACount = listA.size()
-          result.listBCount = listB.size()
+
+          def groupedA = listA.groupBy({ it.title.title })
+          def groupedB = listB.groupBy({ it.title.title })
 
           def mapA = listA.collectEntries { [it.title.title, it] }
           def mapB = listB.collectEntries { [it.title.title, it] }
 
-          def unionList = mapA.keySet().plus(mapB.keySet()).toList() // heySet is hashSet
+          result.listACount = [tipps: listA.size(), titles: mapA.size()]
+          result.listBCount = [tipps: listB.size(), titles: mapB.size()]
+
+          log.debug("mapA: ${mapA.size()}, mapB: ${mapB.size()}")
+
+          def unionList = groupedA.keySet().plus(groupedB.keySet()).toList() // heySet is hashSet
           unionList = unionList.unique()
           unionList.sort()
 
-          result.unionListSize = unionList.size()
+          log.debug("UnionList has ${unionList.size()} entries.")
   
           def filterRules = [params.insrt?true:false, params.dlt?true:false, params.updt?true:false, params.nochng?true:false ]
+
+          result.unionListSize = institutionsService.generateComparisonMap(unionList, mapA, mapB,0, unionList.size(),filterRules).size()
 
           withFormat{
             html{
               def toIndex = result.offset+result.max < unionList.size()? result.offset+result.max: unionList.size()
               result.comparisonMap = 
-                  institutionsService.generateComparisonMap(unionList, mapA, mapB,result.offset, toIndex.intValue(),filterRules)
+                  institutionsService.generateComparisonMap(unionList, groupedA, groupedB,result.offset, toIndex.intValue(),filterRules)
               result
             }
             csv {
@@ -319,7 +329,7 @@ class PackageDetailsController {
           params.insrt = "Y"
           params.dlt = "Y"
           params.updt = "Y"
-          flash.message = message(code:'', default:"Please select two packages for comparison.")
+          flash.message = message(code:'package.compare.flash', default:"Please select two packages for comparison.")
           result
         }
       
@@ -398,7 +408,7 @@ class PackageDetailsController {
 
       result.pkg_link_str="${grailsApplication.config.SystemBaseURL}/packageDetails/show/${params.id}"
 
-      if ( packageInstance.forumId != null ) {
+      if ( packageInstance.forumId != null && grailsApplication.config.ZenDeskBaseURL ) {
         result.forum_url = "${grailsApplication.config.ZenDeskBaseURL}/forums/${packageInstance.forumId}"
       }
 

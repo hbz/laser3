@@ -54,19 +54,41 @@
             <br/>
             <h6>${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
             <div class="inline-lists"> 
-               <dl><dt>${message(code:'licence')}</dt><dd><g:if test="${subscriptionInstance.subscriber}">
-                         <g:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                         <g:if test="${subscriptionInstance.owner != null}">(<g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>)</g:if>
-                       </g:if><g:else>N/A (Subscription offered)</g:else>
-                   </dd>
-               </dl>
-               <dl><dt>${message(code:'package.show.pkg_name', default:'Package Name')}</dt><dd><g:each in="${subscriptionInstance.packages}" var="sp">
-                           <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link> (${sp.pkg?.contentProvider?.name}) 
-                           <g:if test="${editable}">
-                           <a onclick="unlinkPackage(${sp.pkg.id})">${message(code:'default.button.unlink.label', default:'Unlink')} <i class="fa fa-times"></i></a>
-                           <br/>
-                           </g:if>
-                       </g:each></dd></dl>
+              <dl><dt>${message(code:'licence')}</dt><dd><g:if test="${subscriptionInstance.subscriber}">
+                        <g:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                        <g:if test="${subscriptionInstance.owner != null}">(<g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>)</g:if>
+                      </g:if><g:else>N/A (Subscription offered)</g:else>
+                  </dd>
+              </dl>
+              <dl>
+                  <dt>${message(code:'package.show.pkg_name', default:'Package Name')}</dt>
+                  <dd>
+                  <table class="table table-bordered">
+                    <thead>
+                      <th>${message(code:'package.name.label', default:'Name')}</th>
+                      <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
+                      <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                    </thead>
+                    <tbody>
+                      <g:each in="${subscriptionInstance.packages}" var="sp">
+                        <tr>
+                          <td>
+                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                          </td>
+                          <td>
+                            ${sp.pkg?.contentProvider?.name}
+                          </td>
+                          <td>
+                            <g:if test="${editable}">
+                              <a onclick="unlinkPackage(${sp.pkg.id})" style="cursor:pointer;">${message(code:'default.button.unlink.label', default:'Unlink')} <i class="fa fa-times"></i></a>
+                            </g:if>
+                          </td>
+                        </tr>
+                      </g:each>
+                    </tbody>
+                  </table>
+                  </dd>
+              </dl>
 
                <dl><dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
                    <dd>

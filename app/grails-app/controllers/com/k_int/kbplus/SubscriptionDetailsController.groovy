@@ -1008,6 +1008,13 @@ class SubscriptionDetailsController {
       result.editable = false
     }
 
+    if ( result.subscriptionInstance.packages ) {
+      result.pkgs = []
+      result.subscriptionInstance.packages.each { sp ->
+        result.pkgs.add(sp.pkg.id)
+      }
+    }
+
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');

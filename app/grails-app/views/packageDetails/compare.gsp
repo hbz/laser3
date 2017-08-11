@@ -3,7 +3,7 @@
   <head>
     <meta name="layout" content="mmbootstrap">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
-    <title><g:message code="default.edit.label" args="[entityName]" /></title>
+    <title><g:message code="package.compare" default="Package Comparison" /></title>
   </head>
  <body>
 
@@ -54,7 +54,7 @@
 					<td> 
 					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
 							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
-                                              ${message(code:'package.compare.select.first', default:'Select second package to compare (Filtered by dates above). Use \'%\' as wildcard.')}<br/>
+                                              ${message(code:'package.compare.select.second', default:'Select second package to compare (Filtered by dates above). Use \'%\' as wildcard.')}<br/>
                                               <input type="hidden" name="pkgB" id="packageSelectB" value="${pkgB}" />
 					</td>
 				</tr>
@@ -143,17 +143,17 @@
 
 	<table>
 		<tr>
-			<td>
+			<td style="text-align:right;padding-right:10px;">
 				${message(code:'package.compare.filter.title', default:'Filters - Title')}: <input type="text" name="filter" value="${params.filter}"/>
 			</td>
 			<td>
 				${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:
-	<g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                                <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
 			</td>
-			<td> <input type='button' class="btn btn-primary" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
+			<td style="padding-left:10px;"> <input type='button' class="btn btn-primary" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
 		</tr>
 		<tr>
-		<td>
+		<td style="text-align:right;padding-right:10px;">
 			${message(code:'package.compare.filter.coverage_note', default:'Coverage note')}: <input type="text" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
 		</td>
 		<td>
@@ -161,7 +161,7 @@
 			<g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 		</td>
 
-			<td> <input type="submit" class="btn btn-primary" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>
+			<td  style="padding-left:10px;"> <input type="submit" class="btn btn-primary" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>
 		</tr>
 	</table>
 
@@ -181,34 +181,44 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td><b>${message(code:'package.compare.results.tipps.total', default:'Total TIPPs for query')}</b></td>
-			<td><b>${listACount}</b></td>
-			<td><b>${listBCount}</b></td>
+			<td><b>${message(code:'package.compare.results.tipps.total', default:'Total Titles (TIPPs) for query')}</b></td>
+			<td><b>${listACount.titles} (${listACount.tipps})</b></td>
+			<td><b>${listBCount.titles} (${listBCount.tipps})</b></td>
 		<tr>
 		<g:each in="${comparisonMap}" var="entry">
-		<g:set var="pkgATipp" value="${entry.value[0]}"/>
-		<g:set var="pkgBTipp" value="${entry.value[1]}"/>
-		<g:set var="currentTitle" value="${pkgATipp?.title ?:pkgBTipp?.title}"/>
-		<g:set var="highlight" value="${entry.value[2]}"/>
+                  <g:set var="pkgATipp" value="${entry.value[0]}"/>
+                  <g:set var="pkgBTipp" value="${entry.value[1]}"/>
+                  <g:set var="currentTitle" value="${pkgATipp?.title ?:pkgBTipp?.title}"/>
+                  <g:set var="highlight" value="${entry.value[2]}"/>
 
 		<tr>
 			
 			<td>
-			<b><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></b> 
-			<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
+			<b><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></b>
+			<i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
-			<g:each in="${currentTitle.ids}" var="id">
-                <br>${id.identifier.ns.ns}:${id.identifier.value}
-            </g:each>
+			<g:each in="${currentTitle[0].ids}" var="id">
+                          <g:if test="${id.identifier.ns.ns != 'originediturl'}">
+                            <br>${id.identifier.ns.ns}:${id.identifier.value}
+                          </g:if>
+                        </g:each>
 			</td>
 			
 			<g:if test="${pkgATipp}">		
-				<td class="${highlight }"><g:render template="compare_cell" model="[obj:pkgATipp]"/></td>
+				<td class="${highlight }">
+                                  <g:each in="${pkgATipp}" var="t">
+                                    <g:render template="compare_cell" model="[obj:t]"/>
+                                  </g:each>
+                                </td>
 			</g:if>
 			<g:else><td></td></g:else>
 			
 			<g:if test="${pkgBTipp}">			
-				<td class="${highlight }"><g:render template="compare_cell" model="[obj:pkgBTipp]"/></td>
+				<td class="${highlight }">
+                                  <g:each in="${pkgBTipp}" var="t">
+                                    <g:render template="compare_cell" model="[obj:t]"/>
+                                  </g:each>
+                                </td>
 			</g:if>
 			<g:else><td></td></g:else>
 

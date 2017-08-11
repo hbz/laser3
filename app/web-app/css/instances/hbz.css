@@ -6927,9 +6927,9 @@ dl > dt {
 .container > .span12 {
 	margin-left: 0;
 }
-.container > dl > dt {
+/*.container > dl > dt {
     margin-top: 10px;
-}
+}*/
 dt > label {
     font-weight: bold;
 }

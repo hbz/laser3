@@ -158,6 +158,15 @@ class TitleInstancePackagePlatform {
     result
   }
 
+  String getIdentifierValue(idtype) {
+    def result=null
+    ids?.each { id ->
+      if ( id.identifier?.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
+        result = id.identifier?.value
+    }
+    result
+  }
+
   @Transient
   def onChange = { oldMap,newMap ->
 

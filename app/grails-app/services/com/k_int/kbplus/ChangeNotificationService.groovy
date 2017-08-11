@@ -9,7 +9,9 @@ class ChangeNotificationService {
 
   def executorService
   def genericOIDService
+  def sessionFactory
   def zenDeskSyncService
+  def grailsApplication
 
   // N,B, This is critical for this service as it's called from domain object OnChange handlers
   static transactional = false;
@@ -50,11 +52,12 @@ class ChangeNotificationService {
       def pendingOIDChanges = ChangeNotificationQueueItem.executeQuery("select distinct c.oid from ChangeNotificationQueueItem as c order by c.oid");
 
       pendingOIDChanges.each { poidc ->
-    
+
+        def contr = 0
         // log.debug("Consider pending changes for ${poidc}");
         def contextObject = genericOIDService.resolveOID(poidc);
 
-        if ( contextObject == null ) {
+        if ( contextObject == null || contextObject.status?.value == 'Deleted') {
           log.warn("Pending changes for a now deleted item.. nuke them!");
           ChangeNotificationQueueItem.executeUpdate("delete ChangeNotificationQueueItem c where c.oid = :oid", [oid:poidc])
         }
@@ -99,6 +102,11 @@ class ChangeNotificationService {
           else {
             sw.write("<li>Unable to find template for change event \"ChangeNotification.${parsed_event_info.event}\". Event info follows\n\n${pc.changeDocument}</li>");
           }
+          contr++;
+
+          if(contr > 0 && contr % 100 == 0){
+            log.debug("Processed ${contr} notifications for object ${poidc}")
+          }
           pc_delete_list.add(pc)
         }
         sw.write("</ul></p>");
@@ -115,7 +123,7 @@ class ChangeNotificationService {
               // log.debug("  -> consider ${ne}");
               switch ( ne.service ) {
                 case 'zendesk.forum': 
-                  if ( ne.remoteid != null ) {
+                  if ( ne.remoteid != null && grailsApplication.config.ZenDeskBaseURL ) {
                     // log.debug("Send zendesk forum notification for ${ne.remoteid}");
                     zenDeskSyncService.postTopicCommentInForum(announcement_content,
                                                                ne.remoteid.toString(), 
@@ -133,7 +141,7 @@ class ChangeNotificationService {
                                                 type:announcement_type,
                                                 content:announcement_content,
                                                 dateCreated:new Date(),
-                                                user:User.findByUsername('admin')).save();
+                                                user:User.findByUsername('admin')).save(flush:true);
 
                   break;
                 default:
@@ -151,6 +159,7 @@ class ChangeNotificationService {
           // log.debug("Deleting reported change ${pc.id}");
           pc.delete()
         }
+        cleanUpGorm()
       }
     }
     catch ( Exception e ) {
@@ -183,6 +192,12 @@ class ChangeNotificationService {
     } as java.util.concurrent.Callable)
   }
 
+  def cleanUpGorm() {
+    log.debug("Clean up GORM");
+    def session = sessionFactory.currentSession
+    session.flush()
+    session.clear()
+  }
 
 
   def registerPendingChange(prop, target, desc, objowner, changeMap ) {

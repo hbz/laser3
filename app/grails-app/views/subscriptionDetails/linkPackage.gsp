@@ -129,18 +129,28 @@
                     </thead>
                     <tbody>
                       <g:each in="${hits}" var="hit">
-                        <tr>
-                          <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} </g:link>(${hit.getSource()?.titleCount?:'0'} ${message(code:'title.plural', default:'Titles')})</td>
-                          <td>${hit.getSource().consortiaName}</td>
-                          <td><g:link action="linkPackage" 
-                                 id="${params.id}"
-                                 params="${[addId:hit.getSource().dbId,addType:'Without']}"
-                                 onClick="return confirm('${message(code:'subscription.details.link.no_ents.confirm', default:'Are you sure you want to add without entitlements?')}');">${message(code:'subscription.details.link.no_ents', default:'Link (no Entitlements)')}</g:link><br/>
-                              <g:link action="linkPackage" 
-                                 id="${params.id}" 
-                                 params="${[addId:hit.getSource().dbId,addType:'With']}"
-                                 onClick="return confirm('${message(code:'subscription.details.link.with_ents.confirm', default:'Are you sure you want to add with entitlements?')}');">${message(code:'subscription.details.link.with_ents', default:'Link (with Entitlements)')}</g:link></td>
-                        </tr>
+                          <tr>
+                            <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} </g:link>(${hit.getSource()?.titleCount?:'0'} ${message(code:'title.plural', default:'Titles')})</td>
+                            <td>${hit.getSource().consortiaName}</td>
+                            <td>
+                              <g:if test="${!pkgs || !pkgs.contains(hit.getSource().dbId.toLong())}">
+                                <g:link action="linkPackage"
+                                    id="${params.id}"
+                                    params="${[addId:hit.getSource().dbId,addType:'Without']}"
+                                    style="white-space:nowrap;"
+                                    onClick="return confirm('${message(code:'subscription.details.link.no_ents.confirm', default:'Are you sure you want to add without entitlements?')}');">${message(code:'subscription.details.link.no_ents', default:'Link (no Entitlements)')}</g:link>
+                                <br/>
+                                <g:link action="linkPackage"
+                                    id="${params.id}"
+                                    params="${[addId:hit.getSource().dbId,addType:'With']}"
+                                    style="white-space:nowrap;"
+                                    onClick="return confirm('${message(code:'subscription.details.link.with_ents.confirm', default:'Are you sure you want to add with entitlements?')}');">${message(code:'subscription.details.link.with_ents', default:'Link (with Entitlements)')}</g:link>
+                              </g:if>
+                              <g:else>
+                                <span></span>
+                              </g:else>
+                            </td>
+                          </tr>
                       </g:each>
                     </tbody>
                   </table>
@@ -158,7 +168,7 @@
             <h4>${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</h4>
             <hr/>
             <g:each in="${subscriptionInstance.packages}" var="sp">
-              <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link><br/>
+              <p><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></p>
             </g:each>
           </div>
         </div>
