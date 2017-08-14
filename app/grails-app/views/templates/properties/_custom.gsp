@@ -1,96 +1,109 @@
-%{--To use, add the g:render custom_props inside a div with id=custom_props_div, add g:javascript src=properties.js--}%
-%{--on head of container page, and on window load execute  initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");--}%
+%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
+%{-- on head of container page, and on window load execute  --}%
+%{-- initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License" %>
 
-<g:hasErrors bean="${newProp}">
-    <bootstrap:alert class="alert-error">
-        <ul>
-            <g:eachError bean="${newProp}" var="error">
-                <li> <g:message error="${error}"/></li>
-            </g:eachError>
-        </ul>
-    </bootstrap:alert>
-</g:hasErrors>
+<g:if test="${newProp}">
+    <g:hasErrors bean="${newProp}">
+        <bootstrap:alert class="alert-error">
+            <ul>
+                <g:eachError bean="${newProp}" var="error">
+                    <li> <g:message error="${error}"/></li>
+                </g:eachError>
+            </ul>
+        </bootstrap:alert>
+    </g:hasErrors>
+</g:if>
 
 <g:if test="${error}">
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
 <g:if test="${editable}">
-    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']"
-                  method="post"
-                  name="cust_prop_add_value"
-                  class="form-inline"
-                  update="custom_props_div"
-                  onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')">
+    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
+            name="cust_prop_add_value"
+            class="form-inline"
+            update="${custom_props_div}"
+            onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
         <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
         <input type="hidden" name="editable" value="${editable}"/>
         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
+
+        <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
+
         <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="btn btn-primary btn-small"/>
     </g:formRemote>
 </g:if>
 
 <br/>
-<table id="custom_props_table" class="table table-bordered">
+
+<table class="table table-bordered">
     <thead>
-    <tr>
-        <th>${message(code:'licence.property.table.property')}</th>
-        <th>${message(code:'licence.property.table.value')}</th>
-        <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
-            <th>${message(code:'licence.property.table.paragraph')}</th>
-        </g:if>
-        <th>${message(code:'licence.property.table.notes')}</th>
-        <th>${message(code:'licence.property.table.delete')}</th>
-    </tr>
+        <tr>
+            <th>${message(code:'licence.property.table.property')}</th>
+            <th>${message(code:'licence.property.table.value')}</th>
+            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <th>${message(code:'licence.property.table.paragraph')}</th>
+            </g:if>
+            <th>${message(code:'licence.property.table.notes')}</th>
+            <th>${message(code:'licence.property.table.delete')}</th>
+        </tr>
     </thead>
     <tbody>
-    <g:each in="${ownobj.customProperties}" var="prop">
-        <tr>
-            <td>${prop.type.name}</td>
-            <td>
-                <g:if test="${prop.type.type == Integer.toString()}">
-                    <g:xEditable owner="${prop}" type="text" field="intValue"/>
-                </g:if>
-                <g:elseif test="${prop.type.type == String.toString()}">
-                    <g:xEditable owner="${prop}" type="text" field="stringValue"/>
-                </g:elseif>
-                <g:elseif test="${prop.type.type == BigDecimal.toString()}">
-                    <g:xEditable owner="${prop}" type="text" field="decValue"/>
-                </g:elseif>
-                <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                    <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
-                </g:elseif>
-            </td>
-            %{-- prüfen, ob property hat paragraph --}%
-            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+        <g:each in="${ownobj.customProperties}" var="prop">
+            <tr>
+                <td>${prop.type.name}</td>
                 <td>
-                    <g:xEditable owner="${prop}" type="text" field="paragraph"/>
+                    <g:if test="${prop.type.type == Integer.toString()}">
+                        <g:xEditable owner="${prop}" type="text" field="intValue"/>
+                    </g:if>
+                    <g:elseif test="${prop.type.type == String.toString()}">
+                        <g:xEditable owner="${prop}" type="text" field="stringValue"/>
+                    </g:elseif>
+                    <g:elseif test="${prop.type.type == BigDecimal.toString()}">
+                        <g:xEditable owner="${prop}" type="text" field="decValue"/>
+                    </g:elseif>
+                    <g:elseif test="${prop.type.type == RefdataValue.toString()}">
+                        <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
+                    </g:elseif>
                 </td>
-            </g:if>
-
-            <td>
-                <g:xEditable owner="${prop}" type="textarea" field="note"/>
-            </td>
-            <td>
-                <g:if test="${editable == true}">
-                    <g:remoteLink controller="ajax" action="deleteCustomProperty"
-                                  before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
-                                  params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                                  onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')" update="custom_props_div">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
+                %{-- prüfen, ob property hat paragraph --}%
+                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <td>
+                        <g:xEditable owner="${prop}" type="text" field="paragraph"/>
+                    </td>
                 </g:if>
-            </td>
-        </tr>
-    </g:each></tbody>
+
+                <td>
+                    <g:xEditable owner="${prop}" type="textarea" field="note"/>
+                </td>
+                <td>
+                    <g:if test="${editable == true}">
+                        <g:remoteLink controller="ajax" action="deleteCustomProperty"
+                                      before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
+                                      params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                      onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                      update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
+                    </g:if>
+                </td>
+            </tr>
+        </g:each>
+    </tbody>
 </table>
 
+<!--
 <div id="cust_prop_add_modal" class="modal hide">
 
-    <g:formRemote id="create_cust_prop" name="modal_create_cust_prop"
-                  url="[controller: 'ajax', action: 'addCustomPropertyType']" method="post" update="custom_props_div"
-                  onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}')">
+TODO !!! this modal dialog has not been refactored ..
+
+    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyType']" method="post"
+                  id="create_cust_prop"
+                  name="modal_create_cust_prop"
+                  update="${custom_props_div}"
+                  onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
         <input type="hidden" name="editable" value="${editable}"/>
@@ -141,4 +154,4 @@
         </div>
     </g:formRemote>
 
-</div>
+</div>-->

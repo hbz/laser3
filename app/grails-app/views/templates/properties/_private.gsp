@@ -33,19 +33,19 @@
 	    <input type="hidden" name="editable"   value="${editable}"/>
 	    <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-	    <input type="submit" value="Add Property" class="btn btn-primary btn-small"/>
+        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="btn btn-primary btn-small"/>
 	</g:formRemote>
 </g:if>
 
 <br/>
 
-<table id="custom_props_table" class="table table-bordered">
+<table class="table table-bordered">
     <thead>
 	    <tr>
-	        <th>Property</th>
-	        <th>Value</th>
-	        <th>Notes</th>
-	        <th>Delete</th>
+            <th>${message(code:'licence.property.table.property')}</th>
+            <th>${message(code:'licence.property.table.value')}</th>
+            <th>${message(code:'licence.property.table.notes')}</th>
+            <th>${message(code:'licence.property.table.delete')}</th>
             <th>Mandatory</th>
 	    </tr>
     </thead>
@@ -76,7 +76,8 @@
                         <g:remoteLink controller="ajax" action="deletePrivateProperty"
                             before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                             params='[propclass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                            onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')" update="${custom_props_div}">Delete</g:remoteLink>
+                            onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                            update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
                         </g:if>
                     </td>
                     <td>

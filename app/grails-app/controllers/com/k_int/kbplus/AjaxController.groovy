@@ -611,7 +611,13 @@ class AjaxController {
 
     owner.refresh()
     request.setAttribute("editable", params.editable == "true")
-    render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error])
+    render(template: "/templates/properties/custom", model:[
+            ownobj:owner,
+            newProp:newProp,
+            error:error,
+            custom_props_div: "${params.custom_props_div}", // JS markup id
+            prop_desc: type.descr // form data
+    ])
   }
 
   /**
@@ -670,6 +676,7 @@ class AjaxController {
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
     def owner     =  grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    def prop_desc = property.getType().getDescr()
     owner.customProperties.remove(property)
     property.delete(flush:true)
 
@@ -679,7 +686,12 @@ class AjaxController {
         log.debug("Deleted custom property: " + property.type.name)
     }
     request.setAttribute("editable", params.editable == "true")
-    render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:property])
+    render(template: "/templates/properties/custom", model:[
+            ownobj:owner,
+            newProp:property,
+            custom_props_div: "${params.custom_props_div}", // JS markup id
+            prop_desc: prop_desc // form data
+    ])
   }
 
   /**
