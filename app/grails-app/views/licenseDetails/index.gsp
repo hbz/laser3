@@ -34,9 +34,39 @@
             <div class="row">
                 <div class="span12">
                     <h6>${message(code:'licence.properties')}</h6>
-                    <div id="custom_props_div">
-                        <g:render template="/templates/properties/custom" model="${[ ownobj:license,prop_desc:PropertyDefinition.LIC_PROP ]}"/>
+
+                    <div id="custom_props_div_props">
+                        <g:render template="/templates/properties/custom" model="${[
+                                prop_desc: PropertyDefinition.LIC_PROP,
+                                ownobj: license,
+                                custom_props_div: "custom_props_div_props" ]}"/>
                     </div>
+
+                    <h6>${message(code:'licence.openaccess.properties')}</h6>
+
+                    <div id="custom_props_div_oa">
+                        <g:render template="/templates/properties/custom" model="${[
+                                prop_desc: PropertyDefinition.LIC_OA_PROP,
+                                ownobj: license,
+                                custom_props_div: "custom_props_div_oa" ]}"/>
+                    </div>
+
+                    <h6>${message(code:'licence.archive.properties')}</h6>
+
+                    <div id="custom_props_div_archive">
+                        <g:render template="/templates/properties/custom" model="${[
+                                prop_desc: PropertyDefinition.LIC_ARC_PROP,
+                                ownobj: license,
+                                custom_props_div: "custom_props_div_archive" ]}"/>
+                    </div>
+
+                    <r:script language="JavaScript">
+                        $(document).ready(function(){
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                        });
+                    </r:script>
                 </div>
                 <br/>
 
@@ -277,7 +307,7 @@
 
       <g:if test="${editable}">
       </g:if>
-      <g:else>
+        <g:else>
         $(document).ready(function() {
           $(".announce").click(function(){
             var id = $(this).data('id');
@@ -286,9 +316,6 @@
           });
         });
       </g:else>
-     window.onload = function() {
-     initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");
-    };
     </r:script>
 
   </body>

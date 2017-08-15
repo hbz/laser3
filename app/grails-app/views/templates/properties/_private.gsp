@@ -37,8 +37,6 @@
 	</g:formRemote>
 </g:if>
 
-<br/>
-
 <table class="table table-bordered">
     <thead>
 	    <tr>

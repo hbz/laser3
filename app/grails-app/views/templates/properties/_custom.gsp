@@ -38,8 +38,6 @@
     </g:formRemote>
 </g:if>
 
-<br/>
-
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -54,42 +52,44 @@
     </thead>
     <tbody>
         <g:each in="${ownobj.customProperties}" var="prop">
-            <tr>
-                <td>${prop.type.name}</td>
-                <td>
-                    <g:if test="${prop.type.type == Integer.toString()}">
-                        <g:xEditable owner="${prop}" type="text" field="intValue"/>
-                    </g:if>
-                    <g:elseif test="${prop.type.type == String.toString()}">
-                        <g:xEditable owner="${prop}" type="text" field="stringValue"/>
-                    </g:elseif>
-                    <g:elseif test="${prop.type.type == BigDecimal.toString()}">
-                        <g:xEditable owner="${prop}" type="text" field="decValue"/>
-                    </g:elseif>
-                    <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                        <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
-                    </g:elseif>
-                </td>
-                %{-- prüfen, ob property hat paragraph --}%
-                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+            <g:if test="${prop.type.descr == prop_desc}">
+                <tr>
+                    <td>${prop.type.name}</td>
                     <td>
-                        <g:xEditable owner="${prop}" type="text" field="paragraph"/>
+                        <g:if test="${prop.type.type == Integer.toString()}">
+                            <g:xEditable owner="${prop}" type="text" field="intValue"/>
+                        </g:if>
+                        <g:elseif test="${prop.type.type == String.toString()}">
+                            <g:xEditable owner="${prop}" type="text" field="stringValue"/>
+                        </g:elseif>
+                        <g:elseif test="${prop.type.type == BigDecimal.toString()}">
+                            <g:xEditable owner="${prop}" type="text" field="decValue"/>
+                        </g:elseif>
+                        <g:elseif test="${prop.type.type == RefdataValue.toString()}">
+                            <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
+                        </g:elseif>
                     </td>
-                </g:if>
-
-                <td>
-                    <g:xEditable owner="${prop}" type="textarea" field="note"/>
-                </td>
-                <td>
-                    <g:if test="${editable == true}">
-                        <g:remoteLink controller="ajax" action="deleteCustomProperty"
-                                      before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
-                                      params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
-                                      onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                      update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
+                    %{-- prüfen, ob property hat paragraph --}%
+                    <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                        <td>
+                            <g:xEditable owner="${prop}" type="text" field="paragraph"/>
+                        </td>
                     </g:if>
-                </td>
-            </tr>
+
+                    <td>
+                        <g:xEditable owner="${prop}" type="textarea" field="note"/>
+                    </td>
+                    <td>
+                        <g:if test="${editable == true}">
+                            <g:remoteLink controller="ajax" action="deleteCustomProperty"
+                                          before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
+                                          params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                          onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                          update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
+                        </g:if>
+                    </td>
+                </tr>
+            </g:if>
         </g:each>
     </tbody>
 </table>

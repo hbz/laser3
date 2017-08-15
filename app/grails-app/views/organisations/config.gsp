@@ -20,15 +20,19 @@
       
 
      <h6>${message(code:'org.properties')}</h6>
-              <div id="custom_props_div" class="span12">
-                  <g:render template="/templates/properties/custom" model="${[ prop_desc:PropertyDefinition.ORG_CONF,ownobj:orgInstance ]}"/>
-              </div>
-    </div>
+        <div id="custom_props_div_1" class="span12">
+            <g:render template="/templates/properties/custom" model="${[
+                    prop_desc: PropertyDefinition.ORG_CONF,
+                    ownobj: orgInstance,
+                    custom_props_div: "custom_props_div_1" ]}"/>
+        </div>
         <r:script language="JavaScript">
+        $(document).ready(function(){
+            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+        });
+        </r:script>
+    </div>
 
-     initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>");
-
-    </r:script>
 
   </body>
 </html>

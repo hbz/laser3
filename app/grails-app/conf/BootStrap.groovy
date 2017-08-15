@@ -337,40 +337,53 @@ class BootStrap {
   }
 
 
-  def createLicenceProperties() {
-    def existingProps = LicenseCustomProperty.findAll()
-    def requiredProps = [[propname:"Concurrent Access", descr:PropertyDefinition.LIC_PROP,type:RefdataValue.toString(), cat:'ConcurrentAccess'],
-                         [propname:"Concurrent Users", descr:PropertyDefinition.LIC_PROP,type: Integer.toString()],
-                         [propname:"Remote Access", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"Walk In Access", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"Multi Site Access", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"Partners Access", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"Alumni Access", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"ILL - InterLibraryLoans", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"Include In Coursepacks", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"Include in VLE", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"Enterprise Access", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'],
-                         [propname:"Post Cancellation Access Entitlement", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO'], 
-                         [propname:"Cancellation Allowance", descr:PropertyDefinition.LIC_PROP,type: String.toString()], 
-                         [propname:"Notice Period", descr:PropertyDefinition.LIC_PROP,type: String.toString()], 
-                         [propname:"Signed", descr:PropertyDefinition.LIC_PROP,type: RefdataValue.toString(), cat:'YNO']]
+    def createLicenceProperties() {
+        def existingProps = LicenseCustomProperty.findAll()
 
-    createPropertyDefinitions(requiredProps)
-    log.debug("createLicenceProperties completed");
-  }
+        def requiredProps = [
+                [propname:"Concurrent Access", descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
+                [propname:"Concurrent Users",  descr:PropertyDefinition.LIC_PROP, type:Integer.toString()],
+                [propname:"Remote Access",     descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Walk In Access",    descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Multi Site Access", descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Partners Access",   descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Alumni Access",     descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"ILL - InterLibraryLoans",   descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Include In Coursepacks",    descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Include in VLE",    descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Enterprise Access", descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Post Cancellation Access Entitlement",  descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Cancellation Allowance",    descr:PropertyDefinition.LIC_PROP, type:String.toString()],
+                [propname:"Notice Period",     descr:PropertyDefinition.LIC_PROP, type:String.toString()],
+                [propname:"Signed",            descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO']]
+
+        createPropertyDefinitions(requiredProps)
+
+        def requiredOAProps = [
+                [propname:"Type",           descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'Licence.OA.Type'],
+                [propname:"Electronically Archivable Version",  descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'Licence.OA.eArcVersion']]
+
+        createPropertyDefinitions(requiredOAProps)
+
+        def requiredARCProps = []
+
+        createPropertyDefinitions(requiredARCProps)
+
+        log.debug("createLicenceProperties completed");
+    }
 
     def createPrivateProperties(){
         def existingOrgProps = OrgPrivateProperty.findAll()
-        def requiredOrgProps = [[propname:"Org Property 1", descr:PropertyDefinition.ORG_PROP, type: String.toString()],
-                                [propname:"Org Property 2", descr:PropertyDefinition.ORG_PROP, type: RefdataValue.toString(), cat:'YNO'],
-                                [propname:"Org Property 3", descr:PropertyDefinition.ORG_PROP, type: RefdataValue.toString(), cat:'OrgSector']]
+        def requiredOrgProps = [[propname:"Org Property 1", descr:PropertyDefinition.ORG_PROP, type:String.toString()],
+                                [propname:"Org Property 2", descr:PropertyDefinition.ORG_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                                [propname:"Org Property 3", descr:PropertyDefinition.ORG_PROP, type:RefdataValue.toString(), cat:'OrgSector']]
 
         createPropertyDefinitions(requiredOrgProps)
 
         def existingPrsProps = PersonPrivateProperty.findAll()
-        def requiredPrsProps = [[propname:"Person Property 1", descr:PropertyDefinition.PRS_PROP, type: String.toString()],
-                                [propname:"Person Property 2", descr:PropertyDefinition.PRS_PROP, type: RefdataValue.toString(), cat:'YNO'],
-                                [propname:"Person Property 3", descr:PropertyDefinition.PRS_PROP, type: RefdataValue.toString(), cat:'Person Role']]
+        def requiredPrsProps = [[propname:"Person Property 1", descr:PropertyDefinition.PRS_PROP, type:String.toString()],
+                                [propname:"Person Property 2", descr:PropertyDefinition.PRS_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                                [propname:"Person Property 3", descr:PropertyDefinition.PRS_PROP, type:RefdataValue.toString(), cat:'Person Role']]
 
         createPropertyDefinitions(requiredPrsProps)
 
@@ -381,22 +394,22 @@ class BootStrap {
 
     requiredProps.each{ default_prop ->
         def existing_prop = PropertyDefinition.findByName(default_prop.propname)
-       if ( existing_prop ) {
-          existing_prop.type = default_prop.type
-          existing_prop.descr = default_prop.descr
-          existing_prop.save()
-       }else{
+        if ( existing_prop ) {
+            existing_prop.type = default_prop.type
+            existing_prop.descr = default_prop.descr
+            existing_prop.save()
+        }else{
 
-          log.debug("Unable to locate property definition for ${default_prop.propname}.. Creating");
+            log.debug("Unable to locate property definition for ${default_prop.propname}.. Creating");
 
-          def newProp = new PropertyDefinition(name: default_prop.propname, 
-                                               type: default_prop.type, 
+            def newProp = new PropertyDefinition(name: default_prop.propname,
+                                               type: default_prop.type,
                                                descr: default_prop.descr)
-          if ( default_prop.cat != null )
-            newProp.setRefdataCategory(default_prop.cat);
+            if ( default_prop.cat != null )
+                newProp.setRefdataCategory(default_prop.cat);
 
-          newProp.save(failOnError:true)
-       }
+            newProp.save(failOnError:true)
+        }
     }
   }
 
@@ -545,6 +558,16 @@ class BootStrap {
     RefdataCategory.lookupOrCreate("LicenseCategory", "Content").save()
     RefdataCategory.lookupOrCreate("LicenseCategory", "Software").save()
     RefdataCategory.lookupOrCreate("LicenseCategory", "Other").save()
+
+      RefdataCategory.lookupOrCreate("Licence.OA.Type", "No Open Access").save()
+      RefdataCategory.lookupOrCreate("Licence.OA.Type", "Hybrid").save()
+      RefdataCategory.lookupOrCreate("Licence.OA.Type", "Green Open Access").save()
+      RefdataCategory.lookupOrCreate("Licence.OA.Type", "Red Open Access").save()
+
+      RefdataCategory.lookupOrCreate("Licence.OA.eArcVersion", "Publisher-PDF").save()
+      RefdataCategory.lookupOrCreate("Licence.OA.eArcVersion", "Postprint").save()
+      RefdataCategory.lookupOrCreate("Licence.OA.eArcVersion", "Preprint").save()
+      RefdataCategory.lookupOrCreate("Licence.OA.eArcVersion", "Preprint with ePrint URL").save()
 
     RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Current").save()
     RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Deleted").save()

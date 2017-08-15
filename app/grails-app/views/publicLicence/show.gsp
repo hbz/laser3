@@ -1,5 +1,6 @@
 <!doctype html>
 <r:require module="annotations" />
+<%@ page import="com.k_int.properties.PropertyDefinition" %>
 
 <html>
   <head>
@@ -38,11 +39,20 @@
 
     <div class="container">
             <div class="row">
- <h6>${message(code:'licence.properties')}</h6>
-              <div id="custom_props_div" class="span12">
-                  <g:render template="/templates/properties/custom" model="${[ ownobj:license ]}"/>
-              </div>
-            <br/>
+                <h6>${message(code:'licence.properties')}</h6>
+
+                <div id="custom_props_div_1" class="span12">
+                    <g:render template="/templates/properties/custom" model="${[
+                            prop_desc: PropertyDefinition.LIC_PROP,
+                            ownobj: license,
+                            custom_props_div: "custom_props_div_1" ]}"/>
+                </div>
+                <r:script language="JavaScript">
+                $(document).ready(function(){
+                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+                });
+                </r:script>
+
               <div class="span8">
   
                 <h6>Information</h6>

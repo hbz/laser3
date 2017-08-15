@@ -11,10 +11,24 @@ import org.apache.commons.logging.LogFactory
 
 @Log4j
 class PropertyDefinition {
+
     @Transient
-    final static String[] AVAILABLE_DESCR = [LIC_PROP, ORG_CONF, SYS_CONF, PRS_PROP, ORG_PROP]
+    final static String[] AVAILABLE_DESCR = [
+            LIC_PROP,
+            LIC_OA_PROP,
+            LIC_ARC_PROP,
+            ORG_CONF,
+            SYS_CONF,
+            PRS_PROP,
+            ORG_PROP
+    ]
+
     @Transient
     final static String LIC_PROP = 'Licence Property'
+    @Transient
+    final static String LIC_OA_PROP = 'Licence Property: Open Access'
+    @Transient
+    final static String LIC_ARC_PROP = 'Licence Property: Archive'
     @Transient
     final static String ORG_CONF = 'Organisation Config'
     @Transient
