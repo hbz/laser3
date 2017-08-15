@@ -6393,7 +6393,7 @@ dl > dt {
   word-wrap: break-word;
 }
 body.public {
-  margin-bottom: 150px;
+  margin-bottom: 180px;
 }
 body.public #Footer {
   width: 100%;
@@ -6405,6 +6405,11 @@ body.public #Footer .footer-links {
   margin-top: 0;
   margin-bottom: 30px;
 }
+body.public #Footer .footer-sublinks a,
+body.public #Footer .footer-sublinks a:hover {
+  text-decoration: none;
+}
+
 /* Contents Well
 
     <div class="well">
@@ -6604,6 +6609,11 @@ body.public #Footer .footer-links {
   background-image: url('../../images/kbplus_logo.jpg');
   height: 70px;
   width: 95px;
+}
+
+.sprite-kbplus_logo,
+.sprite-kbplus_logo:hover {
+  text-decoration: none;
 }
 /* Navigation
 
