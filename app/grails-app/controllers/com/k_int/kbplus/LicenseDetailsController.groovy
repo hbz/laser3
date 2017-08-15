@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import grails.converters.*
 import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.StreamingMarkupBuilder
 import com.k_int.kbplus.auth.*;
@@ -330,6 +331,28 @@ class LicenseDetailsController {
     userAccessCheck(result.license,result.user,'view')
 
     if ( result.license.hasPerm("edit",result.user) ) {
+      result.editable = true
+    }
+    else {
+      result.editable = false
+    }
+    result
+  }
+
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def properties() {
+    def result = [:]
+
+    log.debug("licenseDetails id: ${params.id}");
+
+    def user    = User.get(springSecurityService.principal.id)
+    result.user = user
+    result.authorizedOrgs = user?.authorizedOrgs
+
+    def licenseInstance = License.get(params.id)
+    result.license      = licenseInstance
+
+    if (result.license.hasPerm("edit", result.user)) {
       result.editable = true
     }
     else {

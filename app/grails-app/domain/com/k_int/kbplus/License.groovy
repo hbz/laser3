@@ -60,8 +60,9 @@ class License extends BaseDomainComponent implements Comparable<License>{
           prsLinks:     PersonRole,
           outgoinglinks:Link,
           incomingLinks:Link,
-          pendingChanges:PendingChange,
-          customProperties:LicenseCustomProperty
+          pendingChanges:     PendingChange,
+          customProperties:   LicenseCustomProperty,
+          privateProperties:  LicensePrivateProperty
   ]
 
   static mappedBy = [
@@ -99,6 +100,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
               startDate column: 'lic_start_date'
                 endDate column: 'lic_end_date'
        customProperties sort:'type', order:'desc'
+      privateProperties sort:'type', order:'desc'
          pendingChanges sort: 'ts', order: 'asc'
   }
 

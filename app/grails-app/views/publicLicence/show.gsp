@@ -41,18 +41,42 @@
             <div class="row">
                 <h6>${message(code:'licence.properties')}</h6>
 
-                <div id="custom_props_div_1" class="span12">
+                <div id="custom_props_div_props">
                     <g:render template="/templates/properties/custom" model="${[
                             prop_desc: PropertyDefinition.LIC_PROP,
                             ownobj: license,
-                            custom_props_div: "custom_props_div_1" ]}"/>
+                            custom_props_div: "custom_props_div_props" ]}"/>
                 </div>
+
+                <h6>${message(code:'licence.openaccess.properties')}</h6>
+
+                <div id="custom_props_div_oa">
+                    <g:render template="/templates/properties/custom" model="${[
+                            prop_desc: PropertyDefinition.LIC_OA_PROP,
+                            ownobj: license,
+                            custom_props_div: "custom_props_div_oa" ]}"/>
+                </div>
+
+                <h6>${message(code:'licence.archive.properties')}</h6>
+
+                <div id="custom_props_div_archive">
+                    <g:render template="/templates/properties/custom" model="${[
+                            prop_desc: PropertyDefinition.LIC_ARC_PROP,
+                            ownobj: license,
+                            custom_props_div: "custom_props_div_archive" ]}"/>
+                </div>
+
                 <r:script language="JavaScript">
-                $(document).ready(function(){
-                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
-                });
+                        $(document).ready(function(){
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                        });
                 </r:script>
 
+            </div>
+
+        <div class="row">
               <div class="span8">
   
                 <h6>Information</h6>
@@ -208,11 +232,10 @@
               </div>
               </div>
               <div class="span4">
-
                 <g:render template="/templates/documents" model="${[ ownobj:license, owntp:'license']}" />
                 <g:render template="/templates/notes"  model="${[ ownobj:license, owntp:'license']}" />
               </div>
-            </div>
+        </div>
     </div>
     <g:render template="orgLinksModal" 
               contextPath="../templates" 
