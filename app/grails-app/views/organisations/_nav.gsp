@@ -1,17 +1,7 @@
-<ul class="nav nav-pills">
-	<li <%='show'== actionName ? ' class="active"' : '' %>>
-		<g:link controller="organisations" action="show" params="${[id:params.id]}">${message(code:'org.nav.details', default:'Details')}</g:link>
-	</li>
-	<li <%='users'== actionName ? ' class="active"' : '' %>>
-		<g:link controller="organisations" action="users" params="${[id:params.id]}">${message(code:'org.nav.users', default:'Users')}</g:link>
-	</li>
-	<li <%='config'== actionName ? ' class="active"' : '' %>>
-		<g:link controller="organisations" action="config" params="${[id:params.id]}">${message(code:'org.nav.options', default:'Options')}</g:link>
-	</li>
-	<li <%='addressbook'== actionName ? ' class="active"' : '' %>>
-		<g:link controller="organisations" action="addressbook" params="${[id:params.id]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
-	</li>
-	<li <%='properties'== actionName ? ' class="active"' : '' %>>
-		<g:link controller="organisations" action="properties" params="${[id:params.id]}">${message(code:'org.privateProperties.label', default:'Private Properties')}</g:link>
-	</li>
-</ul>
+<laser:subNav actionName="${actionName}">
+	<laser:subNavItem controller="organisations" action="show" params="${[id:params.id]}" message="org.nav.details" />
+	<laser:subNavItem controller="organisations" action="users" params="${[id:params.id]}" message="org.nav.users" />
+	<laser:subNavItem controller="organisations" action="config" params="${[id:params.id]}" message="org.nav.options" />
+	<laser:subNavItem controller="organisations" action="addressbook" params="${[id:params.id]}" message="menu.institutions.addressbook" />
+	<laser:subNavItem controller="organisations" action="properties" params="${[id:params.id]}" message="org.privateProperties.label" />
+</laser:subNav>

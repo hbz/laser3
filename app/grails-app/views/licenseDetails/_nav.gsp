@@ -1,34 +1,16 @@
 <g:set var="licence" value="${com.k_int.kbplus.License.get(params.id)}"/>
-<ul class="nav nav-pills">
-    <li <%='index'== actionName ? ' class="active"' : '' %>><g:link controller="licenseDetails"
-                                                                    action="index"
-                                                                    params="${[id:params.id]}">${message(code:'licence.details', default:'Licence Details')}</g:link></li>
 
-    <li <%='documents'== actionName ? ' class="active"' : '' %>><g:link controller="licenseDetails"
-                                                                        action="documents"
-                                                                        params="${[id:params.id]}">${message(code:'licence.nav.docs', default:'Documents')}</g:link></li>
-
-    <li <%='notes'== actionName ? ' class="active"' : '' %>><g:link controller="licenseDetails"
-                                                                    action="notes"
-                                                                    params="${[id:params.id]}">${message(code:'licence.nav.notes', default:'Notes')}</g:link></li>
-
-    <li <%='todo_history'== actionName ? ' class="active"' : '' %>><g:link controller="licenseDetails"
-                                                                      action="todo_history"
-                                                                      params="${[id:params.id]}">${message(code:'licence.nav.todo_history', default:'ToDo History')}</g:link></li>
-
-    <li <%='edit_history'== actionName ? ' class="active"' : '' %>><g:link controller="licenseDetails"
-                                                                      action="edit_history"
-                                                                      params="${[id:params.id]}">${message(code:'licence.nav.edit_history', default:'Edit History')}</g:link></li>
-
-
-    <li <%='additionalInfo'== actionName ? ' class="active"' : '' %>><g:link controller="licenseDetails"
-                                                                             action="additionalInfo"
-                                                                             params="${[id:params.id]}">${message(code:'licence.nav.additionalInfo', default:'Additional Information')}</g:link></li>
+<laser:subNav actionName="${actionName}">
+    <laser:subNavItem controller="licenseDetails" action="index" params="${[id:params.id]}" message="licence.nav.details" />
+    <laser:subNavItem controller="licenseDetails" action="documents" params="${[id:params.id]}" message="licence.nav.docs" />
+    <laser:subNavItem controller="licenseDetails" action="notes" params="${[id:params.id]}" message="licence.nav.notes" />
+    <laser:subNavItem controller="licenseDetails" action="todo_history" params="${[id:params.id]}" message="licence.nav.todo_history" />
+    <laser:subNavItem controller="licenseDetails" action="edit_history" params="${[id:params.id]}" message="licence.nav.edit_history" />
+    <laser:subNavItem controller="licenseDetails" action="additionalInfo" params="${[id:params.id]}" message="licence.nav.additionalInfo" />
+    <laser:subNavItem controller="licenseDetails" action="properties" params="${[id:params.id]}" message="licence.nav.privateProperties" />
 
     <g:if test="${licence.orgLinks?.find{it.roleType?.value == 'Licensing Consortium' &&
-      it?.org?.hasUserWithRole(user,'INST_ADM') && licence.licenseType == 'Template'}}">
-      <li <%='consortia'== actionName ? ' class="active"' : '' %>>
-      <g:link controller="licenseDetails" action="consortia" params="${[id: params.id]}">${message(code:'consortium.plural', default:'Consortia')}</g:link></li>
+            it?.org?.hasUserWithRole(user,'INST_ADM') && licence.licenseType == 'Template'}}">
+        <laser:subNavItem controller="licenseDetails" action="consortia" params="${[id:params.id]}" message="consortium.plural" />
     </g:if>
-
-</ul>
+</laser:subNav>

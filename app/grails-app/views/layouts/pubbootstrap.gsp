@@ -35,9 +35,20 @@
      'UserRole': 'ROLE_USER'
     }];
   </script>
+
     <g:layoutBody/>
     
     <div id="Footer">
+      <div class="footer-links container">
+          <div class="row">
+              <div class="pull-right">
+                  <a href="http://www.kbplus.ac.uk" class="sprite sprite-kbplus_logo"></a>
+              </div>
+          </div>
+      </div>
+
+      <div class="clearfix"></div>
+
       <div class="navbar navbar-footer">
           <div class="navbar-inner">
               <div class="container">
@@ -51,16 +62,7 @@
               </div>
           </div>
       </div>
-          
-      <div class="clearfix"></div>
-          
-      <div class="footer-links container">
-          <div class="row">
-              <div class="pull-right">
-                  <a href="http://www.kbplus.ac.uk"><div class="sprite sprite-kbplus_logo">Knowledge Base Plus</div></a>
-              </div>
-          </div>
-      </div>
+
   </div>
     <r:layoutResources/>
   </body>
