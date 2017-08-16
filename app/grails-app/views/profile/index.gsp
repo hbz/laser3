@@ -12,89 +12,69 @@
         <laser:crumb message="profile.bc.profile" class="active"/>
     </laser:breadcrumbs>
 
-  <g:if test="${flash.error}">
-      <div class="container">
-          <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-  </g:if>
-
-    <g:if test="${flash.message}">
-    <div class="container">
-       <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </div>
+    <g:if test="${flash.error}">
+        <div class="container">
+            <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
+        </div>
     </g:if>
 
-
-    <div class="container">
-      <div class="span12">
-        <h1>${message(code: 'profile.preferences', default:'Preferences')}</h1>
-      </div>
-    </div>
-    <div class="container">
-      <div class="span12">
-        <dl class="dl-horizontal">
-          <div class="control-group">
-            <dt>${message(code: 'profile.info_icon', default:'Show Info Icon')}</dt>
-            <dd>
-              <g:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
-            </dd>
-          </div>
-        </dl>
-      </div>
-    </div>
-
-    <div class="container">
-      <div class="span12">
-        <h1>${message(code: 'profile.user', default:'User Profile')}</h1>
-      </div>
-    </div>
+    <g:if test="${flash.message}">
+        <div class="container">
+            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
+        </div>
+    </g:if>
 
     <div class="container">
         <div class="row">
 
             <div class="span6">
-                <g:form action="updateProfile" class="form-inline">
-                    <dl class="dl-horizontal">
+              <h2>${message(code: 'profile.user', default:'User Profile')}</h2>
 
-                    <div class="control-group">
-                        <dt>${message(code: 'profile.display', default:'Display Name')}</dt>
-                        <dd><input type="text" name="userDispName" value="${user.display}"/></dd>
-                    </div>
+              <g:form action="updateProfile" class="form-inline">
+                  <dl class="dl-horizontal">
 
-                    <div class="control-group">
-                        <dt>${message(code: 'profile.email', default:'Email Address')}</dt>
-                        <dd><input type="text" name="email" value="${user.email}"/></dd>
-                    </div>
+                  <div class="control-group">
+                      <dt>${message(code: 'profile.display', default:'Display Name')}</dt>
+                      <dd><input type="text" name="userDispName" value="${user.display}"/></dd>
+                  </div>
 
-                    <div class="control-group">
-                        <dt>${message(code: 'profile.pagesize', default:'Default Page Size')}</dt>
-                        <dd><input type="text" name="defaultPageSize" value="${user.defaultPageSize}"/></dd>
-                    </div>
+                  <div class="control-group">
+                      <dt>${message(code: 'profile.email', default:'Email Address')}</dt>
+                      <dd><input type="text" name="email" value="${user.email}"/></dd>
+                  </div>
 
-                    <div class="control-group">
-                        <dt>${message(code: 'profile.dash', default:'Default Dashboard')}</dt>
-                        <dd>
-                            <select name="defaultDash" value="${user.defaultDash?.id}">
-                                <g:each in="${user.authorizedOrgs}" var="o">
-                                    <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
-                                </g:each>
-                            </select>
-                        </dd>
-                    </div>
+                  <!--<div class="control-group">
+                      <dt>${message(code: 'profile.pagesize', default:'Default Page Size')}</dt>
+                      <dd><input type="text" name="defaultPageSize" value="${user.defaultPageSize}"/></dd>
+                  </div>-->
 
-                    <div class="control-group">
-                        <dt></dt>
-                        <dd><input type="submit" value="${message(code: 'profile.update.button', default:'Update Profile')}" class="btn btn-primary"/></dd>
-                    </div>
+                  <div class="control-group">
+                      <dt>${message(code: 'profile.dash', default:'Default Dashboard')}</dt>
+                      <dd>
+                          <select name="defaultDash" value="${user.defaultDash?.id}">
+                              <g:each in="${user.authorizedOrgs}" var="o">
+                                  <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
+                              </g:each>
+                          </select>
+                      </dd>
+                  </div>
 
-                    <p style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</p>
-                </g:form>
-            </div><!-- .span6 -->
+                  <p style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</p>
+
+                  <div class="control-group">
+                      <dt></dt>
+                      <dd><input type="submit" value="${message(code: 'profile.update.button', default:'Update Profile')}" class="btn btn-primary"/></dd>
+                  </div>
+
+              </g:form>
+
+          </div><!-- .span6 -->
 
             <div class="span6">
+                <h2>${message(code: 'profile.password.label', default:'Update Password')}</h2>
+
                 <g:form action="updatePassword" class="form-inline">
                     <dl class="dl-horizontal">
-
                         <div class="control-group">
                             <dt>${message(code: 'profile.password.current', default:'Current Password')}</dt>
                             <dd><input type="password" name="passwordCurrent" value=""/></dd>
@@ -107,104 +87,135 @@
                             <dt></dt>
                             <dd><input type="submit" value="${message(code: 'profile.password.update.button', default:'Update Password')}" class="btn btn-primary"/></dd>
                         </div>
+                    </dl>
                 </g:form>
             </div><!-- .span6 -->
+
         </div><!-- .row -->
     </div><!-- .container -->
 
-    <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+  <div class="container">
+      <div class="row">
 
-        <div class="container">
-            <div class="span12">
-                <h1>${message(code: 'api.label', default:'API')}</h1>
-                <dl class="dl-horizontal">
-                    <dt>${message(code: 'api.apikey.label', default:'API-Key')}</dt>
-                    <dd>
-                       <input type="text" readonly="readonly" value="${user.apikey}">
-                    </dd>
-                    <dt>${message(code: 'api.apisecret.label', default:'API-Secret')}</dt>
-                    <dd>
-                        <input type="text" readonly="readonly" value="${user.apisecret}">
-                    </dd>
-                    <dd>
-                        <g:link controller="api" action="index">&rArr; ${message(code:'api.linkTo', default:'Visit API')}</g:link>
-                    </dd>
-                </dl>
-            </div>
-        </div>
-    </g:if>
+          <div class="span6">
+              <h2>${message(code: 'profile.preferences', default:'Preferences')}</h2>
+
+              <dl class="dl-horizontal">
+                  <div class="control-group">
+                      <dt>${message(code: 'profile.info_icon', default:'Show Info Icon')}</dt>
+                      <dd>
+                          <g:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
+                      </dd>
+                  </div>
+
+                  <div class="control-group">
+                      <dt>${message(code: 'profile.simpleViews', default:'Show simple Views')}</dt>
+                      <dd>
+                          <g:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />
+                      </dd>
+                  </div>
+
+                  <div class="control-group">
+                      <dt>${message(code: 'profile.pagesize', default:'Default Page Size')}</dt>
+                      <dd>
+                          <g:xEditable owner="${user}" field="defaultPageSize" />
+                      </dd>
+                  </div>
+              </dl>
+          </div><!-- .span6 -->
+
+          <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+
+              <div class="span6">
+                  <h2>${message(code: 'api.label', default:'API')}</h2>
+                  <dl class="dl-horizontal">
+                      <dt>${message(code: 'api.apikey.label', default:'API-Key')}</dt>
+                      <dd>
+                          <input type="text" readonly="readonly" value="${user.apikey}">
+                      </dd>
+                      <dt>${message(code: 'api.apisecret.label', default:'API-Secret')}</dt>
+                      <dd>
+                          <input type="text" readonly="readonly" value="${user.apisecret}">
+                      </dd>
+                      <dd>
+                          <g:link controller="api" action="index">&rArr; ${message(code:'api.linkTo', default:'Visit API')}</g:link>
+                      </dd>
+                  </dl>
+              </div><!-- .span6 -->
+          </g:if>
+
+        </div><!-- .row -->
+    </div><!-- .container -->
 
     <div class="container">
-      <div class="span12">
-        <h1>${message(code: 'profile.membership', default:'Administrative memberships')}</h1>
-      </div>
+        <div class="span12">
+            <h2>${message(code: 'profile.membership', default:'Administrative memberships')}</h2>
+        </div>
     </div>
 
     <div class="container">
-    <div class="row-fluid">
-      <div class="span6">
-        <laser:card title="profile.membership.existing" class="card-grey">
-          <table class="table table-striped table-bordered table-condensed" style="word-break:normal;">
-            <thead>
-              <tr>
-                <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
-                <th>${message(code: 'profile.membership.role', default:'Role')}</th>
-                <th>${message(code: 'profile.membership.status', default:'Status')}</th>
-                <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
-                <th>${message(code: 'profile.membership.actions', default:'Actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <g:each in="${user.affiliations}" var="assoc">
-                <tr>
-                  <td><g:link controller="organisations" action="info" id="${assoc.org.id}">${assoc.org.name}</g:link></td>
-                  <td><g:message code="cv.roles.${assoc.formalRole?.authority}"/></td>
-                  <td><g:message code="cv.membership.status.${assoc.status}"/></td>
-                  <td><g:formatDate format="dd MMMM yyyy" date="${assoc.dateRequested}"/> / <g:formatDate format="dd MMMM yyyy" date="${assoc.dateActioned}"/></td>
-                  <td><!--<button class="btn">Remove</button>--></td>
-                </tr>
-              </g:each>
-            </tbody>
-          </table>
-        </laser:card>
-      </div>
+        <div class="row">
+              <div class="span6">
+                    <laser:card title="profile.membership.existing" class="card-grey">
+                          <table class="table table-striped table-bordered table-condensed" style="word-break:normal;">
+                                <thead>
+                                      <tr>
+                                          <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
+                                          <th>${message(code: 'profile.membership.role', default:'Role')}</th>
+                                          <th>${message(code: 'profile.membership.status', default:'Status')}</th>
+                                          <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
+                                          <th>${message(code: 'profile.membership.actions', default:'Actions')}</th>
+                                      </tr>
+                                </thead>
+                                <tbody>
+                                      <g:each in="${user.affiliations}" var="assoc">
+                                            <tr>
+                                                  <td><g:link controller="organisations" action="info" id="${assoc.org.id}">${assoc.org.name}</g:link></td>
+                                                  <td><g:message code="cv.roles.${assoc.formalRole?.authority}"/></td>
+                                                  <td><g:message code="cv.membership.status.${assoc.status}"/></td>
+                                                  <td><g:formatDate format="dd MMMM yyyy" date="${assoc.dateRequested}"/> / <g:formatDate format="dd MMMM yyyy" date="${assoc.dateActioned}"/></td>
+                                                  <td><!--<button class="btn">Remove</button>--></td>
+                                            </tr>
+                                      </g:each>
+                                </tbody>
+                          </table>
+                    </laser:card>
+              </div><!--.span6-->
 
-      <div class="span6">
-        <laser:card title="profile.membership.request" class="card-grey">
+            <div class="span6">
+                <laser:card title="profile.membership.request" class="card-grey">
 
-          <p style="word-break:normal"><g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
-          </p>
+                  <p style="word-break:normal"><g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
+                  </p>
 
-          <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="form-search" method="get">
+                  <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="form-search" method="get">
 
-            <g:select name="org"
-                      from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
-                      optionKey="id"
-                      optionValue="name"
-                      class="input-medium"/>
+                    <g:select name="org"
+                              from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                              optionKey="id"
+                              optionValue="name"
+                              class="input-medium"/>
 
-            <g:select name="formalRole"
-                      from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
-                      optionKey="id"
-                      optionValue="${ {role->g.message(code:'cv.roles.'+role.authority) } }"
-                      class="input-medium"/>
+                    <g:select name="formalRole"
+                              from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
+                              optionKey="id"
+                              optionValue="${ {role->g.message(code:'cv.roles.'+role.authority) } }"
+                              class="input-medium"/>
 
-            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="btn btn-primary btn-small">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
-          </g:form>
-        </laser:card>
-      </div><!--.span6-->
-    </div><!--.row-fluid-->
+                    <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="btn btn-primary btn-small">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
+                  </g:form>
+                </laser:card>
+            </div>
+        </div><!--.row-->
     </div><!--.container-->
 
     <g:if test="${grailsApplication.config.feature.notifications}">
 
       <div class="container">
         <div class="span12">
-          <h1>${message(code: 'profile.misc', default:'Misc')}</h1>
+          <h2>${message(code: 'profile.misc', default:'Misc')}</h2>
         </div>
       </div>
-
-
 
       <div id="reminders" class="container">
         <div class="row-fluid">

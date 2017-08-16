@@ -27,8 +27,9 @@ class User {
   SortedSet roles
   Org defaultDash
   
-  
+  // TODO: move to new table
   RefdataValue showInfoIcon
+  RefdataValue showSimpleViews
 
   static hasMany = [ affiliations: com.k_int.kbplus.auth.UserOrg, roles: com.k_int.kbplus.auth.UserRole, reminders: com.k_int.kbplus.Reminder ]
   static mappedBy = [ affiliations: 'user', roles: 'user' ]
@@ -46,6 +47,7 @@ class User {
     apikey blank: true, nullable: true
     apisecret blank: true, nullable: true
     showInfoIcon blank:false, nullable:true
+    showSimpleViews blank:false, nullable:true
   }
 
   static mapping = {

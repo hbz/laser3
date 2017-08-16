@@ -29,15 +29,9 @@
         </ul>
 
         <li class="pull-right">
-          ${message(code:'default.view', default:'View')}:
-          <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
-            <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'advanced']}" button type="button" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
-          </div>
-          &nbsp;
+          <laser:modeSwitch controller="subscriptionDetails" action="index" params="${params}" /> &nbsp;
         </li>
 
-    </li>
         <g:if test="${editable}">
           <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
         </g:if>

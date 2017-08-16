@@ -81,7 +81,7 @@ class ProfileController {
     }
 
 
-
+    // deprecated
     if ( params.defaultPageSize != null ) {
       try {
         long l = Long.parseLong(params.defaultPageSize);
