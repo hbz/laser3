@@ -7,22 +7,23 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class BootStrap {
 
-  def dataloadService
-  def grailsApplication
-  // def docstoreService
+    def dataloadService
+    def grailsApplication
+    // def docstoreService
 
-  def init = { servletContext ->
+    def init = { servletContext ->
 
-    log.info("Sys id: ${grailsApplication.config.kbplusSystemId}")
+        log.info("Sys id: ${grailsApplication.config.kbplusSystemId}")
   
-    if ( grailsApplication.config.kbplusSystemId != null ) {
-      def system_object = SystemObject.findBySysId(grailsApplication.config.kbplusSystemId) ?: new SystemObject(sysId:grailsApplication.config.kbplusSystemId).save(flush:true);
-    }
+        if ( grailsApplication.config.kbplusSystemId != null ) {
+            def system_object = SystemObject.findBySysId(grailsApplication.config.kbplusSystemId) ?: new SystemObject(sysId:grailsApplication.config.kbplusSystemId).save(flush:true);
+        }
 
-    def evt_startup = new EventLog(event:'kbplus.startup',message:'Normal startup',tstp:new Date(System.currentTimeMillis())).save(flush:true)
+        def evt_startup = new EventLog(event:'kbplus.startup', message:'Normal startup', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+        def so_filetype = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name:'Subscription Offered File');
+        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name:'Platforms File');
 
-    def so_filetype = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name:'Subscription Offered File');
-    def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name:'Platforms File');
+        dbChanges()  // only tmp
 
     // Permissions
     def edit_permission = Perm.findByCode('edit') ?: new Perm(code:'edit').save(failOnError: true)
@@ -302,7 +303,59 @@ class BootStrap {
    
     }
 
-  def initializeDefaultSettings(){
+    // TODO remove; tmp only
+    def dbChanges = {
+
+        log.info("applying database changes @ refactoring:2017-08-27")
+
+        def rdc1 = RefdataCategory.findByDesc('Licence.OA.Type')
+        if (rdc1) {
+            rdc1.setDesc('License.OA.Type')
+            rdc1.save()
+            log.info("updated RefdataCategory(${rdc1.id}).desc from 'Licence.OA.Type' to '${rdc1.desc}'")
+        }
+
+        def rdc2 = RefdataCategory.findByDesc('Licence.OA.eArcVersion')
+        if (rdc2) {
+            rdc2.setDesc('License.OA.eArcVersion')
+            rdc2.save()
+            log.info("updated RefdataCategory(${rdc2.id}).desc from 'Licence.OA.eArcVersion' to '${rdc2.desc}'" )
+        }
+
+        RefdataValue.findAllByOwnerAndValue(
+                RefdataCategory.findByDesc('Document Type'), 'ONIX-PL Licence'
+        ).each{ it1 ->
+            it1.setValue('ONIX-PL License')
+            it1.save()
+            log.info("updated RefdataValue(${it1.id}).value from 'ONIX-PL Licence' to '${it1.value}'" )
+        }
+
+        RefdataValue.findAllByOwnerAndValue(
+                RefdataCategory.findByDesc('Document Type'), 'Licence'
+        ).each{ it2 ->
+            it2.setValue('License')
+            it2.save()
+            log.info("updated RefdataValue(${it2.id}).value from 'Licence' to '${it2.value}'" )
+        }
+
+        RefdataValue.findAllByOwnerAndValue(
+                RefdataCategory.findByDesc('Transform Type'), 'licence'
+        ).each{ it3 ->
+            it3.setValue('license')
+            it3.save()
+            log.info("updated RefdataValue(${it3.id}).value from 'licence' to '${it3.value}'" )
+        }
+
+        RefdataValue.findAllByOwnerAndValue(
+                RefdataCategory.findByDesc('Person Responsibility'), 'Specific licence editor'
+        ).each{ it4 ->
+            it4.setValue('Specific license editor')
+            it4.save()
+            log.info("updated RefdataValue(${it4.id}).value from 'Specific licence editor' to ${it4.value}" )
+        }
+    }
+
+    def initializeDefaultSettings(){
     def admObj = SystemAdmin.list()
     if(!admObj){
         log.debug("No SystemAdmin object found, creating new.");
@@ -316,7 +369,7 @@ class BootStrap {
     log.debug("Finished updating config from SystemAdmin")
   }
 
-  def createDefaultSysProps(admObj){
+    def createDefaultSysProps(admObj){
     def requiredProps = [
     [propname:"onix_ghost_license",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"Jisc Collections Model Journals License 2015",note:"Default license used for comparison when viewing a single onix license."],
     [propname:"net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"columnHeader",note:"Only show 1 column header for csv"],
@@ -335,7 +388,6 @@ class BootStrap {
       }
     }
   }
-
 
     def createLicenseProperties() {
         def existingProps = LicenseCustomProperty.findAll()
@@ -390,7 +442,7 @@ class BootStrap {
         log.debug("createPrivateProperties completed");
     }
 
-  def createPropertyDefinitions(requiredProps){
+    def createPropertyDefinitions(requiredProps){
 
     requiredProps.each{ default_prop ->
         def existing_prop = PropertyDefinition.findByName(default_prop.propname)
@@ -413,7 +465,7 @@ class BootStrap {
     }
   }
 
-  def addDefaultPageMappings(){
+    def addDefaultPageMappings(){
       if(! SitePage.findAll()){
         def home = new SitePage(alias:"Home", action:"index",controller:"home").save()
         def profile = new SitePage(alias:"Profile", action:"index",controller:"profile").save()
@@ -423,7 +475,7 @@ class BootStrap {
       }
 
   }
-  def addDefaultJasperReports(){
+    def addDefaultJasperReports(){
         //Add default Jasper reports, if there are currently no reports in DB
     log.debug("Query database for jasper reports")
     def reportsFound = JasperReportFile.findAll()
@@ -458,10 +510,10 @@ class BootStrap {
     //   }
     // }
   }
-  def destroy = {
+    def destroy = {
   }
 
-  def ensurePermGrant(role,perm) {
+    def ensurePermGrant(role,perm) {
     log.debug("ensurePermGrant");
     def existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
     if ( !existingPermGrant ) {
@@ -473,11 +525,11 @@ class BootStrap {
     }
   }
 
-  /**
-  * RefdataValue.group is used only for OrgRole to filter the types of role available in 'Add Role' action 
-  * This is done by providing 'linkType' (using instance class) to the '_orgLinksModal' template.
-  */
-  def setOrgRoleGroups() {
+    /**
+    * RefdataValue.group is used only for OrgRole to filter the types of role available in 'Add Role' action
+    * This is done by providing 'linkType' (using instance class) to the '_orgLinksModal' template.
+    */
+    def setOrgRoleGroups() {
     def lic = License.name
     def sub = Subscription.name
     def pkg = Package.name
@@ -489,8 +541,9 @@ class BootStrap {
       val.save()
     }
   }
-  // Setup extra refdata
-  def setupRefdata = { 
+
+    // Setup extra refdata
+    def setupRefdata = {
     setOrgRoleGroups()
     // -------------------------------------------------------------------
     // ONIX-PL Additions
@@ -824,5 +877,4 @@ No Host Platform URL Content
       RefdataCategory.lookupOrCreate("ReminderTrigger","Subscription Manual Renewal Date")
 
   }
-
 }
