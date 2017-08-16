@@ -359,7 +359,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
                               ])
 
       }else{
-        log.debug("Licence ${dl} has status deleted, no pending notification will be generated.")
+        log.debug("License ${dl} has status deleted, no pending notification will be generated.")
       }  
     }
   }

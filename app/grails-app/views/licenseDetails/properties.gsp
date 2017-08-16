@@ -4,8 +4,8 @@
 <html>
 <head>
     <meta name="layout" content="mmbootstrap">
-    <g:set var="entityName" value="${message(code: 'licence.label', default: 'Licence')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="licence" default="Licence"/></title>
+    <g:set var="entityName" value="${message(code: 'license.label', default: 'License')}" />
+    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="license" default="License"/></title>
     <r:require module="annotations" />
     <g:javascript src="properties.js"/>
 </head>
@@ -18,7 +18,7 @@
     <div class="container">
         <g:set var="message_str" value="refdata.LicenseType.${license.type?.value}" />
         <g:set var="local_type" value="${message(code:message_str)}" />
-        <h1>${license.licensee?.name} ${message(code:'licence.details.type', args:[local_type], default:'Licence')} : <g:xEditable owner="${license}" field="reference" id="reference"/></h1>
+        <h1>${license.licensee?.name} ${message(code:'license.details.type', args:[local_type], default:'License')} : <g:xEditable owner="${license}" field="reference" id="reference"/></h1>
         <g:render template="nav" />
     </div>
 

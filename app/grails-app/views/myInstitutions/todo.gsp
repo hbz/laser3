@@ -30,7 +30,7 @@
                         <g:link controller="subscriptionDetails" action="index" id="${todo.item_with_changes.id}">${message(code:'subscription')}: ${todo.item_with_changes.toString()}</g:link>
                       </g:if>
                       <g:else>
-                        <g:link controller="licenseDetails" action="index" id="${todo.item_with_changes.id}">${message(code:'licence')}: ${todo.item_with_changes.toString()}</g:link>
+                        <g:link controller="licenseDetails" action="index" id="${todo.item_with_changes.id}">${message(code:'license')}: ${todo.item_with_changes.toString()}</g:link>
                       </g:else>
                     </strong><br/>
                     <span class="badge badge-warning">${todo.num_changes}</span> 

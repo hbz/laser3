@@ -31,31 +31,31 @@ class ExportService {
 
     def HQLCoreDates = "SELECT ca.startDate, ca.endDate FROM TitleInstitutionProvider as tip join tip.coreDates as ca WHERE tip.title.id= :ie_title AND tip.institution.id= :ie_institution AND tip.provider.id= :ie_provider"
 
-	def StreamOutLicenceCSV(out,result,licences){
-		log.debug("StreamOutLicenceCSV - ${result} - ${licences}")
+	def StreamOutLicenseCSV(out,result,licenses){
+		log.debug("StreamOutLicenseCSV - ${result} - ${licenses}")
 		Set propertiesSet = new TreeSet();
 
-		def custProps = licences.each{ licence ->
-			propertiesSet.addAll(licence.customProperties.collect{ prop ->
+		def custProps = licenses.each{ license ->
+			propertiesSet.addAll(license.customProperties.collect{ prop ->
 				prop.type.name
 			})
 		}
 		
 		out.withWriter{writer ->
-			//See if we are handling a currentLicences Search
+			//See if we are handling a currentLicenses Search
 			if(result != null && result.searchHeader ){
 				writer.write("SEARCH TERMS\n")
 				writer.write("Institution,ValidOn,ReferenceSearch,LicenceProperty,LicencePropertyValue\n")
 				writer.write("${val(result.institution?.name)},${val(result.validOn)},${val(result.keyWord)},${val(result.propertyFilterType)},${val(result.propertyFilter)}\n" )
 				writer.write("\n")	
 			}
-			writer.write("KB+ Licence ID, LicenceReference,NoticePeriod,LicenceURL,LicensorRef, LicenseeRef, StartDate, EndDate, Licence Category,Licence Status")
+			writer.write("KB+ Licence ID,LicenceReference,NoticePeriod,LicenceURL,LicensorRef,LicenceeRef,StartDate,EndDate,Licence Category,Licence Status")
 			propertiesSet.each{
 				writer.write(",${val(it)}")
 				writer.write(",\"${it} Notes\"")
 			}
 			writer.write("\n")
-			licences.each{ lic ->
+			licenses.each{ lic ->
 				writer.write("${lic.id},${val(lic.reference)},${val(lic.noticePeriod)},${val(lic.licenseUrl)},${val(lic.licensorRef)},${val(lic.licenseeRef)},${val(lic.startDate)},${val(lic.endDate)},${val(lic.licenseCategory?.value)},${val(lic.status?.value)}")
  
 				propertiesSet.each{ prop_name ->
@@ -75,16 +75,16 @@ class ExportService {
 		}
 	}
 
-	def addLicenceSubPkgXML(Document doc, Element into_elem, List licences){
-		log.debug("addLicenceSubPkgXML - ${licences}")
+	def addLicenseSubPkgXML(Document doc, Element into_elem, List licenses){
+		log.debug("addLicenseSubPkgXML - ${licenses}")
 
-		licences.each() { licence ->
+		licenses.each() { license ->
 			def licElem = addXMLElementInto(doc, into_elem, "Licence", null)
-			addXMLElementInto(doc, licElem, "LicenceReference", licence.reference)
-			addXMLElementInto(doc, licElem, "LicenceID", licence.id)
+			addXMLElementInto(doc, licElem, "LicenceReference", license.reference)
+			addXMLElementInto(doc, licElem, "LicenceID", license.id)
 
 			def licSubs =  addXMLElementInto(doc, licElem, "Subscriptions", null)
-			licence.subscriptions.each{ subscription ->
+			license.subscriptions.each{ subscription ->
 				def licSub = addXMLElementInto(doc, licSubs, "Subscription", null)
 
 				addXMLElementInto(doc, licSub, "SubscriptionID", subscription.id)
@@ -105,16 +105,16 @@ class ExportService {
 		}
 	}
 
-	def addLicenceSubPkgTitleXML(Document doc, Element into_elem, List licences){
-		log.debug("addLicenceSubPkgXML - ${licences}")
+	def addLicenseSubPkgTitleXML(Document doc, Element into_elem, List licenses){
+		log.debug("addLicenseSubPkgXML - ${licenses}")
 
-		licences.each() { licence ->
+		licenses.each() { license ->
 			def licElem = addXMLElementInto(doc, into_elem, "Licence", null)
-			addXMLElementInto(doc, licElem, "LicenceReference", licence.reference)
-			addXMLElementInto(doc, licElem, "LicenceID", licence.id)
+			addXMLElementInto(doc, licElem, "LicenceReference", license.reference)
+			addXMLElementInto(doc, licElem, "LicenceID", license.id)
 
 			def licSubs =  addXMLElementInto(doc, licElem, "Subscriptions", null)
-			licence.subscriptions.each{ subscription ->
+			license.subscriptions.each{ subscription ->
 				def licSub = addXMLElementInto(doc, licSubs, "Subscription", null)
 
 				addXMLElementInto(doc, licSub, "SubscriptionID", subscription.id)
@@ -436,37 +436,37 @@ class ExportService {
     }
 	
 	/**
-	 * Add the licences of a given list into a given XML element.
+	 * Add the licenses of a given list into a given XML element.
 	 * 
 	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of licence(s) in.
+	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
 	 * @param lics - the {@link com.k_int.kbplus.License} list
 	 */
-	def addLicencesIntoXML(Document doc, Element into_elem, List lics) {
-		lics.each() { licence ->
+	def addLicensesIntoXML(Document doc, Element into_elem, List lics) {
+		lics.each() { license ->
 			def licElem = addXMLElementInto(doc, into_elem, "Licence", null)
-			addXMLElementInto(doc, licElem, "LicenceReference", licence.reference)
-			addXMLElementInto(doc, licElem, "NoticePeriod", licence.noticePeriod)
-			addXMLElementInto(doc, licElem, "LicenceURL", licence.licenseUrl)
-			addXMLElementInto(doc, licElem, "LicensorRef", licence.licensorRef)
-			addXMLElementInto(doc, licElem, "LicenseeRef", licence.licenseeRef)
+			addXMLElementInto(doc, licElem, "LicenceReference", license.reference)
+			addXMLElementInto(doc, licElem, "NoticePeriod", license.noticePeriod)
+			addXMLElementInto(doc, licElem, "LicenceURL", license.licenseUrl)
+			addXMLElementInto(doc, licElem, "LicensorRef", license.licensorRef)
+			addXMLElementInto(doc, licElem, "LicenseeRef", license.licenseeRef)
 			
-			addRelatedOrgsIntoXML(doc, licElem, licence.orgLinks)
+			addRelatedOrgsIntoXML(doc, licElem, license.orgLinks)
 			
 			def licPropElem = addXMLElementInto(doc, licElem, "LicenceProperties", null)
 			
-			licence.customProperties.each{ prop ->
+			license.customProperties.each{ prop ->
 				def propertyType = addXMLElementInto(doc, licPropElem, "${prop.type.name.replaceAll("\\s","").replaceAll("/","_")}", null)
 				addXMLElementInto(doc, propertyType, "Value","${prop.getValue()}")
 				addXMLElementInto(doc, propertyType, "Note","${prop.note?:''}")
 
 			}
-			def licenceNotes = addXMLElementInto(doc, licElem, "LicenceNotes", null)
-    		licence.documents.each{docctx->
+			def licenseNotes = addXMLElementInto(doc, licElem, "LicenceNotes", null)
+    		license.documents.each{docctx->
 			      if(docctx.owner?.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted')){
 			          def note_val = docctx.owner?.content
 			          if(note_val){
-      					addXMLElementInto(doc, licenceNotes, "Note","${note_val}")
+      					addXMLElementInto(doc, licenseNotes, "Note","${note_val}")
       				}
 			      }
 		    }
@@ -475,10 +475,10 @@ class ExportService {
 	
 	/**
 	 * Add a subscription into a XML file
-	 * It will also add the Licence (owner) and Titles of that subscription
+	 * It will also add the License (owner) and Titles of that subscription
 	 * 
 	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of licence(s) in.
+	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
 	 * @param sub - the {@link com.k_int.kbplus.Subscription}
 	 * @param entitlements - the list of {@link com.k_int.kbplus.IssueEntitlement}
 	 */
@@ -491,7 +491,7 @@ class ExportService {
 		
 		addRelatedOrgsIntoXML(doc, subElem, sub.orgRelations)
 		
-		if(sub.owner) addLicencesIntoXML(doc, subElem, [sub.owner])
+		if(sub.owner) addLicensesIntoXML(doc, subElem, [sub.owner])
 		
 		def titlesElem = addXMLElementInto(doc, subElem, "TitleList", null)
 		addTitleListXML(doc, titlesElem, entitlements)
@@ -499,10 +499,10 @@ class ExportService {
 	
 	/**
 	 * Add a package into a XML file
-	 * It will also add the Licence and the Titles of that subscription
+	 * It will also add the License and the Titles of that subscription
 	 * 
 	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of licence(s) in.
+	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
 	 * @param pck - the {@link com.k_int.kbplus.Package}
 	 * @param tipps - the list of {@link com.k_int.kbplus.TitleInstancePackagePlatform}
 	 */
@@ -515,7 +515,7 @@ class ExportService {
 		
 		addRelatedOrgsIntoXML(doc, subElem, pck.orgs)
 		
-		if(pck.license) addLicencesIntoXML(doc, subElem, [pck.license])
+		if(pck.license) addLicensesIntoXML(doc, subElem, [pck.license])
 		
 		def titlesElem = addXMLElementInto(doc, subElem, "TitleList", null)
 		addTitleListXML(doc, titlesElem, tipps, "TIPP")
@@ -525,7 +525,7 @@ class ExportService {
 	 * Add Organisation into a given Element.
 	 * 
 	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of licence(s) in.
+	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
 	 * @param orgs - list of {@link com.k_int.kbplus.Organisations}
 	 */
 	private addRelatedOrgsIntoXML(Document doc, Element into_elem, orgs){
@@ -746,38 +746,38 @@ class ExportService {
 	}
 	
 	/**
-	 * Add Licences into a given Map.
+	 * Add Licenses into a given Map.
 	 * The Map created with this function has the purpose to be transformed into JSON.
 	 * 
-	 * @param into_map - map which will contain the list of licences
+	 * @param into_map - map which will contain the list of licenses
 	 * @param lics - list of {@link com.k_int.kbplus.License}
 	 * @return the Map created
 	 */
 	def addLicensesToMap(into_map, lics){
-		def licences = []
+		def licenses = []
 		
-		lics.each { licence ->
+		lics.each { license ->
 			def lic = [:]
 			
-			lic."LicenceReference" = licence.reference
-			lic."NoticePeriod" = licence.noticePeriod
-			lic."LicenceURL" = licence.licenseUrl
-			lic."LicensorRef" = licence.licensorRef
-			lic."LicenseeRef" = licence.licenseeRef
+			lic."LicenceReference" = license.reference
+			lic."NoticePeriod" = license.noticePeriod
+			lic."LicenceURL" = license.licenseUrl
+			lic."LicensorRef" = license.licensorRef
+			lic."LicenseeRef" = license.licenseeRef
 				
 			lic."RelatedOrgs" = []
-			addOrgMap(lic, licence.orgLinks)
+			addOrgMap(lic, license.orgLinks)
 			
 			def prop = lic."LicenceProperties" = [:]
-			licence.customProperties.each{
+			license.customProperties.each{
 				def custprop = prop."${it.type.name}" = [:]
 				custprop."Status" = it.getValue()?:""
 				custprop."Notes" = it.getNote()?:""
 			}
 
-			licences << lic
+			licenses << lic
 		}
-		into_map."Licences" = licences
+		into_map."Licences" = licenses
 		
 		return into_map
 	}

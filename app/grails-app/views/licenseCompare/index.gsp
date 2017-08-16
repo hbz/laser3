@@ -27,15 +27,15 @@
 				<g:form id="compare" name="compare" action="compare" method="get">
 					<input type="hidden" name="institution" value="${institution?.id}"/>
 					<div>
-                                                <label for="addIdentifierSelect">${message(code:'onixplLicence.compare.add_id.label', default:'Search licence for comparison:')}</label>
+                                                <label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
 
                                                 <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
                                                 <button type="button" style="margin-top:10px" class="btn btn-success" id="addToList" >${message(code:'default.button.add.label', default:'Add')}</button>
 					</div>
 					
-					<label for="selectedLicences">${message(code:'onixplLicence.compare.selected.label', default:'Licences selected for comparison:')}</label>
+					<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>
 					
-					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicences" name="selectedLicences" class="compare-license" from="${[]}" multiple="true" />
+					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicenses" name="selectedLicenses" class="compare-license" from="${[]}" multiple="true" />
 			
 					<div>
 					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="btn btn-primary" />
@@ -49,7 +49,7 @@
 
 	    $(function(){
 
-	      var main = $('#selectedLicences');
+	      var main = $('#selectedLicenses');
 	  
 	      // Now add the onchange.
 	      main.change(function() {
@@ -64,13 +64,13 @@
 	      		var option_name = option.split("||")[0]
 	      		var option_id = option.split("||") [1]
 	      		var list_option = "<option selected='selected' value='"+option_id+"''>"+option_name+"</option>"
-	      		$("#selectedLicences").append(list_option)
-	      		$('#selectedLicences').trigger( "change" )
+	      		$("#selectedLicenses").append(list_option)
+	      		$('#selectedLicenses').trigger( "change" )
 			});
 
 	      $("#addIdentifierSelect").select2({
   	        width: '90%',
-	        placeholder: "${message(code:'onixplLicence.compare.search.ph', default:'Search for a licence...')}",
+	        placeholder: "${message(code:'onixplLicense.compare.search.ph', default:'Search for a license...')}",
                 formatInputTooShort: function () {
                     return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
                 },

@@ -8,7 +8,7 @@ class RefdataValue {
   // N.B. This used to be ICON but in the 2.x series this was changed to be a css class which denotes an icon
   // Please stick with the change to store css classes in here and not explicit icons
   String icon
-  //For cases were we want to present a specific group of values, eg Licence/Sub related
+  //For cases were we want to present a specific group of values, eg License/Sub related
   String group
 
   static belongsTo = [

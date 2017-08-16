@@ -42,13 +42,13 @@
 
                 </g:if>
             <g:if test="${issueEntitlementInstance?.subscription.owner}">
-                <dt><g:message code="issueEntitlement.licence.label" default="Licence" /></dt>
+                <dt><g:message code="issueEntitlement.license.label" default="License" /></dt>
 
                 <dd><g:link controller="licenseDetails" action="index" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference.encodeAsHTML()}</g:link></dd>
 
             </g:if>
             <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">
-                <dt><g:message code="issueEntitlement.onixplLicence.label" default="ONIX-PL Licence" /></dt>
+                <dt><g:message code="issueEntitlement.onixplLicense.label" default="ONIX-PL License" /></dt>
 
                 <dd><g:link controller="onixplLicenseDetails" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title.encodeAsHTML()}</g:link></dd>
             </g:if>

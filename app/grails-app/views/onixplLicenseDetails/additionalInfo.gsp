@@ -10,12 +10,12 @@
     <div class="container">
         <ul class="breadcrumb">
             <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-            <li>ONIX-PL Licences</li>
+            <li>ONIX-PL Licenses</li>
         </ul>
     </div>
 
     <div class="container">
-        <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} Licence : <span id="reference" class="ipe" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
+        <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference" class="ipe" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
 
         <g:render template="nav" contextPath="." />
     </div>
@@ -27,7 +27,7 @@
       <table  class="table table-striped table-bordered">
       </table>
 
-      <h2>The following organisations are granted the listed permissions from this licence</h2>
+      <h2>The following organisations are granted the listed permissions from this license</h2>
       <table  class="table table-striped table-bordered">
         <tr>
           <th>Organisation</th><th>Roles and Permissions</th>

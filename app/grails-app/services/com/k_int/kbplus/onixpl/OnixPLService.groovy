@@ -153,12 +153,12 @@ class OnixPLService {
    * @param data Row data
    * @return Title if found or null if not
    */
-  public static Map getRowHeadingData (Map row_data,licence=null) {
+  public static Map getRowHeadingData (Map row_data,license=null) {
     // Just find the first example of an entry regardless of which license it's defined against.
 
 
-    if(licence){
-      return row_data."${licence}"
+    if(license){
+      return row_data."${license}"
     }
     return row_data?."${row_data.keySet()[0]}"
 

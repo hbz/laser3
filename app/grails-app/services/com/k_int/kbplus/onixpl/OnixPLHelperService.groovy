@@ -35,7 +35,7 @@ class OnixPLHelperService {
     result
   }
   public Object duplicateDefinitionText(org.w3c.dom.Node node,xml) {
-      //If Node child of Definitions, go one level up and copy annotation and licencetext/or just all but current
+      //If Node child of Definitions, go one level up and copy annotation and licensetext/or just all but current
       if(node.getParentNode()?.getParentNode()?.getNodeName() != "Definitions"){
         return node
       }

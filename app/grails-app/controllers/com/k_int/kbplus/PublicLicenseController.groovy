@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-class PublicLicenceController {
+class PublicLicenseController {
 	def index(){
 		def result = [:]
 
@@ -11,12 +11,12 @@ class PublicLicenceController {
 
 
         def criteria = License.createCriteria();
-        result.licences = criteria.list(max: result.max, offset:result.offset) {
+        result.licenses = criteria.list(max: result.max, offset:result.offset) {
 	        isPublic {
 	        	idEq(public_flag.id)
 	        }
 		}
-		println result.licences
+		println result.licenses
 		result
 	}
 

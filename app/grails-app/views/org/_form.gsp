@@ -279,7 +279,7 @@
                                 <g:if test="${p.sub}">
                                 	<g:link controller="subscription" action="show" id="${p.sub.id}">Subscription: ${p.sub.name}</g:link>
                                 </g:if>
-                                <g:if test="${p.lic}">Licence: ${p.lic.id}</g:if>
+                                <g:if test="${p.lic}">License: ${p.lic.id}</g:if>
                                 <g:if test="${p.title}">
                                 	<g:link controller="titleInstance" action="show" id="${p.title.id}">Title: ${p.title.title}</g:link>
                                 </g:if> 

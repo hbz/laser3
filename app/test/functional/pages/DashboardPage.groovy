@@ -12,11 +12,11 @@ class DashboardPage extends BasePage {
         subscriptions {
             $("a", text: "Subscriptions").click(SubscrDetailsPage)
         }
-        licences {
-            $("a", text: "Licences").click(LicencePage)
+        licenses {
+            $("a", text: "Licenses").click(LicensePage)
         }
         toDo { ref ->
-            $("a", text: ref).click(LicencePage)
+            $("a", text: ref).click(LicensePage)
         }
         generateWorksheet {
             $("a", text: "Generate Renewals Worksheet").click(MyInstitutionsPage)

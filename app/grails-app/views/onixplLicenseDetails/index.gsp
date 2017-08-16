@@ -18,7 +18,7 @@
 <div class="container">
     <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="licenseDetails" action="index" id="${params.id}">ONIX-PL ${message(code:'licence.details')}</g:link> </li>
+        <li> <g:link controller="licenseDetails" action="index" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
         <g:if test="${editable}">
             <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
         </g:if>
@@ -26,17 +26,17 @@
     </div>
 
 <div class="container">
-    <h1>ONIX-PL Licence : ${onixplLicense?.title}</h1>
+    <h1>ONIX-PL License : ${onixplLicense?.title}</h1>
 </div>
 
 <div class="container">
     <div class="row">
         <div class="span8">
 
-            <h6>${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.information')}</h6>
+            <h6>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.information')}</h6>
 
             <g:if test="${!onixplLicense}">
-            ${message(code:'onix.cannot.find.licence')}
+            ${message(code:'onix.cannot.find.license')}
             </g:if>
             <g:else>
             <div class="inline-lists">
@@ -50,7 +50,7 @@
                 </dl>
                 </div>
 
-            <h6>ONIX-PL Licence Properties</h6>
+            <h6>ONIX-PL License Properties</h6>
 
             
             </g:else>

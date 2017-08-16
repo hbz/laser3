@@ -28,7 +28,7 @@
 
    <div class="container">
 
-      <h2>${message(code:'subscription.details.additionalInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this licence')}</h2>
+      <h2>${message(code:'subscription.details.additionalInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
       <table  class="table table-striped table-bordered">
         <tr>
           <th>${message(code:'org.label', default:'Organisation')}</th><th>${message(code:'subscription.details.additionalInfo.roles_and_perm', default:'Roles and Permissions')}</th>
@@ -38,7 +38,7 @@
             <td>${ol.org.name}</td>
             <td>
 
-              <g:message code="subscription.licence.connection" args="${[ol.roleType?.value?:'']}"/><br/>
+              <g:message code="subscription.license.connection" args="${[ol.roleType?.value?:'']}"/><br/>
               ${message(code:'subscription.details.additionalInfo.role.info', default:'This role grants the following permissions to members of that org whose membership role also includes the permission')}<br/>
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">

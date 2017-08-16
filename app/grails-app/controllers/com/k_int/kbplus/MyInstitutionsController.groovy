@@ -144,9 +144,9 @@ class MyInstitutionsController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def actionLicenses() {
         log.debug("actionLicenses :: ${params}")
-        if (params['copy-licence']) {
+        if (params['copy-license']) {
             newLicense(params)
-        } else if (params['delete-licence']) {
+        } else if (params['delete-license']) {
             deleteLicense(params)
         }
     }
@@ -156,7 +156,7 @@ class MyInstitutionsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = Org.findByShortcode(params.shortcode)
-        result.transforms = grailsApplication.config.licenceTransforms
+        result.transforms = grailsApplication.config.licenseTransforms
 
         if (!checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
@@ -198,9 +198,9 @@ class MyInstitutionsController {
 
         def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
-        def licence_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+        def license_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
 
-        def qry_params = [lic_org:result.institution, org_role:licensee_role,lic_status:licence_status]
+        def qry_params = [lic_org:result.institution, org_role:licensee_role,lic_status:license_status]
 
         def qry = INSTITUTIONAL_LICENSES_QUERY
         // def qry = "from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
@@ -236,7 +236,7 @@ class MyInstitutionsController {
 
         result.licenseCount = License.executeQuery("select count(l) ${qry}", qry_params)[0];
         result.licenses = License.executeQuery("select l ${qry}", qry_params, [max: result.max, offset: result.offset]);
-        def filename = "${result.institution.name}_licences"
+        def filename = "${result.institution.name}_licenses"
         withFormat {
             html result
 
@@ -251,7 +251,7 @@ class MyInstitutionsController {
 
                 def out = response.outputStream
                 result.searchHeader = true
-                exportService.StreamOutLicenceCSV(out, result,result.licenses)
+                exportService.StreamOutLicenseCSV(out, result,result.licenses)
                 out.close()
             }
             xml {
@@ -260,10 +260,10 @@ class MyInstitutionsController {
                 if ((params.transformId) && (result.transforms[params.transformId] != null)) {
                     switch(params.transformId) {
                       case "sub_ie":
-                        exportService.addLicenceSubPkgTitleXML(doc, doc.getDocumentElement(),result.licenses)
+                        exportService.addLicenseSubPkgTitleXML(doc, doc.getDocumentElement(),result.licenses)
                       break;
                       case "sub_pkg":
-                        exportService.addLicenceSubPkgXML(doc, doc.getDocumentElement(),result.licenses)
+                        exportService.addLicenseSubPkgXML(doc, doc.getDocumentElement(),result.licenses)
                         break;
                     }
                     String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
@@ -357,7 +357,7 @@ class MyInstitutionsController {
             qparams.add("%${params.filter.toLowerCase()}%")
         }
 
-        //separately select all licences that are not public or are null, to test access rights.
+        //separately select all licenses that are not public or are null, to test access rights.
         // For some reason that I could track, l.isPublic != 'public-yes' returns different results.
         def non_public_query = query + " and ( l.isPublic = ? or l.isPublic is null) "
 
@@ -371,7 +371,7 @@ class MyInstitutionsController {
         result.numLicenses = License.executeQuery("select count(l) ${query}", qparams)[0]
         result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
 
-        //We do the following to remove any licences the user does not have access rights
+        //We do the following to remove any licenses the user does not have access rights
         qparams += public_flag
 
         def nonPublic = License.executeQuery("select l ${non_public_query}", qparams)
@@ -710,17 +710,17 @@ class MyInstitutionsController {
 
         if (!baseLicense?.hasPerm("view", user)) {
             log.debug("return 401....");
-            flash.error = message(code:'myinst.newLicence.error', default:'You do not have permission to view the selected license. Please request access on the profile page');
+            flash.error = message(code:'myinst.newLicense.error', default:'You do not have permission to view the selected license. Please request access on the profile page');
             response.sendError(401)
 
         }else{
-            def copyLicence = institutionsService.copyLicence(params)
-            if (copyLicence.hasErrors() ) {
-                log.error("Problem saving license ${copyLicence.errors}");
-                render view: 'editLicense', model: [licenseInstance: copyLicence]
+            def copyLicense = institutionsService.copyLicense(params)
+            if (copyLicense.hasErrors() ) {
+                log.error("Problem saving license ${copyLicense.errors}");
+                render view: 'editLicense', model: [licenseInstance: copyLicense]
             }else{
                 flash.message = message(code: 'license.created.message')
-                redirect controller: 'licenseDetails', action: 'index', params: params, id: copyLicence.id
+                redirect controller: 'licenseDetails', action: 'index', params: params, id: copyLicense.id
             }
         }
     }
@@ -751,7 +751,7 @@ class MyInstitutionsController {
                 license.status = deletedStatus
                 license.save(flush: true);
             } else {
-                flash.error = message(code:'myinst.deleteLicence.error', default:'Unable to delete - The selected license has attached subscriptions marked as Current')
+                flash.error = message(code:'myinst.deleteLicense.error', default:'Unable to delete - The selected license has attached subscriptions marked as Current')
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -2410,7 +2410,7 @@ AND EXISTS (
         }
 
         PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
-          result.institutional_objects.add(['com.k_int.kbplus.License:'+it.id,"${message(code:'licence')}: "+it.reference]);
+          result.institutional_objects.add(['com.k_int.kbplus.License:'+it.id,"${message(code:'license')}: "+it.reference]);
         }
         PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = ?',[result.institution]).each {
           result.institutional_objects.add(['com.k_int.kbplus.Subscription:'+it.id,"${message(code:'subscription')}: "+it.name]);
@@ -2450,7 +2450,7 @@ AND EXISTS (
 
                 def out = response.outputStream
                 out.withWriter { w ->
-                  w.write('Date,ChangeId,Actor, SubscriptionId,LicenceId,Description\n')
+                  w.write('Date,ChangeId,Actor, SubscriptionId,LicenseId,Description\n')
                   changes.each { c ->
                     def line = "\"${dateFormat.format(c.ts)}\",\"${c.id}\",\"${c.user?.displayName?:''}\",\"${c.subscription?.id ?:''}\",\"${c.license?.id?:''}\",\"${c.desc}\"\n".toString()
                     w.write(line)

@@ -6,33 +6,33 @@ import org.openqa.selenium.Keys
  * Created by ioannis on 29/05/2014.
  * For downloading document: https://blog.codecentric.de/en/2010/07/file-downloads-with-selenium-mission-impossible/
  */
-class LicencePage extends AbstractDetails {
+class LicensePage extends AbstractDetails {
     static at = {
-        browser.page.title.startsWith("KB+ Current Licences") || browser.page.title.startsWith("KB+")
+        browser.page.title.startsWith("KB+ Current Licenses") || browser.page.title.startsWith("KB+")
     }
     static content = {
         createNewLicense { ref ->
-            $("a", text: "Add Blank Licence").click()
+            $("a", text: "Add Blank License").click()
             editRef(ref)
         }
 
-        openLicence { ref ->
+        openLicense { ref ->
             $("a", text: ref).click()
         }
         downloadDoc {
             $("a", text: "Download Doc").click()
         }
 
-        deleteLicence { ref ->
+        deleteLicense { ref ->
             withConfirm { 
                 $("a", text: ref).parent().siblings().find("a",text:"Delete").click()
             }
         }
 
-        licenceDetails {
-            $("a", text: "Licence Details").click()
+        licenseDetails {
+            $("a", text: "License Details").click()
         }
-        viewTemplateLicences {
+        viewTemplateLicenses {
             $("a", text: "Copy from Template").click()
         }
         createCopyOf { ref ->
@@ -43,27 +43,27 @@ class LicencePage extends AbstractDetails {
         }
        
         acceptAll {
-            $("a", text: "Accept All").click(LicencePage)
+            $("a", text: "Accept All").click(LicensePage)
         }
         rejectOne {
-            $("a", text: "Reject").click(LicencePage)
+            $("a", text: "Reject").click(LicensePage)
         }
         verifyInformation { column, value ->
             $("label", for: column).parent().next().text().equals(value)
 
         }
 
-        searchLicence { date, ref ->
+        searchLicense { date, ref ->
             $("input",name:"validOn").value( date)
             $("input",name:"keyword-search").value(ref)
             $("input",type:"submit",value:"Search").click()
         }
 
         importONIX { fileName ->
-            $("a", text: "Import an ONIX-PL licence").click()
+            $("a", text: "Import an ONIX-PL license").click()
             waitFor{$("input", type: "file", name: "import_file")}
             $("input", type: "file", name: "import_file").value(fileName)
-            $("button", text: "Import licence").click()
+            $("button", text: "Import license").click()
             def createNew = $("#replace_opl")
             if (!createNew.isEmpty()) {
                 createNew.click()
@@ -111,7 +111,7 @@ class LicencePage extends AbstractDetails {
 
         rowResults { $("table",0).find("tbody tr").size() }
 
-        exportLicence { export_name ->
+        exportLicense { export_name ->
             $("a#export-menu").click()
             $("a", text: export_name).click()
         }

@@ -218,17 +218,17 @@ td.warning {
     line-height: 18px;
 }
 
-/* licence Search */
+/* license Search */
 
-.licence-searches {
+.license-searches {
     margin-bottom: 15px;
 }
 
 .subscription-options, 
-.licence-options, 
-.licence-documents-options, 
-.licence-links-options, 
-.licence-notes-options,
+.license-options,
+.license-documents-options,
+.license-links-options,
+.license-notes-options,
 .alerts-options { 
     margin-bottom: 15px;
     display: none;
@@ -245,54 +245,54 @@ td.warning {
     margin-left: 5px;
 }
 
-.licence-results {
+.license-results {
 }
 
-.licence-results table th, .licence-results table td {
+.license-results table th, .license-results table td {
     padding: 4px;
 }
 
-/* licence Page */
+/* license Page */
 
-.licence-info {
+.license-info {
     margin-bottom: 20px;
 }
 
-.licence-info dt {
+.license-info dt {
     width: 20%;
     font-weight: bold;
 }
 
-.licence-info dt label {
+.license-info dt label {
     font-weight: bold;
 }
 
-.licence-info dd {
+.license-info dd {
     float: left;
     width: 78%;
 }
 
-.licence-info p {
+.license-info p {
     word-wrap: break-word;
 }
 
-.licence-properties td {
+.license-properties td {
     width: 25%;
 }
 
-.licence-properties tr > td:first-child {
+.license-properties tr > td:first-child {
     font-weight: bold;
 }
 
-.licence-properties tr > td:last-child {
+.license-properties tr > td:last-child {
     width: 50%;
 }
 
-.licence-properties input {
+.license-properties input {
     width: 100%;
 }
 
-.licence-properties .editText {
+.license-properties .editText {
     float: right;
 }
 
@@ -359,11 +359,11 @@ div.comments {
     text-align: right;
 }
 
-#licenceInformation dt,dd {
+#licenseInformation dt,dd {
     width: auto;
 }
 
-.licenceInfo input[type="text"] {
+.licenseInfo input[type="text"] {
     width: 100%;
 }
 

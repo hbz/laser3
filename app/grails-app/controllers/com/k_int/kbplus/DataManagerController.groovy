@@ -195,12 +195,12 @@ class DataManagerController {
           case 'com.k_int.kbplus.License':
             def license_object = License.get(hl.persistedObjectId);
             if (license_object) {
-                def licence_name = license_object.licenseType ? license_object.licenseType+': ' : ''
-                licence_name += license_object.reference ?: '**No reference**'
+                def license_name = license_object.licenseType ? license_object.licenseType+': ' : ''
+                license_name += license_object.reference ?: '**No reference**'
                 line_to_add.link = createLink(controller:'licenseDetails', action: 'index', id:hl.persistedObjectId)
-                line_to_add.name = licence_name
+                line_to_add.name = license_name
             }
-            linetype = 'Licence'
+            linetype = 'License'
             break;
           case 'com.k_int.kbplus.Subscription':
             break;
@@ -276,7 +276,7 @@ class DataManagerController {
         def out = response.outputStream
         def actors_list = getActorNameList(params)
         out.withWriter { w ->
-        w.write('Start Date, End Date, Change Actors, Packages, Licences, Tittles, TIPPs, New Items, Updates\n')
+        w.write('Start Date, End Date, Change Actors, Packages, Licenses, Titles, TIPPs, New Items, Updates\n')
         w.write("\"${params.startDate}\", \"${params.endDate}\", \"${actors_list}\", ${params.packages}, ${params.licenses}, ${params.titles}, ${params.tipps}, ${params.creates}, ${params.updates} \n")
         w.write('Timestamp,Name,Event,Property,Actor,Old,New,Link\n')
           result.formattedHistoryLines.each { c ->

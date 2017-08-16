@@ -6,7 +6,7 @@ import spock.lang.Stepwise
 import com.k_int.kbplus.*
 
 @Stepwise
-class LicenceSpec extends GebReportingSpec {
+class LicenseSpec extends GebReportingSpec {
 
 
     //The following will setup everything required for this test case
@@ -27,8 +27,8 @@ class LicenceSpec extends GebReportingSpec {
                 formalRole:formal_role).save()
 
         def licensee_role_ref = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-        def licence  = new com.k_int.kbplus.License(reference:"Test Licence").save()
-        def licensee_role  = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:licence,org:org).save()
+        def license  = new com.k_int.kbplus.License(reference:"Test License").save()
+        def licensee_role  = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license,org:org).save()
 
 
     }
@@ -44,30 +44,30 @@ class LicenceSpec extends GebReportingSpec {
         then:
           at DashboardPage
     }
-    // def "Test Licence Search"(){
+    // def "Test License Search"(){
     //   setup:
-    //   def licence = License.findByReference("Test Licence")
+    //   def license = License.findByReference("Test License")
     //   go "myInstitutions/${Data.Org_Url}/currentLicenses"
     //   when:
     //     $("input",name:"validOn").value = date
     //     $("input",type:"submit",value:"Search").click()
     //     Thread.sleep
     //   then:
-    //     openLicence("Test Licence")
+    //     openLicense("Test License")
 
     // }
 
     def "Test CustomProperties"(){
-        def licence = License.findByReference("Test Licence")
+        def license = License.findByReference("Test License")
         setup:
-          go '/demo/licenseDetails/index/'+licence.id
-          at LicencePage
+          go '/demo/licenseDetails/index/'+license.id
+          at LicensePage
         when:
           addCustomPropType("Alumni Access")
           setRefPropertyValue("Alumni Access","No")
           deleteCustomProp("Alumni Access")
         then:
-          at LicencePage
+          at LicensePage
     }
 
 
@@ -78,16 +78,16 @@ class LicenceSpec extends GebReportingSpec {
           def ed       = new LocalDate().now().plusMonths(6).toDate()
           def sd       = new LocalDate().now().minusMonths(6).toDate()
           def l_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
-          def licence2 = new com.k_int.kbplus.License(reference:"Test Licence 2", startDate: sd, endDate: ed, status: l_status).save()
-          def licence3 = new com.k_int.kbplus.License(reference:"Test Licence 3", startDate: sd, endDate: ed, status: l_status).save()
-          def licensee_role2 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:licence2,org:org).save()
-          def licensee_role3 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:licence3,org:org).save()
-          go '/demo/licenceCompare/index?shortcode='+Data.Org_Url
-          at LicenceComparePage
+          def license2 = new com.k_int.kbplus.License(reference:"Test License 2", startDate: sd, endDate: ed, status: l_status).save()
+          def license3 = new com.k_int.kbplus.License(reference:"Test License 3", startDate: sd, endDate: ed, status: l_status).save()
+          def licensee_role2 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license2,org:org).save()
+          def licensee_role3 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license3,org:org).save()
+          go '/demo/licenseCompare/index?shortcode='+Data.Org_Url
+          at LicenseComparePage
         when:
-          compare(licence2.reference,licence3.reference)
+          compare(license2.reference,license3.reference)
         then:
-          header() == "Compare Licences (KB+ Licence Properties)"
+          header() == "Compare Licenses (KB+ License Properties)"
           tableCount() > 0
     }
 
@@ -95,21 +95,21 @@ class LicenceSpec extends GebReportingSpec {
     def "license export test"() {
         setup:
           go "myInstitutions/${Data.Org_Url}/currentLicenses"
-          at LicencePage
+          at LicensePage
         when:
-          searchLicence("","test")
-          exportLicence("Licensed Issue Entitlements (CSV)")
-          exportLicence("Licensed Subscriptions/Packages (CSV)")
+          searchLicense("","test")
+          exportLicense("Licensed Issue Entitlements (CSV)")
+          exportLicense("Licensed Subscriptions/Packages (CSV)")
         then:
-          at LicencePage
+          at LicensePage
     }
 
     def "search for public journal license using journal title and org (Invalid)"() {
-        setup: "Logout and go to Public Journal Licences page"
+        setup: "Logout and go to Public Journal Licenses page"
                    //Title licencing
           def org = Org.findByNameAndImpId(Data.Org_name,Data.Org_impId)
-          def licenceSub = new com.k_int.kbplus.License(reference:"test subscription licence").save()
-          def sub = new com.k_int.kbplus.Subscription(name: "test subscription name", owner: licenceSub,
+          def licenseSub = new com.k_int.kbplus.License(reference:"test subscription license").save()
+          def sub = new com.k_int.kbplus.Subscription(name: "test subscription name", owner: licenseSub,
                   identifier: java.util.UUID.randomUUID().toString()).save(flush: true)
           def subrefRole = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber').save()
           def subRelation= new com.k_int.kbplus.OrgRole(roleType: subrefRole, org: org).save()
@@ -121,7 +121,7 @@ class LicenceSpec extends GebReportingSpec {
           def tipp = new com.k_int.kbplus.TitleInstancePackagePlatform(impId:Data.Tipp_uniqID, title: ti).save()
           def ie = new com.k_int.kbplus.IssueEntitlement(status: ie_current, tipp: tipp, subscription: sub).save()
           logout()
-          go '/demo/public/journalLicences'
+          go '/demo/public/journalLicenses'
         when: "inputting org and journal title values"
           $("input", name: "journal").value(Data.Title_titlename)
           $("input", name: "org").value(Data.Org_name)
@@ -146,19 +146,19 @@ class LicenceSpec extends GebReportingSpec {
     def "Change org to have public journal access "() {
         setup: "Custom property page"
           go '/demo/organisations/config/'+Org.findByName(Data.Org_name).id
-          at LicencePage
+          at LicensePage
         when: "Properties are listed, find Public Journal Access"
-          addCustomInputProperty(Data.Licence_publicProp_journals, Data.Licence_public_journals)
+          addCustomInputProperty(Data.License_publicProp_journals, Data.License_public_journals)
         then: "Value of Public Journal Access should have changed"
           rowResults() == 1 //default custom property for Org
           Thread.sleep(500)
-          propertyChangedCheck(Data.Licence_publicProp_journals) == Data.Licence_public_journals
+          propertyChangedCheck(Data.License_publicProp_journals) == Data.License_public_journals
     }
   // todo unable to get IE to return based on mocked data in setupSpec()
    def "search for public journal license using journal title and org (Valid)"() {
-       setup: "Go to Public Journal Licences page"
+       setup: "Go to Public Journal Licenses page"
 
-         go '/demo/public/journalLicences'
+         go '/demo/public/journalLicenses'
        when: "inputting org and journal title values"
          $("input", name: "journal").value(Data.Title_titlename)
          $("input", name: "org").value(Data.Org_name)

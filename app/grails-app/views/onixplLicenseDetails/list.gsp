@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="mmbootstrap">
-		<g:set var="entityName" value="${message(code: 'onixplLicence.label', default: 'OnixplLicence')}" />
+		<g:set var="entityName" value="${message(code: 'onixplLicense.label', default: 'OnixplLicense')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -40,13 +40,13 @@
 						
 							<th class="header"><g:message code="onixplLicense.title.label" default="Title" /></th>
 
-                            <th class="header"><g:message code="onixplLicense.licenses.label" default="${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.plural')}" /></th>
+                            <th class="header"><g:message code="onixplLicense.licenses.label" default="${message(code:'laser', default:'LAS:eR')} ${message(code:'license.plural')}" /></th>
 
-                            <g:sortableColumn property="Type" title="${message(code: 'onixplLicence.type.label', default: 'Type')}" />
+                            <g:sortableColumn property="Type" title="${message(code: 'onixplLicense.type.label', default: 'Type')}" />
 
-                            <g:sortableColumn property="Status" title="${message(code: 'onixplLicence.status.label', default: 'Status')}" />
+                            <g:sortableColumn property="Status" title="${message(code: 'onixplLicense.status.label', default: 'Status')}" />
 
-                            <g:sortableColumn property="Document" title="${message(code: 'onixplLicence.document.label', default: 'Document')}" />
+                            <g:sortableColumn property="Document" title="${message(code: 'onixplLicense.document.label', default: 'Document')}" />
 
                             <th></th>
 						</tr>

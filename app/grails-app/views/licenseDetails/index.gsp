@@ -6,7 +6,7 @@
   <head>
     <meta name="layout" content="mmbootstrap"/>
      <g:javascript src="properties.js"/>
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="licence" default="Licence"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="license" default="License"/></title>
   </head>
 
   <body>
@@ -18,7 +18,7 @@
     <div class="container">
       <g:set var="message_str" value="refdata.LicenseType.${license.type?.value}" />
       <g:set var="local_type" value="${message(code:message_str)}" />
-      <h1>${license.licensee?.name} ${message(code:'licence.details.type', args:[local_type], default:'Licence')} : <g:xEditable owner="${license}" field="reference" id="reference"/></h1>
+      <h1>${license.licensee?.name} ${message(code:'license.details.type', args:[local_type], default:'License')} : <g:xEditable owner="${license}" field="reference" id="reference"/></h1>
       <g:render template="nav" />
     </div>
     <div class="container">
@@ -33,7 +33,7 @@
     <div class="container">
             <div class="row">
                 <div class="span12">
-                    <h6>${message(code:'licence.properties')}</h6>
+                    <h6>${message(code:'license.properties')}</h6>
 
                     <div id="custom_props_div_props">
                         <g:render template="/templates/properties/custom" model="${[
@@ -42,7 +42,7 @@
                                 custom_props_div: "custom_props_div_props" ]}"/>
                     </div>
 
-                    <h6>${message(code:'licence.openaccess.properties')}</h6>
+                    <h6>${message(code:'license.openaccess.properties')}</h6>
 
                     <div id="custom_props_div_oa">
                         <g:render template="/templates/properties/custom" model="${[
@@ -51,7 +51,7 @@
                                 custom_props_div: "custom_props_div_oa" ]}"/>
                     </div>
 
-                    <h6>${message(code:'licence.archive.properties')}</h6>
+                    <h6>${message(code:'license.archive.properties')}</h6>
 
                     <div id="custom_props_div_archive">
                         <g:render template="/templates/properties/custom" model="${[
@@ -72,7 +72,7 @@
 
                 <div class="span8">
   
-                <h6>${message(code:'licence.details.information', default:'Information')}</h6>
+                <h6>${message(code:'license.details.information', default:'Information')}</h6>
 
                 <div class="inline-lists">
 
@@ -113,8 +113,8 @@
                             </table>
                             <g:if test="${editable}">
 
-                                <laser:formAddIdentifier owner="${license}" buttonText="${message(code:'licence.edit.identifier.select.add')}"
-                                                         uniqueCheck="yes" uniqueWarningText="${message(code:'licence.edit.duplicate.warn.list')}">
+                                <laser:formAddIdentifier owner="${license}" buttonText="${message(code:'license.edit.identifier.select.add')}"
+                                                         uniqueCheck="yes" uniqueWarningText="${message(code:'license.edit.duplicate.warn.list')}">
                                     ${message(code:'identifier.select.text', args:['gasco-lic:0815'])}
                                 </laser:formAddIdentifier>
 
@@ -123,44 +123,44 @@
                     </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="subscriptions">${message(code:'licence.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
+                      <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
                       <dd>
                         <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                           <g:each in="${license.subscriptions}" var="sub">
                             <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.id} (${sub.name})</g:link><br/>
                           </g:each>
                         </g:if>
-                        <g:else>${message(code:'licence.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
+                        <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
                       </dd>
                   </dl>
                 
                   <dl>
-                      <dt><label class="control-label" for="${license.pkgs}">${message(code:'licence.linkedPackages', default:'Linked Packages')}</label></dt>
+                      <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
                       <dd>
                         <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
                           <g:each in="${license.pkgs}" var="pkg">
                             <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.id} (${pkg.name})</g:link><br/>
                           </g:each>
                         </g:if>
-                        <g:else>${message(code:'licence.noLinkedPackages', default:'No currently linked packages.')}</g:else>
+                        <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
                       </dd>
                   </dl>
                 
       
                   <dl>
-                      <dt><label class="control-label" for="reference">${message(code:'licence.reference', default:'Reference')}</label></dt>
+                      <dt><label class="control-label" for="reference">${message(code:'license.reference', default:'Reference')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" field="reference" id="reference"/>
                       </dd>
                   </dl>
                   <dl>
-                      <dt><label class="control-label" for="contact">${message(code:'licence.licenceContact', default:'Licence Contact')}</label></dt>
+                      <dt><label class="control-label" for="contact">${message(code:'license.licenseContact', default:'License Contact')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" field="contact" id="contact"/>
                       </dd>
                   </dl>
                   <dl>
-                      <dt><label class="control-label" for="reference">${message(code:'licence.status',default:'Status')}</label></dt>
+                      <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
                       <dd>
                         <g:xEditableRefData owner="${license}" field="status" config='License Status'/>
                       </dd>
@@ -168,7 +168,7 @@
       
                   <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
                     <dl>
-                        <dt><label class="control-label">${message(code:'licence.ONIX-PL-Licence', default:'ONIX-PL Licence')}</label></dt>
+                        <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
                         <dd>
                             <g:if test="${license.onixplLicense}">
                                 <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
@@ -177,77 +177,77 @@
                                 </g:if>
                             </g:if>
                             <g:else>
-                                <g:link class="btn btn-warning" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'licence.importONIX-PLlicence', default:'Import an ONIX-PL licence')}</g:link>
+                                <g:link class="btn btn-warning" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
                             </g:else>
                         </dd>
                     </dl>
                   </sec:ifAnyGranted>
       
                   <dl>
-                      <dt><label class="control-label" for="licenseUrl"><g:message code="licence" default="Licence"/> ${message(code:'licence.Url', default:'URL')}</label></dt>
+                      <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
-                        <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'licence.details.licenceLink', default:'License Link')}</a></g:if>
+                        <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
                       </dd>
                   </dl>
       
                   <dl>
-                      <dt><label class="control-label" for="licensorRef">${message(code:'licence.licensorRef', default:'Licensor Ref')}</label></dt>
+                      <dt><label class="control-label" for="licensorRef">${message(code:'license.licensorRef', default:'Licensor Ref')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
                       </dd>
                   </dl>
       
                   <dl>
-                      <dt><label class="control-label" for="licenseeRef">${message(code:'licence.licenseeRef', default:'Licensee Ref')}</label></dt>
+                      <dt><label class="control-label" for="licenseeRef">${message(code:'license.licenseeRef', default:'Licensee Ref')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">${message(code:'licence.isPublic', default:'Public?')}</label></dt>
+                      <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
                       <dd>
                         <g:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">${message(code:'licence.startDate', default:'Start Date')}</label></dt>
+                      <dt><label class="control-label" for="isPublic">${message(code:'license.startDate', default:'Start Date')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" type="date" field="startDate" />
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">${message(code:'licence.endDate', default:'End Date')}</label></dt>
+                      <dt><label class="control-label" for="isPublic">${message(code:'license.endDate', default:'End Date')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" type="date" field="endDate" />
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="licenseCategory">${message(code:'licence.licenceCategory', default:'Licence Category')}</label></dt>
+                      <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
                       <dd>
                         <g:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="licenseeRef">${message(code:'licence.orgLinks', default:'Org Links')}</label></dt>
+                      <dt><label class="control-label" for="licenseeRef">${message(code:'license.orgLinks', default:'Org Links')}</label></dt>
                       <dd>
                         <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:license?.orgLinks,editmode:editable]}" />
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="licenseeRef">${message(code:'licence.incomingLicenceLinks', default:'Incoming Licence Links')}</label></dt>
-                 <%-- <dt><label class="control-label" for="licenseeRef">Incoming Licence Links</label></dt> --%>
+                      <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
+                 <%-- <dt><label class="control-label" for="licenseeRef">Incoming License Links</label></dt> --%>
                       <dd>
                         <ul>
                           <g:each in="${license?.incomingLinks}" var="il">
                             <li><g:link controller="licenseDetails" action="index" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> - 
-                            ${message(code:'licence.details.incoming.child', default:'Child')}: <g:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+                            ${message(code:'license.details.incoming.child', default:'Child')}: <g:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
 
                             </li>
                           </g:each>
@@ -260,30 +260,30 @@
                 </div>
               </div>
               <div class="span4">
-                <laser:card title="licence.actions" class="card-grey">
+                <laser:card title="license.actions" class="card-grey">
 
             <g:if test="${canCopyOrgs}">
                  
-                  <label for="orgShortcode">${message(code:'licence.copyLicencefor', default:'Copy licence for')}:</label>
-             <%-- <label for="orgShortcode">Copy licence for:</label> --%>
+                  <label for="orgShortcode">${message(code:'license.copyLicensefor', default:'Copy license for')}:</label>
+             <%-- <label for="orgShortcode">Copy license for:</label> --%>
                   <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" id="orgShortcode" name="orgShortcode"/>
                               
-                   <g:link name="copyLicenceBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-licence':'Y']}" onclick="return changeLink(this,${message(code:'licence.details.copy.confirm')})" class="btn btn-success" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                   <g:link name="copyLicenseBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-license':'Y']}" onclick="return changeLink(this,${message(code:'license.details.copy.confirm')})" class="btn btn-success" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
 
-               <label for="linkSubscription">${message(code:'licence.linktoSubscription', default:'Link to Subscription')}:</label>
+               <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
           <%-- <label for="linkSubscription">Link to Subscription:</label> --%>
 
                <g:form id="linkSubscription" name="linkSubscription" action="linkToSubscription">
-                <input type="hidden" name="licence" value="${license.id}"/>
+                <input type="hidden" name="license" value="${license.id}"/>
                 <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription"/>
                 <input type="submit" class="btn btn-success" style="margin-bottom:10px" value="${message(code:'default.button.link.label', default:'Link')}"/>
               </g:form>
 %{--            
           leave this out for now.. it is a bit confusing.
-          <g:link name="deletLicenceBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,${message(code:'licence.details.delete.confirm', args[(license.reference?:'** No licence reference ** ')]?)" params="${[baselicense:license.id,'delete-licence':'Y',shortcode:'replaceme']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
+          <g:link name="deletLicenseBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
           </g:if>
                   <g:else>
-                    ${message(code:'licence.details.not_allowed', default:'Actions available to editors only')}
+                    ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
                   </g:else>
                  </laser:card>
                 <g:render template="/templates/documents" model="${[ ownobj:license, owntp:'license']}" />

@@ -86,7 +86,7 @@
                       <g:if test="${p.sub}">
                               <g:link controller="subscription" action="show" id="${p.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${p.sub.name}</g:link>
                       </g:if>
-                      <g:if test="${p.lic}">${message(code:'licence.label', default:'Licence')}: ${p.lic.id}</g:if>
+                      <g:if test="${p.lic}">${message(code:'license.label', default:'License')}: ${p.lic.id}</g:if>
                     </li>
                   </g:each>
                 </ul></dd>

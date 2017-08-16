@@ -727,7 +727,7 @@ definitions:
           properties: # mapping attr customProperties
             type: array
             items:
-              $ref: "#/definitions/Property(LicenceProperty)"
+              $ref: "#/definitions/Property(LicenseProperty)"
           startDate:
             type: string
             format: date
@@ -819,7 +819,7 @@ definitions:
           properties: # mapping attr customProperties
             type: array
             items:
-              $ref: "#/definitions/Property(LicenceProperty)"
+              $ref: "#/definitions/Property(LicenseProperty)"
           startDate:
             type: string
             format: date
@@ -1234,8 +1234,8 @@ definitions:
               Exclusive with functionType |
               Mapping RefdataCategory "Person Responsibility"
             enum:
-              ["Specific licence editor", "Specific subscription editor", "Specific package editor", "Specific cluster editor", "Specific title editor"]
-            example: "Specific licence editor"
+              ["Specific license editor", "Specific subscription editor", "Specific package editor", "Specific cluster editor", "Specific title editor"]
+            example: "Specific license editor"
           subscription:
             description: |
               Exclusive with cluster, license, organisation, package and title
@@ -1253,7 +1253,7 @@ definitions:
 #        readOnly: true
       description: # mapping attr descr
         type: string
-        example: "Licence Property"
+        example: "License Property"
       name:
         type: string
         example: "Remote Access"
@@ -1273,14 +1273,14 @@ definitions:
         type: string
         example: "No"
 
-  Property(LicenceProperty):
+  Property(LicenseProperty):
     allOf:
       - $ref: "#/definitions/Property"
       - type: object
         properties:
           paragraph:
             type: string
-            example: "This is an important licence paragraph"
+            example: "This is an important license paragraph"
 
   Subscription:
     allOf:

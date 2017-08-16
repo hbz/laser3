@@ -2,35 +2,35 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicence.label', default:'Data import explorer')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
   </head>
   <body>
 
     <laser:breadcrumbs>
         <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <laser:crumb message="licence.copy" class="active" />
+        <laser:crumb message="license.copy" class="active" />
     </laser:breadcrumbs>
 
     <div class="container">
-      <h1>${institution?.name} - ${message(code:'licence.plural', default:'Licences')}</h1>
+      <h1>${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
       <ul class="nav nav-pills">
        <li><g:link controller="myInstitutions" 
                    action="currentLicenses" 
-                   params="${[shortcode:params.shortcode]}">${message(code:'licence.current')}</g:link></li>
+                   params="${[shortcode:params.shortcode]}">${message(code:'license.current')}</g:link></li>
 
        <li class="active"><g:link controller="myInstitutions" 
                                   action="addLicense" 
-                                  params="${[shortcode:params.shortcode]}">${message(code:'licence.copy', default:'Copy from Template')}</g:link></li>
+                                  params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
 
         <g:if test="${is_admin}">
           <li><g:link controller="myInstitutions" 
                                      action="cleanLicense" 
-                                     params="${[shortcode:params.shortcode]}">${message(code:'licence.add.blank')}</g:link></li>
+                                     params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>
         </g:if>
       </ul>
     </div>
 
-    <div class="container licence-searches">
+    <div class="container license-searches">
         <div class="row">
             <div class="span6">&nbsp;
                 <!--
@@ -47,17 +47,17 @@
         <g:form action="addLicense" params="${params}" method="get" class="form-inline">
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
-          <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'licence.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
+          <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'license.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
           <input type="submit" class="btn btn-primary" value="${message(code:'default.button.submit.label')}" />
         </g:form>
       </div>
 
       <div class="container">
-          <div class="well licence-options">
+          <div class="well license-options">
             <g:if test="${is_admin}">
-              <input type="submit" name="copy-licence" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="btn btn-warning" />
+              <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="btn btn-warning" />
             </g:if>
-            <g:else>${message(code:'myinst.addLicence.no_permission', default:'Sorry, you must have editor role to be able to add licences')}</g:else>
+            <g:else>${message(code:'myinst.addLicense.no_permission', default:'Sorry, you must have editor role to be able to add licenses')}</g:else>
           </div>
       </div>
 
@@ -75,12 +75,12 @@
 
 
       <g:if test="${licenses?.size() > 0}">
-        <div class="container licence-results">
+        <div class="container license-results">
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
-                <g:sortableColumn params="${params}" property="reference" title="${message(code:'licence.name')}" />
-                <th>${message(code:'licence.licensor.label', default:'Licensor')}</th>
+                <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.name')}" />
+                <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                 <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                 <th>${message(code:'default.actions.label', default:'Action')}</th>
@@ -94,7 +94,7 @@
                               controller="licenseDetails" 
                               id="${l.id}">
                               <g:if test="${l.reference}">${l.reference}</g:if>
-                              <g:else>${message(code:'myinst.addLicence.no_ref', args:[l.id])}</g:else>
+                              <g:else>${message(code:'myinst.addLicense.no_ref', args:[l.id])}</g:else>
                     </g:link>
                     <g:if test="${l.pkgs && ( l.pkgs.size() > 0 )}">
                       <ul>
@@ -104,13 +104,13 @@
                       </ul>
                     </g:if>
                     <g:else>
-                      <br/>${message(code:'myinst.addLicence.no_results', default:'No linked packages.')}
+                      <br/>${message(code:'myinst.addLicense.no_results', default:'No linked packages.')}
                     </g:else>
                   </td>
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.startDate}"/></td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
-                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
+                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>
@@ -126,14 +126,14 @@
       </g:if>
 
     <r:script type="text/javascript">
-        $('.licence-results input[type="radio"]').click(function () {
-            $('.licence-options').slideDown('fast');
+        $('.license-results input[type="radio"]').click(function () {
+            $('.license-options').slideDown('fast');
         });
 
-        $('.licence-options .delete-licence').click(function () {
-            $('.licence-results input:checked').each(function () {
+        $('.license-options .delete-license').click(function () {
+            $('.license-results input:checked').each(function () {
                 $(this).parent().parent().fadeOut('slow');
-                $('.licence-options').slideUp('fast');
+                $('.license-options').slideUp('fast');
             })
         })
     </r:script>

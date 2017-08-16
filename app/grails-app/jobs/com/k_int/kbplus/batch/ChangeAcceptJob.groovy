@@ -41,7 +41,7 @@ class ChangeAcceptJob {
 
   def licQueryStr = "select pc.id from PendingChange as pc join pc.license.incomingLinks lnk where lnk.isSlaved.value = 'Yes' and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
   def licPendingChanges = PendingChange.executeQuery(licQueryStr, [ pending_change_pending_status ]);
-  log.debug( licPendingChanges.size() +" pending changes have been found for slaved licences")
+  log.debug( licPendingChanges.size() +" pending changes have been found for slaved licenses")
   licPendingChanges.each {
       pendingChangeService.performAccept(it,httpRequestMock)
   }

@@ -6,7 +6,7 @@ import com.k_int.kbplus.auth.UserOrg
 
 import grails.converters.JSON
 
-class LicenceCompareController {
+class LicenseCompareController {
   
   static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
   def springSecurityService
@@ -34,12 +34,12 @@ class LicenceCompareController {
     def result = [:]
     result.institution = Org.get(params.institution)
 
-    def licences = params.list("selectedLicences").collect{
+    def licenses = params.list("selectedLicenses").collect{
       License.get(it.toLong())
     }
-    log.debug("IDS: ${licences}")
+    log.debug("IDS: ${licenses}")
     def comparisonMap = new TreeMap()
-    licences.each{ lic ->
+    licenses.each{ lic ->
       lic.customProperties.each{prop ->
         def point = [:]
         if(prop.getValue()|| prop.getNote()){
@@ -53,15 +53,15 @@ class LicenceCompareController {
       }
     }
     result.map = comparisonMap
-    result.licences = licences
-    def filename = "licence_compare_${result.institution.name}"
+    result.licenses = licenses
+    def filename = "license_compare_${result.institution.name}"
   	withFormat{
       html result
       csv{
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         def out = response.outputStream
-        exportService.StreamOutLicenceCSV(out, result,result.licences)
+        exportService.StreamOutLicenseCSV(out, result,result.licenses)
         out.close()
       }
     }

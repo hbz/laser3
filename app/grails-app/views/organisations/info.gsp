@@ -112,7 +112,7 @@
                 <li>
                   <g:if test="${i.pkg}"><g:link controller="package" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name}</g:link></g:if>
                   <g:if test="${i.sub}"><g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">${messsage(code:'subscription.label', default:'Subscription')}: ${i.sub.name}</g:link></g:if>
-                  <g:if test="${i.lic}">${message(code:'licence.label', default:'Licence')}: ${i.lic.id}</g:if>
+                  <g:if test="${i.lic}">${message(code:'license.label', default:'License')}: ${i.lic.id}</g:if>
                   <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title?.title}</g:link></g:if>
                   <g:set var="roletype_refdata" value="${i.roleType?.value.replaceAll(/\s/,'')}"/>
                   (${message(code:"refdata.${roletype_refdata}", default:"${i.roleType?.value}")}) </li>

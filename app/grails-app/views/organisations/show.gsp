@@ -132,7 +132,7 @@
                     </g:link>
                   </g:if>
                   <g:if test="${i.lic}">
-                    ${message(code:'licence.label', default:'Licence')}: ${i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})
+                    ${message(code:'license.label', default:'License')}: ${i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})
                   </g:if>
                   <g:if test="${i.title}">
                     <g:link controller="titleInstance" action="show" id="${i.title.id}">

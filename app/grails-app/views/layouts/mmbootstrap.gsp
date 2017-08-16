@@ -54,8 +54,8 @@
                       <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstance">Title Instance</g:link></li>
                       <li <%='titleInstancePackagePlatform'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link></li>
                       <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscription">Subscriptions</g:link></li>
-                      <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="license">Licences</g:link></li>
-                      <li <%='onixplLicenseDetails'== controllerName ? ' class="active"' : '' %>><g:link controller="onixplLicenseDetails" action="list">ONIX-PL Licences</g:link></li>
+                      <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="license">Licenses</g:link></li>
+                      <li <%='onixplLicenseDetails'== controllerName ? ' class="active"' : '' %>><g:link controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link></li>
                     </ul>
                   </li>
                 </g:if>
@@ -107,7 +107,7 @@
                                <li><g:link controller="subscriptionDetails"
                                            action="compare"
                                            params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_sub')} </g:link></li>
-                               <li><g:link controller="licenceCompare"
+                               <li><g:link controller="licenseCompare"
                                            action="index"
                                            params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_lic')} </g:link></li>
                                <li><g:link controller="myInstitutions"
@@ -175,14 +175,14 @@
                          <li <%= ( ( 'upload'== controllerName ) && ( 'reviewPackage'==actionName ) ) ? ' class="active"' : '' %>>
                              <g:link controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link></li>
                          <li <%= ( ( 'licenseImport'== controllerName ) && ( 'doImport'==actionName ) ) ? ' class="active"' : '' %>>
-                             <g:link controller="licenseImport" action="doImport">${message(code:'onix.import.licence')}</g:link></li>
+                             <g:link controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</g:link></li>
 
                        <li class="divider"></li>
 
                        <li <%= ( ( 'titleDetails'== controllerName ) && ( 'findTitleMatches'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link></li>
                        <li <%= ( ( 'licenseDetails'== controllerName ) && ( 'create'==actionName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="licenseDetails" action="create">${message(code:'licence.new')}</g:link></li>
+                         <g:link controller="licenseDetails" action="create">${message(code:'license.new')}</g:link></li>
                        <li <%= ( ( 'platform'== controllerName ) && ( 'create'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link></li>
 

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="mmbootstrap"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.label', default:'Licence')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.label', default:'License')}</title>
 </head>
 
 <body>
@@ -12,7 +12,7 @@
     </div>
 
     <div class="container">
-        <h1>${license.licensee?.name} ${message(code:"refdata.LicenseType.${license.type?.value}")} ${message(code:'licence.label', default:'Licence')} : ${license.reference}</h1>
+        <h1>${license.licensee?.name} ${message(code:"refdata.LicenseType.${license.type?.value}")} ${message(code:'license.label', default:'License')} : ${license.reference}</h1>
 
         <g:render template="nav" />
     </div>
@@ -20,11 +20,11 @@
 
 
     <div class="container">
-      <h2>${message(code:'licence.additionalInfo.perms', default:'Permissions for user')}</h2>
+      <h2>${message(code:'license.additionalInfo.perms', default:'Permissions for user')}</h2>
       <table  class="table table-striped table-bordered">
       </table>
 
-      <h2>${message(code:'subscription.details.additionalInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this licence')}</h2>
+      <h2>${message(code:'subscription.details.additionalInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
       <table  class="table table-striped table-bordered">
         <tr>
           <th>Organisation</th><th>${message(code:'subscription.details.additionalInfo.roles_and_perm', default:'Roles and Permissions')}</th>
@@ -33,7 +33,7 @@
           <tr>
             <td>${ol.org.name}</td>
             <td>
-              ${message(code:'subscription.licence.connection', args:[message(code:"refdata.${ol.roleType?.value}", default:"${ol.roleType?.value}")])}<br/>
+              ${message(code:'subscription.license.connection', args:[message(code:"refdata.${ol.roleType?.value}", default:"${ol.roleType?.value}")])}<br/>
               ${message(code:'subscription.details.additionalInfo.role.info', default:'This role grants the following permissions to members of that org whose membership role also includes the permission')}<br/>
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">

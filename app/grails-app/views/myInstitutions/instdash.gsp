@@ -18,7 +18,7 @@
           <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
           <li><g:link controller="myInstitutions" 
                                        action="currentLicenses" 
-                                       params="${[shortcode:params.shortcode]}">${message(code:'licence.plural', default:'Licences')}</g:link></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'license.plural', default:'Licenses')}</g:link></li>
           <li><g:link controller="myInstitutions" 
                                        action="currentSubscriptions" 
                                        params="${[shortcode:params.shortcode]}">${message(code:'subscription.plural', default:'Subscriptions')}</g:link></li>

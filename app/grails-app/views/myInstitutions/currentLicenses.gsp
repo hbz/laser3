@@ -2,13 +2,13 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.current', default:'Current Licences')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.current', default:'Current Licenses')}</title>
   </head>
   <body>
 
   <laser:breadcrumbs>
       <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-      <laser:crumb message="licence.current" class="active" />
+      <laser:crumb message="license.current" class="active" />
       <g:if test="${is_admin}">
           <laser:crumbAsBadge message="default.editable" class="badge-warning" />
       </g:if>
@@ -39,42 +39,42 @@
     </g:if>
 
     <div class="container">
-      <h1>${institution?.name} - ${message(code:'licence.plural', default:'Licences')}</h1>
+      <h1>${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
      <ul class="nav nav-pills">
        <li class="active"><g:link controller="myInstitutions" 
                             action="currentLicenses" 
-                            params="${[shortcode:params.shortcode]}">${message(code:'licence.current')}
+                            params="${[shortcode:params.shortcode]}">${message(code:'license.current')}
                           </g:link></li>
 
           <li><g:link controller="myInstitutions" 
                                   action="addLicense" 
-                                  params="${[shortcode:params.shortcode]}">${message(code:'licence.copy', default:'Copy from Template')}</g:link></li>
+                                  params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
         <g:if test="${is_admin}">
           <li><g:link controller="myInstitutions" 
                                      action="cleanLicense" 
-                                     params="${[shortcode:params.shortcode]}">${message(code:'licence.add.blank')}</g:link></li>
+                                     params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>
         </g:if>
 
       </ul>
     </div>
 
-    <div class="container licence-searches">
+    <div class="container license-searches">
         <div class="row">
             <div class="span8">
               <div class="well">
 
                 <form class="form-inline">
                   <div>
-                    <label>${message(code:'licence.valid_on', default:'Valid On')}:</label>
+                    <label>${message(code:'license.valid_on', default:'Valid On')}:</label>
                     <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">
-                    <label>${message(code:'licence.search.by_ref', default:'Search by Reference')}:</label>
+                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label>
                     <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
                   </div>
                   <div style="margin-top:10px;">
-                    <label>${message(code:'licence.property.search')}:</label>
+                    <label>${message(code:'license.property.search')}:</label>
                     <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
-                    <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'licence.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
+                    <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
                     <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
                     <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
                   </div>
@@ -85,24 +85,24 @@
     </div>
 
       <div class="container">
-          <div class="well licence-options">
-              <input type="submit" name="delete-licence" value="${message(code:'licence.delete_selected.label', default:'Delete Selected')}" class="btn btn-danger delete-licence" />
+          <div class="well license-options">
+              <input type="submit" name="delete-license" value="${message(code:'license.delete_selected.label', default:'Delete Selected')}" class="btn btn-danger delete-license" />
           </div>
       </div>
 
 
 
-        <div class="container licence-results">
+        <div class="container license-results">
         <g:if test="${licenseCount && licenseCount>0}">
-          <span>${message(code:'licence.current.showing', args:[licenseCount])}</span>
+          <span>${message(code:'license.current.showing', args:[licenseCount])}</span>
         </g:if>
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
-                <g:sortableColumn params="${params}" property="reference" title="${message(code:'licence.name')}" />
-                <th>${message(code:'licence.licensor.label', default:'Licensor')}</th>
-                <g:sortableColumn params="${params}" property="startDate" title="${message(code:'licence.start_date', default:'Start Date')}" />
-                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'licence.end_date', default:'End Date')}" />
+                <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.name')}" />
+                <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
+                <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
+                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
                 <th>${message(code:'default.actions.label', default:'Action')}</th>
               </tr>
             </thead>
@@ -111,7 +111,7 @@
                 <tr>
                   <td>
                     <g:link action="index" controller="licenseDetails" id="${l.id}">
-                      ${l.reference?:message(code:'missingLicenseReference', default:'** No Licence Reference Set **')}
+                      ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
                       <ul>
@@ -130,8 +130,8 @@
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.endDate}"/></td>
                   <td>
-                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-licence':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
-                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'licence.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No Licence Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-licence':'Y']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                   </td>
                 </tr>
               </g:each>
@@ -149,8 +149,8 @@
             format:"${session.sessionPreferences?.globalDatepickerFormat}"
         });
 
-        $('.licence-results input[type="radio"]').click(function () {
-            $('.licence-options').slideDown('fast');
+        $('.license-results input[type="radio"]').click(function () {
+            $('.license-options').slideDown('fast');
         });
 
         function availableTypesSelectUpdated(optionSelected){
@@ -184,7 +184,7 @@
             });
           }else{
             //If we dont have RefdataValues,create a simple text input
-            $('#selectVal').replaceWith('<input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'licence.search.property.ph', default:'property value')}" />')
+            $('#selectVal').replaceWith('<input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
           }
         }
 
@@ -216,10 +216,10 @@
           availableTypesSelectUpdated(optionSelected);
         });
 
-        $('.licence-options .delete-licence').click(function () {
-            $('.licence-results input:checked').each(function () {
+        $('.license-options .delete-license').click(function () {
+            $('.license-results input:checked').each(function () {
                 $(this).parent().parent().fadeOut('slow');
-                $('.licence-options').slideUp('fast');
+                $('.license-options').slideUp('fast');
             })
         })
         window.onload = setTypeAndSearch()

@@ -10,7 +10,7 @@
    <div class="container">
         <ul class="breadcrumb">
            <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-           <li>Licences</li>
+           <li>Licenses</li>
         </ul>
     </div>
 

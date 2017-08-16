@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="mmbootstrap">
-    <g:set var="entityName" value="${message(code: 'licence', default: 'Licence')}"/>
+    <g:set var="entityName" value="${message(code: 'license', default: 'License')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
 </head>
 
@@ -29,17 +29,17 @@
 <div class="container">
 <g:if test="${consortia}">
 <h3> Institutions for ${consortia.name} consortia </h3>
-<br><p> The following list displays all members of ${consortia.name} consortia. To create child licences
-    select the desired checkboxes and click 'Create child licences'</p><br>
-<g:form action="generateSlaveLicences" controller="licenseDetails" method="POST">
+<br><p> The following list displays all members of ${consortia.name} consortia. To create child licenses
+    select the desired checkboxes and click 'Create child licenses'</p><br>
+<g:form action="generateSlaveLicenses" controller="licenseDetails" method="POST">
 <input type="hidden" name="baselicense" value="${license.id}"/>
 <input type="hidden" name="id" value="${id}"/>
 <table class="table table-bordered"> 
 <thead>
     <tr>
         <th>Organisation</th>
-        <th>Contains  Licence Copy </th>
-        <th>Create Child Licence</th>
+        <th>Contains  License Copy </th>
+        <th>Create Child License</th>
     </tr>
 </thead>
 <tbody>
@@ -54,9 +54,9 @@
 </tbody>
 </table>
 <dl>
-<dt>Licence name: <input type="text" name="lic_name" 
-    value="Child licence for ${license?.reference}"/></dt>
-<dd><input type="submit" class="btn btn-primary" value="Create child licences"/></dd>
+<dt>License name: <input type="text" name="lic_name"
+    value="Child license for ${license?.reference}"/></dt>
+<dd><input type="submit" class="btn btn-primary" value="Create child licenses"/></dd>
 </dl>
 </g:form>
 </g:if>

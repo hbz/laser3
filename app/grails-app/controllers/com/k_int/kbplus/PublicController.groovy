@@ -5,8 +5,8 @@ class PublicController {
 
     def springSecurityService
 
-  def journalLicences(){
-    log.debug("journalLicences :: ${params}")
+  def journalLicenses(){
+    log.debug("journalLicenses :: ${params}")
     def result = [:]
 
     if(params.journal && params.org){
@@ -24,7 +24,7 @@ class PublicController {
             ti = TitleInstance.get(id)
           } catch (NumberFormatException) {
             flash.error="Entering ns and id e.g :${params.journal} is not permitted, instead it should be ns:identifer number e.g. kb:123"
-            log.error("Namespace & ID error for public journalLicences: ns:${ns} id:${id} (expected integer)")
+            log.error("Namespace & ID error for public journalLicenses: ns:${ns} id:${id} (expected integer)")
           }
         }else{
           ti = TitleInstance.lookupByIdentifierString(params.journal)
@@ -46,7 +46,7 @@ class PublicController {
         if(checkUserAccessToOrg(result.user,org,org_access)){
           def ies = retrieveIssueEntitlements(ti,org,result)
           log.debug("Retrieved ies: ${ies}")
-          if(ies) generateIELicenceMap(ies,result);
+          if(ies) generateIELicenseMap(ies,result);
         }else{
           flash.error = "${org.name} does not provide public access to this service."
         }
@@ -79,11 +79,11 @@ class PublicController {
     return hasAccess
   }
 
-  def generateIELicenceMap(ies,result){
-    log.debug("generateIELicenceMap")
+  def generateIELicenseMap(ies,result){
+    log.debug("generateIELicenseMap")
     def comparisonMap = [:]
     def licIEMap = new TreeMap()
-    //See if we got IEs under the same licence, and list them together
+    //See if we got IEs under the same license, and list them together
     ies.each{ ie->
       def lic = ie.subscription.owner
       if(licIEMap.containsKey(lic)){
@@ -125,8 +125,8 @@ class PublicController {
       query_results.each{ ie ->
         def current_ie = ie.accessEndDate > today || ie.accessEndDate == null
         def current_sub = ie.subscription.endDate > today || ie.subscription.endDate == null
-        def current_licence = ie.subscription.owner.endDate > today || ie.subscription.owner.endDate == null
-        if(current_ie && current_sub && current_licence){
+        def current_license = ie.subscription.owner.endDate > today || ie.subscription.owner.endDate == null
+        if(current_ie && current_sub && current_license){
           issueEntitlements.add(ie)
         }else{
           log.debug("${ie} is not current")

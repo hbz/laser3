@@ -37,7 +37,7 @@
                 <option value="nocopy">${message(code:'myinst.addSubscription.copy_wo_ent', default:'Copy Without Entitlements')}</option>
                 <input type="submit" class="btn disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
             </g:if>
-            <g:else>${message(code:'myinst.addLicence.no_permission')}</g:else>
+            <g:else>${message(code:'myinst.addLicense.no_permission')}</g:else>
             </div>
               
               <div class="clearfix"></div>
@@ -50,7 +50,7 @@
                   <g:sortableColumn params="${params}" property="p.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                   <g:sortableColumn params="${params}" property="p.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                   <th>${message(code:'tipp.platform', default:'Platform')}</th>
-                  <th>${message(code:'licence.label', default:'License')}</th>
+                  <th>${message(code:'license.label', default:'License')}</th>
                 </tr>
                 <g:each in="${packages}" var="p">
                   <tr>

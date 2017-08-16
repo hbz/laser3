@@ -27,13 +27,13 @@ class DocWidgetController {
         log.debug("Got owner instance ${instance}");
 
         def doc_content = new Doc(contentType:0,
-                                  content: params.licenceNote,
+                                  content: params.licenseNote,
                                   type:RefdataCategory.lookupOrCreate('Document Type','Note'),
                                   user:user).save()
 
         def alert = null;
-        if ( params.licenceNoteShared ) {
-          switch ( params.licenceNoteShared ) {
+        if ( params.licenseNoteShared ) {
+          switch ( params.licenseNoteShared ) {
             case "0":
               break;
             case "1":

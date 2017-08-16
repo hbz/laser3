@@ -42,7 +42,7 @@ class AdminController {
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def updatePendingChanges() {
-  //Find all pending changes with licence FK and timestamp after summer 14
+  //Find all pending changes with license FK and timestamp after summer 14
   // For those with changeType: CustomPropertyChange, change it to PropertyChange
   // on changeDoc add value propertyOID with the value of OID
     String theDate = "01/05/2014 00:00:00";

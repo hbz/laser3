@@ -80,7 +80,7 @@ class BootStrap {
     
     RefdataCategory.lookupOrCreate('Person Function', 'General contact person');
     
-    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific licence editor');
+    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific license editor');
     RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific subscription editor');
     RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific package editor');
     RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific cluster editor');
@@ -149,7 +149,7 @@ class BootStrap {
    RefdataCategory.lookupOrCreate('Transform Format', 'xml');
    RefdataCategory.lookupOrCreate('Transform Format', 'url');
    RefdataCategory.lookupOrCreate('Transform Type', 'subscription');
-   RefdataCategory.lookupOrCreate('Transform Type', 'licence');
+   RefdataCategory.lookupOrCreate('Transform Type', 'license');
    RefdataCategory.lookupOrCreate('Transform Type', 'title');
    RefdataCategory.lookupOrCreate('Transform Type', 'package');
   
@@ -294,7 +294,7 @@ class BootStrap {
         // }
         addDefaultJasperReports()
         addDefaultPageMappings()
-        createLicenceProperties()
+        createLicenseProperties()
         createPrivateProperties()
 
         initializeDefaultSettings()
@@ -318,7 +318,7 @@ class BootStrap {
 
   def createDefaultSysProps(admObj){
     def requiredProps = [
-    [propname:"onix_ghost_licence",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"Jisc Collections Model Journals Licence 2015",note:"Default licence used for comparison when viewing a single onix licence."],
+    [propname:"onix_ghost_license",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"Jisc Collections Model Journals License 2015",note:"Default license used for comparison when viewing a single onix license."],
     [propname:"net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"columnHeader",note:"Only show 1 column header for csv"],
     [propname:"net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"columnHeader",note:"Only show 1 column header for xls"],
     [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageHeader",note:" Remove header/footer from csv/xls"],
@@ -337,7 +337,7 @@ class BootStrap {
   }
 
 
-    def createLicenceProperties() {
+    def createLicenseProperties() {
         def existingProps = LicenseCustomProperty.findAll()
 
         def requiredProps = [
@@ -360,8 +360,8 @@ class BootStrap {
         createPropertyDefinitions(requiredProps)
 
         def requiredOAProps = [
-                [propname:"Type",           descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'Licence.OA.Type'],
-                [propname:"Electronically Archivable Version",  descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'Licence.OA.eArcVersion']]
+                [propname:"Type",           descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'License.OA.Type'],
+                [propname:"Electronically Archivable Version",  descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'License.OA.eArcVersion']]
 
         createPropertyDefinitions(requiredOAProps)
 
@@ -369,7 +369,7 @@ class BootStrap {
 
         createPropertyDefinitions(requiredARCProps)
 
-        log.debug("createLicenceProperties completed");
+        log.debug("createLicenseProperties completed");
     }
 
     def createPrivateProperties(){
@@ -496,8 +496,8 @@ class BootStrap {
     // ONIX-PL Additions
     // -------------------------------------------------------------------
     // New document type
-    RefdataCategory.lookupOrCreate('Document Type','ONIX-PL Licence')
-    RefdataCategory.lookupOrCreate('Document Type','Licence')
+    RefdataCategory.lookupOrCreate('Document Type','ONIX-PL License')
+    RefdataCategory.lookupOrCreate('Document Type','License')
 
     // Controlled values from the <UsageType> element.
 
@@ -559,15 +559,15 @@ class BootStrap {
     RefdataCategory.lookupOrCreate("LicenseCategory", "Software").save()
     RefdataCategory.lookupOrCreate("LicenseCategory", "Other").save()
 
-      RefdataCategory.lookupOrCreate("Licence.OA.Type", "No Open Access").save()
-      RefdataCategory.lookupOrCreate("Licence.OA.Type", "Hybrid").save()
-      RefdataCategory.lookupOrCreate("Licence.OA.Type", "Green Open Access").save()
-      RefdataCategory.lookupOrCreate("Licence.OA.Type", "Red Open Access").save()
+      RefdataCategory.lookupOrCreate("License.OA.Type", "No Open Access").save()
+      RefdataCategory.lookupOrCreate("License.OA.Type", "Hybrid").save()
+      RefdataCategory.lookupOrCreate("License.OA.Type", "Green Open Access").save()
+      RefdataCategory.lookupOrCreate("License.OA.Type", "Red Open Access").save()
 
-      RefdataCategory.lookupOrCreate("Licence.OA.eArcVersion", "Publisher-PDF").save()
-      RefdataCategory.lookupOrCreate("Licence.OA.eArcVersion", "Postprint").save()
-      RefdataCategory.lookupOrCreate("Licence.OA.eArcVersion", "Preprint").save()
-      RefdataCategory.lookupOrCreate("Licence.OA.eArcVersion", "Preprint with ePrint URL").save()
+      RefdataCategory.lookupOrCreate("License.OA.eArcVersion", "Publisher-PDF").save()
+      RefdataCategory.lookupOrCreate("License.OA.eArcVersion", "Postprint").save()
+      RefdataCategory.lookupOrCreate("License.OA.eArcVersion", "Preprint").save()
+      RefdataCategory.lookupOrCreate("License.OA.eArcVersion", "Preprint with ePrint URL").save()
 
     RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Current").save()
     RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Deleted").save()

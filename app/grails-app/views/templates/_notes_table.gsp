@@ -1,6 +1,6 @@
 <g:form id="delete_doc_form" url="[controller:"${controllerName}",action:'deleteDocuments']" method="post">
     <g:if test="${editable}">
-        <div class="well hide licence-documents-options">
+        <div class="well hide license-documents-options">
 
             <input type="hidden" name="redirectAction" value="${redirect}"/>
             <input type="hidden" name="instanceId" value="${instance.id}"/>
@@ -8,7 +8,7 @@
         </div>
 
     </g:if>
-    <table class="table table-striped table-bordered table-condensed licence-documents">
+    <table class="table table-striped table-bordered table-condensed license-documents">
         <thead>
         <tr>
             <g:if test="${editable}"><th>${message(code:'default.select.label', default:'Select')}</th></g:if>
@@ -48,25 +48,25 @@
 <!-- JS for show/hide of delete button -->
 <r:script type="text/javascript">
     var showEditButtons =function () {
-        if ($('.licence-documents input:checked').length > 0) {
-            $('.licence-documents-options').slideDown('fast');
+        if ($('.license-documents input:checked').length > 0) {
+            $('.license-documents-options').slideDown('fast');
         } else {
-            $('.licence-documents-options').slideUp('fast');
+            $('.license-documents-options').slideUp('fast');
         }
     }
 
     $(document).ready(showEditButtons);
 
-    $('.licence-documents input[type="checkbox"]').click(showEditButtons);
+    $('.license-documents input[type="checkbox"]').click(showEditButtons);
 
-    $('.licence-documents-options .delete-document').click(function () {
+    $('.license-documents-options .delete-document').click(function () {
         if (!confirm('${message(code:'template.notes.delete.confirm', default:'Are you sure you wish to delete these notes?')}')) {
-            $('.licence-documents input:checked').attr('checked', false);
+            $('.license-documents input:checked').attr('checked', false);
             return false;
         }
-        $('.licence-documents input:checked').each(function () {
+        $('.license-documents input:checked').each(function () {
             $(this).parent().parent().fadeOut('slow');
-            $('.licence-documents-options').slideUp('fast');
+            $('.license-documents-options').slideUp('fast');
         });
     })
 </r:script>

@@ -21,7 +21,7 @@
         <li><g:link controller="titleInstance">Title Instances</g:link></li>
         <li><g:link controller="titleInstancePackagePlatform">Title Instance Package Platform Links</g:link></li>
         <li><g:link controller="subscription">Subscriptions</g:link></li>
-        <li><g:link controller="license"><g:message code="licence" default="Licence"/>s</g:link></li>
+        <li><g:link controller="license"><g:message code="license" default="License"/>s</g:link></li>
     </ul>
 </p>
 </div>

@@ -6,18 +6,18 @@
 
   <head>
     <meta name="layout" content="pubbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Public Licences</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Public Licenses</title>
     <r:require module='annotations' />
   </head>
 
 
   <body class="public">
 
-  <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicLicence']"/>
+  <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicLicense']"/>
 
 
   <div class="container">
-      <h1>Public Licences</h1>
+      <h1>Public Licenses</h1>
   </div>
 
 
@@ -32,7 +32,7 @@
           </tr>
         </thead>
         <tbody>
-          <g:each in="${licences}" var="lic">
+          <g:each in="${licenses}" var="lic">
             <tr>
               
       <td> <g:link action="show" id="${lic.id}">${lic.reference}</g:link></td>
@@ -42,7 +42,7 @@
       </table>
     </div>
     <div class="paginateButtons" style="text-align:center">
-    <span><g:paginate max="${max}" controller="${controller}" action="index" params="${params}" next="Next" prev="Prev" total="${licences.totalCount}" /></span></div>
+    <span><g:paginate max="${max}" controller="${controller}" action="index" params="${params}" next="Next" prev="Prev" total="${licenses.totalCount}" /></span></div>
      
   </div>
 

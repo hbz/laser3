@@ -11,7 +11,7 @@
 <g:render template="public_navbar" contextPath="/templates" model="['active': 'journals']"/>
 
 <div class="container">
-<h1>${message(code:'menu.public.journalLicence')}</h1>
+<h1>${message(code:'menu.public.journalLicense')}</h1>
 
 
     <g:if test="${flash.error}">
@@ -23,7 +23,7 @@
 
 <p> Use the following form to lookup Journals for a specific institution. Only journals from institutions that have opted in for this service will be searchable.</p>
 
-<g:form action="journalLicences" method="get">
+<g:form action="journalLicenses" method="get">
 <div class="well form-horizontal">
 	    Search Journal: <input placeholder="Title or Ident. kb: for ${message(code:'laser', default:'LAS:eR')} ID" name="journal" value="${journal}"/>
 	    Instituion: <input placeholder="Shortcode or ${message(code:'laser', default:'LAS:eR')} ID" name="org" value="${org}"/>
@@ -52,7 +52,7 @@
       </g:each>
       </tr>
       <tr>
-      <th class="cell-1"> Licence</th>
+      <th class="cell-1"> License</th>
       <g:each in="${licIEMap}" var="lic_entry" status="counter">
       <th class="cell-${ (counter + 2) }"><span class="cell-inner" >${lic_entry.getKey().reference}</span></th>
       </g:each>

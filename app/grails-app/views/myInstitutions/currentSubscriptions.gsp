@@ -67,12 +67,12 @@
       <div class="container subscription-results">
         <table class="table table-striped table-bordered table-condensed table-tworow">
           <tr>
-            <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'licence.slash.name')}" />
+            <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
             <th rowspan="2">${message(code:'default.action.label', default:'Action')}</th>
           </tr>
 
           <tr>
-            <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'licence.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
+            <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
             <th>${message(code:'consortium.plural', default:'Consortia')}</th>
             <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
             <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
@@ -87,12 +87,12 @@
                   <g:if test="${s.consortia}">( ${s.consortia?.name} )</g:if>
                 </g:link>
                 <g:if test="${s.owner}"> 
-                  <span class="pull-right">${message(code:'licence')} : <g:link controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link></span>
+                  <span class="pull-right">${message(code:'license')} : <g:link controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link></span>
                 </g:if>
               </td>
               <td rowspan="2">
                 <g:if test="${editable}">
-                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:params.shortcode,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:params.shortcode,basesubscription:s.id]}" onclick="return confirm($message(code:'license.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                 </g:if>
               </td>
             </tr>

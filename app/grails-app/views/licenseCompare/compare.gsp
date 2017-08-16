@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap" />
-<title>${message(code:'laser', default:'LAS:eR')} Licence Compare</title>
+<title>${message(code:'laser', default:'LAS:eR')} License Compare</title>
 </head>
 <body>
 
@@ -42,15 +42,15 @@
   <table class="onix-matrix">
     <thead>
       <th class="cell-1"> Property</th>
-      <g:each in="${licences}" var="licence" status="counter">
-      <th class="cell-${ (counter + 2) }"><span class="cell-inner" >${licence.reference}</span></th>
+      <g:each in="${licenses}" var="license" status="counter">
+      <th class="cell-${ (counter + 2) }"><span class="cell-inner" >${license.reference}</span></th>
       </g:each>
     </thead>
     <tbody>
     <g:each in="${map}" var="entry">
     <tr>
     <th>${entry.getKey()}</th>
-    <g:each in="${licences}" var="lic">
+    <g:each in="${licenses}" var="lic">
       <g:if test="${entry.getValue().containsKey(lic.reference)}">
       <td>
         <g:set var="point" value="${entry.getValue().get(lic.reference)}"/>

@@ -145,14 +145,14 @@
               </dl>
 
               <dl>
-                <dt>${message(code: 'licence.is_public')}</dt>
+                <dt>${message(code: 'license.is_public')}</dt>
                 <dd>
                   <g:xEditableRefData owner="${packageInstance}" field="isPublic" config='YN'/>
                 </dd>
               </dl> 
 
               <dl>
-                <dt><g:message code="licence" default="Licence"/></dt>
+                <dt><g:message code="license" default="License"/></dt>
                 <dd>
                   <g:xEditableRefData owner="${packageInstance}" field="license" config="Licenses"/>
                 </dd>

@@ -49,11 +49,11 @@
 
 <li <%='edit_history'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
                   action="edit_history"
-                  params="${[id:params.id]}">${message(code:'licence.nav.edit_history', default:'Edit History')}</g:link></li>
+                  params="${[id:params.id]}">${message(code:'license.nav.edit_history', default:'Edit History')}</g:link></li>
 
 <li <%='todo_history'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
                 action="todo_history"
-                params="${[id:params.id]}">${message(code:'licence.nav.todo_history', default:'ToDo History')}</g:link></li>
+                params="${[id:params.id]}">${message(code:'license.nav.todo_history', default:'ToDo History')}</g:link></li>
 
 <g:if test="${grailsApplication.config.feature_finance}">
     %{--Custom URL mapping for re-use of index--}%

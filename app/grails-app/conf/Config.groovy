@@ -80,7 +80,7 @@ onix = [
               ]
             ],
             'LicenseGrant' : [
-              'text' : 'Licence Grants'
+              'text' : 'License Grants'
             ],
             'UsageTerms' : [
               'processor': ({ List<Map> data ->
@@ -414,9 +414,9 @@ packageTransforms = [
   'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
 
 ]
-licenceTransforms = [
-  'sub_ie':[name:'Licensed Issue Entitlements (CSV)', xsl:'licenced_titles.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
-  'sub_pkg':[name:'Licensed Subscriptions/Packages (CSV)', xsl:'licenced_subscriptions_packages.xsl', returnFileExtention:'csv', returnMime:'text/csv']
+licenseTransforms = [
+  'sub_ie':[name:'Licensed Issue Entitlements (CSV)', xsl:'licensed_titles.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
+  'sub_pkg':[name:'Licensed Subscriptions/Packages (CSV)', xsl:'licensed_subscriptions_packages.xsl', returnFileExtention:'csv', returnMime:'text/csv']
 ]
 
 
@@ -577,7 +577,7 @@ appDefaultPrefs {
 //    '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
 // ]
 
-// Refdata values that need to be added to the database to allow ONIX-PL licences to be compared properly. The code will
+// Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
 // add them to the DB if they don't already exist.
 refdatavalues = [ "User" : [ "Authorized User", "ExternalAcademic", "ExternalLibrarian", "ExternalStudent",
     "ExternalTeacher", "ExternalTeacherInCountryOfLicensee", "LibraryUserUnaffiliated", "Licensee",

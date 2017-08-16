@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta name="layout" content="mmbootstrap" />
-<title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicence.compare.label', default:'ONIX-PL Licence Comparison')}</title>
+<title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicense.compare.label', default:'ONIX-PL License Comparison')}</title>
 
 </head>
 
@@ -26,18 +26,18 @@
 			<div class="span8">
 				<g:form id="compare" name="compare" action="matrix" method="post">
 					<div>
-						<label for="addIdentifierSelect">${message(code:'onixplLicence.compare.add_id.label', default:'Search licence for comparison:')}</label>
+						<label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
 
 		                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
 		                <button type="button" class="btn btn-success" id="addToList" style="margin-top:10px">${message(code:'default.button.add.label', default:'Add')}</button>
 					</div>
 					
-					<label for="selectedLicences">${message(code:'onixplLicence.compare.selected.label', default:'Licences selected for comparison:')}</label>
-					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicences" name="selectedLicences" class="compare-license" from="${[]}" multiple="true" />
+					<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>
+					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicenses" name="selectedLicenses" class="compare-license" from="${[]}" multiple="true" />
 
 
 					<div>
-						<label for="section">${message(code:'onixplLicence.compare.section.label', default:'Compare section:')}</label>
+						<label for="section">${message(code:'onixplLicense.compare.section.label', default:'Compare section:')}</label>
 						<g:treeSelect name="sections" id="section" class="compare-section"
 							options="${termList}" selected="true" multiple="true" />
 					</div>
@@ -54,7 +54,7 @@
 
 	    $(function(){
 
-	      var main = $('#selectedLicences');
+	      var main = $('#selectedLicenses');
 	  
 	      // Now add the onchange.
 	      main.change(function() {
@@ -69,13 +69,13 @@
 	      		var option_name = option.split("||")[0]
 	      		var option_id = option.split("||") [1]
 	      		var list_option = "<option selected='selected' value='"+option_id+"''>"+option_name+"</option>"
-	      		$("#selectedLicences").append(list_option)
-	      		$('#selectedLicences').trigger( "change" )
+	      		$("#selectedLicenses").append(list_option)
+	      		$('#selectedLicenses').trigger( "change" )
 			});
 
 	      $("#addIdentifierSelect").select2({
   	        width: '90%',
-	        placeholder: "${message(code:'onixplLicence.compare.search.ph', default:'Search for a licence...')}",
+	        placeholder: "${message(code:'onixplLicense.compare.search.ph', default:'Search for a license...')}",
 	        minimumInputLength: 1,
                 formatInputTooShort: function () {
                     return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";

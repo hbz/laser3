@@ -13,7 +13,7 @@
       <div class="row">
         <div class="span4">
           <div class="well">
-            <h6>${message(code:'licence.plural', default:'Licences')}</h6>
+            <h6>${message(code:'license.plural', default:'Licenses')}</h6>
             <dl>
               <g:each in="${user.authorizedOrgs}" var="org">
                 <dd><g:link controller="myInstitutions" 
@@ -98,7 +98,7 @@
           <tr>
             <td colspan="2">
               <g:if test="${ua.rootObj.class.name=='com.k_int.kbplus.License'}">
-                <span class="label label-info">${message(code:'licence.label', default:'Licence')}</span>
+                <span class="label label-info">${message(code:'license.label', default:'License')}</span>
                 <em><g:link action="index"
                         controller="licenseDetails" 
                         id="${ua.rootObj.id}">${ua.rootObj.reference}</g:link></em>
@@ -143,7 +143,7 @@
       </table>
     </div>
 
-    <!-- Lightbox modal for creating a note taken from licenceNotes.html -->
+    <!-- Lightbox modal for creating a note taken from licenseNotes.html -->
     <div class="modal hide fade" id="modalComments">
     </div>
 

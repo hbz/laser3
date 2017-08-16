@@ -12,7 +12,7 @@
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
         <g:if test="${onixplLicense.license.licensee}">
             <li><g:link controller="myInstitutions" action="currentLicenses"
-                        params="${[shortcode: onixplLicense.license.licensee.shortcode]}">${onixplLicense.license.licensee.name} Current Licences</g:link> <span
+                        params="${[shortcode: onixplLicense.license.licensee.shortcode]}">${onixplLicense.license.licensee.name} Current Licenses</g:link> <span
                     class="divider">/</span></li>
         </g:if>
         <li><g:link controller="onixplLicenseDetails" action="index"
@@ -28,7 +28,7 @@
 </div>
 
 <div class="container">
-    <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} Licence : <span id="reference"
+    <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
                                                                                                      style="padding-top: 5px;">${onixplLicense.license.reference}</span>
     </h1>
 
@@ -38,7 +38,7 @@
 
 <div class="container">
     <g:form id="delete_doc_form" url="[controller: 'licenseDetails', action: 'deleteDocuments']" method="post">
-        <div class="well hide licence-documents-options">
+        <div class="well hide license-documents-options">
             <button class="btn btn-danger" id="delete-doc">Delete Selected Documents</button>&nbsp;
             <input type="submit" class="btn btn-primary" value="Add new document" data-toggle="modal"
                    href="#modalCreateDocument"/>
@@ -99,7 +99,7 @@
 </div>
 </div>
 
-<!-- Lightbox modal for creating a document taken from licenceDocuments.html -->
+<!-- Lightbox modal for creating a document taken from licenseDocuments.html -->
 <div class="modal hide" id="modalCreateDocument">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
@@ -134,7 +134,7 @@
                     </dt>
                     <dd>
                         <select name="doctype">
-                            <option value="License">Licence</option>
+                            <option value="License">License</option>
                             <option value="General">General</option>
                             <option value="General">Addendum</option>
                         </select>
@@ -206,24 +206,24 @@
     });
 </r:script>
 
-<!-- JS for licence documents -->
+<!-- JS for license documents -->
 <r:script type="text/javascript">
-    $('.licence-documents input[type="checkbox"]').click(function () {
-        if ($('.licence-documents input:checked').length > 0) {
-            $('.licence-documents-options').slideDown('fast');
+    $('.license-documents input[type="checkbox"]').click(function () {
+        if ($('.license-documents input:checked').length > 0) {
+            $('.license-documents-options').slideDown('fast');
         } else {
-            $('.licence-documents-options').slideUp('fast');
+            $('.license-documents-options').slideUp('fast');
         }
     });
 
-    $('.licence-documents-options .delete-document').click(function () {
+    $('.license-documents-options .delete-document').click(function () {
         if (!confirm('Are you sure you wish to delete these documents?')) {
-            $('.licence-documents input:checked').attr('checked', false);
+            $('.license-documents input:checked').attr('checked', false);
             return false;
         }
-        $('.licence-documents input:checked').each(function () {
+        $('.license-documents input:checked').each(function () {
             $(this).parent().parent().fadeOut('slow');
-            $('.licence-documents-options').slideUp('fast');
+            $('.license-documents-options').slideUp('fast');
         });
     })
 </r:script>

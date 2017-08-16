@@ -11,7 +11,7 @@ class Transforms {
 	String return_file_extention
 	String return_mime
 	
-//	RefdataValue[] accepts_type // subscription, licence
+//	RefdataValue[] accepts_type // subscription, license
 	RefdataValue accepts_format // json, xml, url
 	
 	static hasMany = [ accepts_types: RefdataValue ]

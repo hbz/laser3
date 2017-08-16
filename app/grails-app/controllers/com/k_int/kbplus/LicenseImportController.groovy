@@ -11,7 +11,7 @@ class LicenseImportController {
       CAT_STATUS = "UsageStatus",
       CAT_DOCTYPE = 'Document Type',
       DOCTYPE = 'ONIX-PL License',
-      DEFAULT_DOC_TITLE = 'ONIX-PL Licence document',
+      DEFAULT_DOC_TITLE = 'ONIX-PL License document',
       CAT_USER = "User",
       CAT_USEDRESOURCE = "UsedResource"
 
@@ -31,7 +31,7 @@ class LicenseImportController {
    */
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def doImport() {
-    // log.debug("Ghost_licence" + grails.util.Holders.config.onix_ghost_licence);
+    // log.debug("Ghost_license" + grails.util.Holders.config.onix_ghost_license);
     // Setup result object
     def result = [:]
     result.validationResult = [:]
@@ -294,7 +294,7 @@ class LicenseImportController {
       opl.save()
     } else {
       def opl_title = upload.description
-      // two licences with the same name will make searching and selection for comparison a problem
+      // two licenses with the same name will make searching and selection for comparison a problem
       // for now append upload date to distinguish, users can suggest different approach
       if(OnixplLicense.findByTitle(opl_title)){
           def upload_date = new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm').format(new Date())

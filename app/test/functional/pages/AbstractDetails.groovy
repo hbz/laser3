@@ -16,8 +16,8 @@ class AbstractDetails extends BasePage {
         }
         addNote { text ->
             $("input", value: "Add new note").click()
-            waitElement{$("textarea", name: "licenceNote")}
-            $("textarea", name: "licenceNote").value(text)
+            waitElement{$("textarea", name: "licenseNote")}
+            $("textarea", name: "licenseNote").value(text)
             $("input.btn", name: "SaveNote", value: "Save Changes").click()
         }
         deleteDocument {

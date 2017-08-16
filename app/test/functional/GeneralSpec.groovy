@@ -214,34 +214,34 @@ class GeneralSpec extends BaseSpec {
 		at JasperPage
 	}
 
-	def "Setup licence Template"() {
+	def "Setup license Template"() {
 		setup:
 		changeUser(Data.UserD_name, Data.UserD_passwd)
-		templateLicence()
-		$("input", name: "reference").value(Data.Licence_template_D)
-		$("input", type: "submit").click(LicencePage)
+		templateLicense()
+		$("input", name: "reference").value(Data.License_template_D)
+		$("input", type: "submit").click(LicensePage)
 		when:
 		editIsPublic("Yes")
 		addDocument(Data.Test_Doc_name, Data.Test_Doc_file)
 		//            addCustomPropType("FunctTestProp")
 		then:
-		at LicencePage
+		at LicensePage
 	}   
 
 
 	//ref 101
-	def "View template Licence"() {
+	def "View template License"() {
 		setup:
 		changeUser(Data.UserA_name, Data.UserA_passwd)
-		licences()
+		licenses()
 		when:
-		viewTemplateLicences()
-		openLicence(Data.Licence_template_D)
+		viewTemplateLicenses()
+		openLicense(Data.License_template_D)
 		editRef("some val")
 		then:
 		thrown(RequiredPageContentNotPresent)
 		when:
-		at LicencePage
+		at LicensePage
 		then:
 		catchException { addDocument("whatever", "doc") }
 		//        when:
@@ -249,54 +249,54 @@ class GeneralSpec extends BaseSpec {
 		//        then:
 		//            catchException{deleteDocument()}//For some reason tests deny the existence of this method
 		when:
-		at LicencePage
+		at LicensePage
 		$("a", text: "Documents").click()
 		$("a", text: "Download Doc").click()
 		then:
-		at LicencePage
+		at LicensePage
 	}
 
 	//ref 102
-	def "View template Licence UserB"() {
+	def "View template License UserB"() {
 		setup:
 		changeUser(Data.UserB_name, Data.UserB_passwd)
-		licences()
+		licenses()
 		when:
-		viewTemplateLicences()
-		openLicence(Data.Licence_template_D)
+		viewTemplateLicenses()
+		openLicense(Data.License_template_D)
 		then:
 		catchException { editRef("some val") }
 		when:
-		at LicencePage
+		at LicensePage
 		then:
 		catchException { addDocument("whatever", "doc") }
 		//        when:
 		//            documents()
 		//            deleteDocument()
 		//        then:
-		//            at LicencePage
+		//            at LicensePage
 		when:
 		$("a", text: "Documents").click()
 		$("a", text: "Download Doc").click()
 		then:
-		at LicencePage
+		at LicensePage
 	}
 
 	//ref 103
-	def "Add Actual Licence "() {
+	def "Add Actual License "() {
 		setup:
 		changeUser(Data.UserB_name, Data.UserB_passwd)
-		to DashboardPage             waitFor { licences() }
+		to DashboardPage             waitFor { licenses() }
 		when:
-		viewTemplateLicences()
-		createCopyOf(Data.Licence_template_D)
+		viewTemplateLicenses()
+		createCopyOf(Data.License_template_D)
 		then:
-		at LicencePage
+		at LicensePage
 		when:
 		addDocument(Data.Test_Doc_name, Data.Test_Doc_file)
 		addNote("Test note")
 		then:
-		at LicencePage
+		at LicensePage
 		when:
 		editIsPublic("Yes")
 		documents()
@@ -304,42 +304,42 @@ class GeneralSpec extends BaseSpec {
 		withConfirm { deleteDocument() }
 		notes()
 		withConfirm { deleteNote() }
-		licenceDetails()
-		editRef(Data.Licence_template_copy_D)
+		licenseDetails()
+		editRef(Data.License_template_copy_D)
 		then:
-		at LicencePage
+		at LicensePage
 	}
 
 	//ref 109
-	def "Create Actual Licence"() {
+	def "Create Actual License"() {
 		setup:
 		to DashboardPage
-		waitFor { licences() }
+		waitFor { licenses() }
 		when:
-		createNewLicense(Data.Licence_actual_C)
+		createNewLicense(Data.License_actual_C)
 		addNote("test note")
 		addDocument(Data.Test_Doc_name, Data.Test_Doc_file)
 		then:
-		at LicencePage
+		at LicensePage
 	}
 
 
 	//ref 110
-	def "View Actual Licence(created by B)"() {
+	def "View Actual License(created by B)"() {
 		setup:
 		changeUser(Data.UserA_name, Data.UserA_passwd)
-		waitFor { licences() }
+		waitFor { licenses() }
 		when:
-		searchLicence("",Data.Licence_actual_C)
-		openLicence(Data.Licence_actual_C)
+		searchLicense("",Data.License_actual_C)
+		openLicense(Data.License_actual_C)
 		then:
-		at LicencePage
+		at LicensePage
 		when:
-		at LicencePage
+		at LicensePage
 		then:
 		catchException { editRef("some val") }
 		when:
-		at LicencePage
+		at LicensePage
 		then:
 		catchException { addDocument("whatever", "doc") }
 		when:
@@ -349,38 +349,38 @@ class GeneralSpec extends BaseSpec {
 		when:
 		downloadDoc()
 		then:
-		at LicencePage
+		at LicensePage
 	}
 
 	//111
-	def "Edit Template Licence"() {
+	def "Edit Template License"() {
 		setup: "Login as admin"
 		changeUser(Data.UserD_name, Data.UserD_passwd)
-		licences()
+		licenses()
 		when: "Change public to No"
-		viewTemplateLicences()
-		openLicence(Data.Licence_template_D)
+		viewTemplateLicenses()
+		openLicense(Data.License_template_D)
 		editIsPublic("No")
 		then: "Its updated"
-		at LicencePage
+		at LicensePage
 	}
 
 	def "Add/Edit/Delete Custom Proeprty"(){
 		setup:
-			at LicencePage
+			at LicensePage
 		when:
 			addCustomPropType("Alumni Access")
 			setRefPropertyValue("Alumni Access","No")
 			deleteCustomProp("Alumni Access")
 		then:
-			at LicencePage
+			at LicensePage
 	}
 
 	//112
-	def "Accept updates to Actual Licence"() {
+	def "Accept updates to Actual License"() {
 		setup: "Log in with User B"
 		changeUser(Data.UserB_name, Data.UserB_passwd)
-		toDo(Data.Licence_template_copy_D)
+		toDo(Data.License_template_copy_D)
 		when: "Accept changes"
 		acceptAll()
 		then: "Public should be No"
@@ -392,23 +392,23 @@ class GeneralSpec extends BaseSpec {
 	}
 
 	//  ref 113
-	def "Edit Template Licence - for reject"() {
+	def "Edit Template License - for reject"() {
 		setup: "Login as admin"
 		changeUser(Data.UserD_name, Data.UserD_passwd)
-		licences()
+		licenses()
 		when: "Change public to Yes"
-		viewTemplateLicences()
-		openLicence(Data.Licence_template_D)
+		viewTemplateLicenses()
+		openLicense(Data.License_template_D)
 		editIsPublic("Yes")
 		then: "Its updated"
-		at LicencePage
+		at LicensePage
 	}
 
 	// ref 113
-	def "Reject update to Actual Licence"() {
+	def "Reject update to Actual License"() {
 		setup: "Log in with User B"
 		changeUser(Data.UserB_name, Data.UserB_passwd)
-		toDo(Data.Licence_template_copy_D)
+		toDo(Data.License_template_copy_D)
 		when: "Reject changes"
 		rejectOne()
 		then: "Public should be No"
@@ -417,55 +417,55 @@ class GeneralSpec extends BaseSpec {
 		editIsPublic("Yes")
 	}
 	//ref 114
-	def "Attempt delete actual Licence"() {
+	def "Attempt delete actual License"() {
 		setup:
 		changeUser(Data.UserA_name, Data.UserA_passwd)
-		licences()
+		licenses()
 		when:
-		searchLicence("",Data.Licence_template_copy_D)
-		deleteLicence(Data.Licence_template_copy_D)
+		searchLicense("",Data.License_template_copy_D)
+		deleteLicense(Data.License_template_copy_D)
 		then:
-		alertBox("You do not have sufficient administrative rights to delete the specified licence")
+		alertBox("You do not have sufficient administrative rights to delete the specified license")
 	}
 
 	//ref 115
-	def "Delete Actual Licence"() {
+	def "Delete Actual License"() {
 		setup:
 		changeUser(Data.UserB_name, Data.UserB_passwd)
-		licences()
-		searchLicence("",Data.Licence_template_copy_D)
-		deleteLicence(Data.Licence_template_copy_D)
+		licenses()
+		searchLicense("",Data.License_template_copy_D)
+		deleteLicense(Data.License_template_copy_D)
 		when:
-		at LicencePage
+		at LicensePage
 		then:
-		catchException { openLicence(Data.Licence_template_copy_D) }
+		catchException { openLicense(Data.License_template_copy_D) }
 	}
 
 	//ref 118 - 119
-	def "Import Onix-PL Licence"() {
+	def "Import Onix-PL License"() {
 		setup:
 		changeUser(Data.UserD_name, Data.UserD_passwd)
-		licences()
+		licenses()
 		when:
-		viewTemplateLicences()
-		createCopyOf(Data.Licence_template_D)
-		importONIX(Data.Licence_ONIX_PL)
+		viewTemplateLicenses()
+		createCopyOf(Data.License_template_D)
+		importONIX(Data.License_ONIX_PL)
 		then:
-		at LicencePage
+		at LicensePage
 	}
 
 	//ref 119
-	def "Compare Onix-PL Licence"() {
+	def "Compare Onix-PL License"() {
 		setup:
 		changeUser(Data.UserB_name, Data.UserB_passwd)
 		compareONIX()
 		when:
             $("#select2-chosen-1").click()
-            $("#s2id_autogen1_search").value(Data.Licence_ONIX_PL_title)
+            $("#s2id_autogen1_search").value(Data.License_ONIX_PL_title)
             waitFor{$("div.select2-result-label").click()}
             $("#addToList").click()
             $("#select2-chosen-1").click()
-            $("#s2id_autogen1_search").value(Data.Licence_ONIX_PL_title)
+            $("#s2id_autogen1_search").value(Data.License_ONIX_PL_title)
             waitFor{$("div.select2-result-label").click()}
 	        $("#addToList").click()
 			$("i.jstree-checkbox").click()

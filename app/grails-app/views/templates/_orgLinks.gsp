@@ -1,7 +1,7 @@
   <table class="table table-bordered table-condensed table-striped">
     <thead>
       <tr>
-        <th>${message(code:'licence.organisationName')}</th>
+        <th>${message(code:'license.organisationName')}</th>
         <th>${message(code:'template.orgLinks.role')}</th>
         <th>${message(code:'title.edit.actions.label')}</th>
       </tr>
@@ -25,6 +25,6 @@
     </g:each>
   </table>
   <g:if test="${editmode}">
-    <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >${message(code:'licence.addOrgLink')}</a>
+    <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >${message(code:'license.addOrgLink')}</a>
 <%-- <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >Add Org Link</a> --%>
   </g:if>

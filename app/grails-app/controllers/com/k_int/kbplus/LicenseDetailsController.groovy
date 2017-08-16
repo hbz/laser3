@@ -32,11 +32,11 @@ class LicenseDetailsController {
     result.user = User.get(springSecurityService.principal.id)
     // result.institution = Org.findByShortcode(params.shortcode)
     result.license = License.get(params.id)
-    result.transforms = grailsApplication.config.licenceTransforms
+    result.transforms = grailsApplication.config.licenseTransforms
 
     userAccessCheck(result.license,result.user,'view')
 
-    //used for showing/hiding the Licence Actions menus
+    //used for showing/hiding the License Actions menus
     def admin_role = Role.findAllByAuthority("INST_ADM")
     result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)",[user:result.user,role:admin_role,status:[1,3]])
 
@@ -49,7 +49,7 @@ class LicenseDetailsController {
   
     def license_reference_str = result.license.reference?:'NO_LIC_REF_FOR_ID_'+params.id
 
-    def filename = "licenceDetails_${license_reference_str.replace(" ", "_")}"
+    def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
     result.onixplLicense = result.license.onixplLicense;
 
     if(executorWrapperService.hasRunningProcess(result.license)){
@@ -98,22 +98,22 @@ class LicenseDetailsController {
         render json.toString()
       }
       xml {
-        def doc = exportService.buildDocXML("Licences")
+        def doc = exportService.buildDocXML("Licenses")
             
 
         if ((params.transformId) && (result.transforms[params.transformId] != null)) {
             switch(params.transformId) {
               case "sub_ie":
-                exportService.addLicenceSubPkgTitleXML(doc, doc.getDocumentElement(),[result.license])
+                exportService.addLicenseSubPkgTitleXML(doc, doc.getDocumentElement(),[result.license])
               break;
               case "sub_pkg":
-                exportService.addLicenceSubPkgXML(doc, doc.getDocumentElement(),[result.license])
+                exportService.addLicenseSubPkgXML(doc, doc.getDocumentElement(),[result.license])
                 break;
             }
             String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
             transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
         }else{
-            exportService.addLicencesIntoXML(doc, doc.getDocumentElement(), [result.license])
+            exportService.addLicensesIntoXML(doc, doc.getDocumentElement(), [result.license])
             
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
             response.contentType = "text/xml"
@@ -125,24 +125,24 @@ class LicenseDetailsController {
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         def out = response.outputStream
-        exportService.StreamOutLicenceCSV(out,null,[result.license])
+        exportService.StreamOutLicenseCSV(out,null,[result.license])
         out.close()
       }
     }
   }
 
-  def getAvailableSubscriptions(licence,user){
-    def licenceInstitutions = licence?.orgLinks?.findAll{ orgRole ->
+  def getAvailableSubscriptions(license,user){
+    def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
       orgRole.roleType?.value == "Licensee"
     }?.collect{  it.org?.hasUserWithRole(user,'INST_ADM')?it.org:null  }
 
     def subscriptions = null
-    if(licenceInstitutions){
+    if(licenseInstitutions){
       def sdf = new java.text.SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
       def date_restriction =  new Date(System.currentTimeMillis())
 
       def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org in (:orgs) ) ) ) AND ( s.status.value != 'Deleted' ) AND (s.owner = null) "
-      def qry_params = [orgs:licenceInstitutions]
+      def qry_params = [orgs:licenseInstitutions]
       base_qry += " and s.startDate <= (:start) and s.endDate >= (:start) "
       qry_params.putAll([start:date_restriction])
       subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params)
@@ -153,13 +153,13 @@ class LicenseDetailsController {
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def linkToSubscription(){
     log.debug("linkToSubscription :: ${params}")
-    if(params.subscription && params.licence){
+    if(params.subscription && params.license){
       def sub = Subscription.get(params.subscription)
-      def owner = License.get(params.licence)
+      def owner = License.get(params.license)
       owner.addToSubscriptions(sub)
       owner.save(flush:true)
     }
-    redirect controller:'licenseDetails', action:'index', params: [id:params.licence]
+    redirect controller:'licenseDetails', action:'index', params: [id:params.license]
 
   }
 
@@ -178,7 +178,7 @@ class LicenseDetailsController {
       it.org.hasUserWithRole(result.user,'INST_ADM') }
     }
     if( !isAdmin && (result.license.licenseType != "Template" || hasAccess == null)) {
-      flash.error = message(code:'licence.consortia.access.error')
+      flash.error = message(code:'license.consortia.access.error')
       response.sendError(401) 
       return
     }
@@ -201,34 +201,34 @@ class LicenseDetailsController {
     def consortiaInstitutions = Combo.executeQuery(institutions_in_consortia_hql, [type, consortia])
 
      result.consortiaInstsWithStatus = [ : ]
-     def findOrgLicences = "SELECT lic from License AS lic WHERE exists ( SELECT link from lic.orgLinks AS link WHERE link.org = ? and link.roleType.value = 'Licensee') AND exists ( SELECT incLink from lic.incomingLinks AS incLink WHERE incLink.fromLic = ? ) AND lic.status.value != 'Deleted'"
+     def findOrgLicenses = "SELECT lic from License AS lic WHERE exists ( SELECT link from lic.orgLinks AS link WHERE link.org = ? and link.roleType.value = 'Licensee') AND exists ( SELECT incLink from lic.incomingLinks AS incLink WHERE incLink.fromLic = ? ) AND lic.status.value != 'Deleted'"
      consortiaInstitutions.each{ 
         def queryParams = [ it, result.license]
-        def hasLicence = License.executeQuery(findOrgLicences, queryParams)
-        if (hasLicence){
+        def hasLicense = License.executeQuery(findOrgLicenses, queryParams)
+        if (hasLicense){
           result.consortiaInstsWithStatus.put(it, RefdataCategory.lookupOrCreate("YNO","Yes") )    
         }else{
           result.consortiaInstsWithStatus.put(it, RefdataCategory.lookupOrCreate("YNO","No") )    
         }
       }
     }else{
-      flash.error=message(code:'licence.consortia.noneset')
+      flash.error=message(code:'license.consortia.noneset')
     }
 
     result
   }
   
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def generateSlaveLicences(){
+  def generateSlaveLicenses(){
     def slaved = RefdataCategory.lookupOrCreate('YN','Yes')
     params.each { p ->
         if(p.key.startsWith("_create.")){
          def orgID = p.key.substring(8)
          def orgaisation = Org.get(orgID)
           def attrMap = [shortcode:orgaisation.shortcode,baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:slaved]
-          log.debug("Create slave licence for ${orgaisation.name}")
+          log.debug("Create slave license for ${orgaisation.name}")
           attrMap.copyStartEnd = true
-          institutionsService.copyLicence(attrMap);          
+          institutionsService.copyLicense(attrMap);
         }
     }
     redirect controller:'licenseDetails', action:'consortia', params: [id:params.baselicense]
@@ -430,12 +430,12 @@ class LicenseDetailsController {
     redirect controller: 'licenseDetails', action:params.redirectAction, params:[shortcode:params.shortcode], id:params.instanceId, fragment:'docstab'
   }
 
-  def userAccessCheck(licence,user,role_str){
-    if ( (licence==null || user==null ) || (! licence?.hasPerm(role_str,user) )) {
+  def userAccessCheck(license,user,role_str){
+    if ( (license==null || user==null ) || (! license?.hasPerm(role_str,user) )) {
       log.debug("return 401....");
-      def this_licence = message(code:'licence.details.flash.this_licence')
-      def this_inst = message(code:'licence.details.flash.this_inst')
-      flash.error = message(code:'licence.details.flash.error', args:[role_str,(licence?.reference?:this_licence),(licence?.licensee?.name?:this_inst)])
+      def this_license = message(code:'license.details.flash.this_license')
+      def this_inst = message(code:'license.details.flash.this_inst')
+      flash.error = message(code:'license.details.flash.error', args:[role_str,(license?.reference?:this_license),(license?.licensee?.name?:this_inst)])
       response.sendError(401);
       return false
     }
@@ -494,8 +494,8 @@ class LicenseDetailsController {
       License license = License.get(params.license_id);
       OnixplLicense opl = OnixplLicense.get(params.opl_id);
       if(! (opl && license)){
-        log.error("Something has gone mysteriously wrong. Could not get Licence or OnixLicence. params:${params} license:${license} onix: ${opl}")
-        flash.message = message(code:'licence.unlink.error.unknown');
+        log.error("Something has gone mysteriously wrong. Could not get License or OnixLicense. params:${params} license:${license} onix: ${opl}")
+        flash.message = message(code:'license.unlink.error.unknown');
         redirect(action: 'index', id: license.id);
       }
 
@@ -520,9 +520,9 @@ class LicenseDetailsController {
           license.errors.each {
               log.error("License error: " + it);
           }
-          flash.message = message(code:'licence.unlink.error.known', args:[oplTitle]);
+          flash.message = message(code:'license.unlink.error.known', args:[oplTitle]);
       } else {
-          flash.message = message(code:'licence.unlink.success', args:[oplTitle]);
+          flash.message = message(code:'license.unlink.success', args:[oplTitle]);
       }
       redirect(action: 'index', id: license.id);
   }

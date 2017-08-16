@@ -9,7 +9,7 @@
     
 
       
-      Grants ${ OnixPLService.getAllValues(rth, 'LicenseGrantType', ', ') } licence for
+      Grants ${ OnixPLService.getAllValues(rth, 'LicenseGrantType', ', ') } license for
       ${ OnixPLService.getSingleValue(rth, 'LicenseGrantPurpose') }
     </span></th>
     <g:each var="heading" in="${headings}" status="colCount">

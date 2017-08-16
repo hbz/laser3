@@ -24,11 +24,11 @@ class PropertyDefinition {
     ]
 
     @Transient
-    final static String LIC_PROP = 'Licence Property'
+    final static String LIC_PROP = 'License Property'
     @Transient
-    final static String LIC_OA_PROP = 'Licence Property: Open Access'
+    final static String LIC_OA_PROP = 'License Property: Open Access'
     @Transient
-    final static String LIC_ARC_PROP = 'Licence Property: Archive'
+    final static String LIC_ARC_PROP = 'License Property: Archive'
     @Transient
     final static String ORG_CONF = 'Organisation Config'
     @Transient
@@ -87,7 +87,7 @@ class PropertyDefinition {
     
     
     /**
-    * @param owner: The class that will hold the property, e.g Licence
+    * @param owner: The class that will hold the property, e.g License
     **/
     private static CustomProperty createCustomPropertyValue(owner, PropertyDefinition type) {
         String classString = owner.getClass().toString()
@@ -102,7 +102,7 @@ class PropertyDefinition {
     }
     
     /**
-     * @param owner:    The class that will hold the property, e.g Licence
+     * @param owner:    The class that will hold the property, e.g License
      * @param tenant:   The org that 'owns' this value
      **/
      private static PrivateProperty createPrivatePropertyValue(owner, tenant, PropertyDefinition type) {

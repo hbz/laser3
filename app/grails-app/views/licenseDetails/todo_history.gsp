@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="mmbootstrap"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'licence.label', default:'Licence')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.label', default:'License')}</title>
 </head>
 
 <body>
@@ -12,17 +12,17 @@
     </div>
 
     <div class="container">
-        <h1>${license.licensee?.name} ${license.type?.value} Licence : ${license.reference}</h1>
+        <h1>${license.licensee?.name} ${license.type?.value} License : ${license.reference}</h1>
 
 <g:render template="nav" />
 
     </div>
 
     <div class="container">
-      <h3>${message(code:'licence.nav.todo_history', default:'ToDo History')}</h3>
+      <h3>${message(code:'license.nav.todo_history', default:'ToDo History')}</h3>
       <table  class="table table-striped table-bordered">
         <tr>
-          <th>${message(code:'licence.history.todo.description', default:'ToDo Description')}</th>
+          <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
           <th>${message(code:'default.outcome.label', default:'Outcome')}</th>
           <th>${message(code:'default.date.label', default:'Date')}</th>
         </tr>

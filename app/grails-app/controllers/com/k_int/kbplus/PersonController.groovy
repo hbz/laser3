@@ -247,7 +247,7 @@ class PersonController {
                     subjectType             = "cluster"
                     subjectFormOptionValue  = "name"
                 }
-                else if(roleRdv?.value == "Specific licence editor") {
+                else if(roleRdv?.value == "Specific license editor") {
                     allSubjects             = License.getAll()
                     subjectType             = "license"
                     subjectFormOptionValue  = "reference"

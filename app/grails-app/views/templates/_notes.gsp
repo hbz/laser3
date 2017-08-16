@@ -1,4 +1,4 @@
-<laser:card title="licence.notes" class="card-grey notes">
+<laser:card title="license.notes" class="card-grey notes">
 <%-- <h5>Notes</h5> --%>
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">
@@ -18,7 +18,7 @@
     </g:each>
   </ul>
   <g:if test="${editable}">
-    <input type="submit" class="btn btn-primary" value="${message(code:'licence.addNewNote', default:'Add New Note')}" data-toggle="modal" href="#modalCreateNote" />
+    <input type="submit" class="btn btn-primary" value="${message(code:'license.addNewNote', default:'Add New Note')}" data-toggle="modal" href="#modalCreateNote" />
 <%-- <input type="submit" class="btn btn-primary" value="Add new note" data-toggle="modal" href="#modalCreateNote" /> --%>
   </g:if>
 </laser:card>

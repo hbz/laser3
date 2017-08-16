@@ -16,8 +16,8 @@ class SubscrDetailsPage extends AbstractDetails {
             $("input", name: "newEmptySubName").value(ref)
             $("input", value: "Create").click()
         }
-        licenceCategory {
-            $("span", 'data-name': "licenceCategory").click()
+        licenseCategory {
+            $("span", 'data-name': "licenseCategory").click()
             waitElement{$("button.editable-submit")}
             $("button.editable-submit").click()
         }
@@ -25,7 +25,7 @@ class SubscrDetailsPage extends AbstractDetails {
             $("a", text: ref).click()
         }
 
-        addLicence { ref ->
+        addLicense { ref ->
             $("span", 'data-name': "owner").click()
             waitElement { $("form.editableform") }
             waitFor{$("select.input-medium")}

@@ -41,13 +41,13 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>${message(code:'licence.property.table.property')}</th>
-            <th>${message(code:'licence.property.table.value')}</th>
+            <th>${message(code:'license.property.table.property')}</th>
+            <th>${message(code:'license.property.table.value')}</th>
             <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
-                <th>${message(code:'licence.property.table.paragraph')}</th>
+                <th>${message(code:'license.property.table.paragraph')}</th>
             </g:if>
-            <th>${message(code:'licence.property.table.notes')}</th>
-            <th>${message(code:'licence.property.table.delete')}</th>
+            <th>${message(code:'license.property.table.notes')}</th>
+            <th>${message(code:'license.property.table.delete')}</th>
         </tr>
     </thead>
     <tbody>

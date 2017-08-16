@@ -23,12 +23,12 @@ class Data {
     static Org_impId = "FunctionalTestOrganisation"
     static Org_Url = "Functional_Test_Organisation"
 
-    static Licence_template_D = "Functional Test Temp Licence"
-    static Licence_template_copy_D = "Functional Test Temp Licence edited copy"
-    static Licence_actual_C = "Functional Test Licence C"
+    static License_template_D = "Functional Test Temp License"
+    static License_template_copy_D = "Functional Test Temp License edited copy"
+    static License_actual_C = "Functional Test License C"
 
-    static Licence_ONIX_PL_title = "Nature Publishing Group Academic Site License Agreement US"
-    static Licence_ONIX_PL =
+    static License_ONIX_PL_title = "Nature Publishing Group Academic Site License Agreement US"
+    static License_ONIX_PL =
             workingDir + "manual_test_data" + sep + "onix" + sep + "TX-DRAFT Nature Publishing Group Academic License Template-ople-t-1375739573670.xml"
     static Test_Doc_name = "Functional Test Doc"
     static Test_Doc_file =
@@ -50,8 +50,8 @@ class Data {
     static JasperReportExistingFile = workingDir + "app" + sep + "grails-app"+sep+"conf"+sep+"resources"+sep+"jasper_reports"+sep+"title_no_url.jrxml"
     static JasperReportNewFile = workingDir + "manual_test_data" +sep +"jasper"+sep+"titles.jrxml"
 
-    static Licence_public_journals     = "public"
-    static Licence_publicProp_journals = "Public Journal Access"
+    static License_public_journals     = "public"
+    static License_publicProp_journals = "Public Journal Access"
 
     static Title_identifier        = "eISSN:1234"
     static Title_titlename         = "testing 123"
