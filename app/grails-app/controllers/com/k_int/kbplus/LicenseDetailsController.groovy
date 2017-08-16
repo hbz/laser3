@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PrivatePropertyRule
+import com.k_int.properties.PropertyDefinition
 import grails.converters.*
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
@@ -357,6 +359,29 @@ class LicenseDetailsController {
     }
     else {
       result.editable = false
+    }
+
+    // create mandatory LicensePrivateProperties if not existing
+
+    def ppRulesFlat = []
+    user?.authorizedOrgs?.each{ org ->
+      def ppr = PrivatePropertyRule.getRules(licenseInstance.getClass().getName(), org)
+      if(ppr){
+        ppRulesFlat << ppr
+      }
+    }
+    ppRulesFlat?.flatten().each{ ppr ->
+      def pd = ppr.propertyDefinition
+      def pt = ppr.propertyTenant
+
+      if(!LicensePrivateProperty.findWhere(owner: licenseInstance, type: pd, tenant: pt)) {
+        def newProp = PropertyDefinition.createPrivatePropertyValue(licenseInstance, pt, pd)
+        if(newProp.hasErrors()){
+          log.error(newProp.errors)
+        } else{
+          log.debug("New private property created via private property rule: " + newProp.type.name)
+        }
+      }
     }
     result
   }
