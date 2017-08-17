@@ -23,6 +23,7 @@ class LicenseCustomProperty extends CustomProperty {
     refValue(nullable: true)
     paragraph(nullable: true)
     note(nullable: true)
+    date(nullable: true)
   }
 
   @Transient
@@ -32,6 +33,7 @@ class LicenseCustomProperty extends CustomProperty {
     if(decValue) return "decValue"
     if(refValue) return "refValue"
     if(paragraph) return "paragraph"
+    if(date) return "date"
   }
 
   @Override
@@ -41,6 +43,7 @@ class LicenseCustomProperty extends CustomProperty {
     if(decValue) return decValue.toString()
     if(refValue) return refValue.toString()
     if(paragraph) return paragraph
+    if(date) return date.toString()
   }
 
   def copyValueAndNote(newProp){
@@ -49,6 +52,7 @@ class LicenseCustomProperty extends CustomProperty {
     else if(decValue) newProp.decValue = decValue
     else if(paragraph) newProp.paragraph = paragraph
     else if(refValue) newProp.refValue = refValue
+    else if(date) newProp.refValue = date
     newProp.note = note
     newProp
   }

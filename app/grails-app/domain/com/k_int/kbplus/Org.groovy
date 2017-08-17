@@ -75,17 +75,17 @@ class Org extends BaseDomainComponent {
 
     static constraints = {
        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-            name(nullable:true, blank:false,maxSize:256);
-           impId(nullable:true, blank:true, maxSize:256);
-         comment(nullable:true, blank:true, maxSize:2048);
-         ipRange(nullable:true, blank:true, maxSize:1024);
-          sector(nullable:true, blank:true);
-       shortcode(nullable:true, blank:true, maxSize:128);
-           scope(nullable:true, blank:true, maxSize:128);
-      categoryId(nullable:true, blank:true, maxSize:128);
-         orgType(nullable:true, blank:true, maxSize:128);
-          status(nullable:true, blank:true);
-      membership(nullable:true, blank:true, maxSize:128);
+            name(nullable:true, blank:false,maxSize:255)
+           impId(nullable:true, blank:true, maxSize:255)
+         comment(nullable:true, blank:true, maxSize:2048)       // 2048
+         ipRange(nullable:true, blank:true, maxSize:1024)       // 1024
+          sector(nullable:true, blank:true)
+       shortcode(nullable:true, blank:true, maxSize:128)
+           scope(nullable:true, blank:true, maxSize:128)
+      categoryId(nullable:true, blank:true, maxSize:128)
+         orgType(nullable:true, blank:true, maxSize:128)
+          status(nullable:true, blank:true)
+      membership(nullable:true, blank:true, maxSize:128)
     }
 
     @Override

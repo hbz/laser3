@@ -62,27 +62,27 @@ class IssueEntitlement extends BaseDomainComponent implements Comparable {
   }
 
   static constraints = {
-    globalUID     (nullable:true, blank:false, unique:true, maxSize:256)
+    globalUID     (nullable:true, blank:false, unique:true, maxSize:255)
     status        (nullable:true, blank:false)
     subscription  (nullable:true, blank:false)
     tipp          (nullable:true, blank:false)
-    startDate     (nullable:true, blank:true);
-    startVolume   (nullable:true, blank:true);
-    startIssue    (nullable:true, blank:true);
-    endDate       (nullable:true, blank:true);
-    endVolume     (nullable:true, blank:true);
-    endIssue      (nullable:true, blank:true);
-    embargo       (nullable:true, blank:true);
-    coverageDepth (nullable:true, blank:true);
-    coverageNote  (nullable:true, blank:true);
-    // coreTitle(nullable:true, blank:true);
-    ieReason      (nullable:true, blank:true);
-    coreStatusStart(nullable:true, blank:true);
-    coreStatusEnd (nullable:true, blank:true);
-    coreStatus    (nullable:true, blank:true);
-    accessStartDate(nullable:true, blank:true);
-    accessEndDate (nullable:true, blank:true);
-    medium        (nullable:true, blank:true);
+    startDate     (nullable:true, blank:true)
+    startVolume   (nullable:true, blank:true)
+    startIssue    (nullable:true, blank:true)
+    endDate       (nullable:true, blank:true)
+    endVolume     (nullable:true, blank:true)
+    endIssue      (nullable:true, blank:true)
+    embargo       (nullable:true, blank:true)
+    coverageDepth (nullable:true, blank:true)
+    coverageNote  (nullable:true, blank:true)
+    // coreTitle(nullable:true, blank:true)
+    ieReason      (nullable:true, blank:true)
+    coreStatusStart(nullable:true, blank:true)
+    coreStatusEnd (nullable:true, blank:true)
+    coreStatus    (nullable:true, blank:true)
+    accessStartDate(nullable:true, blank:true)
+    accessEndDate (nullable:true, blank:true)
+    medium        (nullable:true, blank:true)
   }
 
   public Date getDerivedAccessStartDate() {
