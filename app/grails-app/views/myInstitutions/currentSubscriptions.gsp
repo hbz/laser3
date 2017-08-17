@@ -86,7 +86,7 @@
               <td colspan="7">
                 <g:link controller="subscriptionDetails" action="index" params="${[shortcode:params.shortcode]}" id="${s.id}">
                   <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
-                  <g:if test="${s.consortia}">( ${s.consortia?.name} )</g:if>
+                  <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
                 </g:link>
                 <g:if test="${s.owner}"> 
                   <span class="pull-right">${message(code:'licence')} : <g:link controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link></span>
@@ -112,13 +112,13 @@
                     <div>...and ${s.packages.size() - 10} other packages</div>
                   </g:if>
                 </ul>
-                <g:if test="${((s.packages==null) || (s.packages.size()==0))}">
-                  <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'myinst.currentSubscriptions.link_pkg', default:'Link Package')}</g:link></i>
+                <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
+                  <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link></i>
                 </g:if>
                 &nbsp;<br/>
                 &nbsp;<br/>
               </td>
-              <td>${s.getConsortia()?.name}</td>
+              <td>${s.consortia?.name}</td>
               <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
               <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
               <td><g:formatDate formatName="default.date.format.notime" date="${s.renewalDate}"/></td>

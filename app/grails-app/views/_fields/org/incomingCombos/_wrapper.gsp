@@ -16,7 +16,12 @@
                     optionKey="id"
                     optionValue="name"
                     class="input-medium"/>
-          <button id="submitAICForm" data-complete-text="Add Org Combo" type="submit" class="btn btn-primary btn-small">${message(code: 'default.add.label', args:[message(code:'combo.label', default:'Combo')],default:'Add Combo')}</button>
+          <button id="submitAICForm"
+                  data-complete-text="Add Org Combo"
+                  type="submit"
+                  class="btn btn-primary btn-small">
+            ${message(code: 'default.add.label', args:[message(code:'combo.label', default:'Combo')],default:'Add Combo')}
+          </button>
         </g:form>
     </g:if>
   </div>

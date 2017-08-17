@@ -650,6 +650,10 @@ class MyInstitutionsController {
                       new OrgRole(org: cm,
                           sub: cons_sub,
                           roleType: role_sub).save();
+
+                      new OrgRole(org: result.institution,
+                          sub: cons_sub,
+                          roleType: role_cons).save();
                     }else{
                       new OrgRole(org: cm,
                           sub: new_sub,
