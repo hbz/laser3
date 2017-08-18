@@ -76,10 +76,10 @@ class AdminController {
     if ( req != null ) {
       switch(params.act) {
         case 'approve':
-          req.status = 1;
+          req.status = UserOrg.STATUS_APPROVED
           break;
         case 'deny':
-          req.status = 2;
+          req.status = UserOrg.STATUS_REJECTED
           break;
         default:
           log.error("FLASH UNKNOWN CODE");
@@ -285,7 +285,7 @@ class AdminController {
 
         if ( existing_affil_check == null ) {
           log.debug("No existing affiliation");
-          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:3)
+          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:UserOrg.STATUS_AUTO_APPROVED)
           if(!newAffil.save(flush:true,failOnError:true)){
             log.error("Probem saving user roles");
             newAffil.errors.each { e ->
