@@ -50,7 +50,7 @@
 			</td>
 		</tr>
 		<tr >
-			<td colspan="2">${message(code:'tipp.coverage_note', default:'coverageNote')}:
+			<td colspan="2">${message(code:'tipp.coverageNote', default:'coverageNote')}:
 			  <g:if test="${obj.endIssue != null}"> 
 			  ${obj.coverageNote}</td>
 			  </g:if> <g:else>

@@ -18,7 +18,7 @@
 			</td>
 		</tr>
 		<tr >
-			<td colspan="2">${message(code:'tipp.coverage_note', default:'Coverage Note')}: ${obj.coverageNote}</td>
+			<td colspan="2">${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${obj.coverageNote}</td>
 		</tr>
 		<tr >
 			<td colspan="2">${message(code:'platform.label', default:'Host Platform')}: ${obj.platform.name}</td>

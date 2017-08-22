@@ -388,7 +388,19 @@ class MyInstitutionsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = Org.findByShortcode(params.shortcode)
-
+        
+        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
+        
+        def viableOrgs = []
+        
+        if ( result.availableConsortia ){
+          result.availableConsortia.each {
+            viableOrgs.add(it)
+          }
+        }
+        
+        viableOrgs.add(result.institution)
+        
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
 
@@ -406,9 +418,9 @@ class MyInstitutionsController {
         def dateBeforeFilterVal = null;
         if(params.dateBeforeFilter && params.dateBeforeVal){
             if(params.dateBeforeFilter == message(code:'default.renewalDate.label', default:'Renewal Date')){
-                dateBeforeFilter = " and s.manualRenewalDate < ?"
+                dateBeforeFilter = " and s.manualRenewalDate < :date_before"
             }else if (params.dateBeforeFilter == message(code:'default.endDate.label', default:'End Date')){
-                dateBeforeFilter = " and s.endDate < ?"
+                dateBeforeFilter = " and s.endDate < :date_before"
             }
             dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
         }
@@ -424,32 +436,34 @@ class MyInstitutionsController {
         } else {
             result.editable = false;
         }
-
+        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+        def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+        def roleTypes = [role_sub, role_sub_consortia]
         def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         // def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org = ? ) ) OR ( s.isPublic=? ) ) AND ( s.status.value != 'Deleted' ) "
-        def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org = ? ) ) ) AND ( s.status.value != 'Deleted' ) "
+        // def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) OR ( o.roleType = :roleCons AND o.org IN (:allInst) ) ) ) ) AND (
+        def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // def qry_params = [result.institution, public_flag]
-        def qry_params = [result.institution]
+        def qry_params = ['roleTypes':roleTypes,'activeInst':result.institution]
 
         if (params.q?.length() > 0) {
-            base_qry += " and ( lower(s.name) like ? or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like ? ) ) ) "
-            qry_params.add("%${params.q.trim().toLowerCase()}%");
-            qry_params.add("%${params.q.trim().toLowerCase()}%");
+            base_qry += " and ( lower(s.name) like :name_filter or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) ) "
+            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
         }
 
         if (date_restriction) {
-            base_qry += " and s.startDate <= ? and s.endDate >= ? "
-            qry_params.add(date_restriction)
-            qry_params.add(date_restriction)
+            base_qry += " and s.startDate <= :date_restr and s.endDate >= :date_restr "
+            qry_params.put('date_restr', date_restriction)
         }
 
         if(dateBeforeFilter ){
             base_qry += dateBeforeFilter
-            qry_params.add(dateBeforeFilterVal)
+            qry_params.put('date_before', dateBeforeFilterVal)
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -548,6 +562,8 @@ class MyInstitutionsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = Org.findByShortcode(params.shortcode)
+        result.orgType = result.institution.orgType
+        
         if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
             result.editable = true
         } else {
@@ -578,6 +594,19 @@ class MyInstitutionsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = Org.findByShortcode(params.shortcode)
+        result.orgType = RefdataValue.get(params.asOrgType)
+        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+        
+        def orgRole = null
+        
+        log.debug("found orgType ${result.orgType}")
+        
+        if(result.orgType?.value == 'Consortium'){
+          orgRole = role_cons
+        }else{
+          orgRole = role_sub
+        }
 
         if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
 
@@ -598,7 +627,40 @@ class MyInstitutionsController {
             if (new_sub.save()) {
                 def new_sub_link = new OrgRole(org: result.institution,
                         sub: new_sub,
-                        roleType: RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')).save();
+                        roleType: orgRole).save();
+                        
+                if(result.orgType?.value == 'Consortium' && params.linkToAll == "Y"){
+                  def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?",[result.institution])
+                  
+                  cons_members.each { cm ->
+              
+                    if(params.generateSlavedSubs == "Y"){
+                      log.debug("Generating seperate slaved instances for consortia members")
+                      def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
+                                          status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
+                                          name: params.newEmptySubName,
+                                          startDate: startDate,
+                                          endDate: endDate,
+                                          identifier: java.util.UUID.randomUUID().toString(),
+                                          instanceOf: new_sub,
+                                          isSlaved: RefdataCategory.lookupOrCreate('YN', 'Yes'),
+                                          isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
+                                          impId: java.util.UUID.randomUUID().toString()).save()
+                                          
+                      new OrgRole(org: cm,
+                          sub: cons_sub,
+                          roleType: role_sub).save();
+
+                      new OrgRole(org: result.institution,
+                          sub: cons_sub,
+                          roleType: role_cons).save();
+                    }else{
+                      new OrgRole(org: cm,
+                          sub: new_sub,
+                          roleType: role_sub).save();
+                    }
+                  }
+                }
 
                 if ( params.newEmptySubId ) {
                   def sub_id_components = params.newEmptySubId.split(':');
@@ -834,6 +896,20 @@ class MyInstitutionsController {
         result.user = User.get(springSecurityService.principal.id)
         result.institution = Org.findByShortcode(params.shortcode)
         result.transforms = grailsApplication.config.titlelistTransforms
+        
+        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
+        
+        def viableOrgs = []
+        
+        if(result.availableConsortia){
+          result.availableConsortia.each {
+            viableOrgs.add(it.id)
+          }
+        }
+        
+        viableOrgs.add(result.institution.id)
+        
+        log.debug("Viable Org-IDs are: ${viableOrgs}, active Inst is: ${result.institution.id}")
 
         if (!checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
@@ -848,13 +924,15 @@ class MyInstitutionsController {
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
+            log.debug("Getting titles as of ${date_restriction} (current)")
         } else if (params.validOn.trim() == '') {
             result.validOn = "" 
         } else {
             result.validOn = params.validOn
             date_restriction = sdf.parse(params.validOn)
+            log.debug("Getting titles as of ${date_restriction} (given)")
         }
-
+        
         // Set is_admin
         if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) result.is_admin = true
         else result.is_admin = false;
@@ -876,8 +954,15 @@ class MyInstitutionsController {
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
         def del_sub = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
         def del_ie =  RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber'); 
-        def qry_params = [max:result.max, offset:result.offset, institution: result.institution.id, del_sub:del_sub.id, del_ie:del_ie.id, role_sub: role_sub.id]
+        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+        def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+        def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
+        
+        log.debug("viable roles are: ${roles}")
+        log.debug("Using params: ${params}")
+        
+        def qry_params = [max:result.max, offset:result.offset, institution: result.institution.id, del_sub:del_sub.id, del_ie:del_ie.id, role_sub: role_sub.id, role_cons: role_sub_consortia.id]
 
         def sub_qry = "from issue_entitlement ie INNER JOIN subscription sub on ie.ie_subscription_fk=sub.sub_id inner join org_role orole on sub.sub_id=orole.or_sub_fk, title_instance_package_platform tipp inner join title_instance ti  on tipp.tipp_ti_fk=ti.ti_id cross join title_instance ti2 "
         if (filterOtherPlat) {
@@ -886,8 +971,8 @@ class MyInstitutionsController {
         if (filterPvd) {
             sub_qry += "INNER JOIN org_role orgrole on orgrole.or_pkg_fk=tipp.tipp_pkg_fk "
         }
-        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and orole.or_roletype_fk= (:role_sub)"
-        sub_qry += "AND orole.or_org_fk=(:institution) "
+        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_cons) "
+        sub_qry += "AND orole.or_org_fk = :institution "
         sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk <> :del_sub) "
         sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk <> :del_ie ) "
 
@@ -1007,12 +1092,23 @@ class MyInstitutionsController {
         def del_ie =  RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
         def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber'); 
         def cp = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider')
+        def role_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+        def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        
+        def roles = [role_sub,role_sub_consortia]
+        
+        def allInst = []
+        if(result.availableConsortia){
+          allInst = result.availableConsortia
+        }
+        
+        allInst.add(result.institution)
 
-        def sub_params = [institution: result.institution,role_sub:role_sub,sub_del:del_sub]
+        def sub_params = [institution: allInst,roles:roles,sub_del:del_sub]
         def sub_qry = """
 Subscription AS s INNER JOIN s.orgRelations AS o
-WHERE o.roleType=:role_sub
-AND o.org = :institution
+WHERE o.roleType IN (:roles)
+AND o.org IN (:institution)
 AND s.status !=:sub_del """
         if (date_restriction) {
             sub_qry += "\nAND s.startDate <= :date_restriction AND s.endDate >= :date_restriction "
@@ -1194,14 +1290,20 @@ AND EXISTS (
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         def subscription = Subscription.get(params.basesubscription)
+        def inst = Org.get(params.curInst)
+        def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted');
 
         if (subscription.hasPerm("edit", result.user)) {
-            def derived_subs = Subscription.countByInstanceOf(subscription)
+            def derived_subs = Subscription.findByInstanceOfAndStatusNot(subscription, deletedStatus)
 
-            if (derived_subs == 0) {
-                def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted');
+            if (!derived_subs) {
+              log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
+              if( subscription.consortia && subscription.consortia != inst ) {
+                OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
+              } else {
                 subscription.status = deletedStatus
                 subscription.save(flush: true);
+              }
             } else {
                 flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
             }

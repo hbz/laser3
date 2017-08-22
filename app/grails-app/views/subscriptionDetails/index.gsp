@@ -13,7 +13,7 @@
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${subscriptionInstance.subscriber}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
+          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.label', default:'Subscription Details')}</g:link> </li>
         
@@ -62,8 +62,16 @@
           <g:annotatedLabel owner="${subscriptionInstance}" property="entitlements">
             <g:if test="${entitlements?.size() > 0}">
               Entitlements ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(entitlements?.size())),num_sub_rows])}. (
-                <g:if test="${params.mode=='advanced'}">${message(code:'subscription.details.advanced.note', default:'Includes Expected or Expired entitlements, switch to')} <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link> ${message(code:'subscription.details.advanced.note.end', default:'view to hide them')}</g:if>
-                <g:else>${message(code:'subscription.details.basic.note', default:'Expected or Expired entitlements are filtered, use')} <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link> ${message(code:'subscription.details.basic.note.end', default:'view to see them')}</g:else>
+                <g:if test="${params.mode=='advanced'}">
+                  ${message(code:'subscription.details.advanced.note', default:'Includes Expected or Expired entitlements, switch to')} 
+                  <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link> 
+                  ${message(code:'subscription.details.advanced.note.end', default:'view to hide them')}
+                </g:if>
+                <g:else>
+                  ${message(code:'subscription.details.basic.note', default:'Expected or Expired entitlements are filtered, use')} 
+                  <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link> 
+                  ${message(code:'subscription.details.basic.note.end', default:'view to see them')}
+                </g:else>
               )
             </g:if>
             <g:else>
@@ -161,7 +169,7 @@
                 <td>
                   <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link>
 
-                  <g:if test="${ie.tipp?.hostPlatformURL}">( <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}">${message(code:'tipp.platform_url', default:'Host Link')}</a>
+                  <g:if test="${ie.tipp?.hostPlatformURL}">( <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
                             <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL} (${message(code:'default.new_window', default:'In new window')})" target="_blank"><i class="icon-share-alt"></i></a>)</g:if> <br/>
                   <g:each in="${ie?.tipp?.title?.ids}" var="title_id">
                     <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
@@ -172,14 +180,15 @@
 <!--                  ISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('ISSN') ?: ' - '}</strong>,
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
                    ${message(code:'default.access.label', default:'Access')}: ${message(code:"refdata.${ie.availabilityStatus?.value}", default:"${ie.availabilityStatus?.value}")}<br/>
-                   ${message(code:'tipp.coverage_note', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote?:'')}<br/>
+                   ${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote?:'')}<br/>
+                   ${message(code:'tipp.platform', default:'Platform')}: ${ie.tipp?.platform.name?:message(code:'refdata.Unknown')}
                    <g:if test="${ie.availabilityStatus?.value=='Expected'}">
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessStartDate}"/>
                    </g:if>
                    <g:if test="${ie.availabilityStatus?.value=='Expired'}">
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessEndDate}"/>
                    </g:if>
-                   <g:if test="${params.mode=='advanced'}">
+                   <g:if test="${params.mode=='advanced' && editable}">
                      <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
                      <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
                    </g:if>

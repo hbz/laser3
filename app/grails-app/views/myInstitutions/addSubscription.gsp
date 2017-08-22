@@ -7,6 +7,7 @@
   <body>
 
   <laser:breadcrumbs>
+      <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
       <laser:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.name}" message="myinst.addSubscription.label" />
   </laser:breadcrumbs>
 

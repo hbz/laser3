@@ -65,8 +65,8 @@
                   <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                   <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                   <th>${message(code:'tipp.embargo', default:'Embargo')}</th>
-                  <th>${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</th>
-                  <th>${message(code:'tipp.coverage_note', default:'Coverage Note')}</th>
+                  <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                  <th>${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,7 +78,7 @@
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
                       <br/>
                       <span class="pull-right">
-                        <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.platform_url', default:'Host Link')}</a>
+                        <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
                             <a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a> &nbsp;| &nbsp;</g:if>
                             <g:link action="processAddEntitlements" 
                                     params="${[siid:subscriptionInstance.id,('_bulkflag.'+tipp.id):'Y']}"

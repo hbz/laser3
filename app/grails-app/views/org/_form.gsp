@@ -177,14 +177,14 @@
 		
 	</label>
 	
-<ul class="one-to-many">
-<g:each in="${orgInstance?.incomingCombos?}" var="i">
-    <li><g:link controller="combo" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
-</g:each>
-<li class="add">
-<g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
-</li>
-</ul>
+  <ul class="one-to-many">
+  <g:each in="${orgInstance?.incomingCombos?}" var="i">
+      <li><g:link controller="combo" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
+  </g:each>
+  <li class="add">
+  <g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
+  </li>
+  </ul>
 </div>
 
 

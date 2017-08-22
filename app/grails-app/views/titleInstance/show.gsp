@@ -35,7 +35,7 @@
       <div class="span9">
 
         <div class="page-header">
-          <h1>Title Instance: ${titleInstanceInstance?.title}</h1>
+          <h1>${message(code:'titleInstance.label', default:'Title Instance')}: ${titleInstanceInstance?.title}</h1>
         </div>
 
         <g:if test="${flash.message}">
@@ -53,9 +53,11 @@
             <g:if test="${titleInstanceInstance?.ids}">
                 <dl>
                     <dt><g:message code="title.identifiers.label" default="Ids" /></dt>
-                    <g:each in="${titleInstanceInstance.ids}" var="i">
-                        <dd>${i.identifier.ns.ns}:${i.identifier.value}</dd>
-                    </g:each>
+                    <dd>
+                      <g:each in="${titleInstanceInstance.ids}" var="i">
+                          <div>${i.identifier.ns.ns}:${i.identifier.value}</div>
+                      </g:each>
+                    </dd>
                 </dl>
             </g:if>
 
@@ -99,8 +101,8 @@
 
               <table class="table table-bordered table-striped">
                   <tr>
-                      <th>${message(code:'tipp.from_date', default:'From Date')}</th><th>${message(code:'tipp.from_volume', default:'From Volume')}</th><th>${message(code:'tipp.from_issue', default:'From Issue')}</th>
-                      <th>${message(code:'tipp.to_date', default:'To Date')}</th><th>${message(code:'tipp.to_volume', default:'To Volume')}</th><th>${message(code:'tipp.to_issue', default:'To Issue')}</th><th>${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</th>
+                      <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
+                      <th>${message(code:'tipp.endDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th><th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
                       <th>${message(code:'platform.label', default:'Platform')}</th><th>${message(code:'package.label', default:'Package')}</th><th>${message(code:'default.actions.label', default:'Actions')}</th>
                   </tr>
                   <g:each in="${titleInstanceInstance.tipps}" var="t">

@@ -133,7 +133,7 @@
                             <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} </g:link>(${hit.getSource()?.titleCount?:'0'} ${message(code:'title.plural', default:'Titles')})</td>
                             <td>${hit.getSource().consortiaName}</td>
                             <td>
-                              <g:if test="${!pkgs || !pkgs.contains(hit.getSource().dbId.toLong())}">
+                              <g:if test="${editable && (!pkgs || !pkgs.contains(hit.getSource().dbId.toLong()))}">
                                 <g:link action="linkPackage"
                                     id="${params.id}"
                                     params="${[addId:hit.getSource().dbId,addType:'Without']}"

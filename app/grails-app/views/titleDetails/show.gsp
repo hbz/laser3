@@ -26,7 +26,7 @@
           <div class="span12">
 
             <div class="page-header">
-              <h1>${ti.title}</h1>
+              <h1>${ti.title} <g:if test="${ti.status?.value && ti.status.value != 'Current'}"><span class="badge badge-error" style="vertical-align:middle;">${message(code:"refdata.${ti.status.value}", default:"${ti.status.value}")}</span></g:if></h1>
             </div>         
 
               <g:render template="nav" />
@@ -168,11 +168,11 @@
                   <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>
                   <th>${message(code:'tipp.start')}</th>
                   <th>${message(code:'tipp.end')}</th>
-                  <th>${message(code:'tipp.coverage_depth')}</th>
+                  <th>${message(code:'tipp.coverageDepth')}</th>
                   <th>${message(code:'title.edit.actions.label')}</th>
                 </tr>
                 <tr>
-                  <th colspan="6">${message(code:'tipp.coverage_note')}</th>
+                  <th colspan="6">${message(code:'tipp.coverageNote')}</th>
                 </tr>
 
                 <g:if test="${editable}">
@@ -230,8 +230,8 @@
                     <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'title.edit.tipp.show')}</g:link></td>
                   </tr>
                   <tr>
-                    <td colspan="6">${message(code:'tipp.coverage_note')}: ${t.coverageNote?:"${message(code:'title.edit.tipp.no_note', default: 'No coverage note')}"}<br/>
-                                    ${message(code:'tipp.platform_url')}: ${t.hostPlatformURL?:"${message(code:'title.edit.tipp.no_url', default: 'No Host Platform URL')}"}</td>
+                    <td colspan="6">${message(code:'tipp.coverageNote')}: ${t.coverageNote?:"${message(code:'title.edit.tipp.no_note', default: 'No coverage note')}"}<br/>
+                                    ${message(code:'tipp.hostPlatformURL')}: ${t.hostPlatformURL?:"${message(code:'title.edit.tipp.no_url', default: 'No Host Platform URL')}"}</td>
                   </tr>
                 </g:each>
               </table>

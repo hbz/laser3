@@ -202,7 +202,7 @@
 	                  <th>${message(code:'subscription.label', default:'Subscription')}</th>
 	                  <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
 	                  <th>${message(code:'tipp.host_platform', default:'Host Platform')}</th>
-	                  <th>${message(code:'tipp.other_platform', default:'Other Platform')}</th>
+	                  <th>${message(code:'tipp.additionalPlatforms', default:'Additional Platforms')}</th>
 	                </tr>
 	                <g:each in="${entitlements}" var="ie">
 	                  <tr>
