@@ -14,12 +14,12 @@ class PackageSpec extends GebReportingSpec {
         def userAdm = com.k_int.kbplus.auth.User.findByUsername(Data.UserD_name)
         def formal_role = com.k_int.kbplus.auth.Role.findByAuthority('INST_ADM')
         def userOrg = new com.k_int.kbplus.auth.UserOrg(dateRequested:System.currentTimeMillis(),
-                status:1,
+                status:com.k_int.kbplus.auth.UserOrg.STATUS_APPROVED,
                 org:org,
                 user:user,
                 formalRole:formal_role).save()
         def userOrgAdmin = new com.k_int.kbplus.auth.UserOrg(dateRequested:System.currentTimeMillis(),
-                status:1,
+                status:com.k_int.kbplus.auth.UserOrg.STATUS_APPROVED,
                 org:org,
                 user:userAdm,
                 formalRole:formal_role).save()

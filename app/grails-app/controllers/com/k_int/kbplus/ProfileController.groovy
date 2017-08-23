@@ -6,7 +6,8 @@ import grails.plugins.springsecurity.Secured
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
+import com.k_int.kbplus.Org
 
 class ProfileController {
 
@@ -21,42 +22,60 @@ class ProfileController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def processJoinRequest() {
-    log.debug("processJoinRequest(${params}) org with id ${params.org} role ${params.formalRole}");
-    def user = User.get(springSecurityService.principal.id)
-    def org = com.k_int.kbplus.Org.get(params.org)
-    def formal_role = com.k_int.kbplus.auth.Role.get(params.formalRole)
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def processJoinRequest() {
+        log.debug("processJoinRequest(${params}) org with id ${params.org} role ${params.formalRole}")
 
+        def user        = User.get(springSecurityService.principal.id)
+        def org         = Org.get(params.org)
+        def formal_role = Role.get(params.formalRole)
 
-    try {
-      if ( ( org != null ) && ( formal_role != null ) ) {
-        def existingRel = UserOrg.find( { org==org && user==user && formalRole==formal_role } )
-        if ( existingRel ) {
-          log.debug("existing rel");
-          flash.error= message(code:'profile.processJoinRequest.error', default:"You already have a relation with the requested organisation.")
+        try {
+            if ( (org != null) && (formal_role != null) ) {
+                def existingRel = UserOrg.find( { org==org && user==user && formalRole==formal_role } )
+
+                if (existingRel && existingRel.status == UserOrg.STATUS_CANCELLED) {
+                    existingRel.delete()
+                    existingRel = null
+                }
+
+                if(existingRel) {
+                    log.debug("existing rel");
+                    flash.error= message(code:'profile.processJoinRequest.error', default:"You already have a relation with the requested organisation.")
+                }
+                else {
+                    log.debug("Create new user_org entry....");
+                    def p = new UserOrg(dateRequested:System.currentTimeMillis(),
+                                      status:UserOrg.STATUS_PENDING,
+                                      org:org,
+                                      user:user,
+                                      formalRole:formal_role)
+                    p.save(flush:true, failOnError:true)
+                }
+            }
+            else {
+                log.error("Unable to locate org or role");
+            }
         }
-        else {
-          log.debug("Create new user_org entry....");
-          def p = new UserOrg(dateRequested:System.currentTimeMillis(),
-                              status:0,
-                              org:org,
-                              user:user,
-                              formalRole:formal_role)
-          p.save(flush:true, failOnError:true)
+        catch ( Exception e ) {
+            log.error("Problem requesting affiliation",e);
         }
-      }
-      else {
-        log.error("Unable to locate org or role");
-      }
-    }
-    catch ( Exception e ) {
-      log.error("Problem requesting affiliation",e);
+
+        redirect(action: "index")
     }
 
-    redirect(action: "index")
-  }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def processCancelRequest() {
+        log.debug("processCancelRequest(${params}) userOrg with id ${params.assoc}")
+        def user        = User.get(springSecurityService.principal.id)
+        def userOrg     = UserOrg.findByUserAndId(user, params.assoc)
 
+        if (userOrg) {
+            userOrg.status = UserOrg.STATUS_CANCELLED
+        }
+
+        redirect(action: "index")
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def updateProfile() {
