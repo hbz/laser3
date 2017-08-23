@@ -23,36 +23,36 @@ class LicenseCustomProperty extends CustomProperty {
     refValue(nullable: true)
     paragraph(nullable: true)
     note(nullable: true)
-    date(nullable: true)
+    dateValue(nullable: true)
   }
 
   @Transient
   def getValueType(){
     if(stringValue) return "stringValue"
-    if(intValue) return "intValue"
-    if(decValue) return "decValue"
-    if(refValue) return "refValue"
-    if(paragraph) return "paragraph"
-    if(date) return "date"
+    if(intValue)    return "intValue"
+    if(decValue)    return "decValue"
+    if(refValue)    return "refValue"
+    if(paragraph)   return "paragraph"
+    if(dateValue)   return "dateValue"
   }
 
   @Override
   public String toString(){
     if(stringValue) return stringValue
-    if(intValue) return intValue.toString()
-    if(decValue) return decValue.toString()
-    if(refValue) return refValue.toString()
-    if(paragraph) return paragraph
-    if(date) return date.toString()
+    if(intValue)    return intValue.toString()
+    if(decValue)    return decValue.toString()
+    if(refValue)    return refValue.toString()
+    if(paragraph)   return paragraph
+    if(dateValue)   return dateValue.toString()
   }
 
   def copyValueAndNote(newProp){
-    if(stringValue) newProp.stringValue = stringValue
-    else if(intValue) newProp.intValue = intValue
-    else if(decValue) newProp.decValue = decValue
-    else if(paragraph) newProp.paragraph = paragraph
-    else if(refValue) newProp.refValue = refValue
-    else if(date) newProp.refValue = date
+    if(stringValue)     newProp.stringValue = stringValue
+    else if(intValue)   newProp.intValue    = intValue
+    else if(decValue)   newProp.decValue    = decValue
+    else if(paragraph)  newProp.paragraph   = paragraph
+    else if(refValue)   newProp.refValue    = refValue
+    else if(dateValue)  newProp.refValue    = dateValue
     newProp.note = note
     newProp
   }
