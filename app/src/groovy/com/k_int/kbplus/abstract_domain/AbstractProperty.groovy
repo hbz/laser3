@@ -45,7 +45,7 @@ abstract class AbstractProperty implements Serializable{
         if(intValue) return intValue.toString()
         if(decValue) return decValue.toString()
         if(refValue) return refValue.toString()
-        if(dateValue) return dateValue.toString()
+        if(dateValue) return dateValue.getDateString()
     }
 
     def copyValueAndNote(newProp){
@@ -64,19 +64,19 @@ abstract class AbstractProperty implements Serializable{
         switch (type){
             case Integer.toString():
                 result = Integer.parseInt(value)
-                break;
+                break
             case String.toString():
                 result = value
-                break;
+                break
             case BigDecimal.toString():
                 result = new BigDecimal(value)
-                break;
-            case Date.toString():
-                result = new Date(value)
-                break;
+                break
             case org.codehaus.groovy.runtime.NullObject.toString():
                 result = null
-                break;
+                break
+            case Date.toString():
+                result = value.getDateString()
+                break
             default:
                 result = "AbstractProperty.parseValue failed"
         }

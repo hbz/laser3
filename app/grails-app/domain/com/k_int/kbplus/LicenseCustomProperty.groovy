@@ -43,7 +43,7 @@ class LicenseCustomProperty extends CustomProperty {
     if(decValue) return decValue.toString()
     if(refValue) return refValue.toString()
     if(paragraph) return paragraph
-    if(dateValue) return dateValue.toString()
+    if(dateValue) return dateValue.getDateString()
   }
 
   def copyValueAndNote(newProp){
