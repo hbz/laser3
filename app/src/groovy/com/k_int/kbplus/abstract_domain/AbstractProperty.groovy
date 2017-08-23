@@ -9,13 +9,13 @@ import javax.persistence.Transient
 abstract class AbstractProperty implements Serializable{
 
     @Transient
-    def controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note', 'date']
+    def controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note', 'dateValue']
     String          stringValue
     Integer         intValue
     BigDecimal      decValue
     RefdataValue    refValue
     String          note = ""
-    Date            date
+    Date            dateValue
     
     static mapping = {
         note         type: 'text'
@@ -27,7 +27,7 @@ abstract class AbstractProperty implements Serializable{
         decValue(nullable: true)
         refValue(nullable: true)
         note(nullable: true)
-        date(nullable: true)
+        dateValue(nullable: true)
     }
 
     @Transient
@@ -36,7 +36,7 @@ abstract class AbstractProperty implements Serializable{
         if(intValue) return "intValue"
         if(decValue) return "decValue"
         if(refValue) return "refValue"
-        if(date) return "refValue"
+        if(dateValue) return "dateValue"
     }
 
     @Override
@@ -45,7 +45,7 @@ abstract class AbstractProperty implements Serializable{
         if(intValue) return intValue.toString()
         if(decValue) return decValue.toString()
         if(refValue) return refValue.toString()
-        if(date) return date.toString()
+        if(dateValue) return dateValue.toString()
     }
 
     def copyValueAndNote(newProp){
@@ -53,7 +53,7 @@ abstract class AbstractProperty implements Serializable{
         else if(intValue) newProp.intValue = intValue
         else if(decValue) newProp.decValue = decValue
         else if(refValue) newProp.refValue = refValue
-        else if(date) newProp.refValue = date
+        else if(dateValue) newProp.refValue = dateValue
         newProp.note = note
         newProp
     }
@@ -70,6 +70,9 @@ abstract class AbstractProperty implements Serializable{
                 break;
             case BigDecimal.toString():
                 result = new BigDecimal(value)
+                break;
+            case Date.toString():
+                result = new Date(value)
                 break;
             case org.codehaus.groovy.runtime.NullObject.toString():
                 result = null
@@ -90,6 +93,9 @@ abstract class AbstractProperty implements Serializable{
         }
         else if (type == String.toString()) {
             stringValue = parseValue(value, type)
+        }
+        else if (type == Date.toString()) {
+            dateValue = parseValue(value, type)
         }
         else if (type == RefdataValue.toString()) {
             refValue = RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc(rdc), value.toString())
