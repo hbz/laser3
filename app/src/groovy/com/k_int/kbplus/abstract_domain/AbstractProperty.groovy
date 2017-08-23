@@ -45,7 +45,7 @@ abstract class AbstractProperty implements Serializable{
         if(intValue)    return intValue.toString()
         if(decValue)    return decValue.toString()
         if(refValue)    return refValue.toString()
-        if(dateValue)   return dateValue.toString()
+        if(dateValue)   return dateValue.getDateString()
     }
 
     def copyValueAndNote(newProp){
@@ -74,7 +74,7 @@ abstract class AbstractProperty implements Serializable{
             case org.codehaus.groovy.runtime.NullObject.toString():
                 result = null
                 break
-            case dateValue.toString():
+            case Date.toString():
                 result = value.getDateString()
                 break
             default:
@@ -97,7 +97,7 @@ abstract class AbstractProperty implements Serializable{
         else if (type == RefdataValue.toString()) {
             refValue = RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc(rdc), value.toString())
         }
-        else if (type == dateValue.toString()) {
+        else if (type == Date.toString()) {
             dateValue = parseValue(value, type)
         }
     }
