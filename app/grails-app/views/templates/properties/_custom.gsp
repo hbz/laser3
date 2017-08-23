@@ -46,6 +46,7 @@
             <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                 <th>${message(code:'license.property.table.paragraph')}</th>
             </g:if>
+            <th>${message(code:'license.property.table.date')}</th>
             <th>${message(code:'license.property.table.notes')}</th>
             <th>${message(code:'license.property.table.delete')}</th>
         </tr>
@@ -75,7 +76,9 @@
                             <g:xEditable owner="${prop}" type="text" field="paragraph"/>
                         </td>
                     </g:if>
-
+                    <td>
+                        <g:xEditable owner="${prop}" type="date" field="dateValue" />
+                    </td>
                     <td>
                         <g:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
@@ -93,7 +96,6 @@
         </g:each>
     </tbody>
 </table>
-
 <!--
 <div id="cust_prop_add_modal" class="modal hide">
 

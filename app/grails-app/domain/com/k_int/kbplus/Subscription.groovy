@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
-import de.laser.domain.BaseDomainComponent;
+import de.laser.domain.BaseDomainComponent
 import javax.persistence.Transient
 
 class Subscription extends BaseDomainComponent {
