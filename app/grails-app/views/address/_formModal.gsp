@@ -77,7 +77,7 @@
             <g:message code="address.type.label" default="Type" />
 
         </label>
-        <g:select id="type" name="type.id"
+        <laser:select id="type" name="type.id"
             from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
             optionKey="id"
             optionValue="value"

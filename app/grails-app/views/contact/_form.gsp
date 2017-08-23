@@ -7,7 +7,7 @@
 		<g:message code="contact.contentType.label" default="ContentType" />
 		
 	</label>
-	<g:select id="contentType" name="contentType.id" 
+	<laser:select id="contentType" name="contentType.id"
 		from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactContentType')}"
     	optionKey="id"
     	optionValue="value"
@@ -30,7 +30,7 @@
 		<g:message code="contact.type.label" default="Type" />
 		
 	</label>
-	<g:select id="type" name="type.id" 
+	<laser:select id="type" name="type.id"
 		from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
     	optionKey="id"
     	optionValue="value"

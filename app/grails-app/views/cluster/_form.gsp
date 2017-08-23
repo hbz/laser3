@@ -25,7 +25,7 @@
 		<g:message code="cluster.type.label" default="Type" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="type" name="type.id" 
+	<laser:select id="type" name="type.id"
 		from="${com.k_int.kbplus.Cluster.getAllRefdataValues()}"
     	optionKey="id"
     	optionValue="value"

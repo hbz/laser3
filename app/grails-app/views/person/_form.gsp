@@ -38,7 +38,7 @@ import="com.k_int.kbplus.PersonRole"
 		<g:message code="person.gender.label" default="Gender" />
 		
 	</label>
-	<g:select id="gender" name="gender" 
+	<laser:select id="gender" name="gender"
 		from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
     	optionKey="id"
     	optionValue="value"
@@ -120,7 +120,7 @@ import="com.k_int.kbplus.PersonRole"
 		<g:message code="person.isPublic.label" default="IsPublic" />
 		<span class="required-indicator">*</span>	
 	</label>
-	<g:select id="isPublic" name="isPublic" 
+	<laser:select id="isPublic" name="isPublic"
 		from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
     	optionKey="id"
     	optionValue="value"
@@ -132,7 +132,7 @@ import="com.k_int.kbplus.PersonRole"
 	<div class="person-role-function-manager">
 		<h3>Functions</h3>
 		
-		<g:select class="values"
+		<laser:select class="values"
 			name="ignore-functionType-selector"
 		    from="${PersonRole.getAllRefdataValues('Person Function')}" 
 		    optionKey="id" 
@@ -152,7 +152,7 @@ import="com.k_int.kbplus.PersonRole"
 	<div class="person-role-responsibility-manager">
 		<h3>Responsibilities</h3>
 		
-		<g:select class="values"
+		<laser:select class="values"
 			name="ignore-responsibilityType-selector"
 		    from="${PersonRole.getAllRefdataValues('Person Responsibility')}" 
 		    optionKey="id" 

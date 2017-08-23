@@ -23,78 +23,72 @@ class BootStrap {
         def so_filetype = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name:'Subscription Offered File');
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name:'Platforms File');
 
-        dbChanges()  // only tmp
-
     // Permissions
     def edit_permission = Perm.findByCode('edit') ?: new Perm(code:'edit').save(failOnError: true)
     def view_permission = Perm.findByCode('view') ?: new Perm(code:'view').save(failOnError: true)
 
-    RefdataCategory.lookupOrCreate("YN","Yes")
-    RefdataCategory.lookupOrCreate("YN","No")
-    RefdataCategory.lookupOrCreate("YNO","Yes")
-    RefdataCategory.lookupOrCreate("YNO","No")
-    RefdataCategory.lookupOrCreate("YNO","Other")
-    RefdataCategory.lookupOrCreate("YNO","Not applicable")
-    RefdataCategory.lookupOrCreate("YNO","Unknown")
+        RefdataCategory.lookupOrCreate('YN', [en: 'Yes', de: 'Ja'])
+        RefdataCategory.lookupOrCreate('YN', [en: 'No',  de: 'Nein'])
 
-    RefdataCategory.lookupOrCreate("Gender","Female")
-    RefdataCategory.lookupOrCreate("Gender","Male")
-    
-    RefdataCategory.lookupOrCreate('AddressType', 'Postal address');
-    RefdataCategory.lookupOrCreate('AddressType', 'Billing address');
-    RefdataCategory.lookupOrCreate('AddressType', 'Delivery address');
+        RefdataCategory.lookupOrCreate('YNO', [en: 'Yes', de: 'Ja'])
+        RefdataCategory.lookupOrCreate('YNO', [en: 'No',  de: 'Nein'])
+        RefdataCategory.lookupOrCreate('YNO', [en: 'Not applicable', de: 'Entfällt'])
+        RefdataCategory.lookupOrCreate('YNO', [en: 'Unknown', de: 'Unbekannt'])
+        RefdataCategory.lookupOrCreate('YNO', [en: 'Other', de: 'Andere'])
 
-    RefdataCategory.lookupOrCreate('ContactContentType', 'Mail');
-    RefdataCategory.lookupOrCreate('ContactContentType', 'Phone');
-    RefdataCategory.lookupOrCreate('ContactContentType', 'Fax');
-    
-    RefdataCategory.lookupOrCreate('ContactType', 'Personal');
-    RefdataCategory.lookupOrCreate('ContactType', 'Job-related');
-    // TODO
-    RefdataCategory.lookupOrCreate('ClusterType', 'ClusterType 1');
-    RefdataCategory.lookupOrCreate('ClusterType', 'ClusterType 2');
-    
-    RefdataCategory.lookupOrCreate('CoreStatus', 'Yes');
-    RefdataCategory.lookupOrCreate('CoreStatus', 'Print');
-    RefdataCategory.lookupOrCreate('CoreStatus', 'Electronic');
-    RefdataCategory.lookupOrCreate('CoreStatus', 'Print+Electronic');
-    RefdataCategory.lookupOrCreate('CoreStatus', 'No');
+        RefdataCategory.lookupOrCreate('Gender', [en: 'Female', de: 'Weiblich'])
+        RefdataCategory.lookupOrCreate('Gender', [en: 'Male',   de: 'Männlich'])
 
-    RefdataCategory.lookupOrCreate("ConcurrentAccess","Specified")
-    RefdataCategory.lookupOrCreate("ConcurrentAccess","Not Specified")
-    RefdataCategory.lookupOrCreate("ConcurrentAccess","No limit")
-    RefdataCategory.lookupOrCreate("ConcurrentAccess","Other")
+        RefdataCategory.lookupOrCreate('AddressType', [en: 'Postal address',   de: 'Postadresse'])
+        RefdataCategory.lookupOrCreate('AddressType', [en: 'Billing address',  de: 'Rechnungsadresse'])
+        RefdataCategory.lookupOrCreate('AddressType', [en: 'Delivery address', de: 'Lieferadresse'])
 
-    RefdataCategory.lookupOrCreate("YNO","No")
-    RefdataCategory.lookupOrCreate("YNO","Yes")
-    RefdataCategory.lookupOrCreate("YNO","Other")
-    RefdataCategory.lookupOrCreate("YNO","Unknown")
+        RefdataCategory.lookupOrCreate('ContactContentType', [en: 'Mail',  de: 'Post'])
+        RefdataCategory.lookupOrCreate('ContactContentType', [en: 'Phone', de: 'Telefon'])
+        RefdataCategory.lookupOrCreate('ContactContentType', [en: 'Fax',   de: 'Fax'])
 
-    RefdataCategory.lookupOrCreate("FactType","JUSP:JR1")
-    RefdataCategory.lookupOrCreate("FactType","JUSP:JR1a")
-    RefdataCategory.lookupOrCreate("FactType","JUSP:JR1-JR1a")
-    RefdataCategory.lookupOrCreate("FactType","JUSP:JR1GOA")
+        RefdataCategory.lookupOrCreate('ContactType', [en: 'Personal', de: 'Privat'])
+        RefdataCategory.lookupOrCreate('ContactType', [en: 'Job-related', de: 'Geschäftlich'])
+        // TODO
+        RefdataCategory.lookupOrCreate('ClusterType', [en: 'ClusterType 1'])
+        RefdataCategory.lookupOrCreate('ClusterType', [en: 'ClusterType 2'])
 
-    // TODO
-    RefdataCategory.lookupOrCreate('OrgSector', 'Higher Education');
-    RefdataCategory.lookupOrCreate('OrgSector', 'Publisher');
-    
-    RefdataCategory.lookupOrCreate('Person Function', 'General contact person');
-    
-    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific license editor');
-    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific subscription editor');
-    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific package editor');
-    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific cluster editor');
-    RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific title editor');
-    
-    def cons_combo = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium');
+        RefdataCategory.lookupOrCreate('CoreStatus', [en: 'Yes', de: 'Ja'])
+        RefdataCategory.lookupOrCreate('CoreStatus', [en: 'No', de: 'Nein'])
+        RefdataCategory.lookupOrCreate('CoreStatus', [en: 'Print', de: 'Druck'])
+        RefdataCategory.lookupOrCreate('CoreStatus', [en: 'Electronic', de: 'Elektronisch'])
+        RefdataCategory.lookupOrCreate('CoreStatus', [en: 'Print+Electronic', de: 'Druck+Elektronisch'])
 
-    def or_licensee_role   = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-    def or_subscriber_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-    def or_sc_role         = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        RefdataCategory.lookupOrCreate('ConcurrentAccess', [en: 'Specified', de: 'Festgelegt'])
+        RefdataCategory.lookupOrCreate('ConcurrentAccess', [en: 'Not Specified', de: 'Nicht festgelegt'])
+        RefdataCategory.lookupOrCreate('ConcurrentAccess', [en: 'No limit', de: 'Ohne Begrenzung'])
+        RefdataCategory.lookupOrCreate('ConcurrentAccess', [en: 'Other', de: 'Andere'])
+
+        RefdataCategory.lookupOrCreate('FactType', [en: 'JUSP:JR1'])
+        RefdataCategory.lookupOrCreate('FactType', [en: 'JUSP:JR1a'])
+        RefdataCategory.lookupOrCreate('FactType', [en: 'JUSP:JR1-JR1a'])
+        RefdataCategory.lookupOrCreate('FactType', [en: 'JUSP:JR1GOA'])
+
+        // TODO
+        RefdataCategory.lookupOrCreate('OrgSector', [en: 'Higher Education'])
+        RefdataCategory.lookupOrCreate('OrgSector', [en: 'Publisher'])
+
+        RefdataCategory.lookupOrCreate('Person Function', [en: 'General contact person', de: 'Kontaktperson'])
+
+        RefdataCategory.lookupOrCreate('Person Responsibility', [en: 'Specific license editor'])
+        RefdataCategory.lookupOrCreate('Person Responsibility', [en: 'Specific subscription editor'])
+        RefdataCategory.lookupOrCreate('Person Responsibility', [en: 'Specific package editor'])
+        RefdataCategory.lookupOrCreate('Person Responsibility', [en: 'Specific cluster editor'])
+        RefdataCategory.lookupOrCreate('Person Responsibility', [en: 'Specific title editor'])
     
-    def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Owner');
-    def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', 'Cluster Member');
+        def cons_combo = RefdataCategory.lookupOrCreate('Combo Type', [en: 'Consortium', de: 'Konsortium'])
+
+        def or_licensee_role   = RefdataCategory.lookupOrCreate('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
+        def or_subscriber_role = RefdataCategory.lookupOrCreate('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
+        def or_sc_role         = RefdataCategory.lookupOrCreate('Organisational Role', [en: 'Subscription Consortia', de: 'Teilnehmendes Konsortium'])
+
+        def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', [en: 'Cluster Owner'])
+        def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', [en: 'Cluster Member'])
     
     OrgPermShare.assertPermShare(view_permission, or_licensee_role);
     OrgPermShare.assertPermShare(edit_permission, or_licensee_role);
@@ -146,13 +140,13 @@ class BootStrap {
 
   // Transforms types and formats Refdata 
   // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
-   RefdataCategory.lookupOrCreate('Transform Format', 'json');
-   RefdataCategory.lookupOrCreate('Transform Format', 'xml');
-   RefdataCategory.lookupOrCreate('Transform Format', 'url');
-   RefdataCategory.lookupOrCreate('Transform Type', 'subscription');
-   RefdataCategory.lookupOrCreate('Transform Type', 'license');
-   RefdataCategory.lookupOrCreate('Transform Type', 'title');
-   RefdataCategory.lookupOrCreate('Transform Type', 'package');
+   RefdataCategory.lookupOrCreate('Transform Format', [en: 'json'])
+   RefdataCategory.lookupOrCreate('Transform Format', [en: 'xml'])
+   RefdataCategory.lookupOrCreate('Transform Format', [en: 'url'])
+   RefdataCategory.lookupOrCreate('Transform Type', [en: 'subscription'])
+   RefdataCategory.lookupOrCreate('Transform Type', [en: 'license'])
+   RefdataCategory.lookupOrCreate('Transform Type', [en: 'title'])
+   RefdataCategory.lookupOrCreate('Transform Type', [en: 'package'])
   
   // Add Transformers and Transforms define in the demo-config.groovy
   grailsApplication.config.systransforms.each { tr ->
@@ -303,71 +297,19 @@ class BootStrap {
    
     }
 
-    // TODO remove; tmp only
-    def dbChanges = {
-
-        log.info("applying database changes @ refactoring:2017-08-27")
-
-        def rdc1 = RefdataCategory.findByDesc('Licence.OA.Type')
-        if (rdc1) {
-            rdc1.setDesc('License.OA.Type')
-            rdc1.save()
-            log.info("updated RefdataCategory(${rdc1.id}).desc from 'Licence.OA.Type' to '${rdc1.desc}'")
-        }
-
-        def rdc2 = RefdataCategory.findByDesc('Licence.OA.eArcVersion')
-        if (rdc2) {
-            rdc2.setDesc('License.OA.eArcVersion')
-            rdc2.save()
-            log.info("updated RefdataCategory(${rdc2.id}).desc from 'Licence.OA.eArcVersion' to '${rdc2.desc}'" )
-        }
-
-        RefdataValue.findAllByOwnerAndValue(
-                RefdataCategory.findByDesc('Document Type'), 'ONIX-PL Licence'
-        ).each{ it1 ->
-            it1.setValue('ONIX-PL License')
-            it1.save()
-            log.info("updated RefdataValue(${it1.id}).value from 'ONIX-PL Licence' to '${it1.value}'" )
-        }
-
-        RefdataValue.findAllByOwnerAndValue(
-                RefdataCategory.findByDesc('Document Type'), 'Licence'
-        ).each{ it2 ->
-            it2.setValue('License')
-            it2.save()
-            log.info("updated RefdataValue(${it2.id}).value from 'Licence' to '${it2.value}'" )
-        }
-
-        RefdataValue.findAllByOwnerAndValue(
-                RefdataCategory.findByDesc('Transform Type'), 'licence'
-        ).each{ it3 ->
-            it3.setValue('license')
-            it3.save()
-            log.info("updated RefdataValue(${it3.id}).value from 'licence' to '${it3.value}'" )
-        }
-
-        RefdataValue.findAllByOwnerAndValue(
-                RefdataCategory.findByDesc('Person Responsibility'), 'Specific licence editor'
-        ).each{ it4 ->
-            it4.setValue('Specific license editor')
-            it4.save()
-            log.info("updated RefdataValue(${it4.id}).value from 'Specific licence editor' to ${it4.value}" )
-        }
-    }
-
     def initializeDefaultSettings(){
-    def admObj = SystemAdmin.list()
-    if(!admObj){
-        log.debug("No SystemAdmin object found, creating new.");
-        admObj = new SystemAdmin(name:"demo").save();
-    }else{
-      admObj = admObj.first()
+        def admObj = SystemAdmin.list()
+        if (!admObj) {
+            log.debug("No SystemAdmin object found, creating new.");
+            admObj = new SystemAdmin(name:"demo").save();
+        } else {
+            admObj = admObj.first()
+        }
+        //Will not overwrite any existing database properties.
+        createDefaultSysProps(admObj);
+        admObj.refresh()
+        log.debug("Finished updating config from SystemAdmin")
     }
-    //Will not overwrite any existing database properties.
-    createDefaultSysProps(admObj);
-    admObj.refresh()
-    log.debug("Finished updating config from SystemAdmin")
-  }
 
     def createDefaultSysProps(admObj){
     def requiredProps = [

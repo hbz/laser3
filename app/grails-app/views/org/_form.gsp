@@ -41,7 +41,7 @@
 		<g:message code="org.sector.label" default="Sector" />
 		
 	</label>
-	<g:select id="sector" name="sector.id" 
+	<laser:select id="sector" name="sector.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector')}" 
 		optionKey="id" 
 		optionValue="value" 
@@ -82,7 +82,7 @@
 		<g:message code="org.orgType.label" default="Org Type" />
 		
 	</label>
-	<g:select id="orgType" name="orgType.id" 
+	<laser:select id="orgType" name="orgType.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
 		optionKey="id"
 		optionValue="value" 
@@ -95,7 +95,7 @@
 	<label for="status">
 		<g:message code="org.status.label" default="Status" />
 	</label>
-	<g:select id="status" name="status.id" 
+	<laser:select id="status" name="status.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('PendingChangeStatus')}"
 		optionKey="id" 
 		optionValue="value" 
@@ -108,7 +108,7 @@
 		<g:message code="org.membership.label" default="Membership" />
 		
 	</label>
-	<g:select id="membership" name="membership.id"
+	<laser:select id="membership" name="membership.id"
                 from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN')}"
                 optionKey="id"
                 value="${orgInstance?.membership?.id}"

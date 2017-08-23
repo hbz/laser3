@@ -96,7 +96,7 @@
 									<label for="nstype">
 										<g:message code="identifierNamespace.nstype.label" /> TODO !!!
 									</label>
-									<g:select id="nstype" name="nstype.id"
+									<laser:select id="nstype" name="nstype.id"
 											  from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YNO')}"
 											  optionKey="id"
 											  optionValue="value"
