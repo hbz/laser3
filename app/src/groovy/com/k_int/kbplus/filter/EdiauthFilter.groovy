@@ -100,7 +100,7 @@ public class EdiauthFilter extends org.springframework.security.web.authenticati
                       if ( org ) {
                         if ( pa_parts[0]?.toLowerCase() == 'staff' ) {
                           def editorRole = Role.findByAuthority('INST_USER') ?: new Role(authority: 'INST_USER', roleType:'global').save(failOnError: true)
-                          def uo = new UserOrg(status:3,
+                          def uo = new UserOrg(status:UserOrg.STATUS_AUTO_APPROVED,
                                                org:org,
                                                user:existing_user,
                                                formalRole:editorRole,
@@ -108,7 +108,7 @@ public class EdiauthFilter extends org.springframework.security.web.authenticati
                                                dateActioned:System.currentTimeMillis()).save(flush:true)
                         }
                         def new_role = Role.findByAuthority(pa_parts[0]) ?: new Role(authority: pa_parts[0], roleType:'global').save(failOnError: true)
-                        def uo2 = new UserOrg(status:3,
+                        def uo2 = new UserOrg(status:UserOrg.STATUS_AUTO_APPROVED,
                                               org:org,
                                               user:existing_user,
                                               formalRole:new_role,

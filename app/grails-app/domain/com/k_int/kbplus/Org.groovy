@@ -178,7 +178,7 @@ class Org extends BaseDomainComponent {
   public boolean hasUserWithRole( com.k_int.kbplus.auth.User user, com.k_int.kbplus.auth.Role formalRole ) {
     def result = false;
     def userOrg = com.k_int.kbplus.auth.UserOrg.findByUserAndOrgAndFormalRole(user,this,formalRole)
-	  if( userOrg && ( userOrg.status==1 || userOrg.status==3  )){
+	  if( userOrg && ( userOrg.status==UserOrg.STATUS_APPROVED || userOrg.status==UserOrg.STATUS_AUTO_APPROVED )){
 		  result = true
     }
     return result;

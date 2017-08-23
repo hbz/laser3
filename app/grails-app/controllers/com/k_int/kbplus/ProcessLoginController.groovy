@@ -172,7 +172,7 @@ class ProcessLoginController {
         def user_org_link = new com.k_int.kbplus.auth.UserOrg(user:user, 
                                                               org:org, 
                                                               formalRole:userRole,
-                                                              status: auto_approve?3:0, 
+                                                              status: auto_approve?com.k_int.kbplus.auth.UserOrg.STATUS_AUTO_APPROVED:com.k_int.kbplus.auth.UserOrg.STATUS_PENDING,
                                                               dateRequested:System.currentTimeMillis(), 
                                                               dateActioned:System.currentTimeMillis())
         if ( !user_org_link.save(flush:true) ) {

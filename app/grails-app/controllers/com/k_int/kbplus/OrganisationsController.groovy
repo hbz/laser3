@@ -311,7 +311,7 @@ class OrganisationsController {
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
       if ( uo.org.hasUserWithRole(result.user,'INST_ADM') ) {
-        uo.status = 2;
+        uo.status = UserOrg.STATUS_REJECTED
         uo.save();
       }
       redirect action: 'users', id: params.id
@@ -323,7 +323,7 @@ class OrganisationsController {
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
       if ( uo.org.hasUserWithRole(result.user,'INST_ADM') ) {
-        uo.status = 1;
+        uo.status = UserOrg.STATUS_APPROVED
         uo.save();
       }
       redirect action: 'users', id: params.id

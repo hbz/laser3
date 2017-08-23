@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role" %>
+<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
   <head>
@@ -174,7 +174,11 @@
                                                   <td><g:message code="cv.roles.${assoc.formalRole?.authority}"/></td>
                                                   <td><g:message code="cv.membership.status.${assoc.status}"/></td>
                                                   <td><g:formatDate format="dd MMMM yyyy" date="${assoc.dateRequested}"/> / <g:formatDate format="dd MMMM yyyy" date="${assoc.dateActioned}"/></td>
-                                                  <td><!--<button class="btn">Remove</button>--></td>
+                                                  <td>
+                                                      <g:if test="${assoc.status != UserOrg.STATUS_CANCELLED}">
+                                                          <g:link controller="profile" action="processCancelRequest" params="${[assoc:assoc.id]}" class="btn">Cancel</g:link>
+                                                      </g:if>
+                                                  </td>
                                             </tr>
                                       </g:each>
                                 </tbody>
