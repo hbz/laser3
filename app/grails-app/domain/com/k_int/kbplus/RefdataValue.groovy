@@ -45,11 +45,11 @@ class RefdataValue extends I10nTranslatableAbstract {
 
     static def refdataFind(params) {
         def result = [];
-        def ql = RefdataValue.findAllByValueIlike("%${params.q}%",params)
+        def ql = RefdataValue.findAllByValueIlike("%${params.q}%", params)
 
         if (ql) {
             ql.each { id ->
-                result.add([id:"${id.class.name}:${id.id}",text:"${id.value}"])
+                result.add([id:"${id.class.name}:${id.id}", text:"${id.getI10n('value')}"])
             }
         }
         result

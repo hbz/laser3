@@ -1,16 +1,15 @@
 package com.k_int.properties
 
-import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import de.laser.domain.I10nTranslatableAbstract
 import groovy.util.logging.*
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
-import org.apache.commons.logging.LogFactory
 
 @Log4j
-class PropertyDefinition {
+class PropertyDefinition extends I10nTranslatableAbstract {
 
     @Transient
     final static String[] AVAILABLE_DESCR = [
@@ -128,24 +127,24 @@ class PropertyDefinition {
         type
     }
     static def refdataFind(params) {
-
         def result = []
         def ql = null
-        if(!params.desc || params.desc == "*"){
-            if(!params.desc)log.error("Search PropertyDefinition without Description ${params}")
-            ql = findAllByNameIlike("${params.q}%",params)
-        }else{
-            ql = findAllByNameIlikeAndDescr("${params.q}%",params.desc, params)
+        if (!params.desc || params.desc == "*") {
+            if (!params.desc)
+                log.error("Search PropertyDefinition without Description ${params}")
+            ql = findAllByNameIlike("${params.q}%", params)
+        } else {
+            ql = findAllByNameIlikeAndDescr("${params.q}%", params.desc, params)
         }
 
-        if ( ql ) {
+        if (ql) {
             ql.each { prop ->
-                result.add([id:"${prop.id}",text:"${prop.name}"])
+                result.add([id:"${prop.id}",text:"${prop.getI10n('name')}"])
             }
         }
         result
     }
-    
+
   @Transient
   def getOccurrencesOwner(String[] cls){
     def all_owners = []
@@ -180,7 +179,9 @@ class PropertyDefinition {
     def removeProperty() {
         log.debug("Remove");
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseCustomProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicensePrivateProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionCustomProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgCustomProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgPrivateProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonPrivateProperty c where c.type = ?', [this])
         this.delete();

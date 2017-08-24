@@ -51,7 +51,7 @@
         <g:each in="${ownobj.privateProperties}" var="prop">
             <g:if test="${prop.tenant.id == tenant?.id}">
                 <tr>
-                    <td>${prop.type.name}</td>
+                    <td>${prop.type.getI10n('name')}</td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
                             <g:xEditable owner="${prop}" type="text" field="intValue"/>

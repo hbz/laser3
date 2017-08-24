@@ -2,6 +2,7 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.domain.I10nTranslation
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
@@ -14,38 +15,38 @@ class BootStrap {
     def init = { servletContext ->
 
         log.info("Sys id: ${grailsApplication.config.kbplusSystemId}")
-  
-        if ( grailsApplication.config.kbplusSystemId != null ) {
-            def system_object = SystemObject.findBySysId(grailsApplication.config.kbplusSystemId) ?: new SystemObject(sysId:grailsApplication.config.kbplusSystemId).save(flush:true);
+
+        if (grailsApplication.config.kbplusSystemId != null) {
+            def system_object = SystemObject.findBySysId(grailsApplication.config.kbplusSystemId) ?: new SystemObject(sysId: grailsApplication.config.kbplusSystemId).save(flush: true);
         }
 
-        def evt_startup = new EventLog(event:'kbplus.startup', message:'Normal startup', tstp:new Date(System.currentTimeMillis())).save(flush:true)
-        def so_filetype = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name:'Subscription Offered File');
-        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name:'Platforms File');
+        def evt_startup = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
+        def so_filetype = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File');
+        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File');
 
-    // Permissions
-    def edit_permission = Perm.findByCode('edit') ?: new Perm(code:'edit').save(failOnError: true)
-    def view_permission = Perm.findByCode('view') ?: new Perm(code:'view').save(failOnError: true)
+        // Permissions
+        def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
+        def view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
 
         RefdataCategory.lookupOrCreate('YN', [en: 'Yes', de: 'Ja'])
-        RefdataCategory.lookupOrCreate('YN', [en: 'No',  de: 'Nein'])
+        RefdataCategory.lookupOrCreate('YN', [en: 'No', de: 'Nein'])
 
         RefdataCategory.lookupOrCreate('YNO', [en: 'Yes', de: 'Ja'])
-        RefdataCategory.lookupOrCreate('YNO', [en: 'No',  de: 'Nein'])
+        RefdataCategory.lookupOrCreate('YNO', [en: 'No', de: 'Nein'])
         RefdataCategory.lookupOrCreate('YNO', [en: 'Not applicable', de: 'Entfällt'])
         RefdataCategory.lookupOrCreate('YNO', [en: 'Unknown', de: 'Unbekannt'])
         RefdataCategory.lookupOrCreate('YNO', [en: 'Other', de: 'Andere'])
 
         RefdataCategory.lookupOrCreate('Gender', [en: 'Female', de: 'Weiblich'])
-        RefdataCategory.lookupOrCreate('Gender', [en: 'Male',   de: 'Männlich'])
+        RefdataCategory.lookupOrCreate('Gender', [en: 'Male', de: 'Männlich'])
 
-        RefdataCategory.lookupOrCreate('AddressType', [en: 'Postal address',   de: 'Postadresse'])
-        RefdataCategory.lookupOrCreate('AddressType', [en: 'Billing address',  de: 'Rechnungsadresse'])
+        RefdataCategory.lookupOrCreate('AddressType', [en: 'Postal address', de: 'Postadresse'])
+        RefdataCategory.lookupOrCreate('AddressType', [en: 'Billing address', de: 'Rechnungsadresse'])
         RefdataCategory.lookupOrCreate('AddressType', [en: 'Delivery address', de: 'Lieferadresse'])
 
-        RefdataCategory.lookupOrCreate('ContactContentType', [en: 'Mail',  de: 'Post'])
+        RefdataCategory.lookupOrCreate('ContactContentType', [en: 'Mail', de: 'Post'])
         RefdataCategory.lookupOrCreate('ContactContentType', [en: 'Phone', de: 'Telefon'])
-        RefdataCategory.lookupOrCreate('ContactContentType', [en: 'Fax',   de: 'Fax'])
+        RefdataCategory.lookupOrCreate('ContactContentType', [en: 'Fax', de: 'Fax'])
 
         RefdataCategory.lookupOrCreate('ContactType', [en: 'Personal', de: 'Privat'])
         RefdataCategory.lookupOrCreate('ContactType', [en: 'Job-related', de: 'Geschäftlich'])
@@ -80,200 +81,194 @@ class BootStrap {
         RefdataCategory.lookupOrCreate('Person Responsibility', [en: 'Specific package editor'])
         RefdataCategory.lookupOrCreate('Person Responsibility', [en: 'Specific cluster editor'])
         RefdataCategory.lookupOrCreate('Person Responsibility', [en: 'Specific title editor'])
-    
+
         def cons_combo = RefdataCategory.lookupOrCreate('Combo Type', [en: 'Consortium', de: 'Konsortium'])
 
-        def or_licensee_role   = RefdataCategory.lookupOrCreate('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
+        def or_licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
         def or_subscriber_role = RefdataCategory.lookupOrCreate('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
-        def or_sc_role         = RefdataCategory.lookupOrCreate('Organisational Role', [en: 'Subscription Consortia', de: 'Teilnehmendes Konsortium'])
+        def or_sc_role = RefdataCategory.lookupOrCreate('Organisational Role', [en: 'Subscription Consortia', de: 'Teilnehmendes Konsortium'])
 
-        def cl_owner_role      = RefdataCategory.lookupOrCreate('Cluster Role', [en: 'Cluster Owner'])
-        def cl_member_role     = RefdataCategory.lookupOrCreate('Cluster Role', [en: 'Cluster Member'])
-    
-    OrgPermShare.assertPermShare(view_permission, or_licensee_role);
-    OrgPermShare.assertPermShare(edit_permission, or_licensee_role);
-    OrgPermShare.assertPermShare(view_permission, or_subscriber_role);
-    OrgPermShare.assertPermShare(edit_permission, or_subscriber_role);
-    OrgPermShare.assertPermShare(view_permission, or_sc_role);
-    OrgPermShare.assertPermShare(edit_permission, or_sc_role);
-    // TODO
-    OrgPermShare.assertPermShare(view_permission, cl_owner_role);
-    OrgPermShare.assertPermShare(edit_permission, cl_owner_role);
-    // TODO
-    OrgPermShare.assertPermShare(view_permission, cl_member_role);
-    OrgPermShare.assertPermShare(edit_permission, cl_member_role);
-    
-    OrgPermShare.assertPermShare(view_permission, cons_combo);
+        def cl_owner_role = RefdataCategory.lookupOrCreate('Cluster Role', [en: 'Cluster Owner'])
+        def cl_member_role = RefdataCategory.lookupOrCreate('Cluster Role', [en: 'Cluster Member'])
 
+        OrgPermShare.assertPermShare(view_permission, or_licensee_role);
+        OrgPermShare.assertPermShare(edit_permission, or_licensee_role);
+        OrgPermShare.assertPermShare(view_permission, or_subscriber_role);
+        OrgPermShare.assertPermShare(edit_permission, or_subscriber_role);
+        OrgPermShare.assertPermShare(view_permission, or_sc_role);
+        OrgPermShare.assertPermShare(edit_permission, or_sc_role);
+        // TODO
+        OrgPermShare.assertPermShare(view_permission, cl_owner_role);
+        OrgPermShare.assertPermShare(edit_permission, cl_owner_role);
+        // TODO
+        OrgPermShare.assertPermShare(view_permission, cl_member_role);
+        OrgPermShare.assertPermShare(edit_permission, cl_member_role);
 
-    // Global System Roles
-    def userRole      = Role.findByAuthority('ROLE_USER')       ?: new Role(authority: 'ROLE_USER', roleType:'global').save(failOnError: true)
-    def editorRole    = Role.findByAuthority('ROLE_EDITOR')     ?: new Role(authority: 'ROLE_EDITOR', roleType:'global').save(failOnError: true)
-    def adminRole     = Role.findByAuthority('ROLE_ADMIN')      ?: new Role(authority: 'ROLE_ADMIN', roleType:'global').save(failOnError: true)
-    def kbplus_editor = Role.findByAuthority('KBPLUS_EDITOR')   ?: new Role(authority: 'KBPLUS_EDITOR', roleType:'global').save(failOnError: true)
-    def apiRole       = Role.findByAuthority('ROLE_API')        ?: new Role(authority: 'ROLE_API', roleType:'global').save(failOnError: true)
+        OrgPermShare.assertPermShare(view_permission, cons_combo);
 
-    def apiReaderRole = Role.findByAuthority('ROLE_API_READER') ?: new Role(authority: 'ROLE_API_READER', roleType:'global').save(failOnError: true)
-    def apiWriterRole = Role.findByAuthority('ROLE_API_WRITER') ?: new Role(authority: 'ROLE_API_WRITER', roleType:'global').save(failOnError: true)
+        // Global System Roles
+        def userRole = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
+        def editorRole = Role.findByAuthority('ROLE_EDITOR') ?: new Role(authority: 'ROLE_EDITOR', roleType: 'global').save(failOnError: true)
+        def adminRole = Role.findByAuthority('ROLE_ADMIN') ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
+        def kbplus_editor = Role.findByAuthority('KBPLUS_EDITOR') ?: new Role(authority: 'KBPLUS_EDITOR', roleType: 'global').save(failOnError: true)
+        def apiRole = Role.findByAuthority('ROLE_API') ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
-    // Institutional Roles
-    def institutionalAdmin = Role.findByAuthority('INST_ADM')
-    if ( !institutionalAdmin ) {
-      institutionalAdmin = new Role(authority: 'INST_ADM', roleType:'user').save(failOnError: true)
-    }
-    ensurePermGrant(institutionalAdmin,edit_permission);
-    ensurePermGrant(institutionalAdmin,view_permission);
+        def apiReaderRole = Role.findByAuthority('ROLE_API_READER') ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
+        def apiWriterRole = Role.findByAuthority('ROLE_API_WRITER') ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
 
-    def institutionalUser = Role.findByAuthority('INST_USER') 
-    if ( !institutionalUser ) {
-      institutionalUser = new Role(authority: 'INST_USER', roleType:'user').save(failOnError: true)
-    }
-    ensurePermGrant(institutionalUser,view_permission);
-
-    // Allows values to be added to the vocabulary control list by passing an array with RefdataCategory as the key
-    // and a list of values to be added to the RefdataValue table.
-    grailsApplication.config.refdatavalues.each { rdc, rdvList ->
-        rdvList.each { rdv ->
-            RefdataCategory.lookupOrCreate(rdc, rdv);
+        // Institutional Roles
+        def institutionalAdmin = Role.findByAuthority('INST_ADM')
+        if (!institutionalAdmin) {
+            institutionalAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
         }
-    }
+        ensurePermGrant(institutionalAdmin, edit_permission);
+        ensurePermGrant(institutionalAdmin, view_permission);
 
-  // Transforms types and formats Refdata 
-  // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
-   RefdataCategory.lookupOrCreate('Transform Format', [en: 'json'])
-   RefdataCategory.lookupOrCreate('Transform Format', [en: 'xml'])
-   RefdataCategory.lookupOrCreate('Transform Format', [en: 'url'])
-   RefdataCategory.lookupOrCreate('Transform Type', [en: 'subscription'])
-   RefdataCategory.lookupOrCreate('Transform Type', [en: 'license'])
-   RefdataCategory.lookupOrCreate('Transform Type', [en: 'title'])
-   RefdataCategory.lookupOrCreate('Transform Type', [en: 'package'])
-  
-  // Add Transformers and Transforms define in the demo-config.groovy
-  grailsApplication.config.systransforms.each { tr ->
-    def transformName = tr.transforms_name //"${tr.name}-${tr.format}-${tr.type}"
-    
-    def transforms = Transforms.findByName("${transformName}")
-    def transformer = Transformer.findByName("${tr.transformer_name}")
-    if ( transformer ) {
-      if ( transformer.url != tr.url ) {
-        log.debug("Change transformer [${tr.transformer_name}] url to ${tr.url}");
-        transformer.url = tr.url;
-        transformer.save(failOnError: true, flush: true)
-      }
-      else {
-        log.debug("${tr.transformer_name} present and correct");
-      }
-    } else {
-      log.debug("Create transformer ${tr.transformer_name}...");
-      transformer = new Transformer(
-            name: tr.transformer_name,
-            url: tr.url).save(failOnError: true, flush: true)
-    }
-    
-    log.debug("Create transform ${transformName}...");
-    def types = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Type'))
-    def formats = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Format'))
-    
-    if ( transforms ) {
-      
-      if( tr.type ){
-        // split values
-        def type_list = tr.type.split(",")
-        type_list.each { new_type ->
-          if( !transforms.accepts_types.any { f -> f.value == new_type } ){
-            log.debug("Add transformer [${transformName}] type: ${new_type}");
-            def type = types.find{ t -> t.value == new_type }
-            transforms.addToAccepts_types(type)
-          }
+        def institutionalUser = Role.findByAuthority('INST_USER')
+        if (!institutionalUser) {
+            institutionalUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
         }
-      }
-      if ( transforms.accepts_format.value != tr.format ) {
-        log.debug("Change transformer [${transformName}] format to ${tr.format}");
-        def format = formats.findAll{ t -> t.value == tr.format }
-        transforms.accepts_format = format[0]
-      }
-      if ( transforms.return_mime != tr.return_mime ) {
-        log.debug("Change transformer [${transformName}] return format to ${tr.'mime'}");
-        transforms.return_mime = tr.return_mime;
-      }
-      if ( transforms.return_file_extention != tr.return_file_extension ) {
-        log.debug("Change transformer [${transformName}] return format to ${tr.'return'}");
-        transforms.return_file_extention = tr.return_file_extension;
-      }
-      if ( transforms.path_to_stylesheet != tr.path_to_stylesheet ) {
-        log.debug("Change transformer [${transformName}] return format to ${tr.'path'}");
-        transforms.path_to_stylesheet = tr.path_to_stylesheet;
-      }
-      transforms.save(failOnError: true, flush: true)
-    }
-    else {
-      def format = formats.findAll{ t -> t.value == tr.format }
-      
-      assert format.size()==1
-      
-      transforms = new Transforms(
-        name: transformName,
-        accepts_format: format[0],
-        return_mime: tr.return_mime,
-        return_file_extention: tr.return_file_extension,
-        path_to_stylesheet: tr.path_to_stylesheet,
-        transformer: transformer).save(failOnError: true, flush: true)
-        
-      def type_list = tr.type.split(",")
-      type_list.each { new_type ->
-        def type = types.find{ t -> t.value == new_type }
-        transforms.addToAccepts_types(type)
-      }
-    }
-  }
-  
-  
-    if ( grailsApplication.config.localauth ) {
-      log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}");
+        ensurePermGrant(institutionalUser, view_permission);
 
-      grailsApplication.config.sysusers.each { su ->
-        log.debug("test ${su.name} ${su.pass} ${su.display} ${su.roles}");
-        def user = User.findByUsername(su.name)
-        if ( user ) {
-          if ( user.password != su.pass ) {
-            log.debug("Hard change of user password from config ${user.password} -> ${su.pass}");
-            user.password = su.pass;
-            user.save(failOnError: true)
-          }
-          else {
-            log.debug("${su.name} present and correct");
-          }
-        }
-        else {
-          log.debug("Create user...");
-          user = new User(
-                        username: su.name,
-                        password: su.pass,
-                        display: su.display,
-                        email: su.email,
-                        enabled: true).save(failOnError: true)
+        // Allows values to be added to the vocabulary control list by passing an array with RefdataCategory as the key
+        // and a list of values to be added to the RefdataValue table.
+        grailsApplication.config.refdatavalues.each { rdc, rdvList ->
+            rdvList.each { rdv ->
+                RefdataCategory.lookupOrCreate(rdc, rdv);
+            }
         }
 
-        log.debug("Add roles for ${su.name}");
-        su.roles.each { r ->
-          def role = Role.findByAuthority(r)
-          if ( ! ( user.authorities.contains(role) ) ) {
-            log.debug("  -> adding role ${role}");
-            UserRole.create user, role
-          }
-          else {
-            log.debug("  -> ${role} already present");
-          }
+        // Transforms types and formats Refdata
+        // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
+        RefdataCategory.lookupOrCreate('Transform Format', [en: 'json'])
+        RefdataCategory.lookupOrCreate('Transform Format', [en: 'xml'])
+        RefdataCategory.lookupOrCreate('Transform Format', [en: 'url'])
+        RefdataCategory.lookupOrCreate('Transform Type', [en: 'subscription'])
+        RefdataCategory.lookupOrCreate('Transform Type', [en: 'license'])
+        RefdataCategory.lookupOrCreate('Transform Type', [en: 'title'])
+        RefdataCategory.lookupOrCreate('Transform Type', [en: 'package'])
+
+        // Add Transformers and Transforms define in the demo-config.groovy
+        grailsApplication.config.systransforms.each { tr ->
+            def transformName = tr.transforms_name //"${tr.name}-${tr.format}-${tr.type}"
+
+            def transforms = Transforms.findByName("${transformName}")
+            def transformer = Transformer.findByName("${tr.transformer_name}")
+            if (transformer) {
+                if (transformer.url != tr.url) {
+                    log.debug("Change transformer [${tr.transformer_name}] url to ${tr.url}");
+                    transformer.url = tr.url;
+                    transformer.save(failOnError: true, flush: true)
+                } else {
+                    log.debug("${tr.transformer_name} present and correct");
+                }
+            } else {
+                log.debug("Create transformer ${tr.transformer_name}...");
+                transformer = new Transformer(
+                        name: tr.transformer_name,
+                        url: tr.url).save(failOnError: true, flush: true)
+            }
+
+            log.debug("Create transform ${transformName}...");
+            def types = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Type'))
+            def formats = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Format'))
+
+            if (transforms) {
+
+                if (tr.type) {
+                    // split values
+                    def type_list = tr.type.split(",")
+                    type_list.each { new_type ->
+                        if (!transforms.accepts_types.any { f -> f.value == new_type }) {
+                            log.debug("Add transformer [${transformName}] type: ${new_type}");
+                            def type = types.find { t -> t.value == new_type }
+                            transforms.addToAccepts_types(type)
+                        }
+                    }
+                }
+                if (transforms.accepts_format.value != tr.format) {
+                    log.debug("Change transformer [${transformName}] format to ${tr.format}");
+                    def format = formats.findAll { t -> t.value == tr.format }
+                    transforms.accepts_format = format[0]
+                }
+                if (transforms.return_mime != tr.return_mime) {
+                    log.debug("Change transformer [${transformName}] return format to ${tr.'mime'}");
+                    transforms.return_mime = tr.return_mime;
+                }
+                if (transforms.return_file_extention != tr.return_file_extension) {
+                    log.debug("Change transformer [${transformName}] return format to ${tr.'return'}");
+                    transforms.return_file_extention = tr.return_file_extension;
+                }
+                if (transforms.path_to_stylesheet != tr.path_to_stylesheet) {
+                    log.debug("Change transformer [${transformName}] return format to ${tr.'path'}");
+                    transforms.path_to_stylesheet = tr.path_to_stylesheet;
+                }
+                transforms.save(failOnError: true, flush: true)
+            } else {
+                def format = formats.findAll { t -> t.value == tr.format }
+
+                assert format.size() == 1
+
+                transforms = new Transforms(
+                        name: transformName,
+                        accepts_format: format[0],
+                        return_mime: tr.return_mime,
+                        return_file_extention: tr.return_file_extension,
+                        path_to_stylesheet: tr.path_to_stylesheet,
+                        transformer: transformer).save(failOnError: true, flush: true)
+
+                def type_list = tr.type.split(",")
+                type_list.each { new_type ->
+                    def type = types.find { t -> t.value == new_type }
+                    transforms.addToAccepts_types(type)
+                }
+            }
         }
-      }
-    }
 
-    def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name:'AutoApproveMemberships', tp:1, defvalue:'true', value:'true').save();
 
-    // SpringSecurityUtils.clientRegisterFilter( 'oracleSSOFilter', SecurityFilterPosition.PRE_AUTH_FILTER.order)
-    // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER) 
-    SpringSecurityUtils.clientRegisterFilter('ediauthFilter', SecurityFilterPosition.PRE_AUTH_FILTER) 
-    //SpringSecurityUtils.clientRegisterFilter('apiauthFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
+        if (grailsApplication.config.localauth) {
+            log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}");
+
+            grailsApplication.config.sysusers.each { su ->
+                log.debug("test ${su.name} ${su.pass} ${su.display} ${su.roles}");
+                def user = User.findByUsername(su.name)
+                if (user) {
+                    if (user.password != su.pass) {
+                        log.debug("Hard change of user password from config ${user.password} -> ${su.pass}");
+                        user.password = su.pass;
+                        user.save(failOnError: true)
+                    } else {
+                        log.debug("${su.name} present and correct");
+                    }
+                } else {
+                    log.debug("Create user...");
+                    user = new User(
+                            username: su.name,
+                            password: su.pass,
+                            display: su.display,
+                            email: su.email,
+                            enabled: true).save(failOnError: true)
+                }
+
+                log.debug("Add roles for ${su.name}");
+                su.roles.each { r ->
+                    def role = Role.findByAuthority(r)
+                    if (!(user.authorities.contains(role))) {
+                        log.debug("  -> adding role ${role}");
+                        UserRole.create user, role
+                    } else {
+                        log.debug("  -> ${role} already present");
+                    }
+                }
+            }
+        }
+
+        def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: 1, defvalue: 'true', value: 'true').save();
+
+        // SpringSecurityUtils.clientRegisterFilter( 'oracleSSOFilter', SecurityFilterPosition.PRE_AUTH_FILTER.order)
+        // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
+        SpringSecurityUtils.clientRegisterFilter('ediauthFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
+        //SpringSecurityUtils.clientRegisterFilter('apiauthFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
     SpringSecurityUtils.clientRegisterFilter('apiFilter', SecurityFilterPosition.BASIC_AUTH_FILTER)
 
     def uo_with_null_role = UserOrg.findAllByFormalRoleIsNull()
@@ -281,8 +276,11 @@ class BootStrap {
       log.warn("There are user org rows with no role set. Please update the table to add role FKs");
     }
 
-    setupRefdata();
-    log.debug("refdata setup");
+        log.debug("setupRefdata ..")
+        setupRefdata()
+
+        log.debug("setupContentItems ..")
+        setupContentItems()
 
         // if ( grailsApplication.config.doDocstoreMigration == true ) {
         //   docstoreService.migrateToDb();
@@ -295,6 +293,9 @@ class BootStrap {
         initializeDefaultSettings()
         log.debug("Init completed....");
    
+    }
+
+    def destroy = {
     }
 
     def initializeDefaultSettings(){
@@ -312,136 +313,166 @@ class BootStrap {
     }
 
     def createDefaultSysProps(admObj){
-    def requiredProps = [
-    [propname:"onix_ghost_license",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"Jisc Collections Model Journals License 2015",note:"Default license used for comparison when viewing a single onix license."],
-    [propname:"net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"columnHeader",note:"Only show 1 column header for csv"],
-    [propname:"net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"columnHeader",note:"Only show 1 column header for xls"],
-    [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageHeader",note:" Remove header/footer from csv/xls"],
-    [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.2",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageFooter",note:" Remove header/footer from csv/xls"],
-    [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.1",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageHeader",note:" Remove header/footer from csv/xls"],
-    [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.2",descr:PropertyDefinition.SYS_CONF,type:String.toString(),val:"pageFooter",note:" Remove header/footer from csv/xls"]
-    ]
-    createPropertyDefinitions(requiredProps)
-    requiredProps.each{
-      def type = PropertyDefinition.findByNameAndDescr(it.propname,it.descr)
-      if(!SystemAdminCustomProperty.findByType(type)){
-        def newProp = new SystemAdminCustomProperty(type:type,owner:admObj,stringValue:it.val,note:it.note)
-        newProp.save()
-      }
-    }
-  }
-
-    def createLicenseProperties() {
-        def existingProps = LicenseCustomProperty.findAll()
 
         def requiredProps = [
-                [propname:"Concurrent Access", descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
-                [propname:"Concurrent Users",  descr:PropertyDefinition.LIC_PROP, type:Integer.toString()],
-                [propname:"Remote Access",     descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Walk In Access",    descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Multi Site Access", descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Partners Access",   descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Alumni Access",     descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"ILL - InterLibraryLoans",   descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Include In Coursepacks",    descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Include in VLE",    descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Enterprise Access", descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Post Cancellation Access Entitlement",  descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                [propname:"Cancellation Allowance",    descr:PropertyDefinition.LIC_PROP, type:String.toString()],
-                [propname:"Notice Period",     descr:PropertyDefinition.LIC_PROP, type:String.toString()],
-                [propname:"Signed",            descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO']]
-
+                [propname:"onix_ghost_license", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."],
+                [propname:"net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"columnHeader", note:"Only show 1 column header for csv"],
+                [propname:"net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"columnHeader", note:"Only show 1 column header for xls"],
+                [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageHeader", note:" Remove header/footer from csv/xls"],
+                [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.2", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageFooter", note:" Remove header/footer from csv/xls"],
+                [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageHeader", note: " Remove header/footer from csv/xls"],
+                [propname: "net.sf.jasperreports.export.csv.exclude.origin.band.2", descr: PropertyDefinition.SYS_CONF, type: String.toString(), val: "pageFooter", note: " Remove header/footer from csv/xls"]
+        ]
         createPropertyDefinitions(requiredProps)
 
-        def requiredOAProps = [
-                [propname:"Type",           descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'License.OA.Type'],
-                [propname:"Electronically Archivable Version",  descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'License.OA.eArcVersion']]
+        requiredProps.each {
+            def type = PropertyDefinition.findByNameAndDescr(it.propname, it.descr)
+            if (!SystemAdminCustomProperty.findByType(type)) {
+                def newProp = new SystemAdminCustomProperty(type: type, owner: admObj, stringValue: it.val, note: it.note)
+                newProp.save()
+            }
+        }
+    }
 
-        createPropertyDefinitions(requiredOAProps)
+    def createLicenseProperties() {
+
+        def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
+
+        def requiredProps = [
+                [name: [en: "Concurrent Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'ConcurrentAccess'],
+                [name: [en: "Concurrent Users"], descr: allDescr, type: Integer.toString()],
+                [name: [en: "Remote Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Walk In Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Multi Site Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Partners Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Alumni Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "ILL - InterLibraryLoans"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Include In Coursepacks"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Include in VLE"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Enterprise Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Post Cancellation Access Entitlement"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Cancellation Allowance"], descr: allDescr, type: String.toString()],
+                [name: [en: "Notice Period"], descr: allDescr, type: String.toString()],
+                [name: [en: "Signed"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO']
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredProps)
+
+        def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
+
+        def requiredOAProps = [
+                [name: [en: "Type"], descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],
+                [name: [en: "Electronically Archivable Version"], descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.eArcVersion']
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
         def requiredARCProps = []
-
         createPropertyDefinitions(requiredARCProps)
 
         log.debug("createLicenseProperties completed");
     }
 
-    def createPrivateProperties(){
-        def existingOrgProps = OrgPrivateProperty.findAll()
-        def requiredOrgProps = [[propname:"Org Property 1", descr:PropertyDefinition.ORG_PROP, type:String.toString()],
-                                [propname:"Org Property 2", descr:PropertyDefinition.ORG_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                                [propname:"Org Property 3", descr:PropertyDefinition.ORG_PROP, type:RefdataValue.toString(), cat:'OrgSector']]
+    def createPrivateProperties() {
 
-        createPropertyDefinitions(requiredOrgProps)
+        def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
-        def existingPrsProps = PersonPrivateProperty.findAll()
-        def requiredPrsProps = [[propname:"Person Property 1", descr:PropertyDefinition.PRS_PROP, type:String.toString()],
-                                [propname:"Person Property 2", descr:PropertyDefinition.PRS_PROP, type:RefdataValue.toString(), cat:'YNO'],
-                                [propname:"Person Property 3", descr:PropertyDefinition.PRS_PROP, type:RefdataValue.toString(), cat:'Person Role']]
+        def requiredOrgProps = [
+                [name: [en: "Org Property 1"], descr: allOrgDescr, type: String.toString()],
+                [name: [en: "Org Property 2"], descr: allOrgDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Org Property 3"], descr: allOrgDescr, type: RefdataValue.toString(), cat: 'OrgSector']
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
 
-        createPropertyDefinitions(requiredPrsProps)
+        def allPrsDescr = [en: PropertyDefinition.PRS_PROP, de: PropertyDefinition.PRS_PROP]
+
+        def requiredPrsProps = [
+                [name: [en: "Person Property 1"], descr: allPrsDescr, type: String.toString()],
+                [name: [en: "Person Property 2"], descr: allPrsDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Person Property 3"], descr: allPrsDescr, type: RefdataValue.toString(), cat: 'Person Role']
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredPrsProps)
 
         log.debug("createPrivateProperties completed");
     }
 
-    def createPropertyDefinitions(requiredProps){
+    def createPropertyDefinitions(requiredProps) {
 
-    requiredProps.each{ default_prop ->
-        def existing_prop = PropertyDefinition.findByName(default_prop.propname)
-        if ( existing_prop ) {
-            existing_prop.type = default_prop.type
-            existing_prop.descr = default_prop.descr
-            existing_prop.save()
-        }else{
+        requiredProps.each { default_prop ->
+            def prop = PropertyDefinition.findByName(default_prop.propname)
 
-            log.debug("Unable to locate property definition for ${default_prop.propname}.. Creating");
+            if (!prop) {
+                log.debug("Unable to locate property definition for ${default_prop.propname} .. creating")
+                prop = new PropertyDefinition(name: default_prop.propname)
 
-            def newProp = new PropertyDefinition(name: default_prop.propname,
-                                               type: default_prop.type,
-                                               descr: default_prop.descr)
-            if ( default_prop.cat != null )
-                newProp.setRefdataCategory(default_prop.cat);
+                if (default_prop.cat != null) {
+                    prop.setRefdataCategory(default_prop.cat)
+                }
+            }
+            prop.type = default_prop.type
+            prop.descr = default_prop.descr
+            prop.save(failOnError: true)
 
-            newProp.save(failOnError:true)
         }
     }
-  }
 
-    def addDefaultPageMappings(){
-      if(! SitePage.findAll()){
-        def home = new SitePage(alias:"Home", action:"index",controller:"home").save()
-        def profile = new SitePage(alias:"Profile", action:"index",controller:"profile").save()
-        def pages = new SitePage(alias:"Pages", action:"managePages",controller:"spotlight").save()
+    def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
-        dataloadService.updateSiteMapping()
-      }
+        requiredProps.each { default_prop ->
+            def prop = PropertyDefinition.findByName(default_prop.name['en'])
 
-  }
-    def addDefaultJasperReports(){
-        //Add default Jasper reports, if there are currently no reports in DB
-    log.debug("Query database for jasper reports")
-    def reportsFound = JasperReportFile.findAll()
-    def defaultReports = ["floating_titles","match_coverage","no_identifiers","title_no_url",
-        "previous_expected_sub","previous_expected_pkg","duplicate_titles"]
-    defaultReports.each { reportName ->
+            if (!prop) {
+                log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
+                prop = new PropertyDefinition(name: default_prop.name['en'])
 
-      def path = "resources/jasper_reports/"
-      def filePath = path + reportName + ".jrxml"
-      def inputStreamBytes = grailsApplication.parentContext.getResource("classpath:$filePath").inputStream.bytes
-      def newReport = reportsFound.find{ it.name == reportName }
-      if( newReport ){
-        newReport.setReportFile(inputStreamBytes)
-        newReport.save()
-      }else{
-        newReport = new JasperReportFile(name:reportName, reportFile: inputStreamBytes).save()
-      }
-      if(newReport.hasErrors()){
-        log.error("Jasper Report creation for "+reportName+".jrxml failed with errors: \n")
-        newReport.errors.each{
-          log.error(it+"\n")
+                if (default_prop.cat != null) {
+                    prop.setRefdataCategory(default_prop.cat)
+                }
+            }
+
+            prop.type = default_prop.type
+            prop.descr = default_prop.descr['en']
+            prop.save(failOnError: true)
+
+            I10nTranslation.createOrUpdateI10n(prop, 'name', default_prop.name)
+            I10nTranslation.createOrUpdateI10n(prop, 'descr', default_prop.descr)
         }
-      }   
-    } 
+    }
+
+    def addDefaultPageMappings() {
+        if (!SitePage.findAll()) {
+            def home = new SitePage(alias: "Home", action: "index", controller: "home").save()
+            def profile = new SitePage(alias: "Profile", action: "index", controller: "profile").save()
+            def pages = new SitePage(alias: "Pages", action: "managePages", controller: "spotlight").save()
+
+            dataloadService.updateSiteMapping()
+        }
+
+    }
+
+    def addDefaultJasperReports() {
+        //Add default Jasper reports, if there are currently no reports in DB
+        log.debug("Query database for jasper reports")
+        def reportsFound = JasperReportFile.findAll()
+        def defaultReports = ["floating_titles", "match_coverage", "no_identifiers", "title_no_url",
+                              "previous_expected_sub", "previous_expected_pkg", "duplicate_titles"]
+        defaultReports.each { reportName ->
+
+            def path = "resources/jasper_reports/"
+            def filePath = path + reportName + ".jrxml"
+            def inputStreamBytes = grailsApplication.parentContext.getResource("classpath:$filePath").inputStream.bytes
+            def newReport = reportsFound.find { it.name == reportName }
+            if (newReport) {
+                newReport.setReportFile(inputStreamBytes)
+                newReport.save()
+            } else {
+                newReport = new JasperReportFile(name: reportName, reportFile: inputStreamBytes).save()
+            }
+            if (newReport.hasErrors()) {
+                log.error("Jasper Report creation for " + reportName + ".jrxml failed with errors: \n")
+                newReport.errors.each {
+                    log.error(it + "\n")
+                }
+            }
+        }
 
     // Subscription.metaClass.static.methodMissing = { String methodName, args ->
     //   if ( methodName.startsWith('setNsId') ) {
@@ -452,10 +483,8 @@ class BootStrap {
     //   }
     // }
   }
-    def destroy = {
-  }
 
-    def ensurePermGrant(role,perm) {
+    def ensurePermGrant(role, perm) {
     log.debug("ensurePermGrant");
     def existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
     if ( !existingPermGrant ) {
@@ -475,24 +504,25 @@ class BootStrap {
     def lic = License.name
     def sub = Subscription.name
     def pkg = Package.name
-    def valMap = ["Licensor":lic,"Licensee":lic,"Licensing Consortium":lic,"Negotiator":lic,"Subscriber":sub,
-    "Provider":sub,"Subscription Agent":sub,"Subscription Consortia":sub,"Content Provider":pkg,"Package Consortia":pkg]
-    valMap.each{role,group->
-      def val = RefdataCategory.lookupOrCreate("Organisational Role",role)
-      val.setGroup(group)
+    def valMap = ["Licensor": lic, "Licensee": lic, "Licensing Consortium": lic, "Negotiator": lic, "Subscriber":sub, "Provider":sub, "Subscription Agent": sub, "Subscription Consortia": sub, "Content Provider": pkg, "Package Consortia": pkg]
+        valMap.each{ role, group->
+      def val = RefdataCategory.lookupOrCreate("Organisational Role", role)
+      val
+              .setGroup(group)
       val.save()
-    }
+        }
   }
 
     // Setup extra refdata
     def setupRefdata = {
-    setOrgRoleGroups()
-    // -------------------------------------------------------------------
-    // ONIX-PL Additions
-    // -------------------------------------------------------------------
-    // New document type
-    RefdataCategory.lookupOrCreate('Document Type','ONIX-PL License')
-    RefdataCategory.lookupOrCreate('Document Type','License')
+
+        setOrgRoleGroups()
+        // -------------------------------------------------------------------
+        // ONIX-PL Additions
+        // -------------------------------------------------------------------
+        // New document type
+        RefdataCategory.lookupOrCreate('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'])
+        RefdataCategory.lookupOrCreate('Document Type', [en: 'License', de: 'Lizenz'])
 
     // Controlled values from the <UsageType> element.
 
@@ -576,40 +606,6 @@ class BootStrap {
     RefdataCategory.lookupOrCreate('IEMedium', 'Print').save();
     RefdataCategory.lookupOrCreate('IEMedium', 'Electronic').save();
     RefdataCategory.lookupOrCreate('IEMedium', 'Print and Electronic').save();
-
-    log.debug("validate content items...");
-    // The default template for a property change on a title
-    ContentItem.lookupOrCreate('ChangeNotification.TitleInstance.propertyChange','','''
-Title change - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
-''');
-
-    ContentItem.lookupOrCreate('ChangeNotification.TitleInstance.identifierAdded','','''
-An identifier was added to title ${OID?.title}.
-''');
-
-    ContentItem.lookupOrCreate('ChangeNotification.TitleInstance.identifierRemoved','','''
-An identifier was removed from title ${OID?.title}.
-''');
-
-    ContentItem.lookupOrCreate('ChangeNotification.TitleInstancePackagePlatform.updated','','''
-TIPP change for title ${OID?.title?.title} - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
-''');
-
-    ContentItem.lookupOrCreate('ChangeNotification.TitleInstancePackagePlatform.added','','''
-TIPP Added for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
-''');
-
-    ContentItem.lookupOrCreate('ChangeNotification.TitleInstancePackagePlatform.deleted','','''
-TIPP Deleted for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
-''');
-
-    ContentItem.lookupOrCreate('ChangeNotification.Package.created','','''
-New package added with id ${OID.id} - "${OID.name}".
-''');
-
-    ContentItem.lookupOrCreate('kbplus.noHostPlatformURL','','''
-No Host Platform URL Content
-''');
 
    RefdataCategory.lookupOrCreate('CostItemStatus', 'Estimate').save();
    RefdataCategory.lookupOrCreate('CostItemStatus', 'Commitment').save();
@@ -819,4 +815,40 @@ No Host Platform URL Content
       RefdataCategory.lookupOrCreate("ReminderTrigger","Subscription Manual Renewal Date")
 
   }
+
+    def setupContentItems = {
+
+    // The default template for a property change on a title
+    ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.propertyChange','', '''
+Title change - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
+''');
+
+    ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.identifierAdded','', '''
+An identifier was added to title ${OID?.title}.
+''');
+
+    ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.identifierRemoved','', '''
+An identifier was removed from title ${OID?.title}.
+''');
+
+    ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.updated','', '''
+TIPP change for title ${OID?.title?.title} - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
+''');
+
+    ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.added','', '''
+TIPP Added for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
+''');
+
+    ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.deleted','', '''
+TIPP Deleted for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
+''');
+
+    ContentItem.lookupOrCreate ('ChangeNotification.Package.created','', '''
+New package added with id ${OID.id} - "${OID.name}".
+''');
+
+    ContentItem.lookupOrCreate ('kbplus.noHostPlatformURL','', '''
+No Host Platform URL Content
+''');
+    }
 }

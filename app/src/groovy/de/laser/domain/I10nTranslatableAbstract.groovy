@@ -1,10 +1,18 @@
 package de.laser.domain
 
+import org.springframework.context.i18n.LocaleContextHolder
+
 abstract class I10nTranslatableAbstract {
 
     protected i10nStorage = [:]
 
-    def getTranslation(String property, String locale) {
+    // get translation; current locale
+    def getI10n(String property) {
+        getI10n(property, LocaleContextHolder.getLocale().toString())
+    }
+
+    // get translation
+    def getI10n(String property, String locale) {
         def result
 
         if (I10nTranslation.supportedLocales.contains(locale.toLowerCase())) {
@@ -16,6 +24,7 @@ abstract class I10nTranslatableAbstract {
         result
     }
 
+    // returning virtual property for template tags
     def propertyMissing(String name) {
         if (! i10nStorage.containsKey(name)) {
 
@@ -30,6 +39,7 @@ abstract class I10nTranslatableAbstract {
         i10nStorage["${name}"]
     }
 
+    // setting virtual property
     def propertyMissing(String name, value) {
         i10nStorage["${name}"] = value
     }

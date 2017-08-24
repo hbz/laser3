@@ -34,6 +34,28 @@ class I10nTranslation {
         referenceId(unique: ['referenceClass', 'referenceField'])
     }
 
+    static get(Object reference, String referenceField) {
+        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getSimpleName(), reference.getId(), referenceField)
+
+        i10n
+    }
+
+    static get(Object reference, String referenceField, String locale) {
+        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getSimpleName(), reference.getId(), referenceField)
+
+        switch(locale.toLowerCase()){
+            case 'de':
+                return i10n?.valueDe
+                break
+            case 'en':
+                return i10n?.valueEn
+                break
+            case 'fr':
+                return i10n?.valueFr
+                break
+        }
+    }
+
     static set(Object reference, String referenceField, Map values) {
         if (!reference || !referenceField)
             return
@@ -65,25 +87,13 @@ class I10nTranslation {
         i10n
     }
 
-    static get(Object reference, String referenceField) {
-        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getSimpleName(), reference.getId(), referenceField)
+    static createOrUpdateI10n(def obj, String referenceField, Map translations) {
+        def values = [:]
 
-        i10n
-    }
+        translations['en'] ? (values << ['en':translations['en']]) : null
+        translations['de'] ? (values << ['de':translations['de']]) : null
+        translations['fr'] ? (values << ['fr':translations['fr']]) : null
 
-    static get(Object reference, String referenceField, String locale) {
-        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getSimpleName(), reference.getId(), referenceField)
-
-        switch(locale.toLowerCase()){
-            case 'de':
-                return i10n?.valueDe
-                break
-            case 'en':
-                return i10n?.valueEn
-                break
-            case 'fr':
-                return i10n?.valueFr
-                break
-        }
+        I10nTranslation.set(obj, referenceField, values)
     }
 }

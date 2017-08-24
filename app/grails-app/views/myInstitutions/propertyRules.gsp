@@ -48,7 +48,7 @@
                                       optionValue="value"
                                       optionKey="key" />
 
-                            <g:select name="privatePropertyRule.propertyDefinition.id"
+                            <laser:select name="privatePropertyRule.propertyDefinition.id"
                                       from="${PropertyDefinition.findAllByDescr(pdesc.value)}"
                                       optionValue="name"
                                       optionKey="id" />
@@ -76,8 +76,8 @@
                                 <tbody>
                                     <g:each in="${ppRules}" var="ppr">
                                         <tr>
-                                            <td>${ppr.propertyDefinition.descr}</td>
-                                            <td>${ppr.propertyDefinition.name}</td>
+                                            <td>${ppr.propertyDefinition.getI10n('descr')}</td>
+                                            <td>${ppr.propertyDefinition.getI10n('name')}</td>
                                             <td>
                                                 <g:checkBox name="propertyRuleDeleteIds" value="${ppr?.id}" checked="false" />
                                             </td>
