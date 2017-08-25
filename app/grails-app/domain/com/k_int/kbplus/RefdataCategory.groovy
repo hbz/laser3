@@ -22,7 +22,7 @@ class RefdataCategory extends I10nTranslatableAbstract {
     @Transient
     public static final TI_STATUS = 'TitleInstanceStatus'
     @Transient
-    public static final LIC_STATUTS= 'License Status'
+    public static final LIC_STATUS = 'License Status'
     @Transient
     public static final LIC_TYPE = 'License Type'
     @Transient
@@ -40,27 +40,40 @@ class RefdataCategory extends I10nTranslatableAbstract {
     static constraints = {
     }
 
-    static def lookupOrCreate(String category_name, Map rdvValues) {
-
-        //def category_name = catValues['key']
+    /**
+     * Create RefdataCategory and matching I10nTranslation
+     *
+     * @param category_name
+     * @param rdcValues
+     * @return
+     */
+    static def locCategory(String category_name, Map rdcValues) {
 
         def cat = RefdataCategory.findByDescIlike(category_name)
         if (! cat) {
             cat = new RefdataCategory(desc:category_name).save()
         }
-/*
-        def newCatValues = [:]
-        catValues['en'] ? (newCatValues << ['en':catValues['en']]) : null
-        catValues['de'] ? (newCatValues << ['de':catValues['de']]) : null
-        catValues['fr'] ? (newCatValues << ['fr':catValues['fr']]) : null
 
-        def rdcI10n = I10nTranslation.get(cat, 'desc')
-        if (! rdcI10n) {
-            rdcI10n = new I10nTranslation()
-            rdcI10n.set(cat, 'desc', newCatValues)
-            rdcI10n.save()
+        I10nTranslation.createOrUpdateI10n(cat, 'desc', rdcValues)
+
+        cat
+    }
+
+    /**
+     * Create RefdataValue and matching I10nTranslation.
+     * Create needed RefdataCategory without I10nTranslation, if not found
+     *
+     * @param category_name
+     * @param rdvValues
+     * @return
+     */
+    static def locRefdataValue(String category_name, Map rdvValues) {
+
+        def cat = RefdataCategory.findByDescIlike(category_name)
+        if (! cat) {
+            cat = new RefdataCategory(desc:category_name).save()
         }
-*/
+
         def result = RefdataValue.findByOwnerAndValueIlike(cat, rdvValues['en'])
         if (! result) {
             result = new RefdataValue(owner: cat, value: rdvValues['en']).save(flush: true)

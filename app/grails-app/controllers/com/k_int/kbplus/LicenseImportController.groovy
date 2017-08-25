@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import grails.plugins.springsecurity.Secured
-import org.mozilla.universalchardet.UniversalDetector
 import org.xml.sax.SAXException
 
 class LicenseImportController {
@@ -227,7 +226,7 @@ class LicenseImportController {
 
     log.debug("replaceOplRecord: ${replaceOplRecord} createNewDocument: ${createNewDocument} createNewLicense: ${createNewLicense} upload.replace_opl: ${upload.replace_opl} license: ${upload.license!=null}")
     importResult.replace = replaceOplRecord
-    RefdataValue currentStatus = RefdataCategory.lookupOrCreate(RefdataCategory.LIC_STATUTS, 'Current')
+    RefdataValue currentStatus = RefdataCategory.lookupOrCreate(RefdataCategory.LIC_STATUS, 'Current')
     RefdataValue templateType  = RefdataCategory.lookupOrCreate(RefdataCategory.LIC_TYPE, 'Template')
     // Create a new license
 

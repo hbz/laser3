@@ -459,16 +459,18 @@ class AjaxController {
         }
       }
 
-      def cq = Org.executeQuery(config.countQry,query_params);    
-      def rq = Org.executeQuery(config.rowQry,
+      def cq = RefdataValue.executeQuery(config.countQry,query_params);
+      def rq = RefdataValue.executeQuery(config.rowQry,
                                 query_params,
                                 [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
 
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-        def no_ws = rowobj[config.cols[0]].replaceAll(' ','');
-        def local_text = message(code:"refdata.${no_ws}", default:"${rowobj[config.cols[0]]}");
-        result.add([value:"${rowobj.class.name}:${rowobj.id}",text:"${local_text}"]);
+        //def no_ws = rowobj[config.cols[0]].replaceAll(' ','');
+        //def local_text = message(code:"refdata.${no_ws}", default:"${rowobj[config.cols[0]]}");
+        //result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"]);
+        // i10n
+        result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"]);
       }
     }
     else {

@@ -47,8 +47,9 @@
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
-    
-	<g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
+
+    <div class="container">
+	  <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
 	    <div class="container">
 	    <h1>${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
 	      
@@ -120,8 +121,9 @@
 	        </div>
 	    </div>
     </g:form>
-  	<br/>
-  	
+  	  <br/>
+    </div>
+  
     <div class="container">
       <dl>
         <dt>${message(code:'title.plural', default:'Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(titles.size())),num_ti_rows])} )</dt>

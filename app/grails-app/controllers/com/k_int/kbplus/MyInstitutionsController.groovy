@@ -183,10 +183,9 @@ class MyInstitutionsController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-
         def prop_types_list = PropertyDefinition.findAll()
           result.custom_prop_types = prop_types_list.collectEntries{
-          [(it.name) : it.type + "&&" + it.refdataCategory]
+          [(it.getI10n('name')) : it.type + "&&" + it.refdataCategory]
           //We do this for the interface, so we can display select box when we are working with refdata.
           //Its possible there is another way
         }
