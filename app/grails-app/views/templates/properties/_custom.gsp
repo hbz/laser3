@@ -46,7 +46,6 @@
             <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                 <th>${message(code:'license.property.table.paragraph')}</th>
             </g:if>
-            <th>${message(code:'license.property.table.date')}</th>
             <th>${message(code:'license.property.table.notes')}</th>
             <th>${message(code:'license.property.table.delete')}</th>
         </tr>
@@ -66,19 +65,18 @@
                         <g:elseif test="${prop.type.type == BigDecimal.toString()}">
                             <g:xEditable owner="${prop}" type="text" field="decValue"/>
                         </g:elseif>
+                        <g:elseif test="${prop.type.type == Date.toString()}">
+                            <g:xEditable owner="${prop}" type="date" field="dateValue"/>
+                        </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
                         </g:elseif>
                     </td>
-                    %{-- prüfen, ob property hat paragraph --}%
                     <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                         <td>
                             <g:xEditable owner="${prop}" type="text" field="paragraph"/>
                         </td>
                     </g:if>
-                    <td>
-                        <g:xEditable owner="${prop}" type="date" field="dateValue" />
-                    </td>
                     <td>
                         <g:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
