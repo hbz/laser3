@@ -9,7 +9,7 @@
   <body>
 
   <laser:breadcrumbs>
-    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
     <laser:crumb message="myinst.currentSubscriptions.label" class="active" />
     <g:if test="${editable}">
       <laser:crumbAsBadge message="default.editable" class="badge-warning" />
@@ -37,7 +37,7 @@
 
     <div class="container">
       <div class="well">
-      <g:form action="currentSubscriptions" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
+      <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
 
 
 
@@ -82,7 +82,7 @@
           <g:each in="${subscriptions}" var="s">
             <tr>
               <td colspan="7">
-                <g:link controller="subscriptionDetails" action="index" params="${[shortcode:params.shortcode]}" id="${s.id}">
+                <g:link controller="subscriptionDetails" action="index" params="${[shortcode:institution.shortcode]}" id="${s.id}">
                   <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
                   <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
                 </g:link>
@@ -92,7 +92,7 @@
               </td>
               <td rowspan="2">
                 <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
-                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:params.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                 </g:if>
               </td>
             </tr>

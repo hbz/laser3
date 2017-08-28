@@ -12,17 +12,12 @@
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
   </head>
   <body>
-
-    <laser:breadcrumbs>
-      <laser:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}" text="${subscriptionInstance.subscriber.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-      <laser:crumb message="subscription.label" class="active" />
-    </laser:breadcrumbs>
   
-<!--    <div class="container">
+    <div class="container">
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <g:if test="${subscriptionInstance.subscriber}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
+        <g:if test="${params.shortcode}">
+          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.label', default:'Subscription Details')}</g:link> </li>
         
@@ -34,7 +29,7 @@
         </g:if>
         <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
       </ul>
-    </div>-->
+    </div>
 
     <g:if test="${flash.message}">
       <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
@@ -64,10 +59,19 @@
                       <g:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' />
                   </dd>
               </dl>
-              <dl><dt>${message(code:'licence')}</dt><dd><g:if test="${subscriptionInstance.subscriber}">
-                        <g:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                        <g:if test="${subscriptionInstance.owner != null}">(<g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>)</g:if>
-                      </g:if><g:else>N/A (Subscription offered)</g:else>
+              <dl>
+                <dt>${message(code:'license')}</dt>
+                <dd>
+                  <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
+                    <g:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                    <g:if test="${subscriptionInstance.owner != null}">
+                    (
+                      <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> 
+                      <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
+                    )
+                    </g:if>
+                  </g:if>
+                  <g:else>N/A (Subscription offered)</g:else>
                   </dd>
               </dl>
               <dl>
