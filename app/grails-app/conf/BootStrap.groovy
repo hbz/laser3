@@ -23,8 +23,6 @@ class BootStrap {
         def so_filetype = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name:'Subscription Offered File');
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name:'Platforms File');
 
-        dbChanges()  // only tmp
-
     // Permissions
     def edit_permission = Perm.findByCode('edit') ?: new Perm(code:'edit').save(failOnError: true)
     def view_permission = Perm.findByCode('view') ?: new Perm(code:'view').save(failOnError: true)
@@ -301,58 +299,6 @@ class BootStrap {
         initializeDefaultSettings()
         log.debug("Init completed....");
    
-    }
-
-    // TODO remove; tmp only
-    def dbChanges = {
-
-        log.info("applying database changes @ refactoring:2017-08-27")
-
-        def rdc1 = RefdataCategory.findByDesc('Licence.OA.Type')
-        if (rdc1) {
-            rdc1.setDesc('License.OA.Type')
-            rdc1.save()
-            log.info("updated RefdataCategory(${rdc1.id}).desc from 'Licence.OA.Type' to '${rdc1.desc}'")
-        }
-
-        def rdc2 = RefdataCategory.findByDesc('Licence.OA.eArcVersion')
-        if (rdc2) {
-            rdc2.setDesc('License.OA.eArcVersion')
-            rdc2.save()
-            log.info("updated RefdataCategory(${rdc2.id}).desc from 'Licence.OA.eArcVersion' to '${rdc2.desc}'" )
-        }
-
-        RefdataValue.findAllByOwnerAndValue(
-                RefdataCategory.findByDesc('Document Type'), 'ONIX-PL Licence'
-        ).each{ it1 ->
-            it1.setValue('ONIX-PL License')
-            it1.save()
-            log.info("updated RefdataValue(${it1.id}).value from 'ONIX-PL Licence' to '${it1.value}'" )
-        }
-
-        RefdataValue.findAllByOwnerAndValue(
-                RefdataCategory.findByDesc('Document Type'), 'Licence'
-        ).each{ it2 ->
-            it2.setValue('License')
-            it2.save()
-            log.info("updated RefdataValue(${it2.id}).value from 'Licence' to '${it2.value}'" )
-        }
-
-        RefdataValue.findAllByOwnerAndValue(
-                RefdataCategory.findByDesc('Transform Type'), 'licence'
-        ).each{ it3 ->
-            it3.setValue('license')
-            it3.save()
-            log.info("updated RefdataValue(${it3.id}).value from 'licence' to '${it3.value}'" )
-        }
-
-        RefdataValue.findAllByOwnerAndValue(
-                RefdataCategory.findByDesc('Person Responsibility'), 'Specific licence editor'
-        ).each{ it4 ->
-            it4.setValue('Specific license editor')
-            it4.save()
-            log.info("updated RefdataValue(${it4.id}).value from 'Specific licence editor' to ${it4.value}" )
-        }
     }
 
     def initializeDefaultSettings(){
