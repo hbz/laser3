@@ -5,7 +5,6 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.apache.log4j.DailyRollingFileAppender
 import org.apache.log4j.RollingFileAppender
 
-
 // @NotificationsJob
 // - enable notification
 // - enable reminder
@@ -321,8 +320,7 @@ onix = [
 ]
 
 grails.config.locations = [ "file:${userHome}/.grails/${appName}-config.groovy"]
-
-System.out.println("conf locations: loc:${grails.config.locations}");
+System.out.println("\nlocal config override: ${grails.config.locations}");
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
@@ -347,7 +345,6 @@ grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
 // What URL patterns should be processed by the resources plugin
 grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
 grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**']
-
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "none" // none, html, base64
@@ -384,7 +381,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://laser-dev.hbz-nrw.de" // TODO: remind to change if deploy on other server
+        grails.serverURL = "http://localhost:8080/demo" // override in local config
     }
 }
 
@@ -429,7 +426,6 @@ if (base) {
    logWatchFile = new File ("${base}/logs/catalina.out")
 
    if (!logWatchFile.exists()) {
-
      // Need to create one in current context.
      base = false;
    }
@@ -520,22 +516,23 @@ log4j = {
 }
 
 // Added by the Spring Security Core plugin:
-grails.gsp.tldScanPattern='classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
-grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.k_int.kbplus.auth.User'
+grails.gsp.tldScanPattern                                       = 'classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
+grails.plugins.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
-grails.plugins.springsecurity.userLookup.usernamePropertyName='username'
-grails.plugins.springsecurity.authority.className = 'com.k_int.kbplus.auth.Role'
-grails.plugins.springsecurity.securityConfigType = "Annotation"
+grails.plugins.springsecurity.userLookup.usernamePropertyName   = 'username'
+grails.plugins.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
+grails.plugins.springsecurity.securityConfigType                = "Annotation"
 
-grails.plugins.springsecurity.providerNames = ['preAuthenticatedAuthenticationProvider',
-  'daoAuthenticationProvider' // ,
-  //                                               'anonymousAuthenticationProvider',
-  //                                               'rememberMeAuthenticationProvider'
+grails.plugins.springsecurity.providerNames = [
+        'preAuthenticatedAuthenticationProvider',
+        'daoAuthenticationProvider' // ,
+        // 'anonymousAuthenticationProvider',
+        // 'rememberMeAuthenticationProvider'
 ]
 
-grails.plugins.springsecurity.controllerAnnotations.staticRules = [
-  '/monitoring/**': ['ROLE_ADMIN']
-]
+/*grails.plugins.springsecurity.controllerAnnotations.staticRules = [
+  '/monitoring/**': ['ROLE_ADMIN']  // javaMelody ?
+]*/
 
 auditLog {
   logFullClassName = true
@@ -558,15 +555,14 @@ auditLog {
 
 
 appDefaultPrefs {
-  globalDatepickerFormat='yyyy-mm-dd'
-  globalDateFormat='yyyy-MM-dd'
-  globalDateFormatSQL='%Y-%m-%d'
+  globalDatepickerFormat    = 'yyyy-mm-dd'
+  globalDateFormat          = 'yyyy-MM-dd'
+  globalDateFormatSQL       = '%Y-%m-%d'
 }
 
 // The following 2 entries make the app use basic auth by default
 // grails.plugins.springsecurity.useBasicAuth = true
 // grails.plugins.springsecurity.basic.realmName = "KBPlus"
-
 
 // II : This doesn't work because we are calling registerFilter to install the ediauth filter.. need to find a different solution, which is annoying
 // See http://jira.grails.org/browse/GPSPRINGSECURITYCORE-210
@@ -579,27 +575,29 @@ appDefaultPrefs {
 
 // Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
 // add them to the DB if they don't already exist.
-refdatavalues = [ "User" : [ "Authorized User", "ExternalAcademic", "ExternalLibrarian", "ExternalStudent",
-    "ExternalTeacher", "ExternalTeacherInCountryOfLicensee", "LibraryUserUnaffiliated", "Licensee",
-    "LicenseeAlumnus", "LicenseeAuxiliary", "LicenseeContractor", "LicenseeContractorOrganization",
-    "LicenseeContractorStaff", "LicenseeDistanceLearningStudent", "LicenseeExternalStudent", "LicenseeFaculty",
-    "LicenseeInternalStudent", "LicenseeLibrary", "LicenseeLibraryStaff", "LicenseeNonFacultyStaff",
-    "LicenseeResearcher", "LicenseeRetiredStaff", "LicenseeStaff", "LicenseeStudent", "LoansomeDocUser",
-    "OtherTeacherOfAuthorizedUsers", "RegulatoryAuthority", "ResearchSponsor", "ThirdParty", "ThirdPartyLibrary",
-    "ThirdPartyNonCommercialLibrary", "ThirdPartyOrganization", "ThirdPartyPerson", "WalkInUser" ],
-  "UsedResource" : ["AcademicPaper", "AcademicWork", "AcademicWorkIncludingLicensedContent",
-    "AcknowledgmentOfSource", "AuthoredContent", "AuthoredContentPeerReviewedCopy", "AuthorizedUserOwnWork",
-    "CatalogOrInformationSystem", "CombinedWorkIncludingLicensedContent", "CompleteArticle", "CompleteBook",
-    "CompleteChapter", "CompleteIssue", "CopyrightNotice", "CopyrightNoticesOrDisclaimers",
-    "CoursePackElectronic", "CoursePackPrinted", "CourseReserveElectronic", "CourseReservePrinted",
-    "DataFromLicensedContent", "DerivedWork", "DigitalInstructionalMaterial",
-    "DigitalInstructionalMaterialIncludingLicensedContent",
-    "DigitalInstructionalMaterialWithLinkToLicensedContent", "DownloadedLicensedContent",
-    "ImagesInLicensedContent", "LicensedContent", "LicensedContentBriefExcerpt", "LicensedContentMetadata",
-    "LicensedContentPart", "LicensedContentPartDigital", "LicensedContentPartPrinted", "LicenseeContent",
-    "LicenseeWebsite", "LinkToLicensedContent", "MaterialForPresentation", "PersonalPresentationMaterial",
-    "PrintedInstructionalMaterial", "SpecialNeedsInstructionalMaterial", "ThirdPartyWebsite",
-    "TrainingMaterial", "UserContent", "UserWebsite"]]
+refdatavalues = [
+        "User" : [ "Authorized User", "ExternalAcademic", "ExternalLibrarian", "ExternalStudent",
+            "ExternalTeacher", "ExternalTeacherInCountryOfLicensee", "LibraryUserUnaffiliated", "Licensee",
+            "LicenseeAlumnus", "LicenseeAuxiliary", "LicenseeContractor", "LicenseeContractorOrganization",
+            "LicenseeContractorStaff", "LicenseeDistanceLearningStudent", "LicenseeExternalStudent", "LicenseeFaculty",
+            "LicenseeInternalStudent", "LicenseeLibrary", "LicenseeLibraryStaff", "LicenseeNonFacultyStaff",
+            "LicenseeResearcher", "LicenseeRetiredStaff", "LicenseeStaff", "LicenseeStudent", "LoansomeDocUser",
+            "OtherTeacherOfAuthorizedUsers", "RegulatoryAuthority", "ResearchSponsor", "ThirdParty", "ThirdPartyLibrary",
+            "ThirdPartyNonCommercialLibrary", "ThirdPartyOrganization", "ThirdPartyPerson", "WalkInUser" ],
+        "UsedResource" : ["AcademicPaper", "AcademicWork", "AcademicWorkIncludingLicensedContent",
+            "AcknowledgmentOfSource", "AuthoredContent", "AuthoredContentPeerReviewedCopy", "AuthorizedUserOwnWork",
+            "CatalogOrInformationSystem", "CombinedWorkIncludingLicensedContent", "CompleteArticle", "CompleteBook",
+            "CompleteChapter", "CompleteIssue", "CopyrightNotice", "CopyrightNoticesOrDisclaimers",
+            "CoursePackElectronic", "CoursePackPrinted", "CourseReserveElectronic", "CourseReservePrinted",
+            "DataFromLicensedContent", "DerivedWork", "DigitalInstructionalMaterial",
+            "DigitalInstructionalMaterialIncludingLicensedContent",
+            "DigitalInstructionalMaterialWithLinkToLicensedContent", "DownloadedLicensedContent",
+            "ImagesInLicensedContent", "LicensedContent", "LicensedContentBriefExcerpt", "LicensedContentMetadata",
+            "LicensedContentPart", "LicensedContentPartDigital", "LicensedContentPartPrinted", "LicenseeContent",
+            "LicenseeWebsite", "LinkToLicensedContent", "MaterialForPresentation", "PersonalPresentationMaterial",
+            "PrintedInstructionalMaterial", "SpecialNeedsInstructionalMaterial", "ThirdPartyWebsite",
+            "TrainingMaterial", "UserContent", "UserWebsite"]
+    ]
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 

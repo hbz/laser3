@@ -123,7 +123,7 @@
     </g:form>
   	  <br/>
     </div>
-  
+
     <div class="container">
       <dl>
         <dt>${message(code:'title.plural', default:'Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(titles.size())),num_ti_rows])} )</dt>

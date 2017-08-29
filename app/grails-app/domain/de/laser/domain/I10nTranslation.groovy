@@ -24,12 +24,12 @@ class I10nTranslation {
     }
 
     static constraints = {
-        referenceId    (nullable:false, blank:false)
-        referenceClass (nullable:false, blank:false, maxSize:255)
-        referenceField (nullable:false, blank:false, maxSize:255)
-        valueDe     (nullable:true, blank:false)
-        valueEn     (nullable:true, blank:false)
-        valueFr     (nullable:true, blank:false)
+        referenceId     (nullable:false, blank:false)
+        referenceClass  (nullable:false, blank:false, maxSize:255)
+        referenceField  (nullable:false, blank:false, maxSize:255)
+        valueDe         (nullable:true,  blank:false)
+        valueEn         (nullable:true,  blank:false)
+        valueFr         (nullable:true,  blank:false)
 
         referenceId(unique: ['referenceClass', 'referenceField'])
     }
@@ -87,13 +87,13 @@ class I10nTranslation {
         i10n
     }
 
-    static createOrUpdateI10n(def obj, String referenceField, Map translations) {
+    static createOrUpdateI10n(Object reference, String referenceField, Map translations) {
         def values = [:]
 
         translations['en'] ? (values << ['en':translations['en']]) : null
         translations['de'] ? (values << ['de':translations['de']]) : null
         translations['fr'] ? (values << ['fr':translations['fr']]) : null
 
-        I10nTranslation.set(obj, referenceField, values)
+        I10nTranslation.set(reference, referenceField, values)
     }
 }

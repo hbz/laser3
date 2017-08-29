@@ -40,7 +40,7 @@ abstract class I10nTranslatableAbstract {
     }
 
     // setting virtual property
-    def propertyMissing(String name, value) {
+    def propertyMissing(String name, def value) {
         i10nStorage["${name}"] = value
     }
 }
