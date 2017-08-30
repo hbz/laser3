@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import javax.persistence.Transient
@@ -8,6 +7,9 @@ import javax.persistence.Transient
 class LicenseCustomProperty extends CustomProperty {
 
   // %{-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Begin Copied From Class AbstractProperty <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< --}%
+  @Transient
+  def controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+
   @Transient
   String          paragraph
 
@@ -23,7 +25,7 @@ class LicenseCustomProperty extends CustomProperty {
     refValue(nullable: true)
     paragraph(nullable: true)
     note(nullable: true)
-    date(nullable: true)
+    dateValue(nullable: true)
   }
 
   @Transient
@@ -33,7 +35,7 @@ class LicenseCustomProperty extends CustomProperty {
     if(decValue) return "decValue"
     if(refValue) return "refValue"
     if(paragraph) return "paragraph"
-    if(date) return "date"
+    if(dateValue) return "dateValue"
   }
 
   @Override
@@ -43,7 +45,7 @@ class LicenseCustomProperty extends CustomProperty {
     if(decValue) return decValue.toString()
     if(refValue) return refValue.toString()
     if(paragraph) return paragraph
-    if(date) return date.toString()
+    if(dateValue) return dateValue.getDateString()
   }
 
   def copyValueAndNote(newProp){
@@ -52,7 +54,7 @@ class LicenseCustomProperty extends CustomProperty {
     else if(decValue) newProp.decValue = decValue
     else if(paragraph) newProp.paragraph = paragraph
     else if(refValue) newProp.refValue = refValue
-    else if(date) newProp.refValue = date
+    else if(dateValue) newProp.dateValue = dateValue
     newProp.note = note
     newProp
   }

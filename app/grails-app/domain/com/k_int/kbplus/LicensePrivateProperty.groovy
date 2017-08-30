@@ -7,6 +7,8 @@ import javax.persistence.Transient
 class LicensePrivateProperty extends PrivateProperty {
 
     @Transient
+    def controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    @Transient
     String paragraph
     @Transient
     def grailsApplication

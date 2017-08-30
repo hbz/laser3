@@ -47,7 +47,8 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     static def validTypes = ["Number":  Integer.toString(), 
                              "Text":    String.toString(), 
                              "Refdata": RefdataValue.toString(), 
-                             "Decimal": BigDecimal.toString()]
+                             "Decimal": BigDecimal.toString(),
+                             "Date":    Date.toString()]
 
     static constraints = {
         name (nullable: false, blank: false, unique:true)
