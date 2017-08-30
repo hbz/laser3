@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
 import grails.converters.*
 import grails.plugins.springsecurity.Secured
 import grails.web.JSONBuilder
@@ -22,28 +23,6 @@ class DataManagerController {
     result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = ? ) order by ts desc", [pending_change_pending_status]);
 
     result
-  }
-
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def namespaces() {
-
-    def identifierNamespaceInstance = new IdentifierNamespace(params)
-    switch (request.method) {
-      case 'GET':
-        break
-      case 'POST':
-        if (!identifierNamespaceInstance.save(flush: true)) {
-          return
-        }
-        else {
-          flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.id])
-        }
-        break
-    }
-    render view: 'namespaces', model: [
-            identifierNamespaceInstance: identifierNamespaceInstance,
-            identifierNamespaces: IdentifierNamespace.where{}.sort('ns')
-    ]
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

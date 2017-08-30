@@ -88,12 +88,22 @@ class I10nTranslation {
     }
 
     static createOrUpdateI10n(Object reference, String referenceField, Map translations) {
+
         def values = [:]
 
-        translations['en'] ? (values << ['en':translations['en']]) : null
-        translations['de'] ? (values << ['de':translations['de']]) : null
-        translations['fr'] ? (values << ['fr':translations['fr']]) : null
+        if ((! get(reference, referenceField)) && translations.isEmpty()) {
+            values = [
+                    'en': reference."${referenceField}",
+                    'de': reference."${referenceField}",
+                    'fr': reference."${referenceField}"
+                    ]
+        }
+        else {
+            translations['en'] ? (values << ['en':translations['en']]) : null
+            translations['de'] ? (values << ['de':translations['de']]) : null
+            translations['fr'] ? (values << ['fr':translations['fr']]) : null
+        }
 
-        I10nTranslation.set(reference, referenceField, values)
+        set(reference, referenceField, values)
     }
 }

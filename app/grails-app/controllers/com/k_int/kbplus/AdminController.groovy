@@ -900,5 +900,47 @@ class AdminController {
     }
     result
   }
-  
+
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def namespaces() {
+    // TODO check role and editable !!!
+
+    def identifierNamespaceInstance = new IdentifierNamespace(params)
+    switch (request.method) {
+      case 'GET':
+        break
+      case 'POST':
+        if (!identifierNamespaceInstance.save(flush: true)) {
+          return
+        }
+        else {
+          flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.id])
+        }
+        break
+    }
+    render view: 'manageNamespaces', model: [
+            identifierNamespaceInstance: identifierNamespaceInstance,
+            identifierNamespaces: IdentifierNamespace.where{}.sort('ns')
+    ]
+  }
+
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def i10n() {
+    // TODO check role and editable !!!
+
+    if (params.type == 'refdata') {
+
+      render view: 'manageI10nRefdata', model: [
+              editable    : true,
+              rdCategories: RefdataCategory.where {}.sort('desc')
+      ]
+    }
+    else if (params.type == 'properties') {
+
+      render view: 'manageI10nPropertyDefinitions', model: [
+              editable    : true,
+              propertyDefinitions: PropertyDefinition.where {}.sort('descr'),
+      ]
+    }
+  }
 }

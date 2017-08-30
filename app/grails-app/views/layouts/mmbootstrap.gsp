@@ -186,12 +186,6 @@
                        <li <%= ( ( 'platform'== controllerName ) && ( 'create'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link></li>
 
-                         <li class="divider"></li>
-
-                         <li <%= ( ( 'dataManager'== controllerName ) && ( 'namespaces'==actionName ) ) ? ' class="active"' : '' %>>
-                             <g:link controller="dataManager" action="namespaces">${message(code:'menu.datamanager.manageIdentifierNamespaces')}</g:link></li>
-                       <li class="divider"></li>
-
                         <li<%= ( ( 'subscriptionDetails'== controllerName ) && ( 'compare'==actionName ) ) ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
                                            action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link></li>
 
@@ -308,10 +302,19 @@
                           </li>
                         </ul>
                       </li>
-                      <li <%= ( ( 'propertyDefinition'== controllerName ) ) ? ' class="active"' : '' %>>
-                         <g:link controller="propertyDefinition" action="list">Manage Custom Properties</g:link>
-                      </li>
+
+                        <li class="divider"></li>
+
+                        <li <%= ( ( 'admin'== controllerName ) && ( 'namespaces'==actionName ) ) ? ' class="active"' : '' %>>
+                            <g:link controller="admin" action="namespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</g:link></li>
+                        <li <%= ( ( 'admin'== controllerName ) && ( 'i10n'==actionName ) ) ? ' class="active"' : '' %>>
+                            <g:link controller="admin" action="i10n">${message(code:'menu.admin.manageI10n')}</g:link></li>
+                        <li <%= ( ( 'propertyDefinition'== controllerName ) ) ? ' class="active"' : '' %>>
+                            <g:link controller="propertyDefinition" action="list">${message(code:'menu.admin.manageCustomProperties')}</g:link>
+                        </li>
+
                       <li class="divider"></li>
+
                       <li <%= ( ( 'stats'== controllerName ) && ( 'statsHome'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="stats" action="statsHome">Statistics</g:link>
                       </li>

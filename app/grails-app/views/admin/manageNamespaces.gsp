@@ -3,17 +3,17 @@
 <html>
 	<head>
 		<meta name="layout" content="mmbootstrap">
-		<title>${message(code: 'menu.datamanager.manageIdentifierNamespaces')}</title>
+		<title>${message(code: 'menu.admin.manageIdentifierNamespaces')}</title>
 	</head>
 
 		<laser:breadcrumbs>
-			<laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index" />
-			<laser:crumb message="menu.datamanager.manageIdentifierNamespaces" class="active"/>
+			<laser:crumb message="menu.admin.dash" controller="admin" action="index" />
+			<laser:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
 		</laser:breadcrumbs>
 
 		<div class="container">
 			<div class="page-header">
-				<h1><g:message code="menu.datamanager.manageIdentifierNamespaces"/></h1>
+				<h1><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
 			</div>
 
 			<g:if test="${flash.message}">
