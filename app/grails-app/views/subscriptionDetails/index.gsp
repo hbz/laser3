@@ -171,8 +171,8 @@
                   <br/>
 <!--                  ISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('ISSN') ?: ' - '}</strong>,
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
-                   ${message(code:'default.access.label', default:'Access')}: ${message(code:"refdata.${ie.availabilityStatus?.value}", default:"${ie.availabilityStatus?.value}")}<br/>
-                   ${message(code:'tipp.coverage_note', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote?:'')}<br/>
+                   ${message(code:'default.access.label', default:'Access')}: ${ie.availabilityStatus?.getI10n("value")} <br/>
+                   ${message(code:'tipp.coverage_note', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote?:'')} <br/>
                    <g:if test="${ie.availabilityStatus?.value=='Expected'}">
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessStartDate}"/>
                    </g:if>

@@ -123,26 +123,26 @@
                 <li>
                   <g:if test="${i.pkg}">
                     <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
-                      ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${message(code:"refdata.${i.pkg?.packageStatus?.value}", default:"${i.pkg?.packageStatus?.value}")})
+                      ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n("value")})
                     </g:link>
                   </g:if>
                   <g:if test="${i.sub}">
                     <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
-                      ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${message(code:"refdata.${i.sub.status?.value}", default:"${i.sub.status?.value}")})
+                      ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n("value")})
                     </g:link>
                   </g:if>
                   <g:if test="${i.lic}">
-                    ${message(code:'license.label', default:'License')}: ${i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})
+                    ${message(code:'license.label', default:'License')}: ${i.lic.id} (${i.lic.status?.getI10n("value")})
                   </g:if>
                   <g:if test="${i.title}">
                     <g:link controller="titleInstance" action="show" id="${i.title.id}">
-                      ${message(code:'title.label', default:'Title')}: ${i.title.title} (${message(code:"refdata.${i.title.status?.value}", default:"${i.title.status?.value}")})
+                      ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n("value")})
                     </g:link>
                   </g:if>
-                  <g:set var="roletype_refdata" value="${i.roleType?.value.replaceAll(/\s/,'')}"/>
-                  (${message(code:"refdata.${roletype_refdata}", default:"${i.roleType?.value}")}) </li>
+                  (${i.roleType?.getI10n("value")})
+                </li>
               </g:each>
-            </ui></dd>
+            </ul></dd>
           </g:if>
         
           <g:if test="${orgInstance?.impId}">

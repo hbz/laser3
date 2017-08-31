@@ -10,8 +10,7 @@
       <tr>
         <g:if test="${role.org}">
           <td><g:link controller="Organisations" action="info" id="${role.org.id}">${role?.org?.name}</g:link></td>
-          <g:set var="roletype_refdata" value="${role?.roleType?.value.replaceAll(/\s/,'')}"/>
-          <td>${message(code:"refdata.${roletype_refdata}", default:"${role?.roleType?.value}")}</td>
+          <td>${role?.roleType?.getI10n("value")}</td>
           <td>
             <g:if test="${editmode}">
               <g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">${message(code:'default.button.delete.label')}</g:link>

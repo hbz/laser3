@@ -24,6 +24,12 @@ class BootStrap {
         def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
         def view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
 
+
+        // RefdataCategory.locCategory( category_name, EN, DE )     => RefdataCategory(desc:category_name            & I10nTranslation(EN, DE)
+        // RefdataCategory.locRefdataValue( category_name, EN, DE ) => RefdataValue(value:EN, owner:@category_name)  & I10nTranslation(EN, DE)
+
+        // because legacy logic is hardcoded against RefdataCategory.desc & RefdataValue.value
+
         // refdata categories
         RefdataCategory.locCategory('YN',           [en: 'Yes/No', de: 'Ja/Nein'])
         RefdataCategory.locCategory('YNO',          [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
@@ -95,8 +101,12 @@ class BootStrap {
 
         RefdataCategory.locRefdataValue('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
         RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensor', de: 'Lizenzgeber'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensing Consortium'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Negotiator'])
         RefdataCategory.locRefdataValue('Organisational Role', [en: 'Package Consortia'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Provider'])
         RefdataCategory.locRefdataValue('Organisational Role', [en: 'Publisher', de: 'Verlag'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscription Agent'])
 
         def or_licensee_role    = RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
         def or_subscriber_role  = RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
@@ -117,8 +127,8 @@ class BootStrap {
         RefdataCategory.locRefdataValue('Person Responsibility', [en: 'Specific cluster editor'])
         RefdataCategory.locRefdataValue('Person Responsibility', [en: 'Specific title editor', de: 'Titelbearbeiter'])
 
-        RefdataCategory.locRefdataValue('Subscription Status', [en: 'Current', de: 'Current'])
-        RefdataCategory.locRefdataValue('Subscription Status', [en: 'Deleted', de: 'Deleted'])
+        RefdataCategory.locRefdataValue('Subscription Status', [en: 'Current', de: 'Aktuell'])
+        RefdataCategory.locRefdataValue('Subscription Status', [en: 'Deleted', de: 'Gelöscht'])
 
         // assertPermShare
         OrgPermShare.assertPermShare(view_permission, or_licensee_role);
@@ -137,11 +147,11 @@ class BootStrap {
         OrgPermShare.assertPermShare(view_permission, cons_combo);
 
         // Global System Roles
-        def userRole        = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-        def editorRole      = Role.findByAuthority('ROLE_EDITOR') ?: new Role(authority: 'ROLE_EDITOR', roleType: 'global').save(failOnError: true)
-        def adminRole       = Role.findByAuthority('ROLE_ADMIN') ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
+        def userRole        = Role.findByAuthority('ROLE_USER')     ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
+        def editorRole      = Role.findByAuthority('ROLE_EDITOR')   ?: new Role(authority: 'ROLE_EDITOR', roleType: 'global').save(failOnError: true)
+        def adminRole       = Role.findByAuthority('ROLE_ADMIN')    ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
         def kbplus_editor   = Role.findByAuthority('KBPLUS_EDITOR') ?: new Role(authority: 'KBPLUS_EDITOR', roleType: 'global').save(failOnError: true)
-        def apiRole         = Role.findByAuthority('ROLE_API') ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
+        def apiRole         = Role.findByAuthority('ROLE_API')      ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
         def apiReaderRole   = Role.findByAuthority('ROLE_API_READER') ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
         def apiWriterRole   = Role.findByAuthority('ROLE_API_WRITER') ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
@@ -374,7 +384,7 @@ class BootStrap {
                 [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageHeader", note:" Remove header/footer from csv/xls"],
                 [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.2", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageFooter", note:" Remove header/footer from csv/xls"],
                 [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageHeader", note: " Remove header/footer from csv/xls"],
-                [propname: "net.sf.jasperreports.export.csv.exclude.origin.band.2", descr: PropertyDefinition.SYS_CONF, type: String.toString(), val: "pageFooter", note: " Remove header/footer from csv/xls"]
+                [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.2", descr: PropertyDefinition.SYS_CONF, type: String.toString(), val: "pageFooter", note: " Remove header/footer from csv/xls"]
         ]
         createPropertyDefinitions(requiredProps)
 
@@ -392,21 +402,21 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredProps = [
-                [name: [en: "Concurrent Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'ConcurrentAccess'],
-                [name: [en: "Concurrent Users"], descr: allDescr, type: Integer.toString()],
-                [name: [en: "Remote Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Walk In Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Multi Site Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Partners Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Alumni Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Concurrent Access"],   descr: allDescr, type: RefdataValue.toString(), cat: 'ConcurrentAccess'],
+                [name: [en: "Concurrent Users"],    descr: allDescr, type: Integer.toString()],
+                [name: [en: "Remote Access"],       descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Walk In Access"],      descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Multi Site Access"],   descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Partners Access"],     descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Alumni Access"],       descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
                 [name: [en: "ILL - InterLibraryLoans"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
                 [name: [en: "Include In Coursepacks"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Include in VLE"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Enterprise Access"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Include in VLE"],      descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Enterprise Access"],   descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
                 [name: [en: "Post Cancellation Access Entitlement"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
                 [name: [en: "Cancellation Allowance"], descr: allDescr, type: String.toString()],
-                [name: [en: "Notice Period"], descr: allDescr, type: String.toString()],
-                [name: [en: "Signed"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO']
+                [name: [en: "Notice Period"],       descr: allDescr, type: String.toString()],
+                [name: [en: "Signed"],              descr: allDescr, type: RefdataValue.toString(), cat: 'YNO']
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
@@ -667,8 +677,10 @@ class BootStrap {
         RefdataCategory.locCategory(RefdataCategory.LIC_STATUS,
                 [en: 'License Status', de: 'Lizenzstatus'])
 
-        RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Current'])
+        RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktuell'])
+        RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'])
         RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
+        RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'Unknown', de: 'Unbekannt'])
 
         RefdataCategory.locCategory('PendingChangeStatus',
                 [en: 'PendingChangeStatus', de: 'PendingChangeStatus'])
@@ -713,8 +725,10 @@ class BootStrap {
         RefdataCategory.locCategory(RefdataCategory.TI_STATUS,
                 [en: RefdataCategory.TI_STATUS, de: RefdataCategory.TI_STATUS])
 
-        RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Current'])
+        RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
         RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+        RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
+        RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unknown'])
 
         RefdataCategory.locCategory('TitleInstancePackagePlatform.DelayedOA',
                 [en: 'TitleInstancePackagePlatform.DelayedOA', de: 'TitleInstancePackagePlatform.DelayedOA'])
@@ -750,7 +764,7 @@ class BootStrap {
         RefdataCategory.locCategory(RefdataCategory.TIPP_STATUS,
                 [en: RefdataCategory.TIPP_STATUS, de: RefdataCategory.TIPP_STATUS])
 
-        RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Current'])
+        RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'])
         RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Expected', de: 'Expected'])
         RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
         RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'])

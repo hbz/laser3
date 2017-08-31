@@ -101,7 +101,7 @@
                   <tr>
                     <td>${org.org.id}</td>
                     <td><g:link controller="organisations" action="info" id="${org.org.id}">${org.org.name}</g:link></td>
-                    <td>${message(code:"refdata.${org.roleType.value}", default:"${org?.roleType?.value}")}</td>
+                    <td>${org?.roleType?.getI10n("value")}</td>
                     <td>
                       <g:xEditable owner="${org}" type="date" field="startDate"/>
                     </td>

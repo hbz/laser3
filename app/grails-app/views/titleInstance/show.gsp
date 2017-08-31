@@ -72,7 +72,7 @@
                 <dd><ul>
                   <g:each in="${titleInstanceInstance.prsLinks}" var="p">
                     <li>
-                      ${message(code:"refdata.${p.responsibilityType?.value}", default:"${p.responsibilityType?.value}")} -
+                      ${p.responsibilityType?.getI10n("value")} -
 
                       <g:if test="${p.cluster}">
                               <g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>

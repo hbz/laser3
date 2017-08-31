@@ -12,7 +12,7 @@
     </div>
 
     <div class="container">
-        <h1>${license.licensee?.name} ${message(code:"refdata.LicenseType.${license.type?.value}")} ${message(code:'license.label', default:'License')} : ${license.reference}</h1>
+        <h1>${license.licensee?.name} ${license.type?.getI10n("value")} ${message(code:'license.label', default:'License')} : ${license.reference}</h1>
 
         <g:render template="nav" />
     </div>
@@ -33,7 +33,7 @@
           <tr>
             <td>${ol.org.name}</td>
             <td>
-              ${message(code:'subscription.license.connection', args:[message(code:"refdata.${ol.roleType?.value}", default:"${ol.roleType?.value}")])}<br/>
+              ${message(code:'subscription.license.connection', args:["${ol.roleType?.getI10n('value')}"])}<br/>
               ${message(code:'subscription.details.additionalInfo.role.info', default:'This role grants the following permissions to members of that org whose membership role also includes the permission')}<br/>
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
@@ -44,7 +44,6 @@
                       <g:else>
                         [${message(code:'default.perm.not_granted', default:'Not granted')}]
                       </g:else>
- 
                   </li>
                 </g:each>
               </ul>

@@ -115,7 +115,8 @@
                   <g:if test="${i.lic}">${message(code:'license.label', default:'License')}: ${i.lic.id}</g:if>
                   <g:if test="${i.title}"><g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title?.title}</g:link></g:if>
                   <g:set var="roletype_refdata" value="${i.roleType?.value.replaceAll(/\s/,'')}"/>
-                  (${message(code:"refdata.${roletype_refdata}", default:"${i.roleType?.value}")}) </li>
+                  (${i.roleType?.getI10n("value")})
+                </li>
               </g:each>
             </ui></dd>
           </g:if>

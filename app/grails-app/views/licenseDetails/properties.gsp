@@ -16,9 +16,11 @@
     </div>
 
     <div class="container">
-        <g:set var="message_str" value="refdata.LicenseType.${license.type?.value}" />
-        <g:set var="local_type" value="${message(code:message_str)}" />
-        <h1>${license.licensee?.name} ${message(code:'license.details.type', args:[local_type], default:'License')} : <g:xEditable owner="${license}" field="reference" id="reference"/></h1>
+        <h1>
+            ${license.licensee?.name}
+            ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
+            <g:xEditable owner="${license}" field="reference" id="reference"/>
+        </h1>
         <g:render template="nav" />
     </div>
 
