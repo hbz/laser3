@@ -1,6 +1,11 @@
 package de.laser.domain
 
+import javax.persistence.Transient
+
 class I10nTranslation {
+
+    @Transient
+    def grailsApplication
 
     static supportedLocales = ['en', 'de', 'fr']
     static transients       = ['supportedLocales']
@@ -34,14 +39,16 @@ class I10nTranslation {
         referenceId(unique: ['referenceClass', 'referenceField'])
     }
 
+    // -- getter and setter --
+
     static get(Object reference, String referenceField) {
-        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getSimpleName(), reference.getId(), referenceField)
+        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
 
         i10n
     }
 
     static get(Object reference, String referenceField, String locale) {
-        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getSimpleName(), reference.getId(), referenceField)
+        def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
 
         switch(locale.toLowerCase()){
             case 'de':
@@ -63,7 +70,7 @@ class I10nTranslation {
         def i10n = get(reference, referenceField)
         if (!i10n) {
             i10n = new I10nTranslation(
-                    referenceClass: reference.getClass().getSimpleName(),
+                    referenceClass: reference.getClass().getCanonicalName(),
                     referenceId:    reference.getId(),
                     referenceField: referenceField
             )
@@ -83,27 +90,69 @@ class I10nTranslation {
             }
         }
 
-        i10n.save()
+        i10n.save(flush: true)
         i10n
     }
 
-    static createOrUpdateI10n(Object reference, String referenceField, Map translations) {
+    // -- initializations --
 
-        def values = [:]
+    static createI10nIfNeeded(Object reference, String referenceField) {
 
-        if ((! get(reference, referenceField)) && translations.isEmpty()) {
+        def values = [:] // no effect in set()
+
+        if (! get(reference, referenceField)) { // set default values
             values = [
                     'en': reference."${referenceField}",
                     'de': reference."${referenceField}",
                     'fr': reference."${referenceField}"
-                    ]
-        }
-        else {
-            translations['en'] ? (values << ['en':translations['en']]) : null
-            translations['de'] ? (values << ['de':translations['de']]) : null
-            translations['fr'] ? (values << ['fr':translations['fr']]) : null
+            ]
         }
 
-        set(reference, referenceField, values)
+        return set(reference, referenceField, values)
+    }
+
+    static createOrUpdateI10n(Object reference, String referenceField, Map translations) {
+
+        def values = [:] // no effect in set()
+
+        translations['en'] ? (values << ['en':translations['en']]) : null
+        translations['de'] ? (values << ['de':translations['de']]) : null
+        translations['fr'] ? (values << ['fr':translations['fr']]) : null
+
+        return set(reference, referenceField, values)
+    }
+
+    // -- helper --
+
+    static def refdataFindHelper(String referenceClass, String referenceField, String query, def locale) {
+
+        def matches = []
+        def result = []
+
+        switch(locale.toString().toLowerCase()){
+            case 'en':
+                matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
+                        referenceClass, referenceField, "${query}%"
+                )
+                break
+            case 'de':
+                matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueDeIlike(
+                        referenceClass, referenceField, "${query}%"
+                )
+                break
+            case 'fr':
+                matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueFrIlike(
+                        referenceClass, referenceField, "${query}%"
+                )
+                break
+        }
+        matches.each { it ->
+            def obj = (new I10nTranslation().getDomainClass().grailsApplication.classLoader.loadClass(it.referenceClass)).findById(it.referenceId)
+            if (obj) {
+                result << obj
+            }
+        }
+
+        return result
     }
 }

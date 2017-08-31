@@ -35,8 +35,8 @@
 						</thead>
 						<tbody>
 							<g:each in="${propertyDefinitions}" var="pd">
-								<g:set var="pdI10nName" value="${I10nTranslation.createOrUpdateI10n(pd, 'name', [:])}" />
-								<g:set var="pdI10nDescr" value="${I10nTranslation.createOrUpdateI10n(pd, 'descr', [:])}" />
+								<g:set var="pdI10nName"  value="${I10nTranslation.createI10nIfNeeded(pd, 'name')}" />
+								<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nIfNeeded(pd, 'descr')}" />
 								<tr>
 									<td>
 										(${pd.getId()})

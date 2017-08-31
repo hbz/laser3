@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.I10nTranslatableAbstract
 import de.laser.domain.I10nTranslation
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
@@ -109,6 +110,18 @@ class RefdataCategory extends I10nTranslatableAbstract {
 
   static def refdataFind(params) {
       def result = []
+      def matches = I10nTranslation.refdataFindHelper(
+              RefdataCategory.getClass().getCanonicalName(),
+              'desc',
+              params.q,
+              LocaleContextHolder.getLocale()
+      )
+      matches.each { it ->
+          result.add([id: "${it.id}", text: "${it.getI10n('desc')}"])
+      }
+
+      /*
+      def result = []
       def ql = null
 
       ql = RefdataCategory.findAllByDescIlike("${params.q}%", params)
@@ -117,6 +130,7 @@ class RefdataCategory extends I10nTranslatableAbstract {
               result.add([id:"${id.id}", text:"${id.getI10n('desc')}"])
           }
       }
+      */
       result
   }
 

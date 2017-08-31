@@ -4,7 +4,10 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import de.laser.domain.I10nTranslatableAbstract
+import de.laser.domain.I10nTranslation
 import groovy.util.logging.*
+import org.springframework.context.i18n.LocaleContextHolder
+
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
@@ -129,6 +132,27 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     }
     static def refdataFind(params) {
         def result = []
+
+        def matches = I10nTranslation.refdataFindHelper(
+                params.baseClass,
+                'name',
+                params.q,
+                LocaleContextHolder.getLocale()
+        )
+        matches.each { it ->
+            if (params.desc && params.desc != "*") {
+                if (it.getDescr() == params.desc) {
+                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                }
+            }
+            else {
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+            }
+        }
+        result
+
+        /*
+        def result = []
         def ql = null
         if (!params.desc || params.desc == "*") {
             if (!params.desc)
@@ -144,6 +168,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             }
         }
         result
+        */
     }
 
   @Transient

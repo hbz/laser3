@@ -308,7 +308,7 @@
                         <li <%= ( ( 'admin'== controllerName ) && ( 'namespaces'==actionName ) ) ? ' class="active"' : '' %>>
                             <g:link controller="admin" action="namespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</g:link></li>
                         <li <%= ( ( 'admin'== controllerName ) && ( 'i10n'==actionName ) ) ? ' class="active"' : '' %>>
-                            <g:link controller="admin" action="i10n">${message(code:'menu.admin.manageI10n')}</g:link></li>
+                            <g:link controller="admin" action="i10n" params="${[type:'refdata']}">${message(code:'menu.admin.manageI10n')}</g:link></li>
                         <li <%= ( ( 'propertyDefinition'== controllerName ) ) ? ' class="active"' : '' %>>
                             <g:link controller="propertyDefinition" action="list">${message(code:'menu.admin.manageCustomProperties')}</g:link>
                         </li>

@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 import com.k_int.ClassUtils
 import de.laser.domain.I10nTranslatableAbstract
+import de.laser.domain.I10nTranslation
+import org.springframework.context.i18n.LocaleContextHolder
 
 class RefdataValue extends I10nTranslatableAbstract {
 
@@ -44,15 +46,17 @@ class RefdataValue extends I10nTranslatableAbstract {
     }
 
     static def refdataFind(params) {
-        def result = [];
-        def ql = RefdataValue.findAllByValueIlike("%${params.q}%", params)
-
-        if (ql) {
-            ql.each { id ->
-                result.add([id:"${id.class.name}:${id.id}", text:"${id.getI10n('value')}"])
-            }
+        def result = []
+        def matches = I10nTranslation.refdataFindHelper(
+                RefdataValue.getClass().getCanonicalName(),
+                'value',
+                params.q,
+                LocaleContextHolder.getLocale()
+        )
+        matches.each { it ->
+            result.add([id: "${it.class.name}:${it.id}", text: "${it.getI10n('value')}"])
         }
-        result
+        matches
     }
 
     static def refdataCreate(value) {
