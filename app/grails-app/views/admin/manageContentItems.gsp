@@ -7,12 +7,10 @@
 
   <body>
 
-    <div class="container">
-        <ul class="breadcrumb">
-           <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-           <li>Content Items</li>
-        </ul>
-    </div>
+      <laser:breadcrumbs>
+          <laser:crumb message="menu.admin.dash" controller="admin" action="index" />
+          <laser:crumb text="Content Items" class="active"/>
+      </laser:breadcrumbs>
 
     <g:if test="${flash.message}">
       <div class="container">
@@ -27,8 +25,8 @@
     </g:if>
 
 
-    <div class="container-fluid">
-      <div class="row-fluid">
+    <div class="container">
+      <div class="row">
         <div class="span8">
           <table class="table table-bordered">
             <thead>
@@ -52,6 +50,7 @@
           </table>
         </div>
         <div class="span4">
+            <laser:card class="card-grey">
           <g:form action="newContentItem">
             <dl>
               <dt>New Content Item Key</dt>
@@ -74,6 +73,7 @@
             </dl>
             <input type="submit" value="Create" class="btn btn-primary"/>
           </g:form>
+            </laser:card>
         </div>
       </div>
     </div>

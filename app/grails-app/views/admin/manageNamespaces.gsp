@@ -68,7 +68,7 @@
 				<div class="span4">
 					<laser:card title="identifier.namespace.add.label" class="card-grey">
 						<fieldset>
-							<g:form class="form-horizontal" action="namespaces">
+							<g:form class="form-horizontal" action="manageNamespaces">
 
 								<div class="fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'ns', 'error')} required">
 									<label for="ns">

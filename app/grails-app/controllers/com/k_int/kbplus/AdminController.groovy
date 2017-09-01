@@ -902,7 +902,7 @@ class AdminController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def namespaces() {
+  def manageNamespaces() {
     // TODO check role and editable !!!
 
     def identifierNamespaceInstance = new IdentifierNamespace(params)
@@ -925,7 +925,7 @@ class AdminController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def i10n() {
+  def manageI10n() {
     // TODO check role and editable !!!
 
     if (params.type == 'refdata') {
@@ -937,9 +937,14 @@ class AdminController {
     }
     else if (params.type == 'properties') {
 
+      def propDefs = [:]
+      PropertyDefinition.AVAILABLE_DESCR.each { it ->
+        def itResult = PropertyDefinition.findAllByDescr(it).sort()
+        propDefs << ["${it}": itResult]
+      }
       render view: 'manageI10nPropertyDefinitions', model: [
               editable    : true,
-              propertyDefinitions: PropertyDefinition.where {}.sort('descr'),
+              propertyDefinitions: propDefs,
       ]
     }
   }

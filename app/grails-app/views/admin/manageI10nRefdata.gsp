@@ -15,8 +15,8 @@
 			<h1><g:message code="menu.admin.manageI10n"/></h1>
 
 			<laser:subNav>
-				<laser:subNavItem controller="admin" action="i10n" params="${[type:'refdata']}" text="RefdataCategories/-Values" />
-				<laser:subNavItem controller="admin" action="i10n" params="${[type:'properties']}" text="Property Definitions" />
+				<laser:subNavItem controller="admin" action="manageI10n" params="${[type:'refdata']}" text="RefdataCategories/-Values" />
+				<laser:subNavItem controller="admin" action="manageI10n" params="${[type:'properties']}" text="Property Definitions" />
 			</laser:subNav>
 		</div>
 
