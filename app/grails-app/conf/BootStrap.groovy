@@ -84,7 +84,22 @@ class BootStrap {
     RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific package editor');
     RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific cluster editor');
     RefdataCategory.lookupOrCreate('Person Responsibility', 'Specific title editor');
-    
+
+    RefdataCategory.lookupOrCreate('Open Access Type', 'No OA')
+    RefdataCategory.lookupOrCreate('Open Access Type', 'Hybrid OA')
+    RefdataCategory.lookupOrCreate('Open Access Type', 'Green OA')
+
+    RefdataCategory.lookupOrCreate('Electronically Archivable Version', 'Accepted Author')
+    RefdataCategory.lookupOrCreate('Electronically Archivable Version', 'Manuscript (AAM)')
+    RefdataCategory.lookupOrCreate('Electronically Archivable Version', 'Postprint')
+    RefdataCategory.lookupOrCreate('Electronically Archivable Version', 'Preprint')
+    RefdataCategory.lookupOrCreate('Electronically Archivable Version', 'Preprint with ePrint URL')
+
+    RefdataCategory.lookupOrCreate('Authority', 'Author')
+    RefdataCategory.lookupOrCreate('Authority', 'Institution')
+    RefdataCategory.lookupOrCreate('Authority', 'Author and Institution')
+
+
     def cons_combo = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium');
 
     def or_licensee_role   = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
@@ -352,8 +367,37 @@ class BootStrap {
                 [propname:"Enterprise Access", descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
                 [propname:"Post Cancellation Access Entitlement",  descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
                 [propname:"Cancellation Allowance",    descr:PropertyDefinition.LIC_PROP, type:String.toString()],
-                [propname:"Notice Period",     descr:PropertyDefinition.LIC_PROP, type:String.toString()],
-                [propname:"Signed",            descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO']]
+                [propname:"Signed",            descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Agreement Date",              descr:PropertyDefinition.LIC_PROP, type:Date.toString()],
+                [propname:"Notice Period",               descr:PropertyDefinition.LIC_PROP, type:Date.toString()],
+                [propname:"Signed",                      descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YN'],
+                [propname:"Wifi Access",                 descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Metadata delivery",           descr:PropertyDefinition.LIC_PROP, type:String.toString()],
+                [propname:"Correction time",             descr:PropertyDefinition.LIC_PROP, type:String.toString()],
+                [propname:"New underwriter",             descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Place of jurisdiction",       descr:PropertyDefinition.LIC_PROP, type:String.toString()],
+                [propname:"Allowed Participants",        descr:PropertyDefinition.LIC_PROP, type:String.toString()],
+                [propname:"Regional Restriction",        descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Usage Statistics",            descr:PropertyDefinition.LIC_PROP, type:RefdataValue.toString(), cat:'YNO'],
+                [propname:"Invoicing",                   descr:PropertyDefinition.LIC_PROP, type:Date.toString()],
+                [propname:"Payment target",              descr:PropertyDefinition.LIC_PROP, type:Date.toString()],
+                [propname:"Change to licensed material", descr:PropertyDefinition.LIC_PROP, type:String.toString()],
+                [propname:"Service regulations",         descr:PropertyDefinition.LIC_PROP, type:String.toString()],
+
+                [propname:"Open Access",                 descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'YN'],
+                [propname:"Open Access Type",            descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'Open Access Type'],
+                [propname:"Electronically Archivable Version", descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'Electronically Archivable Version'],
+                [propname:"embargo period",              descr:PropertyDefinition.LIC_OA_PROP, type:Integer.toString()],
+                [propname:"Authority",                   descr:PropertyDefinition.LIC_OA_PROP, type:RefdataValue.toString(), cat:'Authority'],
+                [propname:"APC Discount",                descr:PropertyDefinition.LIC_OA_PROP, type:String.toString()],
+                [propname:"Vouchers Free OA Articles",   descr:PropertyDefinition.LIC_OA_PROP, type:String.toString()],
+                [propname:"Branding",                    descr:PropertyDefinition.LIC_OA_PROP, type:String.toString()],
+                [propname:"Funder",                      descr:PropertyDefinition.LIC_OA_PROP, type:String.toString()],
+                [propname:"Offsetting",                  descr:PropertyDefinition.LIC_OA_PROP, type:String.toString()],
+                [propname:"Publishing Fee",              descr:PropertyDefinition.LIC_OA_PROP, type:String.toString()],
+                [propname:"Reading Fee",                 descr:PropertyDefinition.LIC_OA_PROP, type:String.toString()],
+                [propname:"OA First Date",               descr:PropertyDefinition.LIC_OA_PROP, type:Date.toString()],
+                [propname:"OA Last Date",                descr:PropertyDefinition.LIC_OA_PROP, type:Date.toString()]]
 
         createPropertyDefinitions(requiredProps)
 
