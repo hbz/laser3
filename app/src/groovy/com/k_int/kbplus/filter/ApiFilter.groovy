@@ -78,11 +78,11 @@ class ApiFilter extends GenericFilterBean {
             }
 
             if (isAuthorized) {
-                println "VALID authorization: " + authorization
+                //println "VALID authorization: " + authorization
                 request.getRequestDispatcher(path).forward(servletRequest, servletResponse)
                 return
             } else {
-                println "INVALID authorization: " + authorization + " < " + checksum
+                //println "INVALID authorization: " + authorization + " < " + checksum
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
                 response.setContentType("application/json")
 

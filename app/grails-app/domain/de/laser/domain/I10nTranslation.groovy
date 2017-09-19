@@ -96,6 +96,7 @@ class I10nTranslation {
 
     // -- initializations --
 
+    // used in gsp to create translations for on-the-fly-created refdatas
     static createI10nIfNeeded(Object reference, String referenceField) {
 
         def values = [:] // no effect in set()
@@ -111,6 +112,7 @@ class I10nTranslation {
         return set(reference, referenceField, values)
     }
 
+    // used in bootstap
     static createOrUpdateI10n(Object reference, String referenceField, Map translations) {
 
         def values = [:] // no effect in set()

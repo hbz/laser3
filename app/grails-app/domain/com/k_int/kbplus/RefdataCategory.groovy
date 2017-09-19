@@ -141,7 +141,7 @@ class RefdataCategory extends I10nTranslatableAbstract {
    * @return ArrayList
    */
   static getAllRefdataValues(category_name) {
-      println("RefdataCategory.getAllRefdataValues(" + category_name + ")")
+      //println("RefdataCategory.getAllRefdataValues(" + category_name + ")")
 
       /*
       def result = RefdataValue.findAllByOwner(

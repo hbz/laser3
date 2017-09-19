@@ -261,12 +261,12 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             if ("GET" == request.method) {
                 def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_READER'))
                 hasRole = !readRole.isEmpty()
-                println "GET: " + hasRole
+                //println "GET: " + hasRole
             }
             else if ("POST" == request.method) {
                 def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_WRITER'))
                 hasRole = !writeRole.isEmpty()
-                println "POST: " + hasRole
+                //println "POST: " + hasRole
             }
 
             // getting context
