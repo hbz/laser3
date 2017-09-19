@@ -8,6 +8,10 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class BootStrap {
 
+    def grailsApplication
+    def dataloadService
+    // def docstoreService
+
     def init = { servletContext ->
 
         log.info("SystemId: ${grailsApplication.config.kbplusSystemId}")
@@ -24,111 +28,26 @@ class BootStrap {
         def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
         def view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
 
+        log.debug("setupRefdata ..")
+        setupRefdata()
 
-        // RefdataCategory.locCategory( category_name, EN, DE )     => RefdataCategory(desc:category_name            & I10nTranslation(EN, DE)
-        // RefdataCategory.locRefdataValue( category_name, EN, DE ) => RefdataValue(value:EN, owner:@category_name)  & I10nTranslation(EN, DE)
-
-        // because legacy logic is hardcoded against RefdataCategory.desc & RefdataValue.value
-
-        // refdata categories
-        RefdataCategory.locCategory('YN',           [en: 'Yes/No', de: 'Ja/Nein'])
-        RefdataCategory.locCategory('YNO',          [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
-        RefdataCategory.locCategory('AddressType',  [en: 'Address Type', de: 'Art der Adresse'])
-        RefdataCategory.locCategory('Cluster Type', [en: 'Cluster Type', de: 'Cluster Type'])
-        RefdataCategory.locCategory('Combo Type',   [en: 'Combo Type', de: 'Combo Type'])
-        RefdataCategory.locCategory('ConcurrentAccess',         [en: 'Concurrent Access', de: 'SimUser'])
-        RefdataCategory.locCategory('ContactContentType',       [en: 'Type of Contact', de: 'Kontakttyp'])
-        RefdataCategory.locCategory('ContactType',  [en: 'Contact Type', de: 'Art des Kontaktes'])
-        RefdataCategory.locCategory('CoreStatus',   [en: 'Core Status', de: 'Kerntitel-Status'])
-        RefdataCategory.locCategory('FactType',     [en: 'FactType', de: 'FactType'])
-        RefdataCategory.locCategory('Gender',       [en: 'Gender', de: 'Geschlecht'])
-        RefdataCategory.locCategory('Organisational Role',      [en: 'Organisational Role', de: 'Organisational Role'])
-        RefdataCategory.locCategory('OrgSector',    [en: 'OrgSector', de: 'Bereich'])
-        RefdataCategory.locCategory('OrgType',      [en: 'Organisation Type', de: 'Organisationstyp'])
-        RefdataCategory.locCategory('Person Function',          [en: 'Person Function', de: 'Funktion'])
-        RefdataCategory.locCategory('Person Responsibility',    [en: 'Person Responsibility', de: 'Verantwortlich'])
-        RefdataCategory.locCategory('Subscription Status',      [en: 'Subscription Status', de: 'Subscription Status'])
-
-        // refdata values
-        RefdataCategory.locRefdataValue('YN', [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue('YN', [en: 'No', de: 'Nein'])
-
-        RefdataCategory.locRefdataValue('YNO', [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue('YNO', [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue('YNO', [en: 'Not applicable', de: 'Nicht zutreffend'])
-        RefdataCategory.locRefdataValue('YNO', [en: 'Unknown', de: 'Unbekannt'])
-        RefdataCategory.locRefdataValue('YNO', [en: 'Other', de: 'Andere'])
-
-        RefdataCategory.locRefdataValue('AddressType', [en: 'Postal address', de: 'Postanschrift'])
-        RefdataCategory.locRefdataValue('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
-        RefdataCategory.locRefdataValue('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
+        // Allows values to be added to the vocabulary control list by passing an array with RefdataCategory as the key
+        // and a list of values to be added to the RefdataValue table.
+        grailsApplication.config.refdatavalues.each { rdc, rdvList ->
+            rdvList.each { rdv ->
+                RefdataCategory.lookupOrCreate(rdc, rdv);
+            }
+        }
 
         // TODO locCategory
-        def cl_owner_role  = RefdataCategory.locRefdataValue('Cluster Role', [en: 'Cluster Owner'])
-        def cl_member_role = RefdataCategory.locRefdataValue('Cluster Role', [en: 'Cluster Member'])
+        def cl_owner_role       = RefdataCategory.locRefdataValue('Cluster Role',   [en: 'Cluster Owner'])
+        def cl_member_role      = RefdataCategory.locRefdataValue('Cluster Role',   [en: 'Cluster Member'])
 
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 2'])
-
-        def cons_combo = RefdataCategory.locRefdataValue('Combo Type', [en: 'Consortium', de: 'Konsortium'])
-
-        RefdataCategory.locRefdataValue('ConcurrentAccess', [en: 'Specified', de: 'Festgelegt'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess', [en: 'Not Specified', de: 'Nicht festgelegt'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess', [en: 'No limit', de: 'Ohne Begrenzung'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess', [en: 'Other', de: 'Andere'])
-
-        RefdataCategory.locRefdataValue('ContactContentType', [en: 'E-Mail', de: 'E-Mail'])
-        RefdataCategory.locRefdataValue('ContactContentType', [en: 'Phone', de: 'Telefon'])
-        RefdataCategory.locRefdataValue('ContactContentType', [en: 'Fax', de: 'Fax'])
-
-        RefdataCategory.locRefdataValue('ContactType', [en: 'Personal', de: 'Privat'])
-        RefdataCategory.locRefdataValue('ContactType', [en: 'Job-related', de: 'Geschäftlich'])
-
-        RefdataCategory.locRefdataValue('CoreStatus', [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue('CoreStatus', [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue('CoreStatus', [en: 'Print', de: 'Print'])
-        RefdataCategory.locRefdataValue('CoreStatus', [en: 'Electronic', de: 'Elektronisch'])
-        RefdataCategory.locRefdataValue('CoreStatus', [en: 'Print+Electronic', de: 'Print & Elektronisch'])
-
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1a'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1-JR1a'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1GOA'])
-
-        RefdataCategory.locRefdataValue('Gender', [en: 'Female', de: 'Weiblich'])
-        RefdataCategory.locRefdataValue('Gender', [en: 'Male', de: 'Männlich'])
-
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensor', de: 'Lizenzgeber'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensing Consortium'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Negotiator'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Package Consortia'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Provider'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Publisher', de: 'Verlag'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscription Agent'])
+        def cons_combo          = RefdataCategory.locRefdataValue('Combo Type',     [en: 'Consortium', de: 'Konsortium'])
 
         def or_licensee_role    = RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
         def or_subscriber_role  = RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
         def or_sc_role          = RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscription Consortia'])
-
-        RefdataCategory.locRefdataValue('OrgSector', [en: 'Higher Education', de: 'Bibliothek'])
-        RefdataCategory.locRefdataValue('OrgSector', [en: 'Publisher', de: 'Verlag'])
-
-        RefdataCategory.locRefdataValue('OrgType', [en: 'Consortium', de: 'Konsortium'])
-        RefdataCategory.locRefdataValue('OrgType', [en: 'Institution', de: 'Einrichtung'])
-        RefdataCategory.locRefdataValue('OrgType', [en: 'Other', de: 'Andere'])
-
-        RefdataCategory.locRefdataValue('Person Function', [en: 'General contact person', de: 'Kontaktperson'])
-
-        RefdataCategory.locRefdataValue('Person Responsibility', [en: 'Specific license editor', de: 'Lizenzbearbeiter'])
-        RefdataCategory.locRefdataValue('Person Responsibility', [en: 'Specific subscription editor'])
-        RefdataCategory.locRefdataValue('Person Responsibility', [en: 'Specific package editor', de: 'Paketbearbeiter'])
-        RefdataCategory.locRefdataValue('Person Responsibility', [en: 'Specific cluster editor'])
-        RefdataCategory.locRefdataValue('Person Responsibility', [en: 'Specific title editor', de: 'Titelbearbeiter'])
-
-        RefdataCategory.locRefdataValue('Subscription Status', [en: 'Current', de: 'Aktuell'])
-        RefdataCategory.locRefdataValue('Subscription Status', [en: 'Deleted', de: 'Gelöscht'])
 
         // assertPermShare
         OrgPermShare.assertPermShare(view_permission, or_licensee_role);
@@ -169,14 +88,6 @@ class BootStrap {
             institutionalUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
         }
         ensurePermGrant(institutionalUser, view_permission);
-
-        // Allows values to be added to the vocabulary control list by passing an array with RefdataCategory as the key
-        // and a list of values to be added to the RefdataValue table.
-        grailsApplication.config.refdatavalues.each { rdc, rdvList ->
-            rdvList.each { rdv ->
-                RefdataCategory.lookupOrCreate(rdc, rdv);
-            }
-        }
 
         // Transforms types and formats Refdata
         // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
@@ -320,8 +231,8 @@ class BootStrap {
         log.debug("setOrgRoleGroups ..")
         setOrgRoleGroups()
 
-        log.debug("setupRefdata ..")
-        setupRefdata()
+        log.debug("setupOnixPlRefdata ..")
+        setupOnixPlRefdata()
 
         //log.debug("setupRefdataFromCode ..")
         //setupRefdataFromCode()
@@ -353,10 +264,6 @@ class BootStrap {
 
         log.debug("Init completed ..");
     }
-    def dataloadService
-    // def docstoreService
-
-    def grailsApplication
 
     def destroy = {
     }
@@ -364,7 +271,7 @@ class BootStrap {
     def initializeDefaultSettings(){
         def admObj = SystemAdmin.list()
         if (!admObj) {
-            log.debug("No SystemAdmin object found, creating new.");
+            log.debug("No SystemAdmin object found, creating new");
             admObj = new SystemAdmin(name:"demo").save();
         } else {
             admObj = admObj.first()
@@ -384,7 +291,7 @@ class BootStrap {
                 [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageHeader", note:" Remove header/footer from csv/xls"],
                 [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.2", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageFooter", note:" Remove header/footer from csv/xls"],
                 [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageHeader", note: " Remove header/footer from csv/xls"],
-                [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.2", descr: PropertyDefinition.SYS_CONF, type: String.toString(), val: "pageFooter", note: " Remove header/footer from csv/xls"]
+                [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.2", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageFooter", note: " Remove header/footer from csv/xls"]
         ]
         createPropertyDefinitions(requiredProps)
 
@@ -402,29 +309,57 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredProps = [
-                [name: [en: "Concurrent Access"],   descr: allDescr, type: RefdataValue.toString(), cat: 'ConcurrentAccess'],
-                [name: [en: "Concurrent Users"],    descr: allDescr, type: Integer.toString()],
-                [name: [en: "Remote Access"],       descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Walk In Access"],      descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Multi Site Access"],   descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Partners Access"],     descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Alumni Access"],       descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "ILL - InterLibraryLoans"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Include In Coursepacks"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Include in VLE"],      descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Enterprise Access"],   descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Post Cancellation Access Entitlement"], descr: allDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Cancellation Allowance"], descr: allDescr, type: String.toString()],
-                [name: [en: "Notice Period"],       descr: allDescr, type: String.toString()],
-                [name: [en: "Signed"],              descr: allDescr, type: RefdataValue.toString(), cat: 'YNO']
+                [name: [en: "Concurrent Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
+                [name: [en: "Concurrent Users"],        descr:allDescr, type:Integer.toString()],
+                [name: [en: "Remote Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Walk In Access"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Multi Site Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Partners Access"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Alumni Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "ILL - InterLibraryLoans"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Include In Coursepacks"],  descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Include in VLE"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Enterprise Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Post Cancellation Access Entitlement"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Cancellation Allowance"],  descr:allDescr, type:String.toString()],
+                [name: [en: "Notice Period"],           descr:allDescr, type:Date.toString()],
+                [name: [en: "Agreement Date"],          descr:allDescr, type:Date.toString()],
+                [name: [en: "Signed"],                  descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "Wifi Access"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Metadata delivery"],       descr:allDescr, type:String.toString()],
+                [name: [en: "Correction time"],         descr:allDescr, type:String.toString()],
+                [name: [en: "New underwriter"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Place of jurisdiction"],   descr:allDescr, type:String.toString()],
+                [name: [en: "Allowed Participants"],    descr:allDescr, type:String.toString()],
+                [name: [en: "Regional Restriction"],    descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Usage Statistics"],        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Invoicing"],               descr:allDescr, type:Date.toString()],
+                [name: [en: "Payment target"],          descr:allDescr, type:Date.toString()],
+                [name: [en: "Change to licensed material"], descr:allDescr, type:String.toString()],
+                [name: [en: "Service regulations"],     descr:allDescr, type:String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
         def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
 
+        //[name: [en: "Open Access Type"],            descr:allOADescr, type:RefdataValue.toString(), cat:'Open Access Type'],
+        //[name: [en: "Electronically Archivable Version"], descr:allOADescr, type:RefdataValue.toString(), cat:'Electronically Archivable Version'],
+
         def requiredOAProps = [
-                [name: [en: "Type"], descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],
-                [name: [en: "Electronically Archivable Version"], descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.eArcVersion']
+                [name: [en: "Open Access"],     descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Type"],            descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],
+                [name: [en: "Electronically Archivable Version"], descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.eArcVersion'],
+                [name: [en: "embargo period"],  descr: allOADescr, type: Integer.toString()],
+                [name: [en: "Authority"],       descr: allOADescr, type: RefdataValue.toString(), cat:'Authority'],
+                [name: [en: "APC Discount"],    descr: allOADescr, type: String.toString()],
+                [name: [en: "Vouchers Free OA Articles"],   descr: allOADescr, type: String.toString()],
+                [name: [en: "Branding"],        descr: allOADescr, type: String.toString()],
+                [name: [en: "Funder"],          descr: allOADescr, type: String.toString()],
+                [name: [en: "Offsetting"],      descr: allOADescr, type: String.toString()],
+                [name: [en: "Publishing Fee"],  descr: allOADescr, type: String.toString()],
+                [name: [en: "Reading Fee"],     descr: allOADescr, type: String.toString()],
+                [name: [en: "OA First Date"],   descr: allOADescr, type: Date.toString()],
+                [name: [en: "OA Last Date"],    descr: allOADescr, type: Date.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
@@ -497,9 +432,9 @@ class BootStrap {
 
     def addDefaultPageMappings() {
         if (!SitePage.findAll()) {
-            def home = new SitePage(alias: "Home", action: "index", controller: "home").save()
-            def profile = new SitePage(alias: "Profile", action: "index", controller: "profile").save()
-            def pages = new SitePage(alias: "Pages", action: "managePages", controller: "spotlight").save()
+            def home    = new SitePage(alias: "Home",    action: "index",       controller: "home").save()
+            def profile = new SitePage(alias: "Profile", action: "index",       controller: "profile").save()
+            def pages   = new SitePage(alias: "Pages",   action: "managePages", controller: "spotlight").save()
 
             dataloadService.updateSiteMapping()
         }
@@ -581,12 +516,155 @@ class BootStrap {
         }
     }
 
-    // Setup extra refdata
     def setupRefdata = {
+
+        // RefdataCategory.locCategory( category_name, EN, DE )     => RefdataCategory(desc:category_name            & I10nTranslation(EN, DE)
+        // RefdataCategory.locRefdataValue( category_name, EN, DE ) => RefdataValue(value:EN, owner:@category_name)  & I10nTranslation(EN, DE)
+
+        // because legacy logic is hardcoded against RefdataCategory.desc & RefdataValue.value
+
+        // refdata categories
+
+        RefdataCategory.locCategory('YN',                   [en: 'Yes/No', de: 'Ja/Nein'])
+        RefdataCategory.locCategory('YNO',                  [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
+        RefdataCategory.locCategory('AddressType',          [en: 'Address Type', de: 'Art der Adresse'])
+        RefdataCategory.locCategory('Cluster Type',         [en: 'Cluster Type', de: 'Cluster Type'])
+        RefdataCategory.locCategory('Combo Type',           [en: 'Combo Type', de: 'Combo Type'])
+        RefdataCategory.locCategory('ConcurrentAccess',     [en: 'Concurrent Access', de: 'SimUser'])
+        RefdataCategory.locCategory('ContactContentType',   [en: 'Type of Contact', de: 'Kontakttyp'])
+        RefdataCategory.locCategory('ContactType',          [en: 'Contact Type', de: 'Art des Kontaktes'])
+        RefdataCategory.locCategory('CoreStatus',           [en: 'Core Status', de: 'Kerntitel-Status'])
+        RefdataCategory.locCategory('FactType',             [en: 'FactType', de: 'FactType'])
+        RefdataCategory.locCategory('Gender',               [en: 'Gender', de: 'Geschlecht'])
+        RefdataCategory.locCategory('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
+        RefdataCategory.locCategory('OrgSector',            [en: 'OrgSector', de: 'Bereich'])
+        RefdataCategory.locCategory('OrgType',              [en: 'Organisation Type', de: 'Organisationstyp'])
+        RefdataCategory.locCategory('Person Function',      [en: 'Person Function', de: 'Funktion'])
+        RefdataCategory.locCategory('Person Responsibility',[en: 'Person Responsibility', de: 'Verantwortlich'])
+        RefdataCategory.locCategory('Subscription Status',  [en: 'Subscription Status', de: 'Subscription Status'])
+
+        // refdata values
+
+        RefdataCategory.locRefdataValue('YN',   [en: 'Yes', de: 'Ja'])
+        RefdataCategory.locRefdataValue('YN',   [en: 'No', de: 'Nein'])
+
+        RefdataCategory.locRefdataValue('YNO',  [en: 'Yes', de: 'Ja'])
+        RefdataCategory.locRefdataValue('YNO',  [en: 'No', de: 'Nein'])
+        RefdataCategory.locRefdataValue('YNO',  [en: 'Not applicable', de: 'Nicht zutreffend'])
+        RefdataCategory.locRefdataValue('YNO',  [en: 'Unknown', de: 'Unbekannt'])
+        RefdataCategory.locRefdataValue('YNO',  [en: 'Other', de: 'Andere'])
+
+        RefdataCategory.locRefdataValue('AddressType', [en: 'Postal address', de: 'Postanschrift'])
+        RefdataCategory.locRefdataValue('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
+        RefdataCategory.locRefdataValue('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
+
+        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
+        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
+        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 2'])
+
+        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
+        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
+        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'No limit', de: 'Ohne Begrenzung'])
+        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Other', de: 'Andere'])
+
+        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'E-Mail', de: 'E-Mail'])
+        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'Phone', de: 'Telefon'])
+        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'Fax', de: 'Fax'])
+
+        RefdataCategory.locRefdataValue('ContactType',  [en: 'Personal', de: 'Privat'])
+        RefdataCategory.locRefdataValue('ContactType',  [en: 'Job-related', de: 'Geschäftlich'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Yes', de: 'Ja'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'No', de: 'Nein'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print', de: 'Print'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Electronic', de: 'Elektronisch'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print+Electronic', de: 'Print & Elektronisch'])
+
+        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1'])
+        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1a'])
+        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1-JR1a'])
+        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1GOA'])
+
+        RefdataCategory.locRefdataValue('Gender',   [en: 'Female', de: 'Weiblich'])
+        RefdataCategory.locRefdataValue('Gender',   [en: 'Male', de: 'Männlich'])
+
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensor', de: 'Lizenzgeber'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensing Consortium'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Negotiator'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Package Consortia'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Provider'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Publisher', de: 'Verlag'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscription Agent'])
+
+        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
+        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
+        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 2'])
+
+        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
+        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
+        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'No limit', de: 'Ohne Begrenzung'])
+        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Other', de: 'Andere'])
+
+        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'E-Mail', de: 'E-Mail'])
+        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'Phone', de: 'Telefon'])
+        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'Fax', de: 'Fax'])
+
+        RefdataCategory.locRefdataValue('ContactType',  [en: 'Personal', de: 'Privat'])
+        RefdataCategory.locRefdataValue('ContactType',  [en: 'Job-related', de: 'Geschäftlich'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Yes', de: 'Ja'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'No', de: 'Nein'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print', de: 'Print'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Electronic', de: 'Elektronisch'])
+        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print+Electronic', de: 'Print & Elektronisch'])
+
+        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1'])
+        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1a'])
+        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1-JR1a'])
+        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1GOA'])
+
+        RefdataCategory.locRefdataValue('Gender',   [en: 'Female', de: 'Weiblich'])
+        RefdataCategory.locRefdataValue('Gender',   [en: 'Male', de: 'Männlich'])
+
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensor', de: 'Lizenzgeber'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensing Consortium'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Negotiator'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Package Consortia'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Provider'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Publisher', de: 'Verlag'])
+        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscription Agent'])
+
+        RefdataCategory.locRefdataValue('OrgSector',    [en: 'Higher Education', de: 'Bibliothek'])
+        RefdataCategory.locRefdataValue('OrgSector',    [en: 'Publisher', de: 'Verlag'])
+
+        RefdataCategory.locRefdataValue('OrgType',      [en: 'Consortium', de: 'Konsortium'])
+        RefdataCategory.locRefdataValue('OrgType',      [en: 'Institution', de: 'Einrichtung'])
+        RefdataCategory.locRefdataValue('OrgType',      [en: 'Other', de: 'Andere'])
+
+        RefdataCategory.locRefdataValue('Person Function',          [en: 'General contact person', de: 'Kontaktperson'])
+
+        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific license editor', de: 'Lizenzbearbeiter'])
+        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific subscription editor'])
+        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'])
+        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific cluster editor'])
+        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'])
+
+        RefdataCategory.locRefdataValue('Subscription Status',      [en: 'Current', de: 'Aktuell'])
+        RefdataCategory.locRefdataValue('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'])
+    }
+
+    def setupOnixPlRefdata = {
 
         // -------------------------------------------------------------------
         // ONIX-PL Additions
         // -------------------------------------------------------------------
+
+        RefdataCategory.locCategory('Authority',
+                [en: 'Authority', de: 'Authority'])
+
+        RefdataCategory.locRefdataValue('Authority', [en: 'Author'])
+        RefdataCategory.locRefdataValue('Authority', [en: 'Institution'])
+        RefdataCategory.locRefdataValue('Authority', [en: 'Author and Institution'])
 
         RefdataCategory.locCategory('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])
@@ -613,7 +691,8 @@ class BootStrap {
         RefdataCategory.locRefdataValue('CostItemStatus', [en: 'Other', de: 'Andere'])
 
         // TODO locCategory
-        RefdataCategory.locRefdataValue('Document Context Status', [en: 'Deleted', de: 'Gelöscht'])
+        RefdataCategory.locRefdataValue('Document Context Status',
+                [en: 'Deleted', de: 'Gelöscht'])
 
         RefdataCategory.locCategory('Document Type',
                 [en: 'Document Type', de: 'Dokumenttyp'])
@@ -667,8 +746,11 @@ class BootStrap {
         RefdataCategory.locRefdataValue('License.OA.Type', [en: 'Green Open Access', de: 'Green Open-Access'])
         RefdataCategory.locRefdataValue('License.OA.Type', [en: 'Red Open Access', de: 'Red Open-Access'])
 
-        RefdataCategory.locCategory('License.OA.eArcVersion', [en: 'License.OA.eArcVersion', de: 'License.OA.eArcVersion'])
+        RefdataCategory.locCategory('License.OA.eArcVersion',
+                [en: 'License.OA.eArcVersion', de: 'License.OA.eArcVersion'])
 
+        RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Accepted Author'])
+        RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Manuscript (AAM)'])
         RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Publisher-PDF', de: 'Verlags-PDF'])
         RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Postprint', de: 'Postprint'])
         RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Preprint', de: 'Preprint'])

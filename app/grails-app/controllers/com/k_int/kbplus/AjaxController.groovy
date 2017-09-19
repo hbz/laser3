@@ -770,7 +770,8 @@ class AjaxController {
   def lookup() {
     // log.debug("AjaxController::lookup ${params}");
     def result = [:]
-    params.max = params.max ?: 20;
+    // params.max = params.max ?: 20;
+    params.max = params.max ?: 40;
     def domain_class = grailsApplication.getArtefact('Domain',params.baseClass)
     if ( domain_class ) {
       result.values = domain_class.getClazz().refdataFind(params);
