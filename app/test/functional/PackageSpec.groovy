@@ -33,7 +33,7 @@ class PackageSpec extends GebReportingSpec {
         at LogInPage
         login(Data.UserD_name, Data.UserD_passwd)
         when:
-        go '/demo/upload/reviewPackage'
+        go '/laser/upload/reviewPackage'
         $('form').soFile = Data.Package_import_file
         $('button', text: "Upload SO").click()
         then:

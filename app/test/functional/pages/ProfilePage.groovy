@@ -6,7 +6,7 @@ import org.openqa.selenium.Keys
  * Created by ioannis on 28/05/2014.
  */
 class ProfilePage extends BasePage {
-    static url = "/demo/profile/index"
+    static url = "/laser/profile/index"
     static at = { browser.page.title.startsWith "KB+ User Profile" };
 
     static content = {

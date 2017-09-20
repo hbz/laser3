@@ -6,7 +6,7 @@ import org.openqa.selenium.Keys
  * Created by ioannis on 28/05/2014.
  */
 class UploadIssnLPage extends BasePage {
-    static url = "/demo/admin/uploadIssnL"
+    static url = "/laser/admin/uploadIssnL"
     static at = { browser.page.title.startsWith "KB+ Admin::Identifier Same-As Upload" };
 
     static content = {

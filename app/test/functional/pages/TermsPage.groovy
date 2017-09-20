@@ -4,7 +4,7 @@ package pages
  */
 class TermsPage extends BasePage {
     static at = { browser.page.title.startsWith "Terms and Conditions" }
-    static url = "/demo/terms-and-conditions"
+    static url = "/laser/terms-and-conditions"
 
     static content = {
     	downloadTerms {

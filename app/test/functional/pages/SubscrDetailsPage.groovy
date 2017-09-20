@@ -3,7 +3,7 @@ package pages
  * Created by ioannis on 03/06/2014.
  */
 class SubscrDetailsPage extends AbstractDetails {
-    static url = "/demo/subscriptionDetails/show/*"
+    static url = "/laser/subscriptionDetails/show/*"
     static at = {
         browser.page.title.endsWith("- Current Subscriptions") ||
                 browser.page.title.startsWith("KB+ Subscription")||

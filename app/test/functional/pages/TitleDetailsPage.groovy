@@ -4,7 +4,7 @@ package pages
  * Created by ioannis on 29/05/2014.
  */
 class TitleDetailsPage extends BasePage {
-    static url = "/demo/titleDetails/index"
+    static url = "/laser/titleDetails/index"
     static at = { browser.page.title.startsWith "KB+ Titles" };
 
     static content = {

@@ -189,7 +189,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     // Accept a single mandatorty parameter which is the namespace:code for an institution
     // If found, return a JSON report of each title for that institution
     // Also accept an optional parameter esn [element set name] with values full of brief[the default]
-    // Example:  http://localhost:8080/demo/api/institutionTitles?orgid=jusplogin:shu
+    // Example:  http://localhost:8080/laser/api/institutionTitles?orgid=jusplogin:shu
     def institutionTitles() {
 
         def result = [:]

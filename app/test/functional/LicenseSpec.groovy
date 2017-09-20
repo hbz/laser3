@@ -60,7 +60,7 @@ class LicenseSpec extends GebReportingSpec {
     def "Test CustomProperties"(){
         def license = License.findByReference("Test License")
         setup:
-          go '/demo/licenseDetails/index/'+license.id
+          go '/laser/licenseDetails/index/'+license.id
           at LicensePage
         when:
           addCustomPropType("Alumni Access")
@@ -82,7 +82,7 @@ class LicenseSpec extends GebReportingSpec {
           def license3 = new com.k_int.kbplus.License(reference:"Test License 3", startDate: sd, endDate: ed, status: l_status).save()
           def licensee_role2 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license2,org:org).save()
           def licensee_role3 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license3,org:org).save()
-          go '/demo/licenseCompare/index?shortcode='+Data.Org_Url
+          go '/laser/licenseCompare/index?shortcode='+Data.Org_Url
           at LicenseComparePage
         when:
           compare(license2.reference,license3.reference)
@@ -121,7 +121,7 @@ class LicenseSpec extends GebReportingSpec {
           def tipp = new com.k_int.kbplus.TitleInstancePackagePlatform(impId:Data.Tipp_uniqID, title: ti).save()
           def ie = new com.k_int.kbplus.IssueEntitlement(status: ie_current, tipp: tipp, subscription: sub).save()
           logout()
-          go '/demo/public/journalLicenses'
+          go '/laser/public/journalLicenses'
         when: "inputting org and journal title values"
           $("input", name: "journal").value(Data.Title_titlename)
           $("input", name: "org").value(Data.Org_name)
@@ -145,7 +145,7 @@ class LicenseSpec extends GebReportingSpec {
 
     def "Change org to have public journal access "() {
         setup: "Custom property page"
-          go '/demo/organisations/config/'+Org.findByName(Data.Org_name).id
+          go '/laser/organisations/config/'+Org.findByName(Data.Org_name).id
           at LicensePage
         when: "Properties are listed, find Public Journal Access"
           addCustomInputProperty(Data.License_publicProp_journals, Data.License_public_journals)
@@ -158,7 +158,7 @@ class LicenseSpec extends GebReportingSpec {
    def "search for public journal license using journal title and org (Valid)"() {
        setup: "Go to Public Journal Licenses page"
 
-         go '/demo/public/journalLicenses'
+         go '/laser/public/journalLicenses'
        when: "inputting org and journal title values"
          $("input", name: "journal").value(Data.Title_titlename)
          $("input", name: "org").value(Data.Org_name)

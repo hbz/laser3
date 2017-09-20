@@ -38,7 +38,7 @@ class GeneralSpec extends BaseSpec {
 		at LogInPage
 		login(Data.UserD_name, Data.UserD_passwd)
 		when:
-		go "/demo/org/create"
+		go "/laser/org/create"
 		waitFor{$("form")}
 		$("form").name = Data.Org_name
 		$("form").impId = Data.Org_impId
@@ -68,8 +68,8 @@ class GeneralSpec extends BaseSpec {
 
 	def "Setup subscription"(){
 		when:
-		go "/demo/admin/globalSync"
-		go '/demo/myInstitutions/'+Data.Org_Url+'/emptySubscription'
+		go "/laser/admin/globalSync"
+		go '/laser/myInstitutions/'+Data.Org_Url+'/emptySubscription'
                 waitFor { $("form") }
 		$('form').newEmptySubName = Data.Subscription_name_A
 		$('input', type: 'submit').click()
@@ -80,7 +80,7 @@ class GeneralSpec extends BaseSpec {
 
 	def "Setup new package" (){
 		when:
-		go '/demo/upload/reviewPackage'
+		go '/laser/upload/reviewPackage'
 		$('form').soFile = Data.Package_import_file
 		$('button', text: "Upload SO").click()
 		then:
@@ -93,12 +93,12 @@ class GeneralSpec extends BaseSpec {
 		$('#add_to_sub_submit_id').click()
 		then:
 		1 == 1
-		// response page sends back a link containing the new package ID <a href="/demo/packageDetails/show/590">New Package Details</a>
+		// response page sends back a link containing the new package ID <a href="/laser/packageDetails/show/590">New Package Details</a>
 	}
 
 	def "Start downloading titles"() {
 		when:
-		go '/demo/admin/fullReset' // so that new package is displayed
+		go '/laser/admin/fullReset' // so that new package is displayed
 		Thread.sleep(5000)
 		then:
 		true;
@@ -125,7 +125,7 @@ class GeneralSpec extends BaseSpec {
 	//ref 001
 	def "KB+ Member login"() {
 		when:
-		go "/demo/home/index"
+		go "/laser/home/index"
 		then:
 		at LogInPage
 		login(Data.UserA_name, Data.UserA_passwd)
@@ -476,7 +476,7 @@ class GeneralSpec extends BaseSpec {
 
 	def "Update ES Index"() {
 		when:
-		go '/demo/admin/esIndexUpdate' // should have a few titles by now.
+		go '/laser/admin/esIndexUpdate' // should have a few titles by now.
 		Thread.sleep(5000)
 		then:
 		true;
@@ -777,7 +777,7 @@ class GeneralSpec extends BaseSpec {
 	def "Institution Change log"(){
 		when:
 		at DataManagerPage
-		go '/demo/myInstitutions/'+Data.Org_Url+'/changeLog'
+		go '/laser/myInstitutions/'+Data.Org_Url+'/changeLog'
 		then:
 		$("div.pagination").text().contains("Showing 4 changes")
 		when:

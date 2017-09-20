@@ -53,7 +53,7 @@ class AdminActionsSpec extends GebReportingSpec {
   def "Go to User Merge screen and transfer affiliations from user A"(){
 
     when:
-      go '/demo/admin/userMerge'
+      go '/laser/admin/userMerge'
     then:
       browser.page.title.contains("User Merge")
     when:
