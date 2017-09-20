@@ -131,22 +131,29 @@ class I10nTranslation {
         def matches = []
         def result = []
 
-        switch(locale.toString().toLowerCase()){
-            case 'en':
-                matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
-                        referenceClass, referenceField, "${query}%"
-                )
-                break
-            case 'de':
-                matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueDeIlike(
-                        referenceClass, referenceField, "${query}%"
-                )
-                break
-            case 'fr':
-                matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueFrIlike(
-                        referenceClass, referenceField, "${query}%"
-                )
-                break
+        if(! query) {
+            matches = I10nTranslation.findAllByReferenceClassAndReferenceField(
+                    referenceClass, referenceField
+            )
+        }
+        else {
+            switch (locale.toString().toLowerCase()) {
+                case 'en':
+                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
+                            referenceClass, referenceField, "${query}%"
+                    )
+                    break
+                case 'de':
+                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueDeIlike(
+                            referenceClass, referenceField, "${query}%"
+                    )
+                    break
+                case 'fr':
+                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueFrIlike(
+                            referenceClass, referenceField, "${query}%"
+                    )
+                    break
+            }
         }
         matches.each { it ->
             def obj = (new I10nTranslation().getDomainClass().grailsApplication.classLoader.loadClass(it.referenceClass)).findById(it.referenceId)
