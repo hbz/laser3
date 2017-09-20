@@ -8,7 +8,7 @@ info:
   contact:
     email: david.klober@hbz-nrw.de
 
-#basePath: /demo/api/v0 # development
+#basePath: /laser/api/v0 # development
 basePath: /api/v0 # prod
 
 schemes:

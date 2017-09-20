@@ -101,7 +101,7 @@ class BootStrap {
         RefdataCategory.locRefdataValue('Transform Type', [en: 'title'])
         RefdataCategory.locRefdataValue('Transform Type', [en: 'package'])
 
-        // Add Transformers and Transforms define in the demo-config.groovy
+        // Add Transformers and Transforms defined in local config (laser-config.groovy)
         grailsApplication.config.systransforms.each { tr ->
             def transformName = tr.transforms_name //"${tr.name}-${tr.format}-${tr.type}"
 

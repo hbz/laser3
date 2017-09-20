@@ -5,6 +5,11 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.apache.log4j.DailyRollingFileAppender
 import org.apache.log4j.RollingFileAppender
 
+grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
+grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
+
+System.out.println("\nlocal config override: ${grails.config.locations}")
+
 // @NotificationsJob
 // - enable notification
 // - enable reminder
@@ -319,10 +324,6 @@ onix = [
   ]
 ]
 
-grails.config.locations = [ "file:${userHome}/.grails/${appName}-config.groovy"]
-System.out.println("\nlocal config override: ${grails.config.locations}");
-
-grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
 grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
@@ -377,11 +378,11 @@ grails.hibernate.cache.queries = true
 environments {
     development {
         grails.logging.jul.usebridge = true
-        grails.serverURL = "http://localhost:8080/demo"
+        grails.serverURL = "http://localhost:8080/laser"
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://localhost:8080/demo" // override in local config
+        grails.serverURL = "http://localhost:8080/laser" // override in local config (laser-config.groovy)
     }
 }
 
@@ -423,7 +424,7 @@ def logWatchFile
 // First lets see if we have a log file present.
 def base = System.getProperty("catalina.base")
 if (base) {
-   logWatchFile = new File ("${base}/logs/catalina.out")
+   logWatchFile = new File ("${base}/logs/${appName}-${appVersion}.log")
 
    if (!logWatchFile.exists()) {
      // Need to create one in current context.
@@ -432,7 +433,7 @@ if (base) {
 }
 
 if (!base) {
-  logWatchFile = new File("logs/laser.log")
+  logWatchFile = new File("logs/${appName}-${appVersion}.log")
 }
 
 // Log file variable.
@@ -854,7 +855,7 @@ financials.currency="GBP - United Kingdom Pound|EUR - Euro Member Countries|USD 
 defaultOaiConfig = [
   serverName: 'K-Int generic Grails OAI Module :: KBPlus.ac.uk',
   lastModified:'lastUpdated',
-  serverEmail:'ian.ibbotson@k-int.com',
+  serverEmail:'laser@laser.laser',
   schemas:[
     'oai_dc':[
       type:'method',
