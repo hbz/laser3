@@ -342,9 +342,6 @@ class BootStrap {
 
         def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
 
-        //[name: [en: "Open Access Type"],            descr:allOADescr, type:RefdataValue.toString(), cat:'Open Access Type'],
-        //[name: [en: "Electronically Archivable Version"], descr:allOADescr, type:RefdataValue.toString(), cat:'Electronically Archivable Version'],
-
         def requiredOAProps = [
                 [name: [en: "Open Access"],     descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
                 [name: [en: "Type"],            descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],

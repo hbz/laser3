@@ -1,4 +1,5 @@
-println("------- Using demo config from conf hints ------- ")
+println("--- using local config ---")
+
 localauth=true
 dataSource.url="jdbc:mysql://localhost/kbplustest?autoReconnect=true&amp;characterEncoding=utf8"
 aggr_es_cluster='tigerelasticsearch'
@@ -6,9 +7,9 @@ onix_ghost_licence="Jisc Collections Model Journals Licence 2015"
 aggr_es_index='kbplustest'
 publicationService.baseurl='http://knowplus.edina.ac.uk:2012/kbplus/api'
 // no slash at end of SystemBaseURL
-SystemBaseURL="http://localhost:19080/demo"
+SystemBaseURL="http://localhost:19080/laser"
 docstore='http://deprecated/deprecated'
-kbplusSystemId='KITestIntsance'
+kbplusSystemId='LAS:eR-Demo'
 ZenDeskBaseURL='https://projectname.zendesk.com'
 ZenDeskDropboxID=20000000
 ZenDeskLoginEmail='Zen.Desk@Host.Name'

@@ -24,8 +24,13 @@ localauth = true
 feature_finance = true
 
 customProperties =[
-"org":["journalAccess":["name":"Public Journal Access","class":String.toString(),"note":"Set the required rights for accessing the public Journals page. For example 'Staff,Student,Public' or leave empty/delete for no public access."]
-      ]
+    "org":[
+        "journalAccess":[
+            "name"  : "Public Journal Access",
+            "class" : String.toString(),
+            "note"  : "Set the required rights for accessing the public Journals page. For example 'Staff,Student,Public' or leave empty/delete for no public access."
+        ]
+    ]
 ]
 
 onix = [
@@ -424,7 +429,7 @@ def logWatchFile
 // First lets see if we have a log file present.
 def base = System.getProperty("catalina.base")
 if (base) {
-   logWatchFile = new File ("${base}/logs/${appName}-${appVersion}.log")
+   logWatchFile = new File ("${base}/logs/catalina.out")
 
    if (!logWatchFile.exists()) {
      // Need to create one in current context.
