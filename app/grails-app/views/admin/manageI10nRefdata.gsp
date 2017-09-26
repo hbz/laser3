@@ -22,7 +22,7 @@
 
 		<div class="container">
 			<div class="row">
-				<div class="span8">
+				<div class="span12">
 					<table class="table table-bordered">
 						<thead>
 						<tr>
@@ -34,7 +34,7 @@
 						</thead>
 						<tbody>
 							<g:each in="${rdCategories}" var="rdc">
-								<g:set var="rdcI10n" value="${I10nTranslation.createI10nIfNeeded(rdc, 'desc')}" />
+								<g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
 								<tr>
 									<td>${fieldValue(bean: rdc, field: "desc")}</td>
 									<td>${(RefdataValue.findAllByOwner(rdc)).size()}</td>
@@ -53,10 +53,10 @@
 											<g:each in="${RefdataValue.findAllByOwner(rdc)}" var="rdv">
 												<tr>
 													<td style="width:50%">
-														<g:xEditable owner="${I10nTranslation.createI10nIfNeeded(rdv, 'value')}" field="valueDe" />
+														<g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
 													</td>
 													<td style="width:50%">
-														<g:xEditable owner="${I10nTranslation.createI10nIfNeeded(rdv, 'value')}" field="valueEn" />
+														<g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
 													</td>
 												</tr>
 											</g:each>
@@ -66,13 +66,7 @@
 							</g:each>
 						</tbody>
 					</table>
-				</div><!--.span8-->
-
-				<!--<div class="span4">
-					<laser:card title="identifier.namespace.add.label" class="card-grey">
-			TODO
-					</laser:card>
-				</div>--><!--.span4-->
+				</div><!--.span12-->
 			</div><!--.row-->
 		</div>
 

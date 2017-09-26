@@ -14,7 +14,7 @@ class I10nTagLib {
     // <laser:select optionValue="field" />  ==> <laser:select optionValue="field_(de|en|fr)" />
 
     def select = { attrs, body ->
-        attrs.optionValue = attrs.optionValue + "_" + LocaleContextHolder.getLocale()
+        attrs.optionValue = attrs.optionValue + "_" + LocaleContextHolder.getLocale().split("-").first()
         out << g.select(attrs)
     }
 }

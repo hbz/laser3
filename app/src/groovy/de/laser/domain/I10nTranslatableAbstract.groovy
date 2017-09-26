@@ -14,6 +14,7 @@ abstract class I10nTranslatableAbstract {
     // get translation
     def getI10n(String property, String locale) {
         def result
+        locale = locale.split("-").first()
 
         if (I10nTranslation.supportedLocales.contains(locale.toLowerCase())) {
             result = this."${property}_${locale.toLowerCase()}"

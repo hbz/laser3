@@ -509,48 +509,138 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def addCustomPropertyType(){
-    def newProp
-    def error
-    def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
-    def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addRefdataValue() {
 
-    if(params.cust_prop_type.equals(RefdataValue.toString())){
-      if(params.refdatacategory){
-        newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
-        def cat = RefdataCategory.get(params.refdatacategory)
-        newProp.setRefdataCategory(cat.desc)
-        newProp.save(flush:true)
-      } else{
-        error = message(code:'ajax.addCustPropertyType.error', default:'Type creation failed. Please select a ref data type.')
-      }
-    } else{
-      newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+        def newRefdataValue
+        def error
+        def msg
+
+        def rdc = RefdataCategory.findById(params.refdata_category_id)
+        if (rdc) {
+            log.debug("RefdataCategory found")
+        }
+
+        if (RefdataValue.findByOwnerAndValue(rdc, params.refdata_value)) {
+            error = "RefdataValue exists: " + params.refdata_value + " @ " + rdc.desc
+            log.debug(error)
+        }
+        else {
+            newRefdataValue = new RefdataValue(value: params.refdata_value, owner: rdc, softData: true)
+            newRefdataValue.save(flush: true)
+        }
+
+        if (newRefdataValue?.hasErrors()) {
+            log.error(newRefdataValue.errors)
+            error = message(code: 'default.error')
+        }
+        else {
+            msg = "OK. TODO"
+        }
+
+        if (params.reloadReferer) {
+            flash.newRefdataValue = newRefdataValue
+            flash.error   = error
+            flash.message = msg
+            redirect(url: params.reloadReferer)
+        }
     }
-    if(newProp?.hasErrors()){
-      log.error(newProp.errors)
-    } else{
-      if(params.autoAdd == "on" && newProp){
-          params.propIdent = newProp.id.toString()
-          chain(action: "addCustomPropertyValue", params:params)
-      }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addRefdataCategory() {
+
+        def newRefdataCategory
+        def error
+        def msg
+
+        def rdc = RefdataCategory.findByDesc(params.refdata_category)
+        if (rdc) {
+            error = "RefdataCategory exists: " + params.refdata_category
+            log.debug(error)
+        }
+        else {
+            newRefdataCategory = new RefdataCategory(desc: params.refdata_category, softData: true)
+            newRefdataCategory.save(flush: true)
+        }
+
+        if (newRefdataCategory?.hasErrors()) {
+            log.error(newRefdataCategory.errors)
+            error = message(code: 'default.error')
+        }
+        else {
+            msg = "OK. TODO"
+        }
+
+        if (params.reloadReferer) {
+            flash.newRefdataCategory = newRefdataCategory
+            flash.error   = error
+            flash.message = msg
+            redirect(url: params.reloadReferer)
+        }
     }
-    request.setAttribute("editable", params.editable == "true")
-    if(params.reloadReferer){
-      flash.newProp = newProp
-      flash.error = error
-      redirect(url: params.reloadReferer)
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addCustomPropertyType() {
+
+        def newProp
+        def error
+        def msg
+        def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
+        def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+
+        if (PropertyDefinition.findByNameAndDescr(params.cust_prop_name, params.cust_prop_desc)) {
+            error = message(code: 'propertyDefinition.name.unique')
+        }
+        else {
+            if (params.cust_prop_type.equals(RefdataValue.toString())) {
+                if (params.refdatacategory) {
+                    newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+                    def cat = RefdataCategory.get(params.refdatacategory)
+                    newProp.setRefdataCategory(cat.desc)
+                    newProp.save(flush: true)
+                }
+                else {
+                    error = message(code: 'ajax.addCustPropertyType.error', default: 'Type creation failed. Please select a ref data type.')
+                }
+            }
+            else {
+                newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+            }
+
+            if (newProp?.hasErrors()) {
+                log.error(newProp.errors)
+                error = message(code: 'default.error')
+            }
+            else {
+                msg = message(code: 'ajax.addCustPropertyType.success')
+                newProp.softData = true
+                newProp.save(flush: true)
+
+                if (params.autoAdd == "on" && newProp) {
+                    params.propIdent = newProp.id.toString()
+                    chain(action: "addCustomPropertyValue", params: params)
+                }
+            }
+        }
+
+        request.setAttribute("editable", params.editable == "true")
+
+        if (params.reloadReferer) {
+            flash.newProp = newProp
+            flash.error = error
+            flash.message = msg
+            redirect(url: params.reloadReferer)
+        }
+        else if (params.redirect) {
+            flash.newProp = newProp
+            flash.error = error
+            flash.message = msg
+            redirect(controller:"propertyDefinition", action:"create")
+        }
+        else {
+            render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error, message: msg])
+        }
     }
-    else if(params.redirect){
-      flash.newProp = newProp
-      flash.error = error
-      redirect(controller:"propertyDefinition", action:"create")
-    }
-    else{
-      render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error])
-    }
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def addPrivatePropertyType(){
@@ -563,7 +653,7 @@ class AjaxController {
     def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
     if(params.cust_prop_type.equals(RefdataValue.toString())){
       if(params.refdatacategory){
-        newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+        newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
         def cat = RefdataCategory.get(params.refdatacategory)
         newProp.setRefdataCategory(cat.desc)
         newProp.save(flush:true)
@@ -571,7 +661,7 @@ class AjaxController {
         error = "Type creation failed. Please select a ref data type."
       }
     } else{
-      newProp = PropertyDefinition.lookupOrCreateType(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+      newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
     }
     if(newProp?.hasErrors()){
       log.error(newProp.errors)

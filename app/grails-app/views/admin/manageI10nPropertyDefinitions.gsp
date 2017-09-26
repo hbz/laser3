@@ -22,7 +22,7 @@
 
 		<div class="container">
 			<div class="row">
-				<div class="span8">
+				<div class="span12">
 					<g:each in="${propertyDefinitions}" var="entry">
 						<h3>${entry.key}</h3>
                         <table class="table table-striped table-hover table-bordered">
@@ -37,8 +37,8 @@
 							</thead>
 							<tbody>
 								<g:each in="${entry.value}" var="pd">
-									<g:set var="pdI10nName"  value="${I10nTranslation.createI10nIfNeeded(pd, 'name')}" />
-									<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nIfNeeded(pd, 'descr')}" />
+									<g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
+									<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />
 									<tr>
 										<td>
                                             ${fieldValue(bean: pd, field: "name")}
@@ -53,7 +53,7 @@
 							</tbody>
 						</table>
 					</g:each>
-				</div><!--.span8-->
+				</div><!--.span12-->
 			</div><!--.row-->
 		</div>
 

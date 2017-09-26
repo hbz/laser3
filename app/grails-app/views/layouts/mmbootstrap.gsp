@@ -303,11 +303,13 @@
                         <li class="divider"></li>
 
                         <li <%= ( ( 'admin'== controllerName ) && ( 'manageNamespaces'==actionName ) ) ? ' class="active"' : '' %>>
-                            <g:link controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</g:link></li>
-                        <li <%= ( ( 'admin'== controllerName ) && ( 'manageI10n'==actionName ) ) ? ' class="active"' : '' %>>
-                            <g:link controller="admin" action="manageI10n" params="${[type:'properties']}">${message(code:'menu.admin.manageI10n')}</g:link></li>
-                        <li <%= ( ( 'propertyDefinition'== controllerName ) ) ? ' class="active"' : '' %>>
-                            <g:link controller="propertyDefinition" action="list">${message(code:'menu.admin.manageCustomProperties')}</g:link>
+                            <g:link controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</g:link>
+                        </li>
+                        <li <%= ( ( 'admin'== controllerName ) && ( 'managePropertyDefinitions'==actionName ) ) ? ' class="active"' : '' %>>
+                            <g:link controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</g:link>
+                        </li>
+                        <li <%= ( ( 'admin'== controllerName ) && ( 'manageRefdatas'==actionName ) ) ? ' class="active"' : '' %>>
+                            <g:link controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</g:link>
                         </li>
                         <li <%= ( ( 'admin'== controllerName ) && ( 'manageContentItems'==actionName ) ) ? ' class="active"' : '' %>>
                             <g:link controller="admin" action="manageContentItems">${message(code:'menu.admin.manageContentItems')}</g:link>

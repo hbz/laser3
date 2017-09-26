@@ -925,27 +925,25 @@ class AdminController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def manageI10n() {
-    // TODO check role and editable !!!
+  def managePropertyDefinitions() {
 
-    if (params.type == 'refdata') {
-
-      render view: 'manageI10nRefdata', model: [
-              editable    : true,
-              rdCategories: RefdataCategory.where {}.sort('desc')
-      ]
+    def propDefs = [:]
+    PropertyDefinition.AVAILABLE_DESCR.each { it ->
+      def itResult = PropertyDefinition.findAllByDescr(it).sort()
+      propDefs << ["${it}": itResult]
     }
-    else if (params.type == 'properties') {
-
-      def propDefs = [:]
-      PropertyDefinition.AVAILABLE_DESCR.each { it ->
-        def itResult = PropertyDefinition.findAllByDescr(it).sort()
-        propDefs << ["${it}": itResult]
-      }
-      render view: 'manageI10nPropertyDefinitions', model: [
+    render view: 'managePropertyDefinitions', model: [
               editable    : true,
               propertyDefinitions: propDefs,
-      ]
-    }
+            ]
+  }
+
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  def manageRefdatas() {
+
+    render view: 'manageRefdatas', model: [
+            editable    : true,
+            rdCategories: RefdataCategory.where {}.sort('desc')
+    ]
   }
 }

@@ -45,6 +45,9 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     String type
     String refdataCategory
 
+    // indicates this object is created via front-end
+    boolean softData
+
     //Map keys can change and they wont affect any of the functionality
     @Transient
     static def validTypes = ["Number":  Integer.toString(), 
@@ -54,18 +57,20 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                              "Date":    Date.toString()]
 
     static constraints = {
-        name (nullable: false, blank: false, unique:true)
-        descr(nullable: true,  blank: false)
-        type (nullable: false, blank: false)
-        refdataCategory(nullable:true)
+        name            (nullable: false, blank: false)
+        descr           (nullable: true,  blank: false)
+        type            (nullable: false, blank: false)
+        refdataCategory (nullable: true)
+        softData        (nullable: false, blank: false, default: false)
     }
 
     static mapping = {
                       id column: 'pd_id'
-                   descr column: 'pd_description'
-                    name column: 'pd_name', index: 'td_name_idx'
-                    type column: 'pd_type', index: 'td_type_idx'
-         refdataCategory column: 'pd_rdc', index: 'td_type_idx'
+                   descr column: 'pd_description', index: 'td_new_idx'
+                    name column: 'pd_name',        index: 'td_new_idx'
+                    type column: 'pd_type',        index: 'td_type_idx'
+         refdataCategory column: 'pd_rdc',         index: 'td_type_idx'
+                softData column: 'pd_soft_data'
                       sort name: 'desc'
     }
 
@@ -119,17 +124,18 @@ class PropertyDefinition extends I10nTranslatableAbstract {
          newProp.save(flush:true)
          newProp
      }
-     
-    static def lookupOrCreateType(name, typeClass, descr) {
+
+    static def lookupOrCreate(name, typeClass, descr) {
         typeIsValid(typeClass)
-        def type = findByNameAndType(name, typeClass);
+        def type = findByNameAndDescr(name, descr)
         if (!type) {
-            log.debug("No PropertyDefinition type match found for ${typeClass}. Creating new.")
+            log.debug("No PropertyDefinition match for ${name} @ ${descr}. Creating new.")
             type = new PropertyDefinition(name: name, type: typeClass, descr: descr)
             type.save()
         }
         type
     }
+
     static def refdataFind(params) {
         def result = []
 

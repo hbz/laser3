@@ -18,7 +18,9 @@ class CardTagLib {
 
         out << '<div class="card ' + attrs.class + '">'
         out <<   '<div class="card-block">'
-        out <<     '<h4 class="card-title">' + title + '</h4>'
+        if (title) {
+            out << '<h4 class="card-title">' + title + '</h4>'
+        }
         out <<     body()
         out <<   '</div>'
         out << '</div>'

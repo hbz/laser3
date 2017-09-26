@@ -15,17 +15,7 @@
         <laser:crumb message="menu.institutions.manage_props" class="active" />
     </laser:breadcrumbs>
 
-    <g:if test="${flash.message}">
-        <div class="container">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-        <div class="container">
-            <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-        </div>
-    </g:if>
+    <laser:flash data="${flash}" />
 
     <div class="container">
         <h1>${institution?.name} - ${message(code: 'menu.institutions.manage_props', default: 'Manage Property Rules')}</h1>
@@ -115,6 +105,7 @@
                     <dd>
                         <label class="property-label">Name:</label> <input type="text" name="cust_prop_name"/>
                     </dd>
+
                     <dd>
                         <label class="property-label">Type:</label> <g:select
                             from="${PropertyDefinition.validTypes.entrySet()}"
@@ -132,7 +123,6 @@
                     <dd>
                         <label class="property-label">Context:</label>
                         <g:select name="cust_prop_desc"  from="${PropertyDefinition.AVAILABLE_DESCR}"/>
-
                     </dd>
                 </dl>
             </div>

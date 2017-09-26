@@ -14,6 +14,9 @@ class RefdataValue extends I10nTranslatableAbstract {
     //For cases were we want to present a specific group of values, eg License/Sub related
     String group
 
+    // indicates this object is created via front-end
+    boolean softData
+
     static belongsTo = [
         owner:RefdataCategory
     ]
@@ -32,23 +35,25 @@ class RefdataValue extends I10nTranslatableAbstract {
     ]
 
     static mapping = {
-                    id column:'rdv_id'
-               version column:'rdv_version'
-                 owner column:'rdv_owner', index:'rdv_entry_idx'
-                 value column:'rdv_value', index:'rdv_entry_idx'
-                  icon column:'rdv_icon'
-                 group column:'rdv_group'
+                    id column: 'rdv_id'
+               version column: 'rdv_version'
+                 owner column: 'rdv_owner', index: 'rdv_entry_idx'
+                 value column: 'rdv_value', index: 'rdv_entry_idx'
+                  icon column: 'rdv_icon'
+                 group column: 'rdv_group'
+              softData column: 'rdv_soft_data'
     }
 
     static constraints = {
-        icon(nullable:true)
-        group(nullable:true, blank:false)
+        icon     (nullable:true)
+        group    (nullable:true,  blank:false)
+        softData (nullable:false, blank:false, default:false)
     }
 
     static def refdataFind(params) {
         def result = []
         def matches = I10nTranslation.refdataFindHelper(
-                RefdataValue.getClass().getCanonicalName(),
+                params.baseClass,
                 'value',
                 params.q,
                 LocaleContextHolder.getLocale()

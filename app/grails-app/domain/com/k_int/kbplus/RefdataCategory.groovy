@@ -29,16 +29,20 @@ class RefdataCategory extends I10nTranslatableAbstract {
     @Transient
     public static final TIPP_STATUS = 'TIPP Status'
 
-
     String desc
 
+    // indicates this object is created via front-end
+    boolean softData
+
     static mapping = {
-             id column:'rdc_id'
-        version column:'rdc_version'
-           desc column:'rdc_description', index:'rdc_description_idx'
+              id column: 'rdc_id'
+         version column: 'rdc_version'
+            desc column: 'rdc_description', index:'rdc_description_idx'
+        softData column: 'rdv_soft_data'
     }
 
     static constraints = {
+        softData (nullable:false, blank:false, default:false)
     }
 
     /**
@@ -111,7 +115,7 @@ class RefdataCategory extends I10nTranslatableAbstract {
   static def refdataFind(params) {
       def result = []
       def matches = I10nTranslation.refdataFindHelper(
-              RefdataCategory.getClass().getCanonicalName(),
+              params.baseClass,
               'desc',
               params.q,
               LocaleContextHolder.getLocale()
@@ -119,18 +123,6 @@ class RefdataCategory extends I10nTranslatableAbstract {
       matches.each { it ->
           result.add([id: "${it.id}", text: "${it.getI10n('desc')}"])
       }
-
-      /*
-      def result = []
-      def ql = null
-
-      ql = RefdataCategory.findAllByDescIlike("${params.q}%", params)
-      if ( ql ) {
-          ql.each { id ->
-              result.add([id:"${id.id}", text:"${id.getI10n('desc')}"])
-          }
-      }
-      */
       result
   }
 

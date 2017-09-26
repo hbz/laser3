@@ -41,4 +41,29 @@ class StuffTagLib {
             )
         out << '</div>'
     }
+
+    // <laser:flash flash="${flash}" />
+
+    def flash = { attrs, body ->
+
+        def flash = attrs.data
+
+        if (flash && flash.message) {
+            out << '<div class="container">'
+            out <<   '<div class="alert alert-info">'
+            out <<      '<button type="button" class="close" data-dismiss="alert">&times;</button>'
+            out <<        flash.message
+            out <<   '</div>'
+            out << '</div>'
+        }
+
+        if (flash && flash.error) {
+            out << '<div class="container">'
+            out <<   '<div class="alert alert-error">'
+            out <<      '<button type="button" class="close" data-dismiss="alert">&times;</button>'
+            out <<        flash.error
+            out <<   '</div>'
+            out << '</div>'
+        }
+    }
 }

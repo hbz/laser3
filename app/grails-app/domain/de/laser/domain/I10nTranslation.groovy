@@ -97,19 +97,21 @@ class I10nTranslation {
     // -- initializations --
 
     // used in gsp to create translations for on-the-fly-created refdatas
-    static createI10nIfNeeded(Object reference, String referenceField) {
+    static createI10nOnTheFly(Object reference, String referenceField) {
 
         def values = [:] // no effect in set()
 
-        if (! get(reference, referenceField)) { // set default values
+        def existing = get(reference, referenceField)
+        if (! existing) { // set default values
             values = [
                     'en': reference."${referenceField}",
                     'de': reference."${referenceField}",
                     'fr': reference."${referenceField}"
             ]
+            return set(reference, referenceField, values)
         }
 
-        return set(reference, referenceField, values)
+        existing
     }
 
     // used in bootstap
@@ -137,7 +139,7 @@ class I10nTranslation {
             )
         }
         else {
-            switch (locale.toString().toLowerCase()) {
+            switch (locale.toString().split("-").first().toLowerCase()) {
                 case 'en':
                     matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
                             referenceClass, referenceField, "${query}%"
