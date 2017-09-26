@@ -517,25 +517,22 @@ class AjaxController {
         def msg
 
         def rdc = RefdataCategory.findById(params.refdata_category_id)
-        if (rdc) {
-            log.debug("RefdataCategory found")
-        }
 
         if (RefdataValue.findByOwnerAndValue(rdc, params.refdata_value)) {
-            error = "RefdataValue exists: " + params.refdata_value + " @ " + rdc.desc
+            error = message(code: "refdataValue.create_new.unique")
             log.debug(error)
         }
         else {
             newRefdataValue = new RefdataValue(value: params.refdata_value, owner: rdc, softData: true)
             newRefdataValue.save(flush: true)
-        }
 
-        if (newRefdataValue?.hasErrors()) {
-            log.error(newRefdataValue.errors)
-            error = message(code: 'default.error')
-        }
-        else {
-            msg = "OK. TODO"
+            if (newRefdataValue?.hasErrors()) {
+                log.error(newRefdataValue.errors)
+                error = message(code: 'default.error')
+            }
+            else {
+                msg = message(code: 'refdataValue.created', args: [newRefdataValue.value])
+            }
         }
 
         if (params.reloadReferer) {
@@ -555,20 +552,20 @@ class AjaxController {
 
         def rdc = RefdataCategory.findByDesc(params.refdata_category)
         if (rdc) {
-            error = "RefdataCategory exists: " + params.refdata_category
+            error = message(code: 'refdataCategory.create_new.unique')
             log.debug(error)
         }
         else {
             newRefdataCategory = new RefdataCategory(desc: params.refdata_category, softData: true)
             newRefdataCategory.save(flush: true)
-        }
 
-        if (newRefdataCategory?.hasErrors()) {
-            log.error(newRefdataCategory.errors)
-            error = message(code: 'default.error')
-        }
-        else {
-            msg = "OK. TODO"
+            if (newRefdataCategory?.hasErrors()) {
+                log.error(newRefdataCategory.errors)
+                error = message(code: 'default.error')
+            }
+            else {
+                msg = message(code: 'refdataCategory.created', args: [newRefdataCategory.desc])
+            }
         }
 
         if (params.reloadReferer) {

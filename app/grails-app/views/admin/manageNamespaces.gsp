@@ -41,7 +41,7 @@
 						<thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>
-							<th>Referencing Identifiers</th>
+							<th>Identifiers</th>
 							<th><g:message code="identifierNamespace.family.label"/></th>
 							<th><g:message code="identifierNamespace.validationRegex.label"/></th>
 							<th><g:message code="identifierNamespace.nstype.label"/></th>

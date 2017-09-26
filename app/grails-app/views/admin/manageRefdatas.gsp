@@ -45,44 +45,41 @@
 						</tr>
 						</thead>
 						<tbody>
-						<g:each in="${rdCategories}" var="rdc">
-							<g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
-							<tr>
-								<td>${fieldValue(bean: rdc, field: "desc")} (${(RefdataValue.findAllByOwner(rdc)).size()})</td>
-								<td></td>
-								<td>
-									<strong><g:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
-								</td>
-								<td>
-									<strong><g:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
-								</td>
-								<td>
-									<g:if test="${rdc.softData}">&#8252;</g:if>
-								</td>
-							</tr>
+                            <g:each in="${rdCategories}" var="rdc">
+                                <g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
+                                <tr>
+                                    <td>${fieldValue(bean: rdc, field: "desc")} (${(RefdataValue.findAllByOwner(rdc)).size()})</td>
+                                    <td></td>
+                                    <td>
+                                        <strong><g:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                    </td>
+                                    <td>
+                                        <strong><g:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                    </td>
+                                    <td>
+                                        <g:if test="${rdc.softData}">&#8252;</g:if>
+                                    </td>
+                                </tr>
+    
+                                    <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                ${rdv.value}
+                                            </td>
+                                            <td>
+                                                <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
+                                            </td>
+                                            <td>
+                                                <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
+                                            </td>
+                                            <td>
+                                                <g:if test="${rdv.softData}">&#8252;</g:if>
+                                            </td>
+                                        </tr>
+                                    </g:each>
 
-								<!--td colspan="4" style="padding:0;border-left:none"-->
-									<!-- table style="width:100%" class="table-striped table-hover" -->
-										<g:each in="${RefdataValue.findAllByOwner(rdc)}" var="rdv">
-											<tr>
-                                                <td></td>
-												<td>
-													${rdv.value}
-												</td>
-												<td>
-													<g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
-												</td>
-												<td>
-													<g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
-												</td>
-												<td>
-													<g:if test="${rdv.softData}">&#8252;</g:if>
-												</td>
-											</tr>
-										</g:each>
-									<!--/table -->
-
-						</g:each>
+                            </g:each>
 						</tbody>
 					</table>
 				</div><!--.span12-->

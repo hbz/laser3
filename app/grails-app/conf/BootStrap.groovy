@@ -90,12 +90,16 @@ class BootStrap {
         ensurePermGrant(institutionalUser, view_permission);
 
         // Transforms types and formats Refdata
+
+        RefdataCategory.locCategory('Transform Format', [en: 'Transform Format', de: 'Transform Format'])
+        RefdataCategory.locCategory('Transform Type',   [en: 'Transform Type', de: 'Transform Type'])
+
         // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
-        // TODO locCategory
+
         RefdataCategory.locRefdataValue('Transform Format', [en: 'json'])
         RefdataCategory.locRefdataValue('Transform Format', [en: 'xml'])
         RefdataCategory.locRefdataValue('Transform Format', [en: 'url'])
-        // TODO locCategory
+
         RefdataCategory.locRefdataValue('Transform Type', [en: 'subscription'])
         RefdataCategory.locRefdataValue('Transform Type', [en: 'license'])
         RefdataCategory.locRefdataValue('Transform Type', [en: 'title'])
@@ -284,21 +288,39 @@ class BootStrap {
 
     def createDefaultSysProps(admObj){
 
-        def requiredProps = [
-                [propname:"onix_ghost_license", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."],
-                [propname:"net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"columnHeader", note:"Only show 1 column header for csv"],
-                [propname:"net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"columnHeader", note:"Only show 1 column header for xls"],
-                [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageHeader", note:" Remove header/footer from csv/xls"],
-                [propname:"net.sf.jasperreports.export.xls.exclude.origin.band.2", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageFooter", note:" Remove header/footer from csv/xls"],
-                [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.1", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageHeader", note: " Remove header/footer from csv/xls"],
-                [propname:"net.sf.jasperreports.export.csv.exclude.origin.band.2", descr:PropertyDefinition.SYS_CONF, type:String.toString(), val:"pageFooter", note: " Remove header/footer from csv/xls"]
-        ]
-        createPropertyDefinitions(requiredProps)
+        def allDescr = [en: PropertyDefinition.SYS_CONF, de: PropertyDefinition.SYS_CONF]
 
-        requiredProps.each {
-            def type = PropertyDefinition.findByNameAndDescr(it.propname, it.descr)
-            if (!SystemAdminCustomProperty.findByType(type)) {
-                def newProp = new SystemAdminCustomProperty(type: type, owner: admObj, stringValue: it.val, note: it.note)
+        def requiredProps = [
+                [name: [en: "onix_ghost_license"],
+                    descr:allDescr, type:String.toString(), val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."],
+                [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1"],
+                    descr:allDescr, type:String.toString(), val:"columnHeader", note:"Only show 1 column header for csv"],
+                [name: [en: "net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1"],
+                    descr:allDescr, type:String.toString(), val:"columnHeader", note:"Only show 1 column header for xls"],
+                [name: [en: "net.sf.jasperreports.export.xls.exclude.origin.band.1"],
+                    descr:allDescr, type:String.toString(), val:"pageHeader", note:" Remove header/footer from csv/xls"],
+                [name: [en: "net.sf.jasperreports.export.xls.exclude.origin.band.2"],
+                    descr:allDescr, type:String.toString(), val:"pageFooter", note:" Remove header/footer from csv/xls"],
+                [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.band.1"],
+                    descr:allDescr, type:String.toString(), val:"pageHeader", note: " Remove header/footer from csv/xls"],
+                [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.band.2"],
+                    descr:allDescr, type:String.toString(), val:"pageFooter", note: " Remove header/footer from csv/xls"]
+        ]
+
+        requiredProps.each { prop ->
+            def name = prop.name['en']
+            def pd   = PropertyDefinition.findByName(name)
+
+            if (! pd) {
+                log.debug("Unable to locate property definition for ${name} .. creating")
+                pd = new PropertyDefinition(name: name)
+            }
+            pd.type  = prop.type
+            pd.descr = prop.descr
+            pd.save(failOnError: true)
+
+            if (!SystemAdminCustomProperty.findByType(pd)) {
+                def newProp = new SystemAdminCustomProperty(type: pd, owner: admObj, stringValue: prop.val, note: prop.note)
                 newProp.save()
             }
         }
@@ -309,34 +331,34 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredProps = [
+                [name: [en: "Agreement Date"],          descr:allDescr, type:Date.toString()],
+                [name: [en: "Allowed Participants"],    descr:allDescr, type:String.toString()],
+                [name: [en: "Alumni Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Cancellation Allowance"],  descr:allDescr, type:String.toString()],
+                [name: [en: "Change to licensed material"], descr:allDescr, type:String.toString()],
                 [name: [en: "Concurrent Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
                 [name: [en: "Concurrent Users"],        descr:allDescr, type:Integer.toString()],
-                [name: [en: "Remote Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Walk In Access"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Multi Site Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Partners Access"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Alumni Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Correction time"],         descr:allDescr, type:String.toString()],
+                [name: [en: "Enterprise Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "ILL - InterLibraryLoans"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Include In Coursepacks"],  descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Include in VLE"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Enterprise Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Post Cancellation Access Entitlement"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Cancellation Allowance"],  descr:allDescr, type:String.toString()],
-                [name: [en: "Notice Period"],           descr:allDescr, type:Date.toString()],
-                [name: [en: "Agreement Date"],          descr:allDescr, type:Date.toString()],
-                [name: [en: "Signed"],                  descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Wifi Access"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Metadata delivery"],       descr:allDescr, type:String.toString()],
-                [name: [en: "Correction time"],         descr:allDescr, type:String.toString()],
-                [name: [en: "New underwriter"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Place of jurisdiction"],   descr:allDescr, type:String.toString()],
-                [name: [en: "Allowed Participants"],    descr:allDescr, type:String.toString()],
-                [name: [en: "Regional Restriction"],    descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Usage Statistics"],        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Invoicing"],               descr:allDescr, type:Date.toString()],
+                [name: [en: "Metadata delivery"],       descr:allDescr, type:String.toString()],
+                [name: [en: "Multi Site Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Notice Period"],           descr:allDescr, type:Date.toString()],
+                [name: [en: "New underwriter"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Payment target"],          descr:allDescr, type:Date.toString()],
-                [name: [en: "Change to licensed material"], descr:allDescr, type:String.toString()],
-                [name: [en: "Service regulations"],     descr:allDescr, type:String.toString()]
+                [name: [en: "Place of jurisdiction"],   descr:allDescr, type:String.toString()],
+                [name: [en: "Partners Access"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Post Cancellation Access Entitlement"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Remote Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Regional Restriction"],    descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Service regulations"],     descr:allDescr, type:String.toString()],
+                [name: [en: "Signed"],                  descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "Usage Statistics"],        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Walk In Access"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Wifi Access"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO']
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
@@ -361,7 +383,7 @@ class BootStrap {
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
         def requiredARCProps = []
-        createPropertyDefinitions(requiredARCProps)
+        createPropertyDefinitionsWithI10nTranslations(requiredARCProps)
     }
 
     def createPrivateProperties() {
@@ -383,25 +405,6 @@ class BootStrap {
                 [name: [en: "Person Property 3"], descr: allPrsDescr, type: RefdataValue.toString(), cat: 'Person Role']
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredPrsProps)
-    }
-
-    def createPropertyDefinitions(requiredProps) {
-
-        requiredProps.each { default_prop ->
-            def prop = PropertyDefinition.findByName(default_prop.propname)
-
-            if (!prop) {
-                log.debug("Unable to locate property definition for ${default_prop.propname} .. creating")
-                prop = new PropertyDefinition(name: default_prop.propname)
-
-                if (default_prop.cat != null) {
-                    prop.setRefdataCategory(default_prop.cat)
-                }
-            }
-            prop.type = default_prop.type
-            prop.descr = default_prop.descr
-            prop.save(failOnError: true)
-        }
     }
 
     def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
@@ -493,22 +496,30 @@ class BootStrap {
         def sub = Subscription.name
         def pkg = Package.name
 
-        def valMap = [
-                "Licensor": lic,
-                "Licensee": lic,
-                "Licensing Consortium": lic,
-                "Negotiator": lic,
-                "Subscriber":sub,
-                "Provider":sub,
-                "Subscription Agent": sub,
-                "Subscription Consortia": sub,
-                "Content Provider": pkg,
-                "Package Consortia": pkg
+        def entries = [
+                [[en: 'Licensor', de: 'Lizenzgeber'], lic],
+                [[en: 'Licensee', de: 'Lizenznehmer'], lic],
+                [[en: 'Licensing Consortium'], lic],
+                [[en: 'Negotiator'], lic],
+                [[en: 'Subscriber'], sub],
+                [[en: 'Provider', de: 'Anbieter'], sub],
+                [[en: 'Subscription Agent'], sub],
+                [[en: 'Subscription Consortia'], sub],
+                [[en: 'Content Provider', de: 'Anbieter'], pkg],
+                [[en: 'Package Consortia'], pkg],
+                [[en: 'Publisher', de: 'Verlag'], null]
         ]
 
-        valMap.each{ role, group->
-            def val = RefdataCategory.lookupOrCreate("Organisational Role", role)
-            val.setGroup(group)
+        RefdataCategory.locCategory('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
+
+        entries.each{ rdv ->
+            def i10n = rdv[0]
+            def group = rdv[1]
+
+            def val = RefdataCategory.locRefdataValue("Organisational Role", i10n)
+            if (group) {
+                val.setGroup(group)
+            }
             val.save()
         }
     }
@@ -533,7 +544,6 @@ class BootStrap {
         RefdataCategory.locCategory('CoreStatus',           [en: 'Core Status', de: 'Kerntitel-Status'])
         RefdataCategory.locCategory('FactType',             [en: 'FactType', de: 'FactType'])
         RefdataCategory.locCategory('Gender',               [en: 'Gender', de: 'Geschlecht'])
-        RefdataCategory.locCategory('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
         RefdataCategory.locCategory('OrgSector',            [en: 'OrgSector', de: 'Bereich'])
         RefdataCategory.locCategory('OrgType',              [en: 'Organisation Type', de: 'Organisationstyp'])
         RefdataCategory.locCategory('Person Function',      [en: 'Person Function', de: 'Funktion'])
@@ -570,6 +580,7 @@ class BootStrap {
 
         RefdataCategory.locRefdataValue('ContactType',  [en: 'Personal', de: 'Privat'])
         RefdataCategory.locRefdataValue('ContactType',  [en: 'Job-related', de: 'Geschäftlich'])
+
         RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Yes', de: 'Ja'])
         RefdataCategory.locRefdataValue('CoreStatus',   [en: 'No', de: 'Nein'])
         RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print', de: 'Print'])
@@ -583,53 +594,6 @@ class BootStrap {
 
         RefdataCategory.locRefdataValue('Gender',   [en: 'Female', de: 'Weiblich'])
         RefdataCategory.locRefdataValue('Gender',   [en: 'Male', de: 'Männlich'])
-
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensor', de: 'Lizenzgeber'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensing Consortium'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Negotiator'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Package Consortia'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Provider'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Publisher', de: 'Verlag'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscription Agent'])
-
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 2'])
-
-        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'No limit', de: 'Ohne Begrenzung'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Other', de: 'Andere'])
-
-        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'E-Mail', de: 'E-Mail'])
-        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'Phone', de: 'Telefon'])
-        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'Fax', de: 'Fax'])
-
-        RefdataCategory.locRefdataValue('ContactType',  [en: 'Personal', de: 'Privat'])
-        RefdataCategory.locRefdataValue('ContactType',  [en: 'Job-related', de: 'Geschäftlich'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print', de: 'Print'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Electronic', de: 'Elektronisch'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print+Electronic', de: 'Print & Elektronisch'])
-
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1a'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1-JR1a'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1GOA'])
-
-        RefdataCategory.locRefdataValue('Gender',   [en: 'Female', de: 'Weiblich'])
-        RefdataCategory.locRefdataValue('Gender',   [en: 'Male', de: 'Männlich'])
-
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensor', de: 'Lizenzgeber'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensing Consortium'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Negotiator'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Package Consortia'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Provider'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Publisher', de: 'Verlag'])
-        RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscription Agent'])
 
         RefdataCategory.locRefdataValue('OrgSector',    [en: 'Higher Education', de: 'Bibliothek'])
         RefdataCategory.locRefdataValue('OrgSector',    [en: 'Publisher', de: 'Verlag'])

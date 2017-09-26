@@ -901,7 +901,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def manageNamespaces() {
     // TODO check role and editable !!!
 
@@ -914,7 +914,7 @@ class AdminController {
           return
         }
         else {
-          flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.id])
+          flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.ns])
         }
         break
     }
@@ -924,12 +924,12 @@ class AdminController {
     ]
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def managePropertyDefinitions() {
 
     def propDefs = [:]
     PropertyDefinition.AVAILABLE_DESCR.each { it ->
-      def itResult = PropertyDefinition.findAllByDescr(it).sort()
+      def itResult = PropertyDefinition.findAllByDescr(it, [sort: 'name'])
       propDefs << ["${it}": itResult]
     }
     render view: 'managePropertyDefinitions', model: [
@@ -938,12 +938,12 @@ class AdminController {
             ]
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def manageRefdatas() {
 
     render view: 'manageRefdatas', model: [
             editable    : true,
-            rdCategories: RefdataCategory.where {}.sort('desc')
+            rdCategories: RefdataCategory.where{}.sort('desc')
     ]
   }
 }
