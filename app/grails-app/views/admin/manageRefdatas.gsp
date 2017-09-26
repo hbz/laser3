@@ -60,7 +60,7 @@
                                         <g:if test="${rdc.softData}">&#8252;</g:if>
                                     </td>
                                 </tr>
-    
+
                                     <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
                                         <tr>
                                             <td></td>

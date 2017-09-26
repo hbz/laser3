@@ -68,7 +68,7 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         runtime 'javax.servlet:jstl:1.1.2'
         runtime 'taglibs:standard:1.1.2'
-        build('org.grails:grails-docs:2.5.1') {
+        build('org.grails:grails-docs:2.5.6') {
             excludes 'itext'
         }
         compile ('com.k-int:goai:1.0.2') {

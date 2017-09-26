@@ -36,7 +36,7 @@ enum JasperExportFormat implements Serializable {
   ODT_FORMAT("application/vnd.oasis.opendocument.text", "odt", false),
   // ODS_FORMAT("application/vnd.oasis.opendocument.spreadsheetl", "ods", false),
   DOCX_FORMAT("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx", false),
-  XLSX_FORMAT("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx", false),
+  XLSX_FORMAT("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx", false)
 
   String mimeType
   String extension
