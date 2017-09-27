@@ -42,7 +42,15 @@ class MainService {
             if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = licenseService.getLicense((License) result, user, contextOrg)
             }
-        } else if ('organisation'.equalsIgnoreCase(obj)) {
+        }
+        else if ('onixpl'.equalsIgnoreCase(obj)) {
+            // TODO
+            result = licenseService.findLicenseBy(query, value)
+            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
+                result = docService.getOnixPlDocument((License) result, user, contextOrg)
+            }
+        }
+        else if ('organisation'.equalsIgnoreCase(obj)) {
             result = orgService.findOrganisationBy(query, value)
             if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = orgService.getOrganisation((Org) result, user, contextOrg)

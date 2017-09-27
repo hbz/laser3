@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  version: "0.7"
+  version: "0.8"
   title: LAS:eR API
   description: >
     Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
@@ -114,8 +114,6 @@ paths:
       responses:
         200:
           description: OK
-          schema:
-            $ref: "#/definitions/Document"
         400:
           $ref: "#/responses/badRequest"
         401:
@@ -184,6 +182,32 @@ paths:
           $ref: "#/responses/conflict"
         500:
           $ref: "#/responses/internalServerError"
+
+  /onixpl:
+    get:
+      tags:
+        - Documents
+      summary: Find onixpl documents by license identifier
+      description: >
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+      parameters:
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
+        - $ref: "#/parameters/authorization"
+      produces:
+        - application/*
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/responses/badRequest"
+        401:
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
+        404:
+          description: Valid request, but document not found
 
   /organisation:
     get:

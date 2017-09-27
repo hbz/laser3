@@ -2,7 +2,9 @@ package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
 import groovy.util.logging.Log4j
@@ -63,6 +65,31 @@ class DocService {
                     // TODO check orgRole.roleType
                     if(orgRole.getOrg().id == context?.id) {
                         hasAccess = true
+                    }
+                }
+            }
+        }
+        return (hasAccess ? doc : MainService.FORBIDDEN)
+    }
+
+    /**
+     * @return Doc | FORBIDDEN | null
+     */
+    def getOnixPlDocument(License license, User user, Org context){
+        def hasAccess = false
+        def doc = license.onixplLicense?.doc
+
+        if (! doc) {
+            return null // not found
+        }
+
+        DocContext.findAllByOwner(doc).each{ dc ->
+            if(dc.license) {
+                dc.getLicense().getOrgLinks().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if (orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
+                        doc = dc.getOwner()
                     }
                 }
             }

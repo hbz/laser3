@@ -24,7 +24,7 @@ class PkgService {
                 result = Package.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Package.findAllWhere(globalUID: Long.parseLong(value))
+                result = Package.findAllWhere(globalUID: value)
                 break
             case 'identifier':
                 result = Package.findAllWhere(identifier: value)

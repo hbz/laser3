@@ -22,7 +22,7 @@ class SubscriptionService {
                 result = Subscription.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Subscription.findAllWhere(globalUID: Long.parseLong(value))
+                result = Subscription.findAllWhere(globalUID: value)
                 break
             case 'identifier':
                 result = Subscription.findAllWhere(identifier: value)

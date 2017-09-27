@@ -255,7 +255,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         Org contextOrg = null
         User user = (User) request.getAttribute('authorizedApiUser')
 
-        if( user){
+        if (user) {
             // checking role permission
 
             if ("GET" == request.method) {

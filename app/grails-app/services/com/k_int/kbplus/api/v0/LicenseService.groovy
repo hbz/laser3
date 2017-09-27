@@ -23,7 +23,7 @@ class LicenseService {
                 result = License.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = License.findAllWhere(globalUID: Long.parseLong(value))
+                result = License.findAllWhere(globalUID: value)
                 break
             case 'impId':
                 result = License.findAllWhere(impId: value)

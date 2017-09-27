@@ -23,7 +23,7 @@ class OrgService {
                 result = Org.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Org.findAllWhere(globalUID: Long.parseLong(value))
+                result = Org.findAllWhere(globalUID: value)
                 break
             case 'impId':
                 result = Org.findAllWhere(impId: value)
