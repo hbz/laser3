@@ -1,20 +1,23 @@
 <!doctype html>
 <html>
-<head>
-    <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Not Found</title>
-</head>
+    <head>
+        <meta name="layout" content="mmbootstrap" />
+        <title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'serverCode.notFound.message1')}</title>
+    </head>
+    <body>
+        <laser:flash data="${flash}" />
 
-<body>
-<div class="container">
-    <b>404</b> That's an error.
+        <div class="container">
+            <laser:card>
+                <h1>404</h1>
+                <h3>${message(code:'serverCode.notFound.message1')}</h3>
 
-    <g:if test="${flash.error}">
-      <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-    </g:if>
-    <g:else>
-	    <p>The requested URL was not found. That's all we know.</p>
-    </g:else>
-</div>
-</body>
+                <g:if test="${! flash.error}">
+                    <div class="container">
+                        <p>${message(code:'serverCode.notFound.message2')}</p>
+                    </div>
+                </g:if>
+            </laser:card>
+        </div>
+    </body>
 </html>

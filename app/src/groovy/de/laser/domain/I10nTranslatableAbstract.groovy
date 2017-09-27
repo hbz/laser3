@@ -14,13 +14,13 @@ abstract class I10nTranslatableAbstract {
     // get translation
     def getI10n(String property, String locale) {
         def result
-        locale = locale.split("-").first()
+        locale = I10nTranslation.decodeLocale(locale)
 
-        if (I10nTranslation.supportedLocales.contains(locale.toLowerCase())) {
-            result = this."${property}_${locale.toLowerCase()}"
+        if (I10nTranslation.supportedLocales.contains(locale)) {
+            result = this."${property}_${locale}"
         }
         else {
-            result = "- requested locale not supported -"
+            result = "- requested locale ${locale} not supported -"
         }
         result
     }

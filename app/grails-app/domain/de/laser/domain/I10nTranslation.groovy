@@ -128,6 +128,20 @@ class I10nTranslation {
 
     // -- helper --
 
+    // de => de, de-DE => de, de_DE => de
+    static decodeLocale(String locale) {
+
+        if(locale?.contains("-")) {
+            return locale.split("-").first().toLowerCase()
+        }
+        else if(locale?.contains("_")) {
+            return locale.split("_").first().toLowerCase()
+        }
+        else {
+            return locale
+        }
+    }
+
     static def refdataFindHelper(String referenceClass, String referenceField, String query, def locale) {
 
         def matches = []
@@ -139,7 +153,7 @@ class I10nTranslation {
             )
         }
         else {
-            switch (locale.toString().split("-").first().toLowerCase()) {
+            switch (I10nTranslation.decodeLocale(locale.toString())) {
                 case 'en':
                     matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
                             referenceClass, referenceField, "${query}%"

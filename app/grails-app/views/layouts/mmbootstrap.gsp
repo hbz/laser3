@@ -40,7 +40,7 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-            <g:link controller="home" action="index" class="brand" title="LAS:eR ${grailsApplication.metadata.'app.version'} / build ${grailsApplication.metadata.'app.buildNumber'}">LAS:eR</g:link>
+            <g:link controller="home" action="index" class="brand">LAS:eR</g:link>
             <sec:ifLoggedIn>
                 <ul class="nav">
                 <g:if test="${false}">
@@ -61,7 +61,6 @@
                 </g:if>
                 </ul>
                 <ul class="nav">
-                <g:if test="${user}">
                   <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"> ${message(code:'menu.institutions')} <b class="caret"></b> </a>
                     <ul class="dropdown-menu" style="max-width:none;">
@@ -76,86 +75,88 @@
                          <li><a href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')} </a></li>
                        </g:if>
 
-                       <li class="divider"></li>
-                       <g:set var="usaf" value="${user.authorizedOrgs}" />
-                       <g:if test="${usaf && usaf.size() > 0}">
-                         <g:each in="${usaf}" var="org">
-                           <li class="dropdown-submenu">
-                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">${org.name} </a>
-                             <ul class="dropdown-menu">
-                               <li><g:link controller="myInstitutions"
-                                           action="instdash"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.dash')} </g:link></li>
-                               <li><g:link controller="myInstitutions"
-                                           action="todo"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.todo')} </g:link></li>
-                               <li><g:link controller="myInstitutions"
-                                           action="currentLicenses"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.lic')} </g:link></li>
-                               <li><g:link controller="myInstitutions"
-                                           action="currentSubscriptions"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.subs')} </g:link></li>
-                               <li><g:link controller="myInstitutions"
-                                           action="currentTitles"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.ttls')} </g:link></li> 
-                               <li><g:link controller="myInstitutions" 
-                                       		action="addressbook" 
-                                       		params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
-                               <li><g:link controller="myInstitutions" 
-                                       		action="propertyRules" 
-                                       		params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link></li>
-                               <li><g:link controller="subscriptionDetails"
-                                           action="compare"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_sub')} </g:link></li>
-                               <li><g:link controller="licenseCompare"
-                                           action="index"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_lic')} </g:link></li>
-                               <li><g:link controller="myInstitutions"
-                                           action="renewalsSearch"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.gen_renewals')} </g:link></li>
-                               <li><g:link controller="myInstitutions"
-                                           action="renewalsUpload"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.imp_renew')} </g:link></li>
-                               <li><g:link controller="organisations"
-                                           action="show"
-                                           params="${[id:org.id]}">${message(code:'menu.institutions.org_info')} </g:link></li>
-                               <li><g:link controller="subscriptionImport"
-                                           action="generateImportWorksheet"
-                                           params="${[id:org.id]}">${message(code:'menu.institutions.sub_work')} </g:link></li>
-                               <li><g:link controller="subscriptionImport"
-                                           action="importSubscriptionWorksheet"
-                                           params="${[id:org.id]}">${message(code:'menu.institutions.imp_sub_work')} </g:link></li>
-                               <li><g:link controller="myInstitutions"
-                                           action="changeLog"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.change_log')} </g:link></li>
-                               <!--
-                               <li><g:link controller="myInstitutions"
-                                           action="emptySubscription"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.emptySubscription')} </g:link></li>
-                               -->
-                               <g:if test="${grailsApplication.config.feature_finance}">
-                                 <li><g:link controller="myInstitutions"
-                                             action="financeImport"
-                                             params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.financeImport')} </g:link></li>
-                                 <li><g:link controller="myInstitutions"
-                                             action="finance"
-                                             params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.finance')} </g:link></li>
-                               </g:if>
-                               <li><g:link controller="myInstitutions"
-                                           action="tipview"
-                                           params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.core_ttl')} </g:link></li>
-                             </ul>
-                           </li>
-                         </g:each>
-                       </g:if>
-                       <g:else>
-                         <li><span>${message(code:'menu.institutions.affiliation')}</span> <g:link controller="profile" action="index">${message(code:'menu.user.profile')}</g:link></li>
-                       </g:else>
+                        <g:if test="${user}">
+                           <li class="divider"></li>
+                           <g:set var="usaf" value="${user.authorizedOrgs}" />
+                           <g:if test="${usaf && usaf.size() > 0}">
+                             <g:each in="${usaf}" var="org">
+                               <li class="dropdown-submenu">
+                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">${org.name} </a>
+                                 <ul class="dropdown-menu">
+                                   <li><g:link controller="myInstitutions"
+                                               action="instdash"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.dash')} </g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                               action="todo"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.todo')} </g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                               action="currentLicenses"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.lic')} </g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                               action="currentSubscriptions"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.subs')} </g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                               action="currentTitles"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.ttls')} </g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                                action="addressbook"
+                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                                action="propertyRules"
+                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link></li>
+                                   <li><g:link controller="subscriptionDetails"
+                                               action="compare"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_sub')} </g:link></li>
+                                   <li><g:link controller="licenseCompare"
+                                               action="index"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_lic')} </g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                               action="renewalsSearch"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.gen_renewals')} </g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                               action="renewalsUpload"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.imp_renew')} </g:link></li>
+                                   <li><g:link controller="organisations"
+                                               action="show"
+                                               params="${[id:org.id]}">${message(code:'menu.institutions.org_info')} </g:link></li>
+                                   <li><g:link controller="subscriptionImport"
+                                               action="generateImportWorksheet"
+                                               params="${[id:org.id]}">${message(code:'menu.institutions.sub_work')} </g:link></li>
+                                   <li><g:link controller="subscriptionImport"
+                                               action="importSubscriptionWorksheet"
+                                               params="${[id:org.id]}">${message(code:'menu.institutions.imp_sub_work')} </g:link></li>
+                                   <li><g:link controller="myInstitutions"
+                                               action="changeLog"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.change_log')} </g:link></li>
+                                   <!--
+                                   <li><g:link controller="myInstitutions"
+                                               action="emptySubscription"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.emptySubscription')} </g:link></li>
+                                   -->
+                                   <g:if test="${grailsApplication.config.feature_finance}">
+                                     <li><g:link controller="myInstitutions"
+                                                 action="financeImport"
+                                                 params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.financeImport')} </g:link></li>
+                                     <li><g:link controller="myInstitutions"
+                                                 action="finance"
+                                                 params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.finance')} </g:link></li>
+                                   </g:if>
+                                   <li><g:link controller="myInstitutions"
+                                               action="tipview"
+                                               params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.core_ttl')} </g:link></li>
+                                 </ul>
+                               </li>
+                             </g:each>
+                           </g:if>
+                           <g:else>
+                             <li><span>${message(code:'menu.institutions.affiliation')}</span> <g:link controller="profile" action="index">${message(code:'menu.user.profile')}</g:link></li>
+                           </g:else>
+                        </g:if>
                        <li class="divider"></li>
                        <li><a href="${message(code:'help.location')}">${message(code:'menu.institutions.help')}</a></li>
                     </ul>
                   </li>
-                </g:if>
+
                 </ul>
                 <ul class="nav">
                 <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">

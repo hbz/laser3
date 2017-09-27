@@ -1,3 +1,7 @@
+# Grails / Groovy
+
+- Grails 2.5.6
+- Groovy 2.4.10
 
 # Java component dependencies
 
@@ -15,12 +19,3 @@ The following list is the reccommended minimum components - and is the minimum c
 4. Apache Tomcat >= 7.0.53+, With  libtcnative-1 >= 1.1.22+
 5. Apache HTTP ( As front end load balancer and http filter) 2.4.7+
 6. For Shibboleth : libapache2-mod-shib >= 22.4.3+dfsg-2, libshibsp5 >= 2.4.3+dfsg-2, shibboleth-sp2-schemas >=2.4.3+dfsg-2
-
-
-# Build environment 
-
-Suggested Minimum Versions for Build environment - As Above plus
-
-1. groovy 2.3.7+
-
-
