@@ -13,17 +13,18 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 @Log4j
 class MainService {
 
-    static final CREATED                = "CREATED"         // 201
-    static final BAD_REQUEST            = "BAD_REQUEST"     // 400
-    static final FORBIDDEN              = "FORBIDDEN"       // 403
-    static final CONFLICT               = "CONFLICT"        // 409
-    static final PRECONDITION_FAILED    = "PRECONDITION_FAILED"   // 412
-    static final INTERNAL_SERVER_ERROR  = "INTERNAL_SERVER_ERROR" // 500
-    static final NOT_IMPLEMENTED        = "NOT_IMPLEMENTED" // 501
+    static final CREATED                = "201:CREATED"
+    static final BAD_REQUEST            = "400:BAD_REQUEST"
+    static final FORBIDDEN              = "403:FORBIDDEN"
+    static final CONFLICT               = "409:CONFLICT"
+    static final PRECONDITION_FAILED    = "412:PRECONDITION_FAILED"
+    static final INTERNAL_SERVER_ERROR  = "500:INTERNAL_SERVER_ERROR"
+    static final NOT_IMPLEMENTED        = "501:NOT_IMPLEMENTED"
 
     InService inService
 
     DocService docService
+    IssueEntitlementService issueEntitlementService
     LicenseService licenseService
     OrgService orgService
     PkgService pkgService
@@ -37,17 +38,23 @@ class MainService {
             if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = docService.getDocument((Doc) result, user, contextOrg)
             }
-        } else if ('license'.equalsIgnoreCase(obj)) {
+        }
+        else if ('issueEntitlements'.equalsIgnoreCase(obj)) {
+            def subPkg = issueEntitlementService.findSubscriptionPackageBy(query, value)
+            if (subPkg && ! (subPkg in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
+                result = issueEntitlementService.getIssueEntitlements(subPkg, user, contextOrg)
+            }
+        }
+        else if ('license'.equalsIgnoreCase(obj)) {
             result = licenseService.findLicenseBy(query, value)
             if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = licenseService.getLicense((License) result, user, contextOrg)
             }
         }
         else if ('onixpl'.equalsIgnoreCase(obj)) {
-            // TODO
-            result = licenseService.findLicenseBy(query, value)
-            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
-                result = docService.getOnixPlDocument((License) result, user, contextOrg)
+            def lic = licenseService.findLicenseBy(query, value)
+            if (lic && ! (lic in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
+                result = docService.getOnixPlDocument((License) lic, user, contextOrg)
             }
         }
         else if ('organisation'.equalsIgnoreCase(obj)) {
@@ -55,12 +62,14 @@ class MainService {
             if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = orgService.getOrganisation((Org) result, user, contextOrg)
             }
-        } else if ('package'.equalsIgnoreCase(obj)) {
+        }
+        else if ('package'.equalsIgnoreCase(obj)) {
             result = pkgService.findPackageBy(query, value)
             if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = pkgService.getPackage((Package) result, user, contextOrg)
             }
-        } else if ('subscription'.equalsIgnoreCase(obj)) {
+        }
+        else if ('subscription'.equalsIgnoreCase(obj)) {
             result = subscriptionService.findSubscriptionBy(query, value)
             if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
                 result = subscriptionService.getSubscription((Subscription) result, user, contextOrg)

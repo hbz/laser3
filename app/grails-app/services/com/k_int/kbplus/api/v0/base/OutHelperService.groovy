@@ -30,22 +30,43 @@ class OutHelperService {
     // ################### HELPER ###################
 
     /**
-     * @param list
+     * @param Map map
      * @param removeEmptyValues
      * @param removeEmptyLists
      * @return
      */
-    def cleanUp(list, removeNullValues, removeEmptyLists) {
-        if(!list) {
+    def cleanUp(Map map, removeNullValues, removeEmptyLists) {
+        if (! map) {
             return null
         }
-        Collection<String> values = list.values()
+        Collection<String> values = map.values()
 
         if(removeNullValues){
             while (values.remove(null));
+            while (values.remove(""));
         }
         if(removeEmptyLists){
             while (values.remove([]));
+        }
+        map
+    }
+
+    /**
+     * @param List list
+     * @param removeEmptyValues
+     * @param removeEmptyLists
+     * @return
+     */
+    def cleanUp(List list, removeNullValues, removeEmptyLists) {
+        if (! list) {
+            return null
+        }
+        if(removeNullValues){
+            while (list.remove(null));
+            while (list.remove(""));
+        }
+        if(removeEmptyLists){
+            while (list.remove([]));
         }
         list
     }

@@ -51,11 +51,12 @@ class PkgService {
     def getPackage(Package pkg, User user, Org context) {
         def hasAccess = true
 
-        //pkg.orgs.each{ orgRole ->
-        //    if(orgRole.getOrg().id == context?.id) {
-        //        hasAccess = true
-        //    }
-        //}
+        // TODO
+        pkg.orgs.each{ orgRole ->
+            if(orgRole.getOrg().id == context?.id) {
+                hasAccess = true
+            }
+        }
 
         def result = []
         if (hasAccess) {

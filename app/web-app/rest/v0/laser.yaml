@@ -2,20 +2,24 @@
 swagger: "2.0"
 info:
   version: "0.8"
-  title: LAS:eR API
+  title: LAS:eR - API
   description: >
     Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
   contact:
     email: david.klober@hbz-nrw.de
 
-#basePath: /laser/api/v0 # development
-basePath: /api/v0 # prod
+basePath: /laser/api/v0 # development
+#basePath: /api/v0 # prod
 
 schemes:
   - http
 
 tags:
   - name: Documents
+    description: ""
+    externalDocs:
+      url: http://wiki1.hbz-nrw.de/display/ERM/Home
+  - name: IssueEntitlements
     description: ""
     externalDocs:
       url: http://wiki1.hbz-nrw.de/display/ERM/Home
@@ -122,6 +126,32 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but document not found
+
+  /issueEntitlements:
+    get:
+      tags:
+        - IssueEntitlements
+      summary: Find issue entitlements by subscription and package
+      description: >
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_. Parameters have to be separated with *,*
+      parameters:
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
+        - $ref: "#/parameters/authorization"
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/responses/badRequest"
+        401:
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
+        404:
+          description: Valid request, but no issue entitlements found
 
   /license:
     get:
