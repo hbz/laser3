@@ -279,7 +279,7 @@
              <input type="hidden" name="order" value="${params.order}">
              <input type="hidden" name="mode" value="${params.mode}">
              <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
-             <label>${message(code:'tipp.coverage_note', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/><br/>
+             <label>${message(code:'tipp.coverageNote', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/><br/>
               <label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
               <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>, &nbsp;
               <label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
@@ -320,24 +320,24 @@
                     <tr>
                       <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
                           <input type="checkbox" name="clear_start_date"/> (${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.from_volume', default:'Start Volume')}: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
+                      <td>${message(code:'tipp.startVolume', default:'Start Volume')}: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
                           <input type="checkbox" name="clear_start_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.from_issue', default:'Start Issue')}: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                      <td>${message(code:'tipp.startIssue', default:'Start Issue')}: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
                           <input type="checkbox" name="clear_start_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <tr>
                       <td>${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
                           <input type="checkbox" name="clear_end_date"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.to_volume', default:'End Volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+                      <td>${message(code:'tipp.endVolume', default:'End Volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
                           <input type="checkbox" name="clear_end_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.to_issue', default:'End Issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+                      <td>${message(code:'tipp.endIssue', default:'End Issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
                           <input type="checkbox" name="clear_end_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <tr>
-                       <td>${message(code:'tipp.platform_url', default:'Host Platform URL')}: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
+                       <td>${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
                           <input type="checkbox" name="clear_hostPlatformURL"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                         </td>
-                      <td>${message(code:'tipp.coverage_note', default:'Coverage Note')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+                      <td>${message(code:'tipp.coverageNote', default:'Coverage Note')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
                           <input type="checkbox" name="clear_coverage_note"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                       <td>${message(code:'tipp.embargo', default:'Embargo')}:  <g:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
                           <input type="checkbox" name="clear_embargo"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
@@ -409,8 +409,8 @@
                   </span>
                    <g:if test="${params.mode=='advanced'}">
                      <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
-                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
-                     <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
+                     <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
@@ -455,7 +455,7 @@
                <tr>
                   <td colspan="8">coverageNote: ${t.coverageNote}
                   <g:if test="${params.mode=='advanced'}">
-                    <br/> ${message(code:'tipp.platform_url', default:'Host Platform URL')}: <g:xEditable owner="${t}" field="hostPlatformURL" />
+                    <br/> ${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <g:xEditable owner="${t}" field="hostPlatformURL" />
                     <br/> ${message(code:'tipp.delayedOA', default:'Delayed OA')}: <g:xEditableRefData owner="${t}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/> &nbsp;
                     ${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <g:xEditableRefData owner="${t}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/> &nbsp;
                     ${message(code:'tipp.paymentType', default:'Payment')}: <g:xEditableRefData owner="${t}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/> &nbsp;

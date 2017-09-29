@@ -18,7 +18,7 @@
       <thead>
         <th>${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}</th>
         <th>${message(code:'subscription.details.coreEndDate', default:'Core End Date')}</th>
-        <th>${message(code:'default.action.lable', default:'Action')}</th>
+        <th>${message(code:'default.action.label', default:'Action')}</th>
       </thead>
       <tbody>
          <g:each in="${coreDates}" var="coreDate">

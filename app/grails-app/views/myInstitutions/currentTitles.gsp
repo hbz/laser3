@@ -47,87 +47,83 @@
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
-
     <div class="container">
-	  <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
-	    <div class="container">
-	    <h1>${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
-	      
-		<g:set var="filterSub" value="${params.filterSub?params.list('filterSub'):"all"}" />
-		<g:set var="filterPvd" value="${params.filterPvd?params.list('filterPvd'):"all"}" />
-		<g:set var="filterHostPlat" value="${params.filterHostPlat?params.list('filterHostPlat'):"all"}" />
-		<g:set var="filterOtherPlat" value="${params.filterOtherPlat?params.list('filterOtherPlat'):"all"}" />
-      
-      	<select size="5" name="filterSub" class="span3" multiple="multiple"> <!-- onchange="this.form.submit()" -->
-      		<option<%= (filterSub.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_subs', default:'All Subscriptions')}</option>
-      		<g:each in="${subscriptions}" var="s">
-              <option<%= (filterSub.contains(s.id.toString())) ? ' selected="selected"' : '' %> value="${s.id}" title="${s.name}${s.consortia?' ('+s.consortia.name+')':''}">
-                ${s.name} <g:if test="${s.consortia}">( ${s.consortia.name} )</g:if>
-              </option>
-            </g:each>
-      	</select>
-      	<select size="5" name="filterPvd" class="span3" multiple="multiple">
-      		<option<%= (filterPvd.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_providers', default:'All Content Providers')}</option>
-      		<g:each in="${providers}" var="p">
-              <% 
-              def pvdId = p.id.toString()
-              def pvdName = p.name 
-              %>
-              <option<%= (filterPvd.contains(pvdId)) ? ' selected="selected"' : '' %> value="${pvdId}" title="${pvdName}">
-                ${pvdName}
-              </option>
-            </g:each>
-      	</select>
-      	<select size="5" name="filterHostPlat" class="span3" multiple="multiple">
-      		<option<%= (filterHostPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_host_platforms', default:'All Host Platforms')}</option>
-      		<g:each in="${hostplatforms}" var="hp">
-              <% 
-              def hostId = hp.id.toString()
-              def hostName = hp.name 
-              %>
-              <option<%= (filterHostPlat.contains(hostId)) ? ' selected="selected"' : '' %> value="${hostId}" title="${hostName}">
-                ${hostName}
-              </option>
-            </g:each>
-      	</select>
-      	<select size="5" name="filterOtherPlat" class="span3" multiple="multiple">
-      		<option<%= (filterOtherPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_other_platforms', default:'All Additional Platforms')}</option>
-      		<g:each in="${otherplatforms}" var="op">
-              <% 
-              def platId = op.id.toString()
-              def platName = op.name 
-              %>
-              <option<%= (filterOtherPlat.contains(platId)) ? ' selected="selected"' : '' %> value="${platId}" title="${platName}">
-                ${platName}
-              </option>
-            </g:each>
-      	</select>
-    	</div>
-      	<br/>
-	    <div class="container" style="text-align:center">
-      		<div class="pull-left">
-      			<label class="checkbox">
-      				<input type="checkbox" name="filterMultiIE" value="${true}"<%=(params.filterMultiIE)?' checked="true"':''%>/> ${message(code:'myinst.currentTitles.dupes', default:'Titles we subscribe to through 2 or more packages')}
-				</label>
-      		</div>
-	    	<div class="pull-right">
-		        <input type="hidden" name="sort" value="${params.sort}">
-		        <input type="hidden" name="order" value="${params.order}">
-		        <label>${message(code:'default.search.text', default:'Search text')}:</label>
-		        <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
-		        <label>${message(code:'myinst.currentTitles.subs_valid_on', default:'Subscriptions Valid on')}</label>
-                        <g:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
-		        &nbsp;<input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}"/>
-	        </div>
-	    </div>
-    </g:form>
-  	  <br/>
+      <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
+        <h1>${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
+        <g:set var="filterSub" value="${params.filterSub?params.list('filterSub'):"all"}" />
+        <g:set var="filterPvd" value="${params.filterPvd?params.list('filterPvd'):"all"}" />
+        <g:set var="filterHostPlat" value="${params.filterHostPlat?params.list('filterHostPlat'):"all"}" />
+        <g:set var="filterOtherPlat" value="${params.filterOtherPlat?params.list('filterOtherPlat'):"all"}" />
+  
+        <select size="5" name="filterSub" class="span3" multiple="multiple"> <!-- onchange="this.form.submit()" -->
+          <option<%= (filterSub.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_subs', default:'All Subscriptions')}</option>
+          <g:each in="${subscriptions}" var="s">
+            <option<%= (filterSub.contains(s.id.toString())) ? ' selected="selected"' : '' %> value="${s.id}" title="${s.name}${s.consortia?' ('+s.consortia.name+')':''}">
+              ${s.name} <g:if test="${s.consortia}">( ${s.consortia.name} )</g:if>
+            </option>
+          </g:each>
+        </select>
+        <select size="5" name="filterPvd" class="span3" multiple="multiple">
+          <option<%= (filterPvd.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_providers', default:'All Content Providers')}</option>
+          <g:each in="${providers}" var="p">
+            <% 
+            def pvdId = p.id.toString()
+            def pvdName = p.name 
+            %>
+            <option<%= (filterPvd.contains(pvdId)) ? ' selected="selected"' : '' %> value="${pvdId}" title="${pvdName}">
+              ${pvdName}
+            </option>
+          </g:each>
+        </select>
+        <select size="5" name="filterHostPlat" class="span3" multiple="multiple">
+          <option<%= (filterHostPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_host_platforms', default:'All Host Platforms')}</option>
+          <g:each in="${hostplatforms}" var="hp">
+            <% 
+            def hostId = hp.id.toString()
+            def hostName = hp.name 
+            %>
+            <option<%= (filterHostPlat.contains(hostId)) ? ' selected="selected"' : '' %> value="${hostId}" title="${hostName}">
+              ${hostName}
+            </option>
+          </g:each>
+        </select>
+        <select size="5" name="filterOtherPlat" class="span3" multiple="multiple">
+          <option<%= (filterOtherPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_other_platforms', default:'All Additional Platforms')}</option>
+          <g:each in="${otherplatforms}" var="op">
+            <% 
+            def platId = op.id.toString()
+            def platName = op.name 
+            %>
+            <option<%= (filterOtherPlat.contains(platId)) ? ' selected="selected"' : '' %> value="${platId}" title="${platName}">
+              ${platName}
+            </option>
+          </g:each>
+        </select>
+        <br/>
+        <div style="text-align:center">
+          <div class="pull-left">
+            <label class="checkbox">
+              <input type="checkbox" name="filterMultiIE" value="${true}"<%=(params.filterMultiIE)?' checked="true"':''%>/> ${message(code:'myinst.currentTitles.dupes', default:'Titles we subscribe to through 2 or more packages')}
+            </label>
+          </div>
+          <div class="pull-right">
+            <input type="hidden" name="sort" value="${params.sort}">
+            <input type="hidden" name="order" value="${params.order}">
+            <label>${message(code:'default.search.text', default:'Search text')}:</label>
+            <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
+            <label>${message(code:'myinst.currentTitles.subs_valid_on', default:'Subscriptions Valid on')}</label>
+            <g:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
+            &nbsp;<input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}"/>
+          </div>
+        </div>
+      </g:form>
+      <br/>
     </div>
 
     <div class="container">
-      <dl>
-        <dt>${message(code:'title.plural', default:'Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(titles.size())),num_ti_rows])} )</dt>
-        <dd>
+      <div>
+        <span>${message(code:'title.plural', default:'Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(titles.size())),num_ti_rows])} )</span>
+        <div>
           <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="form-inline">
           <g:set var="counter" value="${offset+1}" />
           <table  class="table table-striped table-bordered">
@@ -143,9 +139,10 @@
             
             <g:each in="${titles}" var="ti">
               <tr>
-                <td><g:link controller="titleDetails" action="show" id="${ti.id}">${ti.title}</g:link>
-                <br/> 
-                <g:link controller="public" action="journalLicenses" params="${['journal':'kb:'+ti.id,'org':institution.id]}">${message(code:'myinst.currentTitles.check_license_terms', default:'Check current license terms')}</g:link>
+                <td>
+                  <g:link controller="titleDetails" action="show" id="${ti.id}"><b>${ti.title}</b></g:link>
+                  <br/> 
+                  <g:link controller="public" action="journalLicenses" params="${['journal':'kb:'+ti.id,'org':institution.id]}">${message(code:'myinst.currentTitles.check_license_terms', default:'Check current license terms')}</g:link>
                 </td>
                 <td style="white-space:nowrap">${ti.getIdentifierValue('ISSN')}</td>
                 <td style="white-space:nowrap">${ti.getIdentifierValue('eISSN')}</td>
@@ -174,8 +171,8 @@
             
           </table>
           </g:form>
-        </dd>
-      </dl>
+        </div>
+      </div>
 
       <div class="pagination" style="text-align:center">
         <g:if test="${titles}" >
@@ -204,7 +201,7 @@
 	                  <th>${message(code:'subscription.label', default:'Subscription')}</th>
 	                  <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
 	                  <th>${message(code:'tipp.host_platform', default:'Host Platform')}</th>
-	                  <th>${message(code:'tipp.other_platform', default:'Other Platform')}</th>
+	                  <th>${message(code:'tipp.additionalPlatforms', default:'Additional Platforms')}</th>
 	                </tr>
 	                <g:each in="${entitlements}" var="ie">
 	                  <tr>

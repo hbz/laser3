@@ -10,8 +10,8 @@
     <div class="container">
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <g:if test="${subscriptionInstance.subscriber}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
+        <g:if test="${params.shortcode}">
+          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="addEntitlements" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}</g:link> </li>
         <g:if test="${editable}">
@@ -65,8 +65,8 @@
                   <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                   <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                   <th>${message(code:'tipp.embargo', default:'Embargo')}</th>
-                  <th>${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</th>
-                  <th>${message(code:'tipp.coverage_note', default:'Coverage Note')}</th>
+                  <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                  <th>${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,7 +78,7 @@
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
                       <br/>
                       <span class="pull-right">
-                        <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.platform_url', default:'Host Link')}</a>
+                        <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
                             <a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a> &nbsp;| &nbsp;</g:if>
                             <g:link action="processAddEntitlements" 
                                     params="${[siid:subscriptionInstance.id,('_bulkflag.'+tipp.id):'Y']}"

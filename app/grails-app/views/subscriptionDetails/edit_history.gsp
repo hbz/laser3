@@ -10,7 +10,10 @@
     <div class="container">
         <ul class="breadcrumb">
             <li> <g:link controller="home" action="index">${message(code:'default.home', default:'Home')}</g:link> <span class="divider">/</span> </li>
-            <li>${message(code:'subscription.plural', default:'Subscriptions')}</li>
+            <g:if test="${params.shortcode}">
+              <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
+            </g:if>
+            <li>${message(code:'subscription.label', default:'Subscriptions')} - ${message(code:'license.nav.edit_history')}</li>
         </ul>
     </div>
 

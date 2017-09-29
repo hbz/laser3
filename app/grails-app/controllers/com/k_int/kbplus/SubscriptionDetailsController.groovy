@@ -57,6 +57,7 @@ class SubscriptionDetailsController {
 
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance = Subscription.get(params.id)
+    result.shortcode = params.shortcode;
 
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
@@ -957,15 +958,16 @@ class SubscriptionDetailsController {
 
     def subscription = genericOIDService.resolveOID(params.oid)
     def subscriber = subscription.getSubscriber();
+    def consortia = subscription.getConsortia();
 
     result.add([value:'', text:'None']);
 
-    if ( subscriber ) {
+    if ( subscriber || consortia ) {
 
       def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role','Licensee');
       def template_license_type = RefdataCategory.lookupOrCreate('License Type','Template');
 
-      def qry_params = [subscriber, licensee_role]
+      def qry_params = [(subscriber ?: consortia), licensee_role]
 
       def qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted' order by l.reference"
 
@@ -990,13 +992,25 @@ class SubscriptionDetailsController {
 
     if ( params.addType && ( params.addType != '' ) ) {
       def pkg_to_link = Package.get(params.addId)
+      def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ",[result.subscriptionInstance])
       log.debug("Add package ${params.addType} to subscription ${params}");
+
       if ( params.addType == 'With' ) {
         pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+        sub_instances.each {
+          pkg_to_link.addToSubscription(it, true)
+        }
+
         redirect action:'index', id:params.id
       }
       else if ( params.addType == 'Without' ) {
         pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+        sub_instances.each {
+          pkg_to_link.addToSubscription(it, false)
+        }
+
         redirect action:'addEntitlements', id:params.id
       }
     }
@@ -1138,7 +1152,7 @@ class SubscriptionDetailsController {
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
     }
 
-    if ( ! result.subscription.hasPerm("view",result.user) ) {
+    if ( !result.subscription.hasPerm("view",result.user) ) {
       response.sendError(401);
       return
     }
@@ -1206,12 +1220,14 @@ class SubscriptionDetailsController {
   def details() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance =  Subscription.get(params.id)
+    result.subscriptionInstance =  Subscription.get(params.id) 
     
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.institution = result.subscriptionInstance.subscriber
+    result.institution = Org.findByShortcode(params.shortcode)
+    if( !result.institution ) {
+      result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
+    }
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');

@@ -16,7 +16,7 @@
 	    	</thead>
 	    	<tbody>
 	    		<tr>
-	    			<td><b>${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</b></td>
+	    			<td><b>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</b></td>
 	    			<td>${subA?.coverageDepth} </td>
 	    			<td>${subB?.coverageDepth} </td>
 	    		</tr>

@@ -76,9 +76,6 @@
             </dd>
 
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-              <p>
-                ${message(code:'identifier.select.text', args:['isil:DE-18'])}
-              </p>
             <g:if test="${orgInstance?.ids}">
               <g:each in="${orgInstance.ids}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link></dd>
@@ -97,8 +94,8 @@
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
             <g:each in="${orgInstance.outgoingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                (<g:each in="${i.toOrg?.ids}" var="id">
-                  ${id.identifier.ns.ns}:${id.identifier.value} 
+                (<g:each in="${i.toOrg?.ids}" var="id_out">
+                  ${id_out.identifier.ns.ns}:${id_out.identifier.value} 
                 </g:each>)
               </dd>
             </g:each>
@@ -107,9 +104,9 @@
           <g:if test="${orgInstance?.incomingCombos}">
             <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
             <g:each in="${orgInstance.incomingCombos}" var="i">
-              <dd>${i.type?.value} - <g:link controller="org" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
-                (<g:each in="${i.fromOrg?.ids}" var="id">
-                  ${id.identifier.ns.ns}:${id.identifier.value} 
+              <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                (<g:each in="${i.fromOrg?.ids}" var="id_in">
+                  ${id_in.identifier.ns.ns}:${id_in.identifier.value} 
                 </g:each>)
               </dd>
 
@@ -118,31 +115,56 @@
 
           <g:if test="${orgInstance?.links}">
             <dt><g:message code="org.links.other.label" default="Other org links" /></dt>
-            <dd><ul>
-              <g:each in="${orgInstance.links}" var="i">
-                <li>
-                  <g:if test="${i.pkg}">
-                    <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
-                      ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n("value")})
-                    </g:link>
+            <dd>
+              <g:each in="${sorted_links}" var="rdv_id,link_cat">
+                <div>
+                  <g:set var="roletype_refdata" value="${link_cat.rdv.replaceAll(/\s/,'')}"/>
+                  <span style="font-weight:bold;">${message(code:"refdata.${roletype_refdata}", default:"${link_cat.rdv}")} (${link_cat.total})</span>
+                </div>
+                <ul>
+                  <g:each in="${link_cat.links}" var="i">
+                    <li>
+                      <g:if test="${i.pkg}">
+                        <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
+                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${message(code:"refdata.${i.pkg?.packageStatus?.value}", default:"${i.pkg?.packageStatus?.value}")})
+                        </g:link>
+                      </g:if>
+                      <g:if test="${i.sub}">
+                        <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
+                          ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${message(code:"refdata.${i.sub.status?.value}", default:"${i.sub.status?.value}")})
+                        </g:link>
+                      </g:if>
+                      <g:if test="${i.lic}">
+                        <g:link controller="licenseDetails" action="index" id="${i.lic.id}">
+                          ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})
+                        </g:link>
+                      </g:if>
+                      <g:if test="${i.title}">
+                        <g:link controller="titleInstance" action="show" id="${i.title.id}">
+                          ${message(code:'title.label', default:'Title')}: ${i.title.title} (${message(code:"refdata.${i.title.status?.value}", default:"${i.title.status?.value}")})
+                        </g:link>
+                      </g:if> 
+                    </li>
+                  </g:each>
+                </ul>
+                <g:set var="local_offset" value="${params[link_cat.rdvl] ? Long.parseLong(params[link_cat.rdvl]) : null}" />
+                <div>
+                  <g:if test="${link_cat.total > 10}">
+                    ${message(code:'default.paginate.offset', args:[(local_offset ?: 1),(local_offset ? (local_offset + 10 > link_cat.total ? link_cat.total : local_offset + 10) : 10), link_cat.total])}
                   </g:if>
-                  <g:if test="${i.sub}">
-                    <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
-                      ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n("value")})
-                    </g:link>
+                </div>
+                <div>
+                  <g:if test="${link_cat.total > 10 && local_offset}">
+                    <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
+                    <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">Prev</g:link>
                   </g:if>
-                  <g:if test="${i.lic}">
-                    ${message(code:'license.label', default:'License')}: ${i.lic.id} (${i.lic.status?.getI10n("value")})
+                  <g:if test="${link_cat.total > 10 && ( !local_offset || ( local_offset < (link_cat.total - 10) ) )}">
+                    <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
+                    <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">Next</g:link>
                   </g:if>
-                  <g:if test="${i.title}">
-                    <g:link controller="titleInstance" action="show" id="${i.title.id}">
-                      ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n("value")})
-                    </g:link>
-                  </g:if>
-                  (${i.roleType?.getI10n("value")})
-                </li>
+                </div>
               </g:each>
-            </ul></dd>
+            </dd>
           </g:if>
         
           <g:if test="${orgInstance?.impId}">

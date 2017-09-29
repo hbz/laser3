@@ -5,6 +5,8 @@
 
 <body>
 <div class='body'>
+  <div class="container">
 	<div class='errors'><g:message code="springSecurity.denied.message" /></div>
+  </div>
 </div>
 </body>

@@ -11,7 +11,7 @@
           <div class="span12">
 
             <div class="page-header">
-              <h1>New Title - Step 1</h1>
+              <h1>${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
             </div>
 
             <g:if test="${flash.message}">
