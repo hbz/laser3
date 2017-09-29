@@ -156,11 +156,11 @@
                 <div>
                   <g:if test="${link_cat.total > 10 && local_offset}">
                     <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
-                    <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">Prev</g:link>
+                    <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev', default:'Previous')}</g:link>
                   </g:if>
                   <g:if test="${link_cat.total > 10 && ( !local_offset || ( local_offset < (link_cat.total - 10) ) )}">
                     <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
-                    <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">Next</g:link>
+                    <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next', default:'Next')}</g:link>
                   </g:if>
                 </div>
               </g:each>
