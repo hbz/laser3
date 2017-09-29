@@ -511,6 +511,7 @@ log4j = {
       'grails.app.conf',
       'grails.app.jobs',
       'grails.app.conf.BootStrap',
+      'grails.app.controllers.OrganisationsController',
       //'edu.umn.shibboleth.sp',
       'com.k_int',
   // 'org.springframework.security'
