@@ -2,6 +2,7 @@ package com.k_int.kbplus.filter
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.UserRole
+import de.laser.domain.Constants
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apache.commons.io.IOUtils
@@ -84,7 +85,7 @@ class ApiFilter extends GenericFilterBean {
             } else {
                 //println "INVALID authorization: " + authorization + " < " + checksum
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
-                response.setContentType("application/json")
+                response.setContentType(Constants.MIME_APPLICATION_JSON)
 
                 def result = new JSON([
                         "message": "unauthorized access",

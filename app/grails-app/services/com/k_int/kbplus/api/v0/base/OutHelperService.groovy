@@ -3,6 +3,7 @@ package com.k_int.kbplus.api.v0.base
 import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.LicenseService
 import com.k_int.kbplus.api.v0.MainService
+import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -134,11 +135,11 @@ class OutHelperService {
             result = cleanUp(result, true, true)
         }
 
-        return (hasAccess ? result : MainService.FORBIDDEN)
+        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 
     /**
-     * @return MAP | MainService.FORBIDDEN
+     * @return MAP | Constants.HTTP_FORBIDDEN
      */
     def resolveOrganisationStub(Org org, Org context) {
         def result = [:]
@@ -163,11 +164,11 @@ class OutHelperService {
             result = cleanUp(result, true, true)
         }
 
-        return (hasAccess ? result : MainService.FORBIDDEN)
+        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 
     /**
-     * @return MAP | MainService.FORBIDDEN
+     * @return MAP | Constants.HTTP_FORBIDDEN
      */
     def resolvePackageStub(Package pkg, Org context) {
         def result = [:]
@@ -195,7 +196,7 @@ class OutHelperService {
             result = cleanUp(result, true, true)
         }
 
-        return (hasAccess ? result : MainService.FORBIDDEN)
+        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 
     def resolvePlatformStub(Platform pform) {
@@ -210,7 +211,7 @@ class OutHelperService {
     }
 
     /**
-     * @return MAP | MainService.FORBIDDEN
+     * @return MAP | Constants.HTTP_FORBIDDEN
      */
     def resolveSubscriptionStub(Subscription sub, Org context) {
         def result = [:]
@@ -238,7 +239,7 @@ class OutHelperService {
             result = cleanUp(result, true, true)
         }
 
-        return (hasAccess ? result : MainService.FORBIDDEN)
+        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 
     def resolveSubscriptionPackageStub(SubscriptionPackage subpkg, ignoreRelation, Org context) {
@@ -627,7 +628,7 @@ class OutHelperService {
      * @param com.k_int.kbplus.OnixplLicense opl
      * @param com.k_int.kbplus.License lic
      * @param com.k_int.kbplus.Org context
-     * @return Map | MainService.FORBIDDEN
+     * @return Map | Constants.HTTP_FORBIDDEN
      */
     def resolveOnixplLicense(OnixplLicense opl, License lic, Org context) {
         def result = [:]
@@ -658,7 +659,7 @@ class OutHelperService {
             result = cleanUp(result, true, true)
         }
 
-        return (hasAccess ? result : MainService.FORBIDDEN)
+        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 
     def resolveOrder(Order order) {

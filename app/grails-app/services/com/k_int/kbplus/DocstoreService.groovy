@@ -386,7 +386,7 @@ class DocstoreService {
           streamResponseDoc(ds_resp, os)
           byte[] blob = os.toByteArray()
           dsd.setBlobData(new ByteArrayInputStream(blob), blob.length);
-          dsd.contentType = 3;
+          dsd.contentType = Doc.CONTENT_TYPE_BLOB;
           dsd.migrated = 'y';
           dsd.save(flush:true)
           log.debug("${dsd.id} completed");

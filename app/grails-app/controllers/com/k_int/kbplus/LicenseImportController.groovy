@@ -256,7 +256,7 @@ class LicenseImportController {
     def doc_content, doc_context
 
     // If we are creating a new document for the upload
-    if (createNewDocument) doc_content = new Doc(contentType: 3)
+    if (createNewDocument) doc_content = new Doc(contentType: Doc.CONTENT_TYPE_BLOB)
 
     // Otherwise update the existing doc's description
     else doc_content = upload.existing_opl.doc

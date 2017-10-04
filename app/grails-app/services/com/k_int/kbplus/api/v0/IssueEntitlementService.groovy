@@ -10,6 +10,7 @@ import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.api.v0.base.OutHelperService
 import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
+import de.laser.domain.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -29,7 +30,7 @@ class IssueEntitlementService {
         def queries = query.split(",")
         def values  = value.split(",")
         if (queries.size() != 2 || values.size() != 2) {
-            return MainService.BAD_REQUEST
+            return Constants.HTTP_BAD_REQUEST
         }
 
         def sub = subscriptionService.findSubscriptionBy(queries[0].trim(), values[0].trim())
@@ -37,7 +38,7 @@ class IssueEntitlementService {
 
         if (sub instanceof Subscription && pkg instanceof Package) {
             result = SubscriptionPackage.findAllBySubscriptionAndPkg(sub, pkg)
-            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
         }
         result
     }
@@ -61,13 +62,11 @@ class IssueEntitlementService {
             }
         }
 
-        hasAccess = true // TODO remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         def result = []
         if (hasAccess) {
             result = outService.exportIssueEntitlements(subPkg,  OutHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
-        return (hasAccess ? new JSON(result) : MainService.FORBIDDEN)
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 }

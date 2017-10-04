@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.api.v0.MainService
 import com.k_int.kbplus.auth.*
+import de.laser.domain.Constants
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import org.springframework.http.HttpStatus
@@ -251,6 +252,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         def query   = params.get('q')
         def value   = params.get('v', '')
         def context = params.get('context')
+        def format
 
         Org contextOrg = null
         User user = (User) request.getAttribute('authorizedApiUser')
@@ -286,10 +288,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
 
         if (!contextOrg || !hasRole) {
-            result = mainService.FORBIDDEN
+            result = Constants.HTTP_FORBIDDEN
         }
         else if (!obj) {
-            result = mainService.BAD_REQUEST
+            result = Constants.HTTP_BAD_REQUEST
         }
 
         // delegate api calls
@@ -297,13 +299,37 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         if (!result) {
             if ('GET' == request.method) {
                 if (!query || !value) {
-                    result = mainService.BAD_REQUEST
+                    result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
-                    result = mainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg)
+                    switch(request.getHeader('accept')) {
+                        case Constants.MIME_APPLICATION_JSON:
+                        case Constants.MIME_TEXT_JSON:
+                            format = Constants.MIME_APPLICATION_JSON
+                            break
+                        case Constants.MIME_APPLICATION_XML:
+                        case Constants.MIME_TEXT_XML:
+                            format = Constants.MIME_APPLICATION_XML
+                            break
+                        case Constants.MIME_TEXT_PLAIN:
+                            format = Constants.MIME_TEXT_PLAIN
+                            break
+                        default:
+                            format = Constants.MIME_ALL
+                            break
+                    }
+
+                    result = mainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
 
                     if (result instanceof Doc) {
-                        if (result.contentType == 3) {
+                        if (result.contentType == Doc.CONTENT_TYPE_STRING) {
+                            response.contentType = result.mimeType
+                            response.setHeader('Content-disposition', 'attachment; filename="' + result.title + '"')
+                            response.outputStream << result.content
+                            response.outputStream.flush()
+                            return
+                        }
+                        else if (result.contentType == Doc.CONTENT_TYPE_BLOB) {
                             response.contentType = result.mimeType
                             response.setHeader('Content-disposition', 'attachment; filename="' + result.title + '"')
                             response.outputStream << result.getBlobData()
@@ -318,21 +344,21 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 def data = (postBody ? new JSON().parse(postBody) : null)
 
                 if (!data) {
-                    result = MainService.BAD_REQUEST
+                    result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
                     result = mainService.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
             else {
-                result = mainService.NOT_IMPLEMENTED
+                result = Constants.HTTP_NOT_IMPLEMENTED
             }
         }
 
         result = buildResponse(obj, query, value, context, contextOrg, result)
 
-        response.setContentType("application/json")
-        response.setCharacterEncoding("UTF-8")
+        response.setContentType(Constants.MIME_APPLICATION_JSON)
+        response.setCharacterEncoding(Constants.UTF8)
         response.setHeader("Debug-Result-Length", result.toString().length().toString())
 
         render result.toString(true)
@@ -345,15 +371,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         if (result instanceof HashMap) {
 
             switch(result['result']) {
-                case mainService.CREATED:
+                case Constants.HTTP_CREATED:
                     response.status = HttpStatus.CREATED.value()
                     result = new JSON(["message": "resource successfully created", "debug": result['debug']])
                     break
-                case mainService.CONFLICT:
+                case Constants.HTTP_CONFLICT:
                     response.status = HttpStatus.CONFLICT.value()
                     result = new JSON(["message": "conflict with existing resource", "debug": result['debug']])
                     break
-                case mainService.INTERNAL_SERVER_ERROR:
+                case Constants.HTTP_INTERNAL_SERVER_ERROR:
                     response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
                     result = new JSON(["message": "resource not created", "debug": result['debug']])
                     break
@@ -362,7 +388,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         // GET
 
-        else if (mainService.FORBIDDEN == result) {
+        else if (Constants.HTTP_FORBIDDEN == result) {
             response.status = HttpStatus.FORBIDDEN.value()
             if (contextOrg) {
                 result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode])
@@ -371,15 +397,19 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 result = new JSON(["message": "forbidden", "obj": obj, "context": context])
             }
         }
-        else if (mainService.NOT_IMPLEMENTED == result) {
-            response.status = HttpStatus.NOT_IMPLEMENTED.value()
-            result = new JSON(["message": "not implemented", "method": request.method, "obj": obj])
+        else if (Constants.HTTP_NOT_ACCEPTABLE == result) {
+            response.status = HttpStatus.NOT_ACCEPTABLE.value()
+            result = new JSON(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj])
         }
-        else if (mainService.BAD_REQUEST == result) {
+        else if (Constants.HTTP_NOT_IMPLEMENTED == result) {
+            response.status = HttpStatus.NOT_IMPLEMENTED.value()
+            result = new JSON(["message": "requested method not implemented", "method": request.method, "obj": obj])
+        }
+        else if (Constants.HTTP_BAD_REQUEST == result) {
             response.status = HttpStatus.BAD_REQUEST.value()
             result = new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context])
         }
-        else if (mainService.PRECONDITION_FAILED == result) {
+        else if (Constants.HTTP_PRECONDITION_FAILED == result) {
             response.status = HttpStatus.PRECONDITION_FAILED.value()
             result = new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context])
         }

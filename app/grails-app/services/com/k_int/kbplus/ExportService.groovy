@@ -463,7 +463,7 @@ class ExportService {
 			}
 			def licenseNotes = addXMLElementInto(doc, licElem, "LicenceNotes", null)
     		license.documents.each{docctx->
-			      if(docctx.owner?.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted')){
+			      if(docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING && (docctx.status == null || docctx.status?.value != 'Deleted')){
 			          def note_val = docctx.owner?.content
 			          if(note_val){
       					addXMLElementInto(doc, licenseNotes, "Note","${note_val}")

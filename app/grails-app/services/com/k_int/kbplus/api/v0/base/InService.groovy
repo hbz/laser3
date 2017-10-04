@@ -2,6 +2,7 @@ package com.k_int.kbplus.api.v0.base
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
+import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
@@ -62,13 +63,13 @@ class InService {
                 //def subscriptions = inHelperService.getSubscriptions(data.subscriptions)
 
                 license.save(flush: true)
-                result = ['result': MainService.CREATED, 'debug': license]
+                result = ['result': Constants.HTTP_CREATED, 'debug': license]
             }
             catch (Exception e) {
                 log.error("Error while importing LICENSE via API; rollback forced")
                 log.error(e)
                 status.setRollbackOnly()
-                result = ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
+                result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]
             }
         }
         result
@@ -117,13 +118,13 @@ class InService {
                 org.prsLinks        = personsAndRoles['personRoles']
 
                 org.save(flush: true)
-                result = ['result': MainService.CREATED, 'debug': org]
+                result = ['result': Constants.HTTP_CREATED, 'debug': org]
             }
             catch (Exception e) {
                 log.error("Error while importing ORG via API; rollback forced")
                 log.error(e)
                 status.setRollbackOnly()
-                result = ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
+                result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]
             }
         }
         result
@@ -173,14 +174,14 @@ class InService {
                 // not supported: packages
 
                 sub.save(flush: true)
-                result = ['result': MainService.CREATED, 'debug': sub]
+                result = ['result': Constants.HTTP_CREATED, 'debug': sub]
             }
             catch (Exception e) {
                 log.error("Error while importing SUBSCRIPTION via API; rollback forced")
                 log.error(e)
 
                 status.setRollbackOnly()
-                result = ['result': MainService.INTERNAL_SERVER_ERROR, 'debug': e]
+                result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]
             }
         }
         result

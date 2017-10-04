@@ -8,6 +8,11 @@ import com.k_int.kbplus.auth.User
 
 class Doc {
 
+  static final CONTENT_TYPE_STRING              = 0
+  static final CONTENT_TYPE_DOCSTORE            = 1
+  static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
+  static final CONTENT_TYPE_BLOB                = 3
+
   static transients = [ 'blobSize', 'blobData', 'sessionFactory' ]
   private static final MAX_SIZE = 1073741824 // 4GB 
   def sessionFactory
@@ -20,7 +25,7 @@ class Doc {
   String filename
   String creator
   String mimeType
-  Integer contentType=0 // 0=String, 1=docstore, 2=update notification, 3=blob
+  Integer contentType = CONTENT_TYPE_STRING
   String content 
   Blob blobContent 
   String uuid 

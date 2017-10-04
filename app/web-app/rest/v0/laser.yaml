@@ -91,10 +91,12 @@ responses:
     description: Forbidden access to this resource
   internalServerError:
     description: Resource not created
+  notAcceptable:
+    description: Requested format not supported
   notAuthorized:
     description: Request is not authorized
   notImplemented:
-    description: Request not implemented
+    description: Requested method not implemented
   preconditionFailed:
     description: Multiple matches
 
@@ -115,6 +117,7 @@ paths:
         - $ref: "#/parameters/authorization"
       produces:
         - application/*
+        - text/*
       responses:
         200:
           description: OK
@@ -126,14 +129,16 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but document not found
+        406:
+          $ref: "#/responses/notAcceptable"
 
   /issueEntitlements:
     get:
       tags:
         - IssueEntitlements
-      summary: Find issue entitlements by subscription and package
+      summary: Find issue entitlements by subscription identifier and package identifier
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_. Parameters have to be separated with *,*
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_. Both Parameters have to be separated by *comma*.
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -141,6 +146,7 @@ paths:
         - $ref: "#/parameters/authorization"
       produces:
         - text/plain
+        - application/json
       responses:
         200:
           description: OK
@@ -152,6 +158,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but no issue entitlements found
+        406:
+          $ref: "#/responses/notAcceptable"
 
   /license:
     get:
@@ -166,7 +174,7 @@ paths:
         - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
       produces:
-        - application/json
+        - text/xml
       responses:
         200:
           description: OK
@@ -180,6 +188,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but license not found
+        406:
+          $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
     post:
@@ -226,7 +236,7 @@ paths:
         - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
       produces:
-        - application/*
+        - application/xml
       responses:
         200:
           description: OK
@@ -238,6 +248,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but document not found
+        406:
+          $ref: "#/responses/notAcceptable"
 
   /organisation:
     get:
@@ -266,6 +278,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but organisation not found
+        406:
+          $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
     post:
@@ -325,6 +339,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but license not found
+        406:
+          $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
 
@@ -355,6 +371,8 @@ paths:
           $ref: "#/responses/forbidden"
         404:
           description: Valid request, but subscription not found
+        406:
+          $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
     post:

@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.base.OutHelperService
 import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
+import de.laser.domain.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -32,11 +33,11 @@ class LicenseService {
                 result = Identifier.lookupObjectsByIdentifierString(new License(), value)
                 break
             default:
-                return MainService.BAD_REQUEST
+                return Constants.HTTP_BAD_REQUEST
                 break
         }
         if (result) {
-            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
         }
         result
     }
@@ -58,6 +59,6 @@ class LicenseService {
             result = outService.exportLicense(lic, OutHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
-        return (hasAccess ? new JSON(result) : MainService.FORBIDDEN)
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 }

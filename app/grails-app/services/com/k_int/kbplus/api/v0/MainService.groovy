@@ -6,20 +6,14 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.api.v0.base.InService
+import com.k_int.kbplus.api.v0.converter.KbartService
 import com.k_int.kbplus.auth.User
+import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 @Log4j
 class MainService {
-
-    static final CREATED                = "201:CREATED"
-    static final BAD_REQUEST            = "400:BAD_REQUEST"
-    static final FORBIDDEN              = "403:FORBIDDEN"
-    static final CONFLICT               = "409:CONFLICT"
-    static final PRECONDITION_FAILED    = "412:PRECONDITION_FAILED"
-    static final INTERNAL_SERVER_ERROR  = "500:INTERNAL_SERVER_ERROR"
-    static final NOT_IMPLEMENTED        = "501:NOT_IMPLEMENTED"
 
     InService inService
 
@@ -30,53 +24,96 @@ class MainService {
     PkgService pkgService
     SubscriptionService subscriptionService
 
-    def read(String obj, String query, String value, User user, Org contextOrg) {
+    KbartService kbartService
+
+    /**
+     * @return Object | BAD_REQUEST | PRECONDITION_FAILED | NOT_ACCEPTABLE
+     */
+    def read(String obj, String query, String value, User user, Org contextOrg, String format) {
         def result
+        log.debug("API-READ: ${obj} (${format}) @ ${query}:${value}")
 
         if ('document'.equalsIgnoreCase(obj)) {
-            result = docService.findDocumentBy(query, value)
-            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
-                result = docService.getDocument((Doc) result, user, contextOrg)
-            }
+            //if (format in [ContentType.ALL]) {
+                result = docService.findDocumentBy(query, value)
+                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
+                    result = docService.getDocument((Doc) result, user, contextOrg)
+                }
+            //}
         }
         else if ('issueEntitlements'.equalsIgnoreCase(obj)) {
-            def subPkg = issueEntitlementService.findSubscriptionPackageBy(query, value)
-            if (subPkg && ! (subPkg in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
-                result = issueEntitlementService.getIssueEntitlements(subPkg, user, contextOrg)
+            if (format in [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON]) {
+                def subPkg = issueEntitlementService.findSubscriptionPackageBy(query, value)
+                if (subPkg && ! (subPkg in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]) ) {
+                    result = issueEntitlementService.getIssueEntitlements(subPkg, user, contextOrg)
+
+                    if (format == Constants.MIME_TEXT_PLAIN) {
+                        def kbart = kbartService.convertIssueEntitlements(result)
+                        result = kbartService.getAsDocument(kbart)
+                    }
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
         else if ('license'.equalsIgnoreCase(obj)) {
-            result = licenseService.findLicenseBy(query, value)
-            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
-                result = licenseService.getLicense((License) result, user, contextOrg)
+            if (format in [Constants.MIME_APPLICATION_JSON]) {
+                result = licenseService.findLicenseBy(query, value)
+                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
+                    result = licenseService.getLicense((License) result, user, contextOrg)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
         else if ('onixpl'.equalsIgnoreCase(obj)) {
-            def lic = licenseService.findLicenseBy(query, value)
-            if (lic && ! (lic in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
-                result = docService.getOnixPlDocument((License) lic, user, contextOrg)
+            if (format in [Constants.MIME_APPLICATION_XML]) {
+                def lic = licenseService.findLicenseBy(query, value)
+                if (lic && !(lic in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
+                    result = docService.getOnixPlDocument((License) lic, user, contextOrg)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
         else if ('organisation'.equalsIgnoreCase(obj)) {
-            result = orgService.findOrganisationBy(query, value)
-            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
-                result = orgService.getOrganisation((Org) result, user, contextOrg)
+            if (format in [Constants.MIME_APPLICATION_JSON]) {
+                result = orgService.findOrganisationBy(query, value)
+                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
+                    result = orgService.getOrganisation((Org) result, user, contextOrg)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
         else if ('package'.equalsIgnoreCase(obj)) {
-            result = pkgService.findPackageBy(query, value)
-            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
-                result = pkgService.getPackage((Package) result, user, contextOrg)
+            if (format in [Constants.MIME_APPLICATION_JSON]) {
+                result = pkgService.findPackageBy(query, value)
+                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
+                    result = pkgService.getPackage((Package) result, user, contextOrg)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
         else if ('subscription'.equalsIgnoreCase(obj)) {
-            result = subscriptionService.findSubscriptionBy(query, value)
-            if (result && ! (result in [BAD_REQUEST, PRECONDITION_FAILED]) ) {
-                result = subscriptionService.getSubscription((Subscription) result, user, contextOrg)
+            if (format in [Constants.MIME_APPLICATION_JSON]) {
+                result = subscriptionService.findSubscriptionBy(query, value)
+                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
+                    result = subscriptionService.getSubscription((Subscription) result, user, contextOrg)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
         else {
-            result = NOT_IMPLEMENTED
+            result = Constants.HTTP_NOT_IMPLEMENTED
         }
 
         result
@@ -92,17 +129,17 @@ class MainService {
 
             data.identifiers?.each { ident ->
                 def hits = orgService.findOrganisationBy('ns:identifier', ident.namespace + ":" + ident.value)
-                if (hits == PRECONDITION_FAILED || hits instanceof Org) {
+                if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Org) {
                     conflict = true
                 }
             }
             def hits = orgService.findOrganisationBy('name', data.name.trim())
-            if (hits == PRECONDITION_FAILED || hits instanceof Org) {
+            if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Org) {
                 conflict = true
             }
 
             if (conflict) {
-                return ['result': CONFLICT, 'debug': 'debug']
+                return ['result': Constants.HTTP_CONFLICT, 'debug': 'debug']
             }
 
             result = inService.importOrganisation(data, contextOrg)
@@ -118,23 +155,23 @@ class MainService {
 
             data.identifiers?.each { ident ->
                 def hits = subscriptionService.findSubscriptionBy('ns:identifier', ident.namespace + ":" + ident.value)
-                if (hits == PRECONDITION_FAILED || hits instanceof Subscription) {
+                if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Subscription) {
                     conflict = true
                 }
             }
             def hits = subscriptionService.findSubscriptionBy('identifier', data.identifier)
-            if (hits == PRECONDITION_FAILED || hits instanceof Subscription) {
+            if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Subscription) {
                 conflict = true
             }
 
             if (conflict) {
-                return ['result': CONFLICT, 'debug': 'debug']
+                return ['result': Constants.HTTP_CONFLICT, 'debug': 'debug']
             }
 
             result = inService.importSubscription(data, contextOrg)
         }
         else {
-            result = NOT_IMPLEMENTED
+            result = Constants.HTTP_NOT_IMPLEMENTED
         }
         result
     }

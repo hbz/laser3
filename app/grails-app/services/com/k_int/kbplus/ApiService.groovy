@@ -6,10 +6,6 @@ import groovy.util.slurpersupport.GPathResult
 @Log4j
 class ApiService {
 
-    static final FORBIDDEN          = "FORBIDDEN"
-    static final BAD_REQUEST        = "BAD_REQUEST"
-    static final NOT_IMPLEMENTED    = "NOT_IMPLEMENTED"
-
     /**
      *
      * @param xml
