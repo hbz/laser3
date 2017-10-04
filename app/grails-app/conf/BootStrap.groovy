@@ -316,7 +316,7 @@ class BootStrap {
                 pd = new PropertyDefinition(name: name)
             }
             pd.type  = prop.type
-            pd.descr = prop.descr
+            pd.descr = prop.descr['en']
             pd.save(failOnError: true)
 
             if (!SystemAdminCustomProperty.findByType(pd)) {

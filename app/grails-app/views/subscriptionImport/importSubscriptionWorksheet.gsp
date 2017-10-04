@@ -54,11 +54,11 @@
                 <td>ISSN</td>
                 <td>eISSN</td>
                 <td>${message(code:'default.startDate.label', default:'Start Date')}</td>
-                <td>${message(code:'tipp.from_volume', default:'Start Volume')}</td>
-                <td>${message(code:'tipp.from_issue', default:'Start Issue')}</td>
+                <td>${message(code:'tipp.startVolume', default:'Start Volume')}</td>
+                <td>${message(code:'tipp.startIssue', default:'Start Issue')}</td>
                 <td>${message(code:'default.endDate.label', default:'End Date')}</td>
-                <td>${message(code:'tipp.to_volume', default:'End Volume')}</td>
-                <td>${message(code:'tipp.to_issue', default:'End Issue')}</td>
+                <td>${message(code:'tipp.endVolume', default:'End Volume')}</td>
+                <td>${message(code:'tipp.endIssue', default:'End Issue')}</td>
                 <td>${message(code:'subscription.details.core_medium', default:'Core Medium')}</td>
               </tr>
             </thead>

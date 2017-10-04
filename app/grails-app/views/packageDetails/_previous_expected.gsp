@@ -83,7 +83,7 @@
               <th style="">${message(code:'identifier.plural', default:'Identifiers')}</th>
               <th style="">${message(code:'tipp.coverage_start', default:'Coverage Start')}</th>
               <th style="">${message(code:'tipp.coverage_end', default:'Coverage End')}</th>
-              <th style="">${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</th>
+              <th style="">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
             </tr>
             </thead>
             <tbody>
@@ -99,17 +99,17 @@
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
                    <g:if test="${params.action == 'previous'}">
-                    <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                    <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                    <g:else>
-                   <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
+                   <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
                    </g:else>
                     <g:if test="${params.mode=='advanced'}">
                      <g:if test="${params.action == 'previous'}">
-                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
+                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
                      </g:if>
                      <g:else>
-                      <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                      <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
                      </g:else>
                        <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
                    </g:if>
@@ -146,7 +146,7 @@
 
               <g:if test="${hasCoverageNote==true}">
                 <tr>
-                  <td colspan="6">${message(code:'tipp.coverage_note', default:'Coverage Note')}: ${t.coverageNote}</td>
+                  <td colspan="6">${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${t.coverageNote}</td>
                 </tr>
               </g:if>
 

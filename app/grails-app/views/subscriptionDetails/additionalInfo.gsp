@@ -10,8 +10,8 @@
     <div class="container">
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <g:if test="${subscriptionInstance.subscriber}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:subscriptionInstance.subscriber.shortcode]}"> ${subscriptionInstance.subscriber.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
+        <g:if test="${params.shortcode}">
+          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.permissions.label', default:'Permissions')}</g:link> </li>
         <g:if test="${editable}">
@@ -66,7 +66,7 @@
         <g:each in="${user.affiliations}" var="ol">
           <g:if test="${((ol.status==1)||(ol.status==3))}">
             <tr>
-              <td>${message(code:'subscription.details.additionalInfo.aff_to', args:[ol.org?.name])} <b><g:message code="cv.roles.${ol.formalRole?.authority}"/></b> (${ol.status})</td>
+              <td>${message(code:'subscription.details.additionalInfo.aff_to', args:[ol.org?.name])} <b><g:message code="cv.roles.${ol.formalRole?.authority}"/></b> (${message(code:"cv.membership.status.${ol.status}")})</td>
               <td>
                 <ul>
                   <g:each in="${ol.formalRole?.grantedPermissions}" var="gp">

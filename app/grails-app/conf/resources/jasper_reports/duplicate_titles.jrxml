@@ -18,7 +18,7 @@
 	</parameter>
 	<queryString language="SQL">
 		<![CDATA[Select  ti.ti_id, ti.ti_title,IFNULL(ti_issn.issn,'') as issn,IFNULL(ti_eissn.eissn,'') as eissn,IFNULL(ti_isbn.isbn,'') as isbn, IFNULL(GROUP_CONCAT(tipp.tipp_pkg_fk),'') as pkg_group
-from title_instance as ti  INNER JOIN 
+        from title_instance as ti  INNER JOIN 
 ( select ti2.ti_key_title from title_instance ti2 group by ti2.ti_key_title having count(ti2.ti_key_title) > 1 ) dup on ti.ti_key_title = dup.ti_key_title 
  left join title_instance_package_platform tipp on tipp.tipp_ti_fk = ti.ti_id
  left join ( select io_ti_fk,id_value as issn

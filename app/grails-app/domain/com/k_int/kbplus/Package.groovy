@@ -225,33 +225,36 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     // Add this package to the specified subscription
     // Step 1 - Make sure this package is not already attached to the sub
     // Step 2 - Connect
-    def new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save();
-    // Step 3 - If createEntitlements ...
+    def dupe = SubscriptionPackage.executeQuery("from SubscriptionPackage where subscription = ? and pkg = ?", [subscription, this])
+    
+    if (!dupe){
+      def new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save();
+      // Step 3 - If createEntitlements ...
 
-    if ( createEntitlements ) {
-       def live_issue_entitlement = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Live');
-      tipps.each { tipp ->
-        if(tipp.status?.value != "Deleted"){
-          def new_ie = new IssueEntitlement(status: live_issue_entitlement,
-                                            subscription: subscription,
-                                            tipp: tipp,
-                                            accessStartDate:tipp.accessStartDate,
-                                            accessEndDate:tipp.accessEndDate,
-                                            startDate:tipp.startDate,
-                                            startVolume:tipp.startVolume,
-                                            startIssue:tipp.startIssue,
-                                            endDate:tipp.endDate,
-                                            endVolume:tipp.endVolume,
-                                            endIssue:tipp.endIssue,
-                                            embargo:tipp.embargo,
-                                            coverageDepth:tipp.coverageDepth,
-                                            coverageNote:tipp.coverageNote).save()      
+      if ( createEntitlements ) {
+        def live_issue_entitlement = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Live');
+        tipps.each { tipp ->
+          if(tipp.status?.value != "Deleted"){
+            def new_ie = new IssueEntitlement(status: live_issue_entitlement,
+                                              subscription: subscription,
+                                              tipp: tipp,
+                                              accessStartDate:tipp.accessStartDate,
+                                              accessEndDate:tipp.accessEndDate,
+                                              startDate:tipp.startDate,
+                                              startVolume:tipp.startVolume,
+                                              startIssue:tipp.startIssue,
+                                              endDate:tipp.endDate,
+                                              endVolume:tipp.endVolume,
+                                              endIssue:tipp.endIssue,
+                                              embargo:tipp.embargo,
+                                              coverageDepth:tipp.coverageDepth,
+                                              coverageNote:tipp.coverageNote).save()      
+          }
         }
       }
-    }
 
+    }
   }
- 
 
   /**
    *  Tell the event notification service how this object is known to any registered notification
@@ -436,7 +439,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     if ( ! found ) {
       def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?", [id,this])
+      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
 
       if ( !id_occ || id_occ.size() == 0 ){
         log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");

@@ -56,8 +56,9 @@ class ChangeNotificationService {
         def contr = 0
         // log.debug("Consider pending changes for ${poidc}");
         def contextObject = genericOIDService.resolveOID(poidc);
+        log.debug("Got contextObject ${contextObject} for poidc ${poidc}")
 
-        if ( contextObject == null || contextObject.status?.value == 'Deleted') {
+        if ( contextObject == null ) {
           log.warn("Pending changes for a now deleted item.. nuke them!");
           ChangeNotificationQueueItem.executeUpdate("delete ChangeNotificationQueueItem c where c.oid = :oid", [oid:poidc])
         }
@@ -80,6 +81,7 @@ class ChangeNotificationService {
         pendingChanges.each { pc ->
           // log.debug("Process pending change ${pc}");    
           def parsed_event_info = JSON.parse(pc.changeDocument)
+          log.debug("Event Info: ${parsed_event_info}")
           def change_template = ContentItem.findByKey("ChangeNotification.${parsed_event_info.event}")
           if ( change_template != null ) {
             // log.debug("Found change template... ${change_template.content}");
@@ -88,16 +90,20 @@ class ChangeNotificationService {
             if ( parsed_event_info.OID != null && parsed_event_info.OID.length() > 0 ) {
               event_props.OID = genericOIDService.resolveOID(parsed_event_info.OID);
             }
+            if( event_props.OID ) {
 
-            // Use doStuff to cleverly render change_template with variable substitution 
-            // log.debug("Make engine");
-            def engine = new groovy.text.GStringTemplateEngine()
-            // log.debug("createTemplate..");
-            def tmpl = engine.createTemplate(change_template.content).make(event_props)
-            // log.debug("Write to string writer");
-            sw.write("<li>");
-            sw.write(tmpl.toString());
-            sw.write("</li>");
+              // Use doStuff to cleverly render change_template with variable substitution 
+              // log.debug("Make engine");
+              def engine = new groovy.text.GStringTemplateEngine()
+              // log.debug("createTemplate..");
+              def tmpl = engine.createTemplate(change_template.content).make(event_props)
+              // log.debug("Write to string writer");
+              sw.write("<li>");
+              sw.write(tmpl.toString());
+              sw.write("</li>");
+            }else{
+              sw.write("<li>Component ${parsed_event_info.OID} was deleted!</li>")
+            }
           }
           else {
             sw.write("<li>Unable to find template for change event \"ChangeNotification.${parsed_event_info.event}\". Event info follows\n\n${pc.changeDocument}</li>");

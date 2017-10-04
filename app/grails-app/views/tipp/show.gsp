@@ -34,7 +34,12 @@
             <dt><g:message code="titleInstance.ids.label" default="Ids" /></dt>
             
               <dd><g:each in="${titleInstanceInstance.ids}" var="i">
-              ${i.identifier.ns.ns}:${i.identifier.value}<br/>
+                <g:if test="${i.identifier.ns.ns != 'originediturl'}">
+                  ${i.identifier.ns.ns}:${i.identifier.value}<br/>
+                </g:if>
+                <g:else>
+                  GOKb: <a href="${i.identifier.value}">${message(code:'component.originediturl.label')}</a><br/>
+                </g:else>
               </g:each>
               </dd>
             
@@ -81,12 +86,12 @@
         </dl>
         <dl>
 
-          <dt>${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</dt>
+          <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
           <dd><g:xEditable owner="${tipp}" field="coverageDepth"/></dd>
         </dl>
         <dl>
 
-          <dt>${message(code:'tipp.coverage_note', default:'Coverage Note')}</dt>
+          <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
           <dd><g:xEditable owner="${tipp}" field="coverageNote"/></dd>
         </dl>
         <dl>
@@ -96,7 +101,7 @@
         </dl>
         <dl>
 
-          <dt>${message(code:'tipp.platform_url', default:'Host Platform URL')}</dt>
+          <dt>${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}</dt>
           <dd><g:xEditable type="text" owner="${tipp}" field="hostPlatformURL"/></dd>
         </dl>
         <dl>
@@ -130,7 +135,7 @@
           <dd>${tipp.platform.name}</dd>
         </dl>
         <dl>
-          <dt style="margin-top:10px">${message(code:'tipp.add_platforms', default:'Additional Platforms')}</td>
+          <dt style="margin-top:10px">${message(code:'tipp.additionalPlatforms', default:'Additional Platforms')}</td>
           <dd>
             <table class="table">
               <thead>
@@ -159,7 +164,7 @@
                <g:form action="show" params="${params}" method="get" class="form-inline">
                   <input type="hidden" name="sort" value="${params.sort}">
                   <input type="hidden" name="order" value="${params.order}">
-                  <label>Filters - Package Name:</label> <input name="filter" value="${params.filter}"/> &nbsp;
+                  <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
                   &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
                   <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
                   &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
@@ -172,7 +177,7 @@
               <tr>
                 <th>${message(code:'tipp.coverage_start')}</th>
                 <th>${message(code:'tipp.coverage_end')}</th>
-                <th>${message(code:'tipp.coverage_depth', default:'Coverage Depth')}</th>
+                <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
                 <th>${message(code:'platform.label', default:'Platform')}</th>
                 <th>${message(code:'package.label', default:'Package')}</th>
                 <th>${message(code:'default.actions.label', default:'Actions')}</th>

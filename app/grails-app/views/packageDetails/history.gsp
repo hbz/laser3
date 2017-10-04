@@ -26,7 +26,7 @@
 </div>
 -->
     <laser:breadcrumbs>
-        <laser:crumb controller="packageDetails" action="index" text="All Packages" />
+        <laser:crumb controller="packageDetails" action="index" message="package.show.all" />
         <laser:crumb controller="packageDetails" action="show" id="${packageInstance.id}" text="${packageInstance.name}" />
     </laser:breadcrumbs>
 

@@ -9,7 +9,7 @@
   <body>
 
   <laser:breadcrumbs>
-    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
     <laser:crumb message="myinst.currentSubscriptions.label" class="active" />
     <g:if test="${editable}">
       <laser:crumbAsBadge message="default.editable" class="badge-warning" />
@@ -37,7 +37,7 @@
 
     <div class="container">
       <div class="well">
-      <g:form action="currentSubscriptions" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
+      <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
 
 
 
@@ -82,36 +82,41 @@
           <g:each in="${subscriptions}" var="s">
             <tr>
               <td colspan="7">
-                <g:link controller="subscriptionDetails" action="index" params="${[shortcode:params.shortcode]}" id="${s.id}">
+                <g:link controller="subscriptionDetails" action="index" params="${[shortcode:institution.shortcode]}" id="${s.id}">
                   <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
-                  <g:if test="${s.consortia}">( ${s.consortia?.name} )</g:if>
+                  <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
                 </g:link>
                 <g:if test="${s.owner}"> 
                   <span class="pull-right">${message(code:'license')} : <g:link controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link></span>
                 </g:if>
               </td>
               <td rowspan="2">
-                <g:if test="${editable}">
-                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:params.shortcode,basesubscription:s.id]}" onclick="return confirm($message(code:'license.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
+                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                 </g:if>
               </td>
             </tr>
             <tr>
               <td>
                 <ul>
-                  <g:each in="${s.packages}" var="sp">
-                    <li>
-                      <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">${sp.pkg.name}</g:link>
-                    </li>
+                  <g:each in="${s.packages}" var="sp" status="ind">
+                    <g:if test="${ind < 10}">
+                      <li>
+                        <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">${sp.pkg.name}</g:link>
+                      </li>
+                    </g:if>
                   </g:each>
+                  <g:if test="${s.packages.size() > 10}">
+                    <div>...and ${s.packages.size() - 10} other packages</div>
+                  </g:if>
                 </ul>
-                <g:if test="${((s.packages==null) || (s.packages.size()==0))}">
-                  <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'myinst.currentSubscriptions.link_pkg', default:'Link Package')}</g:link></i>
+                <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
+                  <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link></i>
                 </g:if>
                 &nbsp;<br/>
                 &nbsp;<br/>
               </td>
-              <td>${s.getConsortia()?.name}</td>
+              <td>${s.consortia?.name}</td>
               <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
               <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
               <td><g:formatDate formatName="default.date.format.notime" date="${s.renewalDate}"/></td>

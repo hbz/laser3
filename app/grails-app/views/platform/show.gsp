@@ -91,44 +91,49 @@
         <dl>
           <dt>${message(code:'platform.show.availability', default:'Availability of titles in this platform by package')}</dt>
           <dd>
-          <table border="1" cellspacing="5" cellpadding="5">
-            <tr>
-              <th rowspan="2" style="width: 25%;">${message(code:'title.label', default:'Title')}</th>
-              <th rowspan="2" style="width: 20%;">${message(code:'identifier.plural', default:'Identifiers')}</th>
-              <th colspan="${packages.size()}">${message(code:'platform.show.provided_by', default:'Provided by package')}</th>
-            </tr>
-            <tr>
-              <g:each in="${packages}" var="p">
-                <td><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></td>
-              </g:each>
-            </tr>
-            <g:each in="${titles}" var="t">
+            <table border="1" cellspacing="5" cellpadding="5">
               <tr>
-                <td style="text-align:left;"><g:link controller="titleInstance" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
-                <td>
-                  <g:each in="${t.title.ids}" var="tid">
-                    <div><span>${tid.identifier.ns.ns}</span>: <span>${tid.identifier.value}</span></div>
-                  </g:each>
-                </td>
-                <g:each in="${crosstab[t.position]}" var="tipp">
-                  <g:if test="${tipp}">
-                    <td>${message(code:'platform.show.from', default:'from')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.startDate}"/>
-                          <g:if test="${tipp.startVolume}"> / ${message(code:'tipp.volume', default:'volume')}: ${tipp.startVolume} </g:if>
-                          <g:if test="${tipp.startIssue}"> / ${message(code:'tipp.issue', default:'issue')}: ${tipp.startIssue} </g:if> <br/>
-                        ${message(code:'platform.show.to', default:'to')}:  <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.endDate}"/>
-                          <g:if test="${tipp.endVolume}"> / ${message(code:'tipp.volume', default:'volume')}: ${tipp.endVolume}</g:if>
-                          <g:if test="${tipp.endIssue}"> / ${message(code:'tipp.issue', default:'issue')}: ${tipp.endIssue}</g:if> <br/>
-                        ${message(code:'tipp.coverage_depth', default:'coverage Depth')}: ${tipp.coverageDepth}</br>
-                      <g:link controller="titleInstancePackagePlatform" action="show" id="${tipp.id}">${message(code:'platform.show.full_tipp', default:'Full TIPP Details')}</g:link>
-                    </g:if>
-                    <g:else>
-                      <td></td>
-                    </g:else>
-                  </td>
+                <th rowspan="2" style="width: 25%;">${message(code:'title.label', default:'Title')}</th>
+                <th rowspan="2" style="width: 20%;">${message(code:'identifier.plural', default:'Identifiers')}</th>
+                <th colspan="${packages.size()}">${message(code:'platform.show.provided_by', default:'Provided by package')}</th>
+              </tr>
+              <tr>
+                <g:each in="${packages}" var="p">
+                  <td><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></td>
                 </g:each>
               </tr>
-            </g:each>
-          </table>
+              <g:each in="${titles}" var="t">
+                <tr>
+                  <td style="text-align:left;"><g:link controller="titleInstance" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
+                  <td>
+                    <g:each in="${t.title.ids}" var="tid">
+                      <g:if test="${tid.identifier.ns.ns != 'originediturl'}">
+                        <div><span>${tid.identifier.ns.ns}</span>: <span>${tid.identifier.value}</span></div>
+                      </g:if>
+                      <g:else>
+                        <div><span>GOKb</span>: <a href="${tid.identifier.value}">${message(code:'component.originediturl.label')}</a></div>
+                      </g:else>
+                    </g:each>
+                  </td>
+                  <g:each in="${crosstab[t.position]}" var="tipp">
+                    <g:if test="${tipp}">
+                      <td>${message(code:'platform.show.from', default:'from')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.startDate}"/>
+                            <g:if test="${tipp.startVolume}"> / ${message(code:'tipp.volume', default:'volume')}: ${tipp.startVolume} </g:if>
+                            <g:if test="${tipp.startIssue}"> / ${message(code:'tipp.issue', default:'issue')}: ${tipp.startIssue} </g:if> <br/>
+                          ${message(code:'platform.show.to', default:'to')}:  <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.endDate}"/>
+                            <g:if test="${tipp.endVolume}"> / ${message(code:'tipp.volume', default:'volume')}: ${tipp.endVolume}</g:if>
+                            <g:if test="${tipp.endIssue}"> / ${message(code:'tipp.issue', default:'issue')}: ${tipp.endIssue}</g:if> <br/>
+                          ${message(code:'tipp.coverageDepth', default:'coverage Depth')}: ${tipp.coverageDepth}</br>
+                        <g:link controller="titleInstancePackagePlatform" action="show" id="${tipp.id}">${message(code:'platform.show.full_tipp', default:'Full TIPP Details')}</g:link>
+                      </g:if>
+                      <g:else>
+                        <td></td>
+                      </g:else>
+                    </td>
+                  </g:each>
+                </tr>
+              </g:each>
+            </table>
           </dd>
         </dl>
 

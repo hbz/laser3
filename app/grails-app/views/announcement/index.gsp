@@ -41,17 +41,33 @@
         <g:each in="${recentAnnouncements}" var="ra">
           <tr>
             <td><strong>${ra.title}</strong> <br/>
-            ${ra.content} 
+            <div class="ann-content">
+              ${ra.content}
+            </div>
             <g:if test="${ra.user != null}">
-              <span class="pull-right">${message(code:'announcement.posted_by.label', default:'posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em> ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></span>
+              <span class="pull-right">${message(code:'announcement.posted_by.label', default:'posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em> ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/></span>
             </g:if>
             <g:else>
-              <span class="pull-right">${message(code:'announcement.posted_auto.label', default:'posted automatically on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></span>
+              <span class="pull-right">${message(code:'announcement.posted_auto.label', default:'posted automatically on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/></span>
             </g:else>
           </tr>
         </g:each>
       </table>
     </div>
-
+    <r:script language="JavaScript">
+      $(document).ready(function() {
+        $(".ann-content ul").wrap("<div class='collapse'/>");
+        $(".collapse").before("<div class='btn btn-primary toggle' style='margin-bottom:5px;' type='button'>${message(code:'default.button.show.label')}</div>");
+        $('.toggle').click(function(){
+          console.log("Toggled!");
+          if ( $(this).next().hasClass('in') ){
+            $(this).text("${message(code:'default.button.show.label')}")
+          }else{
+            $(this).text("${message(code:'default.button.hide.label')}")
+          }
+          $(this).next().collapse('toggle');
+        });
+      });
+    </r:script>
   </body>
 </html>

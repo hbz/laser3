@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Package" %>
+<%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -17,7 +18,9 @@
                         data-pk="${ti.class.name}:${ti.id}"
                         data-name="title" 
                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                        data-original-title="${ti.title}">${ti.title}</span></g:if><g:else>${ti.title}</g:else></h1>
+                        data-original-title="${ti.title}">${ti.title}</span></g:if>
+                  <g:else>${ti.title}</g:else>
+              </h1>
             </div>
 
             <g:if test="${flash.message}">
@@ -41,6 +44,8 @@
             <g:if test="${flash.error}">
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
+            
+            <h3>${message(code:'default.status.label')}:<span style="color:initial;cursor:pointer;"> <g:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></span></h3>
 
             <h3>${message(code:'identifier.plural', default:'Identifiers')}</h3>
 
@@ -101,8 +106,8 @@
             <h3>${message(code:'title.edit.tipp')}</h3>
             <table class="table table-bordered table-striped">
                     <tr>
-                        <th>${message(code:'tipp.from_date')}</th><th>${message(code:'tipp.from_volume')}</th><th>${message(code:'tipp.from_issue')}</th>
-                        <th>${message(code:'tipp.to_date')}</th><th>${message(code:'tipp.to_volume')}</th><th>${message(code:'tipp.to_issue')}</th><th>${message(code:'tipp.coverage_depth')}</th>
+                        <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
+                        <th>${message(code:'tipp.endDate')}</th><th>${message(code:'tipp.endVolume')}</th><th>${message(code:'tipp.endIssue')}</th><th>${message(code:'tipp.coverageDepth')}</th>
                         <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'title.edit.actions.label')}</th>
                     </tr>
                     <g:each in="${ti.tipps}" var="t">
