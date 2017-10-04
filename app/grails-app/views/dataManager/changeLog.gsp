@@ -6,34 +6,20 @@
   </head>
 
   <body>
+  
+    <laser:breadcrumbs>
+      <laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
+      <laser:crumb message="menu.datamanager.changelog" class="active"/>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</g:link> </li>
+      <li class="dropdown pull-right">
+        <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
+        <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
+          <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
+        </ul>
+      </li>
+    </laser:breadcrumbs>
 
-        <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
-          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
-          </ul>
-        </li>
-
-      </ul>
-    </div>
-
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+    <laser:flash data="${flash}" />
 
     <div class="container">
       <h2>${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>

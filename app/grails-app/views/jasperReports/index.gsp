@@ -16,18 +16,12 @@
 
 <div class="container">
 
-        <ul class="breadcrumb">
-            <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-            <li><g:link controller="jasperReports" action="index">${message(code:'jasper.reports.label', default:'Jasper Reports')}</g:link> <span
-                    class="divider">/</span></li>
-        </ul>
+    <laser:breadcrumbs>
+        <laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
+        <laser:crumb message="jasper.reports.label" class="active"/>
+    </laser:breadcrumbs>
 
-        <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
-        <g:if test="${flash.error}">
-            <bootstrap:alert class="alert-danger">${flash.error}</bootstrap:alert>
-        </g:if>
+    <laser:flash data="${flash}" />
 
         <div class="inline-lists">
             <dl>

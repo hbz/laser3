@@ -8,12 +8,15 @@ import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;
 import groovy.xml.MarkupBuilder
 
+@Deprecated
 class PublicExportController {
   def ESSearchService
   def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
   def exportService
   def transformerService
-  
+
+  @Deprecated
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() { 
     def result = [:]
     params.max = 30
@@ -42,6 +45,8 @@ class PublicExportController {
     result  
   }
 
+  @Deprecated
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def so() {
     log.debug("subscriptionDetails id:${params.id} format=${response.format}");
     def result = [:]
@@ -160,6 +165,8 @@ class PublicExportController {
     }
   }
 
+  @Deprecated
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def pkg() {
     log.debug("package export id:${params.id} format=${response.format}");
     def result = [:]
@@ -280,6 +287,7 @@ class PublicExportController {
   /**
   * Iterate the result of indentifiers HQL query in pkg() method, and return the required ident ns.
   **/
+  @Deprecated
   def getIdentFromMap(id,ns,results){
     def idents = results.get(id)
     def ident_value = null
@@ -291,6 +299,8 @@ class PublicExportController {
     return ident_value
   }
 
+  @Deprecated
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def idx() {
     def base_qry = " from Package as p order by p.name asc"
     def qry_params = []

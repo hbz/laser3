@@ -27,9 +27,15 @@
 </r:script>
 </head>
 <body>
-  <h1 class="page-header">Log Viewer</h1>
-  <div id="log-wrapper">
-    <g:link class="display-inline" controller="file" params="[filePath: (file)]" data-auto-refresh="1000" data-content-selector=".fileContents" />
-  </div>
+  <laser:breadcrumbs>
+    <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
+    <laser:crumb text="Application Log" class="active"/>
+  </laser:breadcrumbs>
+
+    <h1 class="page-header">Log Viewer</h1>
+    <div id="log-wrapper">
+      <g:link class="display-inline" controller="file" params="[filePath: (file)]" data-auto-refresh="1000" data-content-selector=".fileContents" />
+    </div>
+
 </body>
 </html>

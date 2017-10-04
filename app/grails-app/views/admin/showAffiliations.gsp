@@ -2,27 +2,17 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
+    <title>${message(code:'laser', default:'LAS:eR')} Show Affiliations</title>
   </head>
 
   <body>
 
-    <g:if test="${flash.error}">
-       <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-    </g:if>
+    <laser:breadcrumbs>
+      <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
+      <laser:crumb text="Show Affiliations" class="active"/>
+    </laser:breadcrumbs>
 
-    <g:if test="${flash.message}">
-       <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </g:if>
-
-
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller='admin' action='index'>Admin</g:link> <span class="divider">/</span> </li>
-        <li class="active">Manage Affiliation Requests</li>
-      </ul>
-    </div>
+    <laser:flash data="${flash}" />
 
     <div class="container">
         <h2>Affiliations</h2>

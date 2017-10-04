@@ -52,19 +52,19 @@ class Doc {
   }
 
   static constraints = {
-    status(nullable:true, blank:false)
-    type(nullable:true, blank:false)
-    alert(nullable:true, blank:false)
-    content(nullable:true, blank:false)
+    status    (nullable:true, blank:false)
+    type      (nullable:true, blank:false)
+    alert     (nullable:true, blank:false)
+    content   (nullable:true, blank:false)
     blobContent(nullable:true, blank:false, maxSize:MAX_SIZE)
-    uuid(nullable:true, blank:false)
+    uuid      (nullable:true, blank:false)
     contentType(nullable:true, blank:false)
-    title(nullable:true, blank:false)
-    creator(nullable:true, blank:true)
-    filename(nullable:true, blank:false)
-    mimeType(nullable:true, blank:false)
-    user(nullable:true, blank:false)
-    migrated(nullable:true, blank:false, maxSize:1)
+    title     (nullable:true, blank:false)
+    creator   (nullable:true, blank:true)
+    filename  (nullable:true, blank:false)
+    mimeType  (nullable:true, blank:false)
+    user      (nullable:true, blank:false)
+    migrated  (nullable:true, blank:false, maxSize:1)
   }
 
   def setBlobData(InputStream is, long length) {

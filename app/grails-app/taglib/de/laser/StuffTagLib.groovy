@@ -42,7 +42,7 @@ class StuffTagLib {
         out << '</div>'
     }
 
-    // <laser:flash flash="${flash}" />
+    // <laser:flash data="${flash}" />
 
     def flash = { attrs, body ->
 

@@ -10,9 +10,10 @@
 </head>
 <body>
 
-<div class="container">
-
-</div>
+    <laser:breadcrumbs>
+        <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <laser:crumb text="Application Config" class="active"/>
+    </laser:breadcrumbs>
 
 <div class="container">
 

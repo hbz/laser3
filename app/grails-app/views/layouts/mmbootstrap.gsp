@@ -355,30 +355,31 @@
 
                 </sec:ifAnyGranted>
                 </ul>
-                
-                <ul class="nav"><!-- demo -->
+
                 <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-                  <li class="dropdown">
-                  	<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Demo <b class="caret"></b> </a>
-                    <ul class="dropdown-menu">
-                      <li><g:link controller="address" action="index">Address Controller</g:link></li>
-                      <li><g:link controller="cluster" action="index">Cluster Controller</g:link></li>
-                      <li><g:link controller="contact" action="index">Contact Controller</g:link></li>
-                      <li><g:link controller="person" action="index">Person Controller</g:link></li>
-                      <li class="divider"></li>
-                      
-                      <li><g:link controller="identifier" action="index">Identifier Controller</g:link></li>
-                      <li><g:link controller="organisations" action="index">Organisations Controller</g:link></li>
-                      <li><g:link controller="license" action="index">License Controller</g:link></li>
-                      <li><g:link controller="package" action="index">Package Controller</g:link></li>
-                      <li><g:link controller="subscription" action="index">Subscription Controller</g:link></li>
-                      <li><g:link controller="titleInstance" action="index">Title Controller</g:link></li>
-               	    </ul>
-                  </li>
+                    <g:if env="development">
+                        <ul class="nav"><!-- demo -->
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Demo <b class="caret"></b> </a>
+                                <ul class="dropdown-menu">
+                                    <li><g:link controller="address" action="index">Address Controller</g:link></li>
+                                    <li><g:link controller="cluster" action="index">Cluster Controller</g:link></li>
+                                    <li><g:link controller="contact" action="index">Contact Controller</g:link></li>
+                                    <li><g:link controller="person" action="index">Person Controller</g:link></li>
+                                    <li class="divider"></li>
+
+                                    <li><g:link controller="identifier" action="index">Identifier Controller</g:link></li>
+                                    <li><g:link controller="organisations" action="index">Organisations Controller</g:link></li>
+                                    <li><g:link controller="license" action="index">License Controller</g:link></li>
+                                    <li><g:link controller="package" action="index">Package Controller</g:link></li>
+                                    <li><g:link controller="subscription" action="index">Subscription Controller</g:link></li>
+                                    <li><g:link controller="titleInstance" action="index">Title Controller</g:link></li>
+                                </ul>
+                            </li>
+                        </ul><!-- demo -->
+                    </g:if>
                 </sec:ifAnyGranted>
-                </ul><!-- demo -->
-                
-                
+
             </sec:ifLoggedIn>
 
             <sec:ifLoggedIn>
