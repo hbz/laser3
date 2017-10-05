@@ -37,27 +37,28 @@
 					<table class="table table-bordered table-hover">
 						<thead>
 						<tr>
-							<th>Category(Key)</th>
-							<th>Value(Key)</th>
+							<th>Category (Key)</th>
+							<th>Value (Key)</th>
 							<th>DE</th>
 							<th>EN</th>
-							<th></th>
 						</tr>
 						</thead>
 						<tbody>
                             <g:each in="${rdCategories}" var="rdc">
                                 <g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
                                 <tr>
-                                    <td>${fieldValue(bean: rdc, field: "desc")} (${(RefdataValue.findAllByOwner(rdc)).size()})</td>
+                                    <td>
+                                        ${fieldValue(bean: rdc, field: "desc")}
+                                        <g:if test="${rdc.softData}">
+                                            <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                        </g:if>
+                                    </td>
                                     <td></td>
                                     <td>
                                         <strong><g:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
                                     </td>
                                     <td>
                                         <strong><g:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
-                                    </td>
-                                    <td>
-                                        <g:if test="${rdc.softData}">&#8252;</g:if>
                                     </td>
                                 </tr>
 
@@ -66,15 +67,15 @@
                                             <td></td>
                                             <td>
                                                 ${rdv.value}
+                                                <g:if test="${rdv.softData}">
+                                                    <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                                </g:if>
                                             </td>
                                             <td>
                                                 <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
                                             </td>
                                             <td>
                                                 <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
-                                            </td>
-                                            <td>
-                                                <g:if test="${rdv.softData}">&#8252;</g:if>
                                             </td>
                                         </tr>
                                     </g:each>

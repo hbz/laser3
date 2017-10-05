@@ -81,7 +81,7 @@ input[type="text"] {
 }
 
 table tbody td {
-    word-break: break-word;
+    word-break: break-all;
     background-color: white;
 }
 
@@ -116,7 +116,7 @@ thead td:last-child, table tr:first-child th:last-child  {
     border-top-right-radius: 6px;
 }
 
-th { ter
+th {
     background-color: transparent;
     background-image: none;
     -ms-filter: none;

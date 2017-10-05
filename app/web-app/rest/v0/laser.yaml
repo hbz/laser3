@@ -174,7 +174,7 @@ paths:
         - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
       produces:
-        - text/xml
+        - application/json
       responses:
         200:
           description: OK

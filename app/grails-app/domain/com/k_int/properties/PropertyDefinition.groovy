@@ -15,6 +15,21 @@ import javax.validation.UnexpectedTypeException
 class PropertyDefinition extends I10nTranslatableAbstract {
 
     @Transient
+    final static String LIC_PROP    = 'License Property'
+    @Transient
+    final static String LIC_OA_PROP = 'License Property: Open Access'
+    @Transient
+    final static String LIC_ARC_PROP = 'License Property: Archive'
+    @Transient
+    final static String ORG_CONF    = 'Organisation Config'
+    @Transient
+    final static String SYS_CONF    = 'System Config'
+    @Transient
+    final static String PRS_PROP    = 'Person Property'
+    @Transient
+    final static String ORG_PROP    = 'Organisation Property'
+
+    @Transient
     final static String[] AVAILABLE_DESCR = [
             LIC_PROP,
             LIC_OA_PROP,
@@ -25,25 +40,12 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             ORG_PROP
     ]
 
-    @Transient
-    final static String LIC_PROP = 'License Property'
-    @Transient
-    final static String LIC_OA_PROP = 'License Property: Open Access'
-    @Transient
-    final static String LIC_ARC_PROP = 'License Property: Archive'
-    @Transient
-    final static String ORG_CONF = 'Organisation Config'
-    @Transient
-    final static String SYS_CONF = 'System Config'
-    @Transient
-    final static String PRS_PROP = 'Person Property'
-    @Transient
-    final static String ORG_PROP = 'Organisation Property'
-    
     String name
     String descr
     String type
     String refdataCategory
+
+    boolean multipleOccurrence
 
     // indicates this object is created via front-end
     boolean softData
@@ -57,11 +59,12 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                              "Date":    Date.toString()]
 
     static constraints = {
-        name            (nullable: false, blank: false)
-        descr           (nullable: true,  blank: false)
-        type            (nullable: false, blank: false)
-        refdataCategory (nullable: true)
-        softData        (nullable: false, blank: false, default: false)
+        name                (nullable: false, blank: false)
+        descr               (nullable: true,  blank: false)
+        type                (nullable: false, blank: false)
+        refdataCategory     (nullable: true)
+        multipleOccurrence  (nullable: true,  blank: true,  default: false)
+        softData            (nullable: false, blank: false, default: false)
     }
 
     static mapping = {
@@ -70,6 +73,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                     name column: 'pd_name',        index: 'td_new_idx'
                     type column: 'pd_type',        index: 'td_type_idx'
          refdataCategory column: 'pd_rdc',         index: 'td_type_idx'
+      multipleOccurrence column: 'pd_multiple_occurrence'
                 softData column: 'pd_soft_data'
                       sort name: 'desc'
     }
@@ -125,12 +129,13 @@ class PropertyDefinition extends I10nTranslatableAbstract {
          newProp
      }
 
-    static def lookupOrCreate(name, typeClass, descr) {
+    static def lookupOrCreate(name, typeClass, descr, multipleOccurence) {
         typeIsValid(typeClass)
         def type = findByNameAndDescr(name, descr)
         if (!type) {
             log.debug("No PropertyDefinition match for ${name} @ ${descr}. Creating new.")
             type = new PropertyDefinition(name: name, type: typeClass, descr: descr)
+            type.setMultipleOccurrence(multipleOccurence ? true : false)
             type.save()
         }
         type

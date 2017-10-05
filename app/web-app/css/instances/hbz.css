@@ -6951,7 +6951,14 @@ dt > label {
 .badge > a {
     color: #FFF;
 }
-
+table .badge {
+  border-radius: 1em;
+  opacity: 0.5;
+}
+table .badge:hover {
+  opacity: 1;
+  cursor: default;
+}
 .debug-only {
 	background-color: #ffeecc;
 }

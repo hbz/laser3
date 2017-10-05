@@ -36,12 +36,11 @@
                         <table class="table table-striped table-hover table-bordered">
 							<thead>
 							<tr>
-								<th>Property Definition (ID)</th>
-								<th>Name DE</th>
-								<th>Name EN</th>
-								<th>Description DE</th>
-								<th>Description EN</th>
-								<th></th>
+								<th>Property Definition (Key)</th>
+								<th>DE: Name</th>
+								<th>EN: Name</th>
+								<th>DE: Description</th>
+								<th>EN: Description</th>
 							</tr>
 							</thead>
 							<tbody>
@@ -51,12 +50,17 @@
 									<tr>
 										<td>
                                             ${fieldValue(bean: pd, field: "name")}
+											<g:if test="${pd.multipleOccurrence}">
+												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+											</g:if>
+											<g:if test="${pd.softData}">
+												<span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+											</g:if>
 										</td>
 										<td><g:xEditable owner="${pdI10nName}"  field="valueDe" /></td>
 										<td><g:xEditable owner="${pdI10nName}"  field="valueEn" /></td>
 										<td><g:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
 										<td><g:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>
-										<td><g:if test="${pd.softData}">&#8252;</g:if></td>
 									</tr>
 								</g:each>
 
@@ -100,6 +104,11 @@
 						<dd>
 							<label class="property-label">Context:</label>
 							<g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
+						</dd>
+
+						<dd>
+							<label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
+                            <g:checkBox type="text" name="cust_prop_multiple_occurence" />
 						</dd>
 					</dl>
 				</div>

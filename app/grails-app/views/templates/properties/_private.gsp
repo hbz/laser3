@@ -44,14 +44,25 @@
             <th>${message(code:'license.property.table.value')}</th>
             <th>${message(code:'license.property.table.notes')}</th>
             <th>${message(code:'license.property.table.delete')}</th>
-            <th>Mandatory</th>
 	    </tr>
     </thead>
     <tbody>
         <g:each in="${ownobj.privateProperties}" var="prop">
             <g:if test="${prop.tenant.id == tenant?.id}">
                 <tr>
-                    <td>${prop.type.getI10n('name')}</td>
+                    <td>
+                        ${prop.type.getI10n('name')}
+                        <g:if test="${prop.type.multipleOccurrence}">
+                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                        </g:if>
+                        <%
+                            if(PrivatePropertyRule.findWhere(
+                                    propertyDefinition: prop.type,
+                                    propertyOwnerType: ownobj.getClass().getName(),
+                                    propertyTenant: tenant
+                            )) println "<span  class=\"badge badge-warning\" title=\"${message(code: 'default.mandatory.tooltip')}\"> &#8252; </span>"
+                        %>
+                    </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
                             <g:xEditable owner="${prop}" type="text" field="intValue"/>
@@ -77,15 +88,6 @@
                             onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                             update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
                         </g:if>
-                    </td>
-                    <td>
-                        <%
-                            if(PrivatePropertyRule.findWhere(
-                                    propertyDefinition: prop.type,
-                                    propertyOwnerType: ownobj.getClass().getName(),
-                                    propertyTenant: tenant
-                            )) println "yes"
-                        %>
                     </td>
                 </tr>
             </g:if>
