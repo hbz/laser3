@@ -14,62 +14,77 @@ import grails.util.Holders
 
 
 modules = {
-  application {
-    dependsOn 'jquery'
-    resource url:'js/application.js'
-    resource url:'js/plugins.min.js'
-  }
-  kbplus {
-    // resource url:'css/bootstrap.css'
-    dependsOn 'jquery'
-    resource url:'css/jquery.dataTables.css'
-    resource url:'css/dataTables.fixedColumns.min.css'
-    resource url:'css/dataTables.colVis.min.css'
-    resource url:'css/bootstrap-editable.css'
-    resource url:'css/select2.css'
-    resource url:"css/instances/${Holders.config.defaultCssSkin?:'standard.css'}"
+    application {
+        dependsOn 'jquery'
+        //resource url:'http://code.jquery.com/jquery-3.1.1.min.js'
+        resource url:'js/application.js'
+        resource url:'js/plugins.min.js'
+    }
 
-    // upgrade to bootstrap 4 (tmp)
-    resource url:'css/bootstrap_tmp/bs4_card.css'
-    // ..
+    kbplus {
+        // resource url:'css/bootstrap.css'
+        dependsOn 'jquery'
+        //resource url:'http://code.jquery.com/jquery-3.1.1.min.js'
 
-    resource url:'css/style.css'
+        resource url:'css/jquery.dataTables.css'
+        resource url:'css/dataTables.fixedColumns.min.css'
+        resource url:'css/dataTables.colVis.min.css'
+        resource url:'css/bootstrap-editable.css'
+        resource url:'css/select2.css'
+        resource url:"css/instances/${Holders.config.defaultCssSkin?:'standard.css'}"
 
-    resource url: 'js/inline-content.js'
-    resource url:'js/bootstrap.min.js'
-    resource url:'js/bootstrap-editable.min.js'
-    resource url:'js/moment.min.js'
-    resource url:'js/select2.min.js'
-    resource url:'js/jquery.dataTables.min.js'
-    resource url:'js/dataTables.colVis.min.js'
-    resource url:'js/dataTables.fixedColumns.min.js'
-    resource url:'js/dataTables.scroller.js'
-    resource url:'js/jquery.dotdotdot.min.js'
-    resource url:'js/kbplusapp.js.gsp'
+        // upgrade to bootstrap 4 (tmp)
+        resource url:'css/bootstrap_tmp/bs4_card.css'
+        // ..
 
+        resource url:'css/style.css'
 
-  }
-  annotations {
-    dependsOn 'kbplus'
-    dependsOn 'font-awesome'
-    resource url:'js/summernote.min.js'
-    resource url:'css/summernote.css'
-    resource url:'css/summernote-bs2.css'
-    resource url:'js/annotations.js'
-    resource url:'css/annotations.css'
-  }
-  treeSelects {
-    dependsOn 'jquery'
-    dependsOn 'font-awesome'
-    resource url:'css/jstree-themes/default/style.min.css'
-    resource url:'js/jstree.min.js'
-    resource url:'js/tree-selects.js'
-  }
+        resource url:'js/inline-content.js'
+        resource url:'js/bootstrap.min.js'
+        resource url:'js/bootstrap-editable.min.js'
+        resource url:'js/moment.min.js'
+        resource url:'js/select2.min.js'
+        resource url:'js/jquery.dataTables.min.js'
+        resource url:'js/dataTables.colVis.min.js'
+        resource url:'js/dataTables.fixedColumns.min.js'
+        resource url:'js/dataTables.scroller.js'
+        resource url:'js/jquery.dotdotdot.min.js'
+        resource url:'js/kbplusapp.js.gsp'
+    }
+
+    annotations {
+        dependsOn 'kbplus'
+        dependsOn 'font-awesome'
+
+        resource url:'js/summernote.min.js'
+        resource url:'css/summernote.css'
+        resource url:'css/summernote-bs2.css'
+        resource url:'js/annotations.js'
+        resource url:'css/annotations.css'
+    }
+
+    treeSelects {
+        dependsOn 'font-awesome'
+        dependsOn 'jquery'
+        //resource url:'http://code.jquery.com/jquery-3.1.1.min.js'
+
+        resource url:'css/jstree-themes/default/style.min.css'
+        resource url:'js/jstree.min.js'
+        resource url:'js/tree-selects.js'
+    }
   
-  onixMatrix {
-    dependsOn 'kbplus'
-    dependsOn 'font-awesome'
-    resource url:'css/onix.css'
-    resource url:'js/onix.js'
-  }
+    onixMatrix {
+        dependsOn 'kbplus'
+        dependsOn 'font-awesome'
+
+        resource url:'css/onix.css'
+        resource url:'js/onix.js'
+    }
+
+    semanticUI {
+        resource url:'semantic/semantic.css'
+
+        resource url:'js/jquery-3.1.1.min.js'
+        resource url:'semantic/semantic.js'
+    }
 }
