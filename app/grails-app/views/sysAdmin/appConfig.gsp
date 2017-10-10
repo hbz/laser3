@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <title>${message(code:'laser', default:'LAS:eR')} App Config</title>
     <r:require module="annotations" />
     <g:javascript src="properties.js"/>

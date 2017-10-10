@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <title><g:message code="default.edit.label" args="[entityName ?: message(code:'license.label')]" /></title>
   </head>
   <body>

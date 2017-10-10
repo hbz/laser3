@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <title>${ti.title}</title>
   </head>
   <body>

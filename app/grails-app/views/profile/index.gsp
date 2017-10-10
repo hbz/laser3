@@ -2,152 +2,146 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
   </head>
 
-  <body>
+    <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb message="profile.bc.profile" class="active"/>
-    </laser:breadcrumbs>
+        <semui:breadcrumbs>
+            <semui:crumb message="profile.bc.profile" class="active"/>
+        </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+        <laser:flash data="${flash}" />
 
-    <div class="container">
-        <div class="row">
+        <div class="ui container">
+            <div class="ui two column grid">
 
-            <div class="span6">
-              <h2>${message(code: 'profile.user', default:'User Profile')}</h2>
+                <div class="column wide eight">
 
-              <g:form action="updateProfile" class="form-inline">
-                  <dl class="dl-horizontal">
+                    <g:form action="updateProfile" class="ui form">
+                        <h4 class="ui dividing header">
+                            ${message(code: 'profile.user', default:'User Profile')}
+                        </h4>
 
-                  <div class="control-group">
-                      <dt>${message(code: 'profile.display', default:'Display Name')}</dt>
-                      <dd><input type="text" name="userDispName" value="${user.display}"/></dd>
-                  </div>
-
-                  <div class="control-group">
-                      <dt>${message(code: 'profile.email', default:'Email Address')}</dt>
-                      <dd><input type="text" name="email" value="${user.email}"/></dd>
-                  </div>
-
-                  <!--<div class="control-group">
-                      <dt>${message(code: 'profile.pagesize', default:'Default Page Size')}</dt>
-                      <dd><input type="text" name="defaultPageSize" value="${user.defaultPageSize}"/></dd>
-                  </div>-->
-
-                  <div class="control-group">
-                      <dt>${message(code: 'profile.dash', default:'Default Dashboard')}</dt>
-                      <dd>
-                          <select name="defaultDash" value="${user.defaultDash?.id}">
-                              <g:each in="${user.authorizedOrgs}" var="o">
-                                  <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
-                              </g:each>
-                          </select>
-                      </dd>
-                  </div>
-
-                  <p style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</p>
-
-                  <div class="control-group">
-                      <dt></dt>
-                      <dd><input type="submit" value="${message(code: 'profile.update.button', default:'Update Profile')}" class="btn btn-primary"/></dd>
-                  </div>
-
-              </g:form>
-
-          </div><!-- .span6 -->
-
-            <div class="span6">
-                <h2>${message(code: 'profile.password.label', default:'Update Password')}</h2>
-
-                <g:form action="updatePassword" class="form-inline">
-                    <dl class="dl-horizontal">
-                        <div class="control-group">
-                            <dt>${message(code: 'profile.password.current', default:'Current Password')}</dt>
-                            <dd><input type="password" name="passwordCurrent" value=""/></dd>
+                        <div class="field">
+                            <label>${message(code: 'profile.display', default:'Display Name')}</label>
+                            <input type="text" name="userDispName" value="${user.display}"/>
                         </div>
-                        <div class="control-group">
-                            <dt>${message(code: 'profile.password.new', default:'New Password')}</dt>
-                            <dd><input type="text" name="passwordNew" value=""/></dd>
+
+                        <div class="field">
+                            <label>${message(code: 'profile.email', default:'Email Address')}</label>
+                            <input type="text" name="email" value="${user.email}"/>
                         </div>
-                        <div class="control-group">
-                            <dt></dt>
-                            <dd><input type="submit" value="${message(code: 'profile.password.update.button', default:'Update Password')}" class="btn btn-primary"/></dd>
+
+                        <div class="field">
+                            <label>${message(code: 'profile.dash', default:'Default Dashboard')}</label>
+
+                            <select name="defaultDash" value="${user.defaultDash?.id}">
+                                <g:each in="${user.authorizedOrgs}" var="o">
+                                    <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
+                                </g:each>
+                            </select>
                         </div>
-                    </dl>
-                </g:form>
-            </div><!-- .span6 -->
 
-        </div><!-- .row -->
-    </div><!-- .container -->
+                        <p style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</p>
 
-  <div class="container">
-      <div class="row">
+                        <div class="field">
+                            <label></label>
+                            <button type="submit" class="ui primary button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
+                        </div>
 
-          <div class="span6">
-              <h2>${message(code: 'profile.preferences', default:'Preferences')}</h2>
+                    </g:form>
 
-              <dl class="dl-horizontal">
-                  <div class="control-group">
-                      <dt>${message(code: 'profile.info_icon', default:'Show Info Icon')}</dt>
-                      <dd>
+                </div><!-- .column -->
+
+                <div class="column wide eight">
+                    <g:form action="updatePassword" class="ui form">
+
+                        <h4 class="ui dividing header">
+                            ${message(code: 'profile.password.label', default:'Update Password')}
+                        </h4>
+
+                        <div class="field">
+                            <label>${message(code: 'profile.password.current', default:'Current Password')}</label>
+                            <input type="password" name="passwordCurrent" value=""/>
+                        </div>
+                        <div class="field">
+                            <label>${message(code: 'profile.password.new', default:'New Password')}</label>
+                            <input type="text" name="passwordNew" value=""/>
+                        </div>
+                        <div class="field">
+                            <label></label>
+                            <button type="submit" class="ui primary button">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
+                        </div>
+
+                    </g:form>
+                </div><!-- .column -->
+
+
+                  <div class="column wide eight">
+                    <div class="ui form">
+                      <h4 class="ui dividing header">
+                          ${message(code: 'profile.preferences', default:'Preferences')}
+                      </h4>
+
+                      <div class="field">
+                          <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
                           <g:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
-                      </dd>
-                  </div>
+                      </div>
 
-                  <div class="control-group">
-                      <dt>${message(code: 'profile.simpleViews', default:'Show simple Views')}</dt>
-                      <dd>
+                      <div class="field">
+                          <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
                           <g:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />
-                      </dd>
-                  </div>
+                      </div>
 
-                  <div class="control-group">
-                      <dt>${message(code: 'profile.pagesize', default:'Default Page Size')}</dt>
-                      <dd>
+                      <div class="field">
+                          <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
                           <g:xEditable owner="${user}" field="defaultPageSize" />
-                      </dd>
-                  </div>
-              </dl>
-          </div><!-- .span6 -->
+                      </div>
+                    </div>
+                  </div><!-- .column -->
 
-          <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+                <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+                    <div class="column wide eight">
+                        <div class="ui form">
+                        <h4 class="ui dividing header">
+                            ${message(code: 'api.label', default:'API')}
+                        </h4>
 
-              <div class="span6">
-                  <h2>${message(code: 'api.label', default:'API')}</h2>
-                  <dl class="dl-horizontal">
-                      <dt>${message(code: 'api.apikey.label', default:'API-Key')}</dt>
-                      <dd>
-                          <input type="text" readonly="readonly" value="${user.apikey}">
-                      </dd>
-                      <dt>${message(code: 'api.apisecret.label', default:'API-Secret')}</dt>
-                      <dd>
+                        <div class="field">
+                            <label>${message(code: 'api.apikey.label', default:'API-Key')}</label>
+                            <input type="text" readonly="readonly" value="${user.apikey}">
+                        </div>
+
+                        <div class="field">
+                          <label>${message(code: 'api.apisecret.label', default:'API-Secret')}</label>
                           <input type="text" readonly="readonly" value="${user.apisecret}">
-                      </dd>
-                      <dd>
-                          <g:link controller="api" action="index">&rArr; ${message(code:'api.linkTo', default:'Visit API')}</g:link>
-                      </dd>
-                  </dl>
-              </div><!-- .span6 -->
-          </g:if>
+                        </div>
 
-        </div><!-- .row -->
+                        <div class="field">
+                            <label></label>
+                            <g:link class="ui button" controller="api" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
+                        </div>
+                    </div><!-- .column -->
+                </g:if>
+
+        </div><!-- .grid -->
     </div><!-- .container -->
 
-    <div class="container">
-        <div class="span12">
-            <h2>${message(code: 'profile.membership', default:'Administrative memberships')}</h2>
-        </div>
-    </div>
+        <div class="ui container">
+            <div class="ui one column grid">
+                <!--<div class="column wide sixteen">
+                    <h4 class="ui dividing header">
+                        ${message(code: 'profile.membership', default:'Administrative memberships')}
+                    </h4>
+                </div>-->
 
-    <div class="container">
-        <div class="row">
-              <div class="span6">
-                    <laser:card title="profile.membership.existing" class="card-grey">
-                          <table class="table table-striped table-bordered table-condensed" style="word-break:normal;">
+              <div class="column wide sixteen">
+                <h4 class="ui dividing header">
+                    ${message(code: 'profile.membership.existing')}
+                </h4>
+                          <table class="ui celled striped table">
                                 <thead>
                                       <tr>
                                           <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
@@ -166,98 +160,112 @@
                                                   <td><g:formatDate format="dd MMMM yyyy" date="${assoc.dateRequested}"/> / <g:formatDate format="dd MMMM yyyy" date="${assoc.dateActioned}"/></td>
                                                   <td>
                                                       <g:if test="${assoc.status != UserOrg.STATUS_CANCELLED}">
-                                                          <g:link controller="profile" action="processCancelRequest" params="${[assoc:assoc.id]}" class="btn">Cancel</g:link>
+                                                          <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:assoc.id]}">Cancel</g:link>
                                                       </g:if>
                                                   </td>
                                             </tr>
                                       </g:each>
                                 </tbody>
                           </table>
-                    </laser:card>
-              </div><!--.span6-->
+              </div><!--.column-->
 
-            <div class="span6">
-                <laser:card title="profile.membership.request" class="card-grey">
+                <div class="column wide eight">
+                    <h4 class="ui dividing header">
+                        ${message(code: 'profile.membership.request')}
+                    </h4>
 
-                  <p style="word-break:normal"><g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
-                  </p>
+                      <p style="word-break:normal">
+                          <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
+                      </p>
 
-                  <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="form-search" method="get">
+                  <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
+                      <div class="field">
+                        <label>Organisation</label>
+                        <g:select name="org"
+                          from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                          optionKey="id"
+                          optionValue="name"
+                          class="input-medium"/>
+                      </div>
 
-                    <g:select name="org"
-                              from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
-                              optionKey="id"
-                              optionValue="name"
-                              class="input-medium"/>
-
-                    <g:select name="formalRole"
+                      <div class="field">
+                        <label>Role</label>
+                        <g:select name="formalRole"
                               from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
                               optionKey="id"
                               optionValue="${ {role->g.message(code:'cv.roles.'+role.authority) } }"
                               class="input-medium"/>
+                      </div>
 
-                    <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="btn btn-primary btn-small">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
+                      <div class="field">
+                        <label></label>
+                        <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui primary button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
+                      </div>
                   </g:form>
-                </laser:card>
-            </div>
-        </div><!--.row-->
-    </div><!--.container-->
+            </div><!--.column-->
+
+            </div><!-- .grid -->
+    </div><!-- .container -->
 
     <g:if test="${grailsApplication.config.feature.notifications}">
 
-      <div class="container">
-        <div class="span12">
-          <h2>${message(code: 'profile.misc', default:'Misc')}</h2>
-        </div>
-      </div>
+        <div class="ui container">
+            <div class="ui one column grid">
+                <div class="column wide sixteen">
+                    <h4 class="ui dividing header">${message(code: 'profile.misc', default:'Misc')}</h4>
+                </div>
+                <div class="column wide sixteen">
+                    <div id="reminders">
+                        <div class="well">
+                            <h2>${message(code: 'profile.reminder.new', default:'Create new Reminders / Notifications')}</h2>
+                            <p>${message(code: 'profile.reminder.new.text', default:'Select the condition you are interested about and time period you wished to be notified about said topic.')}</p>
+                            <p><i>${message(code: 'profile.reminder.new.email', default:'Ensure your email or other method of contact is a valid means of reaching yourself')}</i></p>
 
-      <div id="reminders" class="container">
-        <div class="row-fluid">
-          <div class="span12">
-              <div class="well">
-                  <h2>${message(code: 'profile.reminder.new', default:'Create new Reminders / Notifications')}</h2>
-                  <p>${message(code: 'profile.reminder.new.text', default:'Select the condition you are interested about and time period you wished to be notified about said topic.')}</p>
-                  <p><i>${message(code: 'profile.reminder.new.email', default:'Ensure your email or other method of contact is a valid means of reaching yourself')}</i></p>
+                            <g:form name="createReminder" controller="profile" action="createReminder" class="form-search" method="POST" url="[controller:'profile', action:'createReminder']">
 
-                  <g:form name="createReminder" controller="profile" action="createReminder" class="form-search" method="POST" url="[controller:'profile', action:'createReminder']">
+                                <div class="field">
+                                    <label>${message(code: 'profile.reminder.new.notify', default:'Notify for')}</label>
+                                    <g:select name="trigger"
+                                              from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderTrigger')}"
+                                              optionKey="id"
+                                              optionValue="value"
+                                              class="input-medium"/>
+                                </div>
+                                <div class="field">
+                                    <label>${message(code: 'profile.reminder.new.method', default:'Method')}</label>
+                                    <g:select name="method"
+                                              from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderMethod')}"
+                                              optionKey="id"
+                                              optionValue="value"
+                                              class="input-medium"/>
+                                </div>
+                                <div class="field">
+                                    <label>${message(code: 'profile.reminder.new.period', default:'Period')}</label>
+                                    <g:select name="unit"
+                                              from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderUnit')}"
+                                              optionKey="id"
+                                              optionValue="value"
+                                              class="input-medium"/>
+                                </div>
+                                <div class="field">
+                                    <label>${message(code: 'profile.reminder.new.time', default:'Time')}</label>
+                                    <select name="val" class="input-medium required-indicator" id="val" value="${params.val}" data-type="select">
+                                        <g:each in="${(1..7)}" var="s">
+                                            <option value="${s}" ${s==params.long('val')?'selected="selected"':''}>${s}</option>
+                                        </g:each>
+                                    </select>
+                                </div>
 
-                      ${message(code: 'profile.reminder.new.notify', default:'Notify for')}:<g:select name="trigger"
-                      from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderTrigger')}"
-                      optionKey="id"
-                      optionValue="value"
-                      class="input-medium"/>
-
-                      ${message(code: 'profile.reminder.new.method', default:'Method')}:<g:select name="method"
-                      from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderMethod')}"
-                      optionKey="id"
-                      optionValue="value"
-                      class="input-medium"/>
-
-                      ${message(code: 'profile.reminder.new.period', default:'Period')}:<g:select name="unit"
-                      from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderUnit')}"
-                      optionKey="id"
-                      optionValue="value"
-                      class="input-medium"/>
-
-                      ${message(code: 'profile.reminder.new.time', default:'Time')}:<select name="val" class="input-medium required-indicator" id="val" value="${params.val}" data-type="select">
-                          <g:each in="${(1..7)}" var="s">
-                              <option value="${s}" ${s==params.long('val')?'selected="selected"':''}>${s}</option>
-                          </g:each>
-                      </select>
+                                <button id="submitReminder" type="submit" class="ui primary button">${message(code:'default.button.create.label', default: 'Create')}</button>
+                            </g:form>
+                        </div>
+                    </div><!-- #reminders -->
+                </div><!-- .column -->
 
 
-                      <button id="submitReminder" type="submit" class="btn btn-primary btn-small">${message(code:'default.button.create.label', default: 'Create')}</button>
-                  </g:form>
-              </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="container">
-        <div class="row-fluid">
-          <div class="span12">
-              <div class="well">
-                  <h2>${message(code: 'profile.reminder.active', default:'Active Reminders')}</h2>
+                <div class="column wide sixteen">
+                    <div class="well">
+                        <h2>${message(code: 'profile.reminder.active', default:'Active Reminders')}</h2>
 
                   <table class="table table-striped table-bordered table-condensed">
                       <thead>
@@ -290,12 +298,15 @@
                       </g:else>
                       </tbody>
                   </table>
-              </div>
-          </div>
-        </div>
-      </div>
 
-  </g:if>
+                    </div>
+                </div><!-- .column -->
+
+
+            </div><!-- .grid -->
+        </div><!-- .container -->
+
+    </g:if>
   </body>
 </html>
 

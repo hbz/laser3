@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: ${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}</title>
   </head>
 

@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
 		<title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>

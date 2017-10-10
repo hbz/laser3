@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'onixplLicense.license.label',
             default: 'ONIX-PL License')}" />
     <title><g:message code="default.import.label" args="[entityName]" /></title>

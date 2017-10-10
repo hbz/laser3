@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'license.label', default: 'License')}" />
     <title>${message(code:'laser', default:'LAS:eR')} <g:message code="license" default="License"/></title>
     <r:require module="annotations" />

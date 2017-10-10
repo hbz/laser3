@@ -1,12 +1,11 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="mmbootstrap"/>
+        <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
     </head>
 
     <body>
-
 
         <laser:breadcrumbs>
             <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>

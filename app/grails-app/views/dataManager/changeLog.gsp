@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</title>
   </head>
 
   <body>
-  
+
     <laser:breadcrumbs>
       <laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
       <laser:crumb message="menu.datamanager.changelog" class="active"/>

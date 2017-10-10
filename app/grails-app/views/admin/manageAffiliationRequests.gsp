@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Manage Affiliation Requests</title>
   </head>
 
@@ -15,7 +15,7 @@
       <laser:flash data="${flash}" />
 
     <div class="container">
-      
+
         <h2>Manage Pending Membership Requests</h2>
 
         <table class="table table-striped table-bordered table-condensed">

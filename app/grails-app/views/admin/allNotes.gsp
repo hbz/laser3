@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
 
@@ -11,7 +11,7 @@
         <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
         <laser:crumb text="All Notes" class="active"/>
     </laser:breadcrumbs>
-  
+
     <div class="container">
       <table class="table table-bordered">
         <tr>

@@ -9,7 +9,7 @@
 <html>
 <head>
     <title>${message(code:'laser', default:'LAS:eR')} Upload Jasper Reports</title>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
 
 </head>
 

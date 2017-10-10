@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<title>${message(code: 'menu.admin.managePropertyDefinitions')}</title>
 	</head>
 

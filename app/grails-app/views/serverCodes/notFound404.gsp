@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="mmbootstrap" />
+        <meta name="layout" content="semanticUI" />
         <title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'serverCode.notFound.message1')}</title>
     </head>
     <body>
