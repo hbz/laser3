@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 
 class I10nTagLib {
@@ -14,7 +15,7 @@ class I10nTagLib {
     // <laser:select optionValue="field" />  ==> <laser:select optionValue="field_(de|en|fr)" />
 
     def select = { attrs, body ->
-        attrs.optionValue = attrs.optionValue + "_" + LocaleContextHolder.getLocale()
+        attrs.optionValue = attrs.optionValue + "_" + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
         out << g.select(attrs)
     }
 }
