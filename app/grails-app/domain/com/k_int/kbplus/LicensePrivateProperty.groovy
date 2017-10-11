@@ -19,26 +19,24 @@ class LicensePrivateProperty extends PrivateProperty {
 
     PropertyDefinition type
     License owner
-    Org tenant
 
     static mapping = {
         includes PrivateProperty.mapping
 
-        paragraph    type: 'text'
-        tenant  column:'tenant_fk'
+        paragraph type:'text'
+        owner   column:'lpp_owner_fk'
     }
 
     static constraints = {
         importFrom PrivateProperty
 
-        paragraph(nullable: true)
-        tenant (nullable:false, blank:false)
+        paragraph (nullable:true)
+        owner     (nullable:false, blank:false)
     }
 
     static belongsTo = [
-        type : PropertyDefinition,
-        owner: License,
-        tenant: Org
+        type:   PropertyDefinition,
+        owner:  License
     ]
 
     @Transient

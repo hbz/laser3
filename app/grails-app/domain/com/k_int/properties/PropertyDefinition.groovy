@@ -38,7 +38,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             PRS_PROP,
             ORG_PROP
     ]
-
+    @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
             LIC_PROP,
             PRS_PROP,
@@ -221,6 +221,15 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgPrivateProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonPrivateProperty c where c.type = ?', [this])
         this.delete();
+    }
+
+    /* tmp only */
+    static getAvailablePropertyDescriptions() {
+        return [
+                "com.k_int.kbplus.Org"      : PropertyDefinition.ORG_PROP,
+                "com.k_int.kbplus.License"  : PropertyDefinition.LIC_PROP,
+                "com.k_int.kbplus.Person"   : PropertyDefinition.PRS_PROP
+        ]
     }
 }
 
