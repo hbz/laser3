@@ -145,7 +145,7 @@ TODO !!! this modal dialog has not been refactored ..
                     </dd>
                 </div>
                 <dd>
-                    <label class="property-label">Context:</label> <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
+                    <label class="property-label">Context:</label> <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
                 </dd>
                 <dd>
                     Create value for this property: <g:checkBox name="autoAdd" checked="true"/>

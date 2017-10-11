@@ -1,12 +1,10 @@
 package com.k_int.kbplus
 
-import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.apache.log4j.*
 
 class AjaxController {
     def refdata_config = [
@@ -578,14 +576,14 @@ class AjaxController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addCustomPropertyType() {
-
         def newProp
         def error
         def msg
         def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
         def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
 
-        if (PropertyDefinition.findByNameAndDescr(params.cust_prop_name, params.cust_prop_desc)) {
+        // TODO
+        if (PropertyDefinition.findByNameAndDescrAndPropertyOwnerTypeAndTenant(params.cust_prop_name, params.cust_prop_desc, params.ownerClass, params.ownerId)) {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
@@ -638,45 +636,6 @@ class AjaxController {
             render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error, message: msg])
         }
     }
-
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def addPrivatePropertyType(){
-    // TODO has to be refactored to fit private property
-    // TODO this doesnt work !!!
-    // TODO has to be refactored to fit private property
-    def newProp
-    def error
-    def ownerClass = params.ownerClass // we might need this for addPrivatePropertyValue
-    def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-    if(params.cust_prop_type.equals(RefdataValue.toString())){
-      if(params.refdatacategory){
-        newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
-        def cat = RefdataCategory.get(params.refdatacategory)
-        newProp.setRefdataCategory(cat.desc)
-        newProp.save(flush:true)
-      } else{
-        error = "Type creation failed. Please select a ref data type."
-      }
-    } else{
-      newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
-    }
-    if(newProp?.hasErrors()){
-      log.error(newProp.errors)
-    } else{
-      if(params.autoAdd == "on" && newProp){
-        params.propIdent = newProp.id.toString()
-        chain(action: "addPrivatePropertyValue", params:params)
-      }
-    }
-    request.setAttribute("editable", params.editable == "true")
-    if(params.redirect){
-      flash.newProp = newProp
-      flash.error = error
-      redirect(controller:"propertyDefinition", action:"create")
-    } else{
-      render(template: "/templates/properties/private", model:[ownobj:owner, newProp:newProp, error:error])
-    }
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def addCustomPropertyValue(){
