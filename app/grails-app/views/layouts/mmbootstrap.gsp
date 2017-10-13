@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
+<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;org.springframework.web.servlet.support.RequestContextUtils" %>
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -27,7 +27,7 @@
   </head>
 
   <body>
-
+  <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
   <script>
     dataLayer = [{

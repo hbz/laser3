@@ -4,10 +4,30 @@ $(document).ready(function() {
 
   $.fn.editable.defaults.mode = 'inline';
   $.fn.editable.defaults.emptytext = 'Edit';
+  $.fn.datepicker.defaults.language = "${message(code:'default.locale.label', default:'en')}";
+  
+  $('.xEditable').editable({
+    language: "${message(code:'default.locale.label', default:'en')}",
+    datepicker: {
+      language: "${message(code:'default.locale.label', default:'en')}"
+    },
+    format: "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}",
+  });
 
-  $('.xEditableValue').editable();
+  $('.xEditableValue').editable({
+    language: "${message(code:'default.locale.label', default:'en')}",
+    datepicker: {
+      language: "${message(code:'default.locale.label', default:'en')}"
+    },
+    format: "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}",
+  });
   $(".xEditableManyToOne").editable();
   $(".simpleHiddenRefdata").editable({
+    language: "${message(code:'default.locale.label', default:'en')}",
+    datepicker: {
+      language: "${message(code:'default.locale.label', default:'en')}"
+    },
+    format: "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}",
     url: function(params) {
       var hidden_field_id = $(this).data('hidden-id');
       $("#"+hidden_field_id).val(params.value);

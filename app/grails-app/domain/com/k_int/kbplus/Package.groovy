@@ -374,7 +374,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
       def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}";
-      def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}";
+      def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.id}";
 
       def newtip = [
                      title: [
