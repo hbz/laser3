@@ -23,8 +23,12 @@ class LicensePrivateProperty extends PrivateProperty {
     static mapping = {
         includes PrivateProperty.mapping
 
-        paragraph type:'text'
+        id      column:'lpp_id'
+        version column:'lpp_version'
         owner   column:'lpp_owner_fk'
+        type    column:'lpp_type_fk'
+
+        paragraph type:'text'
     }
 
     static constraints = {

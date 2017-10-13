@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.properties.PrivatePropertyRule" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
 
 <g:if test="${newProp}">
     <g:hasErrors bean="${newProp}">
@@ -25,7 +25,7 @@
 			name="cust_prop_add_value"
 	        class="form-inline" 
 	        update="${custom_props_div}"
-	        onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+	        onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
 	        
 	    <input type="hidden" name="propIdent"  desc="${prop_desc}" class="customPropSelect"/>
 	    <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
@@ -48,20 +48,16 @@
     </thead>
     <tbody>
         <g:each in="${ownobj.privateProperties}" var="prop">
-            <g:if test="${prop.tenant.id == tenant?.id}">
+            <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
                         ${prop.type.getI10n('name')}
+                        <g:if test="${prop.type.mandatory}">
+                            <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                        </g:if>
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
                         </g:if>
-                        <%
-                            if(PrivatePropertyRule.findWhere(
-                                    propertyDefinition: prop.type,
-                                    propertyOwnerType: ownobj.getClass().getName(),
-                                    propertyTenant: tenant
-                            )) println "<span  class=\"badge badge-warning\" title=\"${message(code: 'default.mandatory.tooltip')}\"> &#8252; </span>"
-                        %>
                     </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
@@ -85,7 +81,7 @@
                         <g:remoteLink controller="ajax" action="deletePrivateProperty"
                             before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                             params='[propclass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                            onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                            onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
                             update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
                         </g:if>
                     </td>

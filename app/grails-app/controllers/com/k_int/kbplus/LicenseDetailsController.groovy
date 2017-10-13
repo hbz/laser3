@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.properties.PrivatePropertyRule
 import com.k_int.properties.PropertyDefinition
 import grails.converters.*
 import grails.plugins.springsecurity.Secured
@@ -341,50 +340,48 @@ class LicenseDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def properties() {
-    def result = [:]
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def properties() {
+        def result = [:]
 
-    log.debug("licenseDetails id: ${params.id}");
+        log.debug("licenseDetails id: ${params.id}");
 
-    def user    = User.get(springSecurityService.principal.id)
-    result.user = user
-    result.authorizedOrgs = user?.authorizedOrgs
+        def user    = User.get(springSecurityService.principal.id)
+        result.user = user
+        result.authorizedOrgs = user?.authorizedOrgs
 
-    def licenseInstance = License.get(params.id)
-    result.license      = licenseInstance
+        def licenseInstance = License.get(params.id)
+        result.license      = licenseInstance
 
-    if (result.license.hasPerm("edit", result.user)) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-
-    // create mandatory LicensePrivateProperties if not existing
-
-    def ppRulesFlat = []
-    user?.authorizedOrgs?.each{ org ->
-      def ppr = PrivatePropertyRule.getRules(licenseInstance.getClass().getName(), org)
-      if(ppr){
-        ppRulesFlat << ppr
-      }
-    }
-    ppRulesFlat?.flatten().each{ ppr ->
-      def pd = ppr.propertyDefinition
-      def pt = ppr.propertyTenant
-
-      if(!LicensePrivateProperty.findWhere(owner: licenseInstance, type: pd, tenant: pt)) {
-        def newProp = PropertyDefinition.createPrivatePropertyValue(licenseInstance, pt, pd)
-        if(newProp.hasErrors()){
-          log.error(newProp.errors)
-        } else{
-          log.debug("New private property created via private property rule: " + newProp.type.name)
+        if (result.license.hasPerm("edit", result.user)) {
+            result.editable = true
         }
-      }
+        else {
+            result.editable = false
+        }
+
+        // create mandatory LicensePrivateProperties if not existing
+
+        def mandatories = []
+        user?.authorizedOrgs?.each{ org ->
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
+            if (ppd) {
+                mandatories << ppd
+            }
+        }
+        mandatories.flatten().each{ pd ->
+            if (! LicensePrivateProperty.findWhere(owner: licenseInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, licenseInstance, pd)
+
+                if (newProp.hasErrors()) {
+                    log.error(newProp.errors)
+                } else {
+                    log.debug("New license private property created via mandatory: " + newProp.type.name)
+                }
+            }
+        }
+        result
     }
-    result
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def documents() {

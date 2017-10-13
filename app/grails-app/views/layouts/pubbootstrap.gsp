@@ -60,8 +60,9 @@
                       <ul class="footer-sublinks nav pull-right">
                           <li>
                               <a href="https://github.com/hbz/laser">
-                                  Version ${grailsApplication.metadata['app.version']}-${grailsApplication.metadata['app.buildNumber']}
-                                  / ${grailsApplication.metadata['app.buildDate']}
+                                  Version ${grailsApplication.metadata['app.version']}
+                                  <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
+                                  // ${grailsApplication.metadata['app.buildDate']}
                               </a>
                           </li>
                       </ul>

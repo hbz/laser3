@@ -90,7 +90,7 @@ class I10nTranslation {
             }
         }
 
-        i10n.save(flush: true)
+        i10n.save()
         i10n
     }
 

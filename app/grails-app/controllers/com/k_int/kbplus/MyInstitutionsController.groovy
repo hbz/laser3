@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import org.apache.poi.hslf.model.*
@@ -13,6 +14,7 @@ import com.k_int.properties.PropertyDefinition
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
+import de.laser.domain.I10nTranslation
 
 class MyInstitutionsController {
     def dataSource
@@ -2683,7 +2685,7 @@ AND EXISTS (
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
                 descr:  params.pd_descr,
-                type:   params.pd_type,
+               // type:   params.pd_type,
                 tenant: tenant,
         )
 
@@ -2694,20 +2696,18 @@ AND EXISTS (
                 rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
                 rdc = rdc?.desc
             }
-
-            privatePropDef = new PropertyDefinition(
-                    name:   params.pd_name,
-                    descr:  params.pd_descr,
-                    type:   params.pd_type,
-                    refdataCategory:    rdc,
-                    multipleOccurrence: (params.pd_multiple_occurrence ? true : false),
-                    mandatory:          (params.pd_mandatory ? true : false),
-                    softData: true,
-                    tenant: tenant
+            privatePropDef = PropertyDefinition.lookupOrCreate(
+                    params.pd_name,
+                    params.pd_type,
+                    params.pd_descr,
+                    (params.pd_multiple_occurrence ? true : false),
+                    (params.pd_mandatory ? true : false),
+                    tenant
             )
+            privatePropDef.softData = PropertyDefinition.TRUE
+            privatePropDef.refdataCategory = rdc
 
-            if (privatePropDef.save(flush: true)){
-                // TODO add i10n
+            if (privatePropDef.save(flush: true)) {
                 return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])
             }
             else {
@@ -2734,9 +2734,8 @@ AND EXISTS (
             def id = Long.parseLong(did)
             def privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
             if (privatePropDef) {
-                privatePropDef.delete(flush: true)
+                privatePropDef.delete()
                 messages << message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
-                // todo delete i10n
             }
         }
         messages

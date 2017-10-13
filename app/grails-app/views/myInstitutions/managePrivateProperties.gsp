@@ -48,6 +48,7 @@
                                         <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
                                         <th>Name (DE)</th>
                                         <th>Name (EN)</th>
+                                        <th>Count</th>
                                         <th>${message(code:'default.button.delete.label', default:'Delete')}</th>
                                     </tr>
                                 </thead>
@@ -58,20 +59,23 @@
                                             <td>${ppd.getI10n('descr')}</td>
                                             <td>
                                                 ${ppd.getI10n('name')}
+                                                <g:if test="${ppd.softData}">
+                                                    <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                                </g:if>
                                                 <g:if test="${ppd.mandatory}">
                                                     <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
                                                 </g:if>
                                                 <g:if test="${ppd.multipleOccurrence}">
                                                     <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
                                                 </g:if>
-                                                <g:if test="${ppd.softData}">
-                                                    <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
-                                                </g:if>
                                             </td>
                                             <td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
                                             <td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+                                            <td>${ppd.countUsages()}</td>
                                             <td>
-                                                <g:checkBox name="deleteIds" value="${ppd?.id}" checked="false" />
+                                                <g:if test="${ppd.countUsages()==0}">
+                                                    <g:checkBox name="deleteIds" value="${ppd?.id}" checked="false" />
+                                                </g:if>
                                             </td>
                                         </tr>
                                     </g:each>
@@ -121,13 +125,14 @@
                     </div>
 
                     <dd>
-                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
-                        <g:checkBox type="text" name="pd_multiple_occurrence" />
-                    </dd>
-                    <dd>
                         <label class="property-label">${message(code:'default.mandatory.tooltip')}:</label>
                         <g:checkBox type="text" name="pd_mandatory" />
                     </dd>
+                    <dd>
+                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
+                        <g:checkBox type="text" name="pd_multiple_occurrence" />
+                    </dd>
+
                 </dl>
             </div>
 

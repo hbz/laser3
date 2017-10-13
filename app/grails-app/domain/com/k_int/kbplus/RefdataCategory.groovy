@@ -56,7 +56,7 @@ class RefdataCategory extends I10nTranslatableAbstract {
 
         def cat = RefdataCategory.findByDescIlike(category_name)
         if (! cat) {
-            cat = new RefdataCategory(desc:category_name).save()
+            cat = new RefdataCategory(desc:category_name).save(flush: true)
         }
 
         I10nTranslation.createOrUpdateI10n(cat, 'desc', rdcValues)
@@ -76,7 +76,7 @@ class RefdataCategory extends I10nTranslatableAbstract {
 
         def cat = RefdataCategory.findByDescIlike(category_name)
         if (! cat) {
-            cat = new RefdataCategory(desc:category_name).save()
+            cat = new RefdataCategory(desc:category_name).save(flush: true)
         }
 
         def result = RefdataValue.findByOwnerAndValueIlike(cat, rdvValues['en'])
@@ -93,7 +93,7 @@ class RefdataCategory extends I10nTranslatableAbstract {
     static def lookupOrCreate(String category_name, String value) {
         def cat = RefdataCategory.findByDescIlike(category_name);
         if (! cat) {
-            cat = new RefdataCategory(desc:category_name).save();
+            cat = new RefdataCategory(desc:category_name).save(flush: true);
         }
 
         def result = RefdataValue.findByOwnerAndValueIlike(cat, value)
@@ -149,4 +149,14 @@ class RefdataCategory extends I10nTranslatableAbstract {
       def result = RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name))
       result
   }
+
+    def afterInsert() {
+        I10nTranslation.createOrUpdateI10n(this, 'desc', [de: this.desc, en: this.desc])
+    }
+
+    def afterDelete() {
+        def rc = this.getClass().getName()
+        def id = this.getId()
+        I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
+    }
 }

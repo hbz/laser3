@@ -50,15 +50,15 @@
 									<tr>
 										<td>
                                             ${fieldValue(bean: pd, field: "name")}
-											<g:if test="${pd.multipleOccurrence}">
-												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
-											</g:if>
 											<g:if test="${pd.softData}">
 												<span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
 											</g:if>
+											<g:if test="${pd.multipleOccurrence}">
+												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+											</g:if>
 										</td>
-										<td><g:xEditable owner="${pdI10nName}"  field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nName}"  field="valueEn" /></td>
+										<td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+										<td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
 										<!--<td><g:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
 										<td><g:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
 									</tr>

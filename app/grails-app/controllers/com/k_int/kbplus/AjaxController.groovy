@@ -582,14 +582,21 @@ class AjaxController {
         def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
         def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
 
-        // TODO
-        if (PropertyDefinition.findByNameAndDescrAndPropertyOwnerTypeAndTenant(params.cust_prop_name, params.cust_prop_desc, params.ownerClass, params.ownerId)) {
+        // TODO ownerClass
+        if (PropertyDefinition.findByNameAndDescrAndTenant(params.cust_prop_name, params.cust_prop_desc, params.ownerId)) {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
             if (params.cust_prop_type.equals(RefdataValue.toString())) {
                 if (params.refdatacategory) {
-                    newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
+                    newProp = PropertyDefinition.lookupOrCreate(
+                            params.cust_prop_name,
+                            params.cust_prop_type,
+                            params.cust_prop_desc,
+                            params.cust_prop_multiple_occurence,
+                            PropertyDefinition.FALSE,
+                            null
+                    )
                     def cat = RefdataCategory.get(params.refdatacategory)
                     newProp.setRefdataCategory(cat.desc)
                     newProp.save(flush: true)
@@ -599,7 +606,14 @@ class AjaxController {
                 }
             }
             else {
-                newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
+                newProp = PropertyDefinition.lookupOrCreate(
+                        params.cust_prop_name,
+                        params.cust_prop_type,
+                        params.cust_prop_desc,
+                        params.cust_prop_multiple_occurence,
+                        PropertyDefinition.FALSE,
+                        null
+                )
             }
 
             if (newProp?.hasErrors()) {
@@ -647,7 +661,7 @@ class AjaxController {
     def existingProp = owner.customProperties.find{it.type.name == type.name}
 
     if(existingProp == null || type.multipleOccurrence){
-        newProp = PropertyDefinition.createCustomPropertyValue(owner, type)
+        newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type)
         if(newProp.hasErrors()){
             log.error(newProp.errors)
         } else{
@@ -683,12 +697,11 @@ class AjaxController {
     def existingProps = owner.privateProperties.findAll {
       it.owner.id  == owner.id
       it.type.name == type.name // this sucks due lazy proxy problem
-      it.tenant.id == tenant.id
     }
     existingProps.removeAll{it.type.name != type.name} // dubious fix
 
     if(existingProps.size() == 0 || type.multipleOccurrence){
-      newProp = PropertyDefinition.createPrivatePropertyValue(owner, tenant, type)
+      newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
       if(newProp.hasErrors()){
         log.error(newProp.errors)
       } else{
@@ -752,7 +765,7 @@ class AjaxController {
     def className = params.propclass.split(" ")[1]
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
-    def tenant    = property.tenant
+    def tenant    = property.type.tenant
     def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 
