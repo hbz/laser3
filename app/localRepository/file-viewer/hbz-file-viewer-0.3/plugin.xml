@@ -1,0 +1,19 @@
+<plugin name='file-viewer' version='0.3' grailsVersion='1.1 &gt; *'>
+  <author>Himanshu Seth, Fabien Benichou</author>
+  <authorEmail>himanshu@intelligrape.com, fabien.benichou@gmail.com</authorEmail>
+  <title>File Viewer Grails plugin</title>
+  <description>\
+File Viewer Grails plugin provides a user friendly way for viewing folders and files on the system. The most common use-case is to see the logs on the server.
+Documentation available at http://github.com/IntelliGrape/File-Viewer-Grails-Plugin/wiki
+</description>
+  <documentation>http://grails.org/plugin/file-viewer</documentation>
+  <resources>
+    <resource>BuildConfig</resource>
+    <resource>Config</resource>
+    <resource>DataSource</resource>
+    <resource>UrlMappings</resource>
+    <resource>org.grails.plugins.fileviewer.FileController</resource>
+  </resources>
+  <dependencies />
+  <behavior />
+</plugin>
