@@ -7,7 +7,7 @@ package org.grails.plugins.fileviewer
 
 class FileController {
 
-    def fileLocations
+    List fileLocations
 
     def index = {
         Map model = [locations: fileLocations.locations]
@@ -54,7 +54,7 @@ class FileController {
      * @return List
      */
     private List getSubFiles(File file) {
-        List<String> locations = []
+        List locations = []
         file.eachFile {File subFile ->
             locations << subFile.absolutePath
         }
