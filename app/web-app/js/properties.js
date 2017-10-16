@@ -1,19 +1,19 @@
 
-function initPropertiesScript(ajaxurl, contextId){
+function initPropertiesScript(ajaxurl, contextId, tenantId){
     // fallback for hardcoded id
     if(!contextId){
         contextId = "#custom_props_div"
     }
-    console.log( "initPropertiesScript " + ajaxurl + " : " + contextId)
+    console.log( "initPropertiesScript " + ajaxurl + " : " + contextId + " : " + tenantId)
 
-    refdatacatsearch(ajaxurl, contextId);
-    searchProp(ajaxurl, contextId);
-    showModalOnSelect(contextId);
-    showHideRefData(contextId);
-    hideModalOnSubmit(contextId);
+    refdatacatsearch(ajaxurl, contextId)
+    searchProp(ajaxurl, contextId, tenantId)
+    showModalOnSelect(contextId)
+    showHideRefData(contextId)
+    hideModalOnSubmit(contextId)
     //Needs to run to make the xEditable visible
-    $('.xEditableValue').editable();
-    $('.xEditableManyToOne').editable();
+    $('.xEditableValue').editable()
+    $('.xEditableManyToOne').editable()
 }
 
 function refdatacatsearch (ajaxurl, contextId){
@@ -39,8 +39,8 @@ function refdatacatsearch (ajaxurl, contextId){
     });
 }
 
-function searchProp(ajaxurl, contextId){
-    console.log( "searchProp " + ajaxurl + " : " + contextId)
+function searchProp(ajaxurl, contextId, tenantId){
+    console.log( "searchProp " + ajaxurl + " : " + contextId + " : " + tenantId)
     // store
     var desc = $(contextId + " .customPropSelect").attr('desc')
 
@@ -55,7 +55,8 @@ function searchProp(ajaxurl, contextId){
                     q: term, // search term
                     desc: desc,
                     page_limit: 10,
-                    baseClass:'com.k_int.properties.PropertyDefinition'
+                    baseClass:'com.k_int.properties.PropertyDefinition',
+                    tenant: tenantId
                 };
             },
             results: function (data, page) {

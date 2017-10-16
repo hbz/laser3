@@ -550,7 +550,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
     def custProp = getCustomPropByName(custPropName)
     if(custProp == null){
       def type = PropertyDefinition.findByName(custPropName,)
-      custProp = PropertyDefinition.createCustomPropertyValue(this,type)
+      custProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, this, type)
     }
 
     if ( newVal != null ) {

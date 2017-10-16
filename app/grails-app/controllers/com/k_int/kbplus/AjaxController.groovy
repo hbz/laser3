@@ -1,12 +1,10 @@
 package com.k_int.kbplus
 
-import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.apache.log4j.*
 
 class AjaxController {
     def refdata_config = [
@@ -578,20 +576,27 @@ class AjaxController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addCustomPropertyType() {
-
         def newProp
         def error
         def msg
         def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
         def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
 
-        if (PropertyDefinition.findByNameAndDescr(params.cust_prop_name, params.cust_prop_desc)) {
+        // TODO ownerClass
+        if (PropertyDefinition.findByNameAndDescrAndTenant(params.cust_prop_name, params.cust_prop_desc, params.ownerId)) {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
             if (params.cust_prop_type.equals(RefdataValue.toString())) {
                 if (params.refdatacategory) {
-                    newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
+                    newProp = PropertyDefinition.lookupOrCreate(
+                            params.cust_prop_name,
+                            params.cust_prop_type,
+                            params.cust_prop_desc,
+                            params.cust_prop_multiple_occurence,
+                            PropertyDefinition.FALSE,
+                            null
+                    )
                     def cat = RefdataCategory.get(params.refdatacategory)
                     newProp.setRefdataCategory(cat.desc)
                     newProp.save(flush: true)
@@ -601,7 +606,14 @@ class AjaxController {
                 }
             }
             else {
-                newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
+                newProp = PropertyDefinition.lookupOrCreate(
+                        params.cust_prop_name,
+                        params.cust_prop_type,
+                        params.cust_prop_desc,
+                        params.cust_prop_multiple_occurence,
+                        PropertyDefinition.FALSE,
+                        null
+                )
             }
 
             if (newProp?.hasErrors()) {
@@ -640,45 +652,6 @@ class AjaxController {
     }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def addPrivatePropertyType(){
-    // TODO has to be refactored to fit private property
-    // TODO this doesnt work !!!
-    // TODO has to be refactored to fit private property
-    def newProp
-    def error
-    def ownerClass = params.ownerClass // we might need this for addPrivatePropertyValue
-    def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-    if(params.cust_prop_type.equals(RefdataValue.toString())){
-      if(params.refdatacategory){
-        newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
-        def cat = RefdataCategory.get(params.refdatacategory)
-        newProp.setRefdataCategory(cat.desc)
-        newProp.save(flush:true)
-      } else{
-        error = "Type creation failed. Please select a ref data type."
-      }
-    } else{
-      newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
-    }
-    if(newProp?.hasErrors()){
-      log.error(newProp.errors)
-    } else{
-      if(params.autoAdd == "on" && newProp){
-        params.propIdent = newProp.id.toString()
-        chain(action: "addPrivatePropertyValue", params:params)
-      }
-    }
-    request.setAttribute("editable", params.editable == "true")
-    if(params.redirect){
-      flash.newProp = newProp
-      flash.error = error
-      redirect(controller:"propertyDefinition", action:"create")
-    } else{
-      render(template: "/templates/properties/private", model:[ownobj:owner, newProp:newProp, error:error])
-    }
-  }
-
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def addCustomPropertyValue(){
     def error
     def newProp
@@ -688,7 +661,7 @@ class AjaxController {
     def existingProp = owner.customProperties.find{it.type.name == type.name}
 
     if(existingProp == null || type.multipleOccurrence){
-        newProp = PropertyDefinition.createCustomPropertyValue(owner, type)
+        newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type)
         if(newProp.hasErrors()){
             log.error(newProp.errors)
         } else{
@@ -724,12 +697,11 @@ class AjaxController {
     def existingProps = owner.privateProperties.findAll {
       it.owner.id  == owner.id
       it.type.name == type.name // this sucks due lazy proxy problem
-      it.tenant.id == tenant.id
     }
     existingProps.removeAll{it.type.name != type.name} // dubious fix
 
     if(existingProps.size() == 0 || type.multipleOccurrence){
-      newProp = PropertyDefinition.createPrivatePropertyValue(owner, tenant, type)
+      newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
       if(newProp.hasErrors()){
         log.error(newProp.errors)
       } else{
@@ -793,7 +765,7 @@ class AjaxController {
     def className = params.propclass.split(" ")[1]
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
-    def tenant    = property.tenant
+    def tenant    = property.type.tenant
     def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 

@@ -7,26 +7,22 @@ import com.k_int.kbplus.abstract_domain.PrivateProperty
 class PersonPrivateProperty extends PrivateProperty {
 
     PropertyDefinition type
-    Person  owner
-    Org     tenant
+    Person owner
 
     static mapping = {
         id      column:'ppp_id'
         version column:'ppp_version'
         type    column:'ppp_type_fk'
         owner   column:'ppp_owner_fk'
-        tenant  column:'ppp_tenant_fk'
     }
 
     static constraints = {
         type    (nullable:false, blank:false)
         owner   (nullable:false, blank:false)
-        tenant  (nullable:false, blank:false)
     }
 
     static belongsTo = [
-        type :    PropertyDefinition,
-        owner:    Person,
-        tenant:   Org
+        type:   PropertyDefinition,
+        owner:  Person
     ]
 }

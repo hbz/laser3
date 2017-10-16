@@ -5,7 +5,6 @@ import grails.plugins.springsecurity.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
-import grails.util.Holders
 
 class AdminController {
 
@@ -928,8 +927,8 @@ class AdminController {
   def managePropertyDefinitions() {
 
     def propDefs = [:]
-    PropertyDefinition.AVAILABLE_DESCR.each { it ->
-      def itResult = PropertyDefinition.findAllByDescr(it, [sort: 'name'])
+    PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+      def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
       propDefs << ["${it}": itResult]
     }
     render view: 'managePropertyDefinitions', model: [
