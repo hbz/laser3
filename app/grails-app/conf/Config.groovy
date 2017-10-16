@@ -23,6 +23,11 @@ defaultCssSkin = "hbz.css"
 localauth = true
 feature_finance = true
 
+// Database Migration Plugin
+
+grails.plugin.databasemigration.updateOnStart = true
+grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
+
 customProperties =[
     "org":[
         "journalAccess":[

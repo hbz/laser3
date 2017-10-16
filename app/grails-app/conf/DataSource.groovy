@@ -14,8 +14,8 @@ hibernate {
 environments {
     development {
         dataSource {
-            // dbCreate==update  - II: Trial Removing this, we manually update the schema now, so don't do this!
-            dbCreate = "update"
+            // dbCreate==update
+            dbCreate = "none" // disabled due database migration plugin
             driverClassName = "com.mysql.jdbc.Driver"
             dialect=org.hibernate.dialect.MySQL5Dialect
             username = "k-int"
@@ -61,7 +61,7 @@ environments {
     }
     production {
         dataSource {
-            dbCreate = "update"
+            dbCreate = "none" // disabled due database migration plugin
             driverClassName = "com.mysql.jdbc.Driver"
             username = "k-int"
             password = "k-int"
