@@ -107,7 +107,7 @@
                     </g:if>
                   </g:each>
                   <g:if test="${s.packages.size() > 10}">
-                    <div>...and ${s.packages.size() - 10} other packages</div>
+                    <div>${message(code:'myinst.currentSubscriptions.etc.label', args:[s.packages.size() - 10])}</div>
                   </g:if>
                 </ul>
                 <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
