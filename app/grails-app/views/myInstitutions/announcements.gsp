@@ -2,15 +2,15 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'menu.datamanager.ann')}</title>
   </head>
 
   <body>
 
   <laser:breadcrumbs>
-    <laser:crumb controller="myInstitutions" action="announcements" params="${[shortcode:params.shortcode]}" text="${institution.name}" message="menu.datamanager.ann" />
+    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+    <laser:crumb message="menu.datamanager.ann" class="active" />
   </laser:breadcrumbs>
-
 
     <div class="container home-page">
             <table class="table">

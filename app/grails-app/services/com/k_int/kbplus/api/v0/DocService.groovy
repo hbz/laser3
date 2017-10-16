@@ -2,9 +2,12 @@ package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
+import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -26,11 +29,11 @@ class DocService {
                 result = Doc.findAllWhere(uuid: value)
                 break
             default:
-                return MainService.BAD_REQUEST
+                return Constants.HTTP_BAD_REQUEST
                 break
         }
         if (result) {
-            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
         }
         result
     }
@@ -67,6 +70,31 @@ class DocService {
                 }
             }
         }
-        return (hasAccess ? doc : MainService.FORBIDDEN)
+        return (hasAccess ? doc : Constants.HTTP_FORBIDDEN)
+    }
+
+    /**
+     * @return Doc | FORBIDDEN | null
+     */
+    def getOnixPlDocument(License license, User user, Org context){
+        def hasAccess = false
+        def doc = license.onixplLicense?.doc
+
+        if (! doc) {
+            return null // not found
+        }
+
+        DocContext.findAllByOwner(doc).each{ dc ->
+            if(dc.license) {
+                dc.getLicense().getOrgLinks().each { orgRole ->
+                    // TODO check orgRole.roleType
+                    if (orgRole.getOrg().id == context?.id) {
+                        hasAccess = true
+                        doc = dc.getOwner()
+                    }
+                }
+            }
+        }
+        return (hasAccess ? doc : Constants.HTTP_FORBIDDEN)
     }
 }

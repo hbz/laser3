@@ -8,7 +8,7 @@
   <body>
 
     <laser:breadcrumbs>
-      <laser:crumb controller="titleDetails" action="index" message="menu.institutions.all_titles" />
+      <laser:crumb message="menu.institutions.all_titles" class="active" />
     </laser:breadcrumbs>
 
     <div class="container">

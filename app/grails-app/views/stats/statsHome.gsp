@@ -1,55 +1,58 @@
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
-  </head>
+    <head>
+        <meta name="layout" content="mmbootstrap"/>
+        <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
+    </head>
 
-  <body>
+    <body>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="stats" action="statsHome">Stats</g:link> </li>
 
-        <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
-          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link controller="stats" action="statsHome" params="${[format:'csv']}">CSV</g:link></li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+        <laser:breadcrumbs>
+            <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
+            <laser:crumb text="Stats" class="active"/>
 
-    <div class="container">
-      <div class="row">
+            <li class="dropdown pull-right">
+                <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
+                <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
+                    <li>
+                        <g:link controller="stats" action="statsHome" params="${[format:'csv']}">CSV</g:link>
+                    </li>
+                </ul>
+            </li>
+        </laser:breadcrumbs>
 
-        <h1>Org Info</h1>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Institution</th>
-              <th>Affiliated Users</th>
-              <th>Total subscriptions</th>
-              <th>Current subscriptions</th>
-              <th>Total licenses</th>
-              <th>Current licenses</th>
-            </tr>
-          </thead>
-          <tbody>
-            <g:each in="${orginfo}" var="is">
-              <tr>
-                <td>${is.key.name}</td>
-                <td>${is.value['userCount']}</td>
-                <td>${is.value['subCount']}</td>
-                <td>${is.value['currentSoCount']}</td>
-                <td>${is.value['licCount']}</td>
-                <td>${is.value['currentLicCount']}</td>
-              </tr>
-            </g:each>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </body>
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+
+                    <h1>Org Info</h1>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Institution</th>
+                                <th>Affiliated Users</th>
+                                <th>Total subscriptions</th>
+                                <th>Current subscriptions</th>
+                                <th>Total licenses</th>
+                                <th>Current licenses</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${orginfo}" var="is">
+                                <tr>
+                                    <td>${is.key.name}</td>
+                                    <td>${is.value['userCount']}</td>
+                                    <td>${is.value['subCount']}</td>
+                                    <td>${is.value['currentSoCount']}</td>
+                                    <td>${is.value['licCount']}</td>
+                                    <td>${is.value['currentLicCount']}</td>
+                                </tr>
+                            </g:each>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

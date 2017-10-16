@@ -67,7 +67,12 @@
                                     <g:each in="${ppRules}" var="ppr">
                                         <tr>
                                             <td>${ppr.propertyDefinition.getI10n('descr')}</td>
-                                            <td>${ppr.propertyDefinition.getI10n('name')}</td>
+                                            <td>
+                                                ${ppr.propertyDefinition.getI10n('name')}
+                                                <g:if test="${ppr.propertyDefinition.multipleOccurrence}">
+                                                    <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                                </g:if>
+                                            </td>
                                             <td>
                                                 <g:checkBox name="propertyRuleDeleteIds" value="${ppr?.id}" checked="false" />
                                             </td>
@@ -123,6 +128,10 @@
                     <dd>
                         <label class="property-label">Context:</label>
                         <g:select name="cust_prop_desc"  from="${PropertyDefinition.AVAILABLE_DESCR}"/>
+                    </dd>
+                    <dd>
+                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
+                        <g:checkBox type="text" name="cust_prop_multiple_occurence" />
                     </dd>
                 </dl>
             </div>

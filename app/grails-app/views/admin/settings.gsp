@@ -6,6 +6,12 @@
   </head>
 
   <body>
+
+    <laser:breadcrumbs>
+      <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
+      <laser:crumb text="System Settings" class="active"/>
+    </laser:breadcrumbs>
+
     <div class="container">
       <table class="table table-bordered">
         <thead>

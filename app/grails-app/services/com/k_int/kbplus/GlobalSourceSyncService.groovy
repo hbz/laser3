@@ -572,7 +572,7 @@ class GlobalSourceSyncService {
     [ name:'Package', converter:packageConv, reconciler:packageReconcile, newRemoteRecordHandler:null, complianceCheck:testPackageCompliance ],
     [ name:'Title', converter:titleConv, reconciler:titleReconcile, newRemoteRecordHandler:onNewTitle, complianceCheck:testTitleCompliance ],
   ]
-
+  
   def runAllActiveSyncTasks() {
 
     if ( running == false ) {
@@ -753,6 +753,7 @@ class GlobalSourceSyncService {
           log.debug("Updating sync job max timestamp");
           sync_job.haveUpTo=new Date(max_timestamp)
           sync_job.save(flush:true);
+          sleep(2000);
         }
     }
     catch ( Exception e ) {

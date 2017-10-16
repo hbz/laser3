@@ -8,6 +8,11 @@ import com.k_int.kbplus.auth.User
 
 class Doc {
 
+  static final CONTENT_TYPE_STRING              = 0
+  static final CONTENT_TYPE_DOCSTORE            = 1
+  static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
+  static final CONTENT_TYPE_BLOB                = 3
+
   static transients = [ 'blobSize', 'blobData', 'sessionFactory' ]
   private static final MAX_SIZE = 1073741824 // 4GB 
   def sessionFactory
@@ -20,7 +25,7 @@ class Doc {
   String filename
   String creator
   String mimeType
-  Integer contentType=0 // 0=String, 1=docstore, 2=update notification, 3=blob
+  Integer contentType = CONTENT_TYPE_STRING
   String content 
   Blob blobContent 
   String uuid 
@@ -47,19 +52,19 @@ class Doc {
   }
 
   static constraints = {
-    status(nullable:true, blank:false)
-    type(nullable:true, blank:false)
-    alert(nullable:true, blank:false)
-    content(nullable:true, blank:false)
+    status    (nullable:true, blank:false)
+    type      (nullable:true, blank:false)
+    alert     (nullable:true, blank:false)
+    content   (nullable:true, blank:false)
     blobContent(nullable:true, blank:false, maxSize:MAX_SIZE)
-    uuid(nullable:true, blank:false)
+    uuid      (nullable:true, blank:false)
     contentType(nullable:true, blank:false)
-    title(nullable:true, blank:false)
-    creator(nullable:true, blank:true)
-    filename(nullable:true, blank:false)
-    mimeType(nullable:true, blank:false)
-    user(nullable:true, blank:false)
-    migrated(nullable:true, blank:false, maxSize:1)
+    title     (nullable:true, blank:false)
+    creator   (nullable:true, blank:true)
+    filename  (nullable:true, blank:false)
+    mimeType  (nullable:true, blank:false)
+    user      (nullable:true, blank:false)
+    migrated  (nullable:true, blank:false, maxSize:1)
   }
 
   def setBlobData(InputStream is, long length) {

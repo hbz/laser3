@@ -591,7 +591,7 @@ class AjaxController {
         else {
             if (params.cust_prop_type.equals(RefdataValue.toString())) {
                 if (params.refdatacategory) {
-                    newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+                    newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
                     def cat = RefdataCategory.get(params.refdatacategory)
                     newProp.setRefdataCategory(cat.desc)
                     newProp.save(flush: true)
@@ -601,7 +601,7 @@ class AjaxController {
                 }
             }
             else {
-                newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+                newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
             }
 
             if (newProp?.hasErrors()) {
@@ -650,7 +650,7 @@ class AjaxController {
     def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
     if(params.cust_prop_type.equals(RefdataValue.toString())){
       if(params.refdatacategory){
-        newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+        newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
         def cat = RefdataCategory.get(params.refdatacategory)
         newProp.setRefdataCategory(cat.desc)
         newProp.save(flush:true)
@@ -658,7 +658,7 @@ class AjaxController {
         error = "Type creation failed. Please select a ref data type."
       }
     } else{
-      newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc)
+      newProp = PropertyDefinition.lookupOrCreate(params.cust_prop_name, params.cust_prop_type, params.cust_prop_desc, params.cust_prop_multiple_occurence)
     }
     if(newProp?.hasErrors()){
       log.error(newProp.errors)
@@ -687,7 +687,7 @@ class AjaxController {
 
     def existingProp = owner.customProperties.find{it.type.name == type.name}
 
-    if(existingProp == null){
+    if(existingProp == null || type.multipleOccurrence){
         newProp = PropertyDefinition.createCustomPropertyValue(owner, type)
         if(newProp.hasErrors()){
             log.error(newProp.errors)
@@ -728,7 +728,7 @@ class AjaxController {
     }
     existingProps.removeAll{it.type.name != type.name} // dubious fix
 
-    if(existingProps.size() == 0){
+    if(existingProps.size() == 0 || type.multipleOccurrence){
       newProp = PropertyDefinition.createPrivatePropertyValue(owner, tenant, type)
       if(newProp.hasErrors()){
         log.error(newProp.errors)

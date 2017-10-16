@@ -54,7 +54,12 @@
         <g:each in="${ownobj.customProperties}" var="prop">
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
-                    <td>${prop.type.getI10n('name')}</td>
+                    <td>
+                        ${prop.type.getI10n('name')}
+                        <g:if test="${prop.type.multipleOccurrence}">
+                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                        </g:if>
+                    </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
                             <g:xEditable owner="${prop}" type="text" field="intValue"/>

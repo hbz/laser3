@@ -26,7 +26,7 @@ class DocWidgetController {
       if ( instance ) {
         log.debug("Got owner instance ${instance}");
 
-        def doc_content = new Doc(contentType:0,
+        def doc_content = new Doc(contentType:Doc.CONTENT_TYPE_STRING,
                                   content: params.licenseNote,
                                   type:RefdataCategory.lookupOrCreate('Document Type','Note'),
                                   user:user).save()
@@ -86,7 +86,7 @@ class DocWidgetController {
           // def docstore_uuid = docstoreService.uploadStream(input_stream, original_filename, params.upload_title)
           // log.debug("Docstore uuid is ${docstore_uuid}");
     
-          def doc_content = new Doc(contentType:3,
+          def doc_content = new Doc(contentType:Doc.CONTENT_TYPE_BLOB,
                                     uuid: java.util.UUID.randomUUID().toString(),
                                     filename: original_filename,
                                     mimeType: request.getFile("upload_file")?.contentType,

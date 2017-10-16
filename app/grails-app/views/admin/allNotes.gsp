@@ -7,13 +7,11 @@
 
   <body>
 
-   <div class="container">
-        <ul class="breadcrumb">
-           <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-           <li>Licenses</li>
-        </ul>
-    </div>
-
+    <laser:breadcrumbs>
+        <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <laser:crumb text="All Notes" class="active"/>
+    </laser:breadcrumbs>
+  
     <div class="container">
       <table class="table table-bordered">
         <tr>

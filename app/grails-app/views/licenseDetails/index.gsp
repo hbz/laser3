@@ -270,7 +270,7 @@
              <%-- <label for="orgShortcode">Copy license for:</label> --%>
                   <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" id="orgShortcode" name="orgShortcode"/>
                               
-                   <g:link name="copyLicenseBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-license':'Y']}" onclick="return changeLink(this,${message(code:'license.details.copy.confirm')})" class="btn btn-success" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                   <g:link name="copyLicenseBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="btn btn-success" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
 
                <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
           <%-- <label for="linkSubscription">Link to Subscription:</label> --%>
@@ -298,26 +298,26 @@
               model="${[linkType:license?.class?.name,roleLinks:license?.orgLinks,parent:license.class.name+':'+license.id,property:'orgLinks',recip_prop:'lic']}" />
 
     <r:script language="JavaScript">
-      function changeLink(elem,msg){
-        var selectedOrg = $('#orgShortcode').val();
-        var edited_link =  $("a[name="+elem.name+"]").attr("href",function(i,val){
-          return val.replace("replaceme",selectedOrg)
-        });
+        function changeLink(elem, msg) {
+            var selectedOrg = $('#orgShortcode').val();
+            var edited_link =  $("a[name=" + elem.name + "]").attr("href", function(i, val){
+                return val.replace("replaceme", selectedOrg)
+            });
 
-       return confirm(msg);
-      }
+            return confirm(msg);
+        }
 
-      <g:if test="${editable}">
-      </g:if>
+        <g:if test="${editable}">
+        </g:if>
         <g:else>
-        $(document).ready(function() {
-          $(".announce").click(function(){
-            var id = $(this).data('id');
-            $('#modalComments').load('<g:createLink controller="alert" action="commentsFragment" />/'+id);
-            $('#modalComments').modal('show');
-          });
-        });
-      </g:else>
+            $(document).ready(function() {
+                $(".announce").click(function(){
+                    var id = $(this).data('id');
+                    $('#modalComments').load('<g:createLink controller="alert" action="commentsFragment" />/'+id);
+                    $('#modalComments').modal('show');
+                });
+            });
+        </g:else>
     </r:script>
 
   </body>

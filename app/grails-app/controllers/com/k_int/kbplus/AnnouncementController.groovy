@@ -34,7 +34,7 @@ class AnnouncementController {
                                    content:params.annTxt, 
                                    user:result.user, 
                                    type:announcement_type, 
-                                   contentType:0 ).save(flush:true)
+                                   contentType:Doc.CONTENT_TYPE_STRING).save(flush:true)
     redirect(action:'index')
   }
 

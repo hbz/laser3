@@ -1,6 +1,9 @@
 package com.k_int.kbplus.api.v0.base
 
 import com.k_int.kbplus.*
+import com.k_int.kbplus.api.v0.MainService
+import com.k_int.kbplus.auth.User
+import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -8,6 +11,25 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class OutService {
 
     OutHelperService outHelperService
+
+    /**
+     * @param com.k_int.kbplus.SubscriptionPackage subPkg
+     * @param ignoreRelation
+     * @param com.k_int.kbplus.Org context
+     * @return
+     */
+    def exportIssueEntitlements(SubscriptionPackage subPkg, def ignoreRelation, Org context){
+        def result = []
+
+        def tipps = TitleInstancePackagePlatform.findAllBySubAndPkg(subPkg.subscription, subPkg.pkg)
+        tipps.each{ tipp ->
+            def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
+            if (ie) {
+                result << outHelperService.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
+            }
+        }
+        return outHelperService.cleanUp(result, true, true)
+    }
 
     /**
      * @param com.k_int.kbplus.License lic
@@ -211,6 +233,7 @@ class OutService {
         result.organisations    = outHelperService.resolveOrgLinks(sub.orgRelations, outHelperService.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
         result.properties       = outHelperService.resolveCustomProperties(sub.customProperties) // com.k_int.kbplus.SubscriptionCustomProperty
 
+        // TODO refactoring with issueEntitlementService
         result.packages = outHelperService.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
 
         // Ignored

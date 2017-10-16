@@ -7,24 +7,11 @@
 
   <body>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</g:link> </li>
-      </ul>
-    </div>
+    <laser:breadcrumbs>
+      <laser:crumb message="menu.datamanager.dash" class="active"/>
+    </laser:breadcrumbs>
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+    <laser:flash data="${flash}" />
 
     <div class="container">
       <h2>${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h2>

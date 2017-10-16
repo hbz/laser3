@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
 import com.k_int.kbplus.api.v0.OrgService
 import com.k_int.properties.PropertyDefinition
+import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -153,7 +154,7 @@ class InHelperService {
             it.organisation?.identifiers?.each { orgIdent ->
                 check << orgService.findOrganisationBy('identifier', orgIdent.namespace + ":" + orgIdent.value)
             }
-            check.removeAll([null, [], MainService.BAD_REQUEST, MainService.PRECONDITION_FAILED])
+            check.removeAll([null, [], Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])
             check = check.flatten()
 
             def candidates = []

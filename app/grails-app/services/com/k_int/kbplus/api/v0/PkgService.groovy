@@ -5,6 +5,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
+import de.laser.domain.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -24,7 +25,7 @@ class PkgService {
                 result = Package.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Package.findAllWhere(globalUID: Long.parseLong(value))
+                result = Package.findAllWhere(globalUID: value)
                 break
             case 'identifier':
                 result = Package.findAllWhere(identifier: value)
@@ -36,11 +37,11 @@ class PkgService {
                 result = Identifier.lookupObjectsByIdentifierString(new Package(), value)
                 break
             default:
-                return MainService.BAD_REQUEST
+                return Constants.HTTP_BAD_REQUEST
                 break
         }
         if (result) {
-            result = result.size() == 1 ? result.get(0) : MainService.PRECONDITION_FAILED
+            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
         }
         result
     }
@@ -51,17 +52,18 @@ class PkgService {
     def getPackage(Package pkg, User user, Org context) {
         def hasAccess = true
 
-        //pkg.orgs.each{ orgRole ->
-        //    if(orgRole.getOrg().id == context?.id) {
-        //        hasAccess = true
-        //    }
-        //}
+        // TODO
+        pkg.orgs.each{ orgRole ->
+            if(orgRole.getOrg().id == context?.id) {
+                hasAccess = true
+            }
+        }
 
         def result = []
         if (hasAccess) {
             result = outService.exportPackage(pkg, context) // TODO check orgRole.roleType
         }
 
-        return (hasAccess ? new JSON(result) : MainService.FORBIDDEN)
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 }

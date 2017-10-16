@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
     <link rel="stylesheet" href="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui.css')}" type="text/css">
-    <title>${message(code:'laser', default:'LAS:eR')} REST API</title>
+    <title>${message(code:'laser', default:'LAS:eR')} - API</title>
     <style>
         html {
             box-sizing: border-box;
