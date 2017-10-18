@@ -23,11 +23,6 @@ defaultCssSkin = "hbz.css"
 localauth = true
 feature_finance = true
 
-jquery {
-    sources = 'jquery' // Holds the value where to store jQuery-js files /web-app/js/
-    version = '3.2.1' // The jQuery version in use
-}
-
 customProperties =[
     "org":[
         "journalAccess":[

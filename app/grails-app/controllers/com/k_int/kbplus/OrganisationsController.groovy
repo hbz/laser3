@@ -404,13 +404,14 @@ class OrganisationsController {
       log.debug("Processing combo creation between ${fromOrg} AND ${toOrg}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])
       
-      if ( !dupe ){
+      if (! dupe) {
         def consLink = new Combo(fromOrg:fromOrg,
                                  toOrg:toOrg,
                                  status:null,
-                                 type:comboType).save()
-                                 
-      }else{
+                                 type:comboType)
+          consLink.save()
+      }
+      else {
         flash.message = "This Combo already exists!"
       }
     }

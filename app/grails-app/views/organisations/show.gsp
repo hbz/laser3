@@ -176,6 +176,18 @@
 
         </dl>
 
+        <g:if test="${editable}">
+            <g:form>
+                <g:hiddenField name="id" value="${orgInstance?.id}" />
+                <div class="form-actions">
+                    <g:link class="btn" action="edit" id="${orgInstance?.id}">
+                        <i class="icon-pencil"></i>
+                        <g:message code="default.button.edit.label" default="Edit" />
+                    </g:link>
+                </div>
+            </g:form>
+        </g:if>
+
     </div>
 
   </body>

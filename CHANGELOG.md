@@ -1,9 +1,24 @@
-latest
-- Upgrade to Grails 2.5.6 / Groovy 2.4.10
+0.2
 
-Version 0.1.1
+- new rest api endpoints (get only) for onix-pl and issue entitlements
+- improved and refactored property definitions
+- improved refdata values and categories handling
+- improved consortia support
+- improved subscription functionality
+- exception handling for pending changes
+- new field templates for org and platform attributes
+- more custom tags
+- more localization
+- bugfix: global data sync
+- upgrade to Grails 2.5.6 / Groovy 2.4.10
+- use of database migration plugin
+- use of local plugin repositories
+
+0.1.1
+
 - bugfix: locale detection for i10n
 - bugfix: https://github.com/hbz/laser/issues/3
 
-Version 0.1  
+0.1  
+
 - first release: 2017-09-21

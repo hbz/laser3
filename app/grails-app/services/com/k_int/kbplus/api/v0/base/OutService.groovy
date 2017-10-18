@@ -69,8 +69,7 @@ class OutService {
         // References
 
         result.identifiers      = outHelperService.resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
-        // TODO support private properties, when implemented
-        result.properties       = outHelperService.resolveCustomProperties(lic.customProperties) // com.k_int.kbplus.LicenseCustomProperty
+        result.properties       = outHelperService.resolveProperties(lic, context)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = outHelperService.resolveDocuments(lic.documents) // com.k_int.kbplus.DocContext
         result.onixplLicense    = outHelperService.resolveOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 

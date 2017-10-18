@@ -682,46 +682,51 @@ class AjaxController {
     ])
   }
 
-  /**
+    /**
     * Add domain specific private property
     * @return
     */
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def addPrivatePropertyValue(){
-    def error
-    def newProp
-    def tenant = Org.get(params.tenantId)
-    def owner  = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-    def type   = PropertyDefinition.get(params.propIdent.toLong())
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addPrivatePropertyValue(){
+        def error
+        def newProp
+        def tenant = Org.get(params.tenantId)
+        def owner  = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+        def type   = PropertyDefinition.get(params.propIdent.toLong())
 
-    def existingProps = owner.privateProperties.findAll {
-      it.owner.id  == owner.id
-      it.type.name == type.name // this sucks due lazy proxy problem
+        if (! type) { // new property via select2; tmp deactivated
+            error = message(code:'propertyDefinition.private.deactivated')
+        }
+        else {
+            def existingProps = owner.privateProperties.findAll {
+                it.owner.id == owner.id
+                it.type.name == type.name // this sucks due lazy proxy problem
+            }
+            existingProps.removeAll { it.type.name != type.name } // dubious fix
+
+            if (existingProps.size() == 0 || type.multipleOccurrence) {
+                newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
+                if (newProp.hasErrors()) {
+                    log.error(newProp.errors)
+                } else {
+                    log.debug("New private property created: " + newProp.type.name)
+                }
+            } else {
+                error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+            }
+        }
+
+        owner.refresh()
+        request.setAttribute("editable", params.editable == "true")
+        render(template: "/templates/properties/private", model:[
+                ownobj: owner,
+                tenant: tenant,
+                newProp: newProp,
+                error: error,
+                custom_props_div: "custom_props_div_${tenant.shortcode}", // JS markup id
+                prop_desc: type?.descr // form data
+        ])
     }
-    existingProps.removeAll{it.type.name != type.name} // dubious fix
-
-    if(existingProps.size() == 0 || type.multipleOccurrence){
-      newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
-      if(newProp.hasErrors()){
-        log.error(newProp.errors)
-      } else{
-        log.debug("New private property created: " + newProp.type.name)
-      }
-    } else{
-      error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
-    }
-
-    owner.refresh()
-    request.setAttribute("editable", params.editable == "true")
-    render(template: "/templates/properties/private", model:[
-            ownobj: owner,
-            tenant: tenant,
-            newProp: newProp,
-            error: error,
-            custom_props_div: "custom_props_div_${tenant.shortcode}", // JS markup id
-            prop_desc: type.descr // form data
-    ])
-  }
 
   def delOrgRole() {
     // log.debug("delOrgRole ${params}");
