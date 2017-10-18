@@ -14,8 +14,7 @@ hibernate {
 environments {
     development {
         dataSource {
-            // dbCreate==update
-            dbCreate = "none" // disabled due database migration plugin
+            dbCreate = "update"
             driverClassName = "com.mysql.jdbc.Driver"
             dialect=org.hibernate.dialect.MySQL5Dialect
             username = "k-int"
@@ -61,7 +60,7 @@ environments {
     }
     production {
         dataSource {
-            dbCreate = "none" // disabled due database migration plugin
+            dbCreate = "none" // disabled due database migration plugin; overwritten on dev-server
             driverClassName = "com.mysql.jdbc.Driver"
             username = "k-int"
             password = "k-int"
