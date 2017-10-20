@@ -7,31 +7,7 @@
 </head>
 
 <body>
-<div class="row-fluid">
-
-    <div class="span2">
-        <div class="well">
-            <ul class="nav nav-list">
-                <li class="nav-header">${entityName}</li>
-                <li class="active">
-                    <g:link class="list" action="list">
-                        <i class="icon-list icon-white"></i>
-                        <g:message code="default.list.label" args="[entityName]"/>
-                    </g:link>
-                </li>
-                <li>
-                	<g:if test="${editable}">
-                    	<g:link class="create" action="create">
-                        	<i class="icon-plus"></i>
-                        	<g:message code="default.create.label" args="[entityName]"/>
-                    	</g:link>
-                    </g:if>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="container">
-    <div class="span10">
+<div class="container">
 
         <div class="page-header">
             <h1><g:message code="default.list.label" args="[entityName]"/></h1>
@@ -76,8 +52,6 @@
         <div class="pagination">
             <bootstrap:paginate total="${propertyDefinitionTotal}"/>
         </div>
-    </div>
-    </div>
 
 </div>
 </body>
