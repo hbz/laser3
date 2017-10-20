@@ -7,6 +7,7 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
 class PaginationTagLib {
 
 	static namespace = "bootstrap"
+    def springSecurityService
 	
 	def paginate = { attrs ->
         def writer = out
@@ -20,12 +21,14 @@ class PaginationTagLib {
 
         def total = attrs.int('total') ?: 0
         def action = (attrs.action ? attrs.action : (params.action ? params.action : "list"))
-        def offset = params.int('offset') ?: 0
-        def max = params.int('max')
-        def maxsteps = (attrs.int('maxsteps') ?: 10)
 
+        def offset = params.int('offset') ?: 0
         if (!offset) offset = (attrs.int('offset') ?: 0)
+
+        def max = params.int('max')
         if (!max) max = (attrs.int('max') ?: 10)
+
+        def maxsteps = (attrs.int('maxsteps') ?: 10)
 
         def linkParams = [:]
         if (attrs.params) linkParams.putAll(attrs.params)

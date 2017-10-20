@@ -62,10 +62,13 @@ class OrganisationsController {
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def list() {
 
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
 
-      params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        if (! params.max) {
+            params.max = result.user?.getDefaultPageSize()
+        }
+
       def results = null;
       def count = null;
       if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) &&

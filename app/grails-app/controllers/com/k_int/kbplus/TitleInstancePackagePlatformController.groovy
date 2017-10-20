@@ -21,12 +21,14 @@ class TitleInstancePackagePlatformController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-      def result=[:]
-      result.user = User.get(springSecurityService.principal.id)
-      params.max = Math.min(params.max ? params.int('max') : 10, 100)
-      result.titleInstancePackagePlatformInstanceList=TitleInstancePackagePlatform.list(params)
-      result.titleInstancePackagePlatformInstanceTotal=TitleInstancePackagePlatform.count()
-      result
+        def result=[:]
+        result.user = User.get(springSecurityService.principal.id)
+        if (! params.max) {
+            params.max = result.user?.getDefaultPageSize()
+        }
+        result.titleInstancePackagePlatformInstanceList=TitleInstancePackagePlatform.list(params)
+        result.titleInstancePackagePlatformInstanceTotal=TitleInstancePackagePlatform.count()
+        result
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

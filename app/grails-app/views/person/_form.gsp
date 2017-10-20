@@ -1,8 +1,4 @@
-<%@ page
-import="com.k_int.kbplus.Org"  
-import="com.k_int.kbplus.Person" 
-import="com.k_int.kbplus.PersonRole" 
-%>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 
 
 
