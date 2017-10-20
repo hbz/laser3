@@ -119,7 +119,7 @@
         <div class="row">
           <div class="span12">
             <h3>${message(code: 'title.show.history.label')}</h3>
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
               <thead>
                 <tr>
                   <th>${message(code: 'title.show.history.date')}</th>

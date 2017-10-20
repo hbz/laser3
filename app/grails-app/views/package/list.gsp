@@ -8,24 +8,8 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="row-fluid">
-			
-			<div class="span2">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li class="active">
-							<g:link class="list" action="list">
-								<i class="icon-list icon-white"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
+		<div class="container">
 
-			<div class="span9">
-				
 				<div class="page-header">
 					<h1><g:message code="default.list.label" args="[entityName]" /></h1>
 				</div>
@@ -63,7 +47,6 @@
 				<div class="pagination">
 					<bootstrap:paginate total="${packageInstanceTotal}" />
 				</div>
-			</div>
 
 		</div>
 	</body>

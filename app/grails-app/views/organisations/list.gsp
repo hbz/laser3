@@ -8,10 +8,9 @@
   </head>
   <body>
     <div class="container">
-      
-        
+
         <div class="page-header">
-          <h1>${message(code: 'org.label', default: 'Organisations')}</h1>
+          <h1><g:message code="default.list.label" args="[entityName]" /></h1>
         </div>
 
         <div class="well">

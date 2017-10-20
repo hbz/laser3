@@ -11,7 +11,7 @@
         <h1>Import Financials Data</h1>
         <g:if test="${loaderResult==null}">
           <p>This service allows administrators to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
-          <table class="table table-striped">
+          <table class="table table-striped table-bordered">
             <thead>
               <tr>
                 <th>tsv column name</th>
@@ -59,7 +59,7 @@
       </div>
 
       <g:if test="${loaderResult}">
-        <table class="table table-striped">
+        <table class="table table-striped table-bordered">
           <thead>
             <tr>
               <td></td>

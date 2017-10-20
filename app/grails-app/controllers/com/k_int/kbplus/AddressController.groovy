@@ -1,10 +1,13 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import grails.plugins.springsecurity.Secured
 
 import org.springframework.dao.DataIntegrityViolationException
 
 class AddressController {
+
+	def springSecurityService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -15,7 +18,10 @@ class AddressController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+		if (! params.max) {
+			User user   = springSecurityService.getCurrentUser()
+			params.max = user?.getDefaultPageSize()
+		}
         [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]
     }
 

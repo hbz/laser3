@@ -1,6 +1,10 @@
-<%=packageName ? "package ${packageName}\n\n" : ''%>import org.springframework.dao.DataIntegrityViolationException
+<%=packageName ? "package ${packageName}\n\n" : ''%>
+import com.k_int.kbplus.auth.User
+import org.springframework.dao.DataIntegrityViolationException
 
 class ${className}Controller {
+
+	def springSecurityService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -9,7 +13,10 @@ class ${className}Controller {
     }
 
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+		if (! params.max) {
+			User user   = springSecurityService.getCurrentUser()
+			params.max = user?.getDefaultPageSize()
+		}
         [${propertyName}List: ${className}.list(params), ${propertyName}Total: ${className}.count()]
     }
 
