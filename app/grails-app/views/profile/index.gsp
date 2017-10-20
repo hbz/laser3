@@ -128,7 +128,7 @@
                           <input type="text" readonly="readonly" value="${user.apisecret}">
                       </dd>
                       <dd>
-                          <g:link controller="api" action="index">&rArr; ${message(code:'api.linkTo', default:'Visit API')}</g:link>
+                          <g:link controller="api" class="btn" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
                       </dd>
                   </dl>
               </div><!-- .span6 -->

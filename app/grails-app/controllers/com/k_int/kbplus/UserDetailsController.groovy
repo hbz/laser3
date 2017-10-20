@@ -28,7 +28,7 @@ class UserDetailsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         if (! params.max) {
-            params.max = user.result?.getDefaultPageSize()
+            params.max = result.user?.getDefaultPageSize()
         }
 
         def results = null;

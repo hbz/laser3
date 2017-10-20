@@ -27,7 +27,7 @@ class OrgController extends AjaxHandler {
             User user   = springSecurityService.getCurrentUser()
             params.max = user?.getDefaultPageSize()
         }
-        
+
         def results = null;
         def count = null;
 

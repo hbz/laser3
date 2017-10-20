@@ -21,18 +21,18 @@ class UrlMappings {
         // new custom api
         "/api/v0/$obj"     (controller: 'api', action: 'v0')
         "/api/spec"        (uri: '/rest/v0/laser.yaml')
+        
+        "/"                     (view: "public/index")
 
-        // "/"(controller:"home")
-        "/"(view: "/publichome")
+        "/about"                (view: "public/about")
+        "/contact-us"           (view: "public/contact-us")
+        "/freedom-of-information-policy"(view: "public/freedom-of-information-policy")
+        "/noHostPlatformUrl"    (view: "public/noHostPlatformUrl")
+        "/privacy-policy"       (view: "public/privacy-policy")
+        "/public"               (view: "public/index")
+        "/signup"               (view: "public/signup")
+        "/terms-and-conditions" (view: "public/terms-and-conditions")
 
-        "/about"(view: "/about")
-        "/terms-and-conditions"(view: "/terms-and-conditions")
-        "/privacy-policy"(view: "/privacy-policy")
-        "/freedom-of-information-policy"(view: "/freedom-of-information-policy")
-        "/contact-us"(view: "/contact-us")
-        "/publichome"(view: "/publichome")
-        "/signup"(view: "/signup")
-        "/noHostPlatformUrl"(view: "/noHostPlatformUrl")
         "/oai/$id"(controller: 'oai', action: 'index')
 
         "500"(view: '/serverCodes/error')
