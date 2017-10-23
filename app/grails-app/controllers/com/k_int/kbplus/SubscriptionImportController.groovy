@@ -17,6 +17,7 @@ class SubscriptionImportController {
  
   def possible_date_formats = [
     new SimpleDateFormat('yyyy/MM/dd'),
+    new SimpleDateFormat('dd.mm.yyyy')
     new SimpleDateFormat('dd/MM/yyyy'),
     new SimpleDateFormat('dd/MM/yy'),
     new SimpleDateFormat('yyyy/MM'),
@@ -150,7 +151,7 @@ class SubscriptionImportController {
 
     boolean first = true;
 
-    def formatter = new java.text.SimpleDateFormat("yyyy/MM/dd")
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
 
     // Step one - Assemble a list of all titles and packages.. We aren't assembling the matrix
     // of titles x packages yet.. Just gathering the data for the X and Y axis

@@ -51,22 +51,22 @@ class PackageDetailsController {
 
       if ( params.updateStartDate?.length() > 0 ) {
         base_qry += " and ( p.lastUpdated > ? )"
-        qry_params.add(params.date('updateStartDate','yyyy-MM-dd'));
+        qry_params.add(params.date('updateStartDate',message(code:'default.date.format.notime')));
       }
 
       if ( params.updateEndDate?.length() > 0 ) {
         base_qry += " and ( p.lastUpdated < ? )"
-        qry_params.add(params.date('updateEndDate','yyyy-MM-dd'));
+        qry_params.add(params.date('updateEndDate',message(code:'default.date.format.notime')));
       }
 
       if ( params.createStartDate?.length() > 0 ) {
         base_qry += " and ( p.dateCreated > ? )"
-        qry_params.add(params.date('createStartDate','yyyy-MM-dd'));
+        qry_params.add(params.date('createStartDate',message(code:'default.date.format.notime')));
       }
 
       if ( params.createEndDate?.length() > 0 ) {
         base_qry += " and ( p.dateCreated < ? )"
-        qry_params.add(params.date('createEndDate','yyyy-MM-dd'));
+        qry_params.add(params.date('createEndDate',message(code:'default.date.format.notime')));
       }
 
       if ( ( params.sort != null ) && ( params.sort.length() > 0 ) ) {
@@ -293,7 +293,7 @@ class PackageDetailsController {
               def comparisonMap = 
               institutionsService.generateComparisonMap(unionList, mapA, mapB,0, unionList.size(),filterRules)
               log.debug("Create CSV Response")
-              def dateFormatter = new java.text.SimpleDateFormat('yyyy-MM-dd')
+              def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
                response.setHeader("Content-disposition", "attachment; filename=\"packageComparison.csv\"")
                response.contentType = "text/csv"
                def out = response.outputStream
@@ -439,7 +439,7 @@ class PackageDetailsController {
       // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
       def qry_params = [packageInstance]
       
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'));
       def today = new Date()
       if(!params.asAt){
         if(packageInstance.startDate > today){
@@ -660,14 +660,14 @@ class PackageDetailsController {
     }
 
     if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'));
       def d = sdf.parse(params.endsAfter)
       base_qry += " and tipp.endDate >= ?"
       qry_params.add(d)
     }
 
     if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'));
       def d = sdf.parse(params.startsBefore)
       base_qry += " and tipp.startDate <= ?"
       qry_params.add(d)
@@ -889,7 +889,7 @@ class PackageDetailsController {
 
     log.debug("packageBatchUpdate ${params}");
 
-    def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
 
     def bulk_fields = [
       [ formProp:'start_date', domainClassProp:'startDate', type:'date'],
