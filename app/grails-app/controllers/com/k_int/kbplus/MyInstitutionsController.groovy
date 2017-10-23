@@ -174,20 +174,15 @@ class MyInstitutionsController {
 
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
-        
-        log.debug("Date: ${message(code:'default.date.format.notime')}")
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            log.debug("Date: ${result.validOn}")
             date_restriction = sdf.parse(result.validOn)
         } else if (params.validOn.trim() == '') {
             result.validOn = ""
-            log.debug("Date: ${result.validOn}")
         } else {
             result.validOn = params.validOn
             date_restriction = sdf.parse(params.validOn)
-            log.debug("Date: ${result.validOn}")
         }
 
         def prop_types_list = PropertyDefinition.findAll()
