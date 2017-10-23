@@ -49,8 +49,12 @@ class OrgService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getOrganisation(Org org, User user, Org context) {
-        def hasAccess = true
-        def result = outService.exportOrganisation(org, context)
+        def result = []
+        def hasAccess = outService.isDataManager(user)
+
+        if (hasAccess) {
+            result = outService.exportOrganisation(org, context)
+        }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }

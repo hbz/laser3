@@ -42,34 +42,37 @@ class DocService {
      * @return Doc | FORBIDDEN
      */
     def getDocument(Doc doc, User user, Org context){
-        def hasAccess = false
+        def hasAccess = outService.isDataManager(user)
 
-        DocContext.findAllByOwner(doc).each{ dc ->
-            if(dc.license) {
-                dc.getLicense().getOrgLinks().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
+        if (! hasAccess) {
+            DocContext.findAllByOwner(doc).each{ dc ->
+                if(dc.license) {
+                    dc.getLicense().getOrgLinks().each { orgRole ->
+                        // TODO check orgRole.roleType
+                        if(orgRole.getOrg().id == context?.id) {
+                            hasAccess = true
+                        }
                     }
                 }
-            }
-            if(dc.pkg) {
-                dc.getPkg().getOrgs().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
+                if(dc.pkg) {
+                    dc.getPkg().getOrgs().each { orgRole ->
+                        // TODO check orgRole.roleType
+                        if(orgRole.getOrg().id == context?.id) {
+                            hasAccess = true
+                        }
                     }
                 }
-            }
-            if(dc.subscription) {
-                dc.getSubscription().getOrgRelations().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if(orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
+                if(dc.subscription) {
+                    dc.getSubscription().getOrgRelations().each { orgRole ->
+                        // TODO check orgRole.roleType
+                        if(orgRole.getOrg().id == context?.id) {
+                            hasAccess = true
+                        }
                     }
                 }
             }
         }
+
         return (hasAccess ? doc : Constants.HTTP_FORBIDDEN)
     }
 
@@ -77,20 +80,22 @@ class DocService {
      * @return Doc | FORBIDDEN | null
      */
     def getOnixPlDocument(License license, User user, Org context){
-        def hasAccess = false
         def doc = license.onixplLicense?.doc
-
         if (! doc) {
             return null // not found
         }
 
-        DocContext.findAllByOwner(doc).each{ dc ->
-            if(dc.license) {
-                dc.getLicense().getOrgLinks().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if (orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                        doc = dc.getOwner()
+        def hasAccess = outService.isDataManager(user)
+
+        if (! hasAccess) {
+            DocContext.findAllByOwner(doc).each { dc ->
+                if (dc.license) {
+                    dc.getLicense().getOrgLinks().each { orgRole ->
+                        // TODO check orgRole.roleType
+                        if (orgRole.getOrg().id == context?.id) {
+                            hasAccess = true
+                            doc = dc.getOwner()
+                        }
                     }
                 }
             }

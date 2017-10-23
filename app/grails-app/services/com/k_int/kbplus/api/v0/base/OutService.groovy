@@ -2,7 +2,9 @@ package com.k_int.kbplus.api.v0.base
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.api.v0.MainService
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserRole
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -248,5 +250,12 @@ class OutService {
         // result.costItems    = exportHelperService.resolveCostItems(sub.costItems) // com.k_int.kbplus.CostItem
 
         return outHelperService.cleanUp(result, true, true)
+    }
+
+    // ################### HELPER ###################
+
+    def isDataManager(User user) {
+        def role = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
+        return ! role.isEmpty()
     }
 }

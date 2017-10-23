@@ -50,16 +50,18 @@ class PkgService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getPackage(Package pkg, User user, Org context) {
-        def hasAccess = true
+        def result = []
+        def hasAccess = outService.isDataManager(user)
 
         // TODO
-        pkg.orgs.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
+        if (! hasAccess) {
+            pkg.orgs.each { orgRole ->
+                if (orgRole.getOrg().id == context?.id) {
+                    hasAccess = true
+                }
             }
         }
 
-        def result = []
         if (hasAccess) {
             result = outService.exportPackage(pkg, context) // TODO check orgRole.roleType
         }

@@ -46,16 +46,18 @@ class LicenseService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getLicense(License lic, User user, Org context){
-        def hasAccess = false
+        def result = []
+        def hasAccess = outService.isDataManager(user)
 
-        lic.orgLinks.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
+        if (! hasAccess) {
+            lic.orgLinks.each { orgRole ->
+                if (orgRole.getOrg().id == context?.id) {
+                    hasAccess = true
+                }
             }
         }
 
-        def result = []
-        if(hasAccess) {
+        if (hasAccess) {
             result = outService.exportLicense(lic, OutHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 

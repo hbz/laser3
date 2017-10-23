@@ -68,7 +68,7 @@ parameters:
     name: context
     required: false
     type: string
-    description: Optional information if user has multiple memberships
+    description: Optional information if user has multiple memberships in organizations
   authorization:
     in: header
     name: Authorization
