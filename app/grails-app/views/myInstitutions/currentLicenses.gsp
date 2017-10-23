@@ -126,10 +126,10 @@
                       <br/>${message(code:'myinst.currentLicenses.no_subs', default:'No linked subscriptions.')}
                     </g:else>
                   </td>
-                  <td>${l.licensor?.name}</td>
-                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
-                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
-                  <td>
+                  <td style="vertical-align:middle;">${l.licensor?.name}</td>
+                  <td style="vertical-align:middle;"><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
+                  <td style="vertical-align:middle;"><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
+                  <td style="vertical-align:middle;">
                     <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
                     <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                   </td>

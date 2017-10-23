@@ -37,7 +37,7 @@
 	<laser:select id="gender" name="gender"
 		from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
     	optionKey="id"
-    	optionValue="value"
+    	optionValue="${{it.getI10n('value')}}"
         value="${personInstance?.gender?.id}"
         noSelection="['': '']"/>
 </div>
@@ -119,7 +119,7 @@
 	<laser:select id="isPublic" name="isPublic"
 		from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
     	optionKey="id"
-    	optionValue="value"
+    	optionValue="${{it.getI10n('value')}}"
         value="${personInstance?.isPublic?.id}" />
 </div>
 
@@ -132,7 +132,7 @@
 			name="ignore-functionType-selector"
 		    from="${PersonRole.getAllRefdataValues('Person Function')}" 
 		    optionKey="id" 
-		    optionValue="value" /> 
+		    optionValue="${{it.getI10n('value')}}" /> 
 		    
 		<button class="add-person-role" type="button">Add</button>
 		
@@ -152,7 +152,7 @@
 			name="ignore-responsibilityType-selector"
 		    from="${PersonRole.getAllRefdataValues('Person Responsibility')}" 
 		    optionKey="id" 
-		    optionValue="value" /> 
+		    optionValue="${{it.getI10n('value')}}" /> 
 		    
 		<button class="add-person-role" type="button">Add</button>
 

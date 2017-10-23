@@ -224,19 +224,19 @@
                       ${message(code: 'profile.reminder.new.notify', default:'Notify for')}:<g:select name="trigger"
                       from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderTrigger')}"
                       optionKey="id"
-                      optionValue="value"
+                      optionValue="${{it.getI10n('value')}}"
                       class="input-medium"/>
 
                       ${message(code: 'profile.reminder.new.method', default:'Method')}:<g:select name="method"
                       from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderMethod')}"
                       optionKey="id"
-                      optionValue="value"
+                      optionValue="${{it.getI10n('value')}}"
                       class="input-medium"/>
 
                       ${message(code: 'profile.reminder.new.period', default:'Period')}:<g:select name="unit"
                       from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderUnit')}"
                       optionKey="id"
-                      optionValue="value"
+                      optionValue="${{it.getI10n('value')}}"
                       class="input-medium"/>
 
                       ${message(code: 'profile.reminder.new.time', default:'Time')}:<select name="val" class="input-medium required-indicator" id="val" value="${params.val}" data-type="select">
