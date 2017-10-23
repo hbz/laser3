@@ -34,7 +34,7 @@
         </g:form>
       </div>
 
-      <table class="table table-striped">
+      <table class="table table-striped table-bordered">
         <g:each in="${changes}" var="chg">
           <tr>
             <td><g:formatDate format="yyyy-MM-dd" date="${chg.ts}"/>

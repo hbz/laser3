@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
 <!doctype html>
 <html>
   <head>
@@ -7,7 +7,7 @@
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
  <body>
-
+    <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
     <div class="container">
       <ul class="breadcrumb">
@@ -103,7 +103,7 @@
               
               <dl>
                 <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://kbplus/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
+                <dd>uri://laser/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
               </dl>
               
               <dl>
@@ -175,7 +175,7 @@
                <dl>
                     <dt>${message(code: 'package.show.end_date')}</dt>
                     <dd>
-                       <g:xEditable owner="${packageInstance}" id="${packageInstance.class.name.replace(".","")}_${packageInstance.id}_endDate"field="endDate" type="date"/>
+                       <g:xEditable owner="${packageInstance}" field="endDate" type="date"/>
                     </dd>
                </dl>
 
@@ -275,21 +275,25 @@
 
         <div class="well">
           <g:form action="show" params="${params}" method="get" class="form-inline">
-             <input type="hidden" name="sort" value="${params.sort}">
-             <input type="hidden" name="order" value="${params.order}">
-             <input type="hidden" name="mode" value="${params.mode}">
-             <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
-             <label>${message(code:'tipp.coverageNote', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/><br/>
+            <input type="hidden" name="sort" value="${params.sort}">
+            <input type="hidden" name="order" value="${params.order}">
+            <input type="hidden" name="mode" value="${params.mode}">
+            <div>
+              <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
+              <label>${message(code:'tipp.coverageNote', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
+            </div>
+            <div>
               <label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
-              <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>, &nbsp;
+              <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/> -
               <label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
-              <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>, &nbsp;
+              <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/> -
               <g:if test="${params.mode!='advanced'}">
                 <label>${message(code:'package.show.atDate', default:'Show package contents on specific date')}:</label>
                 <g:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
               </g:if>
 
-             <input type="submit" class="btn btn-primary pull-right" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+              <input type="submit" class="btn btn-primary pull-right" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+            </div>
           </g:form>
         </div>
           <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
@@ -318,40 +322,127 @@
                   <br/>
                   <table class="table table-bordered">
                     <tr>
-                      <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
-                          <input type="checkbox" name="clear_start_date"/> (${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.startVolume', default:'Start Volume')}: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
-                          <input type="checkbox" name="clear_start_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.startIssue', default:'Start Issue')}: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
-                          <input type="checkbox" name="clear_start_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                      <td>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          ${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
+                        </div>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          <i style="text-transform:uppercase">${message(code:'default.or', default:'or')}</i> 
+                          <input type="checkbox" name="clear_start_date" />
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </div> 
+                      </td>
+                      <td>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          ${message(code:'tipp.startVolume', default:'Start Volume')}: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
+                        </div>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                          <input type="checkbox" name="clear_start_volume"/> 
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          ${message(code:'tipp.startIssue', default:'Start Issue')}: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                        </div>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                          <input type="checkbox" name="clear_start_issue"/> 
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </div>
+                      </td>
                     </tr>
                     <tr>
-                      <td>${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
-                          <input type="checkbox" name="clear_end_date"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.endVolume', default:'End Volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
-                          <input type="checkbox" name="clear_end_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.endIssue', default:'End Issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
-                          <input type="checkbox" name="clear_end_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                      <td>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          ${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
+                        </div>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                          <input type="checkbox" name="clear_end_date"/>
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          ${message(code:'tipp.endVolume', default:'End Volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+                        </div>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                          <input type="checkbox" name="clear_end_volume"/> 
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          ${message(code:'tipp.endIssue', default:'End Issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+                        </div>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                          <input type="checkbox" name="clear_end_issue"/> 
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </div>
+                      </td>
                     </tr>
                     <tr>
-                       <td>${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
-                          <input type="checkbox" name="clear_hostPlatformURL"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                        </td>
-                      <td>${message(code:'tipp.coverageNote', default:'Coverage Note')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
-                          <input type="checkbox" name="clear_coverage_note"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                       <td>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          ${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
+                        </div>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                          <input type="checkbox" name="clear_hostPlatformURL"/>
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          ${message(code:'tipp.coverageNote', default:'Coverage Note')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+                        </div>
+                        <div style="display:inline-block;white-space:nowrap;">
+                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                          <input type="checkbox" name="clear_coverage_note"/> 
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </div>
+                      </td>
                       <td>${message(code:'tipp.embargo', default:'Embargo')}:  <g:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
-                          <input type="checkbox" name="clear_embargo"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                          <input type="checkbox" name="clear_embargo"/>
+                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                      </td>
                     </tr>
                     <g:if test="${params.mode=='advanced'}">
                       <tr>
-                        <td>${message(code:'tipp.delayedOA', default:'Delayed OA')}: <g:simpleHiddenRefdata id="bulk_delayedOA" name="bulk_delayedOA" refdataCategory="TitleInstancePackagePlatform.DelayedOA"/>
-                          <input type="checkbox" name="clear_delayedOA"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                        <td>
+                          <div style="display:inline-block;white-space:nowrap;">
+                            ${message(code:'tipp.delayedOA', default:'Delayed OA')}: <g:simpleHiddenRefdata id="bulk_delayedOA" name="bulk_delayedOA" refdataCategory="TitleInstancePackagePlatform.DelayedOA"/>
+                          </div>
+                          <div style="display:inline-block;white-space:nowrap;">
+                            <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                            <input type="checkbox" name="clear_delayedOA"/> 
+                            ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                          </div>
                         </td>
-                        <td>${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <g:simpleHiddenRefdata id="bulk_hybridOA" name="bulk_hybridOA" refdataCategory="TitleInstancePackagePlatform.HybridOA"/>
-                          <input type="checkbox" name="clear_hybridOA"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                        <td>
+                          <div style="display:inline-block;white-space:nowrap;">
+                            ${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <g:simpleHiddenRefdata id="bulk_hybridOA" name="bulk_hybridOA" refdataCategory="TitleInstancePackagePlatform.HybridOA"/>
+                          </div>
+                          <div style="display:inline-block;white-space:nowrap;">
+                            <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                            <input type="checkbox" name="clear_hybridOA"/> 
+                            ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                          </div>
                         </td>
-                        <td>${message(code:'tipp.paymentType', default:'Payment')}: <g:simpleHiddenRefdata id="bulk_payment" name="bulk_payment" refdataCategory="TitleInstancePackagePlatform.PaymentType"/>
-                          <input type="checkbox" name="clear_payment"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
+                        <td>
+                          <div style="display:inline-block;white-space:nowrap;">
+                            ${message(code:'tipp.paymentType', default:'Payment')}: <g:simpleHiddenRefdata id="bulk_payment" name="bulk_payment" refdataCategory="TitleInstancePackagePlatform.PaymentType"/>
+                          </div>
+                          <div style="display:inline-block;white-space:nowrap;">
+                            <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
+                            <input type="checkbox" name="clear_payment"/>
+                            ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                          </div>
                         </td>
                       </tr>
                     </g:if>
@@ -405,7 +496,7 @@
                      </g:each>
                    </ul>
                    <span title="${t.availabilityStatusExplanation}">
-                    ${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}
+                    ${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatusAsString}
                   </span>
                    <g:if test="${params.mode=='advanced'}">
                      <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>

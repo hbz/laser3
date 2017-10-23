@@ -202,9 +202,9 @@ class InHelperService {
 
         data.each { it ->
             def property
-
-            // Custom or Private?
             def isPublic = getRefdataValue(it.isPublic?.value,"YN")
+
+            // Private Property
             if ("No".equalsIgnoreCase(isPublic?.value)) {
                 if (owner instanceof Org) {
                     property = new OrgPrivateProperty(
@@ -212,7 +212,6 @@ class InHelperService {
                             tenant: contextOrg,
                             note:   it.note
                     )
-                    properties['private'] << property
                 }
                 else if (owner instanceof Person) {
                     property = new PersonPrivateProperty(
@@ -220,17 +219,35 @@ class InHelperService {
                             tenant: contextOrg,
                             note:   it.note
                     )
+                }
+                else if (owner instanceof License) {
+                    property = new LicensePrivateProperty(
+                            owner:     owner,
+                            tenant:    contextOrg,
+                            paragraph: it.paragraph,
+                            note:      it.note
+                    )
+                }
+
+                if (property) {
+                    def propertyDefinition = PropertyDefinition.findByDescrAndNameAndTenant(data.description, data.name, contextOrg)
+                    property.type = propertyDefinition
+                    property.setValue(it.value, propertyDefinition.type, propertyDefinition.refdataCategory)
+
                     properties['private'] << property
                 }
-                // not supported: no LicensePrivateProperties
+                else {
+                    log.debug('private property not supported: ' + owner + ' < '+ data)
+                }
+
             }
+            // Custom Property
             else {
                 if (owner instanceof Org) {
                     property = new OrgCustomProperty(
                             owner: owner,
                             note:  it.note
                     )
-                    properties['custom'] << property
                 }
                 else if (owner instanceof License) {
                     property = new LicenseCustomProperty(
@@ -238,18 +255,19 @@ class InHelperService {
                             note:      it.note,
                             paragraph: it.paragraph
                     )
+                }
+
+                if (property) {
+                    def propertyDefinition = PropertyDefinition.findByDescrAndNameAndTenant(data.description, data.name, null)
+                    property.type = propertyDefinition
+                    property.setValue(it.value, propertyDefinition.type, propertyDefinition.refdataCategory)
+
                     properties['custom'] << property
                 }
-                // not supported: no PersonCustomProperties
-            }
+                else {
+                    log.debug('property not supported: ' + owner + ' < '+ data)
+                }
 
-            if (property) {
-                def propertyDefinition = PropertyDefinition.findByDescrAndName(data.description, data.name)
-                property.type = propertyDefinition
-                property.setValue(it.value, propertyDefinition.type, propertyDefinition.refdataCategory)
-            }
-            else {
-                log.debug('property not supported: ' + owner + ' < '+ data)
             }
         }
         properties

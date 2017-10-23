@@ -9,6 +9,8 @@ import com.k_int.kbplus.auth.*;
 
 class DocController {
 
+	def springSecurityService
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     def index() {
@@ -16,9 +18,13 @@ class DocController {
     }
 
     def list() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      params.max = Math.min(params.max ? params.int('max') : 10, 100)
+      	def result = [:]
+      	result.user = User.get(springSecurityService.principal.id)
+
+		if (! params.max) {
+			params.max = result.user?.getDefaultPageSize()
+		}
+
       result.docInstanceList = Doc.list(params)
       result.docInstanceTotal = Doc.count()
       result

@@ -1,18 +1,28 @@
 package com.k_int.properties
 
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import de.laser.domain.I10nTranslatableAbstract
 import de.laser.domain.I10nTranslation
 import groovy.util.logging.*
 import org.springframework.context.i18n.LocaleContextHolder
-
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
 class PropertyDefinition extends I10nTranslatableAbstract {
+
+    @Transient
+    final static TRUE  = true
+    @Transient
+    final static FALSE = false
+
+    @Transient
+    final static CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
+    @Transient
+    final static PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
+
 
     @Transient
     final static String LIC_PROP    = 'License Property'
@@ -30,12 +40,18 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     final static String ORG_PROP    = 'Organisation Property'
 
     @Transient
-    final static String[] AVAILABLE_DESCR = [
+    final static String[] AVAILABLE_CUSTOM_DESCR = [
             LIC_PROP,
             LIC_OA_PROP,
             LIC_ARC_PROP,
             ORG_CONF,
             SYS_CONF,
+            PRS_PROP,
+            ORG_PROP
+    ]
+    @Transient
+    final static String[] AVAILABLE_PRIVATE_DESCR = [
+            LIC_PROP,
             PRS_PROP,
             ORG_PROP
     ]
@@ -45,9 +61,14 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     String type
     String refdataCategory
 
-    boolean multipleOccurrence
+    // used for private properties
+    Org tenant
 
-    // indicates this object is created via front-end
+    // allows multiple occurences
+    boolean multipleOccurrence
+    // mandatory
+    boolean mandatory
+    // indicates this object is created via front-end and still not hard coded in bootstrap.groovy
     boolean softData
 
     //Map keys can change and they wont affect any of the functionality
@@ -58,24 +79,28 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                              "Decimal": BigDecimal.toString(),
                              "Date":    Date.toString()]
 
-    static constraints = {
-        name                (nullable: false, blank: false)
-        descr               (nullable: true,  blank: false)
-        type                (nullable: false, blank: false)
-        refdataCategory     (nullable: true)
-        multipleOccurrence  (nullable: true,  blank: true,  default: false)
-        softData            (nullable: false, blank: false, default: false)
-    }
-
     static mapping = {
                       id column: 'pd_id'
                    descr column: 'pd_description', index: 'td_new_idx'
                     name column: 'pd_name',        index: 'td_new_idx'
                     type column: 'pd_type',        index: 'td_type_idx'
          refdataCategory column: 'pd_rdc',         index: 'td_type_idx'
+                  tenant column: 'pd_tenant_fk'
       multipleOccurrence column: 'pd_multiple_occurrence'
+               mandatory column: 'pd_mandatory'
                 softData column: 'pd_soft_data'
                       sort name: 'desc'
+    }
+
+    static constraints = {
+        name                (nullable: false, blank: false)
+        descr               (nullable: true,  blank: false)
+        type                (nullable: false, blank: false)
+        refdataCategory     (nullable: true)
+        tenant              (nullable: true,  blank: true)
+        multipleOccurrence  (nullable: true,  blank: true,  default: false)
+        mandatory           (nullable: false, blank: false, default: false)
+        softData            (nullable: false, blank: false, default: false)
     }
 
     private static def typeIsValid(value) {
@@ -93,50 +118,64 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             id = id.toLong()
         }
         def type = get(id)
-        createCustomPropertyValue(owner, type)
+        createCustomProperty(owner, type)
     }
     */
-    
-    
+
     /**
-    * @param owner: The class that will hold the property, e.g License
-    **/
-    private static CustomProperty createCustomPropertyValue(owner, PropertyDefinition type) {
+     * Called from AjaxController.addCustomPropertyValue()
+     * Called from AjaxController.addPrivatePropertyValue()
+     *
+     * @param owner: The class that will hold the property, e.g License
+     */
+    static AbstractProperty createGenericProperty(def flag, def owner, PropertyDefinition type) {
         String classString = owner.getClass().toString()
         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
-        ownerClassName = "com.k_int.kbplus." + ownerClassName + "CustomProperty"
-        
+
+        if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
+            ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
+        }
+        else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
+            ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
+        }
+
         def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
         newProp.setNote("")
-        owner.customProperties.add(newProp)
+
+        if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
+            owner.customProperties.add(newProp)
+        }
+        else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
+            owner.privateProperties.add(newProp)
+        }
+
         newProp.save(flush:true)
         newProp
     }
-    
-    /**
-     * @param owner:    The class that will hold the property, e.g License
-     * @param tenant:   The org that 'owns' this value
-     **/
-     private static PrivateProperty createPrivatePropertyValue(owner, tenant, PropertyDefinition type) {
-         String classString = owner.getClass().toString()
-         def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
-         ownerClassName = "com.k_int.kbplus." + ownerClassName + "PrivateProperty"
-         
-         def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner, tenant: tenant)
-         newProp.setNote("")
-         owner.privateProperties.add(newProp)
-         newProp.save(flush:true)
-         newProp
-     }
 
-    static def lookupOrCreate(name, typeClass, descr, multipleOccurence) {
+    static def lookupOrCreate(name, typeClass, descr, multipleOccurence, mandatory, Org tenant) {
         typeIsValid(typeClass)
-        def type = findByNameAndDescr(name, descr)
+
+        def type = findWhere(
+                name:   name,
+                descr:  descr,
+                tenant: tenant
+        )
+
         if (!type) {
-            log.debug("No PropertyDefinition match for ${name} @ ${descr}. Creating new.")
-            type = new PropertyDefinition(name: name, type: typeClass, descr: descr)
-            type.setMultipleOccurrence(multipleOccurence ? true : false)
-            type.save()
+            log.debug("No PropertyDefinition match for ${name} : ${descr} @ ${tenant?.name}. Creating new ..")
+
+            type = new PropertyDefinition(
+                    name:   name,
+                    descr:  descr,
+                    type:   typeClass,
+                    // refdataCategory:    rdc,
+                    multipleOccurrence: (multipleOccurence ? true : false),
+                    mandatory:          (mandatory ? true : false),
+                    // TODO softData: true,
+                    tenant: tenant
+            )
+            type.save(flush:true)
         }
         type
     }
@@ -144,6 +183,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     static def refdataFind(params) {
         def result = []
 
+        println params
         def matches = I10nTranslation.refdataFindHelper(
                 params.baseClass,
                 'name',
@@ -151,36 +191,54 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                 LocaleContextHolder.getLocale()
         )
         matches.each { it ->
-            if (params.desc && params.desc != "*") {
-                if (it.getDescr() == params.desc) {
+            // used for private properties
+            def tenantMatch = (params.tenant.equals(it.getTenant()?.id?.toString()))
+
+            if (tenantMatch) {
+                if (params.desc && params.desc != "*") {
+                    if (it.getDescr() == params.desc) {
+                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                    }
+                } else {
                     result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
                 }
             }
-            else {
-                result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-            }
         }
         result
-
-        /*
-        def result = []
-        def ql = null
-        if (!params.desc || params.desc == "*") {
-            if (!params.desc)
-                log.error("Search PropertyDefinition without Description ${params}")
-            ql = findAllByNameIlike("${params.q}%", params)
-        } else {
-            ql = findAllByNameIlikeAndDescr("${params.q}%", params.desc, params)
-        }
-
-        if (ql) {
-            ql.each { prop ->
-                result.add([id:"${prop.id}",text:"${prop.getI10n('name')}"])
-            }
-        }
-        result
-        */
     }
+
+    def countUsages() {
+        def table
+        // TODO : refactoring
+
+        if (this.descr == "License Property") {
+            table = "LicensePrivateProperty"
+        }
+        else if (this.descr == "Person Property") {
+            table = "PersonPrivateProperty"
+        }
+        else if (this.descr == "Org Property") {
+            table = "OrgPrivateProperty"
+        }
+
+        if (table) {
+            def c = PropertyDefinition.executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])
+            return c[0]
+        }
+        return 0
+    }
+
+    def afterInsert() {
+        I10nTranslation.createOrUpdateI10n(this, 'name',  [de: this.name, en: this.name])
+        I10nTranslation.createOrUpdateI10n(this, 'descr', [de: this.descr, en: this.descr])
+    }
+
+    def afterDelete() {
+        def rc = this.getClass().getName()
+        def id = this.getId()
+        I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
+    }
+
 
   @Transient
   def getOccurrencesOwner(String[] cls){
@@ -222,6 +280,15 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgPrivateProperty c where c.type = ?', [this])
         PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonPrivateProperty c where c.type = ?', [this])
         this.delete();
+    }
+
+    /* tmp only */
+    static getAvailablePropertyDescriptions() {
+        return [
+                "com.k_int.kbplus.Org"      : PropertyDefinition.ORG_PROP,
+                "com.k_int.kbplus.License"  : PropertyDefinition.LIC_PROP,
+                "com.k_int.kbplus.Person"   : PropertyDefinition.PRS_PROP
+        ]
     }
 }
 

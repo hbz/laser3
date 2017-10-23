@@ -88,4 +88,14 @@ class RefdataValue extends I10nTranslatableAbstract {
         }
         return false
     }
+
+    def afterInsert() {
+        I10nTranslation.createOrUpdateI10n(this, 'value', [de: this.value, en: this.value])
+    }
+
+    def afterDelete() {
+        def rc = this.getClass().getName()
+        def id = this.getId()
+        I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
+    }
 }

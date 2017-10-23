@@ -74,7 +74,7 @@ class InplaceTagLib {
       def data_link = null
       switch ( attrs.type ) {
         case 'date':
-          data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date',format:'yyyy/MM/dd']).encodeAsHTML()
+          data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy/MM/dd')}"]).encodeAsHTML()
           break;
         case 'string':
         default:
@@ -87,6 +87,10 @@ class InplaceTagLib {
       else {
           out << " data-emptytext=\"${default_empty}\""
       }
+      
+      if( attrs.type == "date" && attrs.language ) {
+        out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
+      }
 
       out << " data-url=\"${data_link}\""
       out << ">"
@@ -96,7 +100,7 @@ class InplaceTagLib {
       }
       else {
         if ( attrs.owner[attrs.field] && attrs.type=='date' ) {
-          def sdf = new java.text.SimpleDateFormat(attrs.format?:'yyyy-MM-dd')
+          def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
           out << sdf.format(attrs.owner[attrs.field])
         }
         else {
@@ -114,7 +118,7 @@ class InplaceTagLib {
       }
       else {
         if ( attrs.owner[attrs.field] && attrs.type=='date' ) {
-          def sdf = new java.text.SimpleDateFormat(attrs.format?:'yyyy-MM-dd')
+          def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
           out << sdf.format(attrs.owner[attrs.field])
         }
         else {
@@ -287,7 +291,11 @@ class InplaceTagLib {
     def default_empty = message(code:'default.button.edit.label')
     def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
-    out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\" data-type=\"${attrs.type?:'textarea'}\" data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
+    out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\" data-type=\"${attrs.type?:'textarea'}\" "
+    if( attrs.type == "date" && attrs.language ) {
+      out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
+    }
+    out << "data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
     out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
   }
 }

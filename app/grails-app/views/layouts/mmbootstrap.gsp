@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
+<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;org.springframework.web.servlet.support.RequestContextUtils" %>
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -27,7 +27,7 @@
   </head>
 
   <body>
-
+  <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
   <script>
     dataLayer = [{
@@ -102,8 +102,8 @@
                                                 action="addressbook"
                                                 params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
                                    <li><g:link controller="myInstitutions"
-                                                action="propertyRules"
-                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link></li>
+                                                action="managePrivateProperties"
+                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.manage_private_properties')}</g:link></li>
                                    <li><g:link controller="subscriptionDetails"
                                                action="compare"
                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.comp_sub')} </g:link></li>

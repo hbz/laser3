@@ -793,7 +793,7 @@ class OutHelperService {
             tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
             tmp.note            = it.note
 
-            if(it.tenant?.id == context.id) {
+            if(it.type.tenant?.id == context.id) {
                 tmp.isPublic    = "No" // derived to substitute tentant
                 result << cleanUp(tmp, true, false)
             }

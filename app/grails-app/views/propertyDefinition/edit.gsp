@@ -68,7 +68,7 @@
                     <div class="control-group ">
                         <label class="control-label" for="descr">Context</label>
                         <div class="controls">
-                        	<g:select name="descr" disabled="${!editable}" value="${propDefInstance.descr}" from="${PropertyDefinition.AVAILABLE_DESCR}" /> 
+                        	<g:select name="descr" disabled="${!editable}" value="${propDefInstance.descr}" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" />
                         </div>
                     </div>
                     <div class="control-group ">

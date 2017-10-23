@@ -25,11 +25,14 @@ class UserDetailsController {
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def list() {
 
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      params.max = Math.min(params.max ? params.int('max') : 10, 100)
-      def results = null;
-      def count = null;
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        if (! params.max) {
+            params.max = result.user?.getDefaultPageSize()
+        }
+
+        def results = null;
+        def count = null;
 
       if(params.authority == "null") 
         params.authority=null;

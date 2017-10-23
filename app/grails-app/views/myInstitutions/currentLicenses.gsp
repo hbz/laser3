@@ -59,10 +59,8 @@
       </ul>
     </div>
 
-    <div class="container license-searches">
-        <div class="row">
-            <div class="span8">
-              <div class="well">
+    <div class="container">
+        <div class="well license-searches">
 
                 <form class="form-inline">
                   <div>
@@ -79,8 +77,6 @@
                     <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
                   </div>
                 </form>
-              </div>
-            </div>
         </div>
     </div>
 

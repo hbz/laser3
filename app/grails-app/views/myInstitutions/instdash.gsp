@@ -43,8 +43,8 @@
                                        action="addressbook" 
                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
           <li><g:link controller="myInstitutions" 
-                                       action="propertyRules" 
-                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link></li>
+                                       action="managePrivateProperties"
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_private_properties')}</g:link></li>
         </ul>
       </div>
     </div>

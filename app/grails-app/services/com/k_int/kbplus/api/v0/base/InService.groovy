@@ -48,8 +48,9 @@ class InService {
                 license.ids              = inHelperService.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
 
                 // References
-                def properties           = inHelperService.getProperties(data.properties, license, context)
-                license.customProperties = properties['custom']
+                def properties            = inHelperService.getProperties(data.properties, license, context)
+                license.customProperties  = properties['custom']
+                license.privateProperties = properties['private']
 
                 // not supported: license.documents
                 // not supported: license.onixplLicense

@@ -36,31 +36,31 @@
                         <table class="table table-striped table-hover table-bordered">
 							<thead>
 							<tr>
-								<th>Property Definition (Key)</th>
-								<th>DE: Name</th>
-								<th>EN: Name</th>
-								<th>DE: Description</th>
-								<th>EN: Description</th>
+								<th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
+								<th>Name (DE)</th>
+								<th>Name (EN)</th>
+								<!--<th>DE: Description</th>
+								<th>EN: Description</th>-->
 							</tr>
 							</thead>
 							<tbody>
 								<g:each in="${entry.value}" var="pd">
 									<g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-									<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />
+									<!--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />-->
 									<tr>
 										<td>
                                             ${fieldValue(bean: pd, field: "name")}
-											<g:if test="${pd.multipleOccurrence}">
-												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
-											</g:if>
 											<g:if test="${pd.softData}">
 												<span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
 											</g:if>
+											<g:if test="${pd.multipleOccurrence}">
+												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+											</g:if>
 										</td>
-										<td><g:xEditable owner="${pdI10nName}"  field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nName}"  field="valueEn" /></td>
-										<td><g:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>
+										<td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+										<td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+										<!--<td><g:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
+										<td><g:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
 									</tr>
 								</g:each>
 
@@ -103,7 +103,7 @@
 
 						<dd>
 							<label class="property-label">Context:</label>
-							<g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_DESCR}"/>
+							<g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
 						</dd>
 
 						<dd>

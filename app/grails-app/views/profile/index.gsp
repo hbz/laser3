@@ -44,7 +44,7 @@
                             </select>
                         </div>
 
-                        <p style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</p>
+                  <div class="alert alert-info" style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
 
                         <div class="field">
                             <label></label>
@@ -78,6 +78,8 @@
                     </g:form>
                 </div><!-- .column -->
 
+        </div><!-- .row -->
+    </div><!-- .container -->
 
                   <div class="column wide eight">
                     <div class="ui form">

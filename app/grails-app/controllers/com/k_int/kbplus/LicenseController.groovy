@@ -21,12 +21,15 @@ class LicenseController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      params.max = Math.min(params.max ? params.int('max') : 10, 100)
-      result.licenseInstanceList = License.list(params)
-      result.licenseInstanceTotal = License.count()
-      result
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+
+        if (! params.max) {
+            params.max = result.user?.getDefaultPageSize()
+        }
+        result.licenseInstanceList = License.list(params)
+        result.licenseInstanceTotal = License.count()
+        result
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

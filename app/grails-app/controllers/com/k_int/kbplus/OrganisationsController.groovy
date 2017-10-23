@@ -36,8 +36,15 @@ class OrganisationsController {
       if(! orgInstance.customProperties){
         grails.util.Holders.config.customProperties.org.each{ 
           def entry = it.getValue()
-          def type = PropertyDefinition.lookupOrCreate(entry.name,entry.class,PropertyDefinition.ORG_CONF, false)
-          def prop = PropertyDefinition.createCustomPropertyValue(orgInstance, type)
+          def type = PropertyDefinition.lookupOrCreate(
+                  entry.name,
+                  entry.class,
+                  PropertyDefinition.ORG_CONF,
+                  PropertyDefinition.FALSE,
+                  PropertyDefinition.FALSE,
+                  null
+          )
+          def prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, orgInstance, type)
           prop.note = entry.note
           prop.save()
         }
@@ -55,10 +62,13 @@ class OrganisationsController {
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def list() {
 
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
 
-      params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        if (! params.max) {
+            params.max = result.user?.getDefaultPageSize()
+        }
+
       def results = null;
       def count = null;
       if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) &&
@@ -175,7 +185,7 @@ class OrganisationsController {
             result.editable = true
         }
         else {
-            result.editable = orgInstance.hasUserWithRole(result.user, 'INST_ADM');
+            result.editable = orgInstance.hasUserWithRole((User)result.user, 'INST_ADM');
         }
 
         if (!orgInstance) {
@@ -186,23 +196,21 @@ class OrganisationsController {
 
         // create mandatory OrgPrivateProperties if not existing
 
-        def ppRulesFlat = []
+        def mandatories = []
         result.user?.authorizedOrgs?.each{ org ->
-            def ppr = PrivatePropertyRule.getRules(orgInstance.getClass().getName(), org)
-            if(ppr){
-                ppRulesFlat << ppr
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Org Property", true, org)
+            if(ppd){
+                mandatories << ppd
             }
         }
-        ppRulesFlat?.flatten().each{ ppr ->
-            def pd = ppr.propertyDefinition
-            def pt = ppr.propertyTenant
+        mandatories.flatten().each{ pd ->
+            if (! OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
 
-            if(!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd, tenant: pt)) {
-                def newProp = PropertyDefinition.createPrivatePropertyValue(orgInstance, pt, pd)
-                if(newProp.hasErrors()){
+                if (newProp.hasErrors()) {
                     log.error(newProp.errors)
-                } else{
-                    log.debug("New private property created via private property rule: " + newProp.type.name)
+                } else {
+                    log.debug("New org private property created via mandatory: " + newProp.type.name)
                 }
             }
         }
@@ -399,13 +407,14 @@ class OrganisationsController {
       log.debug("Processing combo creation between ${fromOrg} AND ${toOrg}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])
       
-      if ( !dupe ){
+      if (! dupe) {
         def consLink = new Combo(fromOrg:fromOrg,
                                  toOrg:toOrg,
                                  status:null,
-                                 type:comboType).save()
-                                 
-      }else{
+                                 type:comboType)
+          consLink.save()
+      }
+      else {
         flash.message = "This Combo already exists!"
       }
     }

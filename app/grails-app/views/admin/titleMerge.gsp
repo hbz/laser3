@@ -19,7 +19,7 @@
                 <g:if test="${title_to_deprecate != null}">
                    <h3>Title To Deprecate: <strong>${title_to_deprecate.title}</strong></h3>
                    <p>The following TIPPs will be updated to point at the authorized title</p>
-                   <table class="table table-striped">
+                   <table class="table table-striped table-bordered">
                      <thead>
                        <th>Internal Id</th>
                        <th>Package</th>

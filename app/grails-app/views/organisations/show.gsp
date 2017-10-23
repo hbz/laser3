@@ -1,5 +1,5 @@
 
-<%@ page import="com.k_int.kbplus.Org" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -23,33 +23,43 @@
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
             <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
-				
-            <g:if test="${orgInstance?.addresses}">
-                    <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-                    <g:each in="${orgInstance?.addresses}" var="a">
-                            <g:if test="${a.org}">
-                                    <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
-                            </g:if>
-                    </g:each>
-            </g:if>
 
-            <g:if test="${orgInstance?.contacts}">
-                    <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
-                    <g:each in="${orgInstance?.contacts}" var="c">
-                            <g:if test="${c.org}">
-                                    <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
-                            </g:if>
-                    </g:each>
-            </g:if>
+            <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
+            <dd>
+                <g:each in="${orgInstance?.addresses}" var="a">
+                    <g:if test="${a.org}">
+                            <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+                    </g:if>
+                </g:each>
+                <g:link controller="address" action="create" class="btn btn-primary btn-small" params="['org.id': orgInstance.id]" >
+                    ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}
+                </g:link>
+            </dd>
 
-            <g:if test="${orgInstance?.prsLinks}">
-                    <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
-                    <g:each in="${orgInstance?.prsLinks}" var="pl">
-                            <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
-                                    <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
-                            </g:if>
-                    </g:each>
-            </g:if>
+            <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
+            <dd>
+                <g:each in="${orgInstance?.contacts}" var="c">
+                    <g:if test="${c.org}">
+                            <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+                    </g:if>
+                </g:each>
+                <g:link controller="contact" action="create" class="btn btn-primary btn-small" params="['org.id': orgInstance.id]" >
+                    ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
+                </g:link>
+            </dd>
+
+            <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+            <dd>
+                <g:each in="${orgInstance?.prsLinks}" var="pl">
+                    <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
+                        <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+                    </g:if>
+                </g:each>
+                <g:link controller="person" action="create" class="btn btn-primary btn-small"
+                        params="['tenant.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
+                    ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                </g:link>
+            </dd>
 
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
               <dd>
@@ -76,19 +86,22 @@
             </dd>
 
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-            <g:if test="${orgInstance?.ids}">
-              <g:each in="${orgInstance.ids}" var="i">
-              <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link></dd>
-              </g:each>
-            </g:if>
+            <dd>
+                <g:if test="${orgInstance?.ids}">
+                  <g:each in="${orgInstance.ids}" var="i">
+                    <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link>
+                    <br />
+                  </g:each>
+                </g:if>
 
-            <g:if test="${editable}">
+                <g:if test="${editable}">
 
-                <laser:formAddIdentifier owner="${orgInstance}">
-                    ${message(code:'identifier.select.text', args:['isil:DE-18'])}
-                </laser:formAddIdentifier>
+                    <laser:formAddIdentifier owner="${orgInstance}">
+                        ${message(code:'identifier.select.text', args:['isil:DE-18'])}
+                    </laser:formAddIdentifier>
 
-            </g:if>
+                </g:if>
+            </dd>
 
           <g:if test="${orgInstance?.outgoingCombos}">
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
@@ -175,6 +188,18 @@
           </g:if>
 
         </dl>
+
+        <g:if test="${editable}">
+            <g:form>
+                <g:hiddenField name="id" value="${orgInstance?.id}" />
+                <div class="form-actions">
+                    <g:link class="btn" action="edit" id="${orgInstance?.id}">
+                        <i class="icon-pencil"></i>
+                        <g:message code="default.button.edit.label" default="Edit" />
+                    </g:link>
+                </div>
+            </g:form>
+        </g:if>
 
     </div>
 

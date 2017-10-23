@@ -28,8 +28,9 @@ modules = {
 
         resource url:'js/inline-content.js'
         resource url:'js/bootstrap.min.js'
-        resource url:'js/bootstrap-editable.min.js'
-        resource url:'js/inline-content.js'
+        resource url:'js/bootstrap-editable.js'
+        resource url:'js/bootstrap-datepicker.de.js'
+        resource url:'js/moment-with-locales.min.js'
         resource url:'js/moment.min.js'
         resource url:'js/select2.min.js'
         resource url:'js/jquery.dataTables.min.js'
@@ -98,9 +99,10 @@ modules = {
         // legacy CRAP ..
         // legacy CRAP ..
 
-        resource url:'js/inline-content.js'
         resource url:'js/bootstrap.min.js'
-        resource url:'js/bootstrap-editable.min.js'
+        resource url:'js/bootstrap-editable.js'
+        resource url:'js/bootstrap-datepicker.de.js'
+        resource url:'js/moment-with-locales.min.js'
         resource url:'js/inline-content.js'
         resource url:'js/moment.min.js'
         //resource url:'js/select2.min.js' // updated

@@ -18,7 +18,10 @@ class PersonController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        if (! params.max) {
+            User user   = springSecurityService.getCurrentUser()
+            params.max = user?.getDefaultPageSize()
+        }
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
@@ -169,23 +172,21 @@ class PersonController {
 
         // create mandatory PersonPrivateProperties if not existing
 
-        def ppRulesFlat = []
+        def mandatories = []
         user?.authorizedOrgs?.each{ org ->
-            def ppr = PrivatePropertyRule.getRules(personInstance.getClass().getName(), org)
-            if(ppr){
-                ppRulesFlat << ppr
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Person Property", true, org)
+            if(ppd){
+                mandatories << ppd
             }
         }
-        ppRulesFlat?.flatten().each{ ppr ->
-            def pd = ppr.propertyDefinition
-            def pt = ppr.propertyTenant
+        mandatories.flatten().each{ pd ->
+            if (! PersonPrivateProperty.findWhere(owner: personInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, personInstance, pd)
 
-            if(!PersonPrivateProperty.findWhere(owner: personInstance, type: pd, tenant: pt)) {
-                def newProp = PropertyDefinition.createPrivatePropertyValue(personInstance, pt, pd)
-                if(newProp.hasErrors()){
+                if (newProp.hasErrors()) {
                     log.error(newProp.errors)
-                } else{
-                    log.debug("New private property created via private property rule: " + newProp.type.name)
+                } else {
+                    log.debug("New person private property created via mandatory: " + newProp.type.name)
                 }
             }
         }

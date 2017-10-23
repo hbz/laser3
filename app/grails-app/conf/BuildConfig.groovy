@@ -5,6 +5,8 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 
+grails.plugin.location.'file-viewer' = "localRepository/file-viewer/hbz-file-viewer-0.3"
+grails.plugin.location.'jquery'      = "localRepository/jquery/jquery-1.11.1" // hbz-jquery-1.11.1
 
 // grails.project.fork = [
 //    test: [maxMemory: 768, minMemory: 64, debug: true, maxPerm: 256], // Removed ", daemon:true" because geb doesn't play nice with forked mode atm
