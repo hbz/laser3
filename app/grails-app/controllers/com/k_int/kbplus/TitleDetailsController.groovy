@@ -95,7 +95,7 @@ class TitleDetailsController {
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def batchUpdate() {
     log.debug(params);
-    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
     def user = User.get(springSecurityService.principal.id)
 
       params.each { p ->

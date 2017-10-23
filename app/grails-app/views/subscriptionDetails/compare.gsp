@@ -283,13 +283,13 @@
     });
 
     $('#dateA').datepicker({
-      format:"${message(code:'default.date.format.notime').toLowerCase()}",
-      language:"${message(code:'default.locale.label')}",
+      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+      language:"${message(code:'default.locale.label', default:'en')}",
       autoclose:true
     });
     $('#dateB').datepicker({
-      format:"${message(code:'default.date.format.notime').toLowerCase()}",
-      language:"${message(code:'default.locale.label')}",
+      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+      language:"${message(code:'default.locale.label', default:'en')}",
       autoclose:true
     });
 
