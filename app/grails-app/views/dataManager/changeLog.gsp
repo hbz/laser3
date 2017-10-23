@@ -26,17 +26,17 @@
       <h6>${message(code:'menu.institutions.change_log', default:'Change Log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
       <g:form action="changeLog" controller="dataManager" method="get">
         ${message(code:'datamanager.changeLog.from_date')}:
-            <div class="input-append date">
-              <input class="span2 datepicker-class" size="16" type="text" 
+            <div class="input-append date datepicker-class">
+              <input class="span2" size="16" type="text" 
               name="startDate" value="${params.startDate}">
               <span class="add-on"><i class="icon-th"></i></span> 
             </div>
         &nbsp;
         ${message(code:'datamanager.changeLog.to_date')}:
-            <div class="input-append date">
-              <input class="span2 datepicker-class" size="16" type="text" 
+            <div class="input-append date datepicker-class">
+              <input class="span2" size="16" type="text" 
               name="endDate" value="${params.endDate}">
-              <span class="add-on"><i class="icon-th"></i></span> 
+              <span class="add-on"><i class="icon-th"></i></span>
             </div>
         <div class="dropdown">
           <span style="vertical-align:bottom;">${message(code:'datamanager.changeLog.actor')} :<span>
@@ -82,7 +82,7 @@
         ${message(code:'datamanager.changeLog.how_changed')}:
         <input type="checkbox" style="vertical-align:top;" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.new_items" default="New Items"/> &nbsp;
         <input type="checkbox" style="vertical-align:top;" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
-        <div><input  class="btn btn-primary" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/></div>
+        <div style="margin-top:10px;"><input  class="btn btn-primary" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/></div>
       </g:form>
 
     </div>
@@ -147,7 +147,9 @@
       }});
 
       $(".datepicker-class").datepicker({
-        format: "yyyy-mm-dd"
+        format:"${message(code:'default.date.format.notime').toLowerCase()}",
+        language:"${message(code:'default.locale.label')}",
+        autoclose:true
       });
   </r:script>
   </body>

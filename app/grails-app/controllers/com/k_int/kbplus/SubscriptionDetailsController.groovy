@@ -130,7 +130,7 @@ class SubscriptionDetailsController {
 
     def date_filter
     if(params.asAt && params.asAt.length() > 0) {
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'));
       date_filter = sdf.parse(params.asAt)
       result.as_at_date = date_filter;
       result.editable = false;
@@ -398,7 +398,7 @@ class SubscriptionDetailsController {
           log.debug("Create CSV Response")
           def comparisonMap =
           institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(),filterRules)
-          def dateFormatter = new java.text.SimpleDateFormat('yyyy-MM-dd')
+          def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
 
            response.setHeader("Content-disposition", "attachment; filename=\"subscriptionComparison.csv\"")
            response.contentType = "text/csv"
@@ -428,7 +428,7 @@ class SubscriptionDetailsController {
         }
       }
     }else{
-      def currentDate = new java.text.SimpleDateFormat('yyyy-MM-dd').format(new Date())
+      def currentDate = new java.text.SimpleDateFormat(message(code:'default.date.format.notime')).format(new Date())
       params.dateA = currentDate
       params.dateB = currentDate
       params.insrt = "Y"
@@ -454,7 +454,7 @@ class SubscriptionDetailsController {
     }
   def createCompareList(sub,dateStr,params, result){
    def returnVals = [:]
-   def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd')
+   def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
    def date = dateStr?sdf.parse(dateStr):new Date()
    def subId = sub.substring( sub.indexOf(":")+1)
 
@@ -491,7 +491,7 @@ class SubscriptionDetailsController {
     }
 
     if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'));
         def d = sdf.parse(params.startsBefore)
         base_qry += " and ie.startDate <= ?"
         qry_params.add(d)
@@ -510,7 +510,7 @@ class SubscriptionDetailsController {
   def subscriptionBatchUpdate() {
     def subscriptionInstance = Subscription.get(params.id)
     // def formatter = new java.text.SimpleDateFormat("MM/dd/yyyy")
-    def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
     def user = User.get(springSecurityService.principal.id)
 
     userAccessCheck( subscriptionInstance, user, 'edit')
@@ -626,14 +626,14 @@ class SubscriptionDetailsController {
       }
 
       if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'));
         def d = sdf.parse(params.endsAfter)
         basequery += " and tipp.endDate >= ?"
         qry_params.add(d)
       }
 
       if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'));
         def d = sdf.parse(params.startsBefore)
         basequery += " and tipp.startDate <= ?"
         qry_params.add(d)

@@ -67,10 +67,10 @@
                 <td rowspan="2">${a.id}</a></td>
                 <td>${a.subscription?.subscriber?.name}</a></td>
                 <td>${a.status?.value}</a></td>
-                <td>Start Date : <g:formatDate format="dd MMM yyyy" date="${a.startDate}"/><br/>
+                <td>Start Date : <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${a.startDate}"/><br/>
                     Start Volume : ${a.startVolume}<br/>
                     Start Issue : ${a.startIssue}</td>
-                <td>End Date : <g:formatDate format="dd MMM yyyy" date="${a.endDate}"/><br/>
+                <td>End Date : <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${a.endDate}"/><br/>
                     End Volume ${a.endVolume}<br/>
                     End Issue : ${a.endIssue}</td>
               </tr>

@@ -105,7 +105,11 @@
     }
     function activateDatepicker(){
 
-        $("div.date").children('input').datepicker()
+        $("div.date").children('input').datepicker({
+          format:"${message(code:'default.date.format.notime').toLowerCase()}",
+          language:"${message(code:'default.locale.label')}",
+          autoclose:true
+        })
     }
     document.onload = runJasperJS();
 </r:script>

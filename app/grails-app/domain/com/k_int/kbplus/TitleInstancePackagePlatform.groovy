@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.*
 
 import javax.persistence.Transient
  
@@ -357,24 +357,24 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
   
   public String getAvailabilityStatusAsString() {
 	  def result = null
-	  def loc = LocaleContextHolder.locale
+	  def loc = LocaleContextHolder.locale?.toString()
 	  Date as_at = new Date();
 	  def tipp_access_start_date = getDerivedAccessStartDate()
 	  def tipp_access_end_date = getDerivedAccessEndDate()
 	  
 	  if ( tipp_access_end_date == null ) {
-		result = messageSource.getMessage("refdata.Current", null, "Current", loc) + "(*)";
+		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Current(*)").getI10n("value");
 	  }
 	  else if ( as_at < tipp_access_start_date ) {
 		// expected
-		result = messageSource.getMessage("refdata.Expected", null, "Expected", loc);
+		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Expected").getI10n("value");
 	  }
 	  else if ( as_at > tipp_access_end_date ) {
 		// expired
-		result = messageSource.getMessage("refdata.Expired", null, "Expired", loc);
+		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Expired").getI10n("value");
 	  }
 	  else {
-		result = messageSource.getMessage("refdata.Current", null, "Current", loc);
+		result = RefdataCategory.lookupOrCreate("TIPP Access Status","Current").getI10n("value");
 	  }
 	  result
   }

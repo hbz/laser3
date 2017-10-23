@@ -323,7 +323,7 @@ class PackageDetailsController {
           }
 
         }else{
-          def currentDate = new java.text.SimpleDateFormat('yyyy-MM-dd').format(new Date())
+          def currentDate = new java.text.SimpleDateFormat(message(code:'default.date.format.notime')).format(new Date())
           params.dateA = currentDate
           params.dateB = currentDate
           params.insrt = "Y"
@@ -346,8 +346,8 @@ class PackageDetailsController {
 
     def createCompareList(pkg,dateStr,params, result){
        def returnVals = [:]
-       def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd')
-       def date = dateStr?sdf.parse(dateStr):new Date()
+       def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+       def date = dateStr ? sdf.parse(dateStr) : new Date()
        def packageId = pkg.substring( pkg.indexOf(":")+1)
         
        def packageInstance = Package.get(packageId)

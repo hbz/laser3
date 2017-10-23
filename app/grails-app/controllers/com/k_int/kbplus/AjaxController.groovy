@@ -244,7 +244,6 @@ class AjaxController {
       else {
         String[] value_components = params.value.split(":");
         def value=resolveOID(value_components);
-
   
         if ( target && value ) {
           def binding_properties = [ "${params.name}":value ]
@@ -1062,19 +1061,17 @@ class AjaxController {
   def renderObjectValue(value) {
     def result=''
     def not_set = message(code:'refdata.notSet')
-    def no_ws =''
 
     if ( value ) {
       switch ( value.class ) {
         case com.k_int.kbplus.RefdataValue.class:
-          no_ws = value.value.replaceAll(' ','')
 
           if ( value.icon != null ) {
             result="<span class=\"select-icon ${value.icon}\"></span>";
-            result += message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
+            result += value.value ? value.getI10n('value') : not_set
           }
           else {
-            result = message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
+            result = value.value ? value.getI10n('value') : not_set
           }
           break;
         default:
@@ -1083,7 +1080,7 @@ class AjaxController {
           }else{
             value = value.toString()
           }
-          no_ws = value.replaceAll(' ','')
+          def no_ws = value.replaceAll(' ','')
 
           result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
       }

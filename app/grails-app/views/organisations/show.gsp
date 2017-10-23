@@ -93,7 +93,7 @@
           <g:if test="${orgInstance?.outgoingCombos}">
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
             <g:each in="${orgInstance.outgoingCombos}" var="i">
-              <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
+              <dd>${i.type?.getI10n('value')} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
                 (<g:each in="${i.toOrg?.ids}" var="id_out">
                   ${id_out.identifier.ns.ns}:${id_out.identifier.value} 
                 </g:each>)
@@ -104,7 +104,7 @@
           <g:if test="${orgInstance?.incomingCombos}">
             <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
             <g:each in="${orgInstance.incomingCombos}" var="i">
-              <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+              <dd>${i.type?.getI10n('value')} - <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
                 (<g:each in="${i.fromOrg?.ids}" var="id_in">
                   ${id_in.identifier.ns.ns}:${id_in.identifier.value} 
                 </g:each>)
@@ -118,15 +118,15 @@
             <dd>
               <g:each in="${sorted_links}" var="rdv_id,link_cat">
                 <div>
-                  <g:set var="roletype_refdata" value="${link_cat.rdv.replaceAll(/\s/,'')}"/>
-                  <span style="font-weight:bold;">${message(code:"refdata.${roletype_refdata}", default:"${link_cat.rdv}")} (${link_cat.total})</span>
+                  <g:set var="roletype_refdata" value="${link_cat.rdv.getI10n('value')}"/>
+                  <span style="font-weight:bold;">${roletype_refdata} (${link_cat.total})</span>
                 </div>
                 <ul>
                   <g:each in="${link_cat.links}" var="i">
                     <li>
                       <g:if test="${i.pkg}">
                         <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
-                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${message(code:"refdata.${i.pkg?.packageStatus?.value}", default:"${i.pkg?.packageStatus?.value}")})
+                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')}")})
                         </g:link>
                       </g:if>
                       <g:if test="${i.sub}">
