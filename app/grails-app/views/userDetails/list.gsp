@@ -29,12 +29,13 @@
           <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
         </g:if>
         
-        <table class="table table-striped">
+        <table class="table table-striped table-bordered">
           <thead>
             <tr>
-              <g:sortableColumn property="username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
-              <g:sortableColumn property="display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
-              <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
+                <g:sortableColumn property="username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
+                <g:sortableColumn property="display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
+                <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
+                <td>Enabled</td>
             </tr>
           </thead>
           <tbody>
@@ -43,6 +44,7 @@
               <td><g:link  action="edit" id="${user.id}">${user.displayName}</g:link></td>
               <td>${fieldValue(bean: user, field: "display")}</td>
               <td>${fieldValue(bean: user, field: "instname")}</td>
+              <td>${fieldValue(bean: user, field: "enabled")}</td>
             </tr>
           </g:each>
           </tbody>

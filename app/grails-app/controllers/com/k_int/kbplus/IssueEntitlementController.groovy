@@ -20,7 +20,10 @@ class IssueEntitlementController {
     }
 
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        if (! params.max) {
+            User user   = springSecurityService.getCurrentUser()
+            params.max = user?.getDefaultPageSize()
+        }
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
@@ -46,15 +49,18 @@ class IssueEntitlementController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
-      def result = [:]
+        def result = [:]
 
-      result.user = User.get(springSecurityService.principal.id)
-      result.issueEntitlementInstance = IssueEntitlement.get(params.id)
+        result.user = User.get(springSecurityService.principal.id)
+        result.issueEntitlementInstance = IssueEntitlement.get(params.id)
 
-      params.max = Math.min(params.max ? params.int('max') : 10, 100)
-      def paginate_after = params.paginate_after ?: 19;
-      result.max = params.max
-      result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        if (! params.max) {
+            params.max = result.user?.getDefaultPageSize()
+        }
+
+        def paginate_after = params.paginate_after ?: 19;
+        result.max = params.max
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
 
       if ( result.issueEntitlementInstance.subscription.isEditableBy(result.user) ) {

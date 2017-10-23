@@ -23,9 +23,14 @@ class OrgController extends AjaxHandler {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        if (! params.max) {
+            User user   = springSecurityService.getCurrentUser()
+            params.max = user?.getDefaultPageSize()
+        }
+
         def results = null;
         def count = null;
+
         if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) &&
              ( params.orgRole != null ) && ( params.orgRole.length() > 0 ) ) {
           def qry = "from Org o where o.name like ? and exists ( from o.links r where r.roleType.id = ? )"

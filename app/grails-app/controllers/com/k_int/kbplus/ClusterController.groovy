@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import grails.plugins.springsecurity.Secured
 
 import com.k_int.kbplus.ajax.AjaxHandler
@@ -7,6 +8,8 @@ import com.k_int.kbplus.ajax.AjaxHandler
 import org.springframework.dao.DataIntegrityViolationException
 
 class ClusterController extends AjaxHandler {
+
+    def springSecurityService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -17,7 +20,10 @@ class ClusterController extends AjaxHandler {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        if (! params.max) {
+            User user   = springSecurityService.getCurrentUser()
+            params.max = user?.getDefaultPageSize()
+        }
         [clusterInstanceList: Cluster.list(params), clusterInstanceTotal: Cluster.count()]
     }
 

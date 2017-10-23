@@ -7,7 +7,7 @@
     </dt></dl>
     <br /><br />
 
-    ${params}
+    <!-- ${params} -->
 
     <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
         <label for="street_1">

@@ -30,7 +30,10 @@ class TippController {
       return
     }
 
-    params.max = Math.min(params.max ? params.int('max') : 10, 100)
+    if (! params.max) {
+      params.max = result.user?.getDefaultPageSize()
+    }
+
     def paginate_after = params.paginate_after ?: 19;
     result.max = params.max
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
