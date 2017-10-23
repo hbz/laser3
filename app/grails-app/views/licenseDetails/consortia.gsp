@@ -56,7 +56,7 @@
 <dl>
 <dt>License name: <input type="text" name="lic_name"
     value="Child license for ${license?.reference}"/></dt>
-<dd><input type="submit" class="btn btn-primary" value="Create child licenses"/></dd>
+<dd><input type="submit" class="ui primary button" value="Create child licenses"/></dd>
 </dl>
 </g:form>
 </g:if>

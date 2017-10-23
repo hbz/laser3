@@ -66,8 +66,8 @@
 							<td>${addressInstance?.prs?.isPublic?.encodeAsHTML()}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${addressInstance.id}" class="btn btn-small">Show &raquo;</g:link>
-								<g:link action="edit" id="${addressInstance.id}" class="btn btn-small">Edit</g:link>
+								<g:link action="show" id="${addressInstance.id}" class="ui tiny button">Show &raquo;</g:link>
+								<g:link action="edit" id="${addressInstance.id}" class="ui tiny button">Edit</g:link>
 							</td>
 						</tr>
 					</g:each>

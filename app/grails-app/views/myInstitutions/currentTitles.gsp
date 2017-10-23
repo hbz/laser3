@@ -113,7 +113,7 @@
             <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
             <label>${message(code:'myinst.currentTitles.subs_valid_on', default:'Subscriptions Valid on')}</label>
             <g:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
-            &nbsp;<input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}"/>
+            &nbsp;<input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
           </div>
         </div>
       </g:form>

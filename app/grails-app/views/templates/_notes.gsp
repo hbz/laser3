@@ -18,8 +18,8 @@
     </g:each>
   </ul>
   <g:if test="${editable}">
-    <input type="submit" class="btn btn-primary" value="${message(code:'license.addNewNote', default:'Add New Note')}" data-toggle="modal" href="#modalCreateNote" />
-<%-- <input type="submit" class="btn btn-primary" value="Add new note" data-toggle="modal" href="#modalCreateNote" /> --%>
+    <input type="submit" class="ui primary button" value="${message(code:'license.addNewNote', default:'Add New Note')}" data-toggle="modal" href="#modalCreateNote" />
+<%-- <input type="submit" class="ui primary button" value="Add new note" data-toggle="modal" href="#modalCreateNote" /> --%>
   </g:if>
 </laser:card>
 

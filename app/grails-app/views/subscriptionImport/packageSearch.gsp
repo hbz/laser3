@@ -62,7 +62,7 @@
                         <tr>
                           <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                           <td>${hit.getSource().consortiaName}</td>
-                          <td><button type="submit" class="btn" name="addBtn" value="${hit.getSource().dbId}">${message(code:'myinst.renewalSearch.addBtn', default:'Add to<br/>basket')}</button></td>
+                          <td><button type="submit" class="ui button" name="addBtn" value="${hit.getSource().dbId}">${message(code:'myinst.renewalSearch.addBtn', default:'Add to<br/>basket')}</button></td>
                         </tr>
                       </g:each>
                     </tbody>

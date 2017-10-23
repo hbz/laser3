@@ -35,7 +35,7 @@
             <div class="span6">&nbsp;
                 <!--
                 <input type="text" name="keyword-search" placeholder="enter search term..." />
-                <input type="submit" class="btn btn-primary" value="Search" />
+                <input type="submit" class="ui primary button" value="Search" />
                 -->
             </div>
             <div class="span6">
@@ -48,7 +48,7 @@
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
           <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'license.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-          <input type="submit" class="btn btn-primary" value="${message(code:'default.button.submit.label')}" />
+          <input type="submit" class="ui primary button" value="${message(code:'default.button.submit.label')}" />
         </g:form>
       </div>
 
@@ -110,7 +110,7 @@
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.startDate}"/></td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
-                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
+                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui positive button">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>

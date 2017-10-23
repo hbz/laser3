@@ -74,7 +74,7 @@
                     <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
                     <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
                     <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
-                    <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
+                    <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
                   </div>
                 </form>
         </div>
@@ -126,8 +126,8 @@
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.endDate}"/></td>
                   <td>
-                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
-                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui positive button">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                   </td>
                 </tr>
               </g:each>

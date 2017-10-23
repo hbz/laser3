@@ -17,7 +17,7 @@
           <g:form action="list" method="get" class="form-inline">
             ${message(code: 'org.search.contains')}: <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> ${message(code: 'org.search.restrict')}
             <g:select name="orgRole" noSelection="${['':'Select One...']}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
-            <input type="submit" value="${message(code:'default.button.search.label')}" class="btn btn-primary"/> (${orgInstanceTotal} Matches)
+            <input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button"/> (${orgInstanceTotal} Matches)
           </g:form>
         </div>
 

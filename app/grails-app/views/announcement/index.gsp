@@ -19,7 +19,7 @@
       <g:form action="createAnnouncement">
         ${message(code:'announcement.subject.label', default:'Subject')}: <input type="text" name="subjectTxt" class="span12" value="${params.as}"/><br/>
         <textarea name="annTxt" class="span12">${params.at}</textarea><br/>
-        <input type="submit" class="btn btn-primary" value="${message(code:'announcement.create.button.label', default:'Create Announcement...')}"/>
+        <input type="submit" class="ui primary button" value="${message(code:'announcement.create.button.label', default:'Create Announcement...')}"/>
       </g:form>
     </div>
 

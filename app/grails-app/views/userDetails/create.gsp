@@ -25,7 +25,7 @@
                <dl><dt>Dispay Name</dt><dd><input type="text" name="display" value="${params.display}"/></dd></dl>
                <dl><dt>Password</dt><dd><input type="password" name="password" value="${params.password}"/></dd></dl>
                <dl><dt>eMail</dt><dd><input type="text" name="email" value="${params.email}"/></dd></dl>
-               <dl><dt></td><dd><input type="submit" value="GO ->" class="btn btn-primary"/></dd></dl>
+               <dl><dt></td><dd><input type="submit" value="GO ->" class="ui primary button"/></dd></dl>
             </div>
           </g:form>
         </div>

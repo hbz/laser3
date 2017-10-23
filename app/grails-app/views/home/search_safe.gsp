@@ -28,7 +28,7 @@
             <g:form action="search" method="get" class="form-inline">
                 <label>Search Text:</label>
                 <input type="text" class="search-query" placeholder="Search" name="q" value="${params.q?.encodeAsHTML()}">
-                <input type="submit" value="Search" class="btn btn-primary btn-small" />
+                <input type="submit" value="Search" class="ui primary button" />
             </g:form>
           </div>
   

@@ -57,7 +57,7 @@
 							<g:render template="form"/>
 							
 							<div class="form-actions">
-								<button id="SubmitButton" type="submit" class="btn btn-primary">
+								<button id="SubmitButton" type="submit" class="ui primary button">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.create.label" default="Create" />
 								</button>

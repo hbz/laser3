@@ -34,7 +34,7 @@
 						<fieldset>
 							<f:all bean="platformInstance"/>
 							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">
+								<button type="submit" class="ui primary button">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.create.label" default="Create" />
 								</button>

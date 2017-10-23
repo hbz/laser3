@@ -107,8 +107,8 @@
 
 <div class="modal-footer">
 
-    <a href="#" class="btn" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
+    <a href="#" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
 
-    <input class="btn btn-success" name="saveAddress" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
+    <input class="ui positive button" name="saveAddress" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
 
 </div>

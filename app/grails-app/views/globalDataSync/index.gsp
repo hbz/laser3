@@ -19,7 +19,7 @@
     <div class="container" style="text-align:center">
       <g:form action="index" method="get" class="form-inline">
         <label>${message(code: 'globalDataSync.search.text')}: </label> <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}" value="${params.q?.encodeAsHTML()}"  />
-        <input type="submit" class="btn btn-primary" value="${message(code: 'default.button.search.label')}" />
+        <input type="submit" class="ui primary button" value="${message(code: 'default.button.search.label')}" />
       </g:form><br/>
     </div>
 
@@ -53,8 +53,8 @@
                      ${item.source.name}</a></td>
               <td> <a href="${item.source.baseUrl}search/index?qbe=g:1packages">${item.displayRectype}</a></td>
               <td>${item.kbplusCompliant?.value}</td>
-              <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}" class="btn btn-success">${message(code: 'globalDataSync.track_new')}</g:link>
-                  <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}" class="btn btn-success">${message(code: 'globalDataSync.track_merge')}</g:link>
+              <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}" class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link>
+                  <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}" class="ui positive button">${message(code: 'globalDataSync.track_merge')}</g:link>
               </td>
             </tr>
             <g:each in="${item.trackers}" var="tracker">
@@ -71,7 +71,7 @@
                       <g:else>
                         <g:set var="confirm" value="${message(code: 'globalDataSync.cancel.confirm', args: [tracker.name])}" />
                       </g:else>
-                      <g:link controller="globalDataSync" action="cancelTracking" class="btn btn-danger"
+                      <g:link controller="globalDataSync" action="cancelTracking" class="ui negative button"
                               params="[trackerId: tracker.id, itemName: fieldValue(bean: item, field: 'name')]"
                               onclick="return confirm('${confirm}')">
                         <g:message code="globalDataSync.cancel" />

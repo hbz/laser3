@@ -183,7 +183,7 @@
             <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
             <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
             <span class="help-block"></span>
-            <button type="submit" class="btn">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
+            <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
           </fieldset>
         </g:form>
 

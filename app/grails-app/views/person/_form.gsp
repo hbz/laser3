@@ -57,7 +57,7 @@
             </g:link>
         </li>
         -->
-        <input class="btn btn-primary" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+        <input class="ui primary button" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
                data-toggle="modal" href="#addContactModal" type="submit">
 	</ul>
 
@@ -87,7 +87,7 @@
             </g:link>
         </li>
         -->
-        <input class="btn btn-primary" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
+        <input class="ui primary button" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
                data-toggle="modal" href="#addAddressModal" type="submit">
 	</ul>
 

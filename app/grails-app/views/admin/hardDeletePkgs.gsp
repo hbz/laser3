@@ -54,7 +54,7 @@
               ${fieldValue(bean: packageInstance, field: "name")} (${packageInstance?.contentProvider?.name})</g:link>
               </td>            
               <td class="link">
-                <button onclick="showDetails(${packageInstance.id});" class="btn btn-small">Prepare Delete</button>
+                <button onclick="showDetails(${packageInstance.id});" class="ui tiny button">Prepare Delete</button>
               </td>
             </tr>
           </g:each>

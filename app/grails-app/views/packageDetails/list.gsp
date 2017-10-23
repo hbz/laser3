@@ -42,8 +42,8 @@
               </div>
             </td>
             <td>
-              <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label')}" style="margin:5px 5px;"></input>
-              <button type="submit" name="format" value="csv" class="btn btn-primary" value="Search"  style="margin:5px 5px;">${message(code:'package.search.export.button')}</button>
+              <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}" style="margin:5px 5px;"></input>
+              <button type="submit" name="format" value="csv" class="ui primary button" value="Search"  style="margin:5px 5px;">${message(code:'package.search.export.button')}</button>
             </td>
           </tr>
         </table>
@@ -70,7 +70,7 @@
               <td>${fieldValue(bean: packageInstance, field: "dateCreated")}</td>
               <td>${fieldValue(bean: packageInstance, field: "lastUpdated")}</td>
               <td class="link">
-                <g:link action="show" id="${packageInstance.id}" class="btn btn-small">${message(code:'package.search.show')} &raquo;</g:link>
+                <g:link action="show" id="${packageInstance.id}" class="ui tiny button">${message(code:'package.search.show')} &raquo;</g:link>
               </td>
             </tr>
           </g:each>

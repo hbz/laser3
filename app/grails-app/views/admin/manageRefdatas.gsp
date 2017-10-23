@@ -19,10 +19,10 @@
             <div class="row">
                 <div class="span12">
                     <laser:card class="card-grey">
-                        <input class="btn btn-primary" value="${message(code:'refdataValue.create_new.label')}"
+                        <input class="ui primary button" value="${message(code:'refdataValue.create_new.label')}"
                                data-toggle="modal" href="#addRefdataValueModal" type="submit">
                         &nbsp;
-                        <input class="btn btn-primary" value="${message(code:'refdataCategory.create_new.label')}"
+                        <input class="ui primary button" value="${message(code:'refdataCategory.create_new.label')}"
                                data-toggle="modal" href="#addRefdataCategoryModal" type="submit">
                     </laser:card>
                 </div>
@@ -113,8 +113,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <a href="#" class="btn" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-                    <input class="btn btn-success" name="SaveRefdataValue" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
+                    <a href="#" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
+                    <input class="ui positive button" name="SaveRefdataValue" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
                 </div>
             </g:form>
         </div>
@@ -137,8 +137,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <a href="#" class="btn" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-                    <input class="btn btn-success" name="SaveRefdataCategory" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
+                    <a href="#" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
+                    <input class="ui positive button" name="SaveRefdataCategory" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
                 </div>
             </g:form>
         </div>

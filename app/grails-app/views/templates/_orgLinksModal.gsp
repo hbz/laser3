@@ -45,8 +45,8 @@
         </div>
 
         <div class="modal-footer">
-            <input id="org_role_add_btn" type="submit" class="btn btn-primary" value="${message(code:'default.button.add.label')}" />
-            <a href="#" data-dismiss="modal" class="btn btn-primary">${message(code:'default.button.close.label')}</a>
+            <input id="org_role_add_btn" type="submit" class="ui primary button" value="${message(code:'default.button.add.label')}" />
+            <a href="#" data-dismiss="modal" class="ui primary button">${message(code:'default.button.close.label')}</a>
         </div>
     </g:form>
 

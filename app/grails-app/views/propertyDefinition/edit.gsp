@@ -108,7 +108,7 @@
                     </div>
                     <div class="form-actions">
                         <g:if test="${editable}">
-                          <button type="submit" <%= ( ( usages == 0  ) ) ? '' : 'disabled' %> class="btn btn-danger" name="_action_delete" formnovalidate>
+                          <button type="submit" <%= ( ( usages == 0  ) ) ? '' : 'disabled' %> class="ui negative button" name="_action_delete" formnovalidate>
                               <i class="icon-trash icon-white"></i>
                               <g:message code="default.button.delete.label" default="Delete"/>
                           </button>

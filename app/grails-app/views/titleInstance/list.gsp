@@ -38,7 +38,7 @@
 							<td>${fieldValue(bean: titleInstanceInstance, field: "title")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${titleInstanceInstance.id}" class="btn btn-small">Show &raquo;</g:link>
+								<g:link action="show" id="${titleInstanceInstance.id}" class="ui tiny button">Show &raquo;</g:link>
 							</td>
 						</tr>
 					</g:each>

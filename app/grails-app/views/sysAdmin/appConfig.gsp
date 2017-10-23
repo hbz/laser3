@@ -32,7 +32,7 @@
     </r:script>
 
     <g:form action="appConfig" method="POST">
-        <input type="submit" name="one"class="btn"value="Refresh"  />
+        <input type="submit" name="one"class="ui button"value="Refresh"  />
     </g:form>
     <h3> Current output for Holders.config</h3>
     <ul>

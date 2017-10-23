@@ -62,7 +62,7 @@
  <dl>
 <dt>Subscription name: <input type="text" name="genSubName" 
     value="Child subscription for ${packageInstance?.name}"/></dt>
-<dd><input type="submit" class="btn btn-primary" value="Create child subscriptions"/></dd>
+<dd><input type="submit" class="ui primary button" value="Create child subscriptions"/></dd>
 </dl>
 
 

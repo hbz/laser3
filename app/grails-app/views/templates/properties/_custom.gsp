@@ -34,7 +34,7 @@
 
         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
-        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="btn btn-primary btn-small"/>
+        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="ui primary button"/>
     </g:formRemote>
 </g:if>
 
@@ -154,8 +154,8 @@ TODO !!! this modal dialog has not been refactored ..
         </div>
 
         <div class="modal-footer">
-            <input id="new_cust_prop_add_btn" type="submit" class="btn btn-primary" value="${message(code:'default.button.add.label', default:'Add')}">
-            <a href="#" data-dismiss="modal" class="btn btn-primary">${message(code:'default.button.close.label', default:'Close')}</a>
+            <input id="new_cust_prop_add_btn" type="submit" class="ui primary button" value="${message(code:'default.button.add.label', default:'Add')}">
+            <a href="#" data-dismiss="modal" class="ui primary button">${message(code:'default.button.close.label', default:'Close')}</a>
         </div>
     </g:formRemote>
 

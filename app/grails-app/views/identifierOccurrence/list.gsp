@@ -46,7 +46,7 @@
 							<td>${fieldValue(bean: identifierOccurrenceInstance, field: "identifier")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${identifierOccurrenceInstance.id}" class="btn btn-small">Show &raquo;</g:link>
+								<g:link action="show" id="${identifierOccurrenceInstance.id}" class="ui tiny button">Show &raquo;</g:link>
 							</td>
 						</tr>
 					</g:each>

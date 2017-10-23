@@ -45,7 +45,7 @@
 			            <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> 
 			            Restrict to orgs who are 
 			            <g:select name="orgRole" noSelection="${['':'Select One...']}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
-			            <input type="submit" value="GO" class="btn btn-primary"/> (${orgInstanceTotal} Matches)
+			            <input type="submit" value="GO" class="ui primary button"/> (${orgInstanceTotal} Matches)
 			          </g:form>
                 </div>
 
@@ -77,8 +77,8 @@
 							<td>${fieldValue(bean: orgInstance, field: "shortcode")}</td>						
 							<td>${fieldValue(bean: orgInstance, field: "scope")}</td>						
 							<td class="link">
-								<g:link action="show" id="${orgInstance.id}" class="btn btn-small">Show &raquo;</g:link>
-								<g:link action="edit" id="${orgInstance.id}" class="btn btn-small">Edit</g:link>
+								<g:link action="show" id="${orgInstance.id}" class="ui tiny button">Show &raquo;</g:link>
+								<g:link action="edit" id="${orgInstance.id}" class="ui tiny button">Edit</g:link>
 							</td>
 						</tr>
 					</g:each>

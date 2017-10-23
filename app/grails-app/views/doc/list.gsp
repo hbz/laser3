@@ -54,7 +54,7 @@
 							<td>${fieldValue(bean: docInstance, field: "contentType")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${docInstance.id}" class="btn btn-small">Show &raquo;</g:link>
+								<g:link action="show" id="${docInstance.id}" class="ui tiny button">Show &raquo;</g:link>
 							</td>
 						</tr>
 					</g:each>

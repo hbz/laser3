@@ -31,7 +31,7 @@
                             <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
                     </g:if>
                 </g:each>
-                <g:link controller="address" action="create" class="btn btn-primary btn-small" params="['org.id': orgInstance.id]" >
+                <g:link controller="address" action="create" class="ui primary button" params="['org.id': orgInstance.id]" >
                     ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}
                 </g:link>
             </dd>
@@ -43,7 +43,7 @@
                             <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
                     </g:if>
                 </g:each>
-                <g:link controller="contact" action="create" class="btn btn-primary btn-small" params="['org.id': orgInstance.id]" >
+                <g:link controller="contact" action="create" class="ui primary button" params="['org.id': orgInstance.id]" >
                     ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
                 </g:link>
             </dd>
@@ -55,7 +55,7 @@
                         <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
                     </g:if>
                 </g:each>
-                <g:link controller="person" action="create" class="btn btn-primary btn-small"
+                <g:link controller="person" action="create" class="ui primary button"
                         params="['tenant.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
                     ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
                 </g:link>
@@ -193,7 +193,7 @@
             <g:form>
                 <g:hiddenField name="id" value="${orgInstance?.id}" />
                 <div class="form-actions">
-                    <g:link class="btn" action="edit" id="${orgInstance?.id}">
+                    <g:link class="ui button" action="edit" id="${orgInstance?.id}">
                         <i class="icon-pencil"></i>
                         <g:message code="default.button.edit.label" default="Edit" />
                     </g:link>

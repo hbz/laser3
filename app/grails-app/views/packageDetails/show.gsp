@@ -447,8 +447,8 @@
                       </tr>
                     </g:if>
                   </table>
-                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
-                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
+                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui primary button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
+                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui primary button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
                 </g:if>
               </th>
             </tr>
@@ -587,7 +587,7 @@
             <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
             <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
             <span class="help-block"></span>
-            <button type="submit" class="btn">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
+            <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
           </fieldset>
         </g:form>
 

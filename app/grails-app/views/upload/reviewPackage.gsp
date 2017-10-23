@@ -41,7 +41,7 @@
 
             ${message(code:'package.upload.override', default:'Override Character Set Test')}: <input style="vertical-align:text-bottom;margin-right:10px;" type="checkbox" name="OverrideCharset" checked="false"/>
 
-            <button type="submit" class="btn btn-primary">${message(code:'package.upload.upload', default:'Upload Package')}</button>
+            <button type="submit" class="ui primary button">${message(code:'package.upload.upload', default:'Upload Package')}</button>
         </g:form>
         
         <br/>

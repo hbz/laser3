@@ -117,11 +117,11 @@
 				<g:form>
 					<g:hiddenField name="id" value="${docInstance?.id}" />
 					<div class="form-actions">
-						<g:link class="btn" action="edit" id="${docInstance?.id}">
+						<g:link class="ui button" action="edit" id="${docInstance?.id}">
 							<i class="icon-pencil"></i>
 							<g:message code="default.button.edit.label" default="Edit" />
 						</g:link>
-						<button class="btn btn-danger" type="submit" name="_action_delete">
+						<button class="ui negative button" type="submit" name="_action_delete">
 							<i class="icon-trash icon-white"></i>
 							<g:message code="default.button.delete.label" default="Delete" />
 						</button>

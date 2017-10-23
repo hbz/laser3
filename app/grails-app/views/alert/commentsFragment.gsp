@@ -39,7 +39,7 @@
             <g:form controller="alert" action="addComment">
               <input type="hidden" name="alertid" value="${params.id}"/>
               <textarea name="newcomment" height="4"/><br/>
-              <input type="submit" class="btn btn-primary" value="Save Comment">
+              <input type="submit" class="ui primary button" value="Save Comment">
             </g:form>
           </div>
         </g:if>
@@ -48,6 +48,6 @@
         </g:else>
       </div>
       <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">Close</a>
+        <a href="#" class="ui button" data-dismiss="modal">Close</a>
       </div>
 

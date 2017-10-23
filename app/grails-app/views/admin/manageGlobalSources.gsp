@@ -59,7 +59,7 @@
                   <td>${source.rectype==0?'Package':'Title'}</td>
                   <td>${source.getNumberLocalPackages()}</td>
                   <td>
-                    <g:link class="btn btn-default" 
+                    <g:link class="ui button"
                             controller="admin" 
                             onclick="return confirm('Deleting this package will remove all tracking info and unlink any local packages - Are you sure?')"
                             action="deleteGlobalSource" 
@@ -95,7 +95,7 @@
               <dt>Credentials (Password)</dt>
               <dd><input type="text" name="credentials" placeholder=""/></dd>
             </dl>
-            <input type="submit" value="Submit" class="btn btn-primary"/>
+            <input type="submit" value="Submit" class="ui primary button"/>
           </g:form>
         </div>
       </div>
@@ -134,7 +134,7 @@
                   <td>${source.rectype==0?'Package':'Title'}</td>
                   <td>${source.getNumberLocalPackages()}</td>
                   <td>
-                    <g:link class="btn btn-default" 
+                    <g:link class="ui button"
                             controller="admin" 
                             onclick="return confirm('Deleting this package will remove all tracking info and unlink any local packages - Are you sure?')"
                             action="deleteGlobalSource" 
@@ -170,7 +170,7 @@
               <dt>Credentials (Password)</dt>
               <dd><input type="text" name="credentials" placeholder=""/></dd>
             </dl>
-            <input type="submit" value="Submit" class="btn btn-primary"/>
+            <input type="submit" value="Submit" class="ui primary button"/>
           </g:form>
         </div>
       </div>

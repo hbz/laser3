@@ -36,8 +36,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">${message(code: 'default.button.close.label', default:'Close')}</a>
-            <input type="submit" class="btn btn-primary" name ="SaveDoc" value="${message(code: 'default.button.save_changes', default: 'Save Changes')}">
+            <a href="#" class="ui button" data-dismiss="modal">${message(code: 'default.button.close.label', default:'Close')}</a>
+            <input type="submit" class="ui primary button" name ="SaveDoc" value="${message(code: 'default.button.save_changes', default: 'Save Changes')}">
         </div>
     </g:form>
 

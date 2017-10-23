@@ -42,8 +42,8 @@
                     <td><g:message code="cv.membership.status.${req.status}"/></td>
                     <td><g:formatDate format="dd MMMM yyyy" date="${req.dateRequested}"/></td>
                     <td>
-                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'approve']}" class="btn">Approve</g:link>
-                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="btn">Deny</g:link>
+                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'approve']}" class="ui button">Approve</g:link>
+                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="ui button">Deny</g:link>
                     </td>
                 </tr>
             </g:each>

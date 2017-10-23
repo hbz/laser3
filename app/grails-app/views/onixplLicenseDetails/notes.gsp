@@ -49,7 +49,7 @@
 
             <div class="well hide license-notes-options">
                 <input type="hidden" name="licid" value="${params.id}"/>
-                <input type="submit" class="btn btn-danger" value="Delete Selected Notes"/>
+                <input type="submit" class="ui negative button" value="Delete Selected Notes"/>
             </div>
 
             <table class="table table-striped table-bordered table-condensed license-notes">

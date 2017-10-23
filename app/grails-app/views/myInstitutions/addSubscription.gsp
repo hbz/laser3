@@ -22,7 +22,7 @@
               <g:form action="addSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
                   <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"  value="${params.q?.encodeAsHTML()}"  />
                   <label>${message(code:'default.valid_on.label', default:'Valid On')}</label>: <input name="validOn" type="text" value="${validOn}"/>
-                  <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
+                  <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
               </g:form>
           </div>
       </div>

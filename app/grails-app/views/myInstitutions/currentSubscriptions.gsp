@@ -58,7 +58,7 @@
            <div class="input-append date">
               <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
           </div>
-        <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
+        <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
       </g:form>
       </div>
     </div>
@@ -92,7 +92,7 @@
               </td>
               <td rowspan="2">
                 <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
-                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                 </g:if>
               </td>
             </tr>

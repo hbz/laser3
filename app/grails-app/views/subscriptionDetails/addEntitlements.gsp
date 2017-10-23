@@ -46,7 +46,7 @@
             &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
             <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 
-            <input type="submit" style="margin-left:10px;" class="btn btn-primary" value="${message(code:'default.button.submit.label', default:'Submit')}">
+            <input type="submit" style="margin-left:10px;" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
           </g:form>
         </dt>
         <dd>
@@ -98,7 +98,7 @@
             </table>
 
             <div class="paginateButtons" style="text-align:center">
-              <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="btn btn-primary"/>
+              <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="ui primary button"/>
             </div>
 
 

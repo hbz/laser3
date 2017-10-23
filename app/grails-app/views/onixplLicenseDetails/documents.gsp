@@ -39,8 +39,8 @@
 <div class="container">
     <g:form id="delete_doc_form" url="[controller: 'licenseDetails', action: 'deleteDocuments']" method="post">
         <div class="well hide license-documents-options">
-            <button class="btn btn-danger" id="delete-doc">Delete Selected Documents</button>&nbsp;
-            <input type="submit" class="btn btn-primary" value="Add new document" data-toggle="modal"
+            <button class="ui negative button" id="delete-doc">Delete Selected Documents</button>&nbsp;
+            <input type="submit" class="ui primary button" value="Add new document" data-toggle="modal"
                    href="#modalCreateDocument"/>
 
             <input type="hidden" name="licid" value="${params.id}"/>
@@ -144,8 +144,8 @@
         </div>
 
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">Close</a>
-            <input type="submit" class="btn btn-primary" value="Save Changes">
+            <a href="#" class="ui button" data-dismiss="modal">Close</a>
+            <input type="submit" class="ui primary button" value="Save Changes">
         </div>
     </g:form>
 </div>

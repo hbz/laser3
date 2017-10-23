@@ -22,7 +22,7 @@
 				<div class="container" style="text-align:left">
 					<g:form action="list" method="get" class="form-inline">
 						<label>${message(code:'default.search.text', default:'Search text')} : </label> <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
-						<input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
+						<input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
 					</g:form><br/>
 				</div>
 
@@ -42,7 +42,7 @@
 							<td>${fieldValue(bean: platformInstance, field: "name")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${platformInstance.id}" class="btn btn-small">${message(code:'default.button.show.label', default:'Show')} &raquo;</g:link>
+								<g:link action="show" id="${platformInstance.id}" class="ui tiny button">${message(code:'default.button.show.label', default:'Show')} &raquo;</g:link>
 							</td>
 						</tr>
 					</g:each>

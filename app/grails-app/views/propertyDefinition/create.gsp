@@ -89,7 +89,7 @@
                          <g:select name="cust_prop_desc"  from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
 
                   </dd>
-                  <button type="submit" class="btn btn-success">
+                  <button type="submit" class="ui positive button">
                     <i class="icon-ok icon-white"></i>
                     Create Property
                 </button>

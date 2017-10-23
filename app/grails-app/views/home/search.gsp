@@ -59,7 +59,7 @@
             <label>Keywords : </label>
             <input id="kwin" type="text" class="form-control" placeholder="Keyword" name="q" value="${params.q}"/>
             -->
-            <button name="search" type="submit" value="true" class="btn btn-default">Search</button>
+            <button name="search" type="submit" value="true" class="ui button">Search</button>
           </fieldset>
         </g:form>
         <p>

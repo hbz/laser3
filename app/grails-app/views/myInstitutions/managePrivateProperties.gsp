@@ -25,7 +25,7 @@
         <div class="row">
             <div class="span12">
                 <laser:card class="card-grey">
-                    <input class="btn btn-primary" value="${message(code:'propertyDefinition.create_new.label')}"
+                    <input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
                            data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
                 </laser:card>
             </div>
@@ -83,7 +83,7 @@
                             </table>
 
                             <g:field type="hidden" name="cmd" value="delete" />
-                            <button type="submit" class="btn btn-primary">${message(code:'default.button.delete.label', default:'Delete')}</button>
+                            <button type="submit" class="ui primary button">${message(code:'default.button.delete.label', default:'Delete')}</button>
                         </g:form>
                     </fieldset>
                 </g:if>
@@ -137,8 +137,8 @@
             </div>
 
             <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-                <input class="btn btn-success" name="SavePropertyDefinition" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
+                <a href="#" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
+                <input class="ui positive button" name="SavePropertyDefinition" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
             </div>
         </g:form>
     </div>

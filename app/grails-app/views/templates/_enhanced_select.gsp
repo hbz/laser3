@@ -15,7 +15,7 @@
   </div>
   
   <div class="modal-footer">
-    <a href="#" class="btn" data-dismiss="modal">Close</a>
+    <a href="#" class="ui button" data-dismiss="modal">Close</a>
   </div>
   
 </div>

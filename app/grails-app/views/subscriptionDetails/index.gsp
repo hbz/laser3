@@ -94,7 +94,7 @@
               <label style="margin:0px 10px">${message(code:'subscription.details.asAt', default:'Entitlements as at')}:</label>
               <g:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
             </g:if>
-            <input type="submit" style="margin-left:10px;" class="btn btn-primary" value="${message(code:'default.button.submit.label', default:'Submit')}" />
+            <input type="submit" style="margin-left:10px;" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
           </g:form>
         </dt>
         <dd>
@@ -139,7 +139,7 @@
                     <option value="remove">${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</option>
                   </select>
 
-                  <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="btn btn-primary"/>
+                  <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="ui primary button"/>
               </th>
 
               <th>

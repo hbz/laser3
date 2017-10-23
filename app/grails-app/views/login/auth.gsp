@@ -39,7 +39,7 @@
             </div>
 
             <p>
-                <input type='submit' id="submit" class="btn btn-primary"
+                <input type='submit' id="submit" class="ui primary button"
                        value='${message(code: "springSecurity.login.button")}'/>
             </p>
         </form>

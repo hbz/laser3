@@ -169,7 +169,7 @@
                   <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
                   &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
                   <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
-                  <input type="submit" class="btn btn-primary" value="${message(code:'default.button.submit.label', default:'Submit')}">
+                  <input type="submit" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
                 </g:form>
 
             <table class="table">

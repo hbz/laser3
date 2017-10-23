@@ -3,7 +3,7 @@
 
     <p>
         <g:link controller="home" action="index">
-            <span class="btn">${message(code:'template.loginDiv.label', default:'LAS:eR Member Login')}</span>
+            <span class="ui button">${message(code:'template.loginDiv.label', default:'LAS:eR Member Login')}</span>
         </g:link>
     </p>
 </div>
