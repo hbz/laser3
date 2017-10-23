@@ -26,7 +26,7 @@
                 <div class="span12">
 
                     <h1>Org Info</h1>
-                    <table class="table table-bordered">
+                    <table class="ui celled table">
                         <thead>
                             <tr>
                                 <th>Institution</th>

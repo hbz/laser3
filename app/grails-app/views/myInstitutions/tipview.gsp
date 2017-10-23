@@ -74,7 +74,7 @@
       </div>
 
 
-        <table class="table table-bordered table-striped">
+        <table class="ui celled striped table">
           <thead>
             <tr>
               <th>${message(code:'myinst.tipview.tip_tid', default:'Title in Package; Title Details')}</th>

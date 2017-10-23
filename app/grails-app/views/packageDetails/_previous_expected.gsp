@@ -72,7 +72,7 @@
           </dt>
           <dd>
 
-          <table class="table table-bordered">
+          <table class="ui celled table">
             <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <thead>
             <tr>

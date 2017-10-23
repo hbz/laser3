@@ -92,7 +92,7 @@
         <g:if test="${licenseCount && licenseCount>0}">
           <span>${message(code:'license.current.showing', args:[licenseCount])}</span>
         </g:if>
-          <table class="table table-bordered table-striped">
+          <table class="ui celled striped table">
             <thead>
               <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.name')}" />

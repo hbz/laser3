@@ -41,7 +41,7 @@
                 <g:if test="${privatePropertyDefinitions}">
                     <fieldset>
                         <g:form class="form-horizontal" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
-                            <table class="table table-striped table-bordered">
+                            <table class="ui celled striped table">
                                 <thead>
                                     <tr>
                                         <th>${message(code:'propertyDefinition.descr.label', default:'Description')}</th>

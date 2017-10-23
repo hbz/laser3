@@ -13,7 +13,7 @@
             <dl>
                 <dt><label class="control-label">${message(code:'template.orgLinksModal.label')}</label></dt>
                 <dd>
-                    <table id="org_role_tab" class="table table-bordered">
+                    <table id="org_role_tab" class="ui celled table">
                         <thead>
                             <tr id="add_org_head_row">
                             </tr>

@@ -50,7 +50,7 @@
                 </div>
 
                 <div id="resultsarea">
-                  <table class="table table-bordered table-striped">
+                  <table class="ui celled striped table">
                     <thead>
                       <tr>
                       <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />

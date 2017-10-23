@@ -104,7 +104,7 @@
           <g:hiddenField name="order" value="${params.order}"/>
           <g:hiddenField name="offset" value="${params.offset}"/>
           <g:hiddenField name="max" value="${params.max}"/>
-          <table  class="table table-striped table-bordered">
+          <table  class="ui celled striped table">
             <thead>
 
             <tr>

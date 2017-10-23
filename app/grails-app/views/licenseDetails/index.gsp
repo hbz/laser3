@@ -91,7 +91,7 @@
                     <dl>
                         <dt><g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel></dt>
                         <dd>
-                            <table class="table table-bordered">
+                            <table class="ui celled table">
                                 <thead>
                                 <tr>
                                     <th>${message(code:'default.authority.label', default:'Authority')}</th>

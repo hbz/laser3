@@ -14,7 +14,7 @@
 
     <p>${message(code:'template.coreAssertionsModal.note', default:'Edit existing core dates using the table below. Click the start and end dates to modify them and then the tick to accept your change. Once finished, click the Done button below')}</p>
     
-    <table class="table table-bordered">
+    <table class="ui celled table">
       <thead>
         <th>${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}</th>
         <th>${message(code:'subscription.details.coreEndDate', default:'Core End Date')}</th>

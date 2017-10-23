@@ -42,7 +42,7 @@
 				<g:form action="compare" controller="subscriptionDetails" method="GET">
                                         <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
                                         <g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
-					<table class="table table-bordered">
+					<table class="ui celled table">
 						<thead>
 							<tr>
 								<th></th>
@@ -99,7 +99,7 @@
                                 <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 				<div class="row">
 				<h3>${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
-				<table class="table table-bordered">
+				<table class="ui celled table">
 					<thead>
 						<tr>
 							<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
@@ -157,7 +157,7 @@
 				<div class="span6 offset3">
 				<dt class="center">${message(code:'subscription.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 				</div>
-				<table class="table table-bordered">
+				<table class="ui celled table">
 					<thead>
 						<tr>
 							<th> ${message(code:'title.label', default:'Title')} </th>

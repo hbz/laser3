@@ -18,7 +18,7 @@
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
         </g:if>
         
-        <table class="table table-bordered table-striped">
+        <table class="ui celled striped table">
           <thead>
               <g:sortableColumn property="title.title" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Title')}" />
               <g:sortableColumn property="platform.name" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Platform')}" />

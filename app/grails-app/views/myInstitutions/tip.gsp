@@ -47,7 +47,7 @@
           </g:if>
 
           <h3>${message(code:'myinst.tip.usageRecords', default:'Usage Records')}</h3>
-          <table class="table table-bordered">
+          <table class="ui celled table">
           <thead>
             <tr>
               <th>${message(code:'default.start.label', default:'Start')}</th>

@@ -126,7 +126,7 @@
         <div>
           <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="form-inline">
           <g:set var="counter" value="${offset+1}" />
-          <table  class="table table-striped table-bordered">
+          <table  class="ui celled striped table">
 
             <tr>
               <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
@@ -191,7 +191,7 @@
 	          </div>
 	          <div id="collapse-full-table" class="accordion-body collapse out">
 	            <div class="accordion-inner">
-	              <table  class="table table-striped table-bordered">
+	              <table  class="ui celled striped table">
 	                <tr>
 	                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
 	                  <th>ISSN</th>

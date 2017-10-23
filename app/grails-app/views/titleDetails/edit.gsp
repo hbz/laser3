@@ -60,7 +60,7 @@
                  </ul>
                  </bootstrap:alert>
               </g:each>
-            <table class="table table-bordered">
+            <table class="ui celled table">
               <thead>
                 <tr>
                   <th>${message(code:'title.edit.component_id.label')}</td>
@@ -104,7 +104,7 @@
 
 
             <h3>${message(code:'title.edit.tipp')}</h3>
-            <table class="table table-bordered table-striped">
+            <table class="ui celled striped table">
                     <tr>
                         <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
                         <th>${message(code:'tipp.endDate')}</th><th>${message(code:'tipp.endVolume')}</th><th>${message(code:'tipp.endIssue')}</th><th>${message(code:'tipp.coverageDepth')}</th>

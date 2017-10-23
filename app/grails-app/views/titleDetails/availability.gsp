@@ -48,7 +48,7 @@
     <g:if test="${availability?.size() > 0}">
 
       <div class="container alert-warn">
-        <table class="table table-bordered">
+        <table class="ui celled table">
           <thead>
             <tr>
               <th rowspan="2">IE</th>

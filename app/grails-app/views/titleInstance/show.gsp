@@ -99,7 +99,7 @@
           <g:if test="${titleInstanceInstance?.tipps}">
               <h6><g:message code="titleInstance.tipps.label" default="Occurences of this title against Packages / Platforms" /></h6>
 
-              <table class="table table-bordered table-striped">
+              <table class="ui celled striped table">
                   <tr>
                       <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
                       <th>${message(code:'tipp.endDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th><th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>

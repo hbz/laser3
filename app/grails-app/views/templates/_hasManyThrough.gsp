@@ -3,7 +3,7 @@ hasManyThrough template
 <div class="container">
   <div class="row">
     <div class="span12">
-      <table class="table table-bordered">
+      <table class="ui celled table">
         <thead>
           <tr>
             <th>ID</td>
@@ -27,7 +27,7 @@ hasManyThrough template
           <div class="row">
             <div class="span6">
               SearchProp : <input type="text" name="sp1"/>
-              <table class="table table-bordered">
+              <table class="ui celled table">
                 <thead>
                   <tr>
                     <th>ID</td>

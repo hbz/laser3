@@ -88,7 +88,7 @@
            <input type="submit" class="btn btn-primary" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
         </g:form>
 
-          <table class="table table-bordered">
+          <table class="ui celled table">
             <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <thead>
             <tr class="no-background">
@@ -104,7 +104,7 @@
                     <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
                   </select>
                   <br/>
-                  <table class="table table-bordered">
+                  <table class="ui celled table">
                     <tr>
                       <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
                           <input type="checkbox" name="clear_start_date"/> (${message(code:'package.show.checkToClear', default:'Check to clear')})</td>

@@ -47,7 +47,7 @@
     <g:if test="${formattedHistoryLines?.size() > 0}">
 
       <div class="container alert-warn">
-        <table class="table table-bordered">
+        <table class="ui celled table">
           <thead>
             <tr>
               <td>${message(code:'event.component', default:'Name')}</td>

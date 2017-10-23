@@ -57,7 +57,7 @@
                 </div>
 
                 <div id="resultsarea">
-                  <table class="table table-bordered table-striped">
+                  <table class="ui celled striped table">
                     <thead>
                       <tr><th>${message(code:'package.show.pkg_name', default:'Package Name')}</th><th>${message(code:'consortium.label', default:'Consortium')}</th><th style="white-space:nowrap">${message(code:'default.additionalInfo.label', default:'Additional Info')}</th></tr>
                     </thead>

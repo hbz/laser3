@@ -97,7 +97,7 @@
          <input type="button" value="${message(code:'default.button.clear_search.label', default:'Clear Search')}" class="btn btn-danger" />
       </g:link>
       </p>
-        <table class="table table-bordered">
+        <table class="ui celled table">
           <thead>
             <tr>
               <td></td>

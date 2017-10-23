@@ -13,7 +13,7 @@
     </laser:breadcrumbs>
 
     <div class="container">
-      <table class="table table-bordered">
+      <table class="ui celled table">
         <tr>
           <th colspan="4">Note attached to</th>
         </tr>

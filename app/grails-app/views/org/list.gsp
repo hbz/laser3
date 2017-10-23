@@ -53,7 +53,7 @@
 				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
 				</g:if>
 				
-				<table class="table table-bordered table-striped">
+				<table class="ui celled striped table">
 					<thead>
 						<tr>
 							<g:sortableColumn property="impId" title="${message(code: 'org.impId.label', default: 'Imp Id')}" />

@@ -39,7 +39,7 @@
           </div>
           </g:form>
 
-        <table class="table table-bordered table-striped">
+        <table class="ui celled striped table">
           <thead>
             <tr>
               <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />

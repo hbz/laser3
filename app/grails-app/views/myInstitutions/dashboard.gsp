@@ -65,7 +65,7 @@
 
     <g:if test="${staticAlerts.size() > 0}">
       <div class="container">
-        <table class="table table-bordered">
+        <table class="ui celled table">
           <tr><th>${message(code:'sysAlert.label', default:'System Alert')}</th></tr>
           <g:each in="${staticAlerts}" var="sa">
             <tr>
@@ -84,7 +84,7 @@
     </g:if>
 
     <div class="container">
-      <table class="table table-bordered">
+      <table class="ui celled table">
           <thead>
               <tr>
                   <th colspan="6">${message(code:'sysAlert.item.label', default:'Alerted item')}</th>

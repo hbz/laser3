@@ -58,7 +58,7 @@
                  </bootstrap:alert>
               </g:each>
 
-            <table class="table table-bordered">
+            <table class="ui celled table">
               <thead>
                 <tr>
                   <th>${message(code:'title.edit.component_id.label')}</td>
@@ -86,7 +86,7 @@
 	  </div>
           <div class="span6">
             <h3>${message(code:'title.edit.orglink')}</h3>
-            <table class="table table-bordered">
+            <table class="ui celled table">
               <thead>
                 <tr>
                   <th>${message(code:'title.edit.component_id.label')}</td>
@@ -119,7 +119,7 @@
         <div class="row">
           <div class="span12">
             <h3>${message(code: 'title.show.history.label')}</h3>
-            <table class="table table-striped table-bordered">
+            <table class="ui celled striped table">
               <thead>
                 <tr>
                   <th>${message(code: 'title.show.history.date')}</th>
@@ -162,7 +162,7 @@
 
             <h3>${message(code:'title.edit.tipp')}</h3>
             <g:form id="${params.id}" controller="titleDetails" action="batchUpdate">
-              <table class="table table-bordered table-striped">
+              <table class="ui celled striped table">
                 <tr>
                   <th rowspan="2"></th>
                   <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>

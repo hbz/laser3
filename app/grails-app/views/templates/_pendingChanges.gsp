@@ -9,7 +9,7 @@
       <g:link controller="pendingChange" action="rejectAll" id="${model.class.name}:${model.id}" class="btn btn-danger"><i class="icon-white icon-remove"></i>${message(code:'template.pendingChanges.reject_all', default:'Reject All')}</g:link>
     </g:if>
     <br/>&nbsp;<br/>
-    <table class="table table-bordered">
+    <table class="ui celled table">
       <thead>
         <tr>
           <td>${message(code:'default.info.label', default:'Info')}</td>

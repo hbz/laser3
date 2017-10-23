@@ -37,7 +37,7 @@
 	</g:formRemote>
 </g:if>
 
-<table class="table table-bordered">
+<table class="ui celled table">
     <thead>
 	    <tr>
             <th>${message(code:'license.property.table.property')}</th>

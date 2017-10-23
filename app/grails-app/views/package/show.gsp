@@ -69,7 +69,7 @@
             <h6>${message(code:'package.show.byPlatform', default:'Availability of titles in this package by platform')}</h6>
       
           <g:set var="counter" value="${1}" />
-          <table class="table table-bordered table-striped">
+          <table class="ui celled striped table">
             <tr>
               <th rowspan="2" style="width: 2%;">#</th>
               <th rowspan="2" style="width: 20%;">${message(code:'title.label', default:'Title')}</th>

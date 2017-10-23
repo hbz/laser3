@@ -26,7 +26,7 @@
 					</g:form><br/>
 				</div>
 
-				<table class="table table-bordered table-striped">
+				<table class="ui celled striped table">
 					<thead>
 						<tr>
 						

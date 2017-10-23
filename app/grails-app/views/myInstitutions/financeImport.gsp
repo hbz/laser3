@@ -35,7 +35,7 @@
       <div class="span12">
         <g:if test="${loaderResult==null}">
           <p>This service allows institutonal admins to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
-          <table class="table table-striped table-bordered">
+          <table class="ui celled striped table">
             <thead>
               <tr>
                 <th>tsv column name</th>
@@ -83,7 +83,7 @@
       </div>
 
       <g:if test="${loaderResult}">
-        <table class="table table-striped table-bordered">
+        <table class="ui celled striped table">
           <thead>
             <tr>
               <td></td>

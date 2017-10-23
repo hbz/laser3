@@ -27,7 +27,7 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <div class="span9">
-          <table class="table table-bordered">
+          <table class="ui celled table">
             <thead>
               <tr>
                 <td>Identifier</td>
@@ -102,7 +102,7 @@
     </div>
   </body>
 </html>
-          <table class="table table-bordered">
+          <table class="ui celled table">
             <thead>
               <tr>
                 <td>Identifier</td>

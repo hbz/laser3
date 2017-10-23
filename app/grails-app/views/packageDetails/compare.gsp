@@ -35,7 +35,7 @@
 	    </g:if>
 
 	<g:form action="compare" controller="packageDetails" method="GET">
-		<table class="table table-bordered">
+		<table class="ui celled table">
 			<thead>
 				<tr>
 					<th></th>
@@ -96,7 +96,7 @@
 
 	<div class="row">
 	<h3>${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
-	<table class="table table-bordered">
+	<table class="ui celled table">
 		<thead>
 			<tr>
 				<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
@@ -171,7 +171,7 @@
 <div class="span6 offset3">
 <dt class="center">${message(code:'package.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 </div>
-<table class="table table-bordered">
+<table class="ui celled table">
 	<thead>
 		<tr> 
 			<td> ${message(code:'title.label', default:'Title')} </td>

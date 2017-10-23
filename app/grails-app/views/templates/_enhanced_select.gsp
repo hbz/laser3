@@ -6,7 +6,7 @@
   </div>
   
   <div>
-    <table id="escr_tab" class="table table-bordered">
+    <table id="escr_tab" class="ui celled table">
       <thead>
 	<tr id="escr_head_row">
         </tr>

@@ -5,7 +5,7 @@
   </div>
   <div class="modal-body">
     <p> Items requiring action are marked with red circle. When these items are addressed, 'Confirm Delete' button will be enabled.</p>
-    <table class="table table-bordered">
+    <table class="ui celled table">
       <thead>
         <th>Item</th>
         <th>Details</th>

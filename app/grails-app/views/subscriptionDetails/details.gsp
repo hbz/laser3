@@ -77,7 +77,7 @@
               <dl>
                   <dt>${message(code:'package.show.pkg_name', default:'Package Name')}</dt>
                   <dd>
-                  <table class="table table-bordered">
+                  <table class="ui celled table">
                     <thead>
                       <th>${message(code:'package.name.label', default:'Name')}</th>
                       <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
@@ -106,7 +106,7 @@
 
                <dl><dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
                    <dd>
-                     <table class="table table-bordered">
+                     <table class="ui celled table">
                        <thead>
                          <tr>
                            <th>${message(code:'default.authority.label', default:'Authority')}</th>
@@ -141,7 +141,7 @@
 
                <dl><dt>${message(code:'financials.label', default:'Financials')}</dt>
                    <dd>
-                     <table class="table table-striped table-bordered">
+                     <table class="ui celled striped table">
                        <thead>
                          <tr>
                            <th>${message(code:'financials.costItem', default:'CI')}</th>

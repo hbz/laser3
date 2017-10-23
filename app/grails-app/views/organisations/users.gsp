@@ -21,7 +21,7 @@
       </g:if>
 
 
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
         <tr>
           <th>${message(code:'user.label', default:'User')}</th>
           <th>${message(code:'user.email', default:'Email')}</th>

@@ -51,7 +51,7 @@
                 </div>
 
                 <div id="resultsarea">
-                  <table class="table table-bordered table-striped">
+                  <table class="ui celled striped table">
                     <thead>
                       <tr>
                       <th style="white-space:nowrap">${message(code:'title.label', default:'Title')}</th>

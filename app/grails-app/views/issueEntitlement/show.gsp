@@ -101,7 +101,7 @@
             
             <h6><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
 
-            <table class="table table-bordered table-striped">
+            <table class="ui celled striped table">
                 <tr>
                     <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
                     <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
@@ -135,7 +135,7 @@
             
             <h6><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
 
-            <table class="table table-bordered table-striped">
+            <table class="ui celled striped table">
                 <tr>
                     <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
                     <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
@@ -172,7 +172,7 @@
                 <a href="${jusplink}">[JUSP]</a>
               </span>
               <h6>JUSP Usage Statistics</h6>
-              <table class="table table-bordered table-striped">
+              <table class="ui celled striped table">
                 <tr>
                   <th>Reporting Period</th>
                   <g:each in="${x_axis_labels}" var="l">
@@ -209,7 +209,7 @@
                   <input type="submit" class="btn btn-primary" value="${message(code:'default.button.submit.label', default:'Submit')}">
                 </g:form>
 
-                <table class="table table-bordered table-striped">
+                <table class="ui celled striped table">
                     <tr>
                         <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
                         <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>

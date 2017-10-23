@@ -35,7 +35,7 @@
 
     <div class="container">
       <g:if test="${costItems && costItems.size() > 0}">
-        <table class="table table-bordered">
+        <table class="ui celled table">
           <thead>
             <tr>
               <th>${message(code:'financials.invoice_number', default:'Invoice Number')}</th>

@@ -28,7 +28,7 @@
     <div class="container">
       <div class="row">
         <div class="span8">
-          <table class="table table-bordered">
+          <table class="ui celled table">
             <thead>
               <tr>
                 <td>Key</td>

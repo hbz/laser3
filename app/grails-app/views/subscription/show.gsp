@@ -127,7 +127,7 @@
 
           <g:if test="${subscriptionInstance?.orgRelations}">
               <h6>Relations</h6>
-              <table class="table table-bordered table-striped">
+              <table class="ui celled striped table">
                   <tr>
                       <th>Relation</th>
                       <th>To Org</th>
@@ -143,7 +143,7 @@
 
           <g:if test="${subscriptionInstance?.issueEntitlements}">
               <h6>Entitlements</h6>
-              <table class="table table-bordered table-striped">
+              <table class="ui celled striped table">
                   <tr>
                       <th>Title</th>
                       <th>ISSN</th>

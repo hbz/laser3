@@ -24,7 +24,7 @@
 
     <div class="container">
       <h3>${message(code:'subscription.details.edit_history.label', default:'Subscription history')}</h3>
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
         <tr>
           <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
           <th>${message(code:'default.person.label', default:'Person')}</th>

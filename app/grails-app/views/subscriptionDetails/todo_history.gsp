@@ -26,7 +26,7 @@
 
       <h3>${message(code:'subscription.details.todo_history.label', default:'ToDo History')}</h3>
 
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
         <tr>
           <th>${message(code:'subscription.details.todo_history.descr', default:'ToDo Description')}</th>
           <th>${message(code:'subscription.details.todo_history.outcome', default:'Outcome')}</th>

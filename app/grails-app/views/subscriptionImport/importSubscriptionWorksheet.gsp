@@ -46,7 +46,7 @@
           <input type="hidden" name="orgId" value="${subOrg.id}"/>
         </g:if>
         <hr/>
-          <table class="table table-bordered">
+          <table class="ui celled table">
             <thead>
               <tr>
                 <td>${message(code:'title.label', default:'Title')}</td>

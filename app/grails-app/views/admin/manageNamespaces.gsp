@@ -37,7 +37,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="span8">
-					<table class="table table-bordered table-striped">
+					<table class="ui celled striped table">
 						<thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>

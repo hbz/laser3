@@ -34,7 +34,7 @@
 
             <g:if test="${titleMatches != null}">
               <g:if test="${titleMatches.size()>0}">
-                <table class="table table-bordered">
+                <table class="ui celled table">
                   <thead>
                     <tr>
                       <th>${message(code:'title.label', default:'Title')}</th>

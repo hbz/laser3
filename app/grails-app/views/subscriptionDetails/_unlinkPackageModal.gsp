@@ -5,7 +5,7 @@
   </div>
   <div class="modal-body">
     <p> ${message(code:'subscription.details.unlink.note', default:'No user actions required for this process.')}</p>
-    <table class="table table-bordered">
+    <table class="ui celled table">
       <thead>
         <th>${message(code:'default.item.label', default:'Item')}</th>
         <th>${message(code:'default.details.label', default:'Details')}</th>

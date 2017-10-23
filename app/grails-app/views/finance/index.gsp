@@ -72,7 +72,7 @@
 <div class="container-fluid">
 
     <div id="userError" hidden="">
-        <table class="table table-striped table-bordered ">
+        <table class="ui celled striped table">
             <thead>
             <tr><th>Problem/Update</th>
                 <th>Info</th></tr>

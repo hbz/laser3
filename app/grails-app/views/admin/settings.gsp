@@ -13,7 +13,7 @@
     </laser:breadcrumbs>
 
     <div class="container">
-      <table class="table table-bordered">
+      <table class="ui celled table">
         <thead>
           <tr>
             <td>Setting</td>

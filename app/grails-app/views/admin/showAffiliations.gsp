@@ -16,7 +16,7 @@
 
     <div class="container">
         <h2>Affiliations</h2>
-        <table class="table table-bordered table-striped">
+        <table class="ui celled striped table">
           <tr>
             <th>Username</th><th>Affiliations</th>
           </tr>

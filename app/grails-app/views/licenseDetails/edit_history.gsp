@@ -20,7 +20,7 @@
 
     <div class="container">
       <h3>${message(code:'license.nav.edit_history', default:'Edit History')}</h3>
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
         <tr>
           <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
           <th>${message(code:'person.label', default:'Person')}</th>

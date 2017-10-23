@@ -15,7 +15,7 @@
 
 <div class="container">
     <h1>Application Info</h1>
-    <table class="table table-bordered">
+    <table class="ui celled table">
         <tr><td>Build Number</td><td> <g:meta name="app.buildNumber"/></td></tr>
         <tr><td>Build Profile</td><td> <g:meta name="app.buildProfile"/></td></tr>
         <tr><td>App version</td><td> <g:meta name="app.version"/></td></tr>
@@ -30,16 +30,16 @@
 
     <h1>Background task status</h1>
     <h2>ES Index Update</h2>
-    <table class="table table-bordered">
+    <table class="ui celled table">
         <tr><td>Currently Running</td><td>${dataloadService.update_running}</td></tr>
         <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
     </table>
     <h2>Global Data Sync</h2>
-    <table class="table table-bordered">
+    <table class="ui celled table">
         <tr><td>Currently Running</td><td>${globalSourceSyncService.running}</td></tr>
     </table>
     <h2>JUSP Sync Service</h2>
-    <table class="table table-bordered">
+    <table class="ui celled table">
         <tr><td>Currently Running</td><td>${juspSyncService.running}</td></tr>
         <tr><td>Completed Count</td><td>${juspSyncService.completedCount}</td></tr>
         <tr><td>New Fact Count</td><td>${juspSyncService.newFactCount}</td></tr>

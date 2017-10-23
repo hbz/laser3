@@ -24,7 +24,7 @@
 
           <h3>${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 
-          <table class="table table-bordered">
+          <table class="ui celled table">
             <thead>
               <tr>
                 <th>${message(code:'user.id', default:'Id')}</td>
@@ -47,7 +47,7 @@
 
           <h3>${message(code:'user.role.plural', default:'Roles')}</h3>
 
-          <table class="table table-bordered">
+          <table class="ui celled table">
             <thead>
               <tr>
                 <th>${message(code:'user.role', default:'Role')}</td>

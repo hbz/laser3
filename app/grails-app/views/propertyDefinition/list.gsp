@@ -17,7 +17,7 @@
             <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
         </g:if>
 
-        <table class="table table-striped table-bordered">
+        <table class="ui celled striped table">
             <thead>
             <tr>
 

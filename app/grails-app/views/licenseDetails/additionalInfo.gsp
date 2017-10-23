@@ -21,11 +21,11 @@
 
     <div class="container">
       <h2>${message(code:'license.additionalInfo.perms', default:'Permissions for user')}</h2>
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
       </table>
 
       <h2>${message(code:'subscription.details.additionalInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
         <tr>
           <th>Organisation</th><th>${message(code:'subscription.details.additionalInfo.roles_and_perm', default:'Roles and Permissions')}</th>
         </tr>
@@ -53,7 +53,7 @@
       </table>
 
       <h2>${message(code:'subscription.details.user.permissions', default:'Logged in user permissions')}</h2>
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
         <tr>
           <th>${message(code:'subscription.details.additionalInfo.aff_via', default:'Affiliated via Role')}</th><th>${message(code:'default.permissions.label', default:'Permissions')}</th>
         </tr>

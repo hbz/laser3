@@ -24,11 +24,11 @@
 
     <div class="container">
       <h2>Permissions for user</h2>
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
       </table>
 
       <h2>The following organisations are granted the listed permissions from this license</h2>
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
         <tr>
           <th>Organisation</th><th>Roles and Permissions</th>
         </tr>
@@ -57,7 +57,7 @@
       </table>
 
       <h2>Logged in user permissions</h2>
-      <table  class="table table-striped table-bordered">
+      <table  class="ui celled striped table">
         <tr>
           <th>Affiliated via Role</th><th>Permissions</th>
         </tr>

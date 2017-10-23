@@ -33,7 +33,7 @@
 
     <div class="container">
 
-      <table class="table table-bordered table-striped">
+      <table class="ui celled striped table">
         <thead>
           <tr>
             <g:sortableColumn property="title" title="${message(code: 'title.label', default: 'Title')}" />
