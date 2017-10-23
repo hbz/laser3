@@ -215,14 +215,14 @@
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">${message(code:'license.startDate', default:'Start Date')}</label></dt>
+                      <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" type="date" field="startDate" />
                       </dd>
                   </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">${message(code:'license.endDate', default:'End Date')}</label></dt>
+                      <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
                       <dd>
                         <g:xEditable owner="${license}" type="date" field="endDate" />
                       </dd>

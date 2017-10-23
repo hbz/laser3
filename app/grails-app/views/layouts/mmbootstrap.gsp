@@ -13,6 +13,11 @@
     <meta name="viewport" content="initial-scale = 1.0">
 
     <r:require modules="kbplus" />
+    
+    <script type="text/javascript">
+     var gspLocale = "${message(code:'default.locale.label', default:'en')}";
+     var gspDateFormat = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}";
+    </script>
 
     <g:layoutHead/>
 
@@ -28,6 +33,7 @@
 
   <body>
   <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
+  <g:set var="dateFormat" value="${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}" />
 
   <script>
     dataLayer = [{

@@ -107,18 +107,18 @@
 		<tbody>
 			<tr>
 				<td>${message(code:'default.dateCreated.label', default:'Date Created')}</td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).dateCreated}"/></td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).dateCreated}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).dateCreated}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).dateCreated}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'default.startDate.label', default:'Start Date')}</td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).startDate}"/></td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).startDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).startDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).startDate}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'default.endDate.label', default:'End Date')}</td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).endDate}"/></td>
-				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).endDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(0).endDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${pkgInsts.get(1).endDate}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'package.compare.overview.tipps', default:'Number of TIPPs')}</td>
@@ -194,20 +194,21 @@
 		<tr>
 			
 			<td>
-			<b><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></b>
-			<i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
+                          <b><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></b>
+                          <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
-			<g:each in="${currentTitle[0].ids}" var="id">
-                          <g:if test="${id.identifier.ns.ns != 'originediturl'}">
-                            <br>${id.identifier.ns.ns}:${id.identifier.value}
-                          </g:if>
-                        </g:each>
+                          <g:each in="${currentTitle[0].ids}" var="id">
+                            <g:if test="${id.identifier.ns.ns != 'originediturl'}">
+                              <br>${id.identifier.ns.ns}:${id.identifier.value}
+                            </g:if>
+                          </g:each>
 			</td>
 			
 			<g:if test="${pkgATipp}">		
 				<td class="${highlight }">
                                   <g:each in="${pkgATipp}" var="t">
                                     <g:render template="compare_cell" model="[obj:t]"/>
+                                    <div style="height:3px;"></div>
                                   </g:each>
                                 </td>
 			</g:if>
@@ -217,6 +218,7 @@
 				<td class="${highlight }">
                                   <g:each in="${pkgBTipp}" var="t">
                                     <g:render template="compare_cell" model="[obj:t]"/>
+                                    <div style="height:3px;"></div>
                                   </g:each>
                                 </td>
 			</g:if>
@@ -309,13 +311,13 @@
     });
 
     $('#dateA').datepicker({
-      format:"${message(code:'default.date.format.notime').toLowerCase()}",
-      language:"${message(code:'default.locale.label')}",
+      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+      language:"${message(code:'default.locale.label', default:'en')}",
       autoclose:true
     });
     $('#dateB').datepicker({
-      format:"${message(code:'default.date.format.notime').toLowerCase()}",
-      language:"${message(code:'default.locale.label')}",
+      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+      language:"${message(code:'default.locale.label', default:'en')}",
       autoclose:true
     });
 

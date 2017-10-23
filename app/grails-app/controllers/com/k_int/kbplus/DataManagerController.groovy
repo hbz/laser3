@@ -30,7 +30,7 @@ class DataManagerController {
 
     def result =[:]
     log.debug("changeLog ${params}");
-    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
     def exporting = params.format == 'csv' ? true : false
 

@@ -1,33 +1,34 @@
 // KBPlusApp.gsp.js
 //
 $(document).ready(function() {
-
+  console.log("${message(code:'default.locale.label')}");
+  console.log(gspLocale);
   $.fn.editable.defaults.mode = 'inline';
   $.fn.editable.defaults.emptytext = 'Edit';
-  $.fn.datepicker.defaults.language = "${message(code:'default.locale.label', default:'en')}";
+  $.fn.datepicker.defaults.language = gspLocale;
   
   $('.xEditable').editable({
-    language: "${message(code:'default.locale.label', default:'en')}",
+    language: gspLocale,
     datepicker: {
-      language: "${message(code:'default.locale.label', default:'en')}"
+      language: gspLocale
     },
-    format: "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}",
+    format: gspDateFormat,
   });
 
   $('.xEditableValue').editable({
-    language: "${message(code:'default.locale.label', default:'en')}",
+    language: gspLocale,
     datepicker: {
-      language: "${message(code:'default.locale.label', default:'en')}"
+      language: gspLocale
     },
-    format: "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}",
+    format: gspDateFormat,
   });
   $(".xEditableManyToOne").editable();
   $(".simpleHiddenRefdata").editable({
-    language: "${message(code:'default.locale.label', default:'en')}",
+    language: gspLocale,
     datepicker: {
-      language: "${message(code:'default.locale.label', default:'en')}"
+      language: gspLocale
     },
-    format: "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}",
+    format: gspDateFormat,
     url: function(params) {
       var hidden_field_id = $(this).data('hidden-id');
       $("#"+hidden_field_id).val(params.value);
@@ -55,15 +56,15 @@ $(document).ready(function() {
   });
 
   $('.dlpopover').popover({html:true,
-                           placement:'left',
-                           title:'search', 
-                           trigger:'click', 
+                          placement:'left',
+                          title:'search', 
+                          trigger:'click', 
     template: 
 '<div class="popover" style="width: 600px;"><div></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>',
-                           'max-width':600, 
-                           content:function() {
-                           return getContent();}
-                          });
+                          'max-width':600, 
+                          content:function() {
+                          return getContent();}
+  });
 });
 
 function getContent() {

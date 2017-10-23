@@ -74,7 +74,7 @@ class JuspController {
 
     def validDates = validateDate(params.core_start) && validateDate(params.core_end)
     if(validDates && params.jusp_inst && params.core_start && params.core_end){
-        def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+        def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         def coreStart = dateFormatter.parse(params.core_start)
         def coreEnd = dateFormatter.parse(params.core_end)
 
@@ -104,7 +104,7 @@ class JuspController {
           }
         }
     }else if(!validDates){
-        result.data="Date format error. Expected format ${message(code:'default.date.format.notime')}"
+        result.data="Date format error. Expected format ${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"
         result.status="error"
     }else{
       result.data = "Required parameters: jusp_inst, core_start, core_end "
@@ -127,13 +127,13 @@ class JuspController {
       if(tiInstProv && validDate){
         def lookupDate = null
         if(params.lookupDate){
-          def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+          def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
           lookupDate = dateFormatter.parse(params.lookupDate)
         }
         result.data = tiInstProv.coreStatus(lookupDate)
         result.status = "ok"
       }else if(!validDate){
-        result.data="Date format error. Expected format ${message(code:'default.date.format.notime')}"
+        result.data="Date format error. Expected format ${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"
         result.status="error"
       }else{
         result.data=""
@@ -156,7 +156,7 @@ class JuspController {
       tiInstProv = tiInstProv[0]//FIXME: Should we care for lists?
       def validDates = validateDate(params.core_start) && validateDate(params.core_end)
       if(tiInstProv && validDates){
-        def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+        def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         def coreStart = dateFormatter.parse(params.core_start)
         def coreEnd = params.core_end ? dateFormatter.parse(params.core_end) : null
         tiInstProv.extendCoreExtent(coreStart, coreEnd)
@@ -169,7 +169,7 @@ class JuspController {
         result.status = "ok"
         result.count = coreDatesList.size()
       }else if(!validDates){
-        result.data="Date format error. Expected format ${message(code:'default.date.format.notime')}"
+        result.data="Date format error. Expected format ${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"
         result.status="error"
         result.count=0
       }else{
@@ -217,7 +217,7 @@ class JuspController {
     return tiInstProv
  }
  private boolean validateDate(String dateString){
-    def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+    def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
     dateFormatter.setLenient(false)
     log.debug("validateDate:: ${dateString}")
     try{
