@@ -162,7 +162,7 @@ class OrganisationsController {
           def link_type_results = OrgRole.executeQuery("select orgr from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id],[offset:param_offset,max:10])
           
           if(link_type_results){
-            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv.value, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
+            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
           }
         }else{
           log.debug("Could not read Refdata: ${lv}")

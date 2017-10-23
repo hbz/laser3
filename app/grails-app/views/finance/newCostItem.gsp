@@ -185,7 +185,9 @@
     });
 
    $('#newDate').datepicker({
-    	format:"yyyy-mm-dd"
+      format:"${message(code:'default.date.format.notime').toLowerCase()}",
+      language:"${message(code:'default.locale.label')}",
+      autoclose:true
     });
   });
 

@@ -48,8 +48,8 @@
             <g:each in="${costItems}" var="ci">
               <tr>
                 <td>${ci.invoice.invoiceNumber}</td>
-                <td><g:formatDate date="${ci.invoice.startDate}" format="yyyy-MM-dd"/></td>
-                <td><g:formatDate date="${ci.invoice.endDate}" format="yyyy-MM-dd"/></td>
+                <td><g:formatDate date="${ci.invoice.startDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/></td>
+                <td><g:formatDate date="${ci.invoice.endDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/></td>
                 <td><span class="pull-right"><g:formatNumber number="${ci.total}" groupingUsed="true" type="currency"/></span></td>
               </tr>
               <tr>

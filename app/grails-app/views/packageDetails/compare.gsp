@@ -61,16 +61,16 @@
 				<tr>
 					<td>${message(code:'package.compare.snapshot', default:'Package On date')}</td>
 					<td>
-						<div class="input-append date">
+						<div class="input-append date" id="dateA">
 							<input class="span2" size="16" type="text" 
-							name="dateA" id="dateA" value="${params.dateA}">
+							name="dateA" value="${params.dateA}">
 							<span class="add-on"><i class="icon-th"></i></span> 
 						</div>
 					</td>
 					<td> 
-						<div class="input-append date">
+						<div class="input-append date" id="dateB">
 							<input class="span2" size="16" type="text" 
-							name="dateB" id="dateB" value="${params.dateB}">
+							name="dateB" value="${params.dateB}">
 							<span class="add-on"><i class="icon-th"></i></span> 
 						</div>
 					</td>
@@ -107,18 +107,18 @@
 		<tbody>
 			<tr>
 				<td>${message(code:'default.dateCreated.label', default:'Date Created')}</td>
-				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).dateCreated}"/></td>
-				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).dateCreated}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).dateCreated}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).dateCreated}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'default.startDate.label', default:'Start Date')}</td>
-				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).startDate}"/></td>
-				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).startDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).startDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).startDate}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'default.endDate.label', default:'End Date')}</td>
-				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(0).endDate}"/></td>
-				<td><g:formatDate format="yyyy-MM-dd" date="${pkgInsts.get(1).endDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(0).endDate}"/></td>
+				<td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkgInsts.get(1).endDate}"/></td>
 			</tr>
 			<tr>
 				<td>${message(code:'package.compare.overview.tipps', default:'Number of TIPPs')}</td>
@@ -309,10 +309,14 @@
     });
 
     $('#dateA').datepicker({
-    	format:"yyyy-mm-dd"
+      format:"${message(code:'default.date.format.notime').toLowerCase()}",
+      language:"${message(code:'default.locale.label')}",
+      autoclose:true
     });
     $('#dateB').datepicker({
-    	format:"yyyy-mm-dd"
+      format:"${message(code:'default.date.format.notime').toLowerCase()}",
+      language:"${message(code:'default.locale.label')}",
+      autoclose:true
     });
 
 </r:script>

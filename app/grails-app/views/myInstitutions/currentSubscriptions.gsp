@@ -140,7 +140,9 @@
     <r:script type="text/javascript">
 
         $(".datepicker-class").datepicker({
-            format:"${session.sessionPreferences?.globalDatepickerFormat}"
+            format:"${message(code:'default.date.format.notime').toLowerCase()}",
+            language:"${message(code:'default.locale.label')}",
+            autoclose:true
         });
     </r:script>
 

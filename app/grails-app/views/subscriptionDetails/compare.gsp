@@ -68,14 +68,14 @@
 							<tr>
 								<td> ${message(code:'subscription.compare.snapshot', default:'Subscriptions on Date')}</td>
 								<td>
-									<div class="input-append date">
+									<div class="input-append date" id="dateA">
 										<input class="span2" size="16" type="text" name="dateA" id="dateA" value="${params.dateA}"/>
 										<span class="add-on"><i class="icon-th"></i></span>
 									</div>
 								</td>
 								<td>
-									<div class="input-append date">
-										<input class="spann2" size="16" type="text" name="dateB" id="dateB" value="${params.dateB}"/>
+									<div class="input-append date" id="dateB">
+										<input class="spann2" size="16" type="text" name="dateB" value="${params.dateB}"/>
 										<span class="add-on"><i class="icon-th"></i></span>
 									</div>
 								</td>
@@ -110,18 +110,18 @@
 					<tbody>
 						<tr>
 							<td>${message(code:'default.dateCreated.label', default:'Date Created')}</td>
-							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(0).dateCreated}"/></td>
-							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(1).dateCreated}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(0).dateCreated}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(1).dateCreated}"/></td>
 						</tr>
 						<tr>
 							<td>${message(code:'default.startDate.label', default:'Start Date')}</td>
-							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(0).startDate}"/></td>
-							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(1).startDate}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(0).startDate}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(1).startDate}"/></td>
 						</tr>
 						<tr>
 							<td>${message(code:'default.endDate.label', default:'End Date')}</td>
-							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(0).endDate}"/></td>
-							<td><g:formatDate format="yyyy-MM-dd" date="${subInsts.get(1).endDate}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(0).endDate}"/></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subInsts.get(1).endDate}"/></td>
 						</tr>
 						<tr>
 							<td>${message(code:'subscription.compare.overview.ies', default:'Number of IEs')}</td>
@@ -283,10 +283,14 @@
     });
 
     $('#dateA').datepicker({
-    	format:"yyyy-mm-dd"
+      format:"${message(code:'default.date.format.notime').toLowerCase()}",
+      language:"${message(code:'default.locale.label')}",
+      autoclose:true
     });
     $('#dateB').datepicker({
-    	format:"yyyy-mm-dd"
+      format:"${message(code:'default.date.format.notime').toLowerCase()}",
+      language:"${message(code:'default.locale.label')}",
+      autoclose:true
     });
 
 </r:script>

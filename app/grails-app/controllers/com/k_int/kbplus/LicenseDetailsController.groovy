@@ -137,7 +137,7 @@ class LicenseDetailsController {
 
     def subscriptions = null
     if(licenseInstitutions){
-      def sdf = new java.text.SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
       def date_restriction =  new Date(System.currentTimeMillis())
 
       def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org in (:orgs) ) ) ) AND ( s.status.value != 'Deleted' ) AND (s.owner = null) "
