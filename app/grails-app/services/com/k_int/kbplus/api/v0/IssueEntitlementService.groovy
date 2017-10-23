@@ -47,22 +47,24 @@ class IssueEntitlementService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getIssueEntitlements(SubscriptionPackage subPkg, User user, Org context){
-        def hasAccess  = false
-        def hasAccess2 = false
-
-        // TODO
-        subPkg.subscription.orgRelations.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess2 = true
-            }
-        }
-        subPkg.pkg.orgs.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = hasAccess2
-            }
-        }
-
         def result = []
+        def hasAccess = outService.isDataManager(user)
+
+        if (! hasAccess) {
+            def hasAccess2 = false
+            // TODO
+            subPkg.subscription.orgRelations.each{ orgRole ->
+                if(orgRole.getOrg().id == context?.id) {
+                    hasAccess2 = true
+                }
+            }
+            subPkg.pkg.orgs.each{ orgRole ->
+                if(orgRole.getOrg().id == context?.id) {
+                    hasAccess = hasAccess2
+                }
+            }
+        }
+
         if (hasAccess) {
             result = outService.exportIssueEntitlements(subPkg,  OutHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
         }

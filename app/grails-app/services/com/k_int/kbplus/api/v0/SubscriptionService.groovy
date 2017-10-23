@@ -48,15 +48,17 @@ class SubscriptionService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getSubscription(Subscription sub, User user, Org context){
-        def hasAccess = false
+        def result = []
+        def hasAccess = outService.isDataManager(user)
 
-        sub.orgRelations.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
+        if (! hasAccess) {
+            sub.orgRelations.each { orgRole ->
+                if (orgRole.getOrg().id == context?.id) {
+                    hasAccess = true
+                }
             }
         }
 
-        def result = []
         if (hasAccess) {
             result = outService.exportSubscription(sub, context) // TODO check orgRole.roleType
         }

@@ -246,7 +246,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         log.debug("api call v0 : " + params)
 
         def result
-        def hasRole = false
+        def hasAccess = false
 
         def obj     = params.get('obj')
         def query   = params.get('q')
@@ -259,16 +259,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         if (user) {
             // checking role permission
+            def dmRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
 
             if ("GET" == request.method) {
                 def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_READER'))
-                hasRole = !readRole.isEmpty()
-                //println "GET: " + hasRole
+                hasAccess = ! (dmRole.isEmpty() && readRole.isEmpty())
             }
             else if ("POST" == request.method) {
                 def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_WRITER'))
-                hasRole = !writeRole.isEmpty()
-                //println "POST: " + hasRole
+                hasAccess = ! (dmRole.isEmpty() && writeRole.isEmpty())
             }
 
             // getting context
@@ -287,7 +286,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             }
         }
 
-        if (!contextOrg || !hasRole) {
+        if (!contextOrg || !hasAccess) {
             result = Constants.HTTP_FORBIDDEN
         }
         else if (!obj) {
