@@ -17,7 +17,7 @@ class SubscriptionImportController {
  
   def possible_date_formats = [
     new SimpleDateFormat('yyyy/MM/dd'),
-    new SimpleDateFormat('dd.mm.yyyy')
+    new SimpleDateFormat('dd.mm.yyyy'),
     new SimpleDateFormat('dd/MM/yyyy'),
     new SimpleDateFormat('dd/MM/yy'),
     new SimpleDateFormat('yyyy/MM'),
