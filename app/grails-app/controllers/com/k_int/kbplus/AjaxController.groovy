@@ -483,28 +483,28 @@ class AjaxController {
       }
     }
   }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addOrgRole() {
+        // log.debug("addOrgRole ${params}");
+        def org_to_link = resolveOID(params.orm_orgoid?.split(":"))
+        def owner = resolveOID(params.parent?.split(":"))
+        def rel = RefdataValue.get(params.orm_orgRole);
 
-  def addOrgRole() {
-    // log.debug("addOrgRole ${params}");
-    def org_to_link = resolveOID(params.orm_orgoid?.split(":"))
-    def owner = resolveOID(params.parent?.split(":"))
-    def rel = RefdataValue.get(params.orm_orgRole);
+        // log.debug("Add link to ${org_to_link} from ${owner} rel is ${rel} recip_prop is ${params.recip_prop}");
+        def new_link = new OrgRole(org:org_to_link,roleType:rel)
+        new_link[params.recip_prop] = owner
+        if ( new_link.save(flush:true) ) {
+            // log.debug("Org link added");
+        }
+        else {
+            log.error("Problem saving new org link...");
+            new_link.errors.each { e ->
+                log.error(e);
+            }
+        }
 
-    // log.debug("Add link to ${org_to_link} from ${owner} rel is ${rel} recip_prop is ${params.recip_prop}");
-    def new_link = new OrgRole(org:org_to_link,roleType:rel)
-    new_link[params.recip_prop] = owner
-    if ( new_link.save(flush:true) ) {
-      // log.debug("Org link added");
+        redirect(url: request.getHeader('referer'))
     }
-    else {
-      log.error("Problem saving new org link...");
-      new_link.errors.each { e ->
-        log.error(e);
-      }
-    }
-
-    redirect(url: request.getHeader('referer'))
-  }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addRefdataValue() {
@@ -727,13 +727,14 @@ class AjaxController {
         ])
     }
 
-  def delOrgRole() {
-    // log.debug("delOrgRole ${params}");
-    def or = OrgRole.get(params.id)
-    or.delete(flush:true);
-    // log.debug("Delete link: ${or}");
-    redirect(url: request.getHeader('referer'))
-  }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def delOrgRole() {
+        // log.debug("delOrgRole ${params}");
+        def or = OrgRole.get(params.id)
+        or.delete(flush:true);
+        // log.debug("Delete link: ${or}");
+        redirect(url: request.getHeader('referer'))
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def deleteCustomProperty(){
@@ -1046,14 +1047,15 @@ class AjaxController {
     outs.close()
   }
 
-  def removeUserRole() {
-    def user = resolveOID2(params.user);
-    def role = resolveOID2(params.role);
-    if ( user && role ) {
-      com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def removeUserRole() {
+        def user = resolveOID2(params.user);
+        def role = resolveOID2(params.role);
+        if (user && role) {
+            com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+        }
+        redirect(url: request.getHeader('referer'))
     }
-    redirect(url: request.getHeader('referer'))    
-  }
 
   /**
    * ToDo: This function is a duplicate of the one found in InplaceTagLib, both should be moved to a shared static utility

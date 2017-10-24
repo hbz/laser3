@@ -56,7 +56,7 @@ class SubscriptionController {
     def show() {
         def subscriptionInstance = Subscription.get(params.id)
         if (!subscriptionInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
             redirect action: 'list'
             return
         }
@@ -131,18 +131,18 @@ class SubscriptionController {
     def delete() {
         def subscriptionInstance = Subscription.get(params.id)
         if (!subscriptionInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             subscriptionInstance.delete(flush: true)
-      flash.message = message(code: 'default.deleted.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
             redirect action: 'show', id: params.id
         }
     }

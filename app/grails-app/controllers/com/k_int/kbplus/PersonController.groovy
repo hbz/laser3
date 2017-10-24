@@ -162,13 +162,7 @@ class PersonController {
         }
         
         def user = User.get(springSecurityService.principal.id)
-        def editable
-        if(SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')) {
-          editable = true
-        }
-        else {
-          editable = true // TODO editable = true 
-        }
+        def editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
         // create mandatory PersonPrivateProperties if not existing
 

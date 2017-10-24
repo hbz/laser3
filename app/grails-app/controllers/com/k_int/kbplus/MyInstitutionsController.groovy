@@ -432,11 +432,8 @@ class MyInstitutionsController {
             return;
         }
 
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
-            result.editable = true
-        } else {
-            result.editable = false;
-        }
+        result.editable = checkUserHasRole(result.user, result.institution, 'INST_ADM')
+
         def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
         def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
         def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
@@ -565,11 +562,7 @@ class MyInstitutionsController {
         result.institution = Org.findByShortcode(params.shortcode)
         result.orgType = result.institution.orgType
         
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
-            result.editable = true
-        } else {
-            result.editable = false;
-        }
+        result.editable = checkUserHasRole(result.user, result.institution, 'INST_ADM')
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
@@ -758,6 +751,7 @@ class MyInstitutionsController {
         }
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def newLicense(params) {
         def user = User.get(springSecurityService.principal.id)
         def org = Org.findByShortcode(params.shortcode)
@@ -788,6 +782,7 @@ class MyInstitutionsController {
         }
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def deleteLicense(params) {
         log.debug("deleteLicense ${params}");
         def result = [:]
@@ -1249,6 +1244,7 @@ AND EXISTS (
         return qry_map
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def availableLicenses() {
         // def sub = resolveOID(params.elementid);
         // OrgRole.findAllByOrgAndRoleType(result.institution, licensee_role).collect { it.lic }
@@ -1287,6 +1283,7 @@ AND EXISTS (
         result
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def actionCurrentSubscriptions() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -2356,7 +2353,7 @@ AND EXISTS (
         result
     }
 
-    def checkUserHasRole(user, org, role) {
+    boolean checkUserHasRole(user, org, role) {
         def uoq = UserOrg.createCriteria()
 
         def grants = uoq.list {
@@ -2377,7 +2374,6 @@ AND EXISTS (
             return true
 
         return false
-
     }
 
     def parseDate(datestr, possible_formats) {

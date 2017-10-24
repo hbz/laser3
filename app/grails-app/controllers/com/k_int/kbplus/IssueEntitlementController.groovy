@@ -15,12 +15,17 @@ class IssueEntitlementController {
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
    def springSecurityService
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        if (! params.max) {
+            User user   = springSecurityService.getCurrentUser()
+            params.max = user?.getDefaultPageSize()
+        }
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 

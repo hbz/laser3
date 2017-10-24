@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -13,7 +14,10 @@ class PropertyDefinitionController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 50, 1000)
+        if (! params.max) {
+            User user   = springSecurityService.getCurrentUser()
+            params.max = user?.getDefaultPageSize()
+        }
         [propDefInstanceList: PropertyDefinition.list(params), propertyDefinitionTotal: PropertyDefinition.count(), editable:isEditable()]
     }
     

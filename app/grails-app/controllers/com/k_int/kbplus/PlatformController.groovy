@@ -80,12 +80,7 @@ class PlatformController {
         return
       }
 
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
-          editable = true
-      }
-      else {
-          editable = false
-      }
+      editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
      // Build up a crosstab array of title-platforms under this package
       def packages = [:]

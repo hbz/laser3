@@ -681,12 +681,7 @@ class SubscriptionDetailsController {
 
         userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-        if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-          result.editable = true
-        }
-        else {
-          result.editable = false
-        }
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
         result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize
         params.max = result.max
