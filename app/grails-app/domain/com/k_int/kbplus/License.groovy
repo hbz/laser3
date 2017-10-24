@@ -2,13 +2,14 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import de.laser.domain.BaseDomainComponent
+import de.laser.domain.Permissions
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends BaseDomainComponent implements Comparable<License>{
+class License extends BaseDomainComponent implements Permissions, Comparable<License> {
 
   @Transient
   def grailsApplication
@@ -183,8 +184,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
     return reference
   }
 
-  // determin if a user can edit this subscription
-  def isEditableBy(user, request) {
+  def isEditableBy(user) {
     hasPerm("edit", user);
   }
 

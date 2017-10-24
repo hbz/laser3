@@ -2,9 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import de.laser.domain.BaseDomainComponent
+import de.laser.domain.Permissions
+
 import javax.persistence.Transient
 
-class Subscription extends BaseDomainComponent {
+class Subscription extends BaseDomainComponent implements Permissions {
 
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
@@ -141,7 +143,7 @@ class Subscription extends BaseDomainComponent {
 
   // determin if a user can edit this subscription
   def isEditableBy(user) {
-    hasPerm("edit",user);
+    hasPerm("edit", user);
   }
 
   def hasPerm(perm, user) {

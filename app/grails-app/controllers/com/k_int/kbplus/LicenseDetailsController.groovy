@@ -39,12 +39,7 @@ class LicenseDetailsController {
     def admin_role = Role.findAllByAuthority("INST_ADM")
     result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)",[user:result.user,role:admin_role,status:[1,3]])
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
   
     def license_reference_str = result.license.reference?:'NO_LIC_REF_FOR_ID_'+params.id
 
@@ -181,12 +176,8 @@ class LicenseDetailsController {
       response.sendError(401) 
       return
     }
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+
+    result.editable = result.license.isEditableBy(result.user)
 
     log.debug("consortia(${params.id}) - ${result.license}")
     def consortia = result.license?.orgLinks?.find{
@@ -241,13 +232,7 @@ class LicenseDetailsController {
     // result.institution = Org.findByShortcode(params.shortcode)
     result.license = License.get(params.id)
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-
+    result.editable = result.license.isEditableBy(result.user)
 
     if ( ! result.license.hasPerm("view",result.user) ) {
       response.sendError(401);
@@ -266,12 +251,7 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
 
     result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -306,12 +286,8 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
 
@@ -331,12 +307,8 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result
   }
 
@@ -353,12 +325,7 @@ class LicenseDetailsController {
         def licenseInstance = License.get(params.id)
         result.license      = licenseInstance
 
-        if (result.license.hasPerm("edit", result.user)) {
-            result.editable = true
-        }
-        else {
-            result.editable = false
-        }
+        result.editable = result.license.isEditableBy(result.user)
 
         // create mandatory LicensePrivateProperties if not existing
 
@@ -392,16 +359,10 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result
   }
-
-
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def deleteDocuments() {

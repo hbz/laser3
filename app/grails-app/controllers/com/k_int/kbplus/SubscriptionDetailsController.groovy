@@ -112,12 +112,7 @@ class SubscriptionDetailsController {
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     if (params.mode == "advanced"){
       params.asAt = null
@@ -598,12 +593,7 @@ class SubscriptionDetailsController {
     result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize;
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,'Deleted');
     def ie_deleted = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
@@ -811,12 +801,7 @@ class SubscriptionDetailsController {
 
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     result
   }
@@ -836,12 +821,7 @@ class SubscriptionDetailsController {
       result.subscriber_shortcode = result.institution.shortcode
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     result
   }
@@ -859,12 +839,7 @@ class SubscriptionDetailsController {
       result.subscriber_shortcode = result.institution.shortcode
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     result
   }
@@ -896,14 +871,7 @@ class SubscriptionDetailsController {
    
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-   
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     // if ( ! result.subscriptionInstance.hasPerm("view",result.user) ) {
     //   render status: 401
@@ -1015,12 +983,7 @@ class SubscriptionDetailsController {
       }
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     if ( result.subscriptionInstance.packages ) {
       result.pkgs = []
@@ -1089,12 +1052,7 @@ class SubscriptionDetailsController {
 
     userAccessCheck( result.subscription, result.user, 'view')
 
-    if ( result.subscription.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscription.isEditableBy(result.user)
 
     result.max = params.max ?: result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -1117,13 +1075,7 @@ class SubscriptionDetailsController {
 
     userAccessCheck( result.subscription, result.user, 'view')
 
-
-    if ( result.subscription.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscription.isEditableBy(result.user)
 
     result.max = params.max ?: result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -1152,17 +1104,12 @@ class SubscriptionDetailsController {
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
     }
 
-    if ( !result.subscription.hasPerm("view",result.user) ) {
+    if ( !result.subscription.hasPerm("view", result.user) ) {
       response.sendError(401);
       return
     }
 
-    if ( result.subscription.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscription.isEditableBy(result.user)
 
     // Get a unique list of invoices
     // select inv, sum(cost) from costItem as ci where ci.sub = x
@@ -1233,13 +1180,7 @@ class SubscriptionDetailsController {
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     result
   }

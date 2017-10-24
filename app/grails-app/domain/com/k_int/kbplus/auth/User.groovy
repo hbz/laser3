@@ -1,10 +1,12 @@
 package com.k_int.kbplus.auth
 
+import de.laser.domain.Permissions
+
 import javax.persistence.Transient
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 
-class User {
+class User implements Permissions {
 
   transient springSecurityService
 
@@ -154,6 +156,10 @@ class User {
     
     // Return the prefs.
     userPrefs
+  }
+
+  def isEditableBy(user) {
+    hasPerm("edit", user);
   }
 
   def hasPerm(perm,user) {

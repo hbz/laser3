@@ -46,9 +46,8 @@ modules = {
     resource url:'js/dataTables.fixedColumns.min.js'
     resource url:'js/dataTables.scroller.js'
     resource url:'js/jquery.dotdotdot.min.js'
+
     resource url:'js/kbplusapp.js.gsp'
-
-
   }
   annotations {
     dependsOn 'kbplus'

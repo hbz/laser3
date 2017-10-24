@@ -125,7 +125,7 @@ grails.project.dependency.resolution = {
 
     plugins {
         runtime ':hibernate:3.6.10.19'  
-        runtime ":resources:1.2.8"
+        runtime ":resources:1.2.8" // 1.2.14 won't work @ kbplusapp.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
         
