@@ -324,14 +324,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     if (result instanceof Doc) {
                         if (result.contentType == Doc.CONTENT_TYPE_STRING) {
                             response.contentType = result.mimeType
-                            response.setHeader('Content-disposition', 'attachment; filename="' + result.title + '"')
+                            response.setHeader('Content-Disposition', 'attachment; filename="' + result.title + '"')
                             response.outputStream << result.content
                             response.outputStream.flush()
                             return
                         }
                         else if (result.contentType == Doc.CONTENT_TYPE_BLOB) {
                             response.contentType = result.mimeType
-                            response.setHeader('Content-disposition', 'attachment; filename="' + result.title + '"')
+                            response.setHeader('Content-Disposition', 'attachment; filename="' + result.title + '-' + result.filename + '"')
+                            response.setHeader('Content-Length', "${result.getBlobSize()}")
                             response.outputStream << result.getBlobData()
                             response.outputStream.flush()
                             return
