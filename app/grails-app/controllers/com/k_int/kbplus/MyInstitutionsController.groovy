@@ -173,7 +173,7 @@ class MyInstitutionsController {
         }
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -403,7 +403,7 @@ class MyInstitutionsController {
         viableOrgs.add(result.institution)
         
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -492,7 +492,7 @@ class MyInstitutionsController {
         result.institution = Org.findByShortcode(params.shortcode)
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -573,7 +573,7 @@ class MyInstitutionsController {
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
-            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
             cal.setTimeInMillis(System.currentTimeMillis())
             cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -611,7 +611,7 @@ class MyInstitutionsController {
 
         if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
 
-            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
             def startDate = sdf.parse(params.valid_from)
             def endDate = sdf.parse(params.valid_to)
 
@@ -921,7 +921,7 @@ class MyInstitutionsController {
         // Set Date Restriction
         def date_restriction = null;
 
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'));
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
@@ -1550,7 +1550,7 @@ AND EXISTS (
 
         boolean first = true;
 
-        def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+        def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         // Add in JR1 and JR1a reports
         def c = new GregorianCalendar()
@@ -2546,7 +2546,7 @@ AND EXISTS (
                 result
             }
             csv {
-                def dateFormat = new SimpleDateFormat(message(code:'default.date.format.notime'))
+                def dateFormat = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
                 def changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
                 response.setHeader("Content-disposition", "attachment; filename=\"${result.institution.name}_changes.csv\"")
                 response.contentType = "text/csv"
@@ -2600,7 +2600,7 @@ AND EXISTS (
 
       if (request.method == 'POST' && result.tip ){
         log.debug("Add usage ${params}")
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime'));
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         def usageDate = sdf.parse(params.usageDate);
         def cal = new GregorianCalendar()
         cal.setTime(usageDate)

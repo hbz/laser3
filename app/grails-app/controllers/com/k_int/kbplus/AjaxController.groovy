@@ -1017,7 +1017,7 @@ class AjaxController {
     
     if ( target_object ) {
       if ( params.type=='date' ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy/MM/dd'))
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         if( params.value && params.value.size() > 0 ){
           def parsed_date = sdf.parse(params.value)
           target_object."${params.name}" = parsed_date

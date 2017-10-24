@@ -151,7 +151,7 @@ class SubscriptionImportController {
 
     boolean first = true;
 
-    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
     // Step one - Assemble a list of all titles and packages.. We aren't assembling the matrix
     // of titles x packages yet.. Just gathering the data for the X and Y axis
