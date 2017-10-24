@@ -295,7 +295,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         // delegate api calls
 
-        if (!result) {
+        if (! result) {
             if ('GET' == request.method) {
                 if (!query || !value) {
                     result = Constants.HTTP_BAD_REQUEST
@@ -342,7 +342,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 def postBody = request.getAttribute("authorizedApiUsersPostBody")
                 def data = (postBody ? new JSON().parse(postBody) : null)
 
-                if (!data) {
+                if (! data) {
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
@@ -354,70 +354,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             }
         }
 
-        result = buildResponse(obj, query, value, context, contextOrg, result)
+        result = mainService.buildResponseBody(request, obj, query, value, context, contextOrg, result)
+
+        def status = result['status'] as int
+        response.setStatus(status)
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
         response.setHeader("Debug-Result-Length", result.toString().length().toString())
 
         render result.toString(true)
-    }
-
-    private buildResponse(def obj, def query, def value, def context, def contextOrg, def result) {
-
-        // POST
-
-        if (result instanceof HashMap) {
-
-            switch(result['result']) {
-                case Constants.HTTP_CREATED:
-                    response.status = HttpStatus.CREATED.value()
-                    result = new JSON(["message": "resource successfully created", "debug": result['debug']])
-                    break
-                case Constants.HTTP_CONFLICT:
-                    response.status = HttpStatus.CONFLICT.value()
-                    result = new JSON(["message": "conflict with existing resource", "debug": result['debug']])
-                    break
-                case Constants.HTTP_INTERNAL_SERVER_ERROR:
-                    response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
-                    result = new JSON(["message": "resource not created", "debug": result['debug']])
-                    break
-            }
-        }
-
-        // GET
-
-        else if (Constants.HTTP_FORBIDDEN == result) {
-            response.status = HttpStatus.FORBIDDEN.value()
-            if (contextOrg) {
-                result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode])
-            }
-            else {
-                result = new JSON(["message": "forbidden", "obj": obj, "context": context])
-            }
-        }
-        else if (Constants.HTTP_NOT_ACCEPTABLE == result) {
-            response.status = HttpStatus.NOT_ACCEPTABLE.value()
-            result = new JSON(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj])
-        }
-        else if (Constants.HTTP_NOT_IMPLEMENTED == result) {
-            response.status = HttpStatus.NOT_IMPLEMENTED.value()
-            result = new JSON(["message": "requested method not implemented", "method": request.method, "obj": obj])
-        }
-        else if (Constants.HTTP_BAD_REQUEST == result) {
-            response.status = HttpStatus.BAD_REQUEST.value()
-            result = new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context])
-        }
-        else if (Constants.HTTP_PRECONDITION_FAILED == result) {
-            response.status = HttpStatus.PRECONDITION_FAILED.value()
-            result = new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context])
-        }
-
-        if (!result) {
-            response.status = HttpStatus.NOT_FOUND.value()
-            result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context])
-        }
-
-        result
     }
 }
