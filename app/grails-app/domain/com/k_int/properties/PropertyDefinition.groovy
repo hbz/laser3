@@ -182,8 +182,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
 
     static def refdataFind(params) {
         def result = []
-
-        println params
+        
         def matches = I10nTranslation.refdataFindHelper(
                 params.baseClass,
                 'name',

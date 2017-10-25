@@ -753,7 +753,7 @@ class GlobalSourceSyncService {
           log.debug("Updating sync job max timestamp");
           sync_job.haveUpTo=new Date(max_timestamp)
           sync_job.save(flush:true);
-          sleep(2000);
+          sleep(3000);
         }
     }
     catch ( Exception e ) {

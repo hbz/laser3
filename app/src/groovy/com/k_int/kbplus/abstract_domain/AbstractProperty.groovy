@@ -6,7 +6,7 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.RefdataValue
 import javax.persistence.Transient
 
-abstract class AbstractProperty implements Serializable{
+abstract class AbstractProperty implements Serializable {
 
     @Transient
     def controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']

@@ -8,7 +8,7 @@ import org.apache.log4j.RollingFileAppender
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
-System.out.println("\nlocal config override: ${grails.config.locations}")
+System.out.println("\n~ local config override: ${grails.config.locations}")
 
 // @NotificationsJob
 // - enable notification
@@ -22,6 +22,13 @@ defaultCssSkin = "hbz.css"
 
 localauth = true
 feature_finance = true
+
+// Database Migration Plugin
+
+grails.plugin.databasemigration.updateOnStart = false
+grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
+
+System.out.println("~ database migration plugin updateOnStart: ${grails.plugin.databasemigration.updateOnStart}")
 
 customProperties =[
     "org":[
@@ -331,18 +338,19 @@ onix = [
 
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
-grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
-  xml: ['text/xml', 'application/xml'],
-  text: 'text/plain',
-  js: 'text/javascript',
-  rss: 'application/rss+xml',
-  atom: 'application/atom+xml',
-  css: 'text/css',
-  csv: 'text/csv',
-  all: '*/*',
-  json: ['application/json','text/json'],
-  form: 'application/x-www-form-urlencoded',
-  multipartForm: 'multipart/form-data'
+grails.mime.types = [
+        html: ['text/html','application/xhtml+xml'],
+        xml: ['text/xml', 'application/xml'],
+        text: 'text/plain',
+        js: 'text/javascript',
+        rss: 'application/rss+xml',
+        atom: 'application/atom+xml',
+        css: 'text/css',
+        csv: 'text/csv',
+        all: '*/*',
+        json: ['application/json','text/json'],
+        form: 'application/x-www-form-urlencoded',
+        multipartForm: 'multipart/form-data'
 ]
 
 // URL Mapping Cache Max Size, defaults to 5000
@@ -354,7 +362,7 @@ grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "none" // none, html, base64
-grails.views.gsp.encoding = "UTF-8"
+grails.views.gsp.encoding  = "UTF-8"
 grails.converters.encoding = "UTF-8"
 
 // enable Sitemesh preprocessing of GSP pages
@@ -376,9 +384,6 @@ grails.exceptionresolver.params.exclude = ['password']
 
 grails.project.dependency.resolver="maven"
 
-// enable query caching by default
-grails.hibernate.cache.queries = true
-
 // set per-environment serverURL stem for creating absolute links
 environments {
     development {
@@ -391,6 +396,9 @@ environments {
     }
 }
 
+// enable query caching by default
+grails.hibernate.cache.queries = true
+
 grails.cache.config = {
   cache {
     name 'message'
@@ -398,28 +406,27 @@ grails.cache.config = {
 }
 
 subscriptionTransforms = [
-  'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-  'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-  'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-  'kbplus':[name:'KBPlus (CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'txt', returnMime:'text/plain'],
+    'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'kbplus':[name:'KBPlus (CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'txt', returnMime:'text/plain'],
 ]
 
 // KBPlus import not available in titlelist because we need sub id and it's possible for multiple IEs to appear
 // per title, which isn't valid inside a KB+ package file
 titlelistTransforms = [
-  'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-  'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-  'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
 ]
 
 packageTransforms = [
-  'kbplus':[name:'KBPlus(CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
-  'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
-
+    'kbplus':[name:'KBPlus(CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
+    'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
 ]
 licenseTransforms = [
-  'sub_ie':[name:'Licensed Issue Entitlements (CSV)', xsl:'licensed_titles.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
-  'sub_pkg':[name:'Licensed Subscriptions/Packages (CSV)', xsl:'licensed_subscriptions_packages.xsl', returnFileExtention:'csv', returnMime:'text/csv']
+    'sub_ie':[name:'Licensed Issue Entitlements (CSV)', xsl:'licensed_titles.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
+    'sub_pkg':[name:'Licensed Subscriptions/Packages (CSV)', xsl:'licensed_subscriptions_packages.xsl', returnFileExtention:'csv', returnMime:'text/csv']
 ]
 
 
@@ -429,16 +436,16 @@ def logWatchFile
 // First lets see if we have a log file present.
 def base = System.getProperty("catalina.base")
 if (base) {
-   logWatchFile = new File ("${base}/logs/catalina.out")
+    logWatchFile = new File ("${base}/logs/catalina.out")
 
    if (!logWatchFile.exists()) {
-     // Need to create one in current context.
-     base = false;
+        // Need to create one in current context.
+        base = false;
    }
 }
 
 if (!base) {
-  logWatchFile = new File("logs/${appName}-${appVersion}.log")
+    logWatchFile = new File("logs/${appName}-${appVersion}.log")
 }
 
 // Log file variable.
@@ -450,11 +457,11 @@ log.info("Using log file location: ${logFile}")
 log_location = logFile
 
 grails {
-  fileViewer {
-    locations = ["${logFile}"]
-    linesCount = 250
-    areDoubleDotsAllowedInFilePath = false
-  }
+    fileViewer {
+        locations = ["${logFile}"]
+        linesCount = 250
+        areDoubleDotsAllowedInFilePath = false
+    }
 }
 
 // log4j configuration
@@ -562,9 +569,9 @@ auditLog {
 
 
 appDefaultPrefs {
-  globalDatepickerFormat    = 'yyyy-mm-dd'
-  globalDateFormat          = 'yyyy-MM-dd'
-  globalDateFormatSQL       = '%Y-%m-%d'
+    globalDatepickerFormat    = 'yyyy-mm-dd'
+    globalDateFormat          = 'yyyy-MM-dd'
+    globalDateFormatSQL       = '%Y-%m-%d'
 }
 
 // The following 2 entries make the app use basic auth by default
@@ -846,17 +853,17 @@ financialImportTSVLoaderMappings = [
   ]
 ];
 
-//grails.mail.default.from="server@yourhost.com" //override system wide
-grails.mail.disabled=false //System wide
-grails.mail.poolSize=20 //default 5 emails at a time, then que based system (prereq = async true)
+//grails.mail.default.from = "server@yourhost.com" //override system wide
+grails.mail.disabled = false //System wide
+grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
 //grails.mail.overrideAddress="ryan@k-int.com" //Test env only, overrides to and from address
-notifications.email.from='wincenter@hbz-nrw.de'
-notifications.email.replyTo='wincenter@hbz-nrw.de'
-notifications.email.genericTemplate=true //If enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
+notifications.email.from = 'wincenter@hbz-nrw.de'
+notifications.email.replyTo = 'wincenter@hbz-nrw.de'
+notifications.email.genericTemplate = true //If enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
 
 //Finance
-grails.plugins.remotepagination.enableBootstrap=true
-financials.currency="GBP - United Kingdom Pound|EUR - Euro Member Countries|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
+grails.plugins.remotepagination.enableBootstrap = true
+financials.currency = "GBP - United Kingdom Pound|EUR - Euro Member Countries|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
 
 defaultOaiConfig = [
   serverName: 'K-Int generic Grails OAI Module :: KBPlus.ac.uk',

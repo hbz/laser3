@@ -23,9 +23,10 @@ class IssueEntitlementController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
         if (! params.max) {
-            User user   = springSecurityService.getCurrentUser()
+            User user  = User.get(springSecurityService.principal.id)
             params.max = user?.getDefaultPageSize()
         }
+
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
