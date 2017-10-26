@@ -24,9 +24,8 @@ class LicenseController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
 
-        if (! params.max) {
-            params.max = result.user?.getDefaultPageSize()
-        }
+        params.max = params.max ?: result.user?.getDefaultPageSize()
+
         result.licenseInstanceList = License.list(params)
         result.licenseInstanceTotal = License.count()
         result
@@ -112,18 +111,18 @@ class LicenseController {
     def delete() {
         def licenseInstance = License.get(params.id)
         if (!licenseInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'license', default: 'License'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'license', default: 'License'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             licenseInstance.delete(flush: true)
-      flash.message = message(code: 'default.deleted.message', args: [message(code: 'license', default: 'License'), params.id])
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'license', default: 'License'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'license', default: 'License'), params.id])
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'license', default: 'License'), params.id])
             redirect action: 'show', id: params.id
         }
     }

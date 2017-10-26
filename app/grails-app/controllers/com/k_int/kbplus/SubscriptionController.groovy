@@ -24,12 +24,11 @@ class SubscriptionController {
     def list() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        if (! params.max) {
-            params.max = result.user?.getDefaultPageSize()
-        }
+        
+        params.max = params.max ?: result.user?.getDefaultPageSize()
 
-        result.subscriptionInstanceList=Subscription.list(params)
-        result.subscriptionInstanceTotal=Subscription.count()
+        result.subscriptionInstanceList = Subscription.list(params)
+        result.subscriptionInstanceTotal = Subscription.count()
         result
     }
 

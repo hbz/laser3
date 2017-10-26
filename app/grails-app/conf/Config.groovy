@@ -8,8 +8,6 @@ import org.apache.log4j.RollingFileAppender
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
-System.out.println("\n~ local config override: ${grails.config.locations}")
-
 // @NotificationsJob
 // - enable notification
 // - enable reminder
@@ -28,6 +26,7 @@ feature_finance = true
 grails.plugin.databasemigration.updateOnStart = false
 grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
 
+System.out.println("\n~ local config override: ${grails.config.locations}")
 System.out.println("~ database migration plugin updateOnStart: ${grails.plugin.databasemigration.updateOnStart}")
 
 customProperties =[

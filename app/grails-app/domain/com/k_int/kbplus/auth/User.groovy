@@ -158,11 +158,11 @@ class User implements Permissions {
     userPrefs
   }
 
-  def isEditableBy(user) {
-    hasPerm("edit", user);
-  }
+    def isEditableBy(user) {
+        hasPerm("edit", user)
+    }
 
-  def hasPerm(perm,user) {
-    false
-  }
+    def hasPerm(perm, user) {
+        false
+    }
 }

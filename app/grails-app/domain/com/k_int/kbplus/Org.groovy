@@ -164,24 +164,7 @@ class Org extends BaseDomainComponent {
   }
 
   static def refdataCreate(value) {
-    return new Org(name:value);
-  }
-
-  public boolean hasUserWithRole(com.k_int.kbplus.auth.User user, String rolename) {
-    def role = com.k_int.kbplus.auth.Role.findByAuthority(rolename)
-    return hasUserWithRole(user,role);
-  }
-
-  /**
-   *  Does user have perm against this org?
-   */
-  public boolean hasUserWithRole( com.k_int.kbplus.auth.User user, com.k_int.kbplus.auth.Role formalRole ) {
-    def result = false;
-    def userOrg = com.k_int.kbplus.auth.UserOrg.findByUserAndOrgAndFormalRole(user,this,formalRole)
-	  if( userOrg && ( userOrg.status==UserOrg.STATUS_APPROVED || userOrg.status==UserOrg.STATUS_AUTO_APPROVED )){
-		  result = true
-    }
-    return result;
+    return new Org(name:value)
   }
 
   static def lookupOrCreate(name, sector, consortium, identifiers, iprange) {
@@ -280,8 +263,8 @@ class Org extends BaseDomainComponent {
 
   }
   
-  @Override
-  String toString() {
-      name + ', ' + sector + ' (' + id + ')'
-  }
+    @Override
+    String toString() {
+        name + ', ' + sector + ' (' + id + ')'
+    }
 }

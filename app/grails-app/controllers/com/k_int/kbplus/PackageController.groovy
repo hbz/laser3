@@ -25,14 +25,12 @@ class PackageController {
     def list() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        if (! params.max) {
-            params.max = result.user?.getDefaultPageSize()
-        }
+        params.max = params.max ?: result.user?.getDefaultPageSize()
 
-          result.max = params.max
-          result.packageInstanceList = Package.list(params)
-          result.packageInstanceTotal = Package.count()
-          result
+        result.max = params.max
+        result.packageInstanceList = Package.list(params)
+        result.packageInstanceTotal = Package.count()
+        result
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

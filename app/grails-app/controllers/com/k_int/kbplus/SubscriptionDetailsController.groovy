@@ -895,12 +895,12 @@ class SubscriptionDetailsController {
     redirect controller:'myInstitutions',action:'renewalsSearch',params:[shortcode:result.subscriptionInstance.subscriber.shortcode]
   }
 
-  def userAccessCheck(sub,user,role_str){
-    if ((sub == null || user == null ) || ! sub.hasPerm(role_str,user) ) {
-      response.sendError(401);
-      return
+    def userAccessCheck(sub, user, role_str) {
+        if ((sub == null || user == null ) || (! sub.hasPerm(role_str, user))) {
+            response.sendError(401);
+            return
+        }
     }
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def acceptChange() {

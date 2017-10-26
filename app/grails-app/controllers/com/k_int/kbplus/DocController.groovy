@@ -23,13 +23,11 @@ class DocController {
       	def result = [:]
       	result.user = User.get(springSecurityService.principal.id)
 
-		if (! params.max) {
-			params.max = result.user?.getDefaultPageSize()
-		}
+		params.max = params.max ?: result.user?.getDefaultPageSize()
 
-      result.docInstanceList = Doc.list(params)
-      result.docInstanceTotal = Doc.count()
-      result
+      	result.docInstanceList = Doc.list(params)
+      	result.docInstanceTotal = Doc.count()
+      	result
     }
 
 	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

@@ -41,7 +41,7 @@ class DataManagerController {
     }
     else {
       def user = User.get(springSecurityService.principal.id)
-      result.max = params.max ? Integer.parseInt(params.max) : user.defaultPageSize
+      result.max = params.max ?: user.defaultPageSize
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     }
@@ -306,7 +306,7 @@ class DataManagerController {
       return;
     }
     result.user = User.get(springSecurityService.principal.id)
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+    result.max = params.max ? Integer.parseInt(params.max): result.user?.defaultPageSize
 
     def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
