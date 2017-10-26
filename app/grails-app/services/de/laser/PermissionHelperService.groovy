@@ -46,7 +46,10 @@ class PermissionHelperService {
     // copied from Org
     boolean hasUserWithRole(user, org, role) {
 
-        if(role instanceof String) {
+        if (! user || ! org) {
+            return false
+        }
+        if (role instanceof String) {
            role = Role.findByAuthority(role)
         }
 

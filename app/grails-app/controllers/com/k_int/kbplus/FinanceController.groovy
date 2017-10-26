@@ -36,11 +36,8 @@ class FinanceController {
     }
 
     boolean isFinanceAuthorised(Org org, User user) {
-        def retval = false
-        if (org && permissionHelperService.hasUserWithRole(user, org, admin_role)) {//ROLE_ADMIN
-            retval = true
-        }
-        return retval
+
+        permissionHelperService.hasUserWithRole(user, org, admin_role)
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

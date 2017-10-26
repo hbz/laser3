@@ -172,7 +172,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                     // refdataCategory:    rdc,
                     multipleOccurrence: (multipleOccurence ? true : false),
                     mandatory:          (mandatory ? true : false),
-                    // TODO softData: true,
+                    // TODO softData is set to FALSE,
                     tenant: tenant
             )
             type.save(flush:true)

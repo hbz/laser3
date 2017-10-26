@@ -376,12 +376,12 @@ grails.enable.native2ascii = true
 // packages to include in Spring bean scanning
 grails.spring.bean.packages = []
 // whether to disable processing of multi part requests
-grails.web.disable.multipart=false
+grails.web.disable.multipart = false
 
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
-grails.project.dependency.resolver="maven"
+grails.project.dependency.resolver = "maven"
 
 // set per-environment serverURL stem for creating absolute links
 environments {
@@ -552,7 +552,7 @@ auditLog {
 
   actorClosure = { request, session ->
 
-    if (request.applicationContext.springSecurityService.principal instanceof java.lang.String){
+    if (request.applicationContext.springSecurityService.principal instanceof java.lang.String) {
       return request.applicationContext.springSecurityService.principal
     }
 
@@ -585,32 +585,6 @@ appDefaultPrefs {
 //    '/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
 //    '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
 // ]
-
-// Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
-// add them to the DB if they don't already exist.
-refdatavalues = [
-        "User" : [ "Authorized User", "ExternalAcademic", "ExternalLibrarian", "ExternalStudent",
-            "ExternalTeacher", "ExternalTeacherInCountryOfLicensee", "LibraryUserUnaffiliated", "Licensee",
-            "LicenseeAlumnus", "LicenseeAuxiliary", "LicenseeContractor", "LicenseeContractorOrganization",
-            "LicenseeContractorStaff", "LicenseeDistanceLearningStudent", "LicenseeExternalStudent", "LicenseeFaculty",
-            "LicenseeInternalStudent", "LicenseeLibrary", "LicenseeLibraryStaff", "LicenseeNonFacultyStaff",
-            "LicenseeResearcher", "LicenseeRetiredStaff", "LicenseeStaff", "LicenseeStudent", "LoansomeDocUser",
-            "OtherTeacherOfAuthorizedUsers", "RegulatoryAuthority", "ResearchSponsor", "ThirdParty", "ThirdPartyLibrary",
-            "ThirdPartyNonCommercialLibrary", "ThirdPartyOrganization", "ThirdPartyPerson", "WalkInUser" ],
-        "UsedResource" : ["AcademicPaper", "AcademicWork", "AcademicWorkIncludingLicensedContent",
-            "AcknowledgmentOfSource", "AuthoredContent", "AuthoredContentPeerReviewedCopy", "AuthorizedUserOwnWork",
-            "CatalogOrInformationSystem", "CombinedWorkIncludingLicensedContent", "CompleteArticle", "CompleteBook",
-            "CompleteChapter", "CompleteIssue", "CopyrightNotice", "CopyrightNoticesOrDisclaimers",
-            "CoursePackElectronic", "CoursePackPrinted", "CourseReserveElectronic", "CourseReservePrinted",
-            "DataFromLicensedContent", "DerivedWork", "DigitalInstructionalMaterial",
-            "DigitalInstructionalMaterialIncludingLicensedContent",
-            "DigitalInstructionalMaterialWithLinkToLicensedContent", "DownloadedLicensedContent",
-            "ImagesInLicensedContent", "LicensedContent", "LicensedContentBriefExcerpt", "LicensedContentMetadata",
-            "LicensedContentPart", "LicensedContentPartDigital", "LicensedContentPartPrinted", "LicenseeContent",
-            "LicenseeWebsite", "LinkToLicensedContent", "MaterialForPresentation", "PersonalPresentationMaterial",
-            "PrintedInstructionalMaterial", "SpecialNeedsInstructionalMaterial", "ThirdPartyWebsite",
-            "TrainingMaterial", "UserContent", "UserWebsite"]
-    ]
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 
@@ -862,7 +836,7 @@ notifications.email.genericTemplate = true //If enabled, no customisation in ema
 
 //Finance
 grails.plugins.remotepagination.enableBootstrap = true
-financials.currency = "GBP - United Kingdom Pound|EUR - Euro Member Countries|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
+financials.currency = "EUR - Euro Member Countries|GBP - United Kingdom Pound|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
 
 defaultOaiConfig = [
   serverName: 'K-Int generic Grails OAI Module :: KBPlus.ac.uk',

@@ -89,7 +89,7 @@ class UserDetailsController {
   }    
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def pub() {
+  def show() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     def userInstance = User.get(params.id)

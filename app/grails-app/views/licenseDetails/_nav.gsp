@@ -10,7 +10,7 @@
     <laser:subNavItem controller="licenseDetails" action="additionalInfo" params="${[id:params.id]}" message="license.nav.additionalInfo" />
     <laser:subNavItem controller="licenseDetails" action="properties" params="${[id:params.id]}" message="license.nav.privateProperties" />
 
-    <g:if test="${license.orgLinks?.find{it.roleType?.value == 'Licensing Consortium' && permissonHelperService.hasUserWithRole(user, it?.org, 'INST_ADM') && license.licenseType == 'Template'}}">
+    <g:if test="${license.orgLinks?.find{it.roleType?.value == 'Licensing Consortium' && permissonHelperService.hasUserWithRole(user, it.org, 'INST_ADM') && license.licenseType == 'Template'}}">
         <laser:subNavItem controller="licenseDetails" action="consortia" params="${[id:params.id]}" message="consortium.plural" />
     </g:if>
 </laser:subNav>
