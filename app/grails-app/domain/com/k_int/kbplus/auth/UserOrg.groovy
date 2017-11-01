@@ -24,10 +24,10 @@ class UserOrg implements Comparable {
     com.k_int.kbplus.auth.Role formalRole
 
     static constraints = {
-        dateActioned    (nullable:true)
-        dateRequested   (nullable:true)
-        formalRole      (nullable:true)
-        role            (nullable:true)
+        dateActioned    (nullable: true)
+        dateRequested   (nullable: true)
+        formalRole      (nullable: true)
+        role            (nullable: true)
     }
 
     @Transient
@@ -42,9 +42,16 @@ class UserOrg implements Comparable {
 
     int hashCode() {
         def builder = new HashCodeBuilder()
-        if (user) builder.append(user.id)
-        if (org) builder.append(org.id)
-        if (formalRole) builder.append(formalRole.id)
+
+        if (user) {
+            builder.append(user.id)
+        }
+        if (org) {
+            builder.append(org.id)
+        }
+        if (formalRole) {
+            builder.append(formalRole.id)
+        }
 
         builder.toHashCode()
     }

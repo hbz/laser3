@@ -444,5 +444,23 @@
 
   <r:layoutResources/>
 
+    <!-- todo: remove -->
+    <g:if test="${editable}">
+      <div class="debug-editable-flag">Editierbar</div>
+        <style>
+            .debug-editable-flag {
+                position: absolute;
+                top: 50px; left: 0;
+                padding: 0.3em 1em;
+                background-color: orange;
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+                text-shadow: 3px 3px 3px rgba(0,0,0, 0.15);
+                z-index: 5000;
+            }
+        </style>
+    </g:if>
+
   </body>
 </html>

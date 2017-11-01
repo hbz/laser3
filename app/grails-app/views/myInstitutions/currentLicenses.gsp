@@ -9,7 +9,7 @@
   <laser:breadcrumbs>
       <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
       <laser:crumb message="license.current" class="active" />
-      <g:if test="${is_admin}">
+      <g:if test="${is_inst_admin}">
           <laser:crumbAsBadge message="default.editable" class="badge-warning" />
       </g:if>
       <li class="dropdown pull-right">
@@ -50,7 +50,7 @@
           <li><g:link controller="myInstitutions" 
                                   action="addLicense" 
                                   params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
-        <g:if test="${is_admin}">
+        <g:if test="${is_inst_admin}">
           <li><g:link controller="myInstitutions" 
                                      action="cleanLicense" 
                                      params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>

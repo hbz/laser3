@@ -384,9 +384,9 @@ class AdminController {
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def toggleBoolSetting() {
     def result = [:]
-    def s = Setting.findByName(params.setting);
+    def s = Setting.findByName(params.setting)
     if ( s ) {
-      if ( s.tp == 1 ) {
+      if ( s.tp == Setting.CONTENT_TYPE_BOOLEAN ) {
         if ( s.value == 'true' )
           s.value = 'false'
         else

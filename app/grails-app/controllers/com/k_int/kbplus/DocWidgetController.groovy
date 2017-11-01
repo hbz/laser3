@@ -19,7 +19,7 @@ class DocWidgetController {
   def createNote() { 
     log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}");
     def user = User.get(springSecurityService.principal.id)
-    def domain_class=grailsApplication.getArtefact('Domain',params.ownerclass)
+    def domain_class = grailsApplication.getArtefact('Domain', params.ownerclass)
 
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(params.ownerid)

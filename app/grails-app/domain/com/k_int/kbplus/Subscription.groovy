@@ -2,9 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import de.laser.domain.BaseDomainComponent
+import de.laser.domain.Permissions
+
 import javax.persistence.Transient
 
-class Subscription extends BaseDomainComponent {
+class Subscription extends BaseDomainComponent implements Permissions {
 
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
@@ -139,34 +141,23 @@ class Subscription extends BaseDomainComponent {
     result
   }
 
-  // determin if a user can edit this subscription
-  def isEditableBy(user) {
-    hasPerm("edit",user);
-  }
-
-  def hasPerm(perm, user) {
-    def result = false
-
-    if ( perm=='view' && this.isPublic?.value=='Yes' ) {
-      result = true;
+    def isEditableBy(user) {
+        hasPerm("edit", user)
     }
 
-    if (!result) {
-      // If user is a member of admin role, they can do anything.
-      def admin_role = Role.findByAuthority('ROLE_ADMIN');
-      if ( admin_role ) {
-        if ( user.getAuthorities().contains(admin_role) ) {
-          result = true;
+    def hasPerm(perm, user) {
+        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+            return true
         }
-      }
-    }
 
-    if ( !result ) {
-      result = checkPermissions(perm,user);
-    }
+        // If user is a member of admin role, they can do anything.
+        def admin_role = Role.findByAuthority('ROLE_ADMIN')
+        if (admin_role && user.getAuthorities().contains(admin_role)) {
+            return true
+        }
 
-    result;
-  }
+        return checkPermissions(perm, user)
+    }
 
   def checkPermissions(perm, user) {
     def result = false

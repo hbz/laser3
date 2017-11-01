@@ -6,6 +6,7 @@ import de.laser.domain.Constants
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apache.commons.io.IOUtils
+import org.springframework.http.HttpStatus
 import org.springframework.web.filter.GenericFilterBean
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
@@ -92,7 +93,8 @@ class ApiFilter extends GenericFilterBean {
                         "authorization": authorization,
                         "path": path,
                         "query": query,
-                        "method": method
+                        "method": method,
+                        "status": HttpStatus.UNAUTHORIZED.value()
                 ])
                 response.getWriter().print(result.toString(true))
                 return

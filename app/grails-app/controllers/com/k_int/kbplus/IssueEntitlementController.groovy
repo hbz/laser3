@@ -15,12 +15,14 @@ class IssueEntitlementController {
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
    def springSecurityService
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
@@ -56,13 +58,7 @@ class IssueEntitlementController {
       result.max = params.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-
-      if ( result.issueEntitlementInstance.subscription.isEditableBy(result.user) ) {
-        result.editable = true
-      }
-      else {
-        result.editable = false
-      }
+      result.editable = result.issueEntitlementInstance.subscription.isEditableBy(result.user)
 
       // Get usage statistics
       def title_id = result.issueEntitlementInstance.tipp.title?.id

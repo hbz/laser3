@@ -81,7 +81,10 @@ grails.project.dependency.resolution = {
         runtime 'xerces:xercesImpl:2.11.0'
         runtime 'mysql:mysql-connector-java:5.1.30'
 
-        runtime ('org.elasticsearch:elasticsearch:1.7.1')
+        runtime ('org.elasticsearch:elasticsearch:1.7.1') {
+            excludes "org.ow2.asm:asm:4.1"
+            //excludes "org.ow2.asm:asm-commons:4.1"
+        }
         runtime ('org.elasticsearch:elasticsearch-groovy:1.7.0') {
             excludes "org.codehaus.groovy:groovy-all:2.4.3"
         }
@@ -125,7 +128,7 @@ grails.project.dependency.resolution = {
 
     plugins {
         runtime ':hibernate:3.6.10.19'  
-        runtime ":resources:1.2.8"
+        runtime ":resources:1.2.8" // 1.2.14 won't work @ kbplusapp.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
         

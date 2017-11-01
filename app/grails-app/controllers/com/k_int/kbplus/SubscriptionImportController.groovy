@@ -482,7 +482,7 @@ class SubscriptionImportController {
     result.user = User.get(springSecurityService.principal.id)
     // result.institution = Org.findByShortcode(params.shortcode)
 
-    // if ( !checkUserIsMember(result.user, result.institution) ) {
+    // if (! permissionHelperService.checkUserIsMember(result.user, result.institution) ) {
     //   flash.error="You do not have permission to view ${result.institution.name}. Please request access on the profile page";
     //   response.sendError(401)
     //   return;
@@ -631,7 +631,7 @@ class SubscriptionImportController {
     if ( result.institution == null )
       return
 
-    // if ( !checkUserIsMember(result.user, result.institution) ) {
+    // if (! permissionHelperService.checkUserIsMember(result.user, result.institution) ) {
     //   flash.error="You do not have permission to view ${result.institution.name}. Please request access on the profile page";
     //   response.sendError(401)
       // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");

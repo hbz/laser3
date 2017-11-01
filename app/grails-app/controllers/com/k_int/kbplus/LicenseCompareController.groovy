@@ -2,22 +2,20 @@ package com.k_int.kbplus
 
 import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-
-import grails.converters.JSON
 
 class LicenseCompareController {
   
-  static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
-  def springSecurityService
-  def exportService
+    static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
+    def springSecurityService
+    def exportService
+    def permissionHelperService
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = Org.findByShortcode(params.shortcode)
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
             response.sendError(401)
             return;
@@ -67,17 +65,4 @@ class LicenseCompareController {
     }
 
   }
-
-  def checkUserIsMember(user, org) {
-    def result = false;
-    // def uo = UserOrg.findByUserAndOrg(user,org)
-    def uoq = UserOrg.where {
-        (user == user && org == org && (status == 1 || status == 3))
-    }
-
-    if (uoq.count() > 0)
-        result = true;
-
-    result
-}
 }

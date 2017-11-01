@@ -22,7 +22,7 @@
                                   action="addLicense" 
                                   params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
 
-        <g:if test="${is_admin}">
+        <g:if test="${is_inst_admin}">
           <li><g:link controller="myInstitutions" 
                                      action="cleanLicense" 
                                      params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>
@@ -54,7 +54,7 @@
 
       <div class="container">
           <div class="well license-options">
-            <g:if test="${is_admin}">
+            <g:if test="${is_inst_admin}">
               <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="btn btn-warning" />
             </g:if>
             <g:else>${message(code:'myinst.addLicense.no_permission', default:'Sorry, you must have editor role to be able to add licenses')}</g:else>

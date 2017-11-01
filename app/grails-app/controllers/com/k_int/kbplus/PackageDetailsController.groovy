@@ -16,13 +16,14 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 class PackageDetailsController {
 
-  def springSecurityService
-  def transformerService
-  def genericOIDService
-  def ESSearchService
-  def exportService
-  def institutionsService
-  def executorWrapperService
+    def springSecurityService
+    def transformerService
+    def genericOIDService
+    def ESSearchService
+    def exportService
+    def institutionsService
+    def executorWrapperService
+    def permissionHelperService
   
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -122,8 +123,7 @@ class PackageDetailsController {
       if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
           isAdmin = true;
       }else{
-        hasAccess = result.packageInstance.orgLinks.find{it.roleType?.value == 'Package Consortia' &&
-        it.org.hasUserWithRole(result.user,'INST_ADM') }
+        hasAccess = result.packageInstance.orgLinks.find{it.roleType?.value == 'Package Consortia' && permissionHelperService.hasUserWithRole(result.user, it.org, 'INST_ADM') }
       }
 
       if( !isAdmin &&  hasAccess == null ) {
@@ -175,6 +175,7 @@ class PackageDetailsController {
       redirect controller:'packageDetails', action:'consortia', params: [id:params.id]
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def createNewSubscription(org,packageId,genSubName){
       //Initialize default subscription values
       log.debug("Create slave with org ${org} and packageID ${packageId}")

@@ -47,10 +47,7 @@ class TitleDetailsController {
   def edit() {
     def result = [:]
 
-    if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') )
-      result.editable=true
-    else
-      result.editable=false
+    result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
     result.ti = TitleInstance.get(params.id)
     result.duplicates = reusedIdentifiers(result.ti);
@@ -61,15 +58,10 @@ class TitleDetailsController {
   def show() {
     def result = [:]
 
-    if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') )
-      result.editable=true
-    else
-      result.editable=false
+    result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
     result.ti = TitleInstance.get(params.id)
-    
     result.duplicates = reusedIdentifiers(result.ti);
-
     result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = ?",[result.ti]);
 
     result
@@ -180,11 +172,7 @@ class TitleDetailsController {
       params.q = old_q?.replace("\"","&quot;") 
     }
 
-    if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') )
-      result.editable=true;
-    else
-      result.editable=false;
-
+    result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
     log.debug(result);
 

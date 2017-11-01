@@ -13,16 +13,17 @@ import org.springframework.security.access.annotation.Secured
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 class LicenseDetailsController {
 
-  def springSecurityService
-  def docstoreService
-  def gazetteerService
-  def alertsService
-  def genericOIDService
-  def transformerService
-  def exportService
-  def institutionsService
-  def pendingChangeService
-  def executorWrapperService
+    def springSecurityService
+    def docstoreService
+    def gazetteerService
+    def alertsService
+    def genericOIDService
+    def transformerService
+    def exportService
+    def institutionsService
+    def pendingChangeService
+    def executorWrapperService
+    def permissionHelperService
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() {
@@ -39,12 +40,7 @@ class LicenseDetailsController {
     def admin_role = Role.findAllByAuthority("INST_ADM")
     result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)",[user:result.user,role:admin_role,status:[1,3]])
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
   
     def license_reference_str = result.license.reference?:'NO_LIC_REF_FOR_ID_'+params.id
 
@@ -133,7 +129,7 @@ class LicenseDetailsController {
   def getAvailableSubscriptions(license,user){
     def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
       orgRole.roleType?.value == "Licensee"
-    }?.collect{  it.org?.hasUserWithRole(user,'INST_ADM')?it.org:null  }
+    }?.collect{  permissionHelperService.hasUserWithRole(user, it.org, 'INST_ADM') ? it.org : null  }
 
     def subscriptions = null
     if(licenseInstitutions){
@@ -173,20 +169,15 @@ class LicenseDetailsController {
     if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
         isAdmin = true;
     }else{
-       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' &&
-      it.org.hasUserWithRole(result.user,'INST_ADM') }
+       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && permissionHelperService.hasUserWithRole(result.user, it.org, 'INST_ADM') }
     }
     if( !isAdmin && (result.license.licenseType != "Template" || hasAccess == null)) {
       flash.error = message(code:'license.consortia.access.error')
       response.sendError(401) 
       return
     }
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+
+    result.editable = result.license.isEditableBy(result.user)
 
     log.debug("consortia(${params.id}) - ${result.license}")
     def consortia = result.license?.orgLinks?.find{
@@ -241,13 +232,7 @@ class LicenseDetailsController {
     // result.institution = Org.findByShortcode(params.shortcode)
     result.license = License.get(params.id)
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-
+    result.editable = result.license.isEditableBy(result.user)
 
     if ( ! result.license.hasPerm("view",result.user) ) {
       response.sendError(401);
@@ -266,12 +251,7 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
 
     result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -306,12 +286,8 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
 
@@ -331,12 +307,8 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result
   }
 
@@ -353,12 +325,7 @@ class LicenseDetailsController {
         def licenseInstance = License.get(params.id)
         result.license      = licenseInstance
 
-        if (result.license.hasPerm("edit", result.user)) {
-            result.editable = true
-        }
-        else {
-            result.editable = false
-        }
+        result.editable = result.license.isEditableBy(result.user)
 
         // create mandatory LicensePrivateProperties if not existing
 
@@ -392,16 +359,10 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result
   }
-
-
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def deleteDocuments() {
@@ -427,17 +388,17 @@ class LicenseDetailsController {
     redirect controller: 'licenseDetails', action:params.redirectAction, params:[shortcode:params.shortcode], id:params.instanceId, fragment:'docstab'
   }
 
-  def userAccessCheck(license,user,role_str){
-    if ( (license==null || user==null ) || (! license?.hasPerm(role_str,user) )) {
-      log.debug("return 401....");
-      def this_license = message(code:'license.details.flash.this_license')
-      def this_inst = message(code:'license.details.flash.this_inst')
-      flash.error = message(code:'license.details.flash.error', args:[role_str,(license?.reference?:this_license),(license?.licensee?.name?:this_inst)])
-      response.sendError(401);
-      return false
+    def userAccessCheck(license, user, role_str) {
+        if ((license == null || user == null ) || (! license?.hasPerm(role_str, user))) {
+            log.debug("return 401....");
+            def this_license = message(code:'license.details.flash.this_license')
+            def this_inst = message(code:'license.details.flash.this_inst')
+            flash.error = message(code:'license.details.flash.error', args:[role_str,(license?.reference?:this_license),(license?.licensee?.name?:this_inst)])
+            response.sendError(401);
+            return false
+        }
+        return true
     }
-    return true
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def acceptChange() {

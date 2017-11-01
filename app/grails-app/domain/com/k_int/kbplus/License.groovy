@@ -2,13 +2,14 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import de.laser.domain.BaseDomainComponent
+import de.laser.domain.Permissions
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends BaseDomainComponent implements Comparable<License>{
+class License extends BaseDomainComponent implements Permissions, Comparable<License> {
 
   @Transient
   def grailsApplication
@@ -183,33 +184,22 @@ class License extends BaseDomainComponent implements Comparable<License>{
     return reference
   }
 
-  // determin if a user can edit this subscription
-  def isEditableBy(user, request) {
-    hasPerm("edit", user);
-  }
-
-  def hasPerm(perm, user) {
-    def result = false
-
-    if ( perm=='view' && this.isPublic?.value=='Yes' ) {
-      result = true;
+    def isEditableBy(user) {
+        hasPerm("edit", user)
     }
 
-    if (!result) {
-      // If user is a member of admin role, they can do anything.
-      def admin_role = Role.findByAuthority('ROLE_ADMIN');
-      if ( admin_role ) {
-        if ( user.getAuthorities().contains(admin_role) ) {
-          result = true;
+    def hasPerm(perm, user) {
+        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+            return true
         }
-      }
-    }
 
-    if ( !result ) {
-      result = checkPermissions(perm,user);
-    }
+        // If user is a member of admin role, they can do anything.
+        def admin_role = Role.findByAuthority('ROLE_ADMIN')
+        if (admin_role && user.getAuthorities().contains(admin_role)) {
+            return true
+        }
 
-    result;
+      return checkPermissions(perm, user)
   }
 
   def checkPermissions(perm, user) {
@@ -549,7 +539,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
   def setReferencePropertyAsCustProp(custPropName, newVal) {
     def custProp = getCustomPropByName(custPropName)
     if(custProp == null){
-      def type = PropertyDefinition.findByName(custPropName,)
+      def type = PropertyDefinition.findByName(custPropName)
       custProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, this, type)
     }
 
