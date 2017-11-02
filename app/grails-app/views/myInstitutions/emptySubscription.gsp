@@ -68,7 +68,7 @@
         }
       };
       $(document).ready(function(){
-        var val = "${orgType.value}";
+        var val = "${orgType?.value}";
         
         if(val == 'Consortium'){
           $(".cons-options").removeClass("hidden");
