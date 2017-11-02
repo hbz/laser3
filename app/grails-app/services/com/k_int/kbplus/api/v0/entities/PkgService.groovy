@@ -1,36 +1,40 @@
-package com.k_int.kbplus.api.v0
+package com.k_int.kbplus.api.v0.entities
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.base.OutHelperService
-import com.k_int.kbplus.api.v0.base.OutService
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.api.v0.ApiReadService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
-class LicenseService {
+class PkgService {
 
-    OutService outService
+    ApiReadService apiReadService
 
     /**
-     * @return License | BAD_REQUEST | PRECONDITION_FAILED
+     * @return Package | BAD_REQUEST | PRECONDITION_FAILED
      */
-    def findLicenseBy(String query, String value) {
+    def findPackageBy(String query, String value) {
         def result
 
         switch(query) {
             case 'id':
-                result = License.findAllWhere(id: Long.parseLong(value))
+                result = Package.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = License.findAllWhere(globalUID: value)
+                result = Package.findAllWhere(globalUID: value)
+                break
+            case 'identifier':
+                result = Package.findAllWhere(identifier: value)
                 break
             case 'impId':
-                result = License.findAllWhere(impId: value)
+                result = Package.findAllWhere(impId: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new License(), value)
+                result = Identifier.lookupObjectsByIdentifierString(new Package(), value)
                 break
             default:
                 return Constants.HTTP_BAD_REQUEST
@@ -45,12 +49,13 @@ class LicenseService {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    def getLicense(License lic, User user, Org context){
+    def getPackage(Package pkg, User user, Org context) {
         def result = []
-        def hasAccess = outService.isDataManager(user)
+        def hasAccess = apiReadService.isDataManager(user)
 
+        // TODO
         if (! hasAccess) {
-            lic.orgLinks.each { orgRole ->
+            pkg.orgs.each { orgRole ->
                 if (orgRole.getOrg().id == context?.id) {
                     hasAccess = true
                 }
@@ -58,7 +63,7 @@ class LicenseService {
         }
 
         if (hasAccess) {
-            result = outService.exportLicense(lic, OutHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = apiReadService.exportPackage(pkg, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

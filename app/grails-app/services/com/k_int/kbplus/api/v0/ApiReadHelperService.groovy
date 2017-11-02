@@ -1,13 +1,12 @@
-package com.k_int.kbplus.api.v0.base
+package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.LicenseService
-import com.k_int.kbplus.api.v0.MainService
+import com.k_int.kbplus.api.v0.entities.LicenseService
 import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
-class OutHelperService {
+class ApiReadHelperService {
 
     final static NO_CONSTRAINT          = "NO_CONSTRAINT"
     final static LICENSE_STUB           = "LICENSE_STUB"

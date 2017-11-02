@@ -1,11 +1,10 @@
-package com.k_int.kbplus.api.v0
+package com.k_int.kbplus.api.v0.entities
 
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.api.v0.base.OutService
+import com.k_int.kbplus.api.v0.ApiReadService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
 import groovy.util.logging.Log4j
@@ -13,7 +12,7 @@ import groovy.util.logging.Log4j
 @Log4j
 class DocService {
 
-    OutService outService
+    ApiReadService apiReadService
 
     /**
      * @return Doc | BAD_REQUEST | PRECONDITION_FAILED
@@ -42,7 +41,7 @@ class DocService {
      * @return Doc | FORBIDDEN
      */
     def getDocument(Doc doc, User user, Org context){
-        def hasAccess = outService.isDataManager(user)
+        def hasAccess = apiReadService.isDataManager(user)
 
         if (! hasAccess) {
             DocContext.findAllByOwner(doc).each{ dc ->
@@ -85,7 +84,7 @@ class DocService {
             return null // not found
         }
 
-        def hasAccess = outService.isDataManager(user)
+        def hasAccess = apiReadService.isDataManager(user)
 
         if (! hasAccess) {
             DocContext.findAllByOwner(doc).each { dc ->

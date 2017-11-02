@@ -1,16 +1,15 @@
-package com.k_int.kbplus.api.v0.base
+package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.MainService
 import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
 
 @Log4j
-class InService {
+class ApiWriteService {
 
-    InHelperService inHelperService
+    ApiWriteHelperService apiWriteHelperService
 
     /**
      *
@@ -36,19 +35,19 @@ class InService {
                         sortableReference:  data.sortableReference,
                 )
 
-                license.startDate   = inHelperService.getValidDateFormat(data.startDate)
-                license.endDate     = inHelperService.getValidDateFormat(data.endDate)
+                license.startDate   = apiWriteHelperService.getValidDateFormat(data.startDate)
+                license.endDate     = apiWriteHelperService.getValidDateFormat(data.endDate)
                 // todo: license.lastmod     = data.lastmod // long ????
 
                 // RefdataValues
-                license.isPublic         = inHelperService.getRefdataValue(data.isPublic, "YN")
-                license.licenseCategory  = inHelperService.getRefdataValue(data.licenseCategory, "LicenseCategory")
-                license.status           = inHelperService.getRefdataValue(data.status, "License Status")
-                license.type             = inHelperService.getRefdataValue(data.type, "License Type")
-                license.ids              = inHelperService.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
+                license.isPublic         = apiWriteHelperService.getRefdataValue(data.isPublic, "YN")
+                license.licenseCategory  = apiWriteHelperService.getRefdataValue(data.licenseCategory, "LicenseCategory")
+                license.status           = apiWriteHelperService.getRefdataValue(data.status, "License Status")
+                license.type             = apiWriteHelperService.getRefdataValue(data.type, "License Type")
+                license.ids              = apiWriteHelperService.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
 
                 // References
-                def properties            = inHelperService.getProperties(data.properties, license, context)
+                def properties            = apiWriteHelperService.getProperties(data.properties, license, context)
                 license.customProperties  = properties['custom']
                 license.privateProperties = properties['private']
 
@@ -58,7 +57,7 @@ class InService {
                 // TO CHECK: save license before saving orgLinks
                 license.save()
 
-                license.orgLinks = inHelperService.getOrgLinks(data.organisations, license, context)
+                license.orgLinks = apiWriteHelperService.getOrgLinks(data.organisations, license, context)
 
                 // TODO: set subscription.owner = license
                 //def subscriptions = inHelperService.getSubscriptions(data.subscriptions)
@@ -95,23 +94,23 @@ class InService {
                 )
 
                 // RefdataValues
-                org.sector  = inHelperService.getRefdataValue(data.sector, "OrgSector")
-                org.status  = inHelperService.getRefdataValue(data.status, "OrgStatus") // TODO unknown catagory !!!
-                org.orgType = inHelperService.getRefdataValue(data.type, "OrgType")
+                org.sector  = apiWriteHelperService.getRefdataValue(data.sector, "OrgSector")
+                org.status  = apiWriteHelperService.getRefdataValue(data.status, "OrgStatus") // TODO unknown catagory !!!
+                org.orgType = apiWriteHelperService.getRefdataValue(data.type, "OrgType")
 
                 // References
-                org.addresses = inHelperService.getAddresses(data.addresses, org, null)
-                org.contacts  = inHelperService.getContacts(data.contacts, org, null)
-                org.ids       = inHelperService.getIdentifiers(data.identifiers, org) // implicit creation of identifier and namespace
+                org.addresses = apiWriteHelperService.getAddresses(data.addresses, org, null)
+                org.contacts  = apiWriteHelperService.getContacts(data.contacts, org, null)
+                org.ids       = apiWriteHelperService.getIdentifiers(data.identifiers, org) // implicit creation of identifier and namespace
 
-                def properties        = inHelperService.getProperties(data.properties, org, context)
+                def properties        = apiWriteHelperService.getProperties(data.properties, org, context)
                 org.customProperties  = properties['custom']
                 org.privateProperties = properties['private']
 
                 // MUST: save org before saving persons and prsLinks
                 org.save()
 
-                def personsAndRoles = inHelperService.getPersonsAndRoles(data.persons, org, context)
+                def personsAndRoles = apiWriteHelperService.getPersonsAndRoles(data.persons, org, context)
                 personsAndRoles['persons'].each { p ->
                     (Person) p.save() // MUST: save persons before saving prsLinks
                 }
@@ -148,25 +147,25 @@ class InService {
                         cancellationAllowances: data.cancellationAllowances,
                         identifier:             data.identifier,
                 )
-                sub.startDate   = inHelperService.getValidDateFormat(data.startDate)
-                sub.endDate     = inHelperService.getValidDateFormat(data.endDate)
-                sub.manualRenewalDate = inHelperService.getValidDateFormat(data.manualRenewalDate)
+                sub.startDate   = apiWriteHelperService.getValidDateFormat(data.startDate)
+                sub.endDate     = apiWriteHelperService.getValidDateFormat(data.endDate)
+                sub.manualRenewalDate = apiWriteHelperService.getValidDateFormat(data.manualRenewalDate)
 
                 // RefdataValues
-                sub.isSlaved  = inHelperService.getRefdataValue(data.isSlaved, "YN")
-                sub.isPublic  = inHelperService.getRefdataValue(data.isPublic, "YN")
-                sub.status    = inHelperService.getRefdataValue(data.isSlaved, "Subscription Status")
-                sub.type      = inHelperService.getRefdataValue(data.isSlaved, "Organisational Role")
+                sub.isSlaved  = apiWriteHelperService.getRefdataValue(data.isSlaved, "YN")
+                sub.isPublic  = apiWriteHelperService.getRefdataValue(data.isPublic, "YN")
+                sub.status    = apiWriteHelperService.getRefdataValue(data.isSlaved, "Subscription Status")
+                sub.type      = apiWriteHelperService.getRefdataValue(data.isSlaved, "Organisational Role")
 
                 // References
-                def properties       = inHelperService.getProperties(data.properties, sub, context)
+                def properties       = apiWriteHelperService.getProperties(data.properties, sub, context)
                 sub.customProperties = properties['custom']
-                sub.ids              = inHelperService.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
+                sub.ids              = apiWriteHelperService.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
 
                 // TO CHECK: save subscriptions before saving orgRelations
                 sub.save()
 
-                sub.orgRelations     = inHelperService.getOrgLinks(data.organisations, sub, context)
+                sub.orgRelations     = apiWriteHelperService.getOrgLinks(data.organisations, sub, context)
 
                 // not supported: documents
                 // not supported: derivedSubscriptions

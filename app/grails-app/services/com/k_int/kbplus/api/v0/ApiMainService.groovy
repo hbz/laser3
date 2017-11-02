@@ -5,8 +5,13 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.api.v0.base.InService
-import com.k_int.kbplus.api.v0.converter.KbartService
+import com.k_int.kbplus.api.v0.converter.ApiKbartService
+import com.k_int.kbplus.api.v0.entities.DocService
+import com.k_int.kbplus.api.v0.entities.IssueEntitlementService
+import com.k_int.kbplus.api.v0.entities.LicenseService
+import com.k_int.kbplus.api.v0.entities.OrgService
+import com.k_int.kbplus.api.v0.entities.PkgService
+import com.k_int.kbplus.api.v0.entities.SubscriptionService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
 import grails.converters.JSON
@@ -15,12 +20,11 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
 
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @Log4j
-class MainService {
+class ApiMainService {
 
-    InService inService
+    ApiWriteService apiWriteService
 
     DocService docService
     IssueEntitlementService issueEntitlementService
@@ -29,7 +33,7 @@ class MainService {
     PkgService pkgService
     SubscriptionService subscriptionService
 
-    KbartService kbartService
+    ApiKbartService apiKbartService
 
     /**
      * @return Object | BAD_REQUEST | PRECONDITION_FAILED | NOT_ACCEPTABLE
@@ -53,8 +57,8 @@ class MainService {
                     result = issueEntitlementService.getIssueEntitlements(subPkg, user, contextOrg)
 
                     if (format == Constants.MIME_TEXT_PLAIN) {
-                        def kbart = kbartService.convertIssueEntitlements(result)
-                        result = kbartService.getAsDocument(kbart)
+                        def kbart = apiKbartService.convertIssueEntitlements(result)
+                        result = apiKbartService.getAsDocument(kbart)
                     }
                 }
             }
@@ -147,11 +151,11 @@ class MainService {
                 return ['result': Constants.HTTP_CONFLICT, 'debug': 'debug']
             }
 
-            result = inService.importOrganisation(data, contextOrg)
+            result = apiWriteService.importOrganisation(data, contextOrg)
         }
         else if ('license'.equalsIgnoreCase(obj)) {
 
-            result = inService.importLicense(data, contextOrg)
+            result = apiWriteService.importLicense(data, contextOrg)
         }
         else if ('subscription'.equalsIgnoreCase(obj)) {
 
@@ -170,7 +174,7 @@ class MainService {
                 return ['result': Constants.HTTP_CONFLICT, 'debug': 'debug']
             }
 
-            result = inService.importSubscription(data, contextOrg)
+            result = apiWriteService.importSubscription(data, contextOrg)
         }
         else {
             result = Constants.HTTP_NOT_IMPLEMENTED

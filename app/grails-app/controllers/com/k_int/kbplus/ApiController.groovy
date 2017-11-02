@@ -1,17 +1,16 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.api.v0.MainService
+import com.k_int.kbplus.api.v0.ApiMainService
 import com.k_int.kbplus.auth.*
 import de.laser.domain.Constants
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
-import org.springframework.http.HttpStatus
 
 class ApiController {
 
     def springSecurityService
     ApiService apiService
-    MainService mainService
+    ApiMainService apiMainService
 
     ApiController(){
         super()
@@ -318,7 +317,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = mainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
+                    result = apiMainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
 
                     if (result instanceof Doc) {
                         if (result.contentType == Doc.CONTENT_TYPE_STRING) {
@@ -347,7 +346,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
-                    result = mainService.write((String) obj, data, (User) user, (Org) contextOrg)
+                    result = apiMainService.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
             else {
@@ -355,7 +354,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             }
         }
 
-        result = mainService.buildResponseBody(request, obj, query, value, context, contextOrg, result)
+        result = apiMainService.buildResponseBody(request, obj, query, value, context, contextOrg, result)
 
         def status = result['status'] as int
         response.setStatus(status)

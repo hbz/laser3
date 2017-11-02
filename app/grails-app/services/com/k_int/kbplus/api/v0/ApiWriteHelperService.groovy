@@ -1,14 +1,13 @@
-package com.k_int.kbplus.api.v0.base
+package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.MainService
-import com.k_int.kbplus.api.v0.OrgService
+import com.k_int.kbplus.api.v0.entities.OrgService
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
-class InHelperService {
+class ApiWriteHelperService {
 
     OrgService orgService
 
