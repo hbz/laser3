@@ -356,8 +356,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         result = apiMainService.buildResponseBody(request, obj, query, value, context, contextOrg, result)
 
-        def status = result['status'] as int
-        response.setStatus(status)
+        response.setStatus(result.target.get("status"))
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)

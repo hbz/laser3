@@ -224,7 +224,7 @@ class ApiMainService {
             result = new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context, "status": HttpStatus.PRECONDITION_FAILED.value()])
         }
 
-        if (!result) {
+        if (! result) {
             result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context, "status": HttpStatus.NOT_FOUND.value()])
         }
 
