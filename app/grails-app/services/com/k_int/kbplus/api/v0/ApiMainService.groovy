@@ -190,13 +190,13 @@ class ApiMainService {
 
             switch(result['result']) {
                 case Constants.HTTP_CREATED:
-                    result = new JSON(["message": "resource successfully created", "debug": result['debug'], "status": HttpStatus.CREATED.value()])
+                    result = new JSON(["message": "resource successfully created", "debug": result['debug'], "_httpStatus": HttpStatus.CREATED.value()])
                     break
                 case Constants.HTTP_CONFLICT:
-                    result = new JSON(["message": "conflict with existing resource", "debug": result['debug'], "status": HttpStatus.CONFLICT.value()])
+                    result = new JSON(["message": "conflict with existing resource", "debug": result['debug'], "_httpStatus": HttpStatus.CONFLICT.value()])
                     break
                 case Constants.HTTP_INTERNAL_SERVER_ERROR:
-                    result = new JSON(["message": "resource not created", "debug": result['debug'], "status": HttpStatus.INTERNAL_SERVER_ERROR.value()])
+                    result = new JSON(["message": "resource not created", "debug": result['debug'], "_httpStatus": HttpStatus.INTERNAL_SERVER_ERROR.value()])
                     break
             }
         }
@@ -205,27 +205,30 @@ class ApiMainService {
 
         else if (Constants.HTTP_FORBIDDEN == result) {
             if (contextOrg) {
-                result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode, "status": HttpStatus.FORBIDDEN.value()])
+                result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode, "_httpStatus": HttpStatus.FORBIDDEN.value()])
             }
             else {
-                result = new JSON(["message": "forbidden", "obj": obj, "context": context, "status": HttpStatus.FORBIDDEN.value()])
+                result = new JSON(["message": "forbidden", "obj": obj, "context": context, "_httpStatus": HttpStatus.FORBIDDEN.value()])
             }
         }
         else if (Constants.HTTP_NOT_ACCEPTABLE == result) {
-            result = new JSON(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj, "status": HttpStatus.NOT_ACCEPTABLE.value()])
+            result = new JSON(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj, "_httpStatus": HttpStatus.NOT_ACCEPTABLE.value()])
         }
         else if (Constants.HTTP_NOT_IMPLEMENTED == result) {
-            result = new JSON(["message": "requested method not implemented", "method": request.method, "obj": obj, "status": HttpStatus.NOT_IMPLEMENTED.value()])
+            result = new JSON(["message": "requested method not implemented", "method": request.method, "obj": obj, "_httpStatus": HttpStatus.NOT_IMPLEMENTED.value()])
         }
         else if (Constants.HTTP_BAD_REQUEST == result) {
-            result = new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context, "status": HttpStatus.BAD_REQUEST.value()])
+            result = new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context, "_httpStatus": HttpStatus.BAD_REQUEST.value()])
         }
         else if (Constants.HTTP_PRECONDITION_FAILED == result) {
-            result = new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context, "status": HttpStatus.PRECONDITION_FAILED.value()])
+            result = new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context, "_httpStatus": HttpStatus.PRECONDITION_FAILED.value()])
         }
 
         if (! result) {
-            result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context, "status": HttpStatus.NOT_FOUND.value()])
+            result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context, "_httpStatus": HttpStatus.NOT_FOUND.value()])
+        }
+        else {
+            result.target.put("_httpStatus", HttpStatus.OK.value()) // TODO
         }
 
         result

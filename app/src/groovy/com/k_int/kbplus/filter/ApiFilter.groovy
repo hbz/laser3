@@ -93,8 +93,8 @@ class ApiFilter extends GenericFilterBean {
                         "authorization": authorization,
                         "path": path,
                         "query": query,
-                        "method": method,
-                        "status": HttpStatus.UNAUTHORIZED.value()
+                        "method": method
+                        //"_httpStatus": HttpStatus.UNAUTHORIZED.value()
                 ])
                 response.getWriter().print(result.toString(true))
                 return

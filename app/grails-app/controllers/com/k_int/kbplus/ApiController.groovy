@@ -354,9 +354,12 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             }
         }
 
+        // todo refactoring
         result = apiMainService.buildResponseBody(request, obj, query, value, context, contextOrg, result)
 
-        response.setStatus(result.target.get("status"))
+        def httpStatus = result.target.get('_httpStatus')
+        result.target.remove('_httpStatus')
+        response.setStatus(httpStatus)
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
