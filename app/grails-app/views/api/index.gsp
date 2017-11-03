@@ -122,7 +122,7 @@
                 var path    = "/api/v0" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
                 var timestamp = ""
                 var nounce    = ""
-                var context = jQuery(div).find('input[placeholder="context - Optional information if user has multiple memberships"]').val().trim()
+                var context = jQuery(div).find('input[placeholder="context - Optional information if user has memberships in multiple organisations"]').val().trim()
                 var query     = ""
                 var body      = ""
 

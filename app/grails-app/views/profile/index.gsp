@@ -159,10 +159,10 @@
                                                   <td><g:link controller="organisations" action="info" id="${assoc.org.id}">${assoc.org.name}</g:link></td>
                                                   <td><g:message code="cv.roles.${assoc.formalRole?.authority}"/></td>
                                                   <td><g:message code="cv.membership.status.${assoc.status}"/></td>
-                                                  <td><g:formatDate format="dd MMMM yyyy" date="${assoc.dateRequested}"/> / <g:formatDate format="dd MMMM yyyy" date="${assoc.dateActioned}"/></td>
-                                                  <td>
+                                                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${assoc.dateRequested}"/> / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${assoc.dateActioned}"/></td>
+                                                  <td style="vertical-align:middle">
                                                       <g:if test="${assoc.status != UserOrg.STATUS_CANCELLED}">
-                                                          <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:assoc.id]}">Cancel</g:link>
+                                                          <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:assoc.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
                                                       </g:if>
                                                   </td>
                                             </tr>
@@ -289,7 +289,7 @@
                                   <td>${r.trigger.value}</td>
                                   <td>${r.reminderMethod.value}</td>
                                   <td>${r.amount} ${r.unit.value}${r.amount >1? 's':''} before</td>
-                                  <g:if test="${r.lastRan}"><td><g:formatDate format="dd MMMM yyyy" date="${r.lastRan}" /></td></g:if>
+                                  <g:if test="${r.lastRan}"><td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${r.lastRan}" /></td></g:if>
                                   <g:else><td>${message(code:'reminder.never_ran', default:'Never executed!')}</td></g:else>
                                   <td>
                                       <button data-op="delete" data-id="${r.id}" class="btn btn-small reminderBtn">${message(code:'default.button.remove.label', default:'Remove')}</button>&nbsp;/&nbsp;

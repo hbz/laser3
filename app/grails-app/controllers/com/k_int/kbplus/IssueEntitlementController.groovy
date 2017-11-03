@@ -15,15 +15,14 @@ class IssueEntitlementController {
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
    def springSecurityService
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        if (! params.max) {
-            User user   = springSecurityService.getCurrentUser()
-            params.max = user?.getDefaultPageSize()
-        }
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
@@ -49,26 +48,17 @@ class IssueEntitlementController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
-        def result = [:]
+      def result = [:]
 
-        result.user = User.get(springSecurityService.principal.id)
-        result.issueEntitlementInstance = IssueEntitlement.get(params.id)
+      result.user = User.get(springSecurityService.principal.id)
+      result.issueEntitlementInstance = IssueEntitlement.get(params.id)
 
-        if (! params.max) {
-            params.max = result.user?.getDefaultPageSize()
-        }
+      params.max = Math.min(params.max ? params.int('max') : 10, 100)
+      def paginate_after = params.paginate_after ?: 19;
+      result.max = params.max
+      result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def paginate_after = params.paginate_after ?: 19;
-        result.max = params.max
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-
-      if ( result.issueEntitlementInstance.subscription.isEditableBy(result.user) ) {
-        result.editable = true
-      }
-      else {
-        result.editable = false
-      }
+      result.editable = result.issueEntitlementInstance.subscription.isEditableBy(result.user)
 
       // Get usage statistics
       def title_id = result.issueEntitlementInstance.tipp.title?.id
@@ -112,14 +102,14 @@ class IssueEntitlementController {
       }
 
       if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         def d = sdf.parse(params.endsAfter)
         base_qry += " and tipp.endDate >= ?"
         qry_params.add(d)
       }
 
       if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         def d = sdf.parse(params.startsBefore)
         base_qry += " and tipp.startDate <= ?"
         qry_params.add(d)

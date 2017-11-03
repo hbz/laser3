@@ -32,7 +32,7 @@
           <g:form action="processAddSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="post">
  
             <div class="pull-left subscription-create">
-            <g:if test="${is_admin}"> 
+            <g:if test="${is_inst_admin}">
               <select name="createSubAction"> 
                 <option value="copy">${message(code:'myinst.addSubscription.copy_with_ent', default:'Copy With Entitlements')}</option>
                 <option value="nocopy">${message(code:'myinst.addSubscription.copy_wo_ent', default:'Copy Without Entitlements')}</option>

@@ -38,9 +38,9 @@
 
 							<td>${subscriptionInstance?.subscriber?.name}</td>
 
-							<td><g:formatDate format="dd MMMM yyyy" date="${subscriptionInstance.startDate}" /></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${subscriptionInstance.startDate}" /></td>
 						
-							<td><g:formatDate format="dd MMMM yyyy"  date="${subscriptionInstance.endDate}" /></td>
+							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"  date="${subscriptionInstance.endDate}" /></td>
 						
 							<td class="link">
 								<g:link action="show" id="${subscriptionInstance.id}" class="ui tiny button">Show &raquo;</g:link>

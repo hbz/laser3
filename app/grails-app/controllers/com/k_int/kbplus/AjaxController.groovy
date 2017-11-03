@@ -244,7 +244,6 @@ class AjaxController {
       else {
         String[] value_components = params.value.split(":");
         def value=resolveOID(value_components);
-
   
         if ( target && value ) {
           def binding_properties = [ "${params.name}":value ]
@@ -484,28 +483,28 @@ class AjaxController {
       }
     }
   }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addOrgRole() {
+        // log.debug("addOrgRole ${params}");
+        def org_to_link = resolveOID(params.orm_orgoid?.split(":"))
+        def owner = resolveOID(params.parent?.split(":"))
+        def rel = RefdataValue.get(params.orm_orgRole);
 
-  def addOrgRole() {
-    // log.debug("addOrgRole ${params}");
-    def org_to_link = resolveOID(params.orm_orgoid?.split(":"))
-    def owner = resolveOID(params.parent?.split(":"))
-    def rel = RefdataValue.get(params.orm_orgRole);
+        // log.debug("Add link to ${org_to_link} from ${owner} rel is ${rel} recip_prop is ${params.recip_prop}");
+        def new_link = new OrgRole(org:org_to_link,roleType:rel)
+        new_link[params.recip_prop] = owner
+        if ( new_link.save(flush:true) ) {
+            // log.debug("Org link added");
+        }
+        else {
+            log.error("Problem saving new org link...");
+            new_link.errors.each { e ->
+                log.error(e);
+            }
+        }
 
-    // log.debug("Add link to ${org_to_link} from ${owner} rel is ${rel} recip_prop is ${params.recip_prop}");
-    def new_link = new OrgRole(org:org_to_link,roleType:rel)
-    new_link[params.recip_prop] = owner
-    if ( new_link.save(flush:true) ) {
-      // log.debug("Org link added");
+        redirect(url: request.getHeader('referer'))
     }
-    else {
-      log.error("Problem saving new org link...");
-      new_link.errors.each { e ->
-        log.error(e);
-      }
-    }
-
-    redirect(url: request.getHeader('referer'))
-  }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addRefdataValue() {
@@ -728,13 +727,14 @@ class AjaxController {
         ])
     }
 
-  def delOrgRole() {
-    // log.debug("delOrgRole ${params}");
-    def or = OrgRole.get(params.id)
-    or.delete(flush:true);
-    // log.debug("Delete link: ${or}");
-    redirect(url: request.getHeader('referer'))
-  }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def delOrgRole() {
+        // log.debug("delOrgRole ${params}");
+        def or = OrgRole.get(params.id)
+        or.delete(flush:true);
+        // log.debug("Delete link: ${or}");
+        redirect(url: request.getHeader('referer'))
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def deleteCustomProperty(){
@@ -1018,7 +1018,7 @@ class AjaxController {
     
     if ( target_object ) {
       if ( params.type=='date' ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy/MM/dd'))
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         if( params.value && params.value.size() > 0 ){
           def parsed_date = sdf.parse(params.value)
           target_object."${params.name}" = parsed_date
@@ -1047,14 +1047,15 @@ class AjaxController {
     outs.close()
   }
 
-  def removeUserRole() {
-    def user = resolveOID2(params.user);
-    def role = resolveOID2(params.role);
-    if ( user && role ) {
-      com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def removeUserRole() {
+        def user = resolveOID2(params.user);
+        def role = resolveOID2(params.role);
+        if (user && role) {
+            com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+        }
+        redirect(url: request.getHeader('referer'))
     }
-    redirect(url: request.getHeader('referer'))    
-  }
 
   /**
    * ToDo: This function is a duplicate of the one found in InplaceTagLib, both should be moved to a shared static utility
@@ -1062,19 +1063,17 @@ class AjaxController {
   def renderObjectValue(value) {
     def result=''
     def not_set = message(code:'refdata.notSet')
-    def no_ws =''
 
     if ( value ) {
       switch ( value.class ) {
         case com.k_int.kbplus.RefdataValue.class:
-          no_ws = value.value.replaceAll(' ','')
 
           if ( value.icon != null ) {
             result="<span class=\"select-icon ${value.icon}\"></span>";
-            result += message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
+            result += value.value ? value.getI10n('value') : not_set
           }
           else {
-            result = message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
+            result = value.value ? value.getI10n('value') : not_set
           }
           break;
         default:
@@ -1083,7 +1082,7 @@ class AjaxController {
           }else{
             value = value.toString()
           }
-          no_ws = value.replaceAll(' ','')
+          def no_ws = value.replaceAll(' ','')
 
           result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
       }

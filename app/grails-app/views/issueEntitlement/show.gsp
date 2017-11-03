@@ -218,10 +218,10 @@
                     </tr>
                     <g:each in="${tippList}" var="t">
                         <tr>
-                            <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/></td>
+                            <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.startDate}"/></td>
                         <td>${t.startVolume}</td>
                         <td>${t.startIssue}</td>
-                        <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.endDate}"/></td>
+                        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.endDate}"/></td>
                         <td>${t.endVolume}</td>
                         <td>${t.endIssue}</td>
                         <td>${t.coverageDepth}</td>
@@ -244,7 +244,9 @@
        }
         function showCoreAssertionModal(){
           $("input.datepicker-class").datepicker({
-            format:"${session.sessionPreferences?.globalDatepickerFormat}"
+            format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+            language:"${message(code:'default.locale.label', default:'en')}",
+            autoclose:true
           });
           $("[name='coreAssertionEdit']").modal('show');
           $('.xEditableValue').editable();

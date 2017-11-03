@@ -13,6 +13,11 @@
     <meta name="viewport" content="initial-scale = 1.0">
 
     <r:require modules="kbplus" />
+    
+    <script type="text/javascript">
+     var gspLocale = "${message(code:'default.locale.label', default:'en')}";
+     var gspDateFormat = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}";
+    </script>
 
     <g:layoutHead/>
 
@@ -28,6 +33,7 @@
 
   <body>
   <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
+  <g:set var="dateFormat" value="${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}" />
 
   <script>
     dataLayer = [{
@@ -437,6 +443,24 @@
   </div>
 
   <r:layoutResources/>
+
+    <!-- todo: remove -->
+    <g:if test="${editable}">
+      <div class="debug-editable-flag">Editierbar</div>
+        <style>
+            .debug-editable-flag {
+                position: absolute;
+                top: 50px; left: 0;
+                padding: 0.3em 1em;
+                background-color: orange;
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+                text-shadow: 3px 3px 3px rgba(0,0,0, 0.15);
+                z-index: 5000;
+            }
+        </style>
+    </g:if>
 
   </body>
 </html>

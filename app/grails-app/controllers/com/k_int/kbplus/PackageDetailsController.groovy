@@ -16,13 +16,14 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 class PackageDetailsController {
 
-  def springSecurityService
-  def transformerService
-  def genericOIDService
-  def ESSearchService
-  def exportService
-  def institutionsService
-  def executorWrapperService
+    def springSecurityService
+    def transformerService
+    def genericOIDService
+    def ESSearchService
+    def exportService
+    def institutionsService
+    def executorWrapperService
+    def permissionHelperService
   
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -51,22 +52,22 @@ class PackageDetailsController {
 
       if ( params.updateStartDate?.length() > 0 ) {
         base_qry += " and ( p.lastUpdated > ? )"
-        qry_params.add(params.date('updateStartDate','yyyy-MM-dd'));
+        qry_params.add(params.date('updateStartDate',message(code:'default.date.format.notime', default:'yyyy-MM-dd')));
       }
 
       if ( params.updateEndDate?.length() > 0 ) {
         base_qry += " and ( p.lastUpdated < ? )"
-        qry_params.add(params.date('updateEndDate','yyyy-MM-dd'));
+        qry_params.add(params.date('updateEndDate',message(code:'default.date.format.notime', default:'yyyy-MM-dd')));
       }
 
       if ( params.createStartDate?.length() > 0 ) {
         base_qry += " and ( p.dateCreated > ? )"
-        qry_params.add(params.date('createStartDate','yyyy-MM-dd'));
+        qry_params.add(params.date('createStartDate',message(code:'default.date.format.notime', default:'yyyy-MM-dd')));
       }
 
       if ( params.createEndDate?.length() > 0 ) {
         base_qry += " and ( p.dateCreated < ? )"
-        qry_params.add(params.date('createEndDate','yyyy-MM-dd'));
+        qry_params.add(params.date('createEndDate',message(code:'default.date.format.notime', default:'yyyy-MM-dd')));
       }
 
       if ( ( params.sort != null ) && ( params.sort.length() > 0 ) ) {
@@ -122,8 +123,7 @@ class PackageDetailsController {
       if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
           isAdmin = true;
       }else{
-        hasAccess = result.packageInstance.orgLinks.find{it.roleType?.value == 'Package Consortia' &&
-        it.org.hasUserWithRole(result.user,'INST_ADM') }
+        hasAccess = result.packageInstance.orgLinks.find{it.roleType?.value == 'Package Consortia' && permissionHelperService.hasUserWithRole(result.user, it.org, 'INST_ADM') }
       }
 
       if( !isAdmin &&  hasAccess == null ) {
@@ -175,6 +175,7 @@ class PackageDetailsController {
       redirect controller:'packageDetails', action:'consortia', params: [id:params.id]
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def createNewSubscription(org,packageId,genSubName){
       //Initialize default subscription values
       log.debug("Create slave with org ${org} and packageID ${packageId}")
@@ -293,7 +294,7 @@ class PackageDetailsController {
               def comparisonMap = 
               institutionsService.generateComparisonMap(unionList, mapA, mapB,0, unionList.size(),filterRules)
               log.debug("Create CSV Response")
-              def dateFormatter = new java.text.SimpleDateFormat('yyyy-MM-dd')
+              def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
                response.setHeader("Content-disposition", "attachment; filename=\"packageComparison.csv\"")
                response.contentType = "text/csv"
                def out = response.outputStream
@@ -323,7 +324,7 @@ class PackageDetailsController {
           }
 
         }else{
-          def currentDate = new java.text.SimpleDateFormat('yyyy-MM-dd').format(new Date())
+          def currentDate = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd')).format(new Date())
           params.dateA = currentDate
           params.dateB = currentDate
           params.insrt = "Y"
@@ -346,8 +347,8 @@ class PackageDetailsController {
 
     def createCompareList(pkg,dateStr,params, result){
        def returnVals = [:]
-       def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd')
-       def date = dateStr?sdf.parse(dateStr):new Date()
+       def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+       def date = dateStr ? sdf.parse(dateStr) : new Date()
        def packageId = pkg.substring( pkg.indexOf(":")+1)
         
        def packageInstance = Package.get(packageId)
@@ -439,7 +440,7 @@ class PackageDetailsController {
       // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
       def qry_params = [packageInstance]
       
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
       def today = new Date()
       if(!params.asAt){
         if(packageInstance.startDate > today){
@@ -660,14 +661,14 @@ class PackageDetailsController {
     }
 
     if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
       def d = sdf.parse(params.endsAfter)
       base_qry += " and tipp.endDate >= ?"
       qry_params.add(d)
     }
 
     if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
       def d = sdf.parse(params.startsBefore)
       base_qry += " and tipp.startDate <= ?"
       qry_params.add(d)
@@ -889,7 +890,7 @@ class PackageDetailsController {
 
     log.debug("packageBatchUpdate ${params}");
 
-    def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
     def bulk_fields = [
       [ formProp:'start_date', domainClassProp:'startDate', type:'date'],

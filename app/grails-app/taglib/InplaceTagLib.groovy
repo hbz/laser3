@@ -74,7 +74,7 @@ class InplaceTagLib {
       def data_link = null
       switch ( attrs.type ) {
         case 'date':
-          data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy/MM/dd')}"]).encodeAsHTML()
+          data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"]).encodeAsHTML()
           break;
         case 'string':
         default:
@@ -177,18 +177,17 @@ class InplaceTagLib {
   def renderObjectValue(value) {
     def result=''
     def not_set = message(code:'refdata.notSet')
-    def no_ws =''
+    
     if ( value ) {
       switch ( value.class ) {
         case com.k_int.kbplus.RefdataValue.class:
-          no_ws = value.value.replaceAll(' ','')
 
           if ( value.icon != null ) {
             result="<span class=\"select-icon ${value.icon}\"></span>";
-            result += message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
+            result += value.value ? value.getI10n('value') : not_set
           }
           else {
-            result = message(code:"refdata.${no_ws}", default:"${value.value ?: not_set}")
+            result = value.value ? value.getI10n('value') : not_set
           }
           break;
         default:
@@ -197,7 +196,7 @@ class InplaceTagLib {
           }else{
             value = value.toString()
           }
-          no_ws = value.replaceAll(' ','')
+          def no_ws = value.replaceAll(' ','')
 
           result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
       }

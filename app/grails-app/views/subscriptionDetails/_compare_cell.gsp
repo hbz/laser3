@@ -8,9 +8,9 @@
 			<td style="white-space: nowrap">
 			  ${message(code:'default.date.label', default:'Date')}:
 			  <g:if test="${obj.startDate != null}">
-			  	<g:formatDate format="yyyy-MM-dd" date="${obj.startDate}"/> <br/>
+			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.startDate}"/> <br/>
 			  </g:if> <g:else>
-			  	<g:formatDate format="yyyy-MM-dd" date="${obj.tipp.startDate}"/> <br/>
+			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.tipp.startDate}"/> <br/>
 			  </g:else>
   			  ${message(code:'tipp.volume', default:'Volume')}:
   			  <g:if test="${obj.startVolume != null}">
@@ -30,9 +30,9 @@
 			<td style="white-space: nowrap"> 
 				${message(code:'default.date.label', default:'Date')}:
 			  <g:if test="${obj.endDate != null}">
-			  	<g:formatDate format="yyyy-MM-dd" date="${obj.endDate}"/> <br/>
+			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.endDate}"/> <br/>
 			  </g:if> <g:else>
-			  	<g:formatDate format="yyyy-MM-dd" date="${obj.tipp.endDate}"/> <br/>
+			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.tipp.endDate}"/> <br/>
 			  </g:else>
 			  ${message(code:'tipp.volume', default:'Volume')}:
   			  <g:if test="${obj.endVolume != null}">

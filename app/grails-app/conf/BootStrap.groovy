@@ -17,12 +17,12 @@ class BootStrap {
         log.info("SystemId: ${grailsApplication.config.kbplusSystemId}")
 
         if (grailsApplication.config.kbplusSystemId != null) {
-            def system_object = SystemObject.findBySysId(grailsApplication.config.kbplusSystemId) ?: new SystemObject(sysId: grailsApplication.config.kbplusSystemId).save(flush: true);
+            def system_object = SystemObject.findBySysId(grailsApplication.config.kbplusSystemId) ?: new SystemObject(sysId: grailsApplication.config.kbplusSystemId).save(flush: true)
         }
 
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
-        def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File');
-        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File');
+        def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
+        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
 
         // Permissions
         def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
@@ -31,39 +31,31 @@ class BootStrap {
         log.debug("setupRefdata ..")
         setupRefdata()
 
-        // Allows values to be added to the vocabulary control list by passing an array with RefdataCategory as the key
-        // and a list of values to be added to the RefdataValue table.
-        grailsApplication.config.refdatavalues.each { rdc, rdvList ->
-            rdvList.each { rdv ->
-                RefdataCategory.lookupOrCreate(rdc, rdv);
-            }
-        }
-
         // TODO locCategory
-        def cl_owner_role       = RefdataCategory.locRefdataValue('Cluster Role',   [en: 'Cluster Owner'])
-        def cl_member_role      = RefdataCategory.locRefdataValue('Cluster Role',   [en: 'Cluster Member'])
+        def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'])
+        def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'])
 
-        def cons_combo          = RefdataCategory.locRefdataValue('Combo Type',     [en: 'Consortium', de: 'Konsortium'])
+        def cons_combo          = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'])
 
-        def or_licensee_role    = RefdataCategory.locRefdataValue('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
-        def or_subscriber_role  = RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
-        def or_sc_role          = RefdataCategory.locRefdataValue('Organisational Role', [en: 'Subscription Consortia'])
+        def or_licensee_role    = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
+        def or_subscriber_role  = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
+        def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia'])
 
         // assertPermShare
-        OrgPermShare.assertPermShare(view_permission, or_licensee_role);
-        OrgPermShare.assertPermShare(edit_permission, or_licensee_role);
-        OrgPermShare.assertPermShare(view_permission, or_subscriber_role);
-        OrgPermShare.assertPermShare(edit_permission, or_subscriber_role);
-        OrgPermShare.assertPermShare(view_permission, or_sc_role);
-        OrgPermShare.assertPermShare(edit_permission, or_sc_role);
+        OrgPermShare.assertPermShare(view_permission, or_licensee_role)
+        OrgPermShare.assertPermShare(edit_permission, or_licensee_role)
+        OrgPermShare.assertPermShare(view_permission, or_subscriber_role)
+        OrgPermShare.assertPermShare(edit_permission, or_subscriber_role)
+        OrgPermShare.assertPermShare(view_permission, or_sc_role)
+        OrgPermShare.assertPermShare(edit_permission, or_sc_role)
         // TODO
-        OrgPermShare.assertPermShare(view_permission, cl_owner_role);
-        OrgPermShare.assertPermShare(edit_permission, cl_owner_role);
+        OrgPermShare.assertPermShare(view_permission, cl_owner_role)
+        OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
         // TODO
-        OrgPermShare.assertPermShare(view_permission, cl_member_role);
-        OrgPermShare.assertPermShare(edit_permission, cl_member_role);
+        OrgPermShare.assertPermShare(view_permission, cl_member_role)
+        OrgPermShare.assertPermShare(edit_permission, cl_member_role)
 
-        OrgPermShare.assertPermShare(view_permission, cons_combo);
+        OrgPermShare.assertPermShare(view_permission, cons_combo)
 
         // Global System Roles
         def userRole        = Role.findByAuthority('ROLE_USER')     ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
@@ -72,38 +64,39 @@ class BootStrap {
         def kbplus_editor   = Role.findByAuthority('KBPLUS_EDITOR') ?: new Role(authority: 'KBPLUS_EDITOR', roleType: 'global').save(failOnError: true)
         def apiRole         = Role.findByAuthority('ROLE_API')      ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
-        def apiReaderRole   = Role.findByAuthority('ROLE_API_READER') ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
-        def apiWriterRole   = Role.findByAuthority('ROLE_API_WRITER') ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
+        def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
+        def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
+        def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
         def institutionalAdmin = Role.findByAuthority('INST_ADM')
-        if (!institutionalAdmin) {
+        if (! institutionalAdmin) {
             institutionalAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
         }
-        ensurePermGrant(institutionalAdmin, edit_permission);
-        ensurePermGrant(institutionalAdmin, view_permission);
+        ensurePermGrant(institutionalAdmin, edit_permission)
+        ensurePermGrant(institutionalAdmin, view_permission)
 
         def institutionalUser = Role.findByAuthority('INST_USER')
-        if (!institutionalUser) {
+        if (! institutionalUser) {
             institutionalUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
         }
-        ensurePermGrant(institutionalUser, view_permission);
+        ensurePermGrant(institutionalUser, view_permission)
 
         // Transforms types and formats Refdata
 
-        RefdataCategory.locCategory('Transform Format', [en: 'Transform Format', de: 'Transform Format'])
-        RefdataCategory.locCategory('Transform Type',   [en: 'Transform Type', de: 'Transform Type'])
+        RefdataCategory.loc('Transform Format', [en: 'Transform Format', de: 'Transform Format'])
+        RefdataCategory.loc('Transform Type',   [en: 'Transform Type', de: 'Transform Type'])
 
         // !!! HAS TO BE BEFORE the script adding the Transformers as it is used by those tables !!!
 
-        RefdataCategory.locRefdataValue('Transform Format', [en: 'json'])
-        RefdataCategory.locRefdataValue('Transform Format', [en: 'xml'])
-        RefdataCategory.locRefdataValue('Transform Format', [en: 'url'])
+        RefdataValue.loc('Transform Format', [en: 'json'])
+        RefdataValue.loc('Transform Format', [en: 'xml'])
+        RefdataValue.loc('Transform Format', [en: 'url'])
 
-        RefdataCategory.locRefdataValue('Transform Type', [en: 'subscription'])
-        RefdataCategory.locRefdataValue('Transform Type', [en: 'license'])
-        RefdataCategory.locRefdataValue('Transform Type', [en: 'title'])
-        RefdataCategory.locRefdataValue('Transform Type', [en: 'package'])
+        RefdataValue.loc('Transform Type', [en: 'subscription'])
+        RefdataValue.loc('Transform Type', [en: 'license'])
+        RefdataValue.loc('Transform Type', [en: 'title'])
+        RefdataValue.loc('Transform Type', [en: 'package'])
 
         // Add Transformers and Transforms defined in local config (laser-config.groovy)
         grailsApplication.config.systransforms.each { tr ->
@@ -113,20 +106,20 @@ class BootStrap {
             def transformer = Transformer.findByName("${tr.transformer_name}")
             if (transformer) {
                 if (transformer.url != tr.url) {
-                    log.debug("Change transformer [${tr.transformer_name}] url to ${tr.url}");
+                    log.debug("Change transformer [${tr.transformer_name}] url to ${tr.url}")
                     transformer.url = tr.url;
                     transformer.save(failOnError: true, flush: true)
                 } else {
-                    log.debug("${tr.transformer_name} present and correct");
+                    log.debug("${tr.transformer_name} present and correct")
                 }
             } else {
-                log.debug("Create transformer ${tr.transformer_name} ..");
+                log.debug("Create transformer ${tr.transformer_name} ..")
                 transformer = new Transformer(
                         name: tr.transformer_name,
                         url: tr.url).save(failOnError: true, flush: true)
             }
 
-            log.debug("Create transform ${transformName} ..");
+            log.debug("Create transform ${transformName} ..")
             def types = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Type'))
             def formats = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Format'))
 
@@ -136,28 +129,28 @@ class BootStrap {
                     // split values
                     def type_list = tr.type.split(",")
                     type_list.each { new_type ->
-                        if (!transforms.accepts_types.any { f -> f.value == new_type }) {
-                            log.debug("Add transformer [${transformName}] type: ${new_type}");
+                        if (! transforms.accepts_types.any { f -> f.value == new_type }) {
+                            log.debug("Add transformer [${transformName}] type: ${new_type}")
                             def type = types.find { t -> t.value == new_type }
                             transforms.addToAccepts_types(type)
                         }
                     }
                 }
                 if (transforms.accepts_format.value != tr.format) {
-                    log.debug("Change transformer [${transformName}] format to ${tr.format}");
+                    log.debug("Change transformer [${transformName}] format to ${tr.format}")
                     def format = formats.findAll { t -> t.value == tr.format }
                     transforms.accepts_format = format[0]
                 }
                 if (transforms.return_mime != tr.return_mime) {
-                    log.debug("Change transformer [${transformName}] return format to ${tr.'mime'}");
+                    log.debug("Change transformer [${transformName}] return format to ${tr.'mime'}")
                     transforms.return_mime = tr.return_mime;
                 }
                 if (transforms.return_file_extention != tr.return_file_extension) {
-                    log.debug("Change transformer [${transformName}] return format to ${tr.'return'}");
+                    log.debug("Change transformer [${transformName}] return format to ${tr.'return'}")
                     transforms.return_file_extention = tr.return_file_extension;
                 }
                 if (transforms.path_to_stylesheet != tr.path_to_stylesheet) {
-                    log.debug("Change transformer [${transformName}] return format to ${tr.'path'}");
+                    log.debug("Change transformer [${transformName}] return format to ${tr.'path'}")
                     transforms.path_to_stylesheet = tr.path_to_stylesheet;
                 }
                 transforms.save(failOnError: true, flush: true)
@@ -183,21 +176,21 @@ class BootStrap {
         }
 
         if (grailsApplication.config.localauth) {
-            log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}");
+            log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
 
             grailsApplication.config.sysusers.each { su ->
-                log.debug("test ${su.name} ${su.pass} ${su.display} ${su.roles}");
+                log.debug("test ${su.name} ${su.pass} ${su.display} ${su.roles}")
                 def user = User.findByUsername(su.name)
                 if (user) {
                     if (user.password != su.pass) {
-                        log.debug("Hard change of user password from config ${user.password} -> ${su.pass}");
+                        log.debug("Hard change of user password from config ${user.password} -> ${su.pass}")
                         user.password = su.pass;
                         user.save(failOnError: true)
                     } else {
-                        log.debug("${su.name} present and correct");
+                        log.debug("${su.name} present and correct")
                     }
                 } else {
-                    log.debug("Create user ..");
+                    log.debug("Create user ..")
                     user = new User(
                             username: su.name,
                             password: su.pass,
@@ -206,20 +199,20 @@ class BootStrap {
                             enabled: true).save(failOnError: true)
                 }
 
-                log.debug("Add roles for ${su.name}");
+                log.debug("Add roles for ${su.name}")
                 su.roles.each { r ->
                     def role = Role.findByAuthority(r)
-                    if (!(user.authorities.contains(role))) {
-                        log.debug("  -> adding role ${role}");
+                    if (! (user.authorities.contains(role))) {
+                        log.debug("  -> adding role ${role}")
                         UserRole.create user, role
                     } else {
-                        log.debug("  -> ${role} already present");
+                        log.debug("  -> ${role} already present")
                     }
                 }
             }
         }
 
-        def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: 1, defvalue: 'true', value: 'true').save();
+        def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         // SpringSecurityUtils.clientRegisterFilter( 'oracleSSOFilter', SecurityFilterPosition.PRE_AUTH_FILTER.order)
         // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
@@ -227,9 +220,8 @@ class BootStrap {
         //SpringSecurityUtils.clientRegisterFilter('apiauthFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
         SpringSecurityUtils.clientRegisterFilter('apiFilter', SecurityFilterPosition.BASIC_AUTH_FILTER)
 
-        def uo_with_null_role = UserOrg.findAllByFormalRoleIsNull()
-        if (uo_with_null_role.size() > 0) {
-            log.warn("There are user org rows with no role set. Please update the table to add role FKs");
+        if (UserOrg.findAllByFormalRoleIsNull()?.size() > 0) {
+            log.warn("There are user org rows with no role set. Please update the table to add role FKs")
         }
 
         log.debug("setOrgRoleGroups ..")
@@ -248,7 +240,7 @@ class BootStrap {
         setupContentItems()
 
         // if ( grailsApplication.config.doDocstoreMigration == true ) {
-        //   docstoreService.migrateToDb();
+        //   docstoreService.migrateToDb()
         // }
 
         log.debug("addDefaultJasperReports ..")
@@ -266,7 +258,7 @@ class BootStrap {
         log.debug("initializeDefaultSettings ..")
         initializeDefaultSettings()
 
-        log.debug("Init completed ..");
+        log.debug("Init completed ..")
     }
 
     def destroy = {
@@ -274,14 +266,14 @@ class BootStrap {
 
     def initializeDefaultSettings(){
         def admObj = SystemAdmin.list()
-        if (!admObj) {
-            log.debug("No SystemAdmin object found, creating new");
-            admObj = new SystemAdmin(name:"demo").save();
+        if (! admObj) {
+            log.debug("No SystemAdmin object found, creating new")
+            admObj = new SystemAdmin(name:"demo").save()
         } else {
             admObj = admObj.first()
         }
         //Will not overwrite any existing database properties.
-        createDefaultSysProps(admObj);
+        createDefaultSysProps(admObj)
         admObj.refresh()
         log.debug("Finished updating config from SystemAdmin")
     }
@@ -317,9 +309,10 @@ class BootStrap {
             }
             pd.type  = prop.type
             pd.descr = prop.descr['en']
+            pd.softData = false
             pd.save(failOnError: true)
 
-            if (!SystemAdminCustomProperty.findByType(pd)) {
+            if (! SystemAdminCustomProperty.findByType(pd)) {
                 def newProp = new SystemAdminCustomProperty(type: pd, owner: admObj, stringValue: prop.val, note: prop.note)
                 newProp.save()
             }
@@ -412,7 +405,7 @@ class BootStrap {
         requiredProps.each { default_prop ->
             def prop = PropertyDefinition.findByName(default_prop.name['en'])
 
-            if (!prop) {
+            if (! prop) {
                 log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
                 prop = new PropertyDefinition(name: default_prop.name['en'])
 
@@ -423,6 +416,7 @@ class BootStrap {
 
             prop.type = default_prop.type
             prop.descr = default_prop.descr['en']
+            prop.softData = false
             prop.save(failOnError: true)
 
             I10nTranslation.createOrUpdateI10n(prop, 'name', default_prop.name)
@@ -431,7 +425,7 @@ class BootStrap {
     }
 
     def addDefaultPageMappings() {
-        if (!SitePage.findAll()) {
+        if (! SitePage.findAll()) {
             def home    = new SitePage(alias: "Home",    action: "index",       controller: "home").save()
             def profile = new SitePage(alias: "Profile", action: "index",       controller: "profile").save()
             def pages   = new SitePage(alias: "Pages",   action: "managePages", controller: "spotlight").save()
@@ -468,10 +462,10 @@ class BootStrap {
 
     // Subscription.metaClass.static.methodMissing = { String methodName, args ->
     //   if ( methodName.startsWith('setNsId') ) {
-    //     log.debug("methodMissing ${methodName}, ${args}");
+    //     log.debug("methodMissing ${methodName}, ${args}")
     //   }
     //   else {
-    //     throw new groovy.lang.MissingMethodException(methodName);
+    //     throw new groovy.lang.MissingMethodException(methodName)
     //   }
     // }
   }
@@ -483,7 +477,7 @@ class BootStrap {
             def new_grant = new PermGrant(role:role, perm:perm).save()
         }
         else {
-            log.debug("grant already exists ${role}, ${perm}");
+            log.debug("grant already exists ${role}, ${perm}")
         }
     }
 
@@ -510,13 +504,13 @@ class BootStrap {
                 [[en: 'Publisher', de: 'Verlag'], null]
         ]
 
-        RefdataCategory.locCategory('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
+        RefdataCategory.loc('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
 
         entries.each{ rdv ->
             def i10n = rdv[0]
             def group = rdv[1]
 
-            def val = RefdataCategory.locRefdataValue("Organisational Role", i10n)
+            def val = RefdataValue.loc("Organisational Role", i10n)
             if (group) {
                 val.setGroup(group)
             }
@@ -533,289 +527,325 @@ class BootStrap {
 
         // refdata categories
 
-        RefdataCategory.locCategory('YN',                   [en: 'Yes/No', de: 'Ja/Nein'])
-        RefdataCategory.locCategory('YNO',                  [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
-        RefdataCategory.locCategory('AddressType',          [en: 'Address Type', de: 'Art der Adresse'])
-        RefdataCategory.locCategory('Cluster Type',         [en: 'Cluster Type', de: 'Cluster Type'])
-        RefdataCategory.locCategory('Combo Type',           [en: 'Combo Type', de: 'Combo Type'])
-        RefdataCategory.locCategory('ConcurrentAccess',     [en: 'Concurrent Access', de: 'SimUser'])
-        RefdataCategory.locCategory('ContactContentType',   [en: 'Type of Contact', de: 'Kontakttyp'])
-        RefdataCategory.locCategory('ContactType',          [en: 'Contact Type', de: 'Art des Kontaktes'])
-        RefdataCategory.locCategory('CoreStatus',           [en: 'Core Status', de: 'Kerntitel-Status'])
-        RefdataCategory.locCategory('FactType',             [en: 'FactType', de: 'FactType'])
-        RefdataCategory.locCategory('Gender',               [en: 'Gender', de: 'Geschlecht'])
-        RefdataCategory.locCategory('OrgSector',            [en: 'OrgSector', de: 'Bereich'])
-        RefdataCategory.locCategory('OrgType',              [en: 'Organisation Type', de: 'Organisationstyp'])
-        RefdataCategory.locCategory('Person Function',      [en: 'Person Function', de: 'Funktion'])
-        RefdataCategory.locCategory('Person Responsibility',[en: 'Person Responsibility', de: 'Verantwortlich'])
-        RefdataCategory.locCategory('Subscription Status',  [en: 'Subscription Status', de: 'Subscription Status'])
+        RefdataCategory.loc('YN',                   [en: 'Yes/No', de: 'Ja/Nein'])
+        RefdataCategory.loc('YNO',                  [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
+        RefdataCategory.loc('AddressType',          [en: 'Address Type', de: 'Art der Adresse'])
+        RefdataCategory.loc('Cluster Type',         [en: 'Cluster Type', de: 'Cluster Type'])
+        RefdataCategory.loc('Combo Type',           [en: 'Combo Type', de: 'Combo Type'])
+        RefdataCategory.loc('ConcurrentAccess',     [en: 'Concurrent Access', de: 'SimUser'])
+        RefdataCategory.loc('ContactContentType',   [en: 'Type of Contact', de: 'Kontakttyp'])
+        RefdataCategory.loc('ContactType',          [en: 'Contact Type', de: 'Art des Kontaktes'])
+        RefdataCategory.loc('CoreStatus',           [en: 'Core Status', de: 'Kerntitel-Status'])
+        RefdataCategory.loc('FactType',             [en: 'FactType', de: 'FactType'])
+        RefdataCategory.loc('Gender',               [en: 'Gender', de: 'Geschlecht'])
+        RefdataCategory.loc('OrgSector',            [en: 'OrgSector', de: 'Bereich'])
+        RefdataCategory.loc('OrgType',              [en: 'Organisation Type', de: 'Organisationstyp'])
+        RefdataCategory.loc('Person Function',      [en: 'Person Function', de: 'Funktion'])
+        RefdataCategory.loc('Person Responsibility',[en: 'Person Responsibility', de: 'Verantwortlich'])
+        RefdataCategory.loc('Subscription Status',  [en: 'Subscription Status', de: 'Subscription Status'])
 
         // refdata values
 
-        RefdataCategory.locRefdataValue('YN',   [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue('YN',   [en: 'No', de: 'Nein'])
+        RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'])
+        RefdataValue.loc('YN',   [en: 'No', de: 'Nein'])
 
-        RefdataCategory.locRefdataValue('YNO',  [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue('YNO',  [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue('YNO',  [en: 'Not applicable', de: 'Nicht zutreffend'])
-        RefdataCategory.locRefdataValue('YNO',  [en: 'Unknown', de: 'Unbekannt'])
-        RefdataCategory.locRefdataValue('YNO',  [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('YNO',  [en: 'Yes', de: 'Ja'])
+        RefdataValue.loc('YNO',  [en: 'No', de: 'Nein'])
+        RefdataValue.loc('YNO',  [en: 'Not applicable', de: 'Nicht zutreffend'])
+        RefdataValue.loc('YNO',  [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc('YNO',  [en: 'Other', de: 'Andere'])
 
-        RefdataCategory.locRefdataValue('AddressType', [en: 'Postal address', de: 'Postanschrift'])
-        RefdataCategory.locRefdataValue('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
-        RefdataCategory.locRefdataValue('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Postal address', de: 'Postanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
 
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 1'])
-        RefdataCategory.locRefdataValue('ClusterType', [en: 'ClusterType 2'])
+        RefdataValue.loc('ClusterType', [en: 'ClusterType 1'])
+        RefdataValue.loc('ClusterType', [en: 'ClusterType 1'])
+        RefdataValue.loc('ClusterType', [en: 'ClusterType 2'])
 
-        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'No limit', de: 'Ohne Begrenzung'])
-        RefdataCategory.locRefdataValue('ConcurrentAccess',     [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
+        RefdataValue.loc('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
+        RefdataValue.loc('ConcurrentAccess',     [en: 'No limit', de: 'Ohne Begrenzung'])
+        RefdataValue.loc('ConcurrentAccess',     [en: 'Other', de: 'Andere'])
 
-        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'E-Mail', de: 'E-Mail'])
-        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'Phone', de: 'Telefon'])
-        RefdataCategory.locRefdataValue('ContactContentType',   [en: 'Fax', de: 'Fax'])
+        RefdataValue.loc('ContactContentType',   [en: 'E-Mail', de: 'E-Mail'])
+        RefdataValue.loc('ContactContentType',   [en: 'Phone', de: 'Telefon'])
+        RefdataValue.loc('ContactContentType',   [en: 'Fax', de: 'Fax'])
 
-        RefdataCategory.locRefdataValue('ContactType',  [en: 'Personal', de: 'Privat'])
-        RefdataCategory.locRefdataValue('ContactType',  [en: 'Job-related', de: 'Geschäftlich'])
+        RefdataValue.loc('ContactType',  [en: 'Personal', de: 'Privat'])
+        RefdataValue.loc('ContactType',  [en: 'Job-related', de: 'Geschäftlich'])
 
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print', de: 'Print'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Electronic', de: 'Elektronisch'])
-        RefdataCategory.locRefdataValue('CoreStatus',   [en: 'Print+Electronic', de: 'Print & Elektronisch'])
+        RefdataValue.loc('CoreStatus',   [en: 'Yes', de: 'Ja'])
+        RefdataValue.loc('CoreStatus',   [en: 'No', de: 'Nein'])
+        RefdataValue.loc('CoreStatus',   [en: 'Print', de: 'Print'])
+        RefdataValue.loc('CoreStatus',   [en: 'Electronic', de: 'Elektronisch'])
+        RefdataValue.loc('CoreStatus',   [en: 'Print+Electronic', de: 'Print & Elektronisch'])
 
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1a'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1-JR1a'])
-        RefdataCategory.locRefdataValue('FactType', [en: 'JUSP:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'JUSP:JR1'])
+        RefdataValue.loc('FactType', [en: 'JUSP:JR1a'])
+        RefdataValue.loc('FactType', [en: 'JUSP:JR1-JR1a'])
+        RefdataValue.loc('FactType', [en: 'JUSP:JR1GOA'])
 
-        RefdataCategory.locRefdataValue('Gender',   [en: 'Female', de: 'Weiblich'])
-        RefdataCategory.locRefdataValue('Gender',   [en: 'Male', de: 'Männlich'])
+        RefdataValue.loc('Gender',   [en: 'Female', de: 'Weiblich'])
+        RefdataValue.loc('Gender',   [en: 'Male', de: 'Männlich'])
 
-        RefdataCategory.locRefdataValue('OrgSector',    [en: 'Higher Education', de: 'Bibliothek'])
-        RefdataCategory.locRefdataValue('OrgSector',    [en: 'Publisher', de: 'Verlag'])
+        RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Bibliothek'])
+        RefdataValue.loc('OrgSector',    [en: 'Publisher', de: 'Verlag'])
 
-        RefdataCategory.locRefdataValue('OrgType',      [en: 'Consortium', de: 'Konsortium'])
-        RefdataCategory.locRefdataValue('OrgType',      [en: 'Institution', de: 'Einrichtung'])
-        RefdataCategory.locRefdataValue('OrgType',      [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
+        RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
+        RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
-        RefdataCategory.locRefdataValue('Person Function',          [en: 'General contact person', de: 'Kontaktperson'])
+        RefdataValue.loc('Person Function',          [en: 'General contact person', de: 'Kontaktperson'])
 
-        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific license editor', de: 'Lizenzbearbeiter'])
-        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific subscription editor'])
-        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'])
-        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific cluster editor'])
-        RefdataCategory.locRefdataValue('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Lizenzbearbeiter'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'])
 
-        RefdataCategory.locRefdataValue('Subscription Status',      [en: 'Current', de: 'Aktuell'])
-        RefdataCategory.locRefdataValue('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'])
     }
 
     def setupOnixPlRefdata = {
+
+        // copied from Config.groovy .. START
+
+        // Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
+        // add them to the DB if they don't already exist.
+        def refdatavalues = [
+                "User" : [ "Authorized User", "ExternalAcademic", "ExternalLibrarian", "ExternalStudent",
+                           "ExternalTeacher", "ExternalTeacherInCountryOfLicensee", "LibraryUserUnaffiliated", "Licensee",
+                           "LicenseeAlumnus", "LicenseeAuxiliary", "LicenseeContractor", "LicenseeContractorOrganization",
+                           "LicenseeContractorStaff", "LicenseeDistanceLearningStudent", "LicenseeExternalStudent", "LicenseeFaculty",
+                           "LicenseeInternalStudent", "LicenseeLibrary", "LicenseeLibraryStaff", "LicenseeNonFacultyStaff",
+                           "LicenseeResearcher", "LicenseeRetiredStaff", "LicenseeStaff", "LicenseeStudent", "LoansomeDocUser",
+                           "OtherTeacherOfAuthorizedUsers", "RegulatoryAuthority", "ResearchSponsor", "ThirdParty", "ThirdPartyLibrary",
+                           "ThirdPartyNonCommercialLibrary", "ThirdPartyOrganization", "ThirdPartyPerson", "WalkInUser" ],
+                "UsedResource" : ["AcademicPaper", "AcademicWork", "AcademicWorkIncludingLicensedContent",
+                                  "AcknowledgmentOfSource", "AuthoredContent", "AuthoredContentPeerReviewedCopy", "AuthorizedUserOwnWork",
+                                  "CatalogOrInformationSystem", "CombinedWorkIncludingLicensedContent", "CompleteArticle", "CompleteBook",
+                                  "CompleteChapter", "CompleteIssue", "CopyrightNotice", "CopyrightNoticesOrDisclaimers",
+                                  "CoursePackElectronic", "CoursePackPrinted", "CourseReserveElectronic", "CourseReservePrinted",
+                                  "DataFromLicensedContent", "DerivedWork", "DigitalInstructionalMaterial",
+                                  "DigitalInstructionalMaterialIncludingLicensedContent",
+                                  "DigitalInstructionalMaterialWithLinkToLicensedContent", "DownloadedLicensedContent",
+                                  "ImagesInLicensedContent", "LicensedContent", "LicensedContentBriefExcerpt", "LicensedContentMetadata",
+                                  "LicensedContentPart", "LicensedContentPartDigital", "LicensedContentPartPrinted", "LicenseeContent",
+                                  "LicenseeWebsite", "LinkToLicensedContent", "MaterialForPresentation", "PersonalPresentationMaterial",
+                                  "PrintedInstructionalMaterial", "SpecialNeedsInstructionalMaterial", "ThirdPartyWebsite",
+                                  "TrainingMaterial", "UserContent", "UserWebsite"]
+        ]
+
+        refdatavalues.each { rdc, rdvList ->
+            rdvList.each { rdv ->
+                RefdataCategory.lookupOrCreate(rdc, rdv)
+            }
+        }
+
+        // copied from Config.groovy .. END
 
         // -------------------------------------------------------------------
         // ONIX-PL Additions
         // -------------------------------------------------------------------
 
-        RefdataCategory.locCategory('Authority',
+        RefdataCategory.loc('Authority',
                 [en: 'Authority', de: 'Authority'])
 
-        RefdataCategory.locRefdataValue('Authority', [en: 'Author'])
-        RefdataCategory.locRefdataValue('Authority', [en: 'Institution'])
-        RefdataCategory.locRefdataValue('Authority', [en: 'Author and Institution'])
+        RefdataValue.loc('Authority', [en: 'Author'])
+        RefdataValue.loc('Authority', [en: 'Institution'])
+        RefdataValue.loc('Authority', [en: 'Author and Institution'])
 
-        RefdataCategory.locCategory('CostItemCategory',
+        RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])
 
-        RefdataCategory.locRefdataValue('CostItemCategory', [en: 'Price', de: 'Preis'])
-        RefdataCategory.locRefdataValue('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'])
-        RefdataCategory.locRefdataValue('CostItemCategory', [en: 'Refund', de: 'Erstattung'])
-        RefdataCategory.locRefdataValue('CostItemCategory', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('CostItemCategory', [en: 'Price', de: 'Preis'])
+        RefdataValue.loc('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'])
+        RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'])
+        RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'])
 
-        RefdataCategory.locCategory('CostItemElement',
+        RefdataCategory.loc('CostItemElement',
                 [en: 'CostItemElement', de: 'CostItemElement'])
 
-        RefdataCategory.locRefdataValue('CostItemElement', [en: 'Admin Fee', de: 'Admin Fee'])
-        RefdataCategory.locRefdataValue('CostItemElement', [en: 'Content', de: 'Content'])
-        RefdataCategory.locRefdataValue('CostItemElement', [en: 'Platform', de: 'Platform'])
-        RefdataCategory.locRefdataValue('CostItemElement', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('CostItemElement', [en: 'Admin Fee', de: 'Admin Fee'])
+        RefdataValue.loc('CostItemElement', [en: 'Content', de: 'Content'])
+        RefdataValue.loc('CostItemElement', [en: 'Platform', de: 'Platform'])
+        RefdataValue.loc('CostItemElement', [en: 'Other', de: 'Andere'])
 
-        RefdataCategory.locCategory('CostItemStatus',
+        RefdataCategory.loc('CostItemStatus',
                 [en: 'CostItemStatus', de: 'CostItemStatus'])
 
-        RefdataCategory.locRefdataValue('CostItemStatus', [en: 'Estimate', de: 'Schätzung'])
-        RefdataCategory.locRefdataValue('CostItemStatus', [en: 'Commitment', de: 'Commitment'])
-        RefdataCategory.locRefdataValue('CostItemStatus', [en: 'Actual', de: 'Actual'])
-        RefdataCategory.locRefdataValue('CostItemStatus', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('CostItemStatus', [en: 'Estimate', de: 'Schätzung'])
+        RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'Commitment'])
+        RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'Actual'])
+        RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Andere'])
 
         // TODO locCategory
-        RefdataCategory.locRefdataValue('Document Context Status',
+        RefdataValue.loc('Document Context Status',
                 [en: 'Deleted', de: 'Gelöscht'])
 
-        RefdataCategory.locCategory('Document Type',
+        RefdataCategory.loc('Document Type',
                 [en: 'Document Type', de: 'Dokumenttyp'])
 
-        RefdataCategory.locRefdataValue('Document Type', [en: 'Announcement', de: 'Angekündigung'])
-        RefdataCategory.locRefdataValue('Document Type', [en: 'License', de: 'Lizenz'])
-        RefdataCategory.locRefdataValue('Document Type', [en: 'Note', de: 'Notiz'])
-        RefdataCategory.locRefdataValue('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'])
+        RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'])
+        RefdataValue.loc('Document Type', [en: 'License', de: 'Lizenz'])
+        RefdataValue.loc('Document Type', [en: 'Note', de: 'Notiz'])
+        RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'])
 
-        RefdataCategory.locCategory('Entitlement Issue Status',
+        RefdataCategory.loc('Entitlement Issue Status',
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'])
 
-        RefdataCategory.locRefdataValue('Entitlement Issue Status', [en: 'Live', de: 'Live'])
-        RefdataCategory.locRefdataValue('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'])
+        RefdataValue.loc('Entitlement Issue Status', [en: 'Live', de: 'Live'])
+        RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'])
 
-        RefdataCategory.locCategory('IE Access Status',
+        RefdataCategory.loc('IE Access Status',
                 [en: 'IE Access Status', de: 'IE Access Status'])
 
-        RefdataCategory.locRefdataValue('IE Access Status', [en: 'ERROR - No Subscription Start and/or End Date', de: 'ERROR - No Subscription Start and/or End Date'])
-        RefdataCategory.locRefdataValue('IE Access Status', [en: 'Current', de: 'Current'])
-        RefdataCategory.locRefdataValue('IE Access Status', [en: 'Current(*)', de: 'Current(*)'])
-        RefdataCategory.locRefdataValue('IE Access Status', [en: 'Expected', de: 'Expected'])
-        RefdataCategory.locRefdataValue('IE Access Status', [en: 'Expired', de: 'Expired'])
+        RefdataValue.loc('IE Access Status', [en: 'ERROR - No Subscription Start and/or End Date', de: 'ERROR - No Subscription Start and/or End Date'])
+        RefdataValue.loc('IE Access Status', [en: 'Current', de: 'Current'])
+        RefdataValue.loc('IE Access Status', [en: 'Current(*)', de: 'Current(*)'])
+        RefdataValue.loc('IE Access Status', [en: 'Expected', de: 'Expected'])
+        RefdataValue.loc('IE Access Status', [en: 'Expired', de: 'Expired'])
 
-        RefdataCategory.locCategory('IEMedium',
+        RefdataCategory.loc('IEMedium',
                 [en: 'IEMedium', de: 'IEMedium'])
 
-        RefdataCategory.locRefdataValue('IEMedium', [en: 'Print', de: 'Print'])
-        RefdataCategory.locRefdataValue('IEMedium', [en: 'Electronic', de: 'Elektronisch'])
-        RefdataCategory.locRefdataValue('IEMedium', [en: 'Print and Electronic', de: 'Print und Elektronisch'])
+        RefdataValue.loc('IEMedium', [en: 'Print', de: 'Print'])
+        RefdataValue.loc('IEMedium', [en: 'Electronic', de: 'Elektronisch'])
+        RefdataValue.loc('IEMedium', [en: 'Print and Electronic', de: 'Print und Elektronisch'])
 
-        RefdataCategory.locCategory('LicenseCategory',
+        RefdataCategory.loc('LicenseCategory',
                 [en: 'LicenseCategory', de: 'Lizenzkategorie'])
 
-        RefdataCategory.locRefdataValue('LicenseCategory', [en: 'Content', de: 'Content'])
-        RefdataCategory.locRefdataValue('LicenseCategory', [en: 'Software', de: 'Software'])
-        RefdataCategory.locRefdataValue('LicenseCategory', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('LicenseCategory', [en: 'Content', de: 'Content'])
+        RefdataValue.loc('LicenseCategory', [en: 'Software', de: 'Software'])
+        RefdataValue.loc('LicenseCategory', [en: 'Other', de: 'Andere'])
 
-        RefdataCategory.locCategory(RefdataCategory.LIC_TYPE,
+        RefdataCategory.loc(RefdataCategory.LIC_TYPE,
                 [en: 'License Type', de: 'Lizenztyp'])
 
-        RefdataCategory.locRefdataValue(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Lokal'])
-        RefdataCategory.locRefdataValue(RefdataCategory.LIC_TYPE, [en: 'Template', de: 'Vorlage'])
-        RefdataCategory.locRefdataValue(RefdataCategory.LIC_TYPE, [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Lokal'])
+        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Template', de: 'Vorlage'])
+        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Unknown', de: 'Unbekannt'])
 
-        RefdataCategory.locCategory('License.OA.Type',
+        RefdataCategory.loc('License.OA.Type',
                 [en: 'Open Acces Type', de: 'Open-Acces Typ'])
 
-        RefdataCategory.locRefdataValue('License.OA.Type', [en: 'No Open Access', de: 'Kein Open-Access'])
-        RefdataCategory.locRefdataValue('License.OA.Type', [en: 'Hybrid', de: 'Hybrid'])
-        RefdataCategory.locRefdataValue('License.OA.Type', [en: 'Green Open Access', de: 'Green Open-Access'])
-        RefdataCategory.locRefdataValue('License.OA.Type', [en: 'Red Open Access', de: 'Red Open-Access'])
+        RefdataValue.loc('License.OA.Type', [en: 'No Open Access', de: 'Kein Open-Access'])
+        RefdataValue.loc('License.OA.Type', [en: 'Hybrid', de: 'Hybrid'])
+        RefdataValue.loc('License.OA.Type', [en: 'Green Open Access', de: 'Green Open-Access'])
+        RefdataValue.loc('License.OA.Type', [en: 'Red Open Access', de: 'Red Open-Access'])
 
-        RefdataCategory.locCategory('License.OA.eArcVersion',
+        RefdataCategory.loc('License.OA.eArcVersion',
                 [en: 'License.OA.eArcVersion', de: 'License.OA.eArcVersion'])
 
-        RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Accepted Author'])
-        RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Manuscript (AAM)'])
-        RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Publisher-PDF', de: 'Verlags-PDF'])
-        RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Postprint', de: 'Postprint'])
-        RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Preprint', de: 'Preprint'])
-        RefdataCategory.locRefdataValue('License.OA.eArcVersion', [en: 'Preprint with ePrint URL'])
+        RefdataValue.loc('License.OA.eArcVersion', [en: 'Accepted Author'])
+        RefdataValue.loc('License.OA.eArcVersion', [en: 'Manuscript (AAM)'])
+        RefdataValue.loc('License.OA.eArcVersion', [en: 'Publisher-PDF', de: 'Verlags-PDF'])
+        RefdataValue.loc('License.OA.eArcVersion', [en: 'Postprint', de: 'Postprint'])
+        RefdataValue.loc('License.OA.eArcVersion', [en: 'Preprint', de: 'Preprint'])
+        RefdataValue.loc('License.OA.eArcVersion', [en: 'Preprint with ePrint URL'])
 
-        RefdataCategory.locCategory(RefdataCategory.LIC_STATUS,
+        RefdataCategory.loc(RefdataCategory.LIC_STATUS,
                 [en: 'License Status', de: 'Lizenzstatus'])
 
-        RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktuell'])
-        RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'])
-        RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
-        RefdataCategory.locRefdataValue(RefdataCategory.LIC_STATUS, [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
+        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Unknown', de: 'Unbekannt'])
 
-        RefdataCategory.locCategory('PendingChangeStatus',
+        RefdataCategory.loc('PendingChangeStatus',
                 [en: 'PendingChangeStatus', de: 'PendingChangeStatus'])
 
-        RefdataCategory.locRefdataValue('PendingChangeStatus', [en: 'Pending', de: 'Ausstehend'])
-        RefdataCategory.locRefdataValue('PendingChangeStatus', [en: 'Accepted', de: 'Angenommen'])
-        RefdataCategory.locRefdataValue('PendingChangeStatus', [en: 'Rejected', de: 'Abgelehnt'])
+        RefdataValue.loc('PendingChangeStatus', [en: 'Pending', de: 'Ausstehend'])
+        RefdataValue.loc('PendingChangeStatus', [en: 'Accepted', de: 'Angenommen'])
+        RefdataValue.loc('PendingChangeStatus', [en: 'Rejected', de: 'Abgelehnt'])
 
-        RefdataCategory.locCategory(RefdataCategory.PKG_LIST_STAT,
+        RefdataCategory.loc(RefdataCategory.PKG_LIST_STAT,
                 [en: RefdataCategory.PKG_LIST_STAT, de: RefdataCategory.PKG_LIST_STAT])
-        RefdataCategory.locCategory(RefdataCategory.PKG_BREAKABLE,
+        RefdataCategory.loc(RefdataCategory.PKG_BREAKABLE,
                 [en: RefdataCategory.PKG_BREAKABLE, de: RefdataCategory.PKG_BREAKABLE])
-        RefdataCategory.locCategory(RefdataCategory.PKG_CONSISTENT,
+        RefdataCategory.loc(RefdataCategory.PKG_CONSISTENT,
                 [en: RefdataCategory.PKG_CONSISTENT, de: RefdataCategory.PKG_CONSISTENT])
-        RefdataCategory.locCategory(RefdataCategory.PKG_FIXED,
+        RefdataCategory.loc(RefdataCategory.PKG_FIXED,
                 [en: RefdataCategory.PKG_FIXED, de: RefdataCategory.PKG_FIXED])
 
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_LIST_STAT,  [en: 'Checked', de: 'Überprüft'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_LIST_STAT,  [en: 'In Progress', de: 'In Bearbeitung'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_BREAKABLE,  [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_BREAKABLE,  [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_BREAKABLE,  [en: 'Unknown', de: 'Unbekannt'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_CONSISTENT, [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_CONSISTENT, [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_CONSISTENT, [en: 'Unknown', de: 'Unbekannt'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_FIXED,      [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_FIXED,      [en: 'Yes', de: 'Ja'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_FIXED,      [en: 'Unknown', de: 'Unbekannt'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_SCOPE,      [en: 'Aggregator', de: 'Aggregator'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_SCOPE,      [en: 'Front File', de: 'Front File'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_SCOPE,      [en: 'Back File', de: 'Back File'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_SCOPE,      [en: 'Master File', de: 'Master File'])
-        RefdataCategory.locRefdataValue(RefdataCategory.PKG_SCOPE,      [en: 'Scope Undefined', de: 'Scope Undefined'])
+        RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'Checked', de: 'Überprüft'])
+        RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'In Progress', de: 'In Bearbeitung'])
+        RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'No', de: 'Nein'])
+        RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'Yes', de: 'Ja'])
+        RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: 'No', de: 'Nein'])
+        RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: 'Yes', de: 'Ja'])
+        RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc(RefdataCategory.PKG_FIXED,      [en: 'No', de: 'Nein'])
+        RefdataValue.loc(RefdataCategory.PKG_FIXED,      [en: 'Yes', de: 'Ja'])
+        RefdataValue.loc(RefdataCategory.PKG_FIXED,      [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Aggregator', de: 'Aggregator'])
+        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Front File', de: 'Front File'])
+        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Back File', de: 'Back File'])
+        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Master File', de: 'Master File'])
+        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Scope Undefined', de: 'Scope Undefined'])
 
-        RefdataCategory.locCategory('TaxType',
+        RefdataCategory.loc('TaxType',
                 [en: 'TaxType', de: 'TaxType'])
 
-        RefdataCategory.locRefdataValue('TaxType', [en: 'On Invoice', de: 'Auf Rechnung'])
-        RefdataCategory.locRefdataValue('TaxType', [en: 'Self Declared', de: 'Überweisung'])
-        RefdataCategory.locRefdataValue('TaxType', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('TaxType', [en: 'On Invoice', de: 'Auf Rechnung'])
+        RefdataValue.loc('TaxType', [en: 'Self Declared', de: 'Überweisung'])
+        RefdataValue.loc('TaxType', [en: 'Other', de: 'Andere'])
 
-        RefdataCategory.locCategory(RefdataCategory.TI_STATUS,
+        RefdataCategory.loc(RefdataCategory.TI_STATUS,
                 [en: RefdataCategory.TI_STATUS, de: RefdataCategory.TI_STATUS])
 
-        RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
-        RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
-        RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
-        RefdataCategory.locRefdataValue(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unknown'])
+        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
+        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unknown'])
 
-        RefdataCategory.locCategory('TitleInstancePackagePlatform.DelayedOA',
+        RefdataCategory.loc('TitleInstancePackagePlatform.DelayedOA',
                 [en: 'TitleInstancePackagePlatform.DelayedOA', de: 'TitleInstancePackagePlatform.DelayedOA'])
 
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.DelayedOA', [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.DelayedOA', [en: 'Unknown', de: 'Unbekannt'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.DelayedOA', [en: 'Yes', de: 'Ja'])
+        RefdataValue.loc('TitleInstancePackagePlatform.DelayedOA', [en: 'No', de: 'Nein'])
+        RefdataValue.loc('TitleInstancePackagePlatform.DelayedOA', [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc('TitleInstancePackagePlatform.DelayedOA', [en: 'Yes', de: 'Ja'])
 
-        RefdataCategory.locCategory('TitleInstancePackagePlatform.HybridOA',
+        RefdataCategory.loc('TitleInstancePackagePlatform.HybridOA',
                 [en: 'TitleInstancePackagePlatform.HybridOA', de: 'TitleInstancePackagePlatform.HybridOA'])
 
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.HybridOA', [en: 'No', de: 'Nein'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.HybridOA', [en: 'Unknown', de: 'Unbekannt'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.HybridOA', [en: 'Yes', de: 'Ja'])
+        RefdataValue.loc('TitleInstancePackagePlatform.HybridOA', [en: 'No', de: 'Nein'])
+        RefdataValue.loc('TitleInstancePackagePlatform.HybridOA', [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc('TitleInstancePackagePlatform.HybridOA', [en: 'Yes', de: 'Ja'])
 
-        RefdataCategory.locCategory('Tipp.StatusReason',
+        RefdataCategory.loc('Tipp.StatusReason',
                 [en: 'Tipp.StatusReason', de: 'Tipp.StatusReason'])
 
-        RefdataCategory.locRefdataValue('Tipp.StatusReason', [en: 'Transfer Out', de: 'Transfer Out'])
-        RefdataCategory.locRefdataValue('Tipp.StatusReason', [en: 'Transfer In', de: 'Transfer In'])
+        RefdataValue.loc('Tipp.StatusReason', [en: 'Transfer Out', de: 'Transfer Out'])
+        RefdataValue.loc('Tipp.StatusReason', [en: 'Transfer In', de: 'Transfer In'])
 
-        RefdataCategory.locCategory('TitleInstancePackagePlatform.PaymentType',
+        RefdataCategory.loc('TitleInstancePackagePlatform.PaymentType',
                 [en: 'TitleInstancePackagePlatform.PaymentType', de: 'TitleInstancePackagePlatform.PaymentType'])
 
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.PaymentType', [en: 'Complimentary', de: 'Complimentary'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.PaymentType', [en: 'Limited Promotion', de: 'Limited Promotion'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.PaymentType', [en: 'Paid', de: 'Paid'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.PaymentType', [en: 'OA', de: 'OA'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.PaymentType', [en: 'Opt Out Promotion', de: 'Opt Out Promotion'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.PaymentType', [en: 'Uncharged', de: 'Uncharged'])
-        RefdataCategory.locRefdataValue('TitleInstancePackagePlatform.PaymentType', [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Complimentary', de: 'Complimentary'])
+        RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Limited Promotion', de: 'Limited Promotion'])
+        RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Paid', de: 'Paid'])
+        RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'OA', de: 'OA'])
+        RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Opt Out Promotion', de: 'Opt Out Promotion'])
+        RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Uncharged', de: 'Uncharged'])
+        RefdataValue.loc('TitleInstancePackagePlatform.PaymentType', [en: 'Unknown', de: 'Unbekannt'])
 
-        RefdataCategory.locCategory(RefdataCategory.TIPP_STATUS,
+        RefdataCategory.loc(RefdataCategory.TIPP_STATUS,
                 [en: RefdataCategory.TIPP_STATUS, de: RefdataCategory.TIPP_STATUS])
 
-        RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'])
-        RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Expected', de: 'Expected'])
-        RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
-        RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'])
-        RefdataCategory.locRefdataValue(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'])
+        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Expected', de: 'Expected'])
+        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'])
+        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'])
 
         // Controlled values from the <UsageType> element.
 
-        RefdataCategory.locCategory('UsageStatus',
+        RefdataCategory.loc('UsageStatus',
                 [en: 'UsageStatus', de: 'UsageStatus'])
 
         RefdataCategory.lookupOrCreate('UsageStatus', 'greenTick',      'UseForDataMining')
@@ -837,18 +867,18 @@ class BootStrap {
     //                                                                                       principal:null,
     //                                                                                       credentials:null,
     //                                                                                       rectype:0)
-    // gokb_record_source.save(flush:true, stopOnError:true);
-    // log.debug("New gokb record source: ${gokb_record_source}");
+    // gokb_record_source.save(flush:true, stopOnError:true)
+    // log.debug("New gokb record source: ${gokb_record_source}")
 
         //Reminders for Cron
         RefdataCategory.lookupOrCreate("ReminderMethod","email")
 
-        RefdataCategory.locCategory('ReminderUnit',
+        RefdataCategory.loc('ReminderUnit',
                 [en: 'ReminderUnit', de: 'ReminderUnit'])
 
-        RefdataCategory.locRefdataValue('ReminderUnit', [en: 'Day', de: 'Tag'])
-        RefdataCategory.locRefdataValue('ReminderUnit', [en: 'Week', de: 'Woche'])
-        RefdataCategory.locRefdataValue('ReminderUnit', [en: 'Month', de: 'Monat'])
+        RefdataValue.loc('ReminderUnit', [en: 'Day', de: 'Tag'])
+        RefdataValue.loc('ReminderUnit', [en: 'Week', de: 'Woche'])
+        RefdataValue.loc('ReminderUnit', [en: 'Month', de: 'Monat'])
 
         RefdataCategory.lookupOrCreate("ReminderTrigger","Subscription Manual Renewal Date")
     }
@@ -858,40 +888,40 @@ class BootStrap {
     // The default template for a property change on a title
     ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.propertyChange','', '''
 Title change - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
-''');
+''')
 
     ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.identifierAdded','', '''
 An identifier was added to title ${OID?.title}.
-''');
+''')
 
     ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.identifierRemoved','', '''
 An identifier was removed from title ${OID?.title}.
-''');
+''')
 
     ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.updated','', '''
 TIPP change for title ${OID?.title?.title} - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
-''');
+''')
 
     ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.added','', '''
 TIPP Added for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
-''');
+''')
 
     ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.deleted','', '''
 TIPP Deleted for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
-''');
+''')
 
     ContentItem.lookupOrCreate ('ChangeNotification.Package.created','', '''
 New package added with id ${OID.id} - "${OID.name}".
-''');
+''')
 
     ContentItem.lookupOrCreate ('kbplus.noHostPlatformURL','', '''
 No Host Platform URL Content
-''');
+''')
     }
 
     def setupCurrencies = {
 
-        RefdataCategory.locCategory('Currency', [en: 'Currency', de: 'Währung'])
+        RefdataCategory.loc('Currency', [en: 'Currency', de: 'Währung'])
 
         RefdataCategory.lookupOrCreate('Currency','AED - United Arab Emirates Dirham').save()
         RefdataCategory.lookupOrCreate('Currency','AFN - Afghanistan Afghani').save()
@@ -1062,7 +1092,7 @@ No Host Platform URL Content
 
         // TODO refactoring .. found in domain classes, controller and services
 
-        RefdataCategory.lookupOrCreate('Document Context Status','Deleted');
+        RefdataCategory.lookupOrCreate('Document Context Status','Deleted')
         RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' )
     }
 }

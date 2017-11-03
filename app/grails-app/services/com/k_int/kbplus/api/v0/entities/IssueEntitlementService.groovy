@@ -1,14 +1,11 @@
-package com.k_int.kbplus.api.v0
+package com.k_int.kbplus.api.v0.entities
 
-import com.k_int.kbplus.Identifier
-import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.TitleInstancePackagePlatform
-import com.k_int.kbplus.api.v0.base.OutHelperService
-import com.k_int.kbplus.api.v0.base.OutService
+import com.k_int.kbplus.api.v0.ApiReadHelperService
+import com.k_int.kbplus.api.v0.ApiReadService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
 import grails.converters.JSON
@@ -17,7 +14,7 @@ import groovy.util.logging.Log4j
 @Log4j
 class IssueEntitlementService {
 
-    OutService outService
+    ApiReadService apiReadService
     PkgService pkgService
     SubscriptionService subscriptionService
 
@@ -47,24 +44,26 @@ class IssueEntitlementService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getIssueEntitlements(SubscriptionPackage subPkg, User user, Org context){
-        def hasAccess  = false
-        def hasAccess2 = false
-
-        // TODO
-        subPkg.subscription.orgRelations.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess2 = true
-            }
-        }
-        subPkg.pkg.orgs.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = hasAccess2
-            }
-        }
-
         def result = []
+        def hasAccess = apiReadService.isDataManager(user)
+
+        if (! hasAccess) {
+            def hasAccess2 = false
+            // TODO
+            subPkg.subscription.orgRelations.each{ orgRole ->
+                if(orgRole.getOrg().id == context?.id) {
+                    hasAccess2 = true
+                }
+            }
+            subPkg.pkg.orgs.each{ orgRole ->
+                if(orgRole.getOrg().id == context?.id) {
+                    hasAccess = hasAccess2
+                }
+            }
+        }
+
         if (hasAccess) {
-            result = outService.exportIssueEntitlements(subPkg,  OutHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = apiReadService.exportIssueEntitlements(subPkg,  ApiReadHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

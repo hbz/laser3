@@ -1,16 +1,16 @@
-package com.k_int.kbplus.api.v0.base
+package com.k_int.kbplus.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.MainService
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import grails.converters.JSON
+import com.k_int.kbplus.auth.UserRole
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
-class OutService {
+class ApiReadService {
 
-    OutHelperService outHelperService
+    ApiReadHelperService apiReadHelperService
 
     /**
      * @param com.k_int.kbplus.SubscriptionPackage subPkg
@@ -25,10 +25,10 @@ class OutService {
         tipps.each{ tipp ->
             def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
             if (ie) {
-                result << outHelperService.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
+                result << apiReadHelperService.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
             }
         }
-        return outHelperService.cleanUp(result, true, true)
+        return apiReadHelperService.cleanUp(result, true, true)
     }
 
     /**
@@ -68,17 +68,17 @@ class OutService {
 
         // References
 
-        result.identifiers      = outHelperService.resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.properties       = outHelperService.resolveProperties(lic, context)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
-        result.documents        = outHelperService.resolveDocuments(lic.documents) // com.k_int.kbplus.DocContext
-        result.onixplLicense    = outHelperService.resolveOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+        result.identifiers      = apiReadHelperService.resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.properties       = apiReadHelperService.resolveProperties(lic, context)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
+        result.documents        = apiReadHelperService.resolveDocuments(lic.documents) // com.k_int.kbplus.DocContext
+        result.onixplLicense    = apiReadHelperService.resolveOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 
-        if (ignoreRelation != outHelperService.IGNORE_ALL) {
-            if (ignoreRelation != outHelperService.IGNORE_SUBSCRIPTION) {
-                result.subscriptions = outHelperService.resolveStubs(lic.subscriptions, outHelperService.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+        if (ignoreRelation != apiReadHelperService.IGNORE_ALL) {
+            if (ignoreRelation != apiReadHelperService.IGNORE_SUBSCRIPTION) {
+                result.subscriptions = apiReadHelperService.resolveStubs(lic.subscriptions, apiReadHelperService.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
             }
-            if (ignoreRelation != outHelperService.IGNORE_LICENSE) {
-                result.organisations = outHelperService.resolveOrgLinks(lic.orgLinks, outHelperService.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+            if (ignoreRelation != apiReadHelperService.IGNORE_LICENSE) {
+                result.organisations = apiReadHelperService.resolveOrgLinks(lic.orgLinks, apiReadHelperService.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
             }
         }
 
@@ -91,7 +91,7 @@ class OutService {
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
         */
-        return outHelperService.cleanUp(result, true, true)
+        return apiReadHelperService.cleanUp(result, true, true)
     }
 
     /**
@@ -118,14 +118,14 @@ class OutService {
 
         // References
 
-        result.addresses    = outHelperService.resolveAddresses(org.addresses, outHelperService.NO_CONSTRAINT) // com.k_int.kbplus.Address
-        result.contacts     = outHelperService.resolveContacts(org.contacts, outHelperService.NO_CONSTRAINT) // com.k_int.kbplus.Contact
-        result.identifiers  = outHelperService.resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.persons      = outHelperService.resolvePrsLinks(
-                org.prsLinks, outHelperService.NO_CONSTRAINT, outHelperService.NO_CONSTRAINT, context
+        result.addresses    = apiReadHelperService.resolveAddresses(org.addresses, apiReadHelperService.NO_CONSTRAINT) // com.k_int.kbplus.Address
+        result.contacts     = apiReadHelperService.resolveContacts(org.contacts, apiReadHelperService.NO_CONSTRAINT) // com.k_int.kbplus.Contact
+        result.identifiers  = apiReadHelperService.resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.persons      = apiReadHelperService.resolvePrsLinks(
+                org.prsLinks, apiReadHelperService.NO_CONSTRAINT, apiReadHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
 
-        result.properties   = outHelperService.resolveProperties(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+        result.properties   = apiReadHelperService.resolveProperties(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
 
         // Ignored
 
@@ -135,7 +135,7 @@ class OutService {
         //result.membership           = org.membership?.value // RefdataValue
         //result.outgoingCombos       = org.outgoingCombos // com.k_int.kbplus.Combo
 
-        return outHelperService.cleanUp(result, true, true)
+        return apiReadHelperService.cleanUp(result, true, true)
     }
 
     /**
@@ -176,13 +176,13 @@ class OutService {
 
         // References
 
-        result.documents        = outHelperService.resolveDocuments(pkg.documents) // com.k_int.kbplus.DocContext
-        result.identifiers      = outHelperService.resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.license          = outHelperService.resolveLicenseStub(pkg.license, context) // com.k_int.kbplus.License
-        result.nominalPlatform  = outHelperService.resolvePlatform(pkg.nominalPlatform) // com.k_int.kbplus.Platform
-        result.organisations    = outHelperService.resolveOrgLinks(pkg.orgs, outHelperService.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
-        result.subscriptions    = outHelperService.resolveSubscriptionPackageStubs(pkg.subscriptions, outHelperService.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
-        result.tipps            = outHelperService.resolveTipps(pkg.tipps, outHelperService.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+        result.documents        = apiReadHelperService.resolveDocuments(pkg.documents) // com.k_int.kbplus.DocContext
+        result.identifiers      = apiReadHelperService.resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.license          = apiReadHelperService.resolveLicenseStub(pkg.license, context) // com.k_int.kbplus.License
+        result.nominalPlatform  = apiReadHelperService.resolvePlatform(pkg.nominalPlatform) // com.k_int.kbplus.Platform
+        result.organisations    = apiReadHelperService.resolveOrgLinks(pkg.orgs, apiReadHelperService.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
+        result.subscriptions    = apiReadHelperService.resolveSubscriptionPackageStubs(pkg.subscriptions, apiReadHelperService.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
+        result.tipps            = apiReadHelperService.resolveTipps(pkg.tipps, apiReadHelperService.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
 
         // Ignored
         /*
@@ -190,7 +190,7 @@ class OutService {
                 pkg.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
         */
-        return outHelperService.cleanUp(result, true, true)
+        return apiReadHelperService.cleanUp(result, true, true)
     }
 
 
@@ -224,16 +224,16 @@ class OutService {
 
         // References
 
-        result.documents        = outHelperService.resolveDocuments(sub.documents) // com.k_int.kbplus.DocContext
-        result.derivedSubscriptions = outHelperService.resolveStubs(sub.derivedSubscriptions, outHelperService.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
-        result.identifiers      = outHelperService.resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.instanceOf       = outHelperService.resolveSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
-        result.license          = outHelperService.resolveLicense(sub.owner, outHelperService.IGNORE_ALL, context) // com.k_int.kbplus.Lice
-        result.organisations    = outHelperService.resolveOrgLinks(sub.orgRelations, outHelperService.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
-        result.properties       = outHelperService.resolveCustomProperties(sub.customProperties) // com.k_int.kbplus.SubscriptionCustomProperty
+        result.documents        = apiReadHelperService.resolveDocuments(sub.documents) // com.k_int.kbplus.DocContext
+        result.derivedSubscriptions = apiReadHelperService.resolveStubs(sub.derivedSubscriptions, apiReadHelperService.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+        result.identifiers      = apiReadHelperService.resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.instanceOf       = apiReadHelperService.resolveSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
+        result.license          = apiReadHelperService.resolveLicense(sub.owner, apiReadHelperService.IGNORE_ALL, context) // com.k_int.kbplus.Lice
+        result.organisations    = apiReadHelperService.resolveOrgLinks(sub.orgRelations, apiReadHelperService.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+        result.properties       = apiReadHelperService.resolveCustomProperties(sub.customProperties) // com.k_int.kbplus.SubscriptionCustomProperty
 
         // TODO refactoring with issueEntitlementService
-        result.packages = outHelperService.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
+        result.packages = apiReadHelperService.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
 
         // Ignored
 
@@ -247,6 +247,13 @@ class OutService {
         */
         // result.costItems    = exportHelperService.resolveCostItems(sub.costItems) // com.k_int.kbplus.CostItem
 
-        return outHelperService.cleanUp(result, true, true)
+        return apiReadHelperService.cleanUp(result, true, true)
+    }
+
+    // ################### HELPER ###################
+
+    def isDataManager(User user) {
+        def role = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
+        return ! role.isEmpty()
     }
 }

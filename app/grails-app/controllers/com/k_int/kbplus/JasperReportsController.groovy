@@ -28,8 +28,8 @@ def dataSource
 		def result=[:]
 		flash.error = ""
  		flash.message = ""
-		result.available_reports= availableReportNames()
-		def reportName= params.report_name?:result.available_reports[0]
+		result.available_reports = availableReportNames()
+		def reportName = params.report_name?:result.available_reports[0]
 
 		if(reportName != null){
 			def available_formats = availableReportFormats()
@@ -61,7 +61,7 @@ def dataSource
 	@Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
 	def uploadReport(){
 		def result = [:]
-		flash.error = params.errorMsg?:""
+		flash.error = params.errorMsg ?: ""
  		flash.message = ""
 
  		if(request  instanceof MultipartHttpServletRequest){

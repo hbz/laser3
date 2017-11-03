@@ -1,7 +1,7 @@
-package com.k_int.kbplus.api.v0
+package com.k_int.kbplus.api.v0.entities
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.base.OutService
+import com.k_int.kbplus.api.v0.ApiReadService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
 import grails.converters.JSON
@@ -10,7 +10,7 @@ import groovy.util.logging.Log4j
 @Log4j
 class SubscriptionService {
 
-    OutService outService
+    ApiReadService apiReadService
 
     /**
      * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED
@@ -48,17 +48,19 @@ class SubscriptionService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getSubscription(Subscription sub, User user, Org context){
-        def hasAccess = false
+        def result = []
+        def hasAccess = apiReadService.isDataManager(user)
 
-        sub.orgRelations.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
+        if (! hasAccess) {
+            sub.orgRelations.each { orgRole ->
+                if (orgRole.getOrg().id == context?.id) {
+                    hasAccess = true
+                }
             }
         }
 
-        def result = []
         if (hasAccess) {
-            result = outService.exportSubscription(sub, context) // TODO check orgRole.roleType
+            result = apiReadService.exportSubscription(sub, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

@@ -1,8 +1,8 @@
-package com.k_int.kbplus.api.v0
+package com.k_int.kbplus.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.api.v0.base.OutService
+import com.k_int.kbplus.api.v0.ApiReadService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
 import grails.converters.JSON
@@ -11,7 +11,7 @@ import groovy.util.logging.Log4j
 @Log4j
 class OrgService {
 
-    OutService outService
+    ApiReadService apiReadService
 
     /**
      * @return Org | BAD_REQUEST | PRECONDITION_FAILED
@@ -49,8 +49,12 @@ class OrgService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getOrganisation(Org org, User user, Org context) {
-        def hasAccess = true
-        def result = outService.exportOrganisation(org, context)
+        def result = []
+        def hasAccess = apiReadService.isDataManager(user)
+
+        if (hasAccess) {
+            result = apiReadService.exportOrganisation(org, context)
+        }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }

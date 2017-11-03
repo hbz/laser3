@@ -1,16 +1,16 @@
 package com.k_int.kbplus.api.v0.converter
 
 import com.k_int.kbplus.Doc
-import com.k_int.kbplus.api.v0.base.OutService
+import com.k_int.kbplus.api.v0.ApiReadService
 import de.laser.domain.Constants
 import grails.converters.JSON
 import groovy.json.*
 import groovy.util.logging.Log4j
 
 @Log4j
-class KbartService {
+class ApiKbartService {
 
-    OutService outService
+    ApiReadService apiReadService
 
     static final KBART2_HEADER = [
         "publication_title",

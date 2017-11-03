@@ -16,10 +16,7 @@ class TippController {
     def result = [:]
 
     result.user = User.get(springSecurityService.principal.id)
-    if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') )
-      result.editable=true
-    else
-      result.editable=false
+    result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
     result.tipp = TitleInstancePackagePlatform.get(params.id)
     result.titleInstanceInstance = result.tipp.title
@@ -30,10 +27,7 @@ class TippController {
       return
     }
 
-    if (! params.max) {
-      params.max = result.user?.getDefaultPageSize()
-    }
-
+    params.max = Math.min(params.max ? params.int('max') : 10, 100)
     def paginate_after = params.paginate_after ?: 19;
     result.max = params.max
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -47,14 +41,14 @@ class TippController {
     }
 
     if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
       def d = sdf.parse(params.endsAfter)
       base_qry += " and tipp.endDate >= ?"
       qry_params.add(d)
     }
 
     if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
       def d = sdf.parse(params.startsBefore)
       base_qry += " and tipp.startDate <= ?"
       qry_params.add(d)

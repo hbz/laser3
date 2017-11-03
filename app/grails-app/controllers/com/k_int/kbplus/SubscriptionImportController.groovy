@@ -17,6 +17,7 @@ class SubscriptionImportController {
  
   def possible_date_formats = [
     new SimpleDateFormat('yyyy/MM/dd'),
+    new SimpleDateFormat('dd.mm.yyyy'),
     new SimpleDateFormat('dd/MM/yyyy'),
     new SimpleDateFormat('dd/MM/yy'),
     new SimpleDateFormat('yyyy/MM'),
@@ -150,7 +151,7 @@ class SubscriptionImportController {
 
     boolean first = true;
 
-    def formatter = new java.text.SimpleDateFormat("yyyy/MM/dd")
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
     // Step one - Assemble a list of all titles and packages.. We aren't assembling the matrix
     // of titles x packages yet.. Just gathering the data for the X and Y axis
@@ -481,7 +482,7 @@ class SubscriptionImportController {
     result.user = User.get(springSecurityService.principal.id)
     // result.institution = Org.findByShortcode(params.shortcode)
 
-    // if ( !checkUserIsMember(result.user, result.institution) ) {
+    // if (! permissionHelperService.checkUserIsMember(result.user, result.institution) ) {
     //   flash.error="You do not have permission to view ${result.institution.name}. Please request access on the profile page";
     //   response.sendError(401)
     //   return;
@@ -630,7 +631,7 @@ class SubscriptionImportController {
     if ( result.institution == null )
       return
 
-    // if ( !checkUserIsMember(result.user, result.institution) ) {
+    // if (! permissionHelperService.checkUserIsMember(result.user, result.institution) ) {
     //   flash.error="You do not have permission to view ${result.institution.name}. Please request access on the profile page";
     //   response.sendError(401)
       // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");

@@ -112,12 +112,7 @@ class SubscriptionDetailsController {
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     if (params.mode == "advanced"){
       params.asAt = null
@@ -130,7 +125,7 @@ class SubscriptionDetailsController {
 
     def date_filter
     if(params.asAt && params.asAt.length() > 0) {
-      def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
       date_filter = sdf.parse(params.asAt)
       result.as_at_date = date_filter;
       result.editable = false;
@@ -398,7 +393,7 @@ class SubscriptionDetailsController {
           log.debug("Create CSV Response")
           def comparisonMap =
           institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(),filterRules)
-          def dateFormatter = new java.text.SimpleDateFormat('yyyy-MM-dd')
+          def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
            response.setHeader("Content-disposition", "attachment; filename=\"subscriptionComparison.csv\"")
            response.contentType = "text/csv"
@@ -428,7 +423,7 @@ class SubscriptionDetailsController {
         }
       }
     }else{
-      def currentDate = new java.text.SimpleDateFormat('yyyy-MM-dd').format(new Date())
+      def currentDate = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd')).format(new Date())
       params.dateA = currentDate
       params.dateB = currentDate
       params.insrt = "Y"
@@ -454,7 +449,7 @@ class SubscriptionDetailsController {
     }
   def createCompareList(sub,dateStr,params, result){
    def returnVals = [:]
-   def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd')
+   def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
    def date = dateStr?sdf.parse(dateStr):new Date()
    def subId = sub.substring( sub.indexOf(":")+1)
 
@@ -491,7 +486,7 @@ class SubscriptionDetailsController {
     }
 
     if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         def d = sdf.parse(params.startsBefore)
         base_qry += " and ie.startDate <= ?"
         qry_params.add(d)
@@ -510,7 +505,7 @@ class SubscriptionDetailsController {
   def subscriptionBatchUpdate() {
     def subscriptionInstance = Subscription.get(params.id)
     // def formatter = new java.text.SimpleDateFormat("MM/dd/yyyy")
-    def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
     def user = User.get(springSecurityService.principal.id)
 
     userAccessCheck( subscriptionInstance, user, 'edit')
@@ -598,12 +593,7 @@ class SubscriptionDetailsController {
     result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize;
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,'Deleted');
     def ie_deleted = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
@@ -626,14 +616,14 @@ class SubscriptionDetailsController {
       }
 
       if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         def d = sdf.parse(params.endsAfter)
         basequery += " and tipp.endDate >= ?"
         qry_params.add(d)
       }
 
       if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat('yyyy-MM-dd');
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         def d = sdf.parse(params.startsBefore)
         basequery += " and tipp.startDate <= ?"
         qry_params.add(d)
@@ -691,12 +681,7 @@ class SubscriptionDetailsController {
 
         userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-        if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-          result.editable = true
-        }
-        else {
-          result.editable = false
-        }
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
         result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize
         params.max = result.max
@@ -811,12 +796,7 @@ class SubscriptionDetailsController {
 
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     result
   }
@@ -836,12 +816,7 @@ class SubscriptionDetailsController {
       result.subscriber_shortcode = result.institution.shortcode
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     result
   }
@@ -859,12 +834,7 @@ class SubscriptionDetailsController {
       result.subscriber_shortcode = result.institution.shortcode
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     result
   }
@@ -896,14 +866,7 @@ class SubscriptionDetailsController {
    
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-   
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     // if ( ! result.subscriptionInstance.hasPerm("view",result.user) ) {
     //   render status: 401
@@ -932,12 +895,12 @@ class SubscriptionDetailsController {
     redirect controller:'myInstitutions',action:'renewalsSearch',params:[shortcode:result.subscriptionInstance.subscriber.shortcode]
   }
 
-  def userAccessCheck(sub,user,role_str){
-    if ((sub == null || user == null ) || ! sub.hasPerm(role_str,user) ) {
-      response.sendError(401);
-      return
+    def userAccessCheck(sub, user, role_str) {
+        if ((sub == null || user == null ) || (! sub.hasPerm(role_str, user))) {
+            response.sendError(401);
+            return
+        }
     }
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def acceptChange() {
@@ -1015,12 +978,7 @@ class SubscriptionDetailsController {
       }
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     if ( result.subscriptionInstance.packages ) {
       result.pkgs = []
@@ -1089,12 +1047,7 @@ class SubscriptionDetailsController {
 
     userAccessCheck( result.subscription, result.user, 'view')
 
-    if ( result.subscription.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscription.isEditableBy(result.user)
 
     result.max = params.max ?: result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -1117,13 +1070,7 @@ class SubscriptionDetailsController {
 
     userAccessCheck( result.subscription, result.user, 'view')
 
-
-    if ( result.subscription.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscription.isEditableBy(result.user)
 
     result.max = params.max ?: result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -1152,17 +1099,12 @@ class SubscriptionDetailsController {
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
     }
 
-    if ( !result.subscription.hasPerm("view",result.user) ) {
+    if ( !result.subscription.hasPerm("view", result.user) ) {
       response.sendError(401);
       return
     }
 
-    if ( result.subscription.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.subscription.isEditableBy(result.user)
 
     // Get a unique list of invoices
     // select inv, sum(cost) from costItem as ci where ci.sub = x
@@ -1233,13 +1175,7 @@ class SubscriptionDetailsController {
       result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
     }
 
-    if ( result.subscriptionInstance.isEditableBy(result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-
+    result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     result
   }

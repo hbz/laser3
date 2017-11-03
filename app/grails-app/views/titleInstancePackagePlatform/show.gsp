@@ -87,7 +87,7 @@
               <g:if test="${titleInstancePackagePlatformInstance?.startDate}">
                   <dl>
                       <dt><g:message code="tipp.startDate" default="Start Date" /></dt>
-                      <dd><g:formatDate format="dd MMMM yyyy" date="${titleInstancePackagePlatformInstance.startDate}" /></dd>    
+                      <dd><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${titleInstancePackagePlatformInstance.startDate}" /></dd>    
                   </dl>
               </g:if>
 
@@ -109,7 +109,7 @@
                   <dl>
                       <dt><g:message code="tipp.endDate" default="End Date" /></dt>
 
-                      <dd><g:formatDate format="dd MMMM yyyy" date="${titleInstancePackagePlatformInstance.endDate}" /></dd>
+                      <dd><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${titleInstancePackagePlatformInstance.endDate}" /></dd>
                   </dl>
               </g:if>
 

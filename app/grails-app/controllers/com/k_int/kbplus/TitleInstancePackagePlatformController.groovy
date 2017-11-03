@@ -23,9 +23,9 @@ class TitleInstancePackagePlatformController {
     def list() {
         def result=[:]
         result.user = User.get(springSecurityService.principal.id)
-        if (! params.max) {
-            params.max = result.user?.getDefaultPageSize()
-        }
+
+        params.max = params.max ?: result.user?.getDefaultPageSize()
+
         result.titleInstancePackagePlatformInstanceList=TitleInstancePackagePlatform.list(params)
         result.titleInstancePackagePlatformInstanceTotal=TitleInstancePackagePlatform.count()
         result
@@ -39,7 +39,7 @@ class TitleInstancePackagePlatformController {
       break
     case 'POST':
           def titleInstancePackagePlatformInstance = new TitleInstancePackagePlatform(params)
-          if (!titleInstancePackagePlatformInstance.save(flush: true)) {
+          if (! titleInstancePackagePlatformInstance.save(flush: true)) {
               render view: 'create', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
               return
           }
@@ -53,7 +53,7 @@ class TitleInstancePackagePlatformController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
         def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
-        if (!titleInstancePackagePlatformInstance) {
+        if (! titleInstancePackagePlatformInstance) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
             redirect action: 'list'
             return
@@ -67,7 +67,7 @@ class TitleInstancePackagePlatformController {
     switch (request.method) {
     case 'GET':
           def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
-          if (!titleInstancePackagePlatformInstance) {
+          if (! titleInstancePackagePlatformInstance) {
               flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
               redirect action: 'list'
               return
@@ -77,7 +77,7 @@ class TitleInstancePackagePlatformController {
       break
     case 'POST':
           def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
-          if (!titleInstancePackagePlatformInstance) {
+          if (! titleInstancePackagePlatformInstance) {
               flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
               redirect action: 'list'
               return
@@ -96,7 +96,7 @@ class TitleInstancePackagePlatformController {
 
           titleInstancePackagePlatformInstance.properties = params
 
-          if (!titleInstancePackagePlatformInstance.save(flush: true)) {
+          if (! titleInstancePackagePlatformInstance.save(flush: true)) {
               render view: 'edit', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
               return
           }

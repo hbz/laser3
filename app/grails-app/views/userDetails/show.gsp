@@ -27,8 +27,8 @@
           <table class="ui celled table">
             <thead>
               <tr>
-                <th>${message(code:'user.id', default:'Id')}</td>
-                <th>${message(code:'user.org', default:'Org')}</td>
+                <th>${message(code:'user.id', default:'Id')}</th>
+                <th>${message(code:'user.org', default:'Org')}</th>
                 <th>${message(code:'user.role', default:'Role')}</th>
                 <th>${message(code:'user.status', default:'Status')}</th>
               </tr>
@@ -50,7 +50,7 @@
           <table class="ui celled table">
             <thead>
               <tr>
-                <th>${message(code:'user.role', default:'Role')}</td>
+                <th>${message(code:'user.role', default:'Role')}</th>
               </tr>
             </thead>
             <tbody>

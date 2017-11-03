@@ -27,10 +27,8 @@ class UserDetailsController {
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        if (! params.max) {
-            params.max = result.user?.getDefaultPageSize()
-        }
 
+        params.max = params.max ?: result.user?.getDefaultPageSize()
         def results = null;
         def count = null;
 
@@ -66,7 +64,7 @@ class UserDetailsController {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     def userInstance = User.get(params.id)
-    if (!userInstance) {
+    if (! userInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'Org'), params.id])
         redirect action: 'list'
         return
@@ -91,7 +89,7 @@ class UserDetailsController {
   }    
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def pub() {
+  def show() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     def userInstance = User.get(params.id)

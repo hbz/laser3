@@ -6,7 +6,7 @@
   </head>
 
   <body>
-
+  
     <laser:breadcrumbs>
       <laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
       <laser:crumb message="menu.datamanager.changelog" class="active"/>
@@ -26,17 +26,17 @@
       <h6>${message(code:'menu.institutions.change_log', default:'Change Log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
       <g:form action="changeLog" controller="dataManager" method="get">
         ${message(code:'datamanager.changeLog.from_date')}:
-            <div class="input-append date">
-              <input class="span2 datepicker-class" size="16" type="text" 
+            <div class="input-append date datepicker-class">
+              <input class="span2" size="16" type="text"
               name="startDate" value="${params.startDate}">
               <span class="add-on"><i class="icon-th"></i></span> 
             </div>
         &nbsp;
         ${message(code:'datamanager.changeLog.to_date')}:
-            <div class="input-append date">
-              <input class="span2 datepicker-class" size="16" type="text" 
+            <div class="input-append date datepicker-class">
+              <input class="span2" size="16" type="text"
               name="endDate" value="${params.endDate}">
-              <span class="add-on"><i class="icon-th"></i></span> 
+              <span class="add-on"><i class="icon-th"></i></span>
             </div>
         <div class="dropdown">
           <span style="vertical-align:bottom;">${message(code:'datamanager.changeLog.actor')} :<span>
@@ -147,7 +147,9 @@
       }});
 
       $(".datepicker-class").datepicker({
-        format: "yyyy-mm-dd"
+        format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+        language:"${message(code:'default.locale.label', default:'en')}",
+        autoclose:true
       });
   </r:script>
   </body>

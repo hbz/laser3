@@ -1,9 +1,9 @@
-package com.k_int.kbplus.api.v0
+package com.k_int.kbplus.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.api.v0.base.OutService
+import com.k_int.kbplus.api.v0.ApiReadService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
 import grails.converters.JSON
@@ -12,7 +12,7 @@ import groovy.util.logging.Log4j
 @Log4j
 class PkgService {
 
-    OutService outService
+    ApiReadService apiReadService
 
     /**
      * @return Package | BAD_REQUEST | PRECONDITION_FAILED
@@ -50,18 +50,20 @@ class PkgService {
      * @return grails.converters.JSON | FORBIDDEN
      */
     def getPackage(Package pkg, User user, Org context) {
-        def hasAccess = true
+        def result = []
+        def hasAccess = apiReadService.isDataManager(user)
 
         // TODO
-        pkg.orgs.each{ orgRole ->
-            if(orgRole.getOrg().id == context?.id) {
-                hasAccess = true
+        if (! hasAccess) {
+            pkg.orgs.each { orgRole ->
+                if (orgRole.getOrg().id == context?.id) {
+                    hasAccess = true
+                }
             }
         }
 
-        def result = []
         if (hasAccess) {
-            result = outService.exportPackage(pkg, context) // TODO check orgRole.roleType
+            result = apiReadService.exportPackage(pkg, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

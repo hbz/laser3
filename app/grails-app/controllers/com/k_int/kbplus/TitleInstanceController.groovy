@@ -22,11 +22,9 @@ class TitleInstanceController {
     def list() {
       	def result = [:]
       	result.user = User.get(springSecurityService.principal.id)
-		if (! params.max) {
-			params.max = result.user?.getDefaultPageSize()
-		}
-      	result.titleInstanceInstanceList=TitleInstance.list(params)
-      	result.titleInstanceInstanceTotal=TitleInstance.count()
+		params.max = params.max ?: result.user?.getDefaultPageSize()
+      	result.titleInstanceInstanceList = TitleInstance.list(params)
+      	result.titleInstanceInstanceTotal = TitleInstance.count()
       	result
     }
 
@@ -38,7 +36,7 @@ class TitleInstanceController {
 			break
 		case 'POST':
 	        def titleInstanceInstance = new TitleInstance(params)
-	        if (!titleInstanceInstance.save(flush: true)) {
+	        if (! titleInstanceInstance.save(flush: true)) {
 	            render view: 'create', model: [titleInstanceInstance: titleInstanceInstance]
 	            return
 	        }
@@ -52,7 +50,7 @@ class TitleInstanceController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
         def titleInstanceInstance = TitleInstance.get(params.id)
-        if (!titleInstanceInstance) {
+        if (! titleInstanceInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), params.id])
             redirect action: 'list'
             return
@@ -66,7 +64,7 @@ class TitleInstanceController {
 		switch (request.method) {
 		case 'GET':
 	        def titleInstanceInstance = TitleInstance.get(params.id)
-	        if (!titleInstanceInstance) {
+	        if (! titleInstanceInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), params.id])
 	            redirect action: 'list'
 	            return
@@ -76,7 +74,7 @@ class TitleInstanceController {
 			break
 		case 'POST':
 	        def titleInstanceInstance = TitleInstance.get(params.id)
-	        if (!titleInstanceInstance) {
+	        if (! titleInstanceInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), params.id])
 	            redirect action: 'list'
 	            return
@@ -109,7 +107,7 @@ class TitleInstanceController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
         def titleInstanceInstance = TitleInstance.get(params.id)
-        if (!titleInstanceInstance) {
+        if (! titleInstanceInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), params.id])
             redirect action: 'list'
             return

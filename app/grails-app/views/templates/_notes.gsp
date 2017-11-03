@@ -5,7 +5,7 @@
       <g:if test="${((docctx.owner?.contentType==0) && !(docctx.domain) && (docctx.status?.value!='Deleted') )}">
         <li>
           <g:xEditable owner="${docctx.owner}" field="content"/><br/>
-          <i>${message(code:'template.notes.created')} <g:formatDate format="dd/MM/yyyy" date="${docctx.owner.dateCreated}"/>
+          <i>${message(code:'template.notes.created')} <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
           <g:if test="${docctx.alert}">
             ${message(code:'template.notes.shared')} ${docctx.alert.createdBy.displayName}
             <g:if test="${docctx.alert.sharingLevel==1}">${message(code:'template.notes.shared_jc')}</g:if>

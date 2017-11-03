@@ -496,7 +496,7 @@
                      </g:each>
                    </ul>
                    <span title="${t.availabilityStatusExplanation}">
-                    ${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatusAsString}
+                    ${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus.getI10n('value')}
                   </span>
                    <g:if test="${params.mode=='advanced'}">
                      <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>

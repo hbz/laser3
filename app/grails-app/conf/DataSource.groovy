@@ -7,17 +7,16 @@ dataSource {
 hibernate {
     cache.use_second_level_cache = true
     cache.use_query_cache = false
-    cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory'
-    //cache.region.factory_class = 'net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory' // CAUTION: USE FOR DB-MIGRATION-PLUGIN
+    //cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory'
+    cache.region.factory_class = 'net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory' // CAUTION: USE FOR DB-MIGRATION-PLUGIN
 }
 // environment specific settings
 environments {
     development {
         dataSource {
-            // dbCreate==update  - II: Trial Removing this, we manually update the schema now, so don't do this!
             dbCreate = "update"
             driverClassName = "com.mysql.jdbc.Driver"
-            dialect=org.hibernate.dialect.MySQL5Dialect
+            dialect = org.hibernate.dialect.MySQL5Dialect
             username = "k-int"
             password = "k-int"
             url = "jdbc:mysql://localhost/KBPlusDev?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
@@ -40,7 +39,7 @@ environments {
         dataSource {
             dbCreate = "create-drop"
             driverClassName = "com.mysql.jdbc.Driver"
-            dialect=org.hibernate.dialect.MySQL5Dialect
+            dialect = org.hibernate.dialect.MySQL5Dialect
             username = "k-int"
             password = "k-int"
             url = "jdbc:mysql://localhost/KBPlusTest?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
@@ -61,13 +60,13 @@ environments {
     }
     production {
         dataSource {
-            dbCreate = "update"
+            dbCreate = "none" // disabled due database migration plugin; overwritten on dev-server
             driverClassName = "com.mysql.jdbc.Driver"
             username = "k-int"
             password = "k-int"
             url = "jdbc:mysql://localhost/KBPlus?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
-            dialect=org.hibernate.dialect.MySQL5Dialect
+            dialect = org.hibernate.dialect.MySQL5Dialect
             properties {
                 maxActive = -1
                 minEvictableIdleTimeMillis=1800000

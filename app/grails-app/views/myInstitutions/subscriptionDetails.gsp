@@ -83,10 +83,10 @@
                     <td>${ie?.tipp?.title?.getIdentifierValue('eISSN')}</td>
                     <td>${ie.coreStatus?.value}</td>
                     <td>
-                        <span><g:formatDate format="dd MMMM yyyy" date="${ie.startDate}"/></span>
+                        <span><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${ie.startDate}"/></span>
                         <input id="IssueEntitlement:${ie.id}:startDate" type="hidden" class="dp1" />
                     </td>
-                    <td><span><g:formatDate format="dd MMMM yyyy" date="${ie.endDate}"/></span>
+                    <td><span><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${ie.endDate}"/></span>
                         <input id="IssueEntitlement:${ie.id}:endDate" type="hidden" class="dp2" />
                     </td>
                     <td><g:inPlaceEdit domain="IssueEntitlement" pk="${ie.id}" field="embargo" id="embargo" class="newipe">${ie.embargo}</g:inPlaceEdit></td>

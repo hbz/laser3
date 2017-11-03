@@ -9,7 +9,7 @@
   <laser:breadcrumbs>
       <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
       <laser:crumb message="license.current" class="active" />
-      <g:if test="${is_admin}">
+      <g:if test="${is_inst_admin}">
           <laser:crumbAsBadge message="default.editable" class="badge-warning" />
       </g:if>
       <li class="dropdown pull-right">
@@ -50,7 +50,7 @@
           <li><g:link controller="myInstitutions" 
                                   action="addLicense" 
                                   params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
-        <g:if test="${is_admin}">
+        <g:if test="${is_inst_admin}">
           <li><g:link controller="myInstitutions" 
                                      action="cleanLicense" 
                                      params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>
@@ -59,8 +59,10 @@
       </ul>
     </div>
 
-    <div class="container">
-        <div class="well license-searches">
+    <div class="container license-searches">
+        <div class="row">
+            <div class="span8">
+              <div class="well">
 
                 <form class="form-inline">
                   <div>
@@ -77,6 +79,8 @@
                     <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
                   </div>
                 </form>
+              </div>
+            </div>
         </div>
     </div>
 
@@ -123,8 +127,8 @@
                     </g:else>
                   </td>
                   <td>${l.licensor?.name}</td>
-                  <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.startDate}"/></td>
-                  <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${l.endDate}"/></td>
+                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
+                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td>
                     <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui positive button">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
                     <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
@@ -142,7 +146,9 @@
     <r:script type="text/javascript">
 
         $("#datepicker-validOn").datepicker({
-            format:"${session.sessionPreferences?.globalDatepickerFormat}"
+            format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+            language:"${message(code:'default.locale.label', default:'en')}",
+            autoclose:true
         });
 
         $('.license-results input[type="radio"]').click(function () {

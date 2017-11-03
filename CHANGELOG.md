@@ -7,9 +7,11 @@
 - improved subscription functionality
 - exception handling for pending changes
 - new field templates for org and platform attributes
-- more custom tags
+- new custom tags
+- datepicker localization
 - more localization
 - bugfix: global data sync
+- bugfix: rest api file download
 - upgrade to Grails 2.5.6 / Groovy 2.4.10
 - use of database migration plugin
 - use of local plugin repositories

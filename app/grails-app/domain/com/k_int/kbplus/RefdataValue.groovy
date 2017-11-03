@@ -50,6 +50,32 @@ class RefdataValue extends I10nTranslatableAbstract {
         softData (nullable:false, blank:false, default:false)
     }
 
+
+    /**
+     * Create RefdataValue and matching I10nTranslation.
+     * Create RefdataCategory, if needed.
+     * Softdata flag will be removed, if RefdataValue is found.
+     *
+     * @param category_name
+     * @param i10n
+     * @return
+     */
+    static def loc(String category_name, Map i10n) {
+
+        def cat = RefdataCategory.loc(category_name, [:])
+
+        def result = findByOwnerAndValueIlike(cat, i10n['en'])
+        if (! result) {
+            result = new RefdataValue(owner: cat, value: i10n['en'])
+        }
+        result.softData = false
+        result.save(flush: true)
+
+        I10nTranslation.createOrUpdateI10n(result, 'value', i10n)
+
+        result
+    }
+
     static def refdataFind(params) {
         def result = []
         def matches = I10nTranslation.refdataFindHelper(

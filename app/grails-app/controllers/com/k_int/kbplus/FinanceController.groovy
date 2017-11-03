@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import grails.converters.JSON;
 import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 //todo Refactor aspects into service
@@ -14,12 +13,15 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 class FinanceController {
 
     def springSecurityService
-    private final def dateFormat      = new java.text.SimpleDateFormat("yyyy-MM-dd")
-    private final def dateTimeFormat  = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss") {{setLenient(false)}}
+    def permissionHelperService
+
+
+    private final def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+    private final def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
     private final def admin_role      = Role.findByAuthority('INST_ADM')
-    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','GBP - United Kingdom Pound')
+    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR - Euro Member Countries')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
 
@@ -34,23 +36,8 @@ class FinanceController {
     }
 
     boolean isFinanceAuthorised(Org org, User user) {
-        def retval = false
-        if (org && org.hasUserWithRole(user,admin_role)) //ROLE_ADMIN
-            retval = true
-        return retval
-    }
 
-    def checkUserIsMember(user, org) {
-        def result = false;
-        // def uo = UserOrg.findByUserAndOrg(user,org)
-        def uoq = UserOrg.where {
-            (user == user && org == org && (status == 1 || status == 3))
-        }
-
-        if (uoq.count() > 0)
-            result = true;
-
-        result
+        permissionHelperService.hasUserWithRole(user, org, admin_role)
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -120,7 +107,7 @@ class FinanceController {
      */
     private def setupQueryData(result, params, user) {
         //Setup params
-        result.editable    =  result.institution.hasUserWithRole(user,admin_role)
+        result.editable    =  permissionHelperService.hasUserWithRole(user, result.institution, admin_role)
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.filterMode  =  params.filterMode?: "OFF"
         result.info        =  [] as List
@@ -168,7 +155,7 @@ class FinanceController {
         if (result.filterMode == "ON")
         {
             log.debug("FinanceController::index()  -- Performing filtering processing...")
-            def qryOutput = filterQuery(result,params,result.wildcard)
+            def qryOutput = filterQuery(result, params, result.wildcard)
             if (qryOutput.filterCount == 0 || !qryOutput.qry_string) //Nothing found from filtering!
             {
                 result.info.add([status:message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.mode')]),

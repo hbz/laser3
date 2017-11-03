@@ -25,7 +25,6 @@ modules = {
     kbplus {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
-
         resource url:'js/inline-content.js'
         resource url:'js/bootstrap.min.js'
         resource url:'js/bootstrap-editable.js'

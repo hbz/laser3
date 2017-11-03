@@ -18,10 +18,7 @@ class PersonController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        if (! params.max) {
-            User user   = springSecurityService.getCurrentUser()
-            params.max = user?.getDefaultPageSize()
-        }
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
@@ -162,13 +159,7 @@ class PersonController {
         }
         
         def user = User.get(springSecurityService.principal.id)
-        def editable
-        if(SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')) {
-          editable = true
-        }
-        else {
-          editable = true // TODO editable = true 
-        }
+        def editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
         // create mandatory PersonPrivateProperties if not existing
 

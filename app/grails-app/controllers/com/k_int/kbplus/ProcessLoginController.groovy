@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import grails.plugins.springsecurity.Secured
+
 import javax.servlet.http.HttpServletResponse
 
 
@@ -151,6 +153,7 @@ class ProcessLoginController {
     render "${response_str}"
   }
 
+  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def createUserOrgLink(user, authInstitutionName, shibbScope) {
     if ( ( authInstitutionName ) && ( authInstitutionName.length() > 0 ) ) {
       def candidate = authInstitutionName.trim().replaceAll(" ","_")
