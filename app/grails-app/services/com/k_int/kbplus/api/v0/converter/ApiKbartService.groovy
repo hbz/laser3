@@ -8,7 +8,7 @@ import groovy.json.*
 import groovy.util.logging.Log4j
 
 @Log4j
-class KbartService {
+class ApiKbartService {
 
     OutService outService
 
