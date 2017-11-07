@@ -1,17 +1,16 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.api.v0.MainService
+import com.k_int.kbplus.api.v0.ApiMainService
 import com.k_int.kbplus.auth.*
 import de.laser.domain.Constants
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
-import org.springframework.http.HttpStatus
 
 class ApiController {
 
     def springSecurityService
     ApiService apiService
-    MainService mainService
+    ApiMainService apiMainService
 
     ApiController(){
         super()
@@ -246,7 +245,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         log.debug("api call v0 : " + params)
 
         def result
-        def hasRole = false
+        def hasAccess = false
 
         def obj     = params.get('obj')
         def query   = params.get('q')
@@ -259,16 +258,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         if (user) {
             // checking role permission
+            def dmRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
 
             if ("GET" == request.method) {
                 def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_READER'))
-                hasRole = !readRole.isEmpty()
-                //println "GET: " + hasRole
+                hasAccess = ! (dmRole.isEmpty() && readRole.isEmpty())
             }
             else if ("POST" == request.method) {
                 def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_WRITER'))
-                hasRole = !writeRole.isEmpty()
-                //println "POST: " + hasRole
+                hasAccess = ! (dmRole.isEmpty() && writeRole.isEmpty())
             }
 
             // getting context
@@ -287,7 +285,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             }
         }
 
-        if (!contextOrg || !hasRole) {
+        if (!contextOrg || !hasAccess) {
             result = Constants.HTTP_FORBIDDEN
         }
         else if (!obj) {
@@ -296,7 +294,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         // delegate api calls
 
-        if (!result) {
+        if (! result) {
             if ('GET' == request.method) {
                 if (!query || !value) {
                     result = Constants.HTTP_BAD_REQUEST
@@ -319,7 +317,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = mainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
+                    result = apiMainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
 
                     if (result instanceof Doc) {
                         if (result.contentType == Doc.CONTENT_TYPE_STRING) {
@@ -344,11 +342,11 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 def postBody = request.getAttribute("authorizedApiUsersPostBody")
                 def data = (postBody ? new JSON().parse(postBody) : null)
 
-                if (!data) {
+                if (! data) {
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
-                    result = mainService.write((String) obj, data, (User) user, (Org) contextOrg)
+                    result = apiMainService.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
             else {
@@ -356,70 +354,13 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             }
         }
 
-        result = buildResponse(obj, query, value, context, contextOrg, result)
+        def responseStruct = apiMainService.buildResponse(request, obj, query, value, context, contextOrg, result)
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Debug-Result-Length", result.toString().length().toString())
+        response.setHeader("Debug-Result-Length", responseStruct[0].toString().length().toString())
+        response.setStatus(responseStruct[1])
 
         render result.toString(true)
-    }
-
-    private buildResponse(def obj, def query, def value, def context, def contextOrg, def result) {
-
-        // POST
-
-        if (result instanceof HashMap) {
-
-            switch(result['result']) {
-                case Constants.HTTP_CREATED:
-                    response.status = HttpStatus.CREATED.value()
-                    result = new JSON(["message": "resource successfully created", "debug": result['debug']])
-                    break
-                case Constants.HTTP_CONFLICT:
-                    response.status = HttpStatus.CONFLICT.value()
-                    result = new JSON(["message": "conflict with existing resource", "debug": result['debug']])
-                    break
-                case Constants.HTTP_INTERNAL_SERVER_ERROR:
-                    response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
-                    result = new JSON(["message": "resource not created", "debug": result['debug']])
-                    break
-            }
-        }
-
-        // GET
-
-        else if (Constants.HTTP_FORBIDDEN == result) {
-            response.status = HttpStatus.FORBIDDEN.value()
-            if (contextOrg) {
-                result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode])
-            }
-            else {
-                result = new JSON(["message": "forbidden", "obj": obj, "context": context])
-            }
-        }
-        else if (Constants.HTTP_NOT_ACCEPTABLE == result) {
-            response.status = HttpStatus.NOT_ACCEPTABLE.value()
-            result = new JSON(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj])
-        }
-        else if (Constants.HTTP_NOT_IMPLEMENTED == result) {
-            response.status = HttpStatus.NOT_IMPLEMENTED.value()
-            result = new JSON(["message": "requested method not implemented", "method": request.method, "obj": obj])
-        }
-        else if (Constants.HTTP_BAD_REQUEST == result) {
-            response.status = HttpStatus.BAD_REQUEST.value()
-            result = new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context])
-        }
-        else if (Constants.HTTP_PRECONDITION_FAILED == result) {
-            response.status = HttpStatus.PRECONDITION_FAILED.value()
-            result = new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context])
-        }
-
-        if (!result) {
-            response.status = HttpStatus.NOT_FOUND.value()
-            result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context])
-        }
-
-        result
     }
 }
