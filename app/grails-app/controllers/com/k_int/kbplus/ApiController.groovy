@@ -242,7 +242,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
      * @return
      */
     def v0() {
-        log.debug("api call v0 : " + params)
+        log.debug("API Call: " + params)
 
         def result
         def hasAccess = false

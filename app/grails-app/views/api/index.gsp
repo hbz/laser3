@@ -88,7 +88,7 @@
     <script>
         window.onload = function() {
             const ui = SwaggerUIBundle({
-                url: "${grailsApplication.config.grails.serverURL}/api/spec",
+                url: "${grailsApplication.config.grails.serverURL}/api/v0/spec",
                 dom_id: '#swagger-ui',
                 presets: [
                     SwaggerUIBundle.presets.apis,
@@ -109,7 +109,6 @@
                 jQuery('.opblock').delegate('input, textarea', 'change', function() {
                     genDigist(jQuery(this).parents('.parameters').first())
                 })
-
             }, 1200)
 
             // todo: change full path dynamically
