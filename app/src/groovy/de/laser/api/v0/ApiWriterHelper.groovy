@@ -1,15 +1,13 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.entities.OrgService
 import com.k_int.properties.PropertyDefinition
+import de.laser.api.v0.entities.ApiOrg
 import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
 class ApiWriterHelper {
-
-    OrgService orgService
 
     // ##### HELPER #####
 
@@ -151,7 +149,7 @@ class ApiWriterHelper {
             // check existing resources
             def check = []
             it.organisation?.identifiers?.each { orgIdent ->
-                check << orgService.findOrganisationBy('identifier', orgIdent.namespace + ":" + orgIdent.value)
+                check << ApiOrg.findOrganisationBy('identifier', orgIdent.namespace + ":" + orgIdent.value)
             }
             check.removeAll([null, [], Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])
             check = check.flatten()

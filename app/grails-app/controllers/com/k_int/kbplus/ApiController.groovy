@@ -353,14 +353,16 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }
         }
-
         def responseStruct = apiMainService.buildResponse(request, obj, query, value, context, contextOrg, result)
+
+        def responseJson = responseStruct[0]
+        def responseCode = responseStruct[1]
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Debug-Result-Length", responseStruct[0].toString().length().toString())
-        response.setStatus(responseStruct[1])
+        response.setHeader("Debug-Result-Length", responseJson.toString().length().toString())
+        response.setStatus(responseCode)
 
-        render result.toString(true)
+        render responseJson.toString(true)
     }
 }

@@ -142,11 +142,7 @@
                 var authorization = "hmac " + key + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
 
                 var input = jQuery(div).find('input[placeholder="Authorization - hmac-sha256 generated auth header"]')
-                jQuery(input).val(authorization).attr('value', authorization).focus().select()
-                try {
-                    document.execCommand('copy')
-                    console.log('copied authorization to clipboard: ' + authorization)
-                } catch(e) {}
+                jQuery(input).val(authorization).attr('value', authorization)
             }
         }
     </script>

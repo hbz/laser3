@@ -59,9 +59,11 @@ class ApiIssueEntitlement {
         }
 
         if (hasAccess) {
-            result = ApiReader.exportIssueEntitlements(subPkg,  ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiReader.exportIssueEntitlements(subPkg, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
-        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+        // this is different to other Api<x>.get<x>-methods;
+        // result may be null here
+        return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
     }
 }

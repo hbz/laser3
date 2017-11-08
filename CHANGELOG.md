@@ -1,6 +1,5 @@
 0.2.1
 
-- bugfix: file download
 - bugfix: rest api 
 - bugfix: javascript
 
