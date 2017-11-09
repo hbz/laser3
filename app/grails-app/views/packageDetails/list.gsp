@@ -22,28 +22,28 @@
       <g:form action="list" method="get" class="form-inline">
         <table>
           <tr>
-            <td>
+            <td style="white-space:nowrap">
               <label>${message(code:'package.search.text')} : </label> <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
             </td>
-            <td style="width:30%;text-align:right;">
+            <td style="width:31%;text-align:right;">
               <div style="padding:5px 5px;white-space:nowrap;">
-                <label>${message(code:'package.search.updated_after')} : </label> <input name="updateStartDate" type="date" value="${params.updateStartDate}"/>
+                <label>${message(code:'package.search.updated_after')} : </label> <g:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date"/>
               </div>
               <div style="padding:5px 5px;white-space:nowrap;">
-                <label>${message(code:'package.search.created_after')} : </label> <input name="createStartDate" type="date" value="${params.createStartDate}"/>
-              </div>
-            </td>
-            <td style="width:30%;text-align:right;">
-              <div style="padding:5px 5px;white-space:nowrap;">
-                <label>${message(code:'package.search.updated_before')} : </label> <input name="updateEndDate" type="date" value="${params.updateEndDate}"/>
-              </div>
-              <div style="padding:5px 5px;white-space:nowrap;">
-                <label>${message(code:'package.search.created_before')} : </label> <input name="createEndDate" type="date" value="${params.createEndDate}"/>
+                <label>${message(code:'package.search.created_after')} : </label> <g:simpleHiddenValue id="createStartDate" name="createStartDate" type="date"/>
               </div>
             </td>
-            <td>
-              <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label')}" style="margin:5px 5px;"></input>
-              <button type="submit" name="format" value="csv" class="btn btn-primary" value="Search"  style="margin:5px 5px;">${message(code:'package.search.export.button')}</button>
+            <td style="width:31%;text-align:right;">
+              <div style="padding:5px 5px;white-space:nowrap;">
+                <label>${message(code:'package.search.updated_before')} : </label> <g:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date"/>
+              </div>
+              <div style="padding:5px 5px;white-space:nowrap;">
+                <label>${message(code:'package.search.created_before')} : </label> <g:simpleHiddenValue  id="createEndDate" name="createEndDate" type="date"/>
+              </div>
+            </td>
+            <td style="vertical-align:bottom">
+              <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label')}" style="margin:10px 5px;min-width:100px;font-size:1.3em;"></input>
+              <button type="submit" name="format" value="csv" class="btn" style="margin:10px 5px;">${message(code:'default.button.exports.csv')}</button>
             </td>
           </tr>
         </table>
@@ -65,10 +65,10 @@
         <tbody>
           <g:each in="${packageInstanceList}" var="packageInstance">
             <tr>
-              <td>${fieldValue(bean: packageInstance, field: "identifier")}</td>
-              <td>${fieldValue(bean: packageInstance, field: "name")}</td>
-              <td>${fieldValue(bean: packageInstance, field: "dateCreated")}</td>
-              <td>${fieldValue(bean: packageInstance, field: "lastUpdated")}</td>
+              <td>${packageInstance.identifier}</td>
+              <td>${packageInstance.name}</td>
+              <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format', default:'yyyy-MM-dd HH:mm:ss z')}"/></td>
+              <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format', default:'yyyy-MM-dd HH:mm:ss z')}"/></td>
               <td class="link">
                 <g:link action="show" id="${packageInstance.id}" class="btn btn-small">${message(code:'package.search.show')} &raquo;</g:link>
               </td>

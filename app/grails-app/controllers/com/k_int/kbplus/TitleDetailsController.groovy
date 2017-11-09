@@ -278,12 +278,11 @@ class TitleDetailsController {
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     
     def ti_cat = RefdataCategory.findByDesc(RefdataCategory.TI_STATUS)
-    result.availableStatuses = RefdataValue.findAllByOwner(ti_cat).collect{ message(code:"refdata.${it}", default:"${it.toString()}") }
+    result.availableStatuses = RefdataValue.findAllByOwner(ti_cat)
     def ti_status = null
+    
     if(params.status){
-      if(result.availableStatuses.contains(params.status)){
-        ti_status = RefdataCategory.lookupOrCreate( RefdataCategory.TI_STATUS, params.status )
-      }
+      ti_status = result.availableStatuses.find { it.value == params.status }
     }
     
     def criteria = TitleInstance.createCriteria()

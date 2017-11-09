@@ -131,30 +131,29 @@
             <dd>
               <g:each in="${sorted_links}" var="rdv_id,link_cat">
                 <div>
-                  <g:set var="roletype_refdata" value="${link_cat.rdv.getI10n('value')}"/>
-                  <span style="font-weight:bold;">${roletype_refdata} (${link_cat.total})</span>
+                  <span style="font-weight:bold;">${link_cat.rdv.getI10n('value')} (${link_cat.total})</span>
                 </div>
                 <ul>
                   <g:each in="${link_cat.links}" var="i">
                     <li>
                       <g:if test="${i.pkg}">
                         <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
-                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')}")})
+                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.sub}">
                         <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
-                          ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${message(code:"refdata.${i.sub.status?.value}", default:"${i.sub.status?.value}")})
+                          ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.lic}">
                         <g:link controller="licenseDetails" action="index" id="${i.lic.id}">
-                          ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})
+                          ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id} (${i.lic.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.title}">
                         <g:link controller="titleInstance" action="show" id="${i.title.id}">
-                          ${message(code:'title.label', default:'Title')}: ${i.title.title} (${message(code:"refdata.${i.title.status?.value}", default:"${i.title.status?.value}")})
+                          ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n('value')})
                         </g:link>
                       </g:if> 
                     </li>

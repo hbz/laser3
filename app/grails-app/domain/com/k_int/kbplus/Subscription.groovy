@@ -107,10 +107,20 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
   def getSubscriber() {
     def result = null;
+    def cons = null;
+    
     orgRelations.each { or ->
       if ( or?.roleType?.value=='Subscriber' )
         result = or.org;
+        
+      if ( or?.roleType?.value=='Subscription Consortia' )
+        cons = or.org;
     }
+    
+    if ( !result && cons ) {
+      result = cons
+    }
+    
     result
   }
 

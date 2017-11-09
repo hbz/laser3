@@ -42,23 +42,34 @@
 
 
         <label class="control-label">${message(code:'default.search.text', default:'Search text')}: </label>
-        <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"/>
+        <input style="margin-top:10px" type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"/>
             
         <label class="control-label">${message(code:'default.valid_on.label', default:'Valid On')}: </label>
         <div class="input-append date">
           <input class="span2 datepicker-class" size="16" type="text" name="validOn" value="${validOn}">
         </div>
 
-        <label class="control-label">${message(code:'default.date.label', default:'Date')}: </label>
+        <label class="control-label">${message(code:'default.filter.label', default:'Filter')}: </label>
         <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
         <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
         <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
-        <g:select name="dateBeforeFilter" value="${params.dateBeforeFilter}" from="${[noDate,renewalDate,endDate]}" />
-         ${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}
-           <div class="input-append date">
+        <g:select style="margin-top:10px;padding:0px 6px;" 
+                  name="dateBeforeFilter" 
+                  value="${params.dateBeforeFilter}" 
+                  from="${['renewalDate' : renewalDate, 'endDate' : endDate]}" 
+                  noSelection="${['null' : noDate]}"
+                  optionKey="key"
+                  optionValue="value" />
+        
+        <span class="dateBefore hidden">
+          <label class="control-label" style="margin-right:10px;">${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}</label>
+          <div class="input-append date">
               <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
           </div>
-        <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
+        </span>
+        <div>
+          <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
+        </div>
       </g:form>
       </div>
     </div>
@@ -144,6 +155,26 @@
             language:"${message(code:'default.locale.label', default:'en')}",
             autoclose:true
         });
+        
+        $(document).ready(function(){
+          var val = "${params.dateBeforeFilter}";
+          console.log(val);
+          if(val == "null"){
+            $(".dateBefore").addClass("hidden");
+          }else{
+            $(".dateBefore").removeClass("hidden");
+          }
+        });
+        
+        $("[name='dateBeforeFilter']").change(function(){
+          var val = $(this)['context']['selectedOptions'][0]['label'];
+          
+          if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
+            $(".dateBefore").removeClass("hidden");
+          }else{
+            $(".dateBefore").addClass("hidden");
+          }
+        })
     </r:script>
 
   </body>

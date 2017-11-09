@@ -403,12 +403,17 @@ class MyInstitutionsController {
         def dateBeforeFilter = null;
         def dateBeforeFilterVal = null;
         if(params.dateBeforeFilter && params.dateBeforeVal){
-            if(params.dateBeforeFilter == message(code:'default.renewalDate.label', default:'Renewal Date')){
+            if(params.dateBeforeFilter == "renewalDate"){
                 dateBeforeFilter = " and s.manualRenewalDate < :date_before"
-            }else if (params.dateBeforeFilter == message(code:'default.endDate.label', default:'End Date')){
+                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
+            }else if (params.dateBeforeFilter == "endDate"){
                 dateBeforeFilter = " and s.endDate < :date_before"
+                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
+            }else{
+              result.remove('dateBeforeFilterVal')
+              result.remove('dateBeforeFilter')
             }
-            dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
+            
         }
 
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
@@ -456,7 +461,7 @@ class MyInstitutionsController {
         }
 
 
-        log.debug("current subs base query: ${base_qry} params: ${qry_params} max:${result.max} offset:${result.offset}");
+//         log.debug("current subs base query: ${base_qry} params: ${qry_params} max:${result.max} offset:${result.offset}");
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
