@@ -1,17 +1,16 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.api.v0.MainService
+import com.k_int.kbplus.api.v0.ApiMainService
 import com.k_int.kbplus.auth.*
 import de.laser.domain.Constants
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
-import org.springframework.http.HttpStatus
 
 class ApiController {
 
     def springSecurityService
     ApiService apiService
-    MainService mainService
+    ApiMainService apiMainService
 
     ApiController(){
         super()
@@ -243,7 +242,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
      * @return
      */
     def v0() {
-        log.debug("api call v0 : " + params)
+        log.debug("API Call: " + params)
 
         def result
         def hasAccess = false
@@ -318,7 +317,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = mainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
+                    result = apiMainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
 
                     if (result instanceof Doc) {
                         if (result.contentType == Doc.CONTENT_TYPE_STRING) {
@@ -347,23 +346,23 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
-                    result = mainService.write((String) obj, data, (User) user, (Org) contextOrg)
+                    result = apiMainService.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
             else {
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }
         }
+        def responseStruct = apiMainService.buildResponse(request, obj, query, value, context, contextOrg, result)
 
-        result = mainService.buildResponseBody(request, obj, query, value, context, contextOrg, result)
-
-        def status = result['status'] as int
-        response.setStatus(status)
+        def responseJson = responseStruct[0]
+        def responseCode = responseStruct[1]
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Debug-Result-Length", result.toString().length().toString())
+        response.setHeader("Debug-Result-Length", responseJson.toString().length().toString())
+        response.setStatus(responseCode)
 
-        render result.toString(true)
+        render responseJson.toString(true)
     }
 }

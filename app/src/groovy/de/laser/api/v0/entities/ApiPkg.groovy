@@ -1,23 +1,21 @@
-package com.k_int.kbplus.api.v0
+package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.api.v0.base.OutService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
+import de.laser.api.v0.ApiReader
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
-class PkgService {
-
-    OutService outService
+class ApiPkg {
 
     /**
      * @return Package | BAD_REQUEST | PRECONDITION_FAILED
      */
-    def findPackageBy(String query, String value) {
+    static findPackageBy(String query, String value) {
         def result
 
         switch(query) {
@@ -49,9 +47,9 @@ class PkgService {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    def getPackage(Package pkg, User user, Org context) {
+    static getPackage(Package pkg, User user, Org context) {
         def result = []
-        def hasAccess = outService.isDataManager(user)
+        def hasAccess = ApiReader.isDataManager(user)
 
         // TODO
         if (! hasAccess) {
@@ -63,7 +61,7 @@ class PkgService {
         }
 
         if (hasAccess) {
-            result = outService.exportPackage(pkg, context) // TODO check orgRole.roleType
+            result = ApiReader.exportPackage(pkg, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

@@ -1,36 +1,38 @@
-package com.k_int.kbplus.api.v0
+package de.laser.api.v0.entities
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.base.OutHelperService
-import com.k_int.kbplus.api.v0.base.OutService
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
+import de.laser.api.v0.ApiReader
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
-class LicenseService {
-
-    OutService outService
+class ApiSubscription {
 
     /**
-     * @return License | BAD_REQUEST | PRECONDITION_FAILED
+     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED
      */
-    def findLicenseBy(String query, String value) {
+    static findSubscriptionBy(String query, String value) {
         def result
 
         switch(query) {
             case 'id':
-                result = License.findAllWhere(id: Long.parseLong(value))
+                result = Subscription.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = License.findAllWhere(globalUID: value)
+                result = Subscription.findAllWhere(globalUID: value)
+                break
+            case 'identifier':
+                result = Subscription.findAllWhere(identifier: value)
                 break
             case 'impId':
-                result = License.findAllWhere(impId: value)
+                result = Subscription.findAllWhere(impId: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new License(), value)
+                result = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
                 break
             default:
                 return Constants.HTTP_BAD_REQUEST
@@ -45,12 +47,12 @@ class LicenseService {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    def getLicense(License lic, User user, Org context){
+    static getSubscription(Subscription sub, User user, Org context){
         def result = []
-        def hasAccess = outService.isDataManager(user)
+        def hasAccess = ApiReader.isDataManager(user)
 
         if (! hasAccess) {
-            lic.orgLinks.each { orgRole ->
+            sub.orgRelations.each { orgRole ->
                 if (orgRole.getOrg().id == context?.id) {
                     hasAccess = true
                 }
@@ -58,7 +60,7 @@ class LicenseService {
         }
 
         if (hasAccess) {
-            result = outService.exportLicense(lic, OutHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiReader.exportSubscription(sub, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
