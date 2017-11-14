@@ -18,7 +18,7 @@ class GlobalDataSyncController {
   def index() { 
     def result = [:]
 
-    result.user = request.user
+    result.user = User.get(springSecurityService.principal.id)
     result.max = params.max ? Integer.parseInt(params.max): result.user?.defaultPageSize
 
     def paginate_after = params.paginate_after ?: ( (2*result.max)-1)

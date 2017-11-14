@@ -41,7 +41,7 @@
 			<g:select name="orgRole_role"
 			    from="${roles}" 
 			    optionKey="id" 
-			    optionValue="value"/> 
+			    optionValue="${{it.getI10n('value')}}"/> 
 			  
 			<button type="button" name="add">Add</button>
 		</li>

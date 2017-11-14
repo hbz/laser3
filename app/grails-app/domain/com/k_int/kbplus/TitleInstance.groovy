@@ -468,6 +468,11 @@ class TitleInstance extends BaseDomainComponent {
             keyTitle = generateKeyTitle(title)
             sortTitle = generateSortTitle(title)
         }
+        
+        if (impId == null) {
+          impId = java.util.UUID.randomUUID().toString();
+        }
+        
         super.beforeInsert()
     }
 

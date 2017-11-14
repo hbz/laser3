@@ -44,7 +44,7 @@
 			            Org Name Contains: 
 			            <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> 
 			            Restrict to orgs who are 
-			            <g:select name="orgRole" noSelection="${['':'Select One...']}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
+			            <g:select name="orgRole" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="${{it.getI10n('value')}}"/>
 			            <input type="submit" value="GO" class="btn btn-primary"/> (${orgInstanceTotal} Matches)
 			          </g:form>
                 </div>

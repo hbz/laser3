@@ -23,7 +23,12 @@
         <div class="span12">
           <div class="well container">
             ${message(code:'title.label', default:'Title')} : <input name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/> (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})
-            ${message(code:'default.status.label', default:'Status')} : <g:select name="status" from="${availableStatuses}" noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}" value="${params.status}"/>
+            ${message(code:'default.status.label', default:'Status')} : <g:select name="status" 
+                                                                                  from="${availableStatuses}"
+                                                                                  optionKey="${{it.value}}"
+                                                                                  optionValue="${{it.getI10n('value')}}" 
+                                                                                  noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}" 
+                                                                                  />
            
             <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
             <div class="pull-right">
@@ -40,10 +45,10 @@
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
                   <g:if test="${params.int('offset')}">
-                   ${message(code:'default.search.offset.text', args:[(params.int('offset') + 1),(totalHits < (params.int('max') + params.int('offset')) ? totalHits : (params.int('max') + params.int('offset'))),totalHits])}
+                   ${message(code:'default.search.offset.text', args:[( params.int('offset') + 1 ),( totalHits < ((params.int('max') ?: max) + params.int('offset')) ? totalHits : ( (params.int('max') ?: max ) + params.int('offset')) ),totalHits])}
                   </g:if>
                   <g:elseif test="${totalHits && totalHits > 0}">
-                    ${message(code:'default.search.no_offset.text', args:[(totalHits < params.int('max') ? totalHits : params.int('max')),totalHits])}
+                    ${message(code:'default.search.no_offset.text', args:[(totalHits < (params.int('max') ?: max) ? totalHits : (params.int('max') ?: max)),totalHits])}
                   </g:elseif>
                   <g:else>
                     ${message(code:'default.search.no_pagiantion.text', args:[totalHits])}
@@ -85,7 +90,7 @@
                             </ul>
                           </td>
                           <td>
-                            ${hit.status?.value}
+                            ${hit.status?.getI10n('value')}
                           </td>
                         </tr>
                       </g:each>

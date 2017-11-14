@@ -23,7 +23,7 @@
             <g:else>
               ${ol}
             </g:else>
-            (${message(code:"refdata.${ol.roleType.value}", default:"${ol.roleType.value}")})
+            (${ol.roleType.getI10n('value')})
           </li>
         </g:each>
       </ul>

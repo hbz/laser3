@@ -44,7 +44,7 @@
 	<laser:select id="sector" name="sector.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector')}" 
 		optionKey="id" 
-		optionValue="value" 
+		optionValue="${{it.getI10n('value')}}" 
 		value="${orgInstance?.sector?.id}" 
 		class="many-to-one" noSelection="['null': '']"/>
 
@@ -85,7 +85,7 @@
 	<laser:select id="orgType" name="orgType.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
 		optionKey="id"
-		optionValue="value" 
+		optionValue="${{it.getI10n('value')}}" 
 		value="${orgInstance?.orgType?.id}" 
 		class="many-to-one" noSelection="['null': '']"/>
 	
@@ -98,7 +98,7 @@
 	<laser:select id="status" name="status.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('PendingChangeStatus')}"
 		optionKey="id" 
-		optionValue="value" 
+		optionValue="${{it.getI10n('value')}}" 
 		value="${orgInstance?.status?.id}" 
 		class="many-to-one" noSelection="['null': '']"/>
 
@@ -112,6 +112,7 @@
                 from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN')}"
                 optionKey="id"
                 value="${orgInstance?.membership?.id}"
+                optionValue="${{it.getI10n('value')}}"
                 class="many-to-one"
                 noSelection="['null': '']"/>
 

@@ -13,7 +13,6 @@
 
         <div class="page-header">
           <h1>${orgInstance.name}</h1>
-                                        <hr/>
         </div>
 
         <g:if test="${flash.message}">
@@ -57,21 +56,21 @@
           <g:if test="${orgInstance?.ipRange}">
             <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
             
-              <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
+              <dd>${orgInstance.ipRange}</dd>
             
           </g:if>
         
           <g:if test="${orgInstance?.sector}">
             <dt><g:message code="org.sector.label" default="Sector" /></dt>
             
-              <dd><g:fieldValue bean="${orgInstance}" field="sector"/></dd>
+              <dd>${orgInstance.sector.getI10n('value')}</dd>
             
           </g:if>
 
       <g:if test="${orgInstance?.membership}">
         <dt><g:message code="org.membership.label" default="Membership" /></dt>
 
-        <dd><g:fieldValue bean="${orgInstance}" field="membership"/></dd>
+        <dd>${orgInstance.membership.getI10n('value')}</dd>
 
       </g:if>
         
@@ -110,30 +109,29 @@
             <dd>
               <g:each in="${sorted_links}" var="rdv_id,link_cat">
                 <div>
-                  <g:set var="roletype_refdata" value="${link_cat.rdv.replaceAll(/\s/,'')}"/>
-                  <span style="font-weight:bold;">${message(code:"refdata.${roletype_refdata}", default:"${link_cat.rdv}")} (${link_cat.total})</span>
+                  <span style="font-weight:bold;">${link_cat.rdv.getI10n('value')} (${link_cat.total})</span>
                 </div>
                 <ul>
                   <g:each in="${link_cat.links}" var="i">
                     <li>
                       <g:if test="${i.pkg}">
                         <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
-                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${message(code:"refdata.${i.pkg?.packageStatus?.value}", default:"${i.pkg?.packageStatus?.value}")})
+                          ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.sub}">
                         <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
-                          ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${message(code:"refdata.${i.sub.status?.value}", default:"${i.sub.status?.value}")})
+                          ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.lic}">
                         <g:link controller="licenseDetails" action="index" id="${i.lic.id}">
-                          ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id} (${message(code:"refdata.${i.lic.status?.value}", default:"${i.lic.status?.value}")})
+                          ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id} (${i.lic.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.title}">
                         <g:link controller="titleInstance" action="show" id="${i.title.id}">
-                          ${message(code:'title.label', default:'Title')}: ${i.title.title} (${message(code:"refdata.${i.title.status?.value}", default:"${i.title.status?.value}")})
+                          ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n('value')})
                         </g:link>
                       </g:if> 
                     </li>
@@ -148,11 +146,11 @@
                 <div>
                   <g:if test="${link_cat.total > 10 && local_offset}">
                     <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
-                    <g:link controller="organisations" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">Prev</g:link>
+                    <g:link controller="organisations" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev', default:'Prev')}</g:link>
                   </g:if>
                   <g:if test="${link_cat.total > 10 && ( !local_offset || ( local_offset < (link_cat.total - 10) ) )}">
                     <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
-                    <g:link controller="organisations" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">Next</g:link>
+                    <g:link controller="organisations" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next', default:'Next')}</g:link>
                   </g:if>
                 </div>
               </g:each>

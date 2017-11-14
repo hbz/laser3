@@ -27,7 +27,7 @@
         
       <g:if test="${items != null}">
         <div class="container" style="text-align:center">
-          ${message(code:'globalDataSync.pagination.text', args: [offset+1,(offset + items.size()),globalItemTotal])}
+          ${message(code:'globalDataSync.pagination.text', args: [offset,(offset + max),globalItemTotal])}
         </div>
       </g:if>
       <table class="table table-bordered table-striped">
@@ -52,7 +52,7 @@
               <td> <a href="${item.source.uri}?verb=getRecord&amp;identifier=${item.identifier}&amp;metadataPrefix=${item.source.fullPrefix}">
                      ${item.source.name}</a></td>
               <td> <a href="${item.source.baseUrl}search/index?qbe=g:1packages">${item.displayRectype}</a></td>
-              <td>${item.kbplusCompliant?.value}</td>
+              <td>${item.kbplusCompliant?.getI10n('value')}</td>
               <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}" class="btn btn-success">${message(code: 'globalDataSync.track_new')}</g:link>
                   <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}" class="btn btn-success">${message(code: 'globalDataSync.track_merge')}</g:link>
               </td>
