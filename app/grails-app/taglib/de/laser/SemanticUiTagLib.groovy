@@ -8,9 +8,9 @@ class SemanticUiTagLib {
 
     static namespace = "semui"
 
-    // <laser:breadcrumbs>
-    //     <laser:crumb controller="controller" action="action" params="params" text="${text}" message="local.string" />
-    // <laser:breadcrumbs>
+    // <semui:breadcrumbs>
+    //     <semui:crumb controller="controller" action="action" params="params" text="${text}" message="local.string" />
+    // <semui:breadcrumbs>
 
     def breadcrumbs = { attrs, body ->
 
@@ -58,4 +58,38 @@ class SemanticUiTagLib {
         out << '<span class="badge ' + attrs.class + '">' + lbMessage + '</span>'
         out << '</li>'
     }
+
+    // <semui:subNav actionName="${actionName}">
+    //     <semui:subNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" />
+    // <semui:subNav>
+
+    def subNav = { attrs, body ->
+
+        out << '<div class="ui secondary pointing menu">'
+        out <<   body()
+        out << '</div>'
+    }
+
+    def subNavItem = { attrs, body ->
+
+        def text      = attrs.text ? attrs.text : ''
+        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def linkBody  = (text && message) ? text + " - " + message : text + message
+        def aClass    = 'item'
+        if (this.pageScope.variables?.actionName == attrs.action) {
+            aClass = 'item active'
+        }
+        if (attrs.controller) {
+            out << g.link(linkBody,
+                    class: aClass,
+                    controller: attrs.controller,
+                    action: attrs.action,
+                    params: attrs.params
+            )
+        }
+        else {
+            out << linkBody
+        }
+    }
+
 }
