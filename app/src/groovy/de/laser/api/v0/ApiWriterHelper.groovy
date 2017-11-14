@@ -1,19 +1,17 @@
-package com.k_int.kbplus.api.v0
+package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.entities.OrgService
 import com.k_int.properties.PropertyDefinition
+import de.laser.api.v0.entities.ApiOrg
 import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
-class ApiWriteHelperService {
-
-    OrgService orgService
+class ApiWriterHelper {
 
     // ##### HELPER #####
 
-    def getValidDateFormat(def value) {
+    static getValidDateFormat(def value) {
         // TODO: check and format date
 
         def date = new Date()
@@ -21,7 +19,7 @@ class ApiWriteHelperService {
         date
     }
 
-    def getRefdataValue(def value, String category) {
+    static getRefdataValue(def value, String category) {
         if (value && category) {
             def rdCategory = RefdataCategory.findByDesc(category)
             def rdValue = RefdataValue.findByOwnerAndValue(rdCategory, value.toString())
@@ -32,7 +30,7 @@ class ApiWriteHelperService {
 
     // #####
 
-    def getAddresses(def data, Org ownerOrg, Person ownerPerson) {
+    static getAddresses(def data, Org ownerOrg, Person ownerPerson) {
         def addresses = []
 
         data.each { it ->
@@ -58,7 +56,7 @@ class ApiWriteHelperService {
         addresses
     }
 
-    def getContacts(def data, Org ownerOrg, Person ownerPerson) {
+    static getContacts(def data, Org ownerOrg, Person ownerPerson) {
         def contacts = []
 
         data.each { it ->
@@ -79,7 +77,7 @@ class ApiWriteHelperService {
         contacts
     }
 
-    def getPersonsAndRoles(def data, Org owner, Org contextOrg) {
+    static getPersonsAndRoles(def data, Org owner, Org contextOrg) {
         def result = [
                 'persons'    : [],
                 'personRoles': []
@@ -128,7 +126,7 @@ class ApiWriteHelperService {
         result
     }
 
-    def getIdentifiers(def data, def owner) {
+    static getIdentifiers(def data, def owner) {
         def idenfifierOccurences = []
 
         data.each { it ->
@@ -143,7 +141,7 @@ class ApiWriteHelperService {
         idenfifierOccurences
     }
 
-    def getOrgLinks(def data, def owner, Org context) {
+    static getOrgLinks(def data, def owner, Org context) {
         def result = []
 
         data.each { it ->   // com.k_int.kbplus.OrgRole
@@ -151,7 +149,7 @@ class ApiWriteHelperService {
             // check existing resources
             def check = []
             it.organisation?.identifiers?.each { orgIdent ->
-                check << orgService.findOrganisationBy('identifier', orgIdent.namespace + ":" + orgIdent.value)
+                check << ApiOrg.findOrganisationBy('identifier', orgIdent.namespace + ":" + orgIdent.value)
             }
             check.removeAll([null, [], Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])
             check = check.flatten()
@@ -193,7 +191,7 @@ class ApiWriteHelperService {
         result
     }
 
-    def getProperties(def data, def owner, Org contextOrg) {
+    static getProperties(def data, def owner, Org contextOrg) {
         def properties = [
                 'custom': [],
                 'private': []

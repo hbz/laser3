@@ -88,7 +88,7 @@
     <script>
         window.onload = function() {
             const ui = SwaggerUIBundle({
-                url: "${grailsApplication.config.grails.serverURL}/api/spec",
+                url: "${grailsApplication.config.grails.serverURL}/api/v0/spec",
                 dom_id: '#swagger-ui',
                 presets: [
                     SwaggerUIBundle.presets.apis,
@@ -109,7 +109,6 @@
                 jQuery('.opblock').delegate('input, textarea', 'change', function() {
                     genDigist(jQuery(this).parents('.parameters').first())
                 })
-
             }, 1200)
 
             // todo: change full path dynamically
@@ -142,11 +141,7 @@
                 var authorization = "hmac " + key + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
 
                 var input = jQuery(div).find('input[placeholder="Authorization - hmac-sha256 generated auth header"]')
-                jQuery(input).val(authorization).attr('value', authorization).focus().select()
-                try {
-                    document.execCommand('copy')
-                    console.log('copied authorization to clipboard: ' + authorization)
-                } catch(e) {}
+                jQuery(input).val(authorization).attr('value', authorization)
             }
         }
     </script>

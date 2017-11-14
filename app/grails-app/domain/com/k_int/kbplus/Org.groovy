@@ -93,6 +93,11 @@ class Org extends BaseDomainComponent {
         if ( !shortcode ) {
             shortcode = generateShortcode(name);
         }
+        
+        if (impId == null) {
+          impId = java.util.UUID.randomUUID().toString();
+        }
+        
         super.beforeInsert()
     }
 

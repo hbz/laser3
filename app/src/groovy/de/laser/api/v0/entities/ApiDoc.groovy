@@ -1,23 +1,21 @@
-package com.k_int.kbplus.api.v0.entities
+package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.api.v0.ApiReadService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
+import de.laser.api.v0.ApiReader
 import groovy.util.logging.Log4j
 
 @Log4j
-class DocService {
-
-    ApiReadService apiReadService
+class ApiDoc {
 
     /**
      * @return Doc | BAD_REQUEST | PRECONDITION_FAILED
      */
-    def findDocumentBy(String query, String value) {
+    static findDocumentBy(String query, String value) {
         def result
 
         switch(query) {
@@ -40,8 +38,8 @@ class DocService {
     /**
      * @return Doc | FORBIDDEN
      */
-    def getDocument(Doc doc, User user, Org context){
-        def hasAccess = apiReadService.isDataManager(user)
+    static getDocument(Doc doc, User user, Org context){
+        def hasAccess = ApiReader.isDataManager(user)
 
         if (! hasAccess) {
             DocContext.findAllByOwner(doc).each{ dc ->
@@ -78,13 +76,13 @@ class DocService {
     /**
      * @return Doc | FORBIDDEN | null
      */
-    def getOnixPlDocument(License license, User user, Org context){
+    static getOnixPlDocument(License license, User user, Org context){
         def doc = license.onixplLicense?.doc
         if (! doc) {
             return null // not found
         }
 
-        def hasAccess = apiReadService.isDataManager(user)
+        def hasAccess = ApiReader.isDataManager(user)
 
         if (! hasAccess) {
             DocContext.findAllByOwner(doc).each { dc ->

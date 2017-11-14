@@ -1,3 +1,8 @@
+0.2.1
+
+- bugfix: rest api 
+- bugfix: javascript
+
 0.2
 
 - new rest api endpoints (get only) for onix-pl and issue entitlements

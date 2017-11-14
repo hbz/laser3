@@ -26,7 +26,7 @@
           <div class="span12">
 
             <div class="page-header">
-              <h1>${ti.title} <g:if test="${ti.status?.value && ti.status.value != 'Current'}"><span class="badge badge-error" style="vertical-align:middle;">${message(code:"refdata.${ti.status.value}", default:"${ti.status.value}")}</span></g:if></h1>
+              <h1>${ti.title} <g:if test="${ti.status?.value && ti.status.value != 'Current'}"><span class="badge badge-error" style="vertical-align:middle;">${ti.status.getI10n('value')}</span></g:if></h1>
             </div>         
 
               <g:render template="nav" />

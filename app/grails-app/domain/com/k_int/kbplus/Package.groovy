@@ -419,6 +419,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         if ( name != null ) {
             sortName = generateSortName(name)
         }
+        
+        if (impId == null) {
+          impId = java.util.UUID.randomUUID().toString();
+        }
+        
         super.beforeInsert()
     }
 

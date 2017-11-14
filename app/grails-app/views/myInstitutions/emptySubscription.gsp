@@ -33,7 +33,7 @@
               <g:select name="asOrgType"
                         from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value <> ? and rdv.owner.desc = ?', ['Other', 'OrgType'])}"
                         optionKey="id"
-                        optionValue="value"
+                        optionValue="${{it.getI10n('value')}}"
                         class="input-medium"/>
             </dt>
             <dd>

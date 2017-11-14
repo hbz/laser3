@@ -1,22 +1,20 @@
-package com.k_int.kbplus.api.v0.entities
+package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.api.v0.ApiReadService
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
+import de.laser.api.v0.ApiReader
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
-class OrgService {
-
-    ApiReadService apiReadService
+class ApiOrg {
 
     /**
      * @return Org | BAD_REQUEST | PRECONDITION_FAILED
      */
-    def findOrganisationBy(String query, String value) {
+    static findOrganisationBy(String query, String value) {
         def result
 
         switch(query) {
@@ -48,12 +46,12 @@ class OrgService {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    def getOrganisation(Org org, User user, Org context) {
+    static getOrganisation(Org org, User user, Org context) {
         def result = []
-        def hasAccess = apiReadService.isDataManager(user)
+        def hasAccess = ApiReader.isDataManager(user)
 
         if (hasAccess) {
-            result = apiReadService.exportOrganisation(org, context)
+            result = ApiReader.exportOrganisation(org, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

@@ -1,40 +1,38 @@
-package com.k_int.kbplus.api.v0.entities
+package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.Package
-import com.k_int.kbplus.api.v0.ApiReadService
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
+import de.laser.api.v0.ApiReader
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
-class PkgService {
-
-    ApiReadService apiReadService
+class ApiSubscription {
 
     /**
-     * @return Package | BAD_REQUEST | PRECONDITION_FAILED
+     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED
      */
-    def findPackageBy(String query, String value) {
+    static findSubscriptionBy(String query, String value) {
         def result
 
         switch(query) {
             case 'id':
-                result = Package.findAllWhere(id: Long.parseLong(value))
+                result = Subscription.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Package.findAllWhere(globalUID: value)
+                result = Subscription.findAllWhere(globalUID: value)
                 break
             case 'identifier':
-                result = Package.findAllWhere(identifier: value)
+                result = Subscription.findAllWhere(identifier: value)
                 break
             case 'impId':
-                result = Package.findAllWhere(impId: value)
+                result = Subscription.findAllWhere(impId: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new Package(), value)
+                result = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
                 break
             default:
                 return Constants.HTTP_BAD_REQUEST
@@ -49,13 +47,12 @@ class PkgService {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    def getPackage(Package pkg, User user, Org context) {
+    static getSubscription(Subscription sub, User user, Org context){
         def result = []
-        def hasAccess = apiReadService.isDataManager(user)
+        def hasAccess = ApiReader.isDataManager(user)
 
-        // TODO
         if (! hasAccess) {
-            pkg.orgs.each { orgRole ->
+            sub.orgRelations.each { orgRole ->
                 if (orgRole.getOrg().id == context?.id) {
                     hasAccess = true
                 }
@@ -63,7 +60,7 @@ class PkgService {
         }
 
         if (hasAccess) {
-            result = apiReadService.exportPackage(pkg, context) // TODO check orgRole.roleType
+            result = ApiReader.exportSubscription(sub, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

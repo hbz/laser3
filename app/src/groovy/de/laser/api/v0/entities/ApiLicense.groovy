@@ -1,22 +1,22 @@
-package com.k_int.kbplus.api.v0.entities
+package de.laser.api.v0.entities
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.ApiReadHelperService
-import com.k_int.kbplus.api.v0.ApiReadService
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
+import de.laser.api.v0.ApiReader
+import de.laser.api.v0.ApiReaderHelper
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
-class LicenseService {
-
-    ApiReadService apiReadService
+class ApiLicense {
 
     /**
      * @return License | BAD_REQUEST | PRECONDITION_FAILED
      */
-    def findLicenseBy(String query, String value) {
+    static findLicenseBy(String query, String value) {
         def result
 
         switch(query) {
@@ -45,9 +45,9 @@ class LicenseService {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    def getLicense(License lic, User user, Org context){
+    static getLicense(License lic, User user, Org context){
         def result = []
-        def hasAccess = apiReadService.isDataManager(user)
+        def hasAccess = ApiReader.isDataManager(user)
 
         if (! hasAccess) {
             lic.orgLinks.each { orgRole ->
@@ -58,7 +58,7 @@ class LicenseService {
         }
 
         if (hasAccess) {
-            result = apiReadService.exportLicense(lic, ApiReadHelperService.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiReader.exportLicense(lic, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

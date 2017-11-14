@@ -6,13 +6,14 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.api.v0.converter.ApiKbartService
-import com.k_int.kbplus.api.v0.entities.DocService
-import com.k_int.kbplus.api.v0.entities.IssueEntitlementService
-import com.k_int.kbplus.api.v0.entities.LicenseService
-import com.k_int.kbplus.api.v0.entities.OrgService
-import com.k_int.kbplus.api.v0.entities.PkgService
-import com.k_int.kbplus.api.v0.entities.SubscriptionService
 import com.k_int.kbplus.auth.User
+import de.laser.api.v0.ApiWriter
+import de.laser.api.v0.entities.ApiDoc
+import de.laser.api.v0.entities.ApiIssueEntitlement
+import de.laser.api.v0.entities.ApiLicense
+import de.laser.api.v0.entities.ApiOrg
+import de.laser.api.v0.entities.ApiPkg
+import de.laser.api.v0.entities.ApiSubscription
 import de.laser.domain.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -23,15 +24,6 @@ import javax.servlet.http.HttpServletRequest
 
 @Log4j
 class ApiMainService {
-
-    ApiWriteService apiWriteService
-
-    DocService docService
-    IssueEntitlementService issueEntitlementService
-    LicenseService licenseService
-    OrgService orgService
-    PkgService pkgService
-    SubscriptionService subscriptionService
 
     ApiKbartService apiKbartService
 
@@ -44,19 +36,19 @@ class ApiMainService {
 
         if ('document'.equalsIgnoreCase(obj)) {
             //if (format in [ContentType.ALL]) {
-                result = docService.findDocumentBy(query, value)
+                result = ApiDoc.findDocumentBy(query, value)
                 if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = docService.getDocument((Doc) result, user, contextOrg)
+                    result = ApiDoc.getDocument((Doc) result, user, contextOrg)
                 }
             //}
         }
         else if ('issueEntitlements'.equalsIgnoreCase(obj)) {
             if (format in [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON]) {
-                def subPkg = issueEntitlementService.findSubscriptionPackageBy(query, value)
+                def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
                 if (subPkg && ! (subPkg in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]) ) {
-                    result = issueEntitlementService.getIssueEntitlements(subPkg, user, contextOrg)
+                    result = ApiIssueEntitlement.getIssueEntitlements(subPkg, user, contextOrg)
 
-                    if (format == Constants.MIME_TEXT_PLAIN) {
+                    if (result && format == Constants.MIME_TEXT_PLAIN) {
                         def kbart = apiKbartService.convertIssueEntitlements(result)
                         result = apiKbartService.getAsDocument(kbart)
                     }
@@ -68,9 +60,9 @@ class ApiMainService {
         }
         else if ('license'.equalsIgnoreCase(obj)) {
             if (format in [Constants.MIME_APPLICATION_JSON]) {
-                result = licenseService.findLicenseBy(query, value)
+                result = ApiLicense.findLicenseBy(query, value)
                 if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = licenseService.getLicense((License) result, user, contextOrg)
+                    result = ApiLicense.getLicense((License) result, user, contextOrg)
                 }
             }
             else {
@@ -79,9 +71,9 @@ class ApiMainService {
         }
         else if ('onixpl'.equalsIgnoreCase(obj)) {
             if (format in [Constants.MIME_APPLICATION_XML]) {
-                def lic = licenseService.findLicenseBy(query, value)
+                def lic = ApiLicense.findLicenseBy(query, value)
                 if (lic && !(lic in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = docService.getOnixPlDocument((License) lic, user, contextOrg)
+                    result = ApiDoc.getOnixPlDocument((License) lic, user, contextOrg)
                 }
             }
             else {
@@ -90,9 +82,9 @@ class ApiMainService {
         }
         else if ('organisation'.equalsIgnoreCase(obj)) {
             if (format in [Constants.MIME_APPLICATION_JSON]) {
-                result = orgService.findOrganisationBy(query, value)
+                result = ApiOrg.findOrganisationBy(query, value)
                 if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = orgService.getOrganisation((Org) result, user, contextOrg)
+                    result = ApiOrg.getOrganisation((Org) result, user, contextOrg)
                 }
             }
             else {
@@ -101,9 +93,9 @@ class ApiMainService {
         }
         else if ('package'.equalsIgnoreCase(obj)) {
             if (format in [Constants.MIME_APPLICATION_JSON]) {
-                result = pkgService.findPackageBy(query, value)
+                result = ApiPkg.findPackageBy(query, value)
                 if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = pkgService.getPackage((Package) result, user, contextOrg)
+                    result = ApiPkg.getPackage((Package) result, user, contextOrg)
                 }
             }
             else {
@@ -112,9 +104,9 @@ class ApiMainService {
         }
         else if ('subscription'.equalsIgnoreCase(obj)) {
             if (format in [Constants.MIME_APPLICATION_JSON]) {
-                result = subscriptionService.findSubscriptionBy(query, value)
+                result = ApiSubscription.findSubscriptionBy(query, value)
                 if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = subscriptionService.getSubscription((Subscription) result, user, contextOrg)
+                    result = ApiSubscription.getSubscription((Subscription) result, user, contextOrg)
                 }
             }
             else {
@@ -137,12 +129,12 @@ class ApiMainService {
         if ('organisation'.equalsIgnoreCase(obj)) {
 
             data.identifiers?.each { ident ->
-                def hits = orgService.findOrganisationBy('ns:identifier', ident.namespace + ":" + ident.value)
+                def hits = ApiOrg.findOrganisationBy('ns:identifier', ident.namespace + ":" + ident.value)
                 if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Org) {
                     conflict = true
                 }
             }
-            def hits = orgService.findOrganisationBy('name', data.name.trim())
+            def hits = ApiOrg.findOrganisationBy('name', data.name.trim())
             if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Org) {
                 conflict = true
             }
@@ -151,21 +143,21 @@ class ApiMainService {
                 return ['result': Constants.HTTP_CONFLICT, 'debug': 'debug']
             }
 
-            result = apiWriteService.importOrganisation(data, contextOrg)
+            result = ApiWriter.importOrganisation(data, contextOrg)
         }
         else if ('license'.equalsIgnoreCase(obj)) {
 
-            result = apiWriteService.importLicense(data, contextOrg)
+            result = ApiWriter.importLicense(data, contextOrg)
         }
         else if ('subscription'.equalsIgnoreCase(obj)) {
 
             data.identifiers?.each { ident ->
-                def hits = subscriptionService.findSubscriptionBy('ns:identifier', ident.namespace + ":" + ident.value)
+                def hits = ApiSubscription.findSubscriptionBy('ns:identifier', ident.namespace + ":" + ident.value)
                 if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Subscription) {
                     conflict = true
                 }
             }
-            def hits = subscriptionService.findSubscriptionBy('identifier', data.identifier)
+            def hits = ApiSubscription.findSubscriptionBy('identifier', data.identifier)
             if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Subscription) {
                 conflict = true
             }
@@ -174,7 +166,7 @@ class ApiMainService {
                 return ['result': Constants.HTTP_CONFLICT, 'debug': 'debug']
             }
 
-            result = apiWriteService.importSubscription(data, contextOrg)
+            result = ApiWriter.importSubscription(data, contextOrg)
         }
         else {
             result = Constants.HTTP_NOT_IMPLEMENTED
@@ -182,7 +174,9 @@ class ApiMainService {
         result
     }
 
-    def buildResponseBody(HttpServletRequest request, def obj, def query, def value, def context, def contextOrg, def result) {
+    def buildResponse(HttpServletRequest request, def obj, def query, def value, def context, def contextOrg, def result) {
+
+        def response = []
 
         // POST
 
@@ -190,13 +184,16 @@ class ApiMainService {
 
             switch(result['result']) {
                 case Constants.HTTP_CREATED:
-                    result = new JSON(["message": "resource successfully created", "debug": result['debug'], "status": HttpStatus.CREATED.value()])
+                    response << new JSON(["message": "resource successfully created", "debug": result['debug']])
+                    response << HttpStatus.CREATED.value()
                     break
                 case Constants.HTTP_CONFLICT:
-                    result = new JSON(["message": "conflict with existing resource", "debug": result['debug'], "status": HttpStatus.CONFLICT.value()])
+                    response << new JSON(["message": "conflict with existing resource", "debug": result['debug']])
+                    response << HttpStatus.CONFLICT.value()
                     break
                 case Constants.HTTP_INTERNAL_SERVER_ERROR:
-                    result = new JSON(["message": "resource not created", "debug": result['debug'], "status": HttpStatus.INTERNAL_SERVER_ERROR.value()])
+                    response << new JSON(["message": "resource not created", "debug": result['debug']])
+                    response << HttpStatus.INTERNAL_SERVER_ERROR.value()
                     break
             }
         }
@@ -205,29 +202,40 @@ class ApiMainService {
 
         else if (Constants.HTTP_FORBIDDEN == result) {
             if (contextOrg) {
-                result = new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode, "status": HttpStatus.FORBIDDEN.value()])
+                response << new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode])
+                response << HttpStatus.FORBIDDEN.value()
             }
             else {
-                result = new JSON(["message": "forbidden", "obj": obj, "context": context, "status": HttpStatus.FORBIDDEN.value()])
+                response << new JSON(["message": "forbidden", "obj": obj, "context": context])
+                response << HttpStatus.FORBIDDEN.value()
             }
         }
         else if (Constants.HTTP_NOT_ACCEPTABLE == result) {
-            result = new JSON(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj, "status": HttpStatus.NOT_ACCEPTABLE.value()])
+            response << new JSON(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj])
+            response << HttpStatus.NOT_ACCEPTABLE.value()
         }
         else if (Constants.HTTP_NOT_IMPLEMENTED == result) {
-            result = new JSON(["message": "requested method not implemented", "method": request.method, "obj": obj, "status": HttpStatus.NOT_IMPLEMENTED.value()])
+            response << new JSON(["message": "requested method not implemented", "method": request.method, "obj": obj])
+            response << HttpStatus.NOT_IMPLEMENTED.value()
         }
         else if (Constants.HTTP_BAD_REQUEST == result) {
-            result = new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context, "status": HttpStatus.BAD_REQUEST.value()])
+            response << new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context])
+            response << HttpStatus.BAD_REQUEST.value()
         }
         else if (Constants.HTTP_PRECONDITION_FAILED == result) {
-            result = new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context, "status": HttpStatus.PRECONDITION_FAILED.value()])
+            response << new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context])
+            response << HttpStatus.PRECONDITION_FAILED.value()
         }
 
-        if (!result) {
-            result = new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context, "status": HttpStatus.NOT_FOUND.value()])
+        if (! result) {
+            response << new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context])
+            response << HttpStatus.NOT_FOUND.value()
+        }
+        else {
+            response << result
+            response << HttpStatus.OK.value()
         }
 
-        result
+        response
     }
 }

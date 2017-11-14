@@ -242,7 +242,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
      * @return
      */
     def v0() {
-        log.debug("api call v0 : " + params)
+        log.debug("API Call: " + params)
 
         def result
         def hasAccess = false
@@ -353,16 +353,16 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }
         }
+        def responseStruct = apiMainService.buildResponse(request, obj, query, value, context, contextOrg, result)
 
-        result = apiMainService.buildResponseBody(request, obj, query, value, context, contextOrg, result)
-
-        def status = result['status'] as int
-        response.setStatus(status)
+        def responseJson = responseStruct[0]
+        def responseCode = responseStruct[1]
 
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Debug-Result-Length", result.toString().length().toString())
+        response.setHeader("Debug-Result-Length", responseJson.toString().length().toString())
+        response.setStatus(responseCode)
 
-        render result.toString(true)
+        render responseJson.toString(true)
     }
 }

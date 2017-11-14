@@ -16,7 +16,7 @@
         <div class="well">
           <g:form action="list" method="get" class="form-inline">
             ${message(code: 'org.search.contains')}: <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> ${message(code: 'org.search.restrict')}
-            <g:select name="orgRole" noSelection="${['':'Select One...']}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
+            <g:select name="orgRole" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
             <input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button"/> (${orgInstanceTotal} Matches)
           </g:form>
         </div>
@@ -41,10 +41,10 @@
             <tr>
               <td><g:link  action="show" id="${orgInstance.id}">${fieldValue(bean: orgInstance, field: "name")}</g:link></td>
               <td>${fieldValue(bean: orgInstance, field: "shortcode")}</td>
-              <td>${orgInstance?.orgType?.value}</td>
-              <td>${orgInstance?.sector?.value}</td>
+              <td>${orgInstance?.orgType?.getI10n('value')}</td>
+              <td>${orgInstance?.sector?.getI10n('value')}</td>
               <td>${fieldValue(bean: orgInstance, field: "scope")}</td>
-              <td>${orgInstance?.membership?.value}</td>
+              <td>${orgInstance?.membership?.getI10n('value')}</td>
             </tr>
           </g:each>
           </tbody>

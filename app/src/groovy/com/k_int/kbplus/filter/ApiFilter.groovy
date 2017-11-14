@@ -29,75 +29,79 @@ class ApiFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) servletResponse
 
         // ignore non api calls
-        if(request.getServletPath().startsWith('/api/v')) {
-            def isAuthorized = false
-            def checksum
+        if (request.getServletPath().startsWith('/api/v')) {
+            // ignore api spec calls
+            if (! (request.getServletPath() =~ /api\/v\d+\/spec/)) {
 
-            def method = request.getMethod()
-            def path   = request.getServletPath()
-            def query  = request.getQueryString()
-            def body   = IOUtils.toString(request.getInputStream())
+                def isAuthorized = false
+                def checksum
 
-            String authorization = request.getHeader('Authorization')
-            try {
-                if (authorization) {
-                    def p1 = authorization.split(' ')
-                    def authMethod = p1[0]
+                def method = request.getMethod()
+                def path = request.getServletPath()
+                def query = request.getQueryString()
+                def body = IOUtils.toString(request.getInputStream())
 
-                    if (authMethod == 'hmac') {
-                        def p2 = p1[1].split(',')
-                        def load = p2[0].split(':')
-                        def algorithm = p2[1]
+                String authorization = request.getHeader('Authorization')
+                try {
+                    if (authorization) {
+                        def p1 = authorization.split(' ')
+                        def authMethod = p1[0]
 
-                        def key = load[0]
-                        def timestamp = load[1]
-                        def nounce = load[2]
-                        def digest = load[3]
+                        if (authMethod == 'hmac') {
+                            def p2 = p1[1].split(',')
+                            def load = p2[0].split(':')
+                            def algorithm = p2[1]
 
-                        // checking digest
+                            def key = load[0]
+                            def timestamp = load[1]
+                            def nounce = load[2]
+                            def digest = load[3]
 
-                        def apiUser = User.findByApikey(key)
-                        def apiSecret = apiUser.apisecret
+                            // checking digest
 
-                        checksum = hmac(
-                                method +    // http-method
-                                path +      // uri
-                                timestamp + // timestamp
-                                nounce +    // nounce
-                                        (query ? URLDecoder.decode(query) : '') + // parameter
-                                body,         // body
-                                apiSecret)
+                            def apiUser = User.findByApikey(key)
+                            def apiSecret = apiUser.apisecret
 
-                        isAuthorized = (checksum == digest)
-                        if(isAuthorized) {
-                            request.setAttribute('authorizedApiUser', apiUser)
-                            request.setAttribute('authorizedApiUsersPostBody', body)
+                            checksum = hmac(
+                                    method +    // http-method
+                                            path +      // uri
+                                            timestamp + // timestamp
+                                            nounce +    // nounce
+                                            (query ? URLDecoder.decode(query) : '') + // parameter
+                                            body,         // body
+                                    apiSecret)
+
+                            isAuthorized = (checksum == digest)
+                            if (isAuthorized) {
+                                request.setAttribute('authorizedApiUser', apiUser)
+                                request.setAttribute('authorizedApiUsersPostBody', body)
+                            }
                         }
                     }
+                } catch (Exception e) {
+                    isAuthorized = false
                 }
-            } catch(Exception e) {
-                isAuthorized = false
-            }
 
-            if (isAuthorized) {
-                //println "VALID authorization: " + authorization
-                request.getRequestDispatcher(path).forward(servletRequest, servletResponse)
-                return
-            } else {
-                //println "INVALID authorization: " + authorization + " < " + checksum
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
-                response.setContentType(Constants.MIME_APPLICATION_JSON)
+                if (isAuthorized) {
+                    //println "VALID authorization: " + authorization
+                    request.getRequestDispatcher(path).forward(servletRequest, servletResponse)
+                    return
+                } else {
+                    //println "INVALID authorization: " + authorization + " < " + checksum
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
+                    response.setContentType(Constants.MIME_APPLICATION_JSON)
 
-                def result = new JSON([
-                        "message": "unauthorized access",
-                        "authorization": authorization,
-                        "path": path,
-                        "query": query,
-                        "method": method,
-                        "status": HttpStatus.UNAUTHORIZED.value()
-                ])
-                response.getWriter().print(result.toString(true))
-                return
+                    def result = new JSON([
+                            "message"      : "unauthorized access",
+                            "authorization": authorization,
+                            "path"         : path,
+                            "query"        : query,
+                            "method"       : method
+                            //"_httpStatus": HttpStatus.UNAUTHORIZED.value()
+                    ])
+                    response.getWriter().print(result.toString(true))
+                    return
+                }
             }
         }
         filterChain.doFilter(servletRequest, servletResponse)

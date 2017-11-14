@@ -1,38 +1,38 @@
-package com.k_int.kbplus.api.v0.entities
+package de.laser.api.v0.entities
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.api.v0.ApiReadService
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
 import com.k_int.kbplus.auth.User
 import de.laser.domain.Constants
+import de.laser.api.v0.ApiReader
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
-class SubscriptionService {
-
-    ApiReadService apiReadService
+class ApiPkg {
 
     /**
-     * @return Subscription | BAD_REQUEST | PRECONDITION_FAILED
+     * @return Package | BAD_REQUEST | PRECONDITION_FAILED
      */
-    def findSubscriptionBy(String query, String value) {
+    static findPackageBy(String query, String value) {
         def result
 
         switch(query) {
             case 'id':
-                result = Subscription.findAllWhere(id: Long.parseLong(value))
+                result = Package.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Subscription.findAllWhere(globalUID: value)
+                result = Package.findAllWhere(globalUID: value)
                 break
             case 'identifier':
-                result = Subscription.findAllWhere(identifier: value)
+                result = Package.findAllWhere(identifier: value)
                 break
             case 'impId':
-                result = Subscription.findAllWhere(impId: value)
+                result = Package.findAllWhere(impId: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
+                result = Identifier.lookupObjectsByIdentifierString(new Package(), value)
                 break
             default:
                 return Constants.HTTP_BAD_REQUEST
@@ -47,12 +47,13 @@ class SubscriptionService {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    def getSubscription(Subscription sub, User user, Org context){
+    static getPackage(Package pkg, User user, Org context) {
         def result = []
-        def hasAccess = apiReadService.isDataManager(user)
+        def hasAccess = ApiReader.isDataManager(user)
 
+        // TODO
         if (! hasAccess) {
-            sub.orgRelations.each { orgRole ->
+            pkg.orgs.each { orgRole ->
                 if (orgRole.getOrg().id == context?.id) {
                     hasAccess = true
                 }
@@ -60,7 +61,7 @@ class SubscriptionService {
         }
 
         if (hasAccess) {
-            result = apiReadService.exportSubscription(sub, context) // TODO check orgRole.roleType
+            result = ApiReader.exportPackage(pkg, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

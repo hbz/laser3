@@ -230,7 +230,7 @@
                                     <g:select name="trigger"
                                               from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderTrigger')}"
                                               optionKey="id"
-                                              optionValue="value"
+                                              optionValue="${{it.getI10n('value')}}"
                                               class="input-medium"/>
                                 </div>
                                 <div class="field">
@@ -238,7 +238,7 @@
                                     <g:select name="method"
                                               from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderMethod')}"
                                               optionKey="id"
-                                              optionValue="value"
+                                              optionValue="${{it.getI10n('value')}}"
                                               class="input-medium"/>
                                 </div>
                                 <div class="field">
@@ -246,7 +246,7 @@
                                     <g:select name="unit"
                                               from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','ReminderUnit')}"
                                               optionKey="id"
-                                              optionValue="value"
+                                              optionValue="${{it.getI10n('value')}}"
                                               class="input-medium"/>
                                 </div>
                                 <div class="field">

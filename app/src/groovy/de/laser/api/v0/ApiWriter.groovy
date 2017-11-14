@@ -1,15 +1,16 @@
-package com.k_int.kbplus.api.v0
+package de.laser.api.v0
 
-import com.k_int.kbplus.*
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Person
+import com.k_int.kbplus.Subscription
 import de.laser.domain.Constants
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
 
 @Log4j
-class ApiWriteService {
-
-    ApiWriteHelperService apiWriteHelperService
+class ApiWriter {
 
     /**
      *
@@ -17,7 +18,7 @@ class ApiWriteService {
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    def importLicense(JSONObject data, Org context) {
+    static importLicense(JSONObject data, Org context) {
         def result = []
 
         License.withTransaction { TransactionStatus status ->
@@ -35,19 +36,19 @@ class ApiWriteService {
                         sortableReference:  data.sortableReference,
                 )
 
-                license.startDate   = apiWriteHelperService.getValidDateFormat(data.startDate)
-                license.endDate     = apiWriteHelperService.getValidDateFormat(data.endDate)
+                license.startDate   = ApiWriterHelper.getValidDateFormat(data.startDate)
+                license.endDate     = ApiWriterHelper.getValidDateFormat(data.endDate)
                 // todo: license.lastmod     = data.lastmod // long ????
 
                 // RefdataValues
-                license.isPublic         = apiWriteHelperService.getRefdataValue(data.isPublic, "YN")
-                license.licenseCategory  = apiWriteHelperService.getRefdataValue(data.licenseCategory, "LicenseCategory")
-                license.status           = apiWriteHelperService.getRefdataValue(data.status, "License Status")
-                license.type             = apiWriteHelperService.getRefdataValue(data.type, "License Type")
-                license.ids              = apiWriteHelperService.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
+                license.isPublic         = ApiWriterHelper.getRefdataValue(data.isPublic, "YN")
+                license.licenseCategory  = ApiWriterHelper.getRefdataValue(data.licenseCategory, "LicenseCategory")
+                license.status           = ApiWriterHelper.getRefdataValue(data.status, "License Status")
+                license.type             = ApiWriterHelper.getRefdataValue(data.type, "License Type")
+                license.ids              = ApiWriterHelper.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
 
                 // References
-                def properties            = apiWriteHelperService.getProperties(data.properties, license, context)
+                def properties            = ApiWriterHelper.getProperties(data.properties, license, context)
                 license.customProperties  = properties['custom']
                 license.privateProperties = properties['private']
 
@@ -57,7 +58,7 @@ class ApiWriteService {
                 // TO CHECK: save license before saving orgLinks
                 license.save()
 
-                license.orgLinks = apiWriteHelperService.getOrgLinks(data.organisations, license, context)
+                license.orgLinks = ApiWriterHelper.getOrgLinks(data.organisations, license, context)
 
                 // TODO: set subscription.owner = license
                 //def subscriptions = inHelperService.getSubscriptions(data.subscriptions)
@@ -81,7 +82,7 @@ class ApiWriteService {
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    def importOrganisation(JSONObject data, Org context) {
+    static importOrganisation(JSONObject data, Org context) {
         def result = []
 
         Org.withTransaction { TransactionStatus status ->
@@ -94,23 +95,23 @@ class ApiWriteService {
                 )
 
                 // RefdataValues
-                org.sector  = apiWriteHelperService.getRefdataValue(data.sector, "OrgSector")
-                org.status  = apiWriteHelperService.getRefdataValue(data.status, "OrgStatus") // TODO unknown catagory !!!
-                org.orgType = apiWriteHelperService.getRefdataValue(data.type, "OrgType")
+                org.sector  = ApiWriterHelper.getRefdataValue(data.sector, "OrgSector")
+                org.status  = ApiWriterHelper.getRefdataValue(data.status, "OrgStatus") // TODO unknown catagory !!!
+                org.orgType = ApiWriterHelper.getRefdataValue(data.type, "OrgType")
 
                 // References
-                org.addresses = apiWriteHelperService.getAddresses(data.addresses, org, null)
-                org.contacts  = apiWriteHelperService.getContacts(data.contacts, org, null)
-                org.ids       = apiWriteHelperService.getIdentifiers(data.identifiers, org) // implicit creation of identifier and namespace
+                org.addresses = ApiWriterHelper.getAddresses(data.addresses, org, null)
+                org.contacts  = ApiWriterHelper.getContacts(data.contacts, org, null)
+                org.ids       = ApiWriterHelper.getIdentifiers(data.identifiers, org) // implicit creation of identifier and namespace
 
-                def properties        = apiWriteHelperService.getProperties(data.properties, org, context)
+                def properties        = ApiWriterHelper.getProperties(data.properties, org, context)
                 org.customProperties  = properties['custom']
                 org.privateProperties = properties['private']
 
                 // MUST: save org before saving persons and prsLinks
                 org.save()
 
-                def personsAndRoles = apiWriteHelperService.getPersonsAndRoles(data.persons, org, context)
+                def personsAndRoles = ApiWriterHelper.getPersonsAndRoles(data.persons, org, context)
                 personsAndRoles['persons'].each { p ->
                     (Person) p.save() // MUST: save persons before saving prsLinks
                 }
@@ -136,7 +137,7 @@ class ApiWriteService {
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    def importSubscription(JSONObject data, Org context) {
+    static importSubscription(JSONObject data, Org context) {
         def result = []
 
         Subscription.withTransaction { TransactionStatus status ->
@@ -147,25 +148,25 @@ class ApiWriteService {
                         cancellationAllowances: data.cancellationAllowances,
                         identifier:             data.identifier,
                 )
-                sub.startDate   = apiWriteHelperService.getValidDateFormat(data.startDate)
-                sub.endDate     = apiWriteHelperService.getValidDateFormat(data.endDate)
-                sub.manualRenewalDate = apiWriteHelperService.getValidDateFormat(data.manualRenewalDate)
+                sub.startDate   = ApiWriterHelper.getValidDateFormat(data.startDate)
+                sub.endDate     = ApiWriterHelper.getValidDateFormat(data.endDate)
+                sub.manualRenewalDate = ApiWriterHelper.getValidDateFormat(data.manualRenewalDate)
 
                 // RefdataValues
-                sub.isSlaved  = apiWriteHelperService.getRefdataValue(data.isSlaved, "YN")
-                sub.isPublic  = apiWriteHelperService.getRefdataValue(data.isPublic, "YN")
-                sub.status    = apiWriteHelperService.getRefdataValue(data.isSlaved, "Subscription Status")
-                sub.type      = apiWriteHelperService.getRefdataValue(data.isSlaved, "Organisational Role")
+                sub.isSlaved  = ApiWriterHelper.getRefdataValue(data.isSlaved, "YN")
+                sub.isPublic  = ApiWriterHelper.getRefdataValue(data.isPublic, "YN")
+                sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, "Subscription Status")
+                sub.type      = ApiWriterHelper.getRefdataValue(data.isSlaved, "Organisational Role")
 
                 // References
-                def properties       = apiWriteHelperService.getProperties(data.properties, sub, context)
+                def properties       = ApiWriterHelper.getProperties(data.properties, sub, context)
                 sub.customProperties = properties['custom']
-                sub.ids              = apiWriteHelperService.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
+                sub.ids              = ApiWriterHelper.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
 
                 // TO CHECK: save subscriptions before saving orgRelations
                 sub.save()
 
-                sub.orgRelations     = apiWriteHelperService.getOrgLinks(data.organisations, sub, context)
+                sub.orgRelations     = ApiWriterHelper.getOrgLinks(data.organisations, sub, context)
 
                 // not supported: documents
                 // not supported: derivedSubscriptions
