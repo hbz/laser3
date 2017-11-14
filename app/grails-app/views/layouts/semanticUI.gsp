@@ -14,6 +14,11 @@
 
     <r:require modules="semanticUI" />
 
+    <script type="text/javascript">
+        var gspLocale = "${message(code:'default.locale.label', default:'en')}";
+        var gspDateFormat = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}";
+    </script>
+
     <g:layoutHead/>
 
     <tmpl:/layouts/favicon />
