@@ -14,12 +14,11 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 class FinanceController {
 
     def springSecurityService
-    private final def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-    private final def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
+
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
     private final def admin_role      = Role.findByAuthority('INST_ADM')
-    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','GBP - United Kingdom Pound')
+    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR - Euro Member Countries')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
 
@@ -57,7 +56,8 @@ class FinanceController {
     def index() {
       log.debug("FinanceController::index() ${params}");
 
-      def result = [:]
+        def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
+        def result = [:]
 
       try {
 
@@ -168,7 +168,7 @@ class FinanceController {
         if (result.filterMode == "ON")
         {
             log.debug("FinanceController::index()  -- Performing filtering processing...")
-            def qryOutput = filterQuery(result,params,result.wildcard)
+            def qryOutput = filterQuery(result, params, result.wildcard)
             if (qryOutput.filterCount == 0 || !qryOutput.qry_string) //Nothing found from filtering!
             {
                 result.info.add([status:message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.mode')]),
@@ -236,6 +236,8 @@ class FinanceController {
      */
     //todo change for batch processing... don't want to kill the server, defaulting to all results presently!
     def private processFinancialCSV(out, result, header) {
+        def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
         def generation_start = new Date()
         def processedCounter = 0
 
@@ -597,8 +599,10 @@ class FinanceController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def newCostItem() {
 
-      def result =  [:]
-      def newCostItem = null;
+        def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+        def result =  [:]
+        def newCostItem = null
 
       try {
         log.debug("FinanceController::newCostItem() ${params}");
@@ -773,6 +777,7 @@ class FinanceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def getRecentCostItems() {
+        def dateTimeFormat     = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def  institution       = Org.findByShortcode(params.shortcode)
         def  result            = [:]
         def  recentParams      = [max:10, order:'desc', sort:'lastUpdated']
@@ -788,6 +793,7 @@ class FinanceController {
 
     @Secured(['ROLE_USER'])
     def newCostItemsPresent() {
+        def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def institution = Org.findByShortcode(params.shortcode)
         Date dateTo     = params.to? dateTimeFormat.parse(params.to):new Date()//getFromToDate(params.to,"to")
         int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution,dateTo)

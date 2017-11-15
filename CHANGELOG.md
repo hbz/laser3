@@ -1,6 +1,13 @@
+0.2.3
+
+- bugfix: date format in finance controller
+
+0.2.2
+
+- bugfix: rest api
+
 0.2.1
 
-- bugfix: rest api 
 - bugfix: javascript
 
 0.2
