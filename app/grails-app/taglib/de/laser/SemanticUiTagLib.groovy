@@ -26,7 +26,6 @@ class SemanticUiTagLib {
     // message          = translate via i18n
     // class="active"   = no link
 
-    // TODO: adopt for semantic ui
     def crumb = { attrs, body ->
 
         def lbText    = attrs.text ? attrs.text : ''
@@ -54,9 +53,7 @@ class SemanticUiTagLib {
 
         def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
 
-        out << '<li class="pull-right">'
-        out << '<span class="badge ' + attrs.class + '">' + lbMessage + '</span>'
-        out << '</li>'
+        out << '<div class="ui horizontal label ' + attrs.class + '">' + lbMessage + '</div>'
     }
 
     // <semui:subNav actionName="${actionName}">
@@ -92,4 +89,28 @@ class SemanticUiTagLib {
         }
     }
 
+    // <semui:messages data="${flash}" />
+
+    def messages = { attrs, body ->
+
+        def flash = attrs.data
+
+        if (flash && flash.message) {
+            out << '<div class="ui success message">'
+            out <<   '<i class="close icon"></i>'
+            out <<   '<p>'
+            out <<     flash.message
+            out <<   '</p>'
+            out << '</div>'
+        }
+
+        if (flash && flash.error) {
+            out << '<div class="ui negative message">'
+            out <<   '<i class="close icon"></i>'
+            out <<   '<p>'
+            out <<     flash.error
+            out <<   '</p>'
+            out << '</div>'
+        }
+    }
 }
