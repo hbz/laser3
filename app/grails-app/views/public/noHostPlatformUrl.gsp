@@ -6,18 +6,16 @@
 </head>
 
 <body class="public">
-<g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
+    <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
-<div>
-    <h1>No Host Platform URL</h1>
-</div>
+    <div class="ui container">
+        <h1 class="ui header">No Host Platform URL</h1>
 
-<div>
-    <div class="row">
-        <div class="span8">
-            <markdown:renderHtml><g:dbContent key="kbplus.noHostPlatformURL"/></markdown:renderHtml>
+        <div class="row">
+            <div class="span8">
+                <markdown:renderHtml><g:dbContent key="kbplus.noHostPlatformURL"/></markdown:renderHtml>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>

@@ -10,9 +10,8 @@
 
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'journals']"/>
 
-    <div>
-      <h1>${message(code:'menu.public.journalLicense')}</h1>
-
+    <div class="ui container">
+      <h1 class="ui header">${message(code:'menu.public.journalLicense')}</h1>
 
       <g:if test="${flash.error}">
         <div>
@@ -31,10 +30,8 @@
           <button type="submit">${message(code:'default.button.search.label', default:'Search')}</button>
         </div>
       </g:form>
-    </div>
 
     <g:if test="${comparisonMap}">
-      <div>
         <div class="onix-matrix-wrapper">
 
           <table class="onix-matrix">
@@ -123,7 +120,7 @@
               </tbody>
             </table>
           </div>
-        </div>
+
         <div id="onix-modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -150,7 +147,8 @@
             );
           });
         </r:script>
-      </div>
+
     </g:if>
+  </div>
   </body>
 </html>

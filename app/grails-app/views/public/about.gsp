@@ -6,22 +6,20 @@
 </head>
 
 <body class="public">
-<g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
+    <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
-<div>
-    <h1>${message(code: 'public.nav.about.label', default: 'About LAS:eR')}</h1>
-</div>
+    <div class="ui container">
+        <h1 class="ui header">${message(code: 'public.nav.about.label', default: 'About LAS:eR')}</h1>
 
-<div>
-    <div class="row">
-        <div class="span8">
-            <markdown:renderHtml><g:dbContent key="kbplus.about.text"/></markdown:renderHtml>
-        </div>
+        <div class="row">
+            <div class="span8">
+                <markdown:renderHtml><g:dbContent key="kbplus.about.text"/></markdown:renderHtml>
+            </div>
 
-        <div class="span4">
-            <g:render template="/templates/loginDiv"/>
+            <div class="span4">
+                <g:render template="/templates/loginDiv"/>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>
