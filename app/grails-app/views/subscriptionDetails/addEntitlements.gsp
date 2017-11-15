@@ -7,7 +7,7 @@
   </head>
   <body>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${params.shortcode}">
@@ -20,14 +20,14 @@
       </ul>
     </div>
 
-    <div class="container">
+    <div>
       <h1><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
       <g:render template="nav" contextPath="." />
     </div>
 
     <g:set var="counter" value="${offset+1}" />
 
-    <div class="container">
+    <div>
 
       <dl>
         <dt>${message(code:'subscription.details.availableTitles', default:'Available Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(tipps?.size())),num_tipp_rows])} )

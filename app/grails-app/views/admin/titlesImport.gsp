@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
       <div class="span12">
         <h1>Titles Import - Create/Add Identifiers</h1>
         <p>

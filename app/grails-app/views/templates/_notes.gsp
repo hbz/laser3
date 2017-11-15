@@ -1,4 +1,4 @@
-<laser:card title="license.notes" class="card-grey notes">
+<semui:card title="license.notes" class="card-grey notes">
 <%-- <h5>Notes</h5> --%>
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">
@@ -21,7 +21,7 @@
     <input type="submit" class="ui primary button" value="${message(code:'license.addNewNote', default:'Add New Note')}" data-toggle="modal" href="#modalCreateNote" />
 <%-- <input type="submit" class="ui primary button" value="Add new note" data-toggle="modal" href="#modalCreateNote" /> --%>
   </g:if>
-</laser:card>
+</semui:card>
 
 <g:render template="/templates/addNote" />
 

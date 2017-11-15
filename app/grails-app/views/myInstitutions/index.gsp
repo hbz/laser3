@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
 
       <g:if test="${staticAlerts.size() > 0}">
         <table class="ui celled table">

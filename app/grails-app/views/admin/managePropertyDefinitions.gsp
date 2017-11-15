@@ -11,24 +11,24 @@
 			<semui:crumb message="menu.admin.manageI10n" class="active"/>
 		</semui:breadcrumbs>
 
-		<div class="container">
+		<div>
 			<h1><g:message code="menu.admin.managePropertyDefinitions"/></h1>
 		</div>
 
-		<div class="container">
+		<div>
 			<div class="row">
 				<div class="span12">
-					<laser:card class="card-grey">
+					<semui:card class="card-grey">
 						<input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
 							   data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
-					</laser:card>
+					</semui:card>
 				</div>
 			</div>
 		</div>
 
 		<semui:messages data="${flash}" />
 
-		<div class="container">
+		<div>
 			<div class="row">
 				<div class="span12">
 					<g:each in="${propertyDefinitions}" var="entry">

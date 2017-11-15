@@ -17,7 +17,7 @@
 <body>
 
 <!-- REMOVE; not tested
-<div class="container">
+<div>
     <ul class="breadcrumb">
         <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
@@ -31,19 +31,19 @@
     </semui:breadcrumbs>
 
 <g:if test="${flash.message}">
-    <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
+    <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
 </g:if>
 
 <g:if test="${flash.error}">
-    <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
+    <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
 </g:if>
 
-<div class="container">
+<div>
     <h1>${packageInstance?.name}</h1>
     <g:render template="nav"/>
 </div>
 
-<div class="container">
+<div>
     <g:if test="${formattedHistoryLines?.size() > 0}">
 
       <div class="container alert-warn">

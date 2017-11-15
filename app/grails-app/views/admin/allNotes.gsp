@@ -12,7 +12,7 @@
         <semui:crumb text="All Notes" class="active"/>
     </semui:breadcrumbs>
 
-    <div class="container">
+    <div>
       <table class="ui celled table">
         <tr>
           <th colspan="4">Note attached to</th>

@@ -13,12 +13,12 @@
         </div>
     <p>
         <g:if test="${flash.message}">
-            <div class="container">
+            <div>
                 <bootstrap:alert class="alert-error">${flash.message}</bootstrap:alert>
             </div>
         </g:if>
     </p>
-    <laser:card class="card-grey">
+    <semui:card class="card-grey">
         <form action='${postUrl}' method='POST' id='loginForm' class='cssform' autocomplete='off'>
             <div class="inline-lists">
                 <dl>
@@ -43,7 +43,7 @@
                        value='${message(code: "springSecurity.login.button")}'/>
             </p>
         </form>
-    </laser:card>
+    </semui:card>
     </div>
 </div>
 <r:script type='text/javascript'>

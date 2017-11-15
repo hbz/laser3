@@ -21,7 +21,7 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="container">
+    <div>
       <h2>${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
       <h6>${message(code:'menu.institutions.change_log', default:'Change Log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
       <g:form action="changeLog" controller="dataManager" method="get">

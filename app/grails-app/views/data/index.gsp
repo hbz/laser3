@@ -12,7 +12,7 @@
     </semui:breadcrumbs>
 
 
-    <div class="container">
+    <div>
       <p>
         ${message(code:'laser', default:'LAS:eR')} data explorer. Use the links above to navigate the data items imported by the ${message(code:'laser', default:'LAS:eR')} import process and validate the data.
       </p>

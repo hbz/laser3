@@ -27,19 +27,19 @@
 
 
     <g:if test="${flash.message}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </div>
     </g:if>
 
     <g:if test="${flash.error}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
 
-    <div class="container">
-      <h1>${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
+    <div>
+      <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
      <ul class="nav nav-pills">
        <li class="active"><g:link controller="myInstitutions" 
@@ -84,7 +84,7 @@
         </div>
     </div>
 
-      <div class="container">
+      <div>
           <div class="well license-options">
               <input type="submit" name="delete-license" value="${message(code:'license.delete_selected.label', default:'Delete Selected')}" class="btn btn-danger delete-license" />
           </div>

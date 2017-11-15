@@ -1,6 +1,6 @@
 hasManyThrough template
 
-<div class="container">
+<div>
   <div class="row">
     <div class="span12">
       <table class="ui celled table">
@@ -23,7 +23,7 @@ hasManyThrough template
         Add
       </a>
       <div id="hmtControls" class="collapse in hmtControlsBlock">
-        <div class="container">
+        <div>
           <div class="row">
             <div class="span6">
               SearchProp : <input type="text" name="sp1"/>

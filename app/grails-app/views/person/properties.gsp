@@ -11,12 +11,12 @@
 </head>
 <body>
 
-<div class="container">
+<div>
     <h1>${personInstance.first_name} ${personInstance.middle_name} ${personInstance.last_name}</h1>
     <g:render template="nav" contextPath="." />
 </div>
 
-<div class="container">
+<div>
     <g:if test="${flash.message}">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
     </g:if>

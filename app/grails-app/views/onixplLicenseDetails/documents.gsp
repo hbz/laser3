@@ -7,7 +7,7 @@
 
 <body>
 
-<div class="container">
+<div>
     <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
         <g:if test="${onixplLicense.license.licensee}">
@@ -27,7 +27,7 @@
     </ul>
 </div>
 
-<div class="container">
+<div>
     <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
                                                                                                      style="padding-top: 5px;">${onixplLicense.license.reference}</span>
     </h1>
@@ -36,7 +36,7 @@
 
 </div>
 
-<div class="container">
+<div>
     <g:form id="delete_doc_form" url="[controller: 'licenseDetails', action: 'deleteDocuments']" method="post">
         <div class="well hide license-documents-options">
             <button class="ui negative button" id="delete-doc">Delete Selected Documents</button>&nbsp;

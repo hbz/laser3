@@ -13,19 +13,19 @@
       </semui:breadcrumbs>
 
     <g:if test="${flash.message}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </div>
     </g:if>
 
     <g:if test="${flash.error}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
 
 
-    <div class="container">
+    <div>
       <div class="row">
         <div class="span8">
           <table class="ui celled table">
@@ -50,7 +50,7 @@
           </table>
         </div>
         <div class="span4">
-            <laser:card class="card-grey">
+            <semui:card class="card-grey">
           <g:form action="newContentItem">
             <dl>
               <dt>New Content Item Key</dt>
@@ -73,7 +73,7 @@
             </dl>
             <input type="submit" value="Create" class="ui primary button"/>
           </g:form>
-            </laser:card>
+            </semui:card>
         </div>
       </div>
     </div>

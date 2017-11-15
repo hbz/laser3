@@ -11,10 +11,10 @@
         <semui:crumb message="subscription.details.label" class="active"/>
     </semui:breadcrumbs>
 
-    <div class="container">
+    <div>
 
     ${institution?.name} Subscription Taken
-       <h1><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
+       <h1 class="ui header"><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
 
       <ul class="nav nav-pills">
         <li class="active"><g:link controller="myInstitutions" 

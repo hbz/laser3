@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
       <p>
         Admin
       </p>

@@ -11,8 +11,8 @@
         <semui:crumb message="license.copy" class="active" />
     </semui:breadcrumbs>
 
-    <div class="container">
-      <h1>${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
+    <div>
+      <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
       <ul class="nav nav-pills">
        <li><g:link controller="myInstitutions" 
                    action="currentLicenses" 
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-      <div class="container">
+      <div>
         <g:form action="addLicense" params="${params}" method="get" class="form-inline">
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
@@ -52,7 +52,7 @@
         </g:form>
       </div>
 
-      <div class="container">
+      <div>
           <div class="well license-options">
             <g:if test="${is_inst_admin}">
               <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="btn btn-warning" />
@@ -62,13 +62,13 @@
       </div>
 
       <g:if test="${flash.message}">
-        <div class="container">
+        <div>
           <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
         </div>
       </g:if>
 
       <g:if test="${flash.error}">
-        <div class="container">
+        <div>
           <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
         </div>
       </g:if>

@@ -21,7 +21,7 @@
             </li>
         </semui:breadcrumbs>
 
-        <div class="container">
+        <div>
             <div class="row">
                 <div class="span12">
 

@@ -7,18 +7,18 @@
 
 <body>
 
-    <div class="container">
+    <div>
       <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
     </div>
 
-    <div class="container">
+    <div>
         <h1>${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span></h1>
 
 <g:render template="nav" />
 
     </div>
 
-    <div class="container">
+    <div>
         <g:render template="/templates/notes_table" model="${[instance: license, redirect: 'notes']}"/>
 
     </div>

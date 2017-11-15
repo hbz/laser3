@@ -7,7 +7,7 @@
     <title><g:message code="default.import.label" args="[entityName]" /></title>
 </head>
 <body>
-<div class="container">
+<div>
 
     <div class="page-header">
         <g:unless test="${validationResult?.success}">

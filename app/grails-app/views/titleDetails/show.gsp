@@ -8,7 +8,7 @@
 </head>
   <body>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="titleDetails" action="show" id="${ti.id}">${message(code:'title.title.label')} ${ti.title}</g:link> </li>
@@ -21,7 +21,7 @@
       </ul>
     </div>
 
-      <div class="container">
+      <div>
         <div class="row">
           <div class="span12">
 

@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<div class="container">
+<div>
     <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="licenseDetails" action="index" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
@@ -25,11 +25,11 @@
 </ul>
     </div>
 
-<div class="container">
+<div>
     <h1>ONIX-PL License : ${onixplLicense?.title}</h1>
 </div>
 
-<div class="container">
+<div>
     <div class="row">
         <div class="span8">
 

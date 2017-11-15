@@ -10,12 +10,12 @@
 
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'journals']"/>
 
-    <div class="container">
+    <div>
       <h1>${message(code:'menu.public.journalLicense')}</h1>
 
 
       <g:if test="${flash.error}">
-        <div class="container">
+        <div>
           <bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert>
         </div>
       </g:if>
@@ -34,7 +34,7 @@
     </div>
 
     <g:if test="${comparisonMap}">
-      <div class="container">
+      <div>
         <div class="onix-matrix-wrapper">
 
           <table class="onix-matrix">

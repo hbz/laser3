@@ -15,24 +15,22 @@
         <semui:crumb message="menu.institutions.manage_private_properties" class="active" />
     </semui:breadcrumbs>
 
+    <h1 class="ui header">${institution?.name} - ${message(code: 'menu.institutions.manage_private_properties')}</h1>
+
     <semui:messages data="${flash}" />
 
-    <div class="container">
-        <h1>${institution?.name} - ${message(code: 'menu.institutions.manage_private_properties')}</h1>
-    </div>
-
-    <div class="container">
+    <div>
         <div class="row">
             <div class="span12">
-                <laser:card class="card-grey">
+                <semui:card class="card-grey">
                     <input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
                            data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
-                </laser:card>
+                </semui:card>
             </div>
         </div>
     </div>
 
-    <div class="container">
+    <div>
         <div class="row">
             <div class="span12">
 

@@ -50,7 +50,7 @@
 
       <div class="navbar navbar-footer">
           <div class="navbar-inner">
-              <div class="container">
+              <div>
                   <div>
                       <ul class="footer-sublinks nav">
 <!--                          <li><a href="${createLink(uri: '/terms-and-conditions')}">${message(code:'default.termsAndCond.label', default:'Terms & Conditions')}</a></li>

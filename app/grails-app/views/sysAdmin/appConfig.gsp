@@ -15,7 +15,7 @@
         <semui:crumb text="Application Config" class="active"/>
     </semui:breadcrumbs>
 
-<div class="container">
+<div>
 
     <h6>${message(code:'sys.properties')}</h6>
 

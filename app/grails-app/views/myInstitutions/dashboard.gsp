@@ -51,20 +51,10 @@
       </div>
     </div>
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+  <semui:messages data="${flash}" />
 
     <g:if test="${staticAlerts.size() > 0}">
-      <div class="container">
+      <div>
         <table class="ui celled table">
           <tr><th>${message(code:'sysAlert.label', default:'System Alert')}</th></tr>
           <g:each in="${staticAlerts}" var="sa">
@@ -83,7 +73,7 @@
       </div>
     </g:if>
 
-    <div class="container">
+    <div>
       <table class="ui celled table">
           <thead>
               <tr>

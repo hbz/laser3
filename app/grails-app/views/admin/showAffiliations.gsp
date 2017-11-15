@@ -14,7 +14,7 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="container">
+    <div>
         <h2>Affiliations</h2>
         <table class="ui celled striped table">
           <tr>

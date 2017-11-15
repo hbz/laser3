@@ -7,11 +7,11 @@
 
 <body>
 
-    <div class="container">
+    <div>
       <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
     </div>
 
-    <div class="container">
+    <div>
         <h1>${license.licensee?.name} ${license.type?.getI10n("value")} ${message(code:'license.label', default:'License')} : ${license.reference}</h1>
 
         <g:render template="nav" />
@@ -19,7 +19,7 @@
 
 
 
-    <div class="container">
+    <div>
       <h2>${message(code:'license.additionalInfo.perms', default:'Permissions for user')}</h2>
       <table  class="ui celled striped table">
       </table>

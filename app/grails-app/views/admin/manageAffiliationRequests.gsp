@@ -14,7 +14,7 @@
 
       <semui:messages data="${flash}" />
 
-    <div class="container">
+    <div>
 
         <h2>Manage Pending Membership Requests</h2>
 

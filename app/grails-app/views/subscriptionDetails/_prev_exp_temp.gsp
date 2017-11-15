@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div class="container">
+<div>
     <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${params.shortcode}">
@@ -19,19 +19,19 @@
 </div>
 
 <g:if test="${flash.message}">
-    <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
+    <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
 </g:if>
 
 <g:if test="${flash.error}">
-    <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
+    <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
 </g:if>
 
-<div class="container">
+<div>
     <h1>${subscriptionInstance.name}</h1>
     <g:render template="nav"  />
 </div>
 
-<div class="container">
+<div>
 
     <dl>
         <g:if test="${num_ie_rows > max}">

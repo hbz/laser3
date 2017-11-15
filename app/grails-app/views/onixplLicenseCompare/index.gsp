@@ -9,7 +9,7 @@
 </head>
 
 <body>
-	<div class="container">
+	<div>
 		<ul class="breadcrumb">
 			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
 				class="divider">/</span></li>
@@ -17,11 +17,11 @@
 		</ul>
 	</div>
 
-	<div class="container">
+	<div>
 		<h1>${message(code:'menu.institutions.comp_onix')}</h1>
 	</div>
 
-	<div class="container">
+	<div>
 		<div class="row">
 			<div class="span8">
 				<g:form id="compare" name="compare" action="matrix" method="post">

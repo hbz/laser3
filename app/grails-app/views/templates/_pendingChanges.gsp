@@ -1,5 +1,5 @@
  <g:if test="${processingpc}">
-  <div class="container"><bootstrap:alert class="alert-warning"><g:message code="pendingchange.inprogress"/></bootstrap:alert></div>
+  <div><bootstrap:alert class="alert-warning"><g:message code="pendingchange.inprogress"/></bootstrap:alert></div>
 </g:if>
 <g:if test="${pendingChanges?.size() > 0}">
   <div class="container alert-warn">

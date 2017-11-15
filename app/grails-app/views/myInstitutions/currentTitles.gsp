@@ -37,19 +37,19 @@
     </semui:breadcrumbs>
 
     <g:if test="${flash.message}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </div>
     </g:if>
 
     <g:if test="${flash.error}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
-    <div class="container">
+    <div>
       <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
-        <h1>${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
+        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
         <g:set var="filterSub" value="${params.filterSub?params.list('filterSub'):"all"}" />
         <g:set var="filterPvd" value="${params.filterPvd?params.list('filterPvd'):"all"}" />
         <g:set var="filterHostPlat" value="${params.filterHostPlat?params.list('filterHostPlat'):"all"}" />
@@ -120,7 +120,7 @@
       <br/>
     </div>
 
-    <div class="container">
+    <div>
       <div>
         <span>${message(code:'title.plural', default:'Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(titles.size())),num_ti_rows])} )</span>
         <div>

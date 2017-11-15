@@ -9,24 +9,24 @@
 
 <body>
 
-    <div class="container">
+    <div>
       <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
     </div>
     
 <g:if test="${flash.message}">
-    <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
+    <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
 </g:if>
 
 <g:if test="${flash.error}">
-    <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
+    <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
 </g:if>
 
-<div class="container">
+<div>
     <h1>${license?.reference}</h1>
     <g:render template="nav"/>
 </div>
 
-<div class="container">
+<div>
 <g:if test="${consortia}">
 <h3> Institutions for ${consortia.name} consortia </h3>
 <br><p> The following list displays all members of ${consortia.name} consortia. To create child licenses

@@ -7,7 +7,7 @@
   </head>
  <body>
 
-<div class="container">
+<div>
 <div class="row">
 	<h2>${message(code:'package.compare', default:'Package Comparison')}</h2>
 	<br/>

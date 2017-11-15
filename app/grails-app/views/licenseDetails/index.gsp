@@ -11,11 +11,11 @@
 
   <body>
 
-    <div class="container">
+    <div>
       <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
     </div>
 
-    <div class="container">
+    <div>
       <h1>
           ${license.licensee?.name}
           ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
@@ -23,7 +23,7 @@
       </h1>
       <g:render template="nav" />
     </div>
-    <div class="container">
+    <div>
 
     <g:if test="${flash.message}">
       <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
@@ -32,7 +32,7 @@
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':license]}"/>
 
-    <div class="container">
+    <div>
             <div class="row">
                 <div class="span12">
                     <h6>${message(code:'license.properties')}</h6>
@@ -262,7 +262,7 @@
                 </div>
               </div>
               <div class="span4">
-                <laser:card title="license.actions" class="card-grey">
+                <semui:card title="license.actions" class="card-grey">
 
             <g:if test="${canCopyOrgs}">
                  
@@ -287,7 +287,7 @@
                   <g:else>
                     ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
                   </g:else>
-                 </laser:card>
+                 </semui:card>
                 <g:render template="/templates/documents" model="${[ ownobj:license, owntp:'license']}" />
                 <g:render template="/templates/notes"  model="${[ ownobj:license, owntp:'license']}" />
               </div>

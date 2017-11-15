@@ -13,7 +13,7 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="container">
+    <div>
       <h2>${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h2>
     </div>
 

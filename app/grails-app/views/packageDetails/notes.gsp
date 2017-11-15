@@ -16,7 +16,7 @@
 
 <body>
 
-<div class="container">
+<div>
     <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="index">All Packages</g:link><span class="divider">/</span></li>
@@ -51,19 +51,19 @@
     </ul>
 </div>
 <g:if test="${flash.message}">
-    <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
+    <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
 </g:if>
 
 <g:if test="${flash.error}">
-    <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
+    <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
 </g:if>
 
-<div class="container">
+<div>
     <h1>${packageInstance?.name}</h1>
     <g:render template="nav"/>
 </div>
 
-<div class="container">
+<div>
     <g:render template="/templates/notes_table" model="${[instance: packageInstance, redirect: 'notes']}"/>
 
 </div>

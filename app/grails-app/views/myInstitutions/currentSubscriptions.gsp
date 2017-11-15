@@ -17,25 +17,25 @@
   </semui:breadcrumbs>
 
    <g:if test="${flash.message}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </div>
     </g:if>
 
     <g:if test="${flash.error}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
 
-    <div class="container">
+    <div>
 
-      <h1>${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
+      <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
       <g:render template="subsNav" contextPath="." />
     </div>
 
-    <div class="container">
+    <div>
       <div class="well">
       <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
 

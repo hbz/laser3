@@ -362,7 +362,7 @@
 
    <sec:ifLoggedIn>
      <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
-       <div class="container">
+       <div>
          <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
             Your display name</g:link> as soon as possible.
          </bootstrap:alert>
@@ -371,7 +371,10 @@
    </sec:ifLoggedIn>
 
 
-  <g:layoutBody/>
+    <div class="ui main container">
+        <g:layoutBody/>
+    </div><!-- .main -->
+
 
   <div id="Footer">
 

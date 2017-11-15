@@ -8,14 +8,14 @@
   <body>
 
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
         <li><g:link controller="spotlight" action="addPage">Add Spotlight Page</g:link></li>
       </ul>
     </div>
 
-   <div class="container">
+   <div>
 
     <g:if test="${flash.error}">
         <bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert>

@@ -8,7 +8,7 @@
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="container">
+		<div>
 		<div class="row-fluid">
 			
 			<div class="span3">

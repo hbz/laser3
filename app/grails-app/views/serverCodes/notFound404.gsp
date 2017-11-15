@@ -7,17 +7,17 @@
     <body>
         <semui:messages data="${flash}" />
 
-        <div class="container">
-            <laser:card>
+        <div>
+            <semui:card>
                 <h1>404</h1>
                 <h3>${message(code:'serverCode.notFound.message1')}</h3>
 
                 <g:if test="${! flash.error}">
-                    <div class="container">
+                    <div>
                         <p>${message(code:'serverCode.notFound.message2')}</p>
                     </div>
                 </g:if>
-            </laser:card>
+            </semui:card>
         </div>
     </body>
 </html>

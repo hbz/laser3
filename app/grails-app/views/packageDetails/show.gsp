@@ -9,7 +9,7 @@
  <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="index">${message(code: 'package.show.all')}</g:link><span class="divider">/</span></li>
@@ -45,7 +45,7 @@
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':packageInstance]}"/>
 
 
-      <div class="container">
+      <div>
         <g:if test="${params.asAt}"><h1>${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
         <div class="page-header">
           <div>
@@ -82,7 +82,7 @@
         </bootstrap:alert>
         </g:hasErrors>
 
-    <div class="container">
+    <div>
       <div class="row">
         <div class="span8">
             <h6>
@@ -254,7 +254,7 @@
       </div>
     </div>
 
-    <div class="container">
+    <div>
       <br/>
       <p>
         <span class="pull-right">

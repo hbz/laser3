@@ -7,7 +7,7 @@
   </head>
   <body>
 
-    <div class="container">
+    <div>
       <div class="page-header">
         <h1><g:message code="globalDataSync.label" /></h1>
       </div>
@@ -23,7 +23,7 @@
       </g:form><br/>
     </div>
 
-    <div class="container">
+    <div>
         
       <g:if test="${items != null}">
         <div class="container" style="text-align:center">

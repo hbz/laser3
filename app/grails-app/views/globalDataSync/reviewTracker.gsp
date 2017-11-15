@@ -7,7 +7,7 @@
   </head>
   <body>
 
-    <div class="container">
+    <div>
       <div class="page-header">
         <h1>Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
       </div>

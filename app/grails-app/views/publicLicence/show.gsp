@@ -11,7 +11,7 @@
   <body>
   <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicExport']"/>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="publicLicense" action="index">All Licenses</g:link> <span class="divider">/</span> </li>
 
@@ -32,12 +32,12 @@
       </ul>
     </div>
 
-    <div class="container">
+    <div>
       <h1>${license.licensee?.name} ${license.type?.value} License : <g:xEditable owner="${license}" field="reference" id="reference"/></h1>
     </div>
 
 
-    <div class="container">
+    <div>
             <div class="row">
                 <h6>${message(code:'license.properties')}</h6>
 

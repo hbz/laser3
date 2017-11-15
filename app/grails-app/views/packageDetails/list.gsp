@@ -9,7 +9,7 @@
   </head>
   <body>
 
-    <div class="container">
+    <div>
       <div class="page-header">
         <h1>${message(code:'package.search')}</h1>
       </div>
@@ -50,7 +50,7 @@
       </g:form><br/>
     </div>
 
-    <div class="container">
+    <div>
         
       <table class="ui celled striped table">
         <thead>

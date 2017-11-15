@@ -37,13 +37,13 @@
         </div>
 
     <g:if test="${flash.message}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </div>
     </g:if>
 
     <g:if test="${flash.error}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>

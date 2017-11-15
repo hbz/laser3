@@ -8,11 +8,11 @@
 <body class="public">
 <g:render template="public_navbar" contextPath="/templates" model="['active': 'signup']"/>
 
-<div class="container">
+<div>
     <h1>${message(code: 'public.signUp.label', default: 'How can institutions get involved?')}</h1>
 </div>
 
-<div class="container">
+<div>
     <div class="row">
         <div class="span8">
             <markdown:renderHtml><g:dbContent key="kbplus.signup.text"/></markdown:renderHtml>

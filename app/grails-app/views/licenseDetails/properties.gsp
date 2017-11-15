@@ -11,11 +11,11 @@
 </head>
 <body>
 
-    <div class="container">
+    <div>
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
     </div>
 
-    <div class="container">
+    <div>
         <h1>
             ${license.licensee?.name}
             ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
@@ -24,7 +24,7 @@
         <g:render template="nav" />
     </div>
 
-<div class="container">
+<div>
     <g:if test="${flash.message}">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
     </g:if>

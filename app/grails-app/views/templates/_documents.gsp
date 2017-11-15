@@ -1,4 +1,4 @@
-<laser:card title="license.documents" class="card-grey documents">
+<semui:card title="license.documents" class="card-grey documents">
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">
       <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
@@ -18,6 +18,6 @@
     <input type="submit" class="ui primary button" value="${message(code:'license.addNewDocument', default: 'Add new document')}" data-toggle="modal" href="#modalCreateDocument" />
 <%-- <input type="submit" class="ui primary button" value="Add new document" data-toggle="modal" href="#modalCreateDocument" /> --%>
   </g:if>
-</laser:card>
+</semui:card>
 <g:render template="/templates/addDocument"  />
 

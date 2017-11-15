@@ -8,7 +8,7 @@
 
   <body>
     
-    <div class="container">
+    <div>
        <div class="span10">
 
       <ul class="breadcrumb">
@@ -19,7 +19,7 @@
     </div>
   
     
-  <div class="container">
+  <div>
       <g:if test="${flash.message}">
       <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </g:if>

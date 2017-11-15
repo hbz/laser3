@@ -14,7 +14,7 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="container">
+    <div>
       <h2>${message(code:'announcement.create.label', default:'Create announcement')}</h2>
       <g:form action="createAnnouncement">
         ${message(code:'announcement.subject.label', default:'Subject')}: <input type="text" name="subjectTxt" class="span12" value="${params.as}"/><br/>
@@ -23,7 +23,7 @@
       </g:form>
     </div>
 
-    <div class="container">
+    <div>
       <h2>${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
       <table class="table">
         <g:each in="${recentAnnouncements}" var="ra">

@@ -45,7 +45,7 @@
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container">
+        <div>
             <g:link controller="home" action="index" class="brand">LAS:eR</g:link>
             <sec:ifLoggedIn>
                 <ul class="nav">
@@ -420,7 +420,7 @@
    <div class="navbar-push"></div>
    <sec:ifLoggedIn>
      <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
-       <div class="container">
+       <div>
          <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
             Your display name</g:link> as soon as possible.
          </bootstrap:alert>

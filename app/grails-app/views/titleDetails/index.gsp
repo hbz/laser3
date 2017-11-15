@@ -11,7 +11,7 @@
       <semui:crumb message="menu.institutions.all_titles" class="active" />
     </semui:breadcrumbs>
 
-    <div class="container">
+    <div>
       <div class="well">
       <g:form action="index" role="form" class="form-inline" method="get" params="${params}">
 
@@ -28,7 +28,7 @@
       </div>
     </div>
     
-    <div class="container">
+    <div>
       <div class="row">
 
         <div class="span12">

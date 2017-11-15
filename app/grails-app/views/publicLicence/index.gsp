@@ -16,12 +16,12 @@
   <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicLicense']"/>
 
 
-  <div class="container">
+  <div>
       <h1>Public Licenses</h1>
   </div>
 
 
-  <div class="container">
+  <div>
 
 
     <div id="resultsarea">

@@ -7,7 +7,7 @@
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
   <body>
-      <div class="container">
+      <div>
 
         <div class="page-header">
           <h1>Subscription Offered - Manual Upload</h1>

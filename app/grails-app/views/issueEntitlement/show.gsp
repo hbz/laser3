@@ -8,7 +8,7 @@
 </head>
 <body>
 
-   <div class="container">
+   <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${issueEntitlementInstance?.subscription.subscriber}">
@@ -22,7 +22,7 @@
       </ul>
     </div>
 
-    <div class="container">
+    <div>
 
         <div class="page-header">
             <h1>${message(code:'issueEntitlement.for_title.label', default:'Issue Entitlements for')} "${issueEntitlementInstance?.tipp.title.title}"</h1>

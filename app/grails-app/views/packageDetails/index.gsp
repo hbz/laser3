@@ -51,7 +51,7 @@
     <semui:crumb message="package.show.all" class="active"/>
   </semui:breadcrumbs>
 
-    <div class="container">
+    <div>
       <g:form action="index" method="get" params="${params}">
       <input type="hidden" name="offset" value="${params.offset}"/>
 

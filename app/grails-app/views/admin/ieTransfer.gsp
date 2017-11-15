@@ -5,7 +5,7 @@
     <title>${message(code:'laser', default:'LAS:eR')} Admin::IE Transfer</title>
   </head>
   <body>
-  	<div class="container">
+  	<div>
   	<h1>IE Transfer</h1>
 
         <g:form action="ieTransfer" method="get">
@@ -26,7 +26,7 @@
               </dd>
             </div>
  			<g:if test="${sourceTIPPObj && targetTIPPObj}">
- 			<div class="container">
+ 			<div>
 
 				  <table class="ui celled table">
 			      <thead>

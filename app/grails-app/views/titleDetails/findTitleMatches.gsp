@@ -6,7 +6,7 @@
     <title><g:message code="default.edit.label" args="[entityName ?: message(code:'title.label')]" /></title>
   </head>
   <body>
-      <div class="container">
+      <div>
         <div class="row">
           <div class="span12">
 

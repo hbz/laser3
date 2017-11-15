@@ -7,7 +7,7 @@
 
   <body>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${params.shortcode}">
@@ -20,13 +20,13 @@
       </ul>
     </div>
 
-    <div class="container">
+    <div>
       <h1>${subscriptionInstance?.name} - ${message(code:'subscription.details.user.permissions', default:'Permissions against Current User')}</h1>
       <g:render template="nav" contextPath="." />
     </div>
 
 
-   <div class="container">
+   <div>
 
       <h2>${message(code:'subscription.details.additionalInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
       <table  class="ui celled striped table">

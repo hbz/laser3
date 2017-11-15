@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
       ${message(code:'myinst.selectPackages.note', args:[subscriptionInstance,titles_in_this_sub])}
       <ul><g:each in="${subscriptionInstance.packages}" var="p">
         <li>${p?.pkg?.name}</li>

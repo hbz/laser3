@@ -12,7 +12,7 @@
     </semui:breadcrumbs>
 
 
-  <div class="container">
+  <div>
    <div class="span8">
 
 

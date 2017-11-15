@@ -7,7 +7,7 @@
 
 <body>
 
-    <div class="container">
+    <div>
         <ul class="breadcrumb">
             <li> <g:link controller="home" action="index">${message(code:'default.home', default:'Home')}</g:link> <span class="divider">/</span> </li>
             <g:if test="${params.shortcode}">
@@ -17,12 +17,12 @@
         </ul>
     </div>
 
-    <div class="container">
+    <div>
         <h1>${subscription.name}</h1>
         <g:render template="nav" contextPath="." />
     </div>
 
-    <div class="container">
+    <div>
       <h3>${message(code:'subscription.details.edit_history.label', default:'Subscription history')}</h3>
       <table  class="ui celled striped table">
         <tr>

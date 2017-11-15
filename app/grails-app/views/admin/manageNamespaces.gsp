@@ -11,7 +11,7 @@
 			<semui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
 		</semui:breadcrumbs>
 
-		<div class="container">
+		<div>
 			<div class="page-header">
 				<h1><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
 			</div>
@@ -34,7 +34,7 @@
 			</g:hasErrors>
 		</div>
 
-		<div class="container">
+		<div>
 			<div class="row">
 				<div class="span8">
 					<table class="ui celled striped table">
@@ -66,7 +66,7 @@
 				</div><!--.span8-->
 
 				<div class="span4">
-					<laser:card title="identifier.namespace.add.label" class="card-grey">
+					<semui:card title="identifier.namespace.add.label" class="card-grey">
 						<fieldset>
 							<g:form class="form-horizontal" action="manageNamespaces">
 
@@ -128,7 +128,7 @@
 							</g:form>
 						</fieldset>
 
-					</laser:card>
+					</semui:card>
 				</div><!--.span4-->
 			</div><!--.row-->
 		</div>

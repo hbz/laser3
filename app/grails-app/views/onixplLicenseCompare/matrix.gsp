@@ -13,10 +13,10 @@
 		<semui:crumb message="menu.institutions.comp_onix" class="active"/>
 	</semui:breadcrumbs>
 
-	<div class="container">
+	<div>
 		<h1>${message(code:'menu.institutions.comp_onix')}</h1>
 	</div>
-	<div class="container">
+	<div>
 		<g:if test="${flash.message}">
 			<bootstrap:alert class="alert-info">
 				${flash.message}

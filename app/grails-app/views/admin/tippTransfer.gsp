@@ -5,7 +5,7 @@
     <title>${message(code:'laser', default:'LAS:eR')} Admin::TIPP Transfer</title>
   </head>
   <body>
-    <div class="container">
+    <div>
     <h1>TIPP Transfer</h1>
 
         <g:each in="${error}" var="err">

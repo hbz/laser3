@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
       <div class="span12">
         <h1>Orgs Import</h1>
         <g:form action="orgsImport" method="post" enctype="multipart/form-data">

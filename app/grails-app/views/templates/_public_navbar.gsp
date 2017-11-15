@@ -1,6 +1,6 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
-        <div class="container">
+        <div>
         	<img class="brand-img" alt="LAS:eR" src="${resource(dir: 'images', file: 'laser-logo-1.png')}"/>
             <ul class="nav">
                 <li id="home" <g:if test="${active.equals("home")}"> class="active" </g:if>>

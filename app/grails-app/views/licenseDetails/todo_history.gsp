@@ -7,18 +7,18 @@
 
 <body>
 
-    <div class="container">
+    <div>
       <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
     </div>
 
-    <div class="container">
+    <div>
         <h1>${license.licensee?.name} ${license.type?.value} License : ${license.reference}</h1>
 
 <g:render template="nav" />
 
     </div>
 
-    <div class="container">
+    <div>
       <h3>${message(code:'license.nav.todo_history', default:'ToDo History')}</h3>
       <table  class="ui celled striped table">
         <tr>

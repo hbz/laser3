@@ -12,7 +12,7 @@
       <semui:crumb text="System Settings" class="active"/>
     </semui:breadcrumbs>
 
-    <div class="container">
+    <div>
       <table class="ui celled table">
         <thead>
           <tr>

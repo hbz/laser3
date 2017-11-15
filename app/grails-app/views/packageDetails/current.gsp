@@ -9,7 +9,7 @@
   <body>
 
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
         <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
@@ -28,7 +28,7 @@
     </div>
 
 
-      <div class="container">
+      <div>
 
         <div class="page-header">
           <div>
@@ -66,7 +66,7 @@
         </bootstrap:alert>
         </g:hasErrors>
 
-    <div class="container">
+    <div>
 
         <dl>
           <dt>${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])} -

@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
       <g:form action="importSubscriptionWorksheet" method="post" enctype="multipart/form-data" params="${params}">
         <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/>
         <button type="submit" class="ui primary button"><g:message code="subscription.upload.worksheet" default="Upload New Subscription Taken Worksheet"/></button>
@@ -14,7 +14,7 @@
     </div>
 
     <g:if test="${(errors && (errors.size() > 0))}">
-      <div class="container">
+      <div>
         <ul>
           <g:each in="${errors}" var="e">
             <li>${e}</li>
@@ -24,13 +24,13 @@
     </g:if>
 
     <g:if test="${flash.message}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </div>
     </g:if>
 
     <g:if test="${flash.error}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
@@ -40,7 +40,7 @@
 
     <g:if test="${1==1}">
       <g:form  action="processSubscriptionImport" method="post" params="${params}" enctype="multipart/form-data" >
-        <div class="container"> 
+        <div>
         <g:if test="${subOrg!=null}">
           ${message(code:'subscription.import.upload.note', default:'Import will create a subscription for')} ${subOrg.name}
           <input type="hidden" name="orgId" value="${subOrg.id}"/>

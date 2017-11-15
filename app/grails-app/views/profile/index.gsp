@@ -14,7 +14,7 @@
 
         <semui:messages data="${flash}" />
 
-        <div class="ui container">
+        <div>
             <div class="ui two column grid">
 
                 <div class="column wide eight">
@@ -44,7 +44,7 @@
                             </select>
                         </div>
 
-                  <div class="alert alert-info" style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
+                        <div class="alert alert-info" style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
 
                         <div class="field">
                             <label></label>
@@ -78,10 +78,7 @@
                     </g:form>
                 </div><!-- .column -->
 
-        </div><!-- .row -->
-    </div><!-- .container -->
-
-                  <div class="column wide eight">
+                <div class="column wide eight">
                     <div class="ui form">
                       <h4 class="ui dividing header">
                           ${message(code: 'profile.preferences', default:'Preferences')}
@@ -107,31 +104,32 @@
                 <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
                     <div class="column wide eight">
                         <div class="ui form">
-                        <h4 class="ui dividing header">
-                            ${message(code: 'api.label', default:'API')}
-                        </h4>
+                            <h4 class="ui dividing header">
+                                ${message(code: 'api.label', default:'API')}
+                            </h4>
 
-                        <div class="field">
-                            <label>${message(code: 'api.apikey.label', default:'API-Key')}</label>
-                            <input type="text" readonly="readonly" value="${user.apikey}">
-                        </div>
+                            <div class="field">
+                                <label>${message(code: 'api.apikey.label', default:'API-Key')}</label>
+                                <input type="text" readonly="readonly" value="${user.apikey}">
+                            </div>
 
-                        <div class="field">
-                          <label>${message(code: 'api.apisecret.label', default:'API-Secret')}</label>
-                          <input type="text" readonly="readonly" value="${user.apisecret}">
-                        </div>
+                            <div class="field">
+                              <label>${message(code: 'api.apisecret.label', default:'API-Secret')}</label>
+                              <input type="text" readonly="readonly" value="${user.apisecret}">
+                            </div>
 
-                        <div class="field">
-                            <label></label>
-                            <g:link class="ui button" controller="api" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
-                        </div>
+                            <div class="field">
+                                <label></label>
+                                <g:link class="ui button" controller="api" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
+                            </div>
+                        </div><!-- form -->
                     </div><!-- .column -->
                 </g:if>
 
         </div><!-- .grid -->
-    </div><!-- .container -->
+    </div><!-- -->
 
-        <div class="ui container">
+        <div>
             <div class="ui one column grid">
                 <!--<div class="column wide sixteen">
                     <h4 class="ui dividing header">
@@ -207,11 +205,11 @@
             </div><!--.column-->
 
             </div><!-- .grid -->
-    </div><!-- .container -->
+        </div><!-- -->
 
     <g:if test="${grailsApplication.config.feature.notifications}">
 
-        <div class="ui container">
+        <div>
             <div class="ui one column grid">
                 <div class="column wide sixteen">
                     <h4 class="ui dividing header">${message(code: 'profile.misc', default:'Misc')}</h4>
@@ -306,7 +304,7 @@
 
 
             </div><!-- .grid -->
-        </div><!-- .container -->
+        </div><!-- -->
 
     </g:if>
   </body>

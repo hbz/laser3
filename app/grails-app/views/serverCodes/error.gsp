@@ -6,11 +6,11 @@
 		<link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css">
 	</head>
 	<body>
-        <div class="container">
+        <div>
             <h1>${message(code:'serverCode.error.message2')}</h1>
         </div>
 
-        <div class="container">
+        <div>
 		    <g:renderException exception="${exception}" />
         </div>
 	</body>

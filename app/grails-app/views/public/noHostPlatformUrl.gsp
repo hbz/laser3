@@ -8,11 +8,11 @@
 <body class="public">
 <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
-<div class="container">
+<div>
     <h1>No Host Platform URL</h1>
 </div>
 
-<div class="container">
+<div>
     <div class="row">
         <div class="span8">
             <markdown:renderHtml><g:dbContent key="kbplus.noHostPlatformURL"/></markdown:renderHtml>

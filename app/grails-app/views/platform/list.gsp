@@ -8,7 +8,7 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="container">
+		<div>
 			<div class="span12">
 				
 				<div class="page-header">

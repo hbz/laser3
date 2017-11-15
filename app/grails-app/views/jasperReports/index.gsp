@@ -14,7 +14,7 @@
 
 <body>
 
-<div class="container">
+<div>
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>

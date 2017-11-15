@@ -7,7 +7,7 @@
 
   <body>
 
-    <div class="container">
+    <div>
         <ul class="breadcrumb">
         <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller='admin' action='index'>Admin</g:link> <span class="divider">/</span> </li>
@@ -18,7 +18,7 @@
 
 
 
-    <div class="container">
+    <div>
 
       <g:if test="${flash.error}">
          <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>

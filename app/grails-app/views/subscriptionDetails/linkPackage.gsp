@@ -44,7 +44,7 @@
 
   <body>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${params.shortcode}">
@@ -57,12 +57,12 @@
       </ul>
     </div>
 
-    <div class="container">
+    <div>
        <h1>${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
        <g:render template="nav" contextPath="." />
     </div>
 
-    <div class="container">
+    <div>
       <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}">
       <input type="hidden" name="offset" value="${params.offset}"/>
       <input type="hidden" name="id" value="${params.id}"/>

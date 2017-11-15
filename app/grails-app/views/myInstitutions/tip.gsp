@@ -6,9 +6,9 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link>
           <span class="divider">/</span> </li>
@@ -23,16 +23,10 @@
     </div>
 
     </div>
-      <div class="container">
+      <div>
 
 
-      <g:if test="${flash.message}">
-      <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-
-        <g:if test="${flash.error}">
-        <bootstrap:alert class="alert alert-error">${flash.error}</bootstrap:alert>
-      </g:if>
+        <semui:messages data="${flash}" />
 
       <div class="row">
         <div class="span12">

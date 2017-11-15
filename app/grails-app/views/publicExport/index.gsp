@@ -55,11 +55,11 @@
   <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicExport']"/>
 
 
-  <div class="container">
+  <div>
       <h1>${message(code:'public.nav.exports.label', default:'Exports')}</h1>
     </div>
 
-    <div class="container">
+    <div>
       <div class="row">
         <div class="span12">
 
@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <div class="container">
+    <div>
       <div class="row">
         <div class="span12">
           <div class="well">
@@ -94,7 +94,7 @@
 
 
 
-    <div class="container">
+    <div>
       <g:form action="index" method="get" params="${params}">
       <input type="hidden" name="offset" value="${params.offset}"/>
       <g:if test="${params.startYear && params.endYear}">

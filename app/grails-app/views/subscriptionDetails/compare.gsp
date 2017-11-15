@@ -8,7 +8,7 @@
 	</head>
 
 	<body>
-		<div class="container">
+		<div>
 			<div class="row">
 				<g:if test="${institutionName}">
 				<h2> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>

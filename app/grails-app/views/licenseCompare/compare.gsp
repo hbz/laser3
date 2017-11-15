@@ -9,7 +9,7 @@
 <r:require modules="onixMatrix" />
 
 
-  <div class="container">
+  <div>
     <ul class="breadcrumb">
       <li><g:link controller="home" action="index">Home</g:link> <span
         class="divider">/</span></li>
@@ -31,11 +31,11 @@
 
   </div>
 
-  <div class="container">
+  <div>
     <h1>${message(code:'menu.institutions.comp_lic')}</h1>
   </div>
 
-  <div class="container">
+  <div>
 
   <div class="onix-matrix-wrapper">
 

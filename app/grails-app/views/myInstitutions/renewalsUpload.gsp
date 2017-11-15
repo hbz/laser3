@@ -12,7 +12,7 @@
     <semui:crumb message="menu.institutions.imp_renew" class="active" />
   </semui:breadcrumbs>
 
-    <div class="container">
+    <div>
       <g:form action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
         <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/>
         <button type="submit" class="ui primary button">${message(code:'myinst.renewalUpload.upload', default:'Upload Renewals Worksheet')}</button>
@@ -20,7 +20,7 @@
     </div>
 
     <g:if test="${(errors && (errors.size() > 0))}">
-      <div class="container">
+      <div>
         <ul>
           <g:each in="${errors}" var="e">
             <li>${e}</li>
@@ -29,24 +29,14 @@
       </div>
     </g:if>
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+   <semui:messages data="${flash}" />
 
     <g:set var="counter" value="${-1}" />
 
       <g:form action="processRenewal" method="post" enctype="multipart/form-data" params="${params}">
 
 
-        <div class="container">
+        <div>
         <hr/>
           ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br/>
           <table class="ui celled table">

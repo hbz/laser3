@@ -7,7 +7,7 @@
 
   <body>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${params.shortcode}">
@@ -20,12 +20,12 @@
       </ul>
     </div>
 
-   <div class="container">
+   <div>
        <h1>${subscriptionInstance?.name}</h1>
        <g:render template="nav" contextPath="." />
     </div>
 
-    <div class="container">
+    <div>
       <g:link controller="subscriptionDetails"
                     action="launchRenewalsProcess" 
                     params="${[id:params.id]}">${message(code:'subscription.details.renewals.click_here', default:'Click Here')}</g:link> ${message(code:'subscription.details.renewals.note')}

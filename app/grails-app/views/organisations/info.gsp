@@ -8,7 +8,7 @@
     <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
-    <div class="container">
+    <div>
       
 
         <div class="page-header">

@@ -13,7 +13,7 @@
     </semui:breadcrumbs>
 
 
-<div class="container">
+<div>
     <h1>Application Info</h1>
     <table class="ui celled table">
         <tr><td>Build Number</td><td> <g:meta name="app.buildNumber"/></td></tr>

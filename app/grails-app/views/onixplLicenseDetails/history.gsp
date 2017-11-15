@@ -7,21 +7,21 @@
 
 <body>
 
-    <div class="container">
+    <div>
         <ul class="breadcrumb">
             <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
             <li>ONIX-PL Licenses</li>
         </ul>
     </div>
 
-    <div class="container">
+    <div>
         <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference" class="ipe" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
 
 <g:render template="nav" contextPath="." />
 
     </div>
 
-    <div class="container">
+    <div>
 License history
       <table  class="ui celled striped table">
         <tr>

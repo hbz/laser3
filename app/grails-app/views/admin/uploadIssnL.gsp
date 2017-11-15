@@ -6,11 +6,11 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
       <div class="span12">
         <h1>Import Identifier Same-As Relations</h1>
       <g:if test="${hasStarted}">
-        <div class="container">
+        <div>
             <bootstrap:alert id="procesing_alert" class="alert-info"><g:message code="admin.upload.issnL" default="admin.upload.issnL=CSV Processing has started in the background and will not require intervention"></g:message> </bootstrap:alert>
         </div>
       </g:if>

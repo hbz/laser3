@@ -11,13 +11,13 @@
       <semui:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.name}" message="myinst.addSubscription.label" />
   </semui:breadcrumbs>
 
-    <div class="container">
-      <h1>${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
+    <div>
+      <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
       <g:render template="subsNav" contextPath="." />
     </div>
 
         
-      <div class="container">
+      <div>
           <div class="pull-right">
               <g:form action="addSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
                   <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"  value="${params.q?.encodeAsHTML()}"  />
@@ -27,7 +27,7 @@
           </div>
       </div>
 
-    <div class="container">
+    <div>
         <g:if test="${packages}" >
           <g:form action="processAddSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="post">
  

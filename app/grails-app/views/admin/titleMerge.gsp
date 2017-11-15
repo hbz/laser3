@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div>
       <div class="span12">
         <h1>Title Merge</h1>
         <g:form action="titleMerge" method="get">

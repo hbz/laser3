@@ -12,15 +12,10 @@
       <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
     </semui:breadcrumbs>
 
-      <div class="container">
+      <div>
 
 
-      <g:if test="${flash.message}">
-      <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-        <g:if test="${flash.error}">
-        <bootstrap:alert class="alert alert-error">${flash.error}</bootstrap:alert>
-      </g:if>
+      <semui:messages data="${flash}" />
 
       <ul class="nav nav-pills">
           <g:set var="nparams" value="${params.clone()}"/>

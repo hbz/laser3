@@ -7,7 +7,7 @@
     <body>
         <semui:messages data="${flash}" />
 
-        <div class="container">
+        <div>
             <p>${message(code:'serverCode.forbidden.message')}</p>
         </div>
     </body>

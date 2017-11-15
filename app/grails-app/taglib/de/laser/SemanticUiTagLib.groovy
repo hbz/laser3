@@ -14,7 +14,7 @@ class SemanticUiTagLib {
 
     def breadcrumbs = { attrs, body ->
 
-        out << '<div class="ui container">'
+        out << '<div>'
         out <<   '<div class="ui large breadcrumb">'
         out <<     crumb([controller: 'home', message:'default.home.label'])
         out <<     body()
@@ -112,5 +112,22 @@ class SemanticUiTagLib {
             out <<   '</p>'
             out << '</div>'
         }
+    }
+
+    // <semui:card title="" class="some_css_class">
+    //
+    // <semui:card>
+
+    def card = { attrs, body ->
+        def title = attrs.title ? "${message(code: attrs.title)}" : ''
+
+        out << '<div class="ui card ' + attrs.class + '">'
+        out <<   '<div class="content">'
+        if (title) {
+            out << '<div class="header">' + title + '</div>'
+        }
+        out <<     body()
+        out <<   '</div>'
+        out << '</div>'
     }
 }

@@ -11,12 +11,12 @@
   </head>
   <body>
 
-    <div class="container">
+    <div>
       <h1>${orgInstance.name}</h1>
       <g:render template="nav" contextPath="." />
     </div>
 
-    <div class="container">
+    <div>
       
 
      <h6>${message(code:'org.properties')}</h6>

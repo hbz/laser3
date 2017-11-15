@@ -7,7 +7,7 @@
 
   <body>
 
-    <div class="container">
+    <div>
         <ul class="breadcrumb">
            <li> <g:link controller="home">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
            <li>Content Items</li>
@@ -15,19 +15,19 @@
     </div>
 
     <g:if test="${flash.message}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </div>
     </g:if>
 
     <g:if test="${flash.error}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
 
 
-    <div class="container">
+    <div>
       <g:form action="editContentItem" id="${params.id}">
         <dl>
           <dt>Key</dt>

@@ -26,7 +26,7 @@
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container">
+        <div>
           <sec:ifLoggedIn>
             <a class="brand" href="${createLink(uri: '/')}">${message(code:'laser', default:'LAS:eR')}</a>
           </sec:ifLoggedIn>
@@ -111,7 +111,7 @@
     </div>
 
     <div id="Footer">
-        <div class="container">
+        <div>
             <div class="row">
                 <div class="pull-right">
                     <a href="http://www.kbplus.ac.uk"><div class="sprite sprite-kbplus_logo">Knowledge Base Plus</div></a>

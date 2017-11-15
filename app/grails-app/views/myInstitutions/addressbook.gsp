@@ -22,24 +22,24 @@ import="com.k_int.kbplus.RefdataCategory"
       </semui:breadcrumbs>
 
    <g:if test="${flash.message}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </div>
     </g:if>
 
     <g:if test="${flash.error}">
-      <div class="container">
+      <div>
         <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
       </div>
     </g:if>
 
-    <div class="container">
+    <div>
 
-        <h1>${institution?.name} - ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</h1>
+        <h1 class="ui header">${institution?.name} - ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</h1>
 
     </div>
 
-    <div class="container">
+    <div>
         <div class="row">
             <div class="span8">
 		        <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')} ..</p>
@@ -54,11 +54,11 @@ import="com.k_int.kbplus.RefdataCategory"
                 </dl>
             </div>
             <div class="span4">
-                <laser:card title="person.create_new.label" class="card-grey">
+                <semui:card title="person.create_new.label" class="card-grey">
                     <g:link controller="person" action="create" params="['tenant.id': institution?.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No').id ]" >
                         ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
                     </g:link>
-                </laser:card>
+                </semui:card>
             </div>
         </div><!--.row-->
       </div><!--.container-->
