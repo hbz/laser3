@@ -7,9 +7,9 @@
 
   <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb text="Global Sources" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb text="Global Sources" class="active" />
+    </semui:breadcrumbs>
 
     <g:if test="${flash.message}">
       <div class="container">

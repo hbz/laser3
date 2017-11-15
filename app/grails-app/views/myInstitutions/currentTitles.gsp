@@ -11,9 +11,9 @@
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <laser:crumb message="myinst.currentTitles.label" class="active" />
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <semui:crumb message="myinst.currentTitles.label" class="active" />
         <li class="dropdown pull-right">
             <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">
                 ${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
@@ -34,7 +34,7 @@
 
             </ul>
         </li>
-    </laser:breadcrumbs>
+    </semui:breadcrumbs>
 
     <g:if test="${flash.message}">
       <div class="container">

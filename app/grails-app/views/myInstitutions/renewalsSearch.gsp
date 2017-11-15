@@ -7,10 +7,10 @@
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <laser:crumb message="menu.institutions.gen_renewals" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <semui:crumb message="menu.institutions.gen_renewals" class="active" />
+    </semui:breadcrumbs>
 
     <div class="container">
       <g:form action="renewalsSearch" method="get" params="${params}">

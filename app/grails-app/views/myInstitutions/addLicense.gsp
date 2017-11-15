@@ -6,10 +6,10 @@
   </head>
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <laser:crumb message="license.copy" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <semui:crumb message="license.copy" class="active" />
+    </semui:breadcrumbs>
 
     <div class="container">
       <h1>${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>

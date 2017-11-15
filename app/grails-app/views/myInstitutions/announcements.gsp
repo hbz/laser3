@@ -7,10 +7,10 @@
 
   <body>
 
-  <laser:breadcrumbs>
-    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-    <laser:crumb message="menu.datamanager.ann" class="active" />
-  </laser:breadcrumbs>
+  <semui:breadcrumbs>
+    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+    <semui:crumb message="menu.datamanager.ann" class="active" />
+  </semui:breadcrumbs>
 
     <div class="container home-page">
             <table class="table">

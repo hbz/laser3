@@ -7,9 +7,9 @@
 
   <body>
 
-  <laser:breadcrumbs>
-    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-    <laser:crumb message="default.changeLog.label" class="active" />
+  <semui:breadcrumbs>
+    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+    <semui:crumb message="default.changeLog.label" class="active" />
 
     <li class="dropdown pull-right">
       <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.exports.label', default:'Exports')}<b class="caret"></b></a>
@@ -17,7 +17,7 @@
         <li><g:link controller="myInstitutions" action="changeLog" params="${params+[format:'csv']}">CSV Export</g:link></li>
       </ul>
     </li>
-  </laser:breadcrumbs>
+  </semui:breadcrumbs>
 
     <div class="container home-page">
 

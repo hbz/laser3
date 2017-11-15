@@ -5,7 +5,7 @@
         <title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'serverCode.notFound.message1')}</title>
     </head>
     <body>
-        <laser:flash data="${flash}" />
+        <semui:messages data="${flash}" />
 
         <div class="container">
             <laser:card>

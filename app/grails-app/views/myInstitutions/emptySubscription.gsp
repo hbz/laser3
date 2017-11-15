@@ -6,10 +6,10 @@
         </head>
     <body>
 
-        <laser:breadcrumbs>
-            <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-            <laser:crumb message="myinst.addSubscription.label" class="active" />
-        </laser:breadcrumbs>
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+            <semui:crumb message="myinst.addSubscription.label" class="active" />
+        </semui:breadcrumbs>
 
         <div class="container">
             <h1>${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>

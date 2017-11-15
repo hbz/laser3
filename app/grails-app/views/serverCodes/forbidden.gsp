@@ -5,7 +5,7 @@
         <title>${message(code:'laser', default:'LAS:eR')} - Forbidden</title>
     </head>
     <body>
-        <laser:flash data="${flash}" />
+        <semui:messages data="${flash}" />
 
         <div class="container">
             <p>${message(code:'serverCode.forbidden.message')}</p>

@@ -25,10 +25,10 @@
     </ul>
 </div>
 -->
-    <laser:breadcrumbs>
-        <laser:crumb controller="packageDetails" action="index" message="package.show.all" />
-        <laser:crumb controller="packageDetails" action="show" id="${packageInstance.id}" text="${packageInstance.name}" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
+        <semui:crumb controller="packageDetails" action="show" id="${packageInstance.id}" text="${packageInstance.name}" />
+    </semui:breadcrumbs>
 
 <g:if test="${flash.message}">
     <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>

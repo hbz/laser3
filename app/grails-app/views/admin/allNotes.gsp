@@ -7,10 +7,10 @@
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-        <laser:crumb text="All Notes" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <semui:crumb text="All Notes" class="active"/>
+    </semui:breadcrumbs>
 
     <div class="container">
       <table class="ui celled table">

@@ -7,9 +7,9 @@
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="admin" action="userMerge" text="User Merge" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="admin" action="userMerge" text="User Merge" />
+    </semui:breadcrumbs>
 
 
   <div class="container">

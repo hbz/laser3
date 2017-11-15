@@ -7,9 +7,9 @@
   </head>
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb message="subscription.details.label" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb message="subscription.details.label" class="active"/>
+    </semui:breadcrumbs>
 
     <div class="container">
 

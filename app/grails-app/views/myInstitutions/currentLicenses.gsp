@@ -6,11 +6,11 @@
   </head>
   <body>
 
-  <laser:breadcrumbs>
-      <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-      <laser:crumb message="license.current" class="active" />
+  <semui:breadcrumbs>
+      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+      <semui:crumb message="license.current" class="active" />
       <g:if test="${is_inst_admin}">
-          <laser:crumbAsBadge message="default.editable" class="badge-warning" />
+          <semui:crumbAsBadge message="default.editable" class="orange" />
       </g:if>
       <li class="dropdown pull-right">
           <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
@@ -23,7 +23,7 @@
               </g:each>
           </ul>
       </li>
-  </laser:breadcrumbs>
+  </semui:breadcrumbs>
 
 
     <g:if test="${flash.message}">

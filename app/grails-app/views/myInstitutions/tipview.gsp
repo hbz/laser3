@@ -7,10 +7,10 @@
 
   <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-      <laser:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+      <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
+    </semui:breadcrumbs>
 
       <div class="container">
 

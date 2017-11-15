@@ -7,9 +7,9 @@
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb text="${institution?.name}" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb text="${institution?.name}" class="active" />
+    </semui:breadcrumbs>
 
     <div class="container home-page">
       <div class="well">
@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <laser:flash data="${flash}" />
+    <semui:messages data="${flash}" />
 
     <div class="container home-page">
       <div class="row">

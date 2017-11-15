@@ -7,12 +7,12 @@
 
   <body>
 
-      <laser:breadcrumbs>
-          <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-          <laser:crumb text="Manage Affiliation Requests" class="active"/>
-      </laser:breadcrumbs>
+      <semui:breadcrumbs>
+          <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+          <semui:crumb text="Manage Affiliation Requests" class="active"/>
+      </semui:breadcrumbs>
 
-      <laser:flash data="${flash}" />
+      <semui:messages data="${flash}" />
 
     <div class="container">
 

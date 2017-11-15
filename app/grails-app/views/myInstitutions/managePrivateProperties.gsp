@@ -10,12 +10,12 @@
     </head>
     <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <laser:crumb message="menu.institutions.manage_private_properties" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <semui:crumb message="menu.institutions.manage_private_properties" class="active" />
+    </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+    <semui:messages data="${flash}" />
 
     <div class="container">
         <h1>${institution?.name} - ${message(code: 'menu.institutions.manage_private_properties')}</h1>

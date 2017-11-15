@@ -7,9 +7,9 @@
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb text="Search" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb text="Search" class="active" />
+    </semui:breadcrumbs>
 
 
     <div class="container">

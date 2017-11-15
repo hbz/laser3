@@ -7,9 +7,9 @@
 
     <body>
 
-        <laser:breadcrumbs>
-            <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-            <laser:crumb text="Stats" class="active"/>
+        <semui:breadcrumbs>
+            <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+            <semui:crumb text="Stats" class="active"/>
 
             <li class="dropdown pull-right">
                 <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
@@ -19,7 +19,7 @@
                     </li>
                 </ul>
             </li>
-        </laser:breadcrumbs>
+        </semui:breadcrumbs>
 
         <div class="container">
             <div class="row">

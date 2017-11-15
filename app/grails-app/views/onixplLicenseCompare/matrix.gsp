@@ -9,9 +9,9 @@
 </head>
 <body>
 
-	<laser:breadcrumbs>
-		<laser:crumb message="menu.institutions.comp_onix" class="active"/>
-	</laser:breadcrumbs>
+	<semui:breadcrumbs>
+		<semui:crumb message="menu.institutions.comp_onix" class="active"/>
+	</semui:breadcrumbs>
 
 	<div class="container">
 		<h1>${message(code:'menu.institutions.comp_onix')}</h1>

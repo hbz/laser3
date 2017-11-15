@@ -12,7 +12,7 @@
             <semui:crumb message="profile.bc.profile" class="active"/>
         </semui:breadcrumbs>
 
-        <laser:flash data="${flash}" />
+        <semui:messages data="${flash}" />
 
         <div class="ui container">
             <div class="ui two column grid">

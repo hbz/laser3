@@ -7,9 +7,9 @@
 
   <body>
   
-    <laser:breadcrumbs>
-      <laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
-      <laser:crumb message="menu.datamanager.changelog" class="active"/>
+    <semui:breadcrumbs>
+      <semui:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
+      <semui:crumb message="menu.datamanager.changelog" class="active"/>
 
       <li class="dropdown pull-right">
         <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
@@ -17,9 +17,9 @@
           <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
         </ul>
       </li>
-    </laser:breadcrumbs>
+    </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+    <semui:messages data="${flash}" />
 
     <div class="container">
       <h2>${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>

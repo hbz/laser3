@@ -7,11 +7,11 @@
 
   <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb message="menu.datamanager.dash" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb message="menu.datamanager.dash" class="active"/>
+    </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+    <semui:messages data="${flash}" />
 
     <div class="container">
       <h2>${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h2>

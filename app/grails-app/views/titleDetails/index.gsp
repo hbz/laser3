@@ -7,9 +7,9 @@
 
   <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb message="menu.institutions.all_titles" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb message="menu.institutions.all_titles" class="active" />
+    </semui:breadcrumbs>
 
     <div class="container">
       <div class="well">

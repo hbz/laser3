@@ -10,10 +10,10 @@
 </head>
 <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-        <laser:crumb text="Application Config" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <semui:crumb text="Application Config" class="active"/>
+    </semui:breadcrumbs>
 
 <div class="container">
 

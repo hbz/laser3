@@ -25,16 +25,16 @@
     </div>
 -->
 
-    <laser:breadcrumbs>
+    <semui:breadcrumbs>
         <g:if test="${onixplLicense.license.licensee}">
-            <laser:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:onixplLicense.license.licensee.shortcode]}" text="${onixplLicense.license.licensee.name} Current Licenses" />
+            <semui:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:onixplLicense.license.licensee.shortcode]}" text="${onixplLicense.license.licensee.name} Current Licenses" />
         </g:if>
-        <laser:crumb controller="onixplLicenseDetails" action="index" id="${params.id}" text="ONIX-PL License Details" />
-        <laser:crumb controller="onixplLicenseDetails" action="notes" id="${params.id}" text="License Notes" />
+        <semui:crumb controller="onixplLicenseDetails" action="index" id="${params.id}" text="ONIX-PL License Details" />
+        <semui:crumb controller="onixplLicenseDetails" action="notes" id="${params.id}" text="License Notes" />
         <g:if test="${editable}">
             <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
         </g:if>
-    </laser:breadcrumbs>
+    </semui:breadcrumbs>
 
 
     <div class="container">

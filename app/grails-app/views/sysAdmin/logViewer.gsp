@@ -27,10 +27,10 @@
 </r:script>
 </head>
 <body>
-  <laser:breadcrumbs>
-    <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <laser:crumb text="Application Log" class="active"/>
-  </laser:breadcrumbs>
+  <semui:breadcrumbs>
+    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+    <semui:crumb text="Application Log" class="active"/>
+  </semui:breadcrumbs>
 
     <h1 class="page-header">Log Viewer</h1>
     <div id="log-wrapper">

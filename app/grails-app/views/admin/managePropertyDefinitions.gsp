@@ -6,10 +6,10 @@
 		<title>${message(code: 'menu.admin.managePropertyDefinitions')}</title>
 	</head>
 
-		<laser:breadcrumbs>
-			<laser:crumb message="menu.admin.dash" controller="admin" action="index" />
-			<laser:crumb message="menu.admin.manageI10n" class="active"/>
-		</laser:breadcrumbs>
+		<semui:breadcrumbs>
+			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+			<semui:crumb message="menu.admin.manageI10n" class="active"/>
+		</semui:breadcrumbs>
 
 		<div class="container">
 			<h1><g:message code="menu.admin.managePropertyDefinitions"/></h1>
@@ -26,7 +26,7 @@
 			</div>
 		</div>
 
-		<laser:flash data="${flash}" />
+		<semui:messages data="${flash}" />
 
 		<div class="container">
 			<div class="row">

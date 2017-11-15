@@ -7,10 +7,10 @@
 
   <body>
 
-      <laser:breadcrumbs>
-          <laser:crumb message="menu.admin.dash" controller="admin" action="index" />
-          <laser:crumb text="Content Items" class="active"/>
-      </laser:breadcrumbs>
+      <semui:breadcrumbs>
+          <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+          <semui:crumb text="Content Items" class="active"/>
+      </semui:breadcrumbs>
 
     <g:if test="${flash.message}">
       <div class="container">

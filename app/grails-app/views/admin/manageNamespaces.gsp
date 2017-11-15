@@ -6,10 +6,10 @@
 		<title>${message(code: 'menu.admin.manageIdentifierNamespaces')}</title>
 	</head>
 
-		<laser:breadcrumbs>
-			<laser:crumb message="menu.admin.dash" controller="admin" action="index" />
-			<laser:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
-		</laser:breadcrumbs>
+		<semui:breadcrumbs>
+			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+			<semui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
+		</semui:breadcrumbs>
 
 		<div class="container">
 			<div class="page-header">

@@ -8,13 +8,13 @@
   </head>
   <body>
 
-  <laser:breadcrumbs>
-    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
-    <laser:crumb message="myinst.currentSubscriptions.label" class="active" />
+  <semui:breadcrumbs>
+    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
+    <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
     <g:if test="${editable}">
-      <laser:crumbAsBadge message="default.editable" class="badge-warning" />
+      <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
-  </laser:breadcrumbs>
+  </semui:breadcrumbs>
 
    <g:if test="${flash.message}">
       <div class="container">

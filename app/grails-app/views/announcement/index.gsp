@@ -7,12 +7,12 @@
 
   <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
-      <laser:crumb message="menu.datamanager.ann" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
+      <semui:crumb message="menu.datamanager.ann" class="active"/>
+    </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+    <semui:messages data="${flash}" />
 
     <div class="container">
       <h2>${message(code:'announcement.create.label', default:'Create announcement')}</h2>

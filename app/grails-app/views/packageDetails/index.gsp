@@ -47,9 +47,9 @@
 
   <body>
 
-  <laser:breadcrumbs>
-    <laser:crumb message="package.show.all" class="active"/>
-  </laser:breadcrumbs>
+  <semui:breadcrumbs>
+    <semui:crumb message="package.show.all" class="active"/>
+  </semui:breadcrumbs>
 
     <div class="container">
       <g:form action="index" method="get" params="${params}">
