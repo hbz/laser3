@@ -35,10 +35,7 @@
 
 				<h1 class="ui header"><g:message code="default.show.label" args="[entityName]" /></h1>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
-
+				<semui:messages data="${flash}" />
 				<dl>
 				
 					<g:if test="${identifierOccurrenceInstance?.org}">

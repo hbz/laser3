@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <h1>${message(code:'laser', default:'LAS:eR')} API Calls</h1>
+    <h1 class="ui header">${message(code:'laser', default:'LAS:eR')} API Calls</h1>
 
     <ul>
       <li><g:link action="assertCore">AssertCore</g:link> - assert a JUSP Core status against an institution, title and optionally provider. If no provider is given then

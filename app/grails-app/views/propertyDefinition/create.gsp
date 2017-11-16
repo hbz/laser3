@@ -33,17 +33,7 @@
     <div class="span9">
 
             <h1 class="ui header"><g:message code="default.create.label" args="[entityName]"/></h1>
-    <g:if test="${flash.message}">
-      <div>
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div>
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+        <semui:messages data="${flash}" />
 
     <g:hasErrors bean="${newProp}">
         <bootstrap:alert class="alert-error">

@@ -11,13 +11,7 @@
 
           <h1 class="ui header">Subscription Offered - Manual Upload</h1>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
-
-        <g:if test="${flash.error}">
-        <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-        </g:if>
+        <semui:messages data="${flash}" />
 
         <g:hasErrors bean="${packageInstance}">
         <bootstrap:alert class="alert-error">

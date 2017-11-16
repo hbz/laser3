@@ -10,17 +10,9 @@
       <div class="row">
         <div class="span12">
 
-          <div class="page-header">
-             <h1>${ui.displayName?:'No username'}</h1>
-          </div>
+             <h1 class="ui header">${ui.displayName?:'No username'}</h1>
 
-          <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-          </g:if>
-
-          <g:if test="${flash.error}">
-            <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-          </g:if>
+          <semui:messages data="${flash}" />
 
           <h3>${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 

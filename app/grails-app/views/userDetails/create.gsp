@@ -11,9 +11,7 @@
 
           <h1 class="ui header">New User</h1>
 
-        <g:if test="${flash.message}">
-          <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+        <semui:messages data="${flash}" />
         
         <div class="well">
           <g:form id="createUserForm" action="create" method="post">

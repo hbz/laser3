@@ -7,7 +7,7 @@
 	</head>
 	<body>
         <div>
-            <h1>${message(code:'serverCode.error.message2')}</h1>
+            <h1 class="ui header">${message(code:'serverCode.error.message2')}</h1>
         </div>
 
         <div>

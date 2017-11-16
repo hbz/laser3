@@ -6,7 +6,7 @@
   </head>
   <body>
   	<div>
-  	<h1>IE Transfer</h1>
+  	<h1 class="ui header">IE Transfer</h1>
 
         <g:form action="ieTransfer" method="get">
           <p>Add the appropriate ID's below. All IssueEntitlements of source will be removed and transfered to target. Detailed information and confirmation will be presented before proceeding</p>

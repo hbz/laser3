@@ -26,7 +26,7 @@
     </div>
 
 <div>
-    <h1>ONIX-PL License : ${onixplLicense?.title}</h1>
+    <h1 class="ui header">ONIX-PL License : ${onixplLicense?.title}</h1>
 </div>
 
 <div>

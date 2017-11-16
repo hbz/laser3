@@ -8,7 +8,7 @@
   <body>
     <div>
       <div class="span12">
-        <h1>Title Merge</h1>
+        <h1 class="ui header">Title Merge</h1>
         <g:form action="titleMerge" method="get">
           <p>Add the appropriate ID's below. Detailed information and confirmation will be presented before proceeding</p>
           <dl>

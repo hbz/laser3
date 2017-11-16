@@ -7,14 +7,9 @@
   </head>
   <body>
 
-    <div>
-      <div class="page-header">
-        <h1>Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
-      </div>
-      <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-    </div>
+
+        <h1 class="ui header">Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
+        <semui:messages data="${flash}" />
 
     <g:form action="createTracker" controller="globalDataSync" id="${params.id}">
 

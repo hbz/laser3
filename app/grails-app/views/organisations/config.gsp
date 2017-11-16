@@ -11,13 +11,10 @@
   </head>
   <body>
 
-    <div>
-      <h1>${orgInstance.name}</h1>
-      <g:render template="nav" contextPath="." />
-    </div>
 
-    <div>
-      
+    <h1 class="ui header">${orgInstance.name}</h1>
+
+    <g:render template="nav" contextPath="." />
 
      <h6>${message(code:'org.properties')}</h6>
         <div id="custom_props_div_1" class="span12">
@@ -31,7 +28,6 @@
             initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
         });
         </r:script>
-    </div>
 
 
   </body>

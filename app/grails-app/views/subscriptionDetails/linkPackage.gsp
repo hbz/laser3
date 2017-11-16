@@ -58,7 +58,7 @@
     </div>
 
     <div>
-       <h1>${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
+       <h1 class="ui header">${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
        <g:render template="nav" contextPath="." />
     </div>
 

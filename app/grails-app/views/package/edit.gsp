@@ -12,10 +12,7 @@
 
           <h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
 
-
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+        <semui:messages data="${flash}" />
 
         <g:hasErrors bean="${packageInstance}">
         <bootstrap:alert class="alert-error">

@@ -7,17 +7,14 @@
   </head>
   <body>
 
-    <div>
-      <div class="page-header">
-        <h1>Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
-      </div>
-      <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-    </div>
+
+        <h1 class="ui header">Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
+
+      <semui:messages data="${flash}" />
+
 
     <div class="container well">
-      <h1>Select local package</h1>
+      <h1 class="ui header">Select local package</h1>
       <p>....to be updated by this remote package tracker</p>
       <g:form action="buildMergeTracker" id="${params.id}" method="get">
         <input type="hidden" name="synctype" value="existing"/>

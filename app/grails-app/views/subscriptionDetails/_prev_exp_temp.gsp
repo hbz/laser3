@@ -18,16 +18,9 @@
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.details.label', default:'Details')}</g:link> </li>
 </div>
 
-<g:if test="${flash.message}">
-    <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-</g:if>
-
-<g:if test="${flash.error}">
-    <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-</g:if>
-
+<semui:messages data="${flash}" />
 <div>
-    <h1>${subscriptionInstance.name}</h1>
+    <h1 class="ui header">${subscriptionInstance.name}</h1>
     <g:render template="nav"  />
 </div>
 

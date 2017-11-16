@@ -8,7 +8,7 @@
   <body>
     <div>
       <div class="span12">
-        <h1>Titles Import - Create/Add Identifiers</h1>
+        <h1 class="ui header">Titles Import - Create/Add Identifiers</h1>
         <p>
           This form allows an administrator to upload a CSV of titles containing one or more identifiers and titles. If a title can be uniquely matched using any/all of the identifiers then any missing identifiers will be added. If multiple identifiers match different titles no update will be made. If the identifiers do not match any existing titles, and the file includes a 'title.title' column, a new journal title record is created.
 

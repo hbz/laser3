@@ -15,7 +15,7 @@
     </div>
 
     <div>
-      <h1>${institution.name} Cost Items</h1>
+      <h1 class="ui header">${institution.name} Cost Items</h1>
       <g:form action="index" method="post" params="${[shortcode:params.shortcode]}">
         <input type="hidden" name="shortcode" value="${params.shortcode}"/>
         <table class="table table-striped table-bordered table-condensed table-tworow">

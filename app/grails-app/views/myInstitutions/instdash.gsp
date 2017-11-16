@@ -13,7 +13,7 @@
 
     <div class="home-page">
       <div class="well">
-        <h1>${institution.name} - Dashboard</h1>
+        <h1 class="ui header">${institution.name} - Dashboard</h1>
         <ul class="inline">
           <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
           <li><g:link controller="myInstitutions" 

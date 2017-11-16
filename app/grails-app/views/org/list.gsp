@@ -35,9 +35,9 @@
 
 			<div class="span9">
 				
-				<div class="page-header">
-					<h1>Organisations</h1>
-				</div>
+
+					<h1 class="ui header">Organisations</h1>
+
 
                 <div class="well">
 			          <g:form action="list" method="get" class="form-inline">
@@ -49,9 +49,7 @@
 			          </g:form>
                 </div>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+				<semui:messages data="${flash}" />
 				
 				<table class="ui celled striped table">
 					<thead>

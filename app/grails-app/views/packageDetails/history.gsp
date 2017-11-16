@@ -30,18 +30,12 @@
         <semui:crumb controller="packageDetails" action="show" id="${packageInstance.id}" text="${packageInstance.name}" />
     </semui:breadcrumbs>
 
-<g:if test="${flash.message}">
-    <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-</g:if>
+<semui:messages data="${flash}" />
 
-<g:if test="${flash.error}">
-    <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-</g:if>
 
-<div>
-    <h1>${packageInstance?.name}</h1>
+    <h1 class="ui header">${packageInstance?.name}</h1>
     <g:render template="nav"/>
-</div>
+
 
 <div>
     <g:if test="${formattedHistoryLines?.size() > 0}">

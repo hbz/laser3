@@ -11,15 +11,11 @@
   </head>
   <body>
 
-    <div>
-      <h1>${orgInstance.name}</h1>
-      <g:render template="nav" contextPath="." />
-    </div>
+      <h1 class="ui header">${orgInstance.name}</h1>
 
-    <div>
-		<g:if test="${flash.message}">
-			<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-		</g:if>
+      <g:render template="nav" contextPath="." />
+
+        <semui:messages data="${flash}" />
 
         <g:each in="${authorizedOrgs}" var="authOrg">
             <h6>@ ${authOrg.name}</h6>
@@ -38,7 +34,7 @@
                 </r:script>
             </div>
 		</g:each>
-    </div>
+
 
   </body>
 </html>

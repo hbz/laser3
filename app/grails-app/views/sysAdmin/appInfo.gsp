@@ -14,7 +14,7 @@
 
 
 <div>
-    <h1>Application Info</h1>
+    <h1 class="ui header">Application Info</h1>
     <table class="ui celled table">
         <tr><td>Build Number</td><td> <g:meta name="app.buildNumber"/></td></tr>
         <tr><td>Build Profile</td><td> <g:meta name="app.buildProfile"/></td></tr>
@@ -28,7 +28,7 @@
     </table>
 
 
-    <h1>Background task status</h1>
+    <h1 class="ui header">Background task status</h1>
     <h2>ES Index Update</h2>
     <table class="ui celled table">
         <tr><td>Currently Running</td><td>${dataloadService.update_running}</td></tr>

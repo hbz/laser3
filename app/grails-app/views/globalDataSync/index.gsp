@@ -7,14 +7,10 @@
   </head>
   <body>
 
-    <div>
-      <div class="page-header">
-        <h1><g:message code="globalDataSync.label" /></h1>
-      </div>
-      <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-    </div>
+
+        <h1 class="ui header"><g:message code="globalDataSync.label" /></h1>
+
+      <semui:messages data="${flash}" />
 
     <div class="container" style="text-align:center">
       <g:form action="index" method="get" class="form-inline">

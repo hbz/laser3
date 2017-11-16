@@ -25,7 +25,7 @@
             <div class="row">
                 <div class="span12">
 
-                    <h1>Org Info</h1>
+                    <h1 class="ui header">Org Info</h1>
                     <table class="ui celled table">
                         <thead>
                             <tr>

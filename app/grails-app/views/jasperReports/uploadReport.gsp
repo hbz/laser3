@@ -23,12 +23,7 @@
                     class="divider">/</span></li>
         </ul>
 
-        <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
-        <g:if test="${flash.error}">
-            <bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert>
-        </g:if>
+        <semui:messages data="${flash}" />
 
         <p>The types of accepted files are .jasper and .jrxml. Any other files selected will be ignored.</p>
         <g:uploadForm action="uploadReport" controller="jasperReports">

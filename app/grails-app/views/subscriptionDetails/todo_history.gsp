@@ -18,7 +18,7 @@
     </div>
 
     <div>
-        <h1>${subscription.name}</h1>
+        <h1 class="ui header">${subscription.name}</h1>
         <g:render template="nav" contextPath="." />
     </div>
 

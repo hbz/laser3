@@ -8,7 +8,7 @@
   <body>
     <div>
       <div class="span12">
-        <h1>Orgs Import</h1>
+        <h1 class="ui header">Orgs Import</h1>
         <g:form action="orgsImport" method="post" enctype="multipart/form-data">
           <p>
             Upload a .csv file formatted as<br/>

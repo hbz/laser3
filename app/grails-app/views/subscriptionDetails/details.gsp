@@ -34,8 +34,8 @@
   <semui:messages data="${flash}" />
 
     <div>
-      <g:if test="${params.asAt}"><h1>${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1></g:if>
-       <h1><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
+      <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1></g:if>
+       <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
        <g:render template="nav"  />
     </div>
 

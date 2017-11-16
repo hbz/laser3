@@ -8,7 +8,7 @@
   <body>
     <div class="container-fluid">
       <div class="span12">
-        <h1>Import Financials Data</h1>
+        <h1 class="ui header">Import Financials Data</h1>
         <g:if test="${loaderResult==null}">
           <p>This service allows administrators to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
           <table class="ui celled striped table">

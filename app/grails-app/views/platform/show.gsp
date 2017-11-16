@@ -33,19 +33,17 @@
     <div>
       <div class="span12">
 
-        <div class="page-header">
-          <h1>Platform : <g:if test="${editable}"><span id="platformNameEdit"
+
+          <h1 class="ui header">Platform : <g:if test="${editable}"><span id="platformNameEdit"
                                                         class="xEditableValue"
                                                         data-type="textarea"
                                                         data-pk="${platformInstance.class.name}:${platformInstance.id}"
                                                         data-name="name"
                                                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${platformInstance.name}</span></g:if><g:else>${platformInstance.name}</g:else>
           </h1>
-        </div>
 
-        <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+
+        <semui:messages data="${flash}" />
 
         <fieldset class="inline-lists">
             <dl>

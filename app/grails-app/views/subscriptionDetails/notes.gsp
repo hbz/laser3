@@ -22,7 +22,7 @@
 
    <div>
 
-       <h1>${subscriptionInstance?.name}</h1>
+       <h1 class="ui header">${subscriptionInstance?.name}</h1>
 
        <g:render template="nav" />
 

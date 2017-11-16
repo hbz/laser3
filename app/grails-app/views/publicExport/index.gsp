@@ -56,7 +56,7 @@
 
 
   <div>
-      <h1>${message(code:'public.nav.exports.label', default:'Exports')}</h1>
+      <h1 class="ui header">${message(code:'public.nav.exports.label', default:'Exports')}</h1>
     </div>
 
     <div>

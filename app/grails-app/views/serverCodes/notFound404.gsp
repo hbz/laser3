@@ -9,7 +9,7 @@
 
         <div>
             <semui:card>
-                <h1>404</h1>
+                <h1 class="ui header">404</h1>
                 <h3>${message(code:'serverCode.notFound.message1')}</h3>
 
                 <g:if test="${! flash.error}">

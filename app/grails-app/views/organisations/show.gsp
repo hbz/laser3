@@ -9,16 +9,14 @@
   </head>
   <body>
 
-    <div>
-      <h1>${orgInstance.name}</h1>
-      <g:render template="nav" contextPath="." />
-    </div>
 
-    <div>
+    <h1 class="ui header">${orgInstance.name}</h1>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+    <g:render template="nav" contextPath="." />
+
+    <semui:messages data="${flash}" />
+
+    <div class="inline-lists">
 
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>

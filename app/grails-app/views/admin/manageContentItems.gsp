@@ -12,22 +12,11 @@
           <semui:crumb text="Content Items" class="active"/>
       </semui:breadcrumbs>
 
-    <g:if test="${flash.message}">
-      <div>
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div>
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+      <semui:messages data="${flash}" />
 
 
-    <div>
-      <div class="row">
-        <div class="span8">
+    <div class="ui grid">
+      <div class="twelve wide column">
           <table class="ui celled table">
             <thead>
               <tr>
@@ -48,8 +37,8 @@
               </g:each>
             </tbody>
           </table>
-        </div>
-        <div class="span4">
+        </div><!-- .twelve -->
+        <div class="four wide column">
             <semui:card class="card-grey">
           <g:form action="newContentItem">
             <dl>
@@ -74,8 +63,8 @@
             <input type="submit" value="Create" class="ui primary button"/>
           </g:form>
             </semui:card>
-        </div>
-      </div>
-    </div>
+        </div><!-- .four -->
+      </div><!-- .grid -->
+
   </body>
 </html>

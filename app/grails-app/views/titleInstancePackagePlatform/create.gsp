@@ -31,13 +31,10 @@
 			
 			<div class="span9">
 
-				<div class="page-header">
-					<h1><g:message code="default.create.label" args="[entityName]" /></h1>
-				</div>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+					<h1 class="ui header"><g:message code="default.create.label" args="[entityName]" /></h1>
+
+				<semui:messages data="${flash}" />
 
 				<g:hasErrors bean="${titleInstancePackagePlatformInstance}">
 				<bootstrap:alert class="alert-error">

@@ -8,16 +8,12 @@
     <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
+
+    <h1 class="ui header">${orgInstance.name}</h1>
+
+    <semui:messages data="${flash}" />
+
     <div>
-      
-
-        <div class="page-header">
-          <h1>${orgInstance.name}</h1>
-        </div>
-
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
 
         <dl>
           <g:if test="${orgInstance?.name}">

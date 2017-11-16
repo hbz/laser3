@@ -22,9 +22,7 @@
     <g:render template="nav" />
 
 <div>
-    <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </g:if>
+    <semui:messages data="${flash}" />
 
     <g:each in="${authorizedOrgs}" var="authOrg">
         <h6>@ ${authOrg.name}</h6>

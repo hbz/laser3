@@ -6,7 +6,7 @@
   </head>
   <body>
     <div>
-    <h1>TIPP Transfer</h1>
+    <h1 class="ui header">TIPP Transfer</h1>
 
         <g:each in="${error}" var="err">
           <bootstrap:alert class="alert-danger">${err}</bootstrap:alert>

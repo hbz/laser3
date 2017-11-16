@@ -12,7 +12,7 @@
 		</semui:breadcrumbs>
 
 		<div>
-			<h1><g:message code="menu.admin.manageRefdatas"/></h1>
+			<h1 class="ui header"><g:message code="menu.admin.manageRefdatas"/></h1>
 		</div>
 
         <div>

@@ -14,7 +14,7 @@
 	</semui:breadcrumbs>
 
 	<div>
-		<h1>${message(code:'menu.institutions.comp_onix')}</h1>
+		<h1 class="ui header">${message(code:'menu.institutions.comp_onix')}</h1>
 	</div>
 	<div>
 		<g:if test="${flash.message}">

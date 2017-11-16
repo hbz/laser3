@@ -9,22 +9,16 @@
 <body>
 <div>
 
-    <div class="page-header">
+
         <g:unless test="${validationResult?.success}">
-            <h1>${message(code:'onix.import.license', default:'Import ONIX-PL License')}
+            <h1 class="ui header">${message(code:'onix.import.license', default:'Import ONIX-PL License')}
             <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
             <g:else> ${message(code:'onix.import.unspec', default:'for unspecified license')}</g:else>
             </h1>
         </g:unless>
-    </div>
 
-    <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </g:if>
 
-    <g:if test="${flash.error}">
-        <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-    </g:if>
+    <semui:messages data="${flash}" />
 
     <g:hasErrors bean="${packageInstance}">
         <bootstrap:alert class="alert-error">

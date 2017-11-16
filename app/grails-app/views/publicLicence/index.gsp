@@ -17,7 +17,7 @@
 
 
   <div>
-      <h1>Public Licenses</h1>
+      <h1 class="ui header">Public Licenses</h1>
   </div>
 
 

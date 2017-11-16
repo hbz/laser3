@@ -12,14 +12,12 @@
 <body>
 
 <div>
-    <h1>${personInstance.first_name} ${personInstance.middle_name} ${personInstance.last_name}</h1>
+    <h1 class="ui header">${personInstance.first_name} ${personInstance.middle_name} ${personInstance.last_name}</h1>
     <g:render template="nav" contextPath="." />
 </div>
 
 <div>
-    <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </g:if>
+    <semui:messages data="${flash}" />
 
     <g:each in="${authorizedOrgs}" var="authOrg">
         <h6>@ ${authOrg.name}</h6>

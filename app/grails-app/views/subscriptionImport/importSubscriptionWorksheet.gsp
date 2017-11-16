@@ -23,17 +23,7 @@
       </div>
     </g:if>
 
-    <g:if test="${flash.message}">
-      <div>
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div>
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+  <semui:messages data="${flash}" />
 
 
     <g:set var="counter" value="${-1}" />

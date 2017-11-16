@@ -9,12 +9,9 @@
   </head>
   <body>
 
-    <div>
+
         <h1 class="ui header">${message(code:'package.search')}</h1>
-      <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-    </div>
+        <semui:messages data="${flash}" />
 
     <div class="container" style="text-align:center">
       <g:form action="list" method="get" class="form-inline">

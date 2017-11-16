@@ -46,10 +46,10 @@
 
 
       <div>
-        <g:if test="${params.asAt}"><h1>${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
+        <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
         <div class="page-header">
           <div>
-          <h1><g:if test="${editable}"><span id="packageNameEdit"
+          <h1 class="ui header"><g:if test="${editable}"><span id="packageNameEdit"
                         class="xEditableValue"
                         data-type="textarea"
                         data-pk="${packageInstance.class.name}:${packageInstance.id}"
@@ -68,9 +68,7 @@
         </div>
     </div>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+ <semui:messages data="${flash}" />
 
         <g:hasErrors bean="${packageInstance}">
         <bootstrap:alert class="alert-error">

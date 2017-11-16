@@ -21,7 +21,7 @@
     </div>
 
     <div>
-      <h1>${subscriptionInstance?.name} - ${message(code:'subscription.details.user.permissions', default:'Permissions against Current User')}</h1>
+      <h1 class="ui header">${subscriptionInstance?.name} - ${message(code:'subscription.details.user.permissions', default:'Permissions against Current User')}</h1>
       <g:render template="nav" contextPath="." />
     </div>
 

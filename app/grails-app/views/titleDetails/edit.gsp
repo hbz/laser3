@@ -11,8 +11,8 @@
         <div class="row">
           <div class="span12">
 
-            <div class="page-header">
-              <h1><g:if test="${editable}"><span id="titleEdit" 
+
+              <h1 class="ui header"><g:if test="${editable}"><span id="titleEdit"
                         class="xEditableValue"
                         data-type="textarea" 
                         data-pk="${ti.class.name}:${ti.id}"
@@ -21,11 +21,9 @@
                         data-original-title="${ti.title}">${ti.title}</span></g:if>
                   <g:else>${ti.title}</g:else>
               </h1>
-            </div>
 
-            <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-            </g:if>
+
+              <semui:messages data="${flash}" />
 
 
 

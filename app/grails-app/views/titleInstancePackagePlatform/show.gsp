@@ -34,13 +34,11 @@
       
       <div class="span10">
 
-        <div class="page-header">
-          <h1><g:message code="default.show.label" args="[entityName]" /></h1>
-        </div>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+          <h1 class="ui header"><g:message code="default.show.label" args="[entityName]" /></h1>
+
+
+          <semui:messages data="${flash}" />
 
           <div class="inline-lists">
 

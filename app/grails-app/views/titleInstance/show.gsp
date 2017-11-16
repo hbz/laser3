@@ -34,13 +34,10 @@
       
       <div class="span9">
 
-        <div class="page-header">
-          <h1>${message(code:'titleInstance.label', default:'Title Instance')}: ${titleInstanceInstance?.title}</h1>
-        </div>
+          <h1 class="ui header">${message(code:'titleInstance.label', default:'Title Instance')}: ${titleInstanceInstance?.title}</h1>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+
+          <semui:messages data="${flash}" />
 
           <div class="inline-lists">
             <g:if test="${titleInstanceInstance?.title}">

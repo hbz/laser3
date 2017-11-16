@@ -9,17 +9,11 @@
   <body>
       <div>
 
-        <div class="page-header">
-          <h1>${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
-        </div>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+          <h1 class="ui header">${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
 
-        <g:if test="${flash.error}">
-        <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-        </g:if>
+
+        <semui:messages data="${flash}" />
 
         <g:hasErrors bean="${packageInstance}">
         <bootstrap:alert class="alert-error">

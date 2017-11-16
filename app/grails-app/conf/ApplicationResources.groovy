@@ -77,9 +77,6 @@ modules = {
         resource url:'css/select2.css'
         resource url:"css/instances/${Holders.config.defaultCssSkin?:'standard.css'}"
 
-        // upgrade to bootstrap 4 (tmp)
-        resource url:'css/bootstrap_tmp/bs4_card.css'
-
         resource url:'css/style.css'
     }
 

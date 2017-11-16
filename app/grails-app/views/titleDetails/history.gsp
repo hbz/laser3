@@ -36,14 +36,8 @@
    <h1 class="ui header">${titleInstance.title}</h1>
 
     <g:render template="nav" />
-    
-    <g:if test="${flash.message}">
-        <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-    </g:if>
 
-    <g:if test="${flash.error}">
-        <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-    </g:if>
+        <semui:messages data="${flash}" />
 
     <g:if test="${formattedHistoryLines?.size() > 0}">
 

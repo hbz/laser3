@@ -24,9 +24,7 @@
 
           <h1 class="ui header">${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}</h1>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+        <semui:messages data="${flash}" />
 
         <dl>
           <g:if test="${titleInstanceInstance?.ids}">

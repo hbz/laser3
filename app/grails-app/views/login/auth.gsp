@@ -9,14 +9,10 @@
 <div id='login' class="container">
     <div class='inner'>
         <div class='header'>
-            <h1><g:message code="springSecurity.login.header"/></h1>
+            <h1 class="ui header"><g:message code="springSecurity.login.header"/></h1>
         </div>
     <p>
-        <g:if test="${flash.message}">
-            <div>
-                <bootstrap:alert class="alert-error">${flash.message}</bootstrap:alert>
-            </div>
-        </g:if>
+        <semui:messages data="${flash}" />
     </p>
     <semui:card class="card-grey">
         <form action='${postUrl}' method='POST' id='loginForm' class='ui form cssform' autocomplete='off'>

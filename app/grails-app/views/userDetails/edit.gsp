@@ -10,31 +10,25 @@
       <div class="row">
         <div class="span12">
 
-          <div class="page-header">
-             <h1><span id="displayEdit" 
+
+             <h1 class="ui header"><span id="displayEdit"
                        class="xEditableValue"
                        data-type="textarea" 
                        data-pk="${ui.class.name}:${ui.id}"
                        data-name="display" 
                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
                        data-original-title="${ui.display}">${ui.display}</span></h1>
-          </div>
 
-          <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-          </g:if>
 
-          <g:if test="${flash.error}">
-            <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-          </g:if>
+            <semui:messages data="${flash}" />
 
           <h3>${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 
           <table class="ui celled table">
             <thead>
               <tr>
-                <th>${message(code:'user.id', default:'Id')}</td>
-                <th>${message(code:'user.org', default:'Org')}</td>
+                <th>${message(code:'user.id', default:'Id')}</th>
+                <th>${message(code:'user.org', default:'Org')}</th>
                 <th>${message(code:'user.role', default:'Role')}</th>
                 <th>${message(code:'user.status', default:'Status')}</th>
                 <th>${message(code:'user.actions', default:'Actions')}</th>

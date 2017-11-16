@@ -16,12 +16,7 @@
    <div class="span8">
 
 
-    <g:if test="${flash.message}">
-      <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </g:if>
-    <g:if test="${flash.error}">
-      <bootstrap:alert class="alert alert-error">${flash.error}</bootstrap:alert>
-    </g:if>
+       <semui:messages data="${flash}" />
     
      <p>Select the user to keep, and the user whose rights will be transferred. When 'merge' is clicked,
       a confirmation screen with 'user to merge' current rights will be displayed.</p>

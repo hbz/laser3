@@ -9,9 +9,9 @@
   <body>
     <div>
 
-        <div class="page-header">
-          <h1><g:message code="default.list.label" args="[entityName]" /></h1>
-        </div>
+
+          <h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
+
 
         <div class="well">
           <g:form action="list" method="get" class="form-inline">
@@ -21,9 +21,7 @@
           </g:form>
         </div>
 
-        <g:if test="${flash.message}">
-          <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+      <semui:messages data="${flash}" />
         
         <table class="ui celled striped table">
           <thead>

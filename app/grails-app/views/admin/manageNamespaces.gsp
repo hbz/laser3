@@ -12,16 +12,11 @@
 		</semui:breadcrumbs>
 
 		<div>
-			<div class="page-header">
-				<h1><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
-			</div>
 
-			<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-			</g:if>
-			<g:if test="${flash.error}">
-				<bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-			</g:if>
+				<h1 class="ui header"><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
+
+
+			<semui:messages data="${flash}" />
 
 			<g:hasErrors bean="${identifierNamespaceInstance}">
 				<bootstrap:alert class="alert-error">
@@ -34,9 +29,9 @@
 			</g:hasErrors>
 		</div>
 
-		<div>
-			<div class="row">
-				<div class="span8">
+
+			<div class="ui grid">
+				<div class="twelve wide column">
 					<table class="ui celled striped table">
 						<thead>
 						<tr>
@@ -63,9 +58,9 @@
 						</g:each>
 						</tbody>
 					</table>
-				</div><!--.span8-->
+				</div><!--.twelve-->
 
-				<div class="span4">
+				<div class="four wide column">
 					<semui:card title="identifier.namespace.add.label" class="card-grey">
 						<fieldset>
 							<g:form class="form-horizontal" action="manageNamespaces">
@@ -129,9 +124,9 @@
 						</fieldset>
 
 					</semui:card>
-				</div><!--.span4-->
-			</div><!--.row-->
-		</div>
+				</div><!--.four-->
+			</div><!--.grid-->
+
 
 	</body>
 </html>

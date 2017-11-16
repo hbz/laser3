@@ -16,7 +16,7 @@
 
     <semui:messages data="${flash}" />
 
-    <h1>${institution?.name} - Finance Import</h1>
+    <h1 class="ui header">${institution?.name} - Finance Import</h1>
   
     <div class="container-fluid">
       <div class="span12">

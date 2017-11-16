@@ -16,16 +16,14 @@ import="com.k_int.kbplus.RefdataCategory"
   <body>
 
     <div>
-      <h1>${orgInstance.name}</h1>
+      <h1 class="ui header">${orgInstance.name}</h1>
       <g:render template="nav" contextPath="." />
     </div>
 
     <div>
-      
 
-      <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
+
+        <semui:messages data="${flash}" />
 
 		<p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership ..')}</p>
 		

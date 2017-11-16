@@ -15,7 +15,7 @@
     </div>
 
     <div>
-        <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference" class="ipe" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
+        <h1 class="ui header">${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference" class="ipe" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
 
         <g:render template="nav" contextPath="." />
     </div>

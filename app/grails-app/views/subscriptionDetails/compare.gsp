@@ -32,9 +32,7 @@
 			        </li>
 
 			      </ul>
-				<g:if test="${flash.message}">
-					<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+				<semui:messages data="${flash}" />
 		        <g:if test="${request.message}">
 				    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
 			    </g:if>

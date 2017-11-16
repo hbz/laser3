@@ -28,7 +28,7 @@
     <button class="btn btn-primary pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
     <button style="margin-right: 10px" class="btn btn-primary pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
 </g:if>
-<h1>${institution.name} Cost Items</h1>
+<h1 class="ui header">${institution.name} Cost Items</h1>
 <g:form id="filterView" action="index" method="post" params="${[shortcode:params.shortcode]}">
     <input type="hidden" name="shortcode" value="${params.shortcode}"/>
         <table id="costTable" class="table table-striped table-bordered table-condensed table-tworow">
