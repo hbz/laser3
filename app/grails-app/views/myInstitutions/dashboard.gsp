@@ -9,8 +9,8 @@
 
 
 
-    <div class="container home-page">
-      <div class="row">
+    <div class="home-page">
+      <div>
         <div class="span4">
           <div class="well">
             <h6>${message(code:'license.plural', default:'Licenses')}</h6>

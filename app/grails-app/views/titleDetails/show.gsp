@@ -22,29 +22,46 @@
     </div>
 
       <div>
-        <div class="row">
-          <div class="span12">
+        <h1 class="ui header">${ti.title} <g:if test="${ti.status?.value && ti.status.value != 'Current'}"><span class="badge badge-error" style="vertical-align:middle;">${ti.status.getI10n('value')}</span></g:if></h1>
 
-            <div class="page-header">
-              <h1>${ti.title} <g:if test="${ti.status?.value && ti.status.value != 'Current'}"><span class="badge badge-error" style="vertical-align:middle;">${ti.status.getI10n('value')}</span></g:if></h1>
-            </div>         
+        <g:render template="nav" />
+        <semui:messages data="${flash}" />
 
-              <g:render template="nav" />
 
-            <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-            </g:if>
+        <h3>${message(code:'title.identifiers.label')}</h3>
 
-            <g:if test="${flash.error}">
-            <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-            </g:if>
-          </div>
-        </div>
+        <div class="ui grid">
 
-        <div class="row">
-          <div class="span6">
+          <div class="eight wide column">
 
-            <h3>${message(code:'title.identifiers.label')}</h3>
+            <table class="ui celled table">
+              <thead>
+              <tr>
+                <th>${message(code:'title.edit.component_id.label')}</th>
+                <th>${message(code:'title.edit.namespace.label')}</th>
+                <th>${message(code:'title.edit.identifier.label')}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <g:each in="${ti.ids}" var="io">
+                <tr>
+                  <td>${io.id}</td>
+                  <td>${io.identifier.ns.ns}</td>
+                  <td>
+                    <g:if test="${io.identifier.ns.ns == 'originediturl'}">
+                      <a href="${io.identifier.value}">GOKb Link</a>
+                    </g:if>
+                    <g:else>
+                      ${io.identifier.value}
+                    </g:else>
+                  </td>
+                </tr>
+              </g:each>
+              </tbody>
+            </table>
+          </div><!-- .eight -->
+
+          <div class="eight wide column">
 
               <g:each in="${duplicates}" var="entry">
 
@@ -58,38 +75,14 @@
                  </bootstrap:alert>
               </g:each>
 
-            <table class="ui celled table">
-              <thead>
-                <tr>
-                  <th>${message(code:'title.edit.component_id.label')}</td>
-                  <th>${message(code:'title.edit.namespace.label')}</th>
-                  <th>${message(code:'title.edit.identifier.label')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <g:each in="${ti.ids}" var="io">
-                  <tr>
-                    <td>${io.id}</td>
-                    <td>${io.identifier.ns.ns}</td>
-                    <td>
-                      <g:if test="${io.identifier.ns.ns == 'originediturl'}">
-                        <a href="${io.identifier.value}">GOKb Link</a>
-                      </g:if>
-                      <g:else>
-                        ${io.identifier.value}
-                      </g:else>
-                    </td>
-                  </tr>
-                </g:each>
-              </tbody>
-            </table>
-	  </div>
-          <div class="span6">
+          </div><!-- .eight -->
+        </div><!-- .grid -->
+
             <h3>${message(code:'title.edit.orglink')}</h3>
             <table class="ui celled table">
               <thead>
                 <tr>
-                  <th>${message(code:'title.edit.component_id.label')}</td>
+                  <th>${message(code:'title.edit.component_id.label')}</th>
                   <th>${message(code:'template.orgLinks.name')}</th>
                   <th>${message(code:'template.orgLinks.role')}</th>
                   <th>${message(code:'title.edit.orglink.from')}</th>
@@ -112,12 +105,7 @@
                 </g:each>
               </tbody>
             </table>
-          </div>
-        </div>
 
-
-        <div class="row">
-          <div class="span12">
             <h3>${message(code: 'title.show.history.label')}</h3>
             <table class="ui celled striped table">
               <thead>
@@ -154,11 +142,6 @@
                 ${message(code: 'title.show.gokb')} <a href="${ti.getIdentifierValue('originediturl')}">GOKb</a>.
               </span>
             </g:if>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="span12">
 
             <h3>${message(code:'title.edit.tipp')}</h3>
             <g:form id="${params.id}" controller="titleDetails" action="batchUpdate">
@@ -237,8 +220,6 @@
               </table>
             </g:form>
 
-          </div>
-        </div>
       </div>
   </body>
 </html>

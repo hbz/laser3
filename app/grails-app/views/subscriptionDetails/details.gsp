@@ -31,13 +31,7 @@
       </ul>
     </div>
 
-    <g:if test="${flash.message}">
-      <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-    </g:if>
+  <semui:messages data="${flash}" />
 
     <div>
       <g:if test="${params.asAt}"><h1>${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1></g:if>
@@ -48,9 +42,8 @@
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
 
-    <div id="collapseableSubDetails" class="container collapse in">
-      <div class="row">
-        <div class="span8"> 
+    <div id="collapseableSubDetails" class="ui grid">
+        <div class="twelve wide column">
             <br/>
             <h6>${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
             <div class="inline-lists"> 
@@ -205,12 +198,13 @@
             </div>
         </div>
 
-        <div class="span4">
+        <div class="four wide column">
           <g:render template="documents" contextPath="../templates" model="${[ ownobj:subscriptionInstance, owntp:'subscription']}" />
           <g:render template="notes" contextPath="../templates" model="${[ ownobj:subscriptionInstance, owntp:'subscription']}" />
-        </div>
-      </div>
-    </div>
+        </div><!-- .four -->
+    </div><!-- .grid -->
+
+
     <div id="magicArea"></div>
     <g:render template="orgLinksModal" 
               contextPath="../templates" 

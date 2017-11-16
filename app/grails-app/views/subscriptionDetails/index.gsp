@@ -39,13 +39,7 @@
       </ul>
     </div>
 
-    <g:if test="${flash.message}">
-      <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-    </g:if>
+  <semui:messages data="${flash}" />
 
     <div>
       <g:if test="${params.asAt}"><h1>${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>

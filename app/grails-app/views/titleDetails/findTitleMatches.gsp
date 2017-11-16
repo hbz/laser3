@@ -10,9 +10,9 @@
         <div class="row">
           <div class="span12">
 
-            <div class="page-header">
-              <h1>${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
-            </div>
+
+              <h1 class="ui header">${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
+
 
             <g:if test="${flash.message}">
             <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>

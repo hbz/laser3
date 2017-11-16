@@ -7,16 +7,11 @@
 
 <body>
 
-    <div>
-      <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    </div>
-    
-    <div>
-        <h1>${license.licensee?.name} ${license.type?.value} ${message(code:'license.label', default:'License')} : ${license.reference}</h1>
+    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-<g:render template="nav" />
+    <h1 class="ui header">${license.licensee?.name} ${license.type?.value} ${message(code:'license.label', default:'License')} : ${license.reference}</h1>
 
-    </div>
+    <g:render template="nav" />
 
     <div>
       <h3>${message(code:'license.nav.edit_history', default:'Edit History')}</h3>

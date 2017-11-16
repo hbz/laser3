@@ -6,7 +6,6 @@
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
         <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
-
     </head>
     <body>
 
@@ -19,75 +18,67 @@
 
     <semui:messages data="${flash}" />
 
-    <div>
-        <div class="row">
-            <div class="span12">
-                <semui:card class="card-grey">
-                    <input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
-                           data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
-                </semui:card>
-            </div>
+    <div class="ui grid">
+        <div class="twelve wide column">
+
+            <p>${message(code:'propertyDefinition.private.info')}</p>
+
+            <g:if test="${privatePropertyDefinitions}">
+
+                <g:form class="form-horizontal" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
+                    <table class="ui celled striped table">
+                        <thead>
+                            <tr>
+                                <th>${message(code:'propertyDefinition.descr.label', default:'Description')}</th>
+                                <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
+                                <th>Name (DE)</th>
+                                <th>Name (EN)</th>
+                                <th>Count</th>
+                                <th>${message(code:'default.button.delete.label', default:'Delete')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${privatePropertyDefinitions}" var="ppd">
+                                <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(ppd, 'name')}" />
+                                <tr>
+                                    <td>${ppd.getI10n('descr')}</td>
+                                    <td>
+                                        ${ppd.getI10n('name')}
+                                        <g:if test="${ppd.softData}">
+                                            <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                        </g:if>
+                                        <g:if test="${ppd.mandatory}">
+                                            <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                                        </g:if>
+                                        <g:if test="${ppd.multipleOccurrence}">
+                                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                        </g:if>
+                                    </td>
+                                    <td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+                                    <td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+                                    <td>${ppd.countUsages()}</td>
+                                    <td>
+                                        <g:if test="${ppd.countUsages()==0}">
+                                            <g:checkBox name="deleteIds" value="${ppd?.id}" checked="false" />
+                                        </g:if>
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </tbody>
+                    </table>
+
+                    <g:field type="hidden" name="cmd" value="delete" />
+                    <button type="submit" class="ui primary button">${message(code:'default.button.delete.label', default:'Delete')}</button>
+                </g:form>
+            </g:if>
         </div>
-    </div>
-
-    <div>
-        <div class="row">
-            <div class="span12">
-
-                <p>${message(code:'propertyDefinition.private.info')}</p>
-
-                <g:if test="${privatePropertyDefinitions}">
-                    <fieldset>
-                        <g:form class="form-horizontal" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
-                            <table class="ui celled striped table">
-                                <thead>
-                                    <tr>
-                                        <th>${message(code:'propertyDefinition.descr.label', default:'Description')}</th>
-                                        <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
-                                        <th>Name (DE)</th>
-                                        <th>Name (EN)</th>
-                                        <th>Count</th>
-                                        <th>${message(code:'default.button.delete.label', default:'Delete')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <g:each in="${privatePropertyDefinitions}" var="ppd">
-                                        <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(ppd, 'name')}" />
-                                        <tr>
-                                            <td>${ppd.getI10n('descr')}</td>
-                                            <td>
-                                                ${ppd.getI10n('name')}
-                                                <g:if test="${ppd.softData}">
-                                                    <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
-                                                </g:if>
-                                                <g:if test="${ppd.mandatory}">
-                                                    <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
-                                                </g:if>
-                                                <g:if test="${ppd.multipleOccurrence}">
-                                                    <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
-                                                </g:if>
-                                            </td>
-                                            <td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-                                            <td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-                                            <td>${ppd.countUsages()}</td>
-                                            <td>
-                                                <g:if test="${ppd.countUsages()==0}">
-                                                    <g:checkBox name="deleteIds" value="${ppd?.id}" checked="false" />
-                                                </g:if>
-                                            </td>
-                                        </tr>
-                                    </g:each>
-                                </tbody>
-                            </table>
-
-                            <g:field type="hidden" name="cmd" value="delete" />
-                            <button type="submit" class="ui primary button">${message(code:'default.button.delete.label', default:'Delete')}</button>
-                        </g:form>
-                    </fieldset>
-                </g:if>
-            </div>
+        <div class="four wide column">
+            <semui:card class="card-grey">
+                <input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
+                       data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
+            </semui:card>
         </div>
-    </div>
+    </div><!-- .grid -->
 
     <div id="addPropertyDefinitionModal" class="modal hide">
 

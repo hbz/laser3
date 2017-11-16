@@ -10,10 +10,8 @@
 	<body>
 		<div>
 			<div class="span12">
-				
-				<div class="page-header">
-					<h1><g:message code="default.list.label" args="[entityName]" /></h1>
-				</div>
+
+				<h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
 
 				<g:if test="${flash.message}">
 				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>

@@ -11,7 +11,7 @@
         <semui:crumb text="${institution?.name}" class="active" />
     </semui:breadcrumbs>
 
-    <div class="container home-page">
+    <div class="home-page">
       <div class="well">
         <h1>${institution.name} - Dashboard</h1>
         <ul class="inline">
@@ -51,9 +51,9 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="container home-page">
-      <div class="row">
-        <div class="span4">
+    <div class="home-page">
+      <div class="ui grid">
+        <div class="five wide column">
             <table class="table table-bordered dashboard-widget">
               <thead>
                 <th>
@@ -85,13 +85,13 @@
               </g:each>
                 <tr>
                   <td>
-                    <g:link action="todo" params="${[shortcode:params.shortcode]}" class="btn btn-primary pull-right">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
+                    <g:link action="todo" params="${[shortcode:params.shortcode]}" class="ui primary button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
                   </td>
                 </tr>
               </tbody>
             </table>
-        </div>
-        <div class="span4">
+        </div><!-- .five -->
+        <div class="six wide column">
             <table class="table table-bordered dashboard-widget">
               <thead>
                 <th>
@@ -120,14 +120,14 @@
               </g:each>
                 <tr>
                   <td>
-                     <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="btn btn-primary pull-right">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
+                     <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="ui primary button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
                   </td>
                 </tr>
               </tbody>
             </table>
-        </div>
+        </div><!-- .six -->
         <g:if test="${grailsApplication.config.ZenDeskBaseURL}">
-        <div class="span4">
+        <div class="five wide column">
            <table class="table table-bordered dashboard-widget">
               <thead>
                 <th>
@@ -179,9 +179,9 @@
             </tr>
           </tbody>
           </table>
-        </div>
+        </div><!-- .five -->
         </g:if>
-      </div>
+      </div><!-- .grid -->
     </div>
 
     <r:script>

@@ -9,22 +9,14 @@
 
 <body>
 
-    <div>
-      <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    </div>
-    
-<g:if test="${flash.message}">
-    <div><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-</g:if>
+    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-<g:if test="${flash.error}">
-    <div><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-</g:if>
+    <semui:messages data="${flash}" />
 
-<div>
-    <h1>${license?.reference}</h1>
+    <h1 class="ui header">${license?.reference}</h1>
+
     <g:render template="nav"/>
-</div>
+
 
 <div>
 <g:if test="${consortia}">

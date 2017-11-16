@@ -11,27 +11,19 @@
         <semui:crumb message="license.copy" class="active" />
     </semui:breadcrumbs>
 
-    <div>
-      <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
-      <ul class="nav nav-pills">
-       <li><g:link controller="myInstitutions" 
-                   action="currentLicenses" 
-                   params="${[shortcode:params.shortcode]}">${message(code:'license.current')}</g:link></li>
 
-       <li class="active"><g:link controller="myInstitutions" 
-                                  action="addLicense" 
-                                  params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
+    <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
-        <g:if test="${is_inst_admin}">
-          <li><g:link controller="myInstitutions" 
-                                     action="cleanLicense" 
-                                     params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>
-        </g:if>
-      </ul>
-    </div>
+    <semui:subNav actionName="${actionName}">
+      <semui:subNavItem controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
+      <semui:subNavItem controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}" message="license.copy" />
+      <g:if test="${is_inst_admin}">
+        <semui:subNavItem controller="myInstitutions" action="cleanLicense" params="${[shortcode:params.shortcode]}" message="license.add.blank" />
+      </g:if>
+    </semui:subNav>
 
-    <div class="container license-searches">
-        <div class="row">
+    <div class="license-searches">
+        <div>
             <div class="span6">&nbsp;
                 <!--
                 <input type="text" name="keyword-search" placeholder="enter search term..." />
@@ -61,21 +53,10 @@
           </div>
       </div>
 
-      <g:if test="${flash.message}">
-        <div>
-          <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </div>
-      </g:if>
-
-      <g:if test="${flash.error}">
-        <div>
-          <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-        </div>
-      </g:if>
-
+      <semui:messages data="${flash}" />
 
       <g:if test="${licenses?.size() > 0}">
-        <div class="container license-results">
+        <div class="license-results">
           <table class="ui celled striped table">
             <thead>
               <tr>

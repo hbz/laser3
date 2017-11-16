@@ -58,7 +58,7 @@ class SemanticUiTagLib {
 
     // <semui:subNav actionName="${actionName}">
     //     <semui:subNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" />
-    // <semui:subNav>
+    // </semui:subNav>
 
     def subNav = { attrs, body ->
 

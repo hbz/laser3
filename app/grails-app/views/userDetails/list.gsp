@@ -8,11 +8,8 @@
   </head>
   <body>
     <div>
-      
-        
-        <div class="page-header">
-          <h1>Users</h1>
-        </div>
+
+          <h1 class="ui header">Users</h1>
 
           <div class="well form-horizontal">
 

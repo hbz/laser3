@@ -8,7 +8,6 @@
   <body>
     <div>
 
-    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link>
           <span class="divider">/</span> </li>
@@ -20,15 +19,10 @@
            </li>
 
       </ul>
-    </div>
-
-    </div>
-      <div>
-
 
         <semui:messages data="${flash}" />
 
-      <div class="row">
+      <div>
         <div class="span12">
           <h3>${message(code:'myinst.tip.coreDates', default:'Core dates')}</h3>
           <ul>

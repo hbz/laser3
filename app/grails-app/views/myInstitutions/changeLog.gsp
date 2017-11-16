@@ -19,7 +19,7 @@
     </li>
   </semui:breadcrumbs>
 
-    <div class="container home-page">
+    <div class="home-page">
 
       <div class="pagination" style="text-align:center">
         ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br/>

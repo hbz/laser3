@@ -14,23 +14,10 @@
       </ul>
     </div>
 
-   <g:if test="${flash.message}">
-      <div class="container-fluid">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
+    <semui:messages data="${flash}" />
 
-    <g:if test="${flash.error}">
-      <div class="container-fluid">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <div class="container-fluid">
-      <h1>${institution?.name} - Finance Import</h1>
-    </div>
-
-
+    <h1>${institution?.name} - Finance Import</h1>
+  
     <div class="container-fluid">
       <div class="span12">
         <g:if test="${loaderResult==null}">

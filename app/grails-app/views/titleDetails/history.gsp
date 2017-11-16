@@ -33,7 +33,7 @@
     <div class="span12">
 
 
-  <div class="page-header">   <h1>${titleInstance.title}</h1> </div>         
+   <h1 class="ui header">${titleInstance.title}</h1>
 
     <g:render template="nav" />
     

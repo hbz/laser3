@@ -28,7 +28,7 @@
           <li class="${active_filter=='all'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'all']}">${message(code:'myinst.tipview.all', default:'All')}</g:link></li>
 
       </ul>
-      <div class="row">
+      <div>
         <div class="span12">
           <g:form action="tipview" method="get" params="${[shortcode:params.shortcode]}">
 

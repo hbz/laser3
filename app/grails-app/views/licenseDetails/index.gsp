@@ -11,30 +11,22 @@
 
   <body>
 
-    <div>
       <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    </div>
 
-    <div>
-      <h1>
+      <h1 class="ui header">
           ${license.licensee?.name}
           ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
           <g:xEditable owner="${license}" field="reference" id="reference"/>
       </h1>
-      <g:render template="nav" />
-    </div>
-    <div>
 
-    <g:if test="${flash.message}">
-      <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </g:if>
-    </div>
+      <g:render template="nav" />
+
+
+        <semui:messages data="${flash}" />
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':license]}"/>
 
-    <div>
-            <div class="row">
-                <div class="span12">
+
                     <h6>${message(code:'license.properties')}</h6>
 
                     <div id="custom_props_div_props">
@@ -69,10 +61,10 @@
                             initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
                         });
                     </r:script>
-                </div>
-                <br/>
 
-                <div class="span8">
+               <div class="ui grid">
+
+                <div class="twelve wide column">
   
                 <h6>${message(code:'license.details.information', default:'Information')}</h6>
 
@@ -260,11 +252,12 @@
 
                   <div class="clearfix"></div>
                 </div>
-              </div>
-              <div class="span4">
+              </div><!-- .twelve -->
+
+              <div class="four wide column">
                 <semui:card title="license.actions" class="card-grey">
 
-            <g:if test="${canCopyOrgs}">
+                <g:if test="${canCopyOrgs}">
                  
                   <label for="orgShortcode">${message(code:'license.copyLicensefor', default:'Copy license for')}:</label>
              <%-- <label for="orgShortcode">Copy license for:</label> --%>
@@ -283,16 +276,16 @@
 %{--            
           leave this out for now.. it is a bit confusing.
           <g:link name="deletLicenseBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
-          </g:if>
+                </g:if>
                   <g:else>
                     ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
                   </g:else>
                  </semui:card>
                 <g:render template="/templates/documents" model="${[ ownobj:license, owntp:'license']}" />
                 <g:render template="/templates/notes"  model="${[ ownobj:license, owntp:'license']}" />
-              </div>
-            </div>
-    </div>
+              </div><!-- .four -->
+            </div><!-- .grid -->
+
     <g:render template="orgLinksModal" 
               contextPath="../templates" 
               model="${[linkType:license?.class?.name,roleLinks:license?.orgLinks,parent:license.class.name+':'+license.id,property:'orgLinks',recip_prop:'lic']}" />

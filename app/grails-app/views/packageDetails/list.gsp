@@ -10,9 +10,7 @@
   <body>
 
     <div>
-      <div class="page-header">
-        <h1>${message(code:'package.search')}</h1>
-      </div>
+        <h1 class="ui header">${message(code:'package.search')}</h1>
       <g:if test="${flash.message}">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
       </g:if>

@@ -33,9 +33,8 @@
       
       <div class="span10">
 
-        <div class="page-header">
-          <h1>${message(code:'package.label', default:'Package')} : ${packageInstance?.name} (${packageInstance?.contentProvider?.name})</h1>
-        </div>
+          <h1 class="ui header">${message(code:'package.label', default:'Package')} : ${packageInstance?.name} (${packageInstance?.contentProvider?.name})</h1>
+
 
         <g:if test="${flash.message}">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>

@@ -8,32 +8,20 @@
   </head>
   <body>
 
-  <semui:breadcrumbs>
-    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
-    <g:if test="${editable}">
-      <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
-  </semui:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
+      <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
+      <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+      </g:if>
+    </semui:breadcrumbs>
 
-   <g:if test="${flash.message}">
-      <div>
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div>
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <div>
+    <semui:messages data="${flash}" />
 
       <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
       <g:render template="subsNav" contextPath="." />
-    </div>
+
 
     <div>
       <div class="well">
@@ -72,7 +60,7 @@
     </div>
 
 
-      <div class="container subscription-results">
+      <div class="subscription-results">
         <table class="table table-striped table-bordered table-condensed table-tworow">
           <tr>
             <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />

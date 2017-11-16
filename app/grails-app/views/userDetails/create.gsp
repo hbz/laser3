@@ -8,11 +8,8 @@
   </head>
   <body>
     <div>
-      
-        
-        <div class="page-header">
-          <h1>New User</h1>
-        </div>
+
+          <h1 class="ui header">New User</h1>
 
         <g:if test="${flash.message}">
           <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>

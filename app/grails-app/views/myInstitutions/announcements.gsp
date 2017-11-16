@@ -12,7 +12,7 @@
     <semui:crumb message="menu.datamanager.ann" class="active" />
   </semui:breadcrumbs>
 
-    <div class="container home-page">
+    <div class="home-page">
             <table class="table">
               <g:each in="${recentAnnouncements}" var="ra">
                 <tr>

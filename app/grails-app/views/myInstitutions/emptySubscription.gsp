@@ -11,11 +11,10 @@
             <semui:crumb message="myinst.addSubscription.label" class="active" />
         </semui:breadcrumbs>
 
-        <div>
-            <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
-            <g:render template="subsNav" contextPath="." />
-        </div>
-        
+        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
+
+        <g:render template="subsNav" contextPath="." />
+
     <div>
       <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>
       <g:form action="processEmptySubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="post" class="form-inline"> 

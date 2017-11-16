@@ -33,7 +33,7 @@
 	    <input type="hidden" name="editable"   value="${editable}"/>
 	    <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="ui primary button"/>
+        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="ui mini primary button"/>
 	</g:formRemote>
 </g:if>
 

@@ -29,7 +29,7 @@
 
     <div class="tabbable"> <!-- Only required for left/right tabs -->
       <dl>
-        <dt>License</td>
+        <dt>License</dt>
         <dd><g:relation domain='Subscription' 
                         pk='${subscriptionInstance.id}' 
                         field='owner' 

@@ -9,9 +9,7 @@
   <body>
       <div>
 
-        <div class="page-header">
-          <h1>Subscription Offered - Manual Upload</h1>
-        </div>
+          <h1 class="ui header">Subscription Offered - Manual Upload</h1>
 
         <g:if test="${flash.message}">
         <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>

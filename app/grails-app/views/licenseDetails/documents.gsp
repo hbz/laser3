@@ -7,21 +7,15 @@
 
 <body>
 
-    <div>
-      <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    </div>
+    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-<div>
-    <h1>${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span></h1>
+    <h1 class="ui header">${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span></h1>
 
     <g:render template="nav" />
 
-</div>
-
-<div>
     <g:render template="/templates/documents_table" model="${[instance:license, redirect:'documents']}"/>
-</div>
-<g:render template="/templates/addDocument" model="${[ownobj:license, owntp:'license']}" />
+
+    <g:render template="/templates/addDocument" model="${[ownobj:license, owntp:'license']}" />
 
 </body>
 </html>

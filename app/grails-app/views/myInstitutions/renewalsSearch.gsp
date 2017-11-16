@@ -15,7 +15,7 @@
     <div>
       <g:form action="renewalsSearch" method="get" params="${params}">
       <input type="hidden" name="offset" value="${params.offset}"/>
-      <div class="row">
+      <div>
         <div class="span12">
           <div class="well">
             Package Name: <input name="pkgname" value="${params.pkgname}"/>
@@ -28,7 +28,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div>
         <div class="span2">
           <div class="well">
               <g:each in="${facets}" var="facet">

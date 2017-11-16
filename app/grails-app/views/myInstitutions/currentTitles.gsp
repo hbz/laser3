@@ -36,17 +36,8 @@
         </li>
     </semui:breadcrumbs>
 
-    <g:if test="${flash.message}">
-      <div>
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
+  <semui:messages data="${flash}" />
 
-    <g:if test="${flash.error}">
-      <div>
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
     <div>
       <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>

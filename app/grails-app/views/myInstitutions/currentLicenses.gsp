@@ -25,63 +25,37 @@
       </li>
   </semui:breadcrumbs>
 
+  <semui:messages data="${flash}" />
 
-    <g:if test="${flash.message}">
-      <div>
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
+  <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
-    <g:if test="${flash.error}">
-      <div>
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <div>
-      <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
-
-     <ul class="nav nav-pills">
-       <li class="active"><g:link controller="myInstitutions" 
-                            action="currentLicenses" 
-                            params="${[shortcode:params.shortcode]}">${message(code:'license.current')}
-                          </g:link></li>
-
-          <li><g:link controller="myInstitutions" 
-                                  action="addLicense" 
-                                  params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
+    <semui:subNav actionName="${actionName}">
+        <semui:subNavItem controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
+        <semui:subNavItem controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}" message="license.copy" />
         <g:if test="${is_inst_admin}">
-          <li><g:link controller="myInstitutions" 
-                                     action="cleanLicense" 
-                                     params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>
+            <semui:subNavItem controller="myInstitutions" action="cleanLicense" params="${[shortcode:params.shortcode]}" message="license.add.blank" />
         </g:if>
+    </semui:subNav>
 
-      </ul>
-    </div>
+    <div class="license-searches">
+      <div class="well">
 
-    <div class="container license-searches">
-        <div class="row">
-            <div class="span8">
-              <div class="well">
-
-                <form class="form-inline">
-                  <div>
-                    <label>${message(code:'license.valid_on', default:'Valid On')}:</label>
-                    <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">
-                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label>
-                    <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
-                  </div>
-                  <div style="margin-top:10px;">
-                    <label>${message(code:'license.property.search')}:</label>
-                    <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
-                    <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
-                    <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
-                    <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
-                  </div>
-                </form>
-              </div>
-            </div>
-        </div>
+        <form class="form-inline">
+          <div>
+            <label>${message(code:'license.valid_on', default:'Valid On')}:</label>
+            <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">
+            <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label>
+            <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
+          </div>
+          <div style="margin-top:10px;">
+            <label>${message(code:'license.property.search')}:</label>
+            <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
+            <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
+            <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
+            <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+          </div>
+        </form>
+      </div>
     </div>
 
       <div>
@@ -92,7 +66,7 @@
 
 
 
-        <div class="container license-results">
+        <div class="license-results">
         <g:if test="${licenseCount && licenseCount>0}">
           <span>${message(code:'license.current.showing', args:[licenseCount])}</span>
         </g:if>
