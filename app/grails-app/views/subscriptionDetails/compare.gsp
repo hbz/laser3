@@ -141,7 +141,7 @@
 					<input type="hidden" name="nochng" value="${params.nochng}"/>
 					<input type="hidden" name="countA" value="${params.countA}"/>
 					<input type="hidden" name="countB" value="${params.countB}"/>
-					<table>
+					 <table class="ui celled table">
 						<tr>
 							<td>
 								${message(code:'subscription.compare.filter.title', default:'Filters - Title')}: <input name="filter" value="${params.filter}">

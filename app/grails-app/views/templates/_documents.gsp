@@ -1,4 +1,4 @@
-<semui:card title="license.documents" class="card-grey documents">
+<semui:card message="license.documents" class="card-grey documents">
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">
       <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">

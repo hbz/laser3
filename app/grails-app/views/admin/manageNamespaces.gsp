@@ -61,7 +61,7 @@
 				</div><!--.twelve-->
 
 				<div class="four wide column">
-					<semui:card title="identifier.namespace.add.label" class="card-grey">
+					<semui:card message="identifier.namespace.add.label" class="card-grey">
 						<fieldset>
 							<g:form class="form-horizontal" action="manageNamespaces">
 

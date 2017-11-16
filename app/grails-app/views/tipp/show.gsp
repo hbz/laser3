@@ -132,9 +132,9 @@
           <dd>${tipp.platform.name}</dd>
         </dl>
         <dl>
-          <dt style="margin-top:10px">${message(code:'tipp.additionalPlatforms', default:'Additional Platforms')}</td>
+          <dt style="margin-top:10px">${message(code:'tipp.additionalPlatforms', default:'Additional Platforms')}</dt>
           <dd>
-            <table class="table">
+            <table class="ui celled table">
               <thead>
                 <tr><th>${message(code:'default.relation.label', default:'Relation')}</th><th>${message(code:'tipp.show.platformName', default:'Platform Name')}</th><th>${message(code:'platform.primaryURL', default:'Primary URL')}</th></tr>
               </thead>
@@ -169,7 +169,7 @@
                   <input type="submit" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
                 </g:form>
 
-            <table class="table">
+            <table class="ui celled table">
               <thead>
               <tr>
                 <th>${message(code:'tipp.coverage_start')}</th>

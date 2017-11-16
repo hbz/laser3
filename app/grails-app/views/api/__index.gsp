@@ -11,7 +11,7 @@
     <ul>
       <li><g:link action="assertCore">AssertCore</g:link> - assert a JUSP Core status against an institution, title and optionally provider. If no provider is given then
           records will be created for all providers we know about for this title.
-        <table>
+         <table class="ui celled table">
           <tr><th>Parameter</th><th>Optonal/Mandatory</th><th>Description</th><th>Examples</th></tr>
           <tr>
             <td><strong>provider</strong></td>

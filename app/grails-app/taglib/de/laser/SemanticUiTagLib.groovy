@@ -114,12 +114,14 @@ class SemanticUiTagLib {
         }
     }
 
-    // <semui:card title="" class="some_css_class">
+    // <semui:card text="${text}" message="local.string" class="some_css_class">
     //
     // <semui:card>
 
     def card = { attrs, body ->
-        def title = attrs.title ? "${message(code: attrs.title)}" : ''
+        def text      = attrs.text ? attrs.text : ''
+        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def title  = (text && message) ? text + " - " + message : text + message
 
         out << '<div class="ui card ' + attrs.class + '">'
         out <<   '<div class="content">'

@@ -139,7 +139,7 @@
 	<input type="hidden" name="countA" value="${params.countA}"/>
 	<input type="hidden" name="countB" value="${params.countB}"/>
 
-	<table>
+	 <table class="ui celled table">
 		<tr>
 			<td style="text-align:right;padding-right:10px;">
 				${message(code:'package.compare.filter.title', default:'Filters - Title')}: <input type="text" name="filter" value="${params.filter}"/>

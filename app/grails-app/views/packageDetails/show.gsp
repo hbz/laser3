@@ -47,8 +47,7 @@
 
       <div>
         <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
-        <div class="page-header">
-          <div>
+
           <h1 class="ui header"><g:if test="${editable}"><span id="packageNameEdit"
                         class="xEditableValue"
                         data-type="textarea"
@@ -63,9 +62,6 @@
               <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
             </g:if>
 
-          </div>
-
-        </div>
     </div>
 
  <semui:messages data="${flash}" />
@@ -80,9 +76,8 @@
         </bootstrap:alert>
         </g:hasErrors>
 
-    <div>
-      <div class="row">
-        <div class="span8">
+    <div class="ui grid">
+        <div class="twelve wide column">
             <h6>
               ${message(code: 'package.show.pkg_information')}
               <span class="btn-group pull-right" data-toggle="buttons-radio">
@@ -222,35 +217,34 @@
               </dl>
 
           </fieldset>
-        </div>
+        </div><!-- .twelve -->
 
 
-        <div class="span4">
+        <div class="four wide column">
 
-          <div class="well notes">
-            <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
-              <h5>${message(code: 'package.show.addToSub')}:</h5>
-              <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}">
-                <select name="subid">
-                  <g:each in="${subscriptionList}" var="s">
-                    <option value="${s.sub.id}">${s.sub.name ?: "unnamed subscription ${s.sub.id}"} - ${s.org.name}</option>
-                  </g:each>
-                </select><br/>
-                ${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" style="vertical-align:text-bottom;"/><br/>
-                <input id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
-              </g:form>
-            </g:if>
-            <g:else>
-              ${message(code: 'package.show.no_subs')}
-            </g:else>
-          </div>
-
+            <semui:card message="package.show.addToSub" class="card-grey notes">
+                <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
+                  <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}">
+                    <select name="subid">
+                      <g:each in="${subscriptionList}" var="s">
+                        <option value="${s.sub.id}">${s.sub.name ?: "unnamed subscription ${s.sub.id}"} - ${s.org.name}</option>
+                      </g:each>
+                    </select><br/>
+                    ${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" style="vertical-align:text-bottom;"/><br/>
+                    <input id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
+                  </g:form>
+                </g:if>
+                <g:else>
+                  ${message(code: 'package.show.no_subs')}
+                </g:else>
+            </semui:card>
 
           <g:render template="/templates/documents" model="${[ ownobj:packageInstance, owntp:'pkg']}" />
           <g:render template="/templates/notes"  model="${[ ownobj:packageInstance, owntp:'pkg']}" />
-        </div>
-      </div>
-    </div>
+        </div><!-- .four -->
+
+    </div><!-- .grid -->
+
 
     <div>
       <br/>

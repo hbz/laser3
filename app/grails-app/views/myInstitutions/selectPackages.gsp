@@ -11,7 +11,7 @@
       <ul><g:each in="${subscriptionInstance.packages}" var="p">
         <li>${p?.pkg?.name}</li>
       </g:each></ul>
-      <table>
+       <table class="ui celled table">
         <tr>
           <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
           <th>${message(code:'myinst.selectPackages.candidates', default:'Candidate Packages')}</th>

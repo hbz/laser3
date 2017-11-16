@@ -16,22 +16,13 @@
 
 <body>
 
-<div>
-  <ul class="breadcrumb">
-    <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-    <li> <g:link controller="titleDetails" action="show" id="${titleInstance.id}">${message(code: 'title', default: 'Title')} ${titleInstance.title}</g:link> </li>
-
-    <li class="dropdown pull-right">
+  <semui:breadcrumbs>
+    <semui:crumb class="active" text="${message(code:'title.title.label')}: ${titleInstance.title}" />
 
     <g:if test="${editable}">
-      <li class="pull-right"><span class="badge badge-warning">${message(code: 'default.editable', default: 'Editable')}</span>&nbsp;</li>
+      <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable')}</span>&nbsp;</li>
     </g:if>
-  </ul>
-</div>
-
-<div>
-    <div class="span12">
-
+  </semui:breadcrumbs>
 
    <h1 class="ui header">${titleInstance.title}</h1>
 
@@ -82,9 +73,7 @@
     <g:else>
       <div class="container alert-warn"> </div>
     </g:else>
-  </div>
-  </div>
-  </div>
+
 
 </body>
 </html>

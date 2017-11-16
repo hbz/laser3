@@ -15,7 +15,7 @@
 
     <div class="container" style="text-align:center">
       <g:form action="list" method="get" class="form-inline">
-        <table>
+         <table class="ui celled table">
           <tr>
             <td style="white-space:nowrap">
               <label>${message(code:'package.search.text')} : </label> <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;

@@ -1,4 +1,4 @@
-<table>
+ <table class="ui celled table">
 	<thead>
 		<th style="border:1px solid #dddddd;">${message(code:'tipp.coverage_start', default:'Coverage Start')}</th>
 		<th style="border:1px solid #dddddd;">${message(code:'tipp.coverage_end', default:'Coverage End')}</th>

@@ -86,10 +86,9 @@
 
         </fieldset>
 
-        <dl>
-          <dt>${message(code:'platform.show.availability', default:'Availability of titles in this platform by package')}</dt>
-          <dd>
-            <table border="1" cellspacing="5" cellpadding="5">
+        ${message(code:'platform.show.availability', default:'Availability of titles in this platform by package')}
+
+            <table class="ui celled table">
               <tr>
                 <th rowspan="2" style="width: 25%;">${message(code:'title.label', default:'Title')}</th>
                 <th rowspan="2" style="width: 20%;">${message(code:'identifier.plural', default:'Identifiers')}</th>
@@ -132,8 +131,7 @@
                 </tr>
               </g:each>
             </table>
-          </dd>
-        </dl>
+
 
       </div>
 

@@ -19,7 +19,7 @@
 		<div id="list-org" class="content scaffold-list" role="main">
 			<h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
 			<semui:messages data="${flash}" />
-			<table>
+			 <table class="ui celled table">
 			<thead>
 					<tr>
 					

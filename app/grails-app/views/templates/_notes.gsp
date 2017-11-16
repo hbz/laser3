@@ -1,4 +1,4 @@
-<semui:card title="license.notes" class="card-grey notes">
+<semui:card message="license.notes" class="card-grey notes">
 <%-- <h5>Notes</h5> --%>
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">

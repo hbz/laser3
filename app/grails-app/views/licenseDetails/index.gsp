@@ -255,7 +255,7 @@
               </div><!-- .twelve -->
 
               <div class="four wide column">
-                <semui:card title="license.actions" class="card-grey">
+                <semui:card message="license.actions" class="card-grey">
 
                 <g:if test="${canCopyOrgs}">
                  

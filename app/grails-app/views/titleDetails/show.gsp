@@ -8,23 +8,18 @@
 </head>
   <body>
 
-    <div>
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="titleDetails" action="show" id="${ti.id}">${message(code:'title.title.label')} ${ti.title}</g:link> </li>
+      <semui:breadcrumbs>
+          <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
 
-        <li class="dropdown pull-right">
+          <g:if test="${editable}">
+              <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable')}</span>&nbsp;</li>
+          </g:if>
+      </semui:breadcrumbs>
 
-        <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable')}</span>&nbsp;</li>
-        </g:if>
-      </ul>
-    </div>
-
-      <div>
         <h1 class="ui header">${ti.title} <g:if test="${ti.status?.value && ti.status.value != 'Current'}"><span class="badge badge-error" style="vertical-align:middle;">${ti.status.getI10n('value')}</span></g:if></h1>
 
         <g:render template="nav" />
+
         <semui:messages data="${flash}" />
 
 
@@ -220,6 +215,5 @@
               </table>
             </g:form>
 
-      </div>
   </body>
 </html>
