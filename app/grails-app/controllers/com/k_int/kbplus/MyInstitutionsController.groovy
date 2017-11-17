@@ -28,6 +28,7 @@ class MyInstitutionsController {
     def docstoreService
     def tsvSuperlifterService
     def permissionHelperService
+    def contextService
 
     static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
 
@@ -2576,6 +2577,19 @@ AND EXISTS (
         result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
 
         result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def switchContext() {
+        def user = User.get(springSecurityService.principal.id)
+        def org  = Org.findByShortcode(params.shortcode)
+
+        if (user && org && org.id in user.getAuthorizedOrgsIds()) {
+            log.debug('switched context to: ' + org)
+            contextService.setOrg(org)
+        }
+
+        redirect action:'instdash', params:params
     }
 
     /**

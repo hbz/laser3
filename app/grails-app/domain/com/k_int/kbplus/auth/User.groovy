@@ -96,6 +96,12 @@ class User implements Permissions {
     def o = Org.executeQuery(qry, [this]);
     o
   }
+  @Transient def getAuthorizedOrgsIds() {
+    // def result = Org.find(
+    def qry = "select o.id from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+    def o = Org.executeQuery(qry, [this]);
+    o
+  }
 
   /**
    * This method lists all the principals that convey a particular permission on a user. For example
