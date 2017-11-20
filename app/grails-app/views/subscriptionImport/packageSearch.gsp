@@ -55,7 +55,7 @@
                 <div id="resultsarea">
                   <table class="ui celled striped table">
                     <thead>
-                      <tr><th>${message(code:'package.show.pkg_name', default:'Package Name')}</th><th>${message(code:'consortium.label', default:'Consortium')}</th><th>${message(code:'default.additionalInfo.label', default:'Additional Info')}</th></tr>
+                      <tr><th>${message(code:'package.show.pkg_name', default:'Package Name')}</th><th>${message(code:'consortium.label', default:'Consortium')}</th><th>${message(code:'default.permissionInfo.label', default:'Additional Info')}</th></tr>
                     </thead>
                     <tbody>
                       <g:each in="${hits}" var="hit">

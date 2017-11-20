@@ -7,7 +7,7 @@
     <semui:subNavItem controller="licenseDetails" action="notes" params="${[id:params.id]}" message="license.nav.notes" />
     <semui:subNavItem controller="licenseDetails" action="todo_history" params="${[id:params.id]}" message="license.nav.todo_history" />
     <semui:subNavItem controller="licenseDetails" action="edit_history" params="${[id:params.id]}" message="license.nav.edit_history" />
-    <semui:subNavItem controller="licenseDetails" action="additionalInfo" params="${[id:params.id]}" message="license.nav.additionalInfo" />
+    <semui:subNavItem controller="licenseDetails" action="permissionInfo" params="${[id:params.id]}" message="license.nav.permissionInfo" />
     <semui:subNavItem controller="licenseDetails" action="properties" params="${[id:params.id]}" message="license.nav.privateProperties" />
 
     <g:if test="${license.orgLinks?.find{it.roleType?.value == 'Licensing Consortium' && permissonHelperService.hasUserWithRole(user, it.org, 'INST_ADM') && license.licenseType == 'Template'}}">

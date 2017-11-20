@@ -41,25 +41,25 @@
           ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br/>
           <table class="ui celled table">
             <tbody>
-            <input type="hidden" name="subscription.start_date" value="${additionalInfo?.sub_startDate}"/>
-            <input type="hidden" name="subscription.end_date" value="${additionalInfo?.sub_endDate}"/>
-            <input type="hidden" name="subscription.copy_docs" value="${additionalInfo?.sub_id}"/>
+            <input type="hidden" name="subscription.start_date" value="${permissionInfo?.sub_startDate}"/>
+            <input type="hidden" name="subscription.end_date" value="${permissionInfo?.sub_endDate}"/>
+            <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
 
               <tr><th>${message(code:'default.select.label', default:'Select')}</th><th >${message(code:'myinst.renewalUpload.props', default:'Subscription Properties')}</th><th>${message(code:'default.value.label', default:'Value')}</th></tr>
               <tr>
                 <th><g:checkBox name="subscription.copyStart" value="${true}" /></th>
                 <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-                <td>${additionalInfo?.sub_startDate}</td>
+                <td>${permissionInfo?.sub_startDate}</td>
               </tr>
               <tr>
                 <th><g:checkBox name="subscription.copyEnd" value="${true}" /></th>
                 <th>${message(code:'default.endDate.label', default:'End Date')}</th>
-                <td>${additionalInfo?.sub_endDate}</td>
+                <td>${permissionInfo?.sub_endDate}</td>
               </tr>
               <tr>
                 <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
                 <th>${message(code:'myinst.renewalUpload.copy', default:'Copy Documents and Notes from Subscription')}</th>
-                <td>${additionalInfo?.sub_name}</td>
+                <td>${permissionInfo?.sub_name}</td>
               </tr>
             </tbody>
           </table>

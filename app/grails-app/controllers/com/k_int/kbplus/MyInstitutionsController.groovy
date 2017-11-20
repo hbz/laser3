@@ -2050,7 +2050,7 @@ AND EXISTS (
                     flash.error = message(code:'myinst.processRenewalUpload.error.access')
                 }
             }
-            result.additionalInfo = [sub_startDate:sub_startDate,sub_endDate:sub_endDate,sub_name:original_sub?.name?:'',sub_id:original_sub?.id?:'']
+            result.permissionInfo = [sub_startDate:sub_startDate,sub_endDate:sub_endDate,sub_name:original_sub?.name?:'',sub_id:original_sub?.id?:'']
 
             log.debug("Worksheet upload on behalf of ${org_name}, ${org_id}, ${org_shortcode}");
 

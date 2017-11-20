@@ -45,9 +45,9 @@
             action="notes"
             params="${[id:params.id, shortcode: (params.shortcode ?: null)]}">${message(code:'default.notes.label', default:'Notes')}</g:link></li>
 
-<li <%='additionalInfo'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
-                  action="additionalInfo"
-                  params="${[id:params.id, shortcode: (params.shortcode ?: null)]}">${message(code:'default.additionalInfo.label', default:'Additional Info')}</g:link></li>
+<li <%='permissionInfo'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
+                  action="permissionInfo"
+                  params="${[id:params.id, shortcode: (params.shortcode ?: null)]}">${message(code:'default.permissionInfo.label', default:'Additional Info')}</g:link></li>
 
 <li <%='edit_history'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
                   action="edit_history"

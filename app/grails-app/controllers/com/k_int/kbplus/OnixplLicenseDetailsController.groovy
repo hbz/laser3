@@ -67,7 +67,7 @@ class OnixplLicenseDetailsController {
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def additionalInfo() {
+    def permissionInfo() {
         def user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
         [onixplLicense: onixplLicense, user: user]

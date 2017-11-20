@@ -413,7 +413,7 @@ class LicenseDetailsController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def additionalInfo() {
+  def permissionInfo() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.license = License.get(params.id)
