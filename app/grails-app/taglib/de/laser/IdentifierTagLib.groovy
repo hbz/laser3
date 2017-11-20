@@ -39,7 +39,7 @@ class IdentifierTagLib {
         out <<   '<input type="hidden" name="__context" value="' + context + '" />'
         out <<   '<input type="hidden" name="__recip" value="' + recip + '" />'
         out <<   '<br />'
-        out <<   '<input type="submit" value="' + buttonText + '" class="btn btn-primary btn-small" />'
+        out <<   '<input type="submit" value="' + buttonText + '" class="ui mini primary button" />'
         out <<   '<script type="text/javascript">'
         out <<     getJS1(namespaceSelector, identSelector, attrs)
         out <<     getJS2(formSelector, identSelector, attrs)

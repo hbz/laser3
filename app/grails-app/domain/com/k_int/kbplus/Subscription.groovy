@@ -52,6 +52,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
                      derivedSubscriptions: Subscription,
                      pendingChanges: PendingChange,
                      customProperties: SubscriptionCustomProperty,
+                     privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem]
 
   static mappedBy = [
@@ -63,7 +64,8 @@ class Subscription extends BaseDomainComponent implements Permissions {
                       prsLinks: 'sub',
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
-                      costItems: 'sub'
+                      costItems: 'sub',
+                      privateProperties: 'owner'
                       ]
 
   static mapping = {
@@ -100,6 +102,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
     noticePeriod(nullable:true, blank:true)
     isPublic(nullable:true, blank:true)
     customProperties(nullable:true)
+    privateProperties(nullable:true)
     cancellationAllowances(nullable:true, blank:true)
     lastUpdated(nullable: true, blank: true)
     // vendor(nullable:true, blank:false)

@@ -76,6 +76,8 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
           outgoinglinks: 'fromLic',
           incomingLinks: 'toLic',
           pendingChanges:'license',
+          customProperties:  'owner',
+          privateProperties: 'owner'
   ]
 
   static mapping = {

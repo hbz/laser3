@@ -40,6 +40,7 @@ class Org extends BaseDomainComponent {
       contacts: 'org',
       addresses: 'org',
       affiliations: 'org',
+      customProperties: 'owner',
       privateProperties: 'owner'
       ]
 

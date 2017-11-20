@@ -9,23 +9,21 @@
     <title>${message(code:'laser', default:'LAS:eR')} <g:message code="license" default="License"/></title>
   </head>
 
-  <body>
+    <body>
 
-      <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+        <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-      <h1 class="ui header">
-          ${license.licensee?.name}
-          ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
-          <g:xEditable owner="${license}" field="reference" id="reference"/>
-      </h1>
+        <h1 class="ui header">
+            ${license.licensee?.name}
+            ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
+            <g:xEditable owner="${license}" field="reference" id="reference"/>
+        </h1>
 
-      <g:render template="nav" />
-
+        <g:render template="nav" />
 
         <semui:messages data="${flash}" />
 
-    <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':license]}"/>
-
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':license]}"/>
 
                     <h6>${message(code:'license.properties')}</h6>
 
@@ -53,6 +51,26 @@
                                 ownobj: license,
                                 custom_props_div: "custom_props_div_archive" ]}"/>
                     </div>
+
+                    <g:each in="${authorizedOrgs}" var="authOrg">
+                        <g:if test="${authOrg.name == contextOrg?.name}">
+                            <h6>${message(code:'license.properties')} ( ${authOrg.name} )</h6>
+
+                            <div id="custom_props_div_${authOrg.shortcode}">
+                                  <g:render template="/templates/properties/private" model="${[
+                                          prop_desc: PropertyDefinition.LIC_PROP,
+                                          ownobj: license,
+                                          custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                          tenant: authOrg]}"/>
+
+                                  <r:script language="JavaScript">
+                                        $(document).ready(function(){
+                                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                        });
+                                  </r:script>
+                             </div>
+                        </g:if>
+                    </g:each>
 
                     <r:script language="JavaScript">
                         $(document).ready(function(){
