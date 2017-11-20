@@ -14,7 +14,7 @@
 <g:form controller="jasperReports" action="generateReport">
     <input type="hidden" id="hiddenReportName" name="_file">
     <input type="hidden" id="hiddenReportFormat" name="_format">
-    <table class="table table-striped table-bordered table-condensed">
+    <table class="ui celled striped table">
         <thead>
         <tr>
             <th class="text-center" colspan="2">

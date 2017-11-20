@@ -34,7 +34,7 @@
 		<div>
 			<div class="row">
 				<div class="span12">
-					<table class="table table-bordered table-hover">
+					<table class="ui celled striped table">
 						<thead>
 						<tr>
 							<th>Category (Key)</th>

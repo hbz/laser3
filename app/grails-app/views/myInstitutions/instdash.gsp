@@ -12,7 +12,7 @@
     </semui:breadcrumbs>
 
     <div class="home-page">
-      <div class="well">
+      <div class="ui segment">
         <h1 class="ui header">${institution.name} - Dashboard</h1>
         <ul class="inline">
           <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
@@ -54,7 +54,7 @@
     <div class="home-page">
       <div class="ui grid">
         <div class="five wide column">
-            <table class="table table-bordered dashboard-widget">
+            <table class="ui celled table dashboard-widget">
               <thead>
                 <th>
                   <h5 class="pull-left">${message(code:'myinst.todo.label', default:'To Do')}</h5>
@@ -92,7 +92,7 @@
             </table>
         </div><!-- .five -->
         <div class="six wide column">
-            <table class="table table-bordered dashboard-widget">
+            <table class="ui celled table dashboard-widget">
               <thead>
                 <th>
                   <h5 class="pull-left">${message(code:'announcement.plural', default:'Announcements')}</h5>
@@ -128,7 +128,7 @@
         </div><!-- .six -->
         <g:if test="${grailsApplication.config.ZenDeskBaseURL}">
         <div class="five wide column">
-           <table class="table table-bordered dashboard-widget">
+           <table class="ui table dashboard-widget">
               <thead>
                 <th>
                   <h5 class="pull-left">${message(code:'myinst.dash.forum.label', default:'Latest Discussions')}</h5>

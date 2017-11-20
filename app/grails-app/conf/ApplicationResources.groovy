@@ -77,7 +77,8 @@ modules = {
         resource url:'css/select2.css'
         resource url:"css/instances/${Holders.config.defaultCssSkin?:'standard.css'}"
 
-        resource url:'css/style.css'
+        //resource url:'css/style.css'
+        resource url:'css/tmp_semui.css'
     }
 
     semanticUI {

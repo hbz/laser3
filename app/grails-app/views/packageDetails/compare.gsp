@@ -9,12 +9,11 @@
 
 <div>
 <div class="row">
-	<h2>${message(code:'package.compare', default:'Package Comparison')}</h2>
-	<br/>
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="compare">${message(code:'package.compare.compare', default:'Compare')}</g:link></li>
+	<h2 class="ui header">${message(code:'package.compare', default:'Package Comparison')}</h2>
+
+	<semui:breadcrumbs>
+		<semui:crumb controller="packageDetails" action="index" message="package.show.all" />
+		<semui:crumb class="active" message="package.compare.compare" />
 
         <li class="dropdown pull-right">
           <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
@@ -25,7 +24,7 @@
           </ul>
         </li>
 
-      </ul>
+	</semui:breadcrumbs>
 
 	<semui:messages data="${flash}" />
         <g:if test="${request.message}">

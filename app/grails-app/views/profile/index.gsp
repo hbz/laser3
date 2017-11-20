@@ -267,7 +267,7 @@
                     <div class="well">
                         <h2>${message(code: 'profile.reminder.active', default:'Active Reminders')}</h2>
 
-                  <table class="table table-striped table-bordered table-condensed">
+                  <table class="ui celled striped table">
                       <thead>
                       <tr>
                           <th><g:message code="reminder.trigger" default="Trigger"/></th>

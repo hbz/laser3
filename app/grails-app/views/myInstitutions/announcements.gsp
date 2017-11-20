@@ -13,7 +13,7 @@
   </semui:breadcrumbs>
 
     <div class="home-page">
-            <table class="table">
+            <table class="ui table">
               <g:each in="${recentAnnouncements}" var="ra">
                 <tr>
                   <td><strong>${ra.title}</strong> <br/>

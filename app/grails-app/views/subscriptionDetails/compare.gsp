@@ -11,16 +11,14 @@
 		<div>
 			<div class="row">
 				<g:if test="${institutionName}">
-				<h2> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
+				<h2 class="ui header"> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
 				</g:if>
 				<g:else>
-					<h2> ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
+					<h2 class="ui header"> ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
 				</g:else>
 
-				<br/>
-			      <ul class="breadcrumb">
-			        <li><g:link controller="home" action="index">${message(code:'default.home.label',default:'Home')}</g:link> <span class="divider">/</span>
-			        <li><g:link controller="subscriptionDetails" action="compare">${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</g:link></li>
+			<semui:breadcrumbs>
+				<semui:crumb class="active" message="subscription.compare.label" />
 
 			        <li class="dropdown pull-right">
 			          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
@@ -30,8 +28,8 @@
 			            
 			          </ul>
 			        </li>
+			</semui:breadcrumbs>
 
-			      </ul>
 				<semui:messages data="${flash}" />
 		        <g:if test="${request.message}">
 				    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>

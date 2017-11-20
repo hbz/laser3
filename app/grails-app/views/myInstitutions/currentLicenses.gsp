@@ -58,14 +58,6 @@
       </div>
     </div>
 
-      <div>
-          <div class="well license-options">
-              <input type="submit" name="delete-license" value="${message(code:'license.delete_selected.label', default:'Delete Selected')}" class="btn btn-danger delete-license" />
-          </div>
-      </div>
-
-
-
         <div class="license-results">
         <g:if test="${licenseCount && licenseCount>0}">
           <span>${message(code:'license.current.showing', args:[licenseCount])}</span>

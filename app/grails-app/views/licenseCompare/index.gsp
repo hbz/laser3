@@ -9,17 +9,12 @@
 </head>
 
 <body>
-	<div>
-		<ul class="breadcrumb">
-			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
-				class="divider">/</span></li>
-			<li>${message(code:'menu.institutions.comp_lic')}</li>
-		</ul>
-	</div>
 
-	<div>
-		<h1 class="ui header">${message(code:'menu.institutions.comp_lic')}</h1>
-	</div>
+	<semui:breadcrumbs>
+		<semui:crumb class="active" message="menu.institutions.comp_lic" />
+	</semui:breadcrumbs>
+
+	<h1 class="ui header">${message(code:'menu.institutions.comp_lic')}</h1>
 
 	<div>
 		<div class="row">

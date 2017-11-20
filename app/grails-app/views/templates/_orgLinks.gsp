@@ -1,4 +1,4 @@
-  <table class="table table-bordered table-condensed table-striped">
+  <table class="ui celled striped table">
     <thead>
       <tr>
         <th>${message(code:'license.organisationName')}</th>

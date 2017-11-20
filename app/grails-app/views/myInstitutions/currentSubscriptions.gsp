@@ -61,7 +61,7 @@
 
 
       <div class="subscription-results">
-        <table class="table table-striped table-bordered table-condensed table-tworow">
+        <table class="ui celled striped table table-tworow">
           <tr>
             <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
             <th rowspan="2">${message(code:'default.action.label', default:'Action')}</th>

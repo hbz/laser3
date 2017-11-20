@@ -9,11 +9,9 @@
  <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
-    <div>
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">${message(code: 'package.show.all')}</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
+<semui:breadcrumbs>
+        <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
+        <semui:crumb class="active" text="${packageInstance.name}" />
 
         <li class="dropdown pull-right">
           <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
@@ -38,9 +36,8 @@
           </div>
           &nbsp;
         </li>
-        
-      </ul>
-    </div>
+
+</semui:breadcrumbs>
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':packageInstance]}"/>
 

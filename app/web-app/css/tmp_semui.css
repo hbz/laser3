@@ -1,0 +1,20 @@
+/* ONLY TMP, REMOVE LATER */
+
+.navbar-push {
+    height: 60px;
+}
+
+.ui.main {
+    padding-bottom: 3em;
+}
+
+.ui.main .ui.breadcrumb {
+    margin-bottom: 1em;
+    width: 100%;
+    border: none;
+}
+
+/* myInstitutions/../dashboard */
+ui.main .home-page {
+    margin-bottom: 1em;
+}

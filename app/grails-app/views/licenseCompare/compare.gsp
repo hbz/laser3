@@ -8,18 +8,12 @@
 
 <r:require modules="onixMatrix" />
 
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="instdash" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
 
-  <div>
-    <ul class="breadcrumb">
-      <li><g:link controller="home" action="index">Home</g:link> <span
-        class="divider">/</span></li>
-           <li><g:link controller="myInstitutions"
-                       action="instdash"
-                       params="${[shortcode:institution.shortcode]}">${institution.name} ${message(code:'menu.institutions.dash')} </g:link><span
-        class="divider">/</span></li>
+        <semui:crumb class="active" message="menu.institutions.comp_lic" />
 
-      <li>${message(code:'menu.institutions.comp_lic')}</li>
-     <li class="dropdown pull-right">
+        <li class="dropdown pull-right">
           <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>&nbsp;
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li>
@@ -27,13 +21,9 @@
             </li>
           </ul>
         </li>
-    </ul>
+    </semui:breadcrumbs>
 
-  </div>
-
-  <div>
-    <h1 class="ui header">${message(code:'menu.institutions.comp_lic')}</h1>
-  </div>
+    <h2 class="ui header">${message(code:'menu.institutions.comp_lic')}</h2>
 
   <div>
 

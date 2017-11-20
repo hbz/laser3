@@ -19,22 +19,24 @@
   <li<%='renewals'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
               action="renewals"
               params="${[id:params.id, shortcode:(params.shortcode ?: null)]}">${message(code:'subscription.details.renewals.label', default:'Renewals')}</g:link></li>
-
+    <!--
     <li <%='previous'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
                                                                       action="previous"
                                                                       params="${[id:params.id, shortcode:(params.shortcode ?: null)]}">${message(code:'subscription.details.previous.label', default:'Previous')}</g:link></li>
+    -->
+    <!--
     <li <%='expected'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
                                                                        action="expected"
                                                                        params="${[id:params.id, shortcode:(params.shortcode ?: null)]}">${message(code:'subscription.details.expected.label', default:'Expected')}</g:link></li>
-
+    -->
+    <!--
     <g:if test="${grailsApplication.config.feature_finance}">
     <li <%='costPerUse'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
                                                                    action="costPerUse"
                                                                    params="${[id:params.id, shortcode:(params.shortcode ?: null)]}">${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')}</g:link></li>
     </g:if>
+    -->
 
-</ul>
-<ul class="nav nav-pills">
 <li <%='documents'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
             action="documents"
             params="${[id:params.id, shortcode: (params.shortcode ?: null)]}">${message(code:'default.documents.label', default:'Documents')}</g:link></li>

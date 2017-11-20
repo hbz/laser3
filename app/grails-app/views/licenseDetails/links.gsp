@@ -20,7 +20,7 @@
 
     <div>
 
-      <table class="table table-striped table-bordered table-condensed">
+      <table class="ui celled striped table">
         <thead>
           <tr>
             <td>Link Type</td>

@@ -64,7 +64,7 @@
           <g:else>
             <div class="alert alert-error">${message(code:'package.upload.failed', default:'File failed validation checks, details follow')}</div>
           </g:else>
-          <table class="table">
+          <table class="ui table">
             <tbody>
               <g:each in="${['soName', 'soIdentifier', 'soProvider', 'soPackageIdentifier', 'soPackageName', 'aggreementTermStartYear', 'aggreementTermEndYear', 'consortium', 'numPlatformsListed']}" var="fld">
                 <tr>
@@ -82,7 +82,7 @@
             </tbody>
           </table>
 
-          <table class="table">
+          <table class="ui table">
             <thead>
               <tr>
                 <g:each in="${validationResult.soHeaderLine}" var="c">

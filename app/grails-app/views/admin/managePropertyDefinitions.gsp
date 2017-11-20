@@ -33,7 +33,7 @@
 				<div class="span12">
 					<g:each in="${propertyDefinitions}" var="entry">
 						<h3>${entry.key}</h3>
-                        <table class="table table-striped table-hover table-bordered">
+                        <table class="ui celled striped table">
 							<thead>
 							<tr>
 								<th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>

@@ -160,7 +160,7 @@
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="addressbook"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="propertyRules"
+                                <g:link class="item" controller="myInstitutions" action="managePrivateProperties"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link>
 
                                 <g:link class="item" controller="organisations" action="show"

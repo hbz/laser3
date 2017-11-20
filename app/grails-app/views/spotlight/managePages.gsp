@@ -32,7 +32,7 @@
     </g:hasErrors>
 
       <div class="span6"> 
-          <table class="table table-striped table-bordered table-condensed">
+          <table class="ui celled striped table">
               <thead>
                 <tr>
                   <th>Controller</th>

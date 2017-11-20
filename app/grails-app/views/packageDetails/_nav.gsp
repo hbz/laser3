@@ -1,38 +1,22 @@
-<ul class="nav nav-pills">
+<semui:subNav actionName="${actionName}">
 
-  <li <%='show'== actionName ? ' class="active"' : '' %>>
-    <g:link controller="packageDetails" action="show" params="${[id:params.id]}">${message(code: 'package.show.nav.details', default: 'Package Details')}</g:link>
-  </li>
+    <semui:subNavItem controller="packageDetails" action="show" params="${[id:params.id]}" message="package.show.nav.details" />
 
-  <li <%='current'== actionName ? ' class="active"' : '' %>><g:link controller="packageDetails" 
-              action="current" 
-              params="${[id:params.id]}">${message(code: 'package.show.nav.titles', default: 'Titles')}</g:link></li>
+    <semui:subNavItem controller="packageDetails" action="current" params="${[id:params.id]}" message="package.show.nav.titles" />
 
-  <li<%='expected'== actionName ? ' class="active"' : '' %>><g:link controller="packageDetails" 
-              action="expected" 
-              params="${[id:params.id]}">${message(code: 'package.show.nav.expected', default: 'Expected Titles')}</g:link></li>
+    <semui:subNavItem controller="packageDetails" action="expected" params="${[id:params.id]}" message="package.show.nav.expected" />
 
-  <li<%='previous'== actionName ? ' class="active"' : '' %>><g:link controller="packageDetails" 
-              action="previous" 
-              params="${[id:params.id]}">${message(code: 'package.show.nav.previous', default: 'Previous Titles')}</g:link></li>
+    <semui:subNavItem controller="packageDetails" action="previous" params="${[id:params.id]}" message="package.show.nav.previous" />
 
-    <li <%='documents'== actionName ? ' class="active"' : '' %>><g:link controller="packageDetails"
-                                                                        action="documents"
-                                                                        params="${[id:params.id]}">${message(code: 'package.show.nav.docs', default: 'Documents')}</g:link></li>
+    <semui:subNavItem controller="packageDetails" action="documents" params="${[id:params.id]}" message="package.show.nav.docs" />
 
-    <li<%='notes'== actionName ? ' class="active"' : '' %>><g:link controller="packageDetails"
-                                                                   action="notes"
-                                                                   params="${[id:params.id]}">${message(code: 'package.show.nav.notes', default: 'Notes')}</g:link></li>
+    <semui:subNavItem controller="packageDetails" action="notes" params="${[id:params.id]}" message="package.show.nav.notes" />
 
-    <li<%='history'== actionName ? ' class="active"' : '' %>><g:link controller="packageDetails"
-                                                                   action="history"
-                                                                   params="${[id:params.id]}">${message(code: 'package.show.nav.history', default: 'History')}</g:link></li>
+    <semui:subNavItem controller="packageDetails" action="history" params="${[id:params.id]}" message="package.show.nav.history" />
 
-  <g:if test="${editable}">
-    <g:if test="${packageInstance?.consortia != null}">
-      <li<%='consortia'== actionName ? ' class="active"' : '' %>><g:link controller="packageDetails" action="consortia" params="${[id:params.id]}">${message(code: 'package.show.nav.consortia', default: 'Consortia')}</g:link></li>
+    <g:if test="${editable}">
+        <g:if test="${packageInstance?.consortia != null}">
+            <semui:subNavItem controller="packageDetails" action="consortia" params="${[id:params.id]}" message="package.show.nav.consortia" />
+        </g:if>
     </g:if>
-  </g:if>
-
-
-</ul>
+</semui:subNav>

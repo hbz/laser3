@@ -12,7 +12,6 @@
       <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
     </semui:breadcrumbs>
 
-      <div>
 
 
       <semui:messages data="${flash}" />
@@ -28,8 +27,7 @@
           <li class="${active_filter=='all'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'all']}">${message(code:'myinst.tipview.all', default:'All')}</g:link></li>
 
       </ul>
-      <div>
-        <div class="span12">
+
           <g:form action="tipview" method="get" params="${[shortcode:params.shortcode]}">
 
           <div class="well form-horizontal" style="clear:both">
@@ -66,7 +64,7 @@
           </div>
           </g:form>
         </div>
-      </div>
+
 
 
         <table class="ui celled striped table">
@@ -103,7 +101,7 @@
           </div>
         <div id="magicArea">
         </div>
-        </div>
+
 
         <g:javascript>
         function showDetails(id){

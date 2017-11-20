@@ -41,7 +41,7 @@
               
               <div class="clearfix"></div>
               
-            <table class="table table-striped table-bordered subscriptions-list">
+            <table class="ui celled striped table subscriptions-list">
                 <tr>
                   <th>${message(code:'default.select.label', default:'Select')}</th>
                   <g:sortableColumn params="${params}" property="p.name" title="${message(code:'default.name.label', default:'Name')}" />

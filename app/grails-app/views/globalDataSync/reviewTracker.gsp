@@ -32,7 +32,7 @@
         <dl>
           <td>Auto accept the following changes</dt>
           <dd>
-          <table class="table">
+          <table class="ui table">
             <tr>
               <td><input type="Checkbox" name="autoAcceptTippAddition"/>TIPP Addition</td>
               <td><input type="Checkbox" name="autoAcceptTippUpdate"/>TIPP Update</td>
@@ -76,7 +76,7 @@
               <g:else>
                 <g:if test="${i.action=='-'}">
                   <b><em>${i.tipp?.title?.name}</em></b> (<g:each in="${i.tipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
-                  <table class="table">
+                  <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                     <g:each in="${i.tipp.coverage}" var="c">
                       <tr><th>Start</th> <td>${c.startVolume}</td><td>${c.startIssue}</td>
@@ -88,7 +88,7 @@
                 </g:if>
                 <g:else>
                   <b><em>${i.oldtipp?.title?.name}</em></b> (<g:each in="${i.oldtipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
-                  <table class="table">
+                  <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                     <g:each in="${i.oldtipp.coverage}" var="c">
                       <tr><th>Start</th> <td>${c.startVolume}</td><td>${c.startIssue}</td>
@@ -107,7 +107,7 @@
               </g:if>
               <g:else>
                 <b><em>${i.tipp?.title?.name}</em></b> (<g:each in="${i.tipp.title.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
-                <table class="table">
+                <table class="ui table">
                   <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                   <g:each in="${i.tipp.coverage}" var="c">
                     <tr><th>Start</th> <td>${c.startVolume}</td><td>${c.startIssue}</td><td>${c.startDate}</td></tr>

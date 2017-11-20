@@ -7,25 +7,21 @@
   </head>
   <body>
 
-    <div>
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="packageDetails" action="show" id="${tipp.pkg.id}">${tipp.pkg.name} [${message(code:'package.label', default:'package')}]</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="tipp" action="show" id="${tipp.id}">${tipp.title.title}</g:link> [${message(code:'title.label', default:'title')}]</li>
+  <semui:breadcrumbs>
+
+      <semui:crumb controller="packageDetails" action="show" id="${tipp.pkg.id}" text="${tipp.pkg.name} [${message(code:'package.label', default:'package')}]" />
+      <semui:crumb controller="tipp" action="show" id="${tipp.id}" text="${tipp.title.title} [${message(code:'title.label', default:'title')}]" />
 
         <g:if test="${editable}">
           <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
         </g:if>
-      </ul>
-    </div>
+  </semui:breadcrumbs>
 
-    <div class="container inline-lists">
-      
+    <h1 class="ui header">${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}</h1>
 
-          <h1 class="ui header">${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}</h1>
+    <semui:messages data="${flash}" />
 
-        <semui:messages data="${flash}" />
-
+  <div class="inline-lists">
         <dl>
           <g:if test="${titleInstanceInstance?.ids}">
             <dt><g:message code="titleInstance.ids.label" default="Ids" /></dt>

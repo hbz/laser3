@@ -9,11 +9,9 @@
   </head>
   <body>
 
-    <div>
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="platform" action="index">${message(code:'platform.show.all', default:'All Platforms')}</g:link><span class="divider">/</span></li>
-        <li><g:link controller="platform" action="show" id="${platformInstance.id}">${platformInstance.name}</g:link></li>
+<semui:breadcrumbs>
+    <semui:crumb controller="platform" action="index" message="platform.show.all" />
+    <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
 
         <li class="pull-right">
           <g:if test="${editable}">
@@ -26,13 +24,7 @@
           </div>
           &nbsp;
          </li>
-
-      </ul>
-    </div>
-
-    <div>
-      <div class="span12">
-
+</semui:breadcrumbs>
 
           <h1 class="ui header">Platform : <g:if test="${editable}"><span id="platformNameEdit"
                                                         class="xEditableValue"
@@ -131,11 +123,6 @@
                 </tr>
               </g:each>
             </table>
-
-
-      </div>
-
-    </div>
 
   </body>
 </html>

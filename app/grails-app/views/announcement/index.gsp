@@ -25,7 +25,7 @@
 
     <div>
       <h2>${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
-      <table class="table">
+      <table class="ui table">
         <g:each in="${recentAnnouncements}" var="ra">
           <tr>
             <td><strong>${ra.title}</strong> <br/>

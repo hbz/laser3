@@ -21,7 +21,7 @@
         </g:if>
       </div>
 
-            <table class="table">
+            <table class="ui table">
               <g:each in="${todos}" var="todo">
                 <tr>
                   <td>

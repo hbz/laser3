@@ -6,14 +6,12 @@
   </head>
 
   <body>
-    <div>
-      <div class="span12">
         <h1 class="ui header">Orgs Import</h1>
         <g:form action="orgsImport" method="post" enctype="multipart/form-data">
           <p>
             Upload a .csv file formatted as<br/>
             org_name, sector, id.type...,affiliation.role...,role,</br>
-            <table class="table">
+            <table class="ui celled table">
               <tr>
                 <td>Example Header Row:</td>
                 <td>name,</td>
@@ -50,7 +48,6 @@
             <button name="load" type="submit" value="Go">Load...</button>
           </dl>
         </g:form>
-      </div>
-    </div>
+
   </body>
 </html>
