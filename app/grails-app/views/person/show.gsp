@@ -8,40 +8,16 @@
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div>
-		<div class="row-fluid">
-			
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li>
-							<g:link class="create" action="create">
-								<i class="icon-plus"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span9">
+		<h1 class="ui header"><g:message code="default.show.label" args="[entityName]" /></h1>
+		<g:render template="nav" contextPath="." />
 
-    
+		<semui:messages data="${flash}" />
 
-					<h1 class="ui header"><g:message code="default.show.label" args="[entityName]" /></h1>
-      				<g:render template="nav" contextPath="." />
+		<div class="ui grid">
 
+			<div class="twelve wide column">
 
-					<semui:messages data="${flash}" />
-
-<div class="inline-lists">
+			<div class="inline-lists">
 				<dl>
 				
 					<g:if test="${personInstance?.first_name}">
@@ -192,9 +168,13 @@
 					</div>
 				</g:form>
 
-			</div>
+			</div><!-- .twelve -->
 
-		</div>
-		</div>
+            <div class="four wide column">
+                <g:render template="../templates/sideMenu" />
+            </div><!-- .four -->
+
+		</div><!-- .grid -->
+
 	</body>
 </html>
