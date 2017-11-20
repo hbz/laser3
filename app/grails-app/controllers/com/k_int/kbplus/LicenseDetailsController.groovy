@@ -24,6 +24,7 @@ class LicenseDetailsController {
     def pendingChangeService
     def executorWrapperService
     def permissionHelperService
+    def contextService
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() {
@@ -81,6 +82,35 @@ class LicenseDetailsController {
       }
     }
     result.availableSubs = getAvailableSubscriptions(result.license,result.user)
+
+
+      // -- private properties
+
+      result.authorizedOrgs = result.user?.authorizedOrgs
+      result.contextOrg     = contextService.getOrg() ?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
+
+      // create mandatory LicensePrivateProperties if not existing
+
+      def mandatories = []
+      result.user?.authorizedOrgs?.each{ org ->
+          def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
+          if (ppd) {
+              mandatories << ppd
+          }
+      }
+      mandatories.flatten().each{ pd ->
+          if (! LicensePrivateProperty.findWhere(owner: licenseInstance, type: pd)) {
+              def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, licenseInstance, pd)
+
+              if (newProp.hasErrors()) {
+                  log.error(newProp.errors)
+              } else {
+                  log.debug("New license private property created via mandatory: " + newProp.type.name)
+              }
+          }
+      }
+
+      // -- private properties
 
     withFormat {
       html result

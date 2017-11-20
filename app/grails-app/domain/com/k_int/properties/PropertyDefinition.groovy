@@ -33,6 +33,8 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     @Transient
     final static String ORG_CONF    = 'Organisation Config'
     @Transient
+    final static String SUB_PROP    = 'Subscription Property'
+    @Transient
     final static String SYS_CONF    = 'System Config'
     @Transient
     final static String PRS_PROP    = 'Person Property'
@@ -45,6 +47,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             LIC_OA_PROP,
             LIC_ARC_PROP,
             ORG_CONF,
+            SUB_PROP,
             SYS_CONF,
             PRS_PROP,
             ORG_PROP
@@ -52,8 +55,9 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
             LIC_PROP,
-            PRS_PROP,
-            ORG_PROP
+            SUB_PROP,
+            ORG_PROP,
+            PRS_PROP
     ]
 
     String name

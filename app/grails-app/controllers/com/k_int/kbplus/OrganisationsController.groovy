@@ -10,6 +10,7 @@ class OrganisationsController {
 
     def springSecurityService
     def permissionHelperService
+    def contextService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -162,6 +163,35 @@ class OrganisationsController {
       }
       
       result.sorted_links = sorted_links
+
+
+        // -- private properties
+
+        result.authorizedOrgs = result.user?.authorizedOrgs
+        result.contextOrg     = contextService.getOrg() ?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
+
+        // create mandatory OrgPrivateProperties if not existing
+
+        def mandatories = []
+        result.user?.authorizedOrgs?.each{ org ->
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Org Property", true, org)
+            if(ppd){
+                mandatories << ppd
+            }
+        }
+        mandatories.flatten().each{ pd ->
+            if (! OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
+
+                if (newProp.hasErrors()) {
+                    log.error(newProp.errors)
+                } else {
+                    log.debug("New org private property created via mandatory: " + newProp.type.name)
+                }
+            }
+        }
+
+        // -- private properties
       
       result
     }

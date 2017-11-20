@@ -1,13 +1,15 @@
 
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
-  </head>
-  <body>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
+
+        <g:javascript src="properties.js"/>
+    </head>
+    <body>
 
 
     <h1 class="ui header">${orgInstance.name}</h1>
@@ -17,6 +19,26 @@
     <semui:messages data="${flash}" />
 
     <div class="inline-lists">
+
+          <g:each in="${authorizedOrgs}" var="authOrg">
+              <g:if test="${authOrg.name == contextOrg?.name}">
+              <h6>${message(code:'org.properties')} ( ${authOrg.name} )</h6>
+
+                  <div id="custom_props_div_${authOrg.shortcode}">
+                      <g:render template="/templates/properties/private" model="${[
+                              prop_desc: PropertyDefinition.ORG_PROP,
+                              ownobj: orgInstance,
+                              custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                              tenant: authOrg]}"/>
+
+                      <r:script language="JavaScript">
+                            $(document).ready(function(){
+                                initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                            });
+                      </r:script>
+                  </div>
+              </g:if>
+          </g:each>
 
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>

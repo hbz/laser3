@@ -1,8 +1,10 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
 <%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="com.k_int.properties.PropertyDefinition" %>
 <%
   def dateFormater = new SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
 %>
+
 <r:require module="annotations" />
 
 <!doctype html>
@@ -10,6 +12,7 @@
   <head>
     <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
+      <g:javascript src="properties.js"/>
   </head>
   <body>
   
@@ -44,8 +47,44 @@
 
     <div id="collapseableSubDetails" class="ui grid">
         <div class="twelve wide column">
-            <br/>
+
+            <h6>${message(code:'subscription.properties')}</h6>
+
+            <div id="custom_props_div_props">
+                <g:render template="/templates/properties/custom" model="${[
+                        prop_desc: PropertyDefinition.SUB_PROP,
+                        ownobj: subscriptionInstance,
+                        custom_props_div: "custom_props_div_props" ]}"/>
+            </div>
+
+            <r:script language="JavaScript">
+                $(document).ready(function(){
+                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                });
+            </r:script>
+
+            <g:each in="${authorizedOrgs}" var="authOrg">
+                <g:if test="${authOrg.name == contextOrg?.name}">
+                    <h6>${message(code:'subscription.properties')} ( ${authOrg.name} )</h6>
+
+                    <div id="custom_props_div_${authOrg.shortcode}">
+                        <g:render template="/templates/properties/private" model="${[
+                                prop_desc: PropertyDefinition.SUB_PROP,
+                                ownobj: subscriptionInstance,
+                                custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                tenant: authOrg]}"/>
+
+                        <r:script language="JavaScript">
+                                $(document).ready(function(){
+                                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                });
+                        </r:script>
+                    </div>
+                </g:if>
+            </g:each>
+
             <h6>${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
+
             <div class="inline-lists"> 
               <dl><dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
                   <dd>

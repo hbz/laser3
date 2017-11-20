@@ -78,7 +78,7 @@
           <g:each in="${subscriptions}" var="s">
             <tr>
               <td colspan="7">
-                <g:link controller="subscriptionDetails" action="index" params="${[shortcode:institution.shortcode]}" id="${s.id}">
+                <g:link controller="subscriptionDetails" action="details" params="${[shortcode:institution.shortcode]}" id="${s.id}">
                   <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
                   <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
                 </g:link>

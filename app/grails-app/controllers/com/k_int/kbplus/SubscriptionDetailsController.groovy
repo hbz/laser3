@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
 import grails.converters.*
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
@@ -18,18 +19,19 @@ import static groovyx.net.http.Method.*
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 class SubscriptionDetailsController {
 
-  def springSecurityService
-  def gazetteerService
-  def alertsService
-  def genericOIDService
-  def transformerService
-  def exportService
-  def grailsApplication
-  def pendingChangeService
-  def institutionsService
-  def ESSearchService
-  def executorWrapperService
-  def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
+    def springSecurityService
+    def contextService
+    def gazetteerService
+    def alertsService
+    def genericOIDService
+    def transformerService
+    def exportService
+    def grailsApplication
+    def pendingChangeService
+    def institutionsService
+    def ESSearchService
+    def executorWrapperService
+    def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
 
 
   private static String INVOICES_FOR_SUB_HQL =
@@ -1177,6 +1179,36 @@ class SubscriptionDetailsController {
 
     result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
+
+
+
+    // -- private properties
+
+    result.authorizedOrgs = result.user?.authorizedOrgs
+    result.contextOrg     = contextService.getOrg() ?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
+
+    // create mandatory OrgPrivateProperties if not existing
+
+    def mandatories = []
+    result.user?.authorizedOrgs?.each{ org ->
+        def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, org)
+        if (ppd){
+            mandatories << ppd
+        }
+    }
+    mandatories.flatten().each{ pd ->
+        if (! SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
+            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+
+            if (newProp.hasErrors()) {
+                log.error(newProp.errors)
+            } else {
+                log.debug("New subscription private property created via mandatory: " + newProp.type.name)
+            }
+        }
+    }
+
+    // -- private properties
     result
   }
 }
