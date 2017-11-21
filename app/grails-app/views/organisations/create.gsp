@@ -34,9 +34,7 @@
 
 					<h1 class="ui header"><g:message code="default.create.label" args="[entityName]" /></h1>
 
-
-				<semui:messages data="${flash}" />ap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+				<semui:messages data="${flash}" />
 
 				<g:hasErrors bean="${orgInstance}">
 				<bootstrap:alert class="alert-error">
