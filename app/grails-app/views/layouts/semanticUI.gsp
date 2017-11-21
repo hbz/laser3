@@ -93,7 +93,7 @@
                             <g:if test="${contextOrg}">
 
                                 <g:link class="item" controller="myInstitutions" action="currentSubscriptions"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.subs')}</g:link>
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.mySubs')}</g:link>
 
                                 <sec:ifAnyGranted roles="INST_USER">
                                     <div class="divider"></div>
@@ -133,7 +133,7 @@
                         <g:if test="${user}">
                             <g:if test="${contextOrg}">
                                 <g:link class="item" controller="myInstitutions" action="currentLicenses"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.lic')}</g:link>
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.myLics')}</g:link>
 
                                 <g:link class="item" controller="licenseCompare" action="index"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.comp_lic')}</g:link>
@@ -152,7 +152,7 @@
                         <g:if test="${user}">
                             <g:if test="${contextOrg}">
                                 <g:link class="item" controller="myInstitutions" action="instdash"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.dash')}</g:link>
+                                        params="${[shortcode:contextOrg?.shortcode]}">${contextOrg?.name}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="todo"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.todo')}</g:link>
 

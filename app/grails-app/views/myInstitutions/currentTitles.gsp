@@ -14,26 +14,24 @@
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
         <semui:crumb message="myinst.currentTitles.label" class="active" />
-        <li class="dropdown pull-right">
-            <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">
-                ${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
-            <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-                <li>
-                    <g:link action="currentTitles" params="${params+[format:'csv']}">CSV</g:link>
-                </li>
-                <li>
-                    <g:link action="currentTitles" params="${params+[format:'json']}">JSON</g:link>
-                </li>
-                <li>
-                    <g:link action="currentTitles" params="${params+[format:'xml',shortcode:params.shortcode]}">XML</g:link>
-                </li>
 
-                <g:each in="${transforms}" var="transkey,transval">
-                    <li><g:link action="currentTitles" id="${params.id}" params="${params+[format:'xml',transformId:transkey]}"> ${transval.name}</g:link></li>
-                </g:each>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link action="currentTitles" params="${params + [format:'csv']}">CSV Export</g:link>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link action="currentTitles" params="${params + [format:'xml', shortcode:params.shortcode]}">XML Export</g:link>
+            </semui:exportDropdownItem>
+            <g:each in="${transforms}" var="transkey,transval">
+                <semui:exportDropdownItem>
+                    <g:link action="currentTitles" id="${params.id}" params="${params + [format:'xml', transformId:transkey]}"> ${transval.name}</g:link>
+                </semui:exportDropdownItem>
+            </g:each>
+        </semui:exportDropdown>
 
-            </ul>
-        </li>
     </semui:breadcrumbs>
 
   <semui:messages data="${flash}" />

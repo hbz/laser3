@@ -12,17 +12,18 @@
       <g:if test="${is_inst_admin}">
           <semui:crumbAsBadge message="default.editable" class="orange" />
       </g:if>
-      <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
-          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-              <li>
-                  <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-              </li>
-              <g:each in="${transforms}" var="transkey,transval">
-                  <li><g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link></li>
-              </g:each>
-          </ul>
-      </li>
+
+      <semui:exportDropdown>
+          <semui:exportDropdownItem>
+              <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+          </semui:exportDropdownItem>
+          <g:each in="${transforms}" var="transkey,transval">
+              <semui:exportDropdownItem>
+                  <g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+              </semui:exportDropdownItem>
+          </g:each>
+      </semui:exportDropdown>
+
   </semui:breadcrumbs>
 
   <semui:messages data="${flash}" />

@@ -16,12 +16,7 @@
         <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
 
         <li class="pull-right">
-          View:
-          <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="packageDetails" action="${params.action}" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
-            <g:link controller="packageDetails" action="${params.action}" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
-          </div>
-          &nbsp;
+            <semui:modeSwitch controller="packageDetails" action="${params.action}" params="${params}" />
         </li>
       </ul>
     </div>

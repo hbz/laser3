@@ -44,7 +44,7 @@
                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
           <li><g:link controller="myInstitutions" 
                                        action="managePrivateProperties"
-                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_private_properties')}</g:link></li>
+                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_props')}</g:link></li>
         </ul>
       </div>
     </div>

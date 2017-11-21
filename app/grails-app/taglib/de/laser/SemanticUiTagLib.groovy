@@ -1,8 +1,13 @@
 package de.laser
 
+import com.k_int.kbplus.auth.User
+
 // Semantic UI
 
 class SemanticUiTagLib {
+
+    def springSecurityService
+
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 
@@ -48,6 +53,8 @@ class SemanticUiTagLib {
             out << ' <div class="divider">/</div> '
         }
     }
+
+    // <semui:crumbAsBadge message="default.editable" class="orange" />
 
     def crumbAsBadge = { attrs, body ->
 
@@ -130,6 +137,78 @@ class SemanticUiTagLib {
         }
         out <<     body()
         out <<   '</div>'
+        out << '</div>'
+    }
+
+    // <semui:modeSwitch controller="controller" action="action" params="params" />
+
+    def modeSwitch = { attrs, body ->
+
+        def mode = (attrs.params.mode=='basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
+        if (!mode) {
+            def user = User.get(springSecurityService.principal.id)
+            mode = (user.showSimpleViews?.value == 'No') ? 'advanced' : 'basic'
+
+            // CAUTION: inject default mode
+            attrs.params.mode = mode
+        }
+
+        out << '<div class="ui buttons">'
+        out << g.link( "${message(code:'profile.simpleView', default:'Basic')}",
+                controller: attrs.controller,
+                action: attrs.action,
+                params: attrs.params + ['mode':'basic'],
+                class: "ui mini button ${mode == 'basic' ? 'positive' : ''}"
+        )
+
+        out << '<div class="or"></div>'
+
+        out << g.link( "${message(code:'profile.advancedView', default:'Advanced')}",
+                controller: attrs.controller,
+                action: attrs.action,
+                params: attrs.params + ['mode':'advanced'],
+                class: "ui mini button ${mode == 'advanced' ? 'positive' : ''}"
+        )
+        out << '</div>'
+    }
+
+    // <semui:exportDropdown params="${params}" transforms="${transforms}" />
+
+    def exportDropdown = { attrs, body ->
+
+        out << '<div class="ui compact menu">'
+        out <<   '<div class="ui simple dropdown item">'
+        out <<     'Export'
+        out <<     '<i class="dropdown icon"></i>'
+        out <<     '<div class="menu">'
+
+        out <<       body()
+        /*
+        out <<       '<div class="item">'
+        out <<         g.link("JSON Export", action:"show", params:"${params+[format:'json']}")
+        out <<       '</div>'
+        out <<       '<div class="item">'
+        out <<         g.link("XML Export", action:"show", params:"${params+[format:'xml']}")
+        out <<       '</div>'
+
+        attrs.transforms?.each{key, val ->
+            out <<       '<div class="item">'
+            out <<         g.link("${val.name}", action:"show", id:"${attrs.params.id}", params:"${[format:'xml', transformId:key, mode:attrs.params.mode]}")
+            out <<       '</div>'
+        }
+        */
+
+        out <<     '</div>'
+        out <<   '</div>'
+        out << '</div>'
+    }
+
+    //<semui:exportDropdownItem> LINK <semui:exportDropdownItem>
+
+    def exportDropdownItem = { attrs, body ->
+
+        out << '<div class="item">'
+        out <<   body()
         out << '</div>'
     }
 }

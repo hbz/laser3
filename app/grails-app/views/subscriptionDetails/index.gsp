@@ -16,24 +16,29 @@
 
         <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
 
-        <li class="dropdown pull-right">
-            <a class="dropdown-toggle btn btn-mini btn-primary" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.exports.label', default:'Exports')}<b class="caret"></b></a>
-            <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
+        <div class="pull-right">
+            <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
 
-                <li><g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link></li>
-                <li><g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link></li>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
+                </semui:exportDropdownItem>
                 <g:each in="${transforms}" var="transkey,transval">
-                    <li><g:link action="index" id="${params.id}" params="${[format:'xml',transformId:transkey,mode: params.mode]}">${transval.name}</g:link></li>
+                    <semui:exportDropdownItem>
+                        <g:link action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
+                    </semui:exportDropdownItem>
                 </g:each>
-            </ul>
+            </semui:exportDropdown>
 
-        <li class="pull-right">
-            <laser:modeSwitch controller="subscriptionDetails" action="index" params="${params}" /> &nbsp;
-        </li>
+        </div>
 
         <g:if test="${editable}">
-            <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
+            <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
+
         <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
 
     </semui:breadcrumbs>

@@ -9,35 +9,36 @@
  <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
-<semui:breadcrumbs>
+    <semui:breadcrumbs>
         <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
         <semui:crumb class="active" text="${packageInstance.name}" />
 
-        <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
+        <div class="pull-right">
 
-          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link action="show" params="${params+[format:'json']}">JSON Export</g:link></li>
-            <li><g:link action="show" params="${params+[format:'xml']}">XML Export</g:link></li>
-            <g:each in="${transforms}" var="transkey,transval">
-              <li><g:link action="show" id="${params.id}" params="${[format:'xml',transformId:transkey,mode:params.mode]}"> ${transval.name}</g:link></li>
-            </g:each>
-          </ul>
-        </li>
+            <g:if test="${editable}">
+                <semui:crumbAsBadge message="default.editable" class="orange" />
+            </g:if>
 
-        <li class="pull-right">
-          <g:if test="${editable}">
-              <span class="badge badge-warning">${message(code: 'default.editable')}</span>&nbsp;
-          </g:if>
-          ${message(code: 'package.show.view')}:
-          <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
-            <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
-          </div>
-          &nbsp;
-        </li>
+            <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
-</semui:breadcrumbs>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:link action="show" params="${params+[format:'xml']}">XML</g:link>
+                </semui:exportDropdownItem>
+
+                <g:each in="${transforms}" var="transkey,transval">
+                    <semui:exportDropdownItem>
+                        <g:link action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                    </semui:exportDropdownItem>
+                </g:each>
+            </semui:exportDropdown>
+        </div>
+
+    </semui:breadcrumbs>
+
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':packageInstance]}"/>
 
@@ -77,10 +78,8 @@
         <div class="twelve wide column">
             <h6>
               ${message(code: 'package.show.pkg_information')}
-              <span class="btn-group pull-right" data-toggle="buttons-radio">
-                <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
-                <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
-              </span>
+
+              <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
               &nbsp;
             </h6>
             <g:hiddenField name="version" value="${packageInstance?.version}" />
