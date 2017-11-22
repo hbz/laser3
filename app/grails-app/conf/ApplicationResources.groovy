@@ -77,7 +77,6 @@ modules = {
         resource url:'css/select2.css'
         resource url:"css/instances/${Holders.config.defaultCssSkin?:'standard.css'}"
 
-        //resource url:'css/style.css'
         resource url:'css/tmp_semui.css'
     }
 
@@ -85,12 +84,8 @@ modules = {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
 
-        //resource url:'js/jquery-3.1.1.min.js'
-
         resource url:'semantic/semantic.js'
         resource url:'semantic/semantic.css'
-
-        //resource url:'semantic_heave/bootstrap.3.3.7.min.js'    // new
 
         // legacy CRAP ..
         // legacy CRAP ..
