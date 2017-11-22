@@ -14,6 +14,7 @@ import org.springframework.security.access.annotation.Secured
 class LicenseDetailsController {
 
     def springSecurityService
+    def taskService
     def docstoreService
     def gazetteerService
     def alertsService
@@ -81,8 +82,13 @@ class LicenseDetailsController {
         result.pendingChanges = pendingChanges.collect{PendingChange.get(it)}
       }
     }
-    result.availableSubs = getAvailableSubscriptions(result.license,result.user)
+    result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
+      // tasks
+      def contextOrg  = contextService.getOrg()?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
+      result.tasks    = taskService.getTasksByTenantAndObject(contextOrg, result.license)
+      def preCon      = taskService.getPreconditions(contextOrg)
+      result << preCon
 
       // -- private properties
 

@@ -21,6 +21,7 @@ class SubscriptionDetailsController {
 
     def springSecurityService
     def contextService
+    def taskService
     def gazetteerService
     def alertsService
     def genericOIDService
@@ -1179,8 +1180,11 @@ class SubscriptionDetailsController {
 
     result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
-
-
+    // tasks
+    def contextOrg  = contextService.getOrg()?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
+    result.tasks    = taskService.getTasksByTenantAndObject(contextOrg, result.subscriptionInstance)
+    def preCon      = taskService.getPreconditions(contextOrg)
+    result << preCon
 
     // -- private properties
 

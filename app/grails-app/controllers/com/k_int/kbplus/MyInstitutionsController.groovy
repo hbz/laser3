@@ -29,6 +29,7 @@ class MyInstitutionsController {
     def tsvSuperlifterService
     def permissionHelperService
     def contextService
+    def taskService
 
     static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
 
@@ -2340,10 +2341,11 @@ AND EXISTS (
 
         //.findAllByOwner(result.user,sort:'ts',order:'asc')
 
+        // tasks
         def contextOrg  = contextService.getOrg()?: Org.findByShortcode(springSecurityService.getCurrentUser().defaultDash?.shortcode)
-        def tasks1       = Task.findAllByTenantUser(User.get(springSecurityService.principal.id))
-        def tasks2       = Task.findAllByTenantOrg(contextOrg)
-        result.tasks     = tasks1.plus(tasks2).unique(true)
+        result.tasks    = taskService.getTasksByTenants(springSecurityService.getCurrentUser(), contextOrg)
+        def preCon      = taskService.getPreconditions(contextOrg)
+        result << preCon
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])

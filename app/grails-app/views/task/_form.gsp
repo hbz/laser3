@@ -48,10 +48,8 @@
 <div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')} required">
 	<label for="description">
 		<g:message code="task.description.label" default="Description" />
-		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="description" required="" value="${taskInstance?.description}"/>
-
+	<g:textField name="description" value="${taskInstance?.description}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
@@ -93,17 +91,15 @@
 <div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'tenantUser', 'error')} required">
 	<label for="tenantUser">
 		<g:message code="task.tenantUser.label" default="Tenant User" />
-		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="tenantUser" name="tenantUser.id" from="${validTenantUsers}" optionKey="id" optionValue="display" required="" value="${taskInstance?.tenantUser?.id}" class="many-to-one"/>
+	<g:select id="tenantUser" name="tenantUser.id" from="${validTenantUsers}" optionKey="id" optionValue="display" value="${taskInstance?.tenantUser?.id}" class="many-to-one" noSelection="['null': '']" />
 
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'tenantOrg', 'error')} required">
 	<label for="tenantOrg">
 		<g:message code="task.tenantOrg.label" default="Tenant Org" />
-		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="tenantOrg" name="tenantOrg.id" from="${validTenantOrgs}" optionKey="id" required="" value="${taskInstance?.tenantOrg?.id}" class="many-to-one"/>
+	<g:select id="tenantOrg" name="tenantOrg.id" from="${validTenantOrgs}" optionKey="id" value="${taskInstance?.tenantOrg?.id}" class="many-to-one" noSelection="['null': '']" />
 
 </div>

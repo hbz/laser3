@@ -299,9 +299,11 @@
                     ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
                   </g:else>
                  </semui:card>
-                <g:render template="/templates/documents" model="${[ ownobj:license, owntp:'license']}" />
-                <g:render template="/templates/notes"  model="${[ ownobj:license, owntp:'license']}" />
-              </div><!-- .four -->
+
+                    <g:render template="/templates/tasks" model="${[ownobj:license, owntp:'license']}" />
+                    <g:render template="/templates/documents" model="${[ownobj:license, owntp:'license']}" />
+                    <g:render template="/templates/notes"  model="${[ownobj:license, owntp:'license']}" />
+                </div><!-- .four -->
             </div><!-- .grid -->
 
     <g:render template="orgLinksModal" 

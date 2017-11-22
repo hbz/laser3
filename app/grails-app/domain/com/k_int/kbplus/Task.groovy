@@ -26,13 +26,13 @@ class Task {
         pkg             (nullable:true, blank:false)
         subscription    (nullable:true, blank:false)
         title           (nullable:false, blank:false)
-        description     (nullable:false, blank:false)
+        description     (nullable:true, blank:true)
         status          (nullable:false, blank:false)
         owner           (nullable:false, blank:false)
         endDate         (nullable:false, blank:false)
         createDate      (nullable:false, blank:false)
-        tenantUser      (nullable:false, blank:false)
-        tenantOrg       (nullable:false, blank:false)
+        tenantUser      (nullable:true,  blank:true)
+        tenantOrg       (nullable:true,  blank:true)
     }
 
     static mapping = {

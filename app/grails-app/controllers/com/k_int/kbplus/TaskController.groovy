@@ -7,6 +7,7 @@ class TaskController {
 
 	def springSecurityService
     def contextService
+    def taskService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -17,13 +18,14 @@ class TaskController {
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
-			params.max = user?.getDefaultPageSize()
+			params.max  = user?.getDefaultPageSize()
 		}
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
     def create() {
-		def result = setPreconditions()
+        def contextOrg  = contextService.getOrg()?: Org.findByShortcode(springSecurityService.getCurrentUser().defaultDash?.shortcode)
+		def result      = taskService.getPreconditions(contextOrg)
 
 		switch (request.method) {
 		case 'GET':
@@ -56,7 +58,8 @@ class TaskController {
     }
 
     def edit() {
-        def result = setPreconditions()
+        def contextOrg = contextService.getOrg()?: Org.findByShortcode(springSecurityService.getCurrentUser().defaultDash?.shortcode)
+        def result     = taskService.getPreconditions(contextOrg)
 
 		switch (request.method) {
 		case 'GET':
@@ -121,38 +124,5 @@ class TaskController {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.id])
             redirect action: 'show', id: params.id
         }
-    }
-
-    private setPreconditions() {
-        def result = [:]
-
-        def contextOrg = contextService.getOrg()?: Org.findByShortcode(springSecurityService.getCurrentUser().defaultDash?.shortcode)
-
-        def qry_params = [
-                lic_org:    contextOrg,
-                org_role:   RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee'),
-                lic_status: RefdataCategory.lookupOrCreate('License Status', 'Deleted')
-        ]
-
-        def validLicenses 	    = License.executeQuery('select l ' + MyInstitutionsController.INSTITUTIONAL_LICENSES_QUERY, qry_params,  [max: 100, offset: 0])
-        def validOrgs           = Org.list()
-        def validPackages       = Package.list()        // TODO
-        def validSubscriptions 	= Subscription.list()   // TODO
-
-        def tenantUsersQuery = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
-
-        def validTenantOrgs     = [contextOrg]
-        def validTenantUsers 	= User.executeQuery(tenantUsersQuery, [contextOrg])
-
-        result.validLicenses        = validLicenses
-        result.validOrgs            = validOrgs
-        result.validPackages        = validPackages
-        result.validSubscriptions   = validSubscriptions
-
-        result.taskOwner            = springSecurityService.getCurrentUser()
-        result.validTenantOrgs      = validTenantOrgs
-        result.validTenantUsers     = validTenantUsers
-
-        result
     }
 }

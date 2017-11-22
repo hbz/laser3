@@ -24,6 +24,8 @@ class PackageDetailsController {
     def institutionsService
     def executorWrapperService
     def permissionHelperService
+    def contextService
+    def taskService
   
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -395,7 +397,7 @@ class PackageDetailsController {
 
       result.user = User.get(springSecurityService.principal.id)
       def packageInstance = Package.get(params.id)
-      if (!packageInstance) {
+      if (! packageInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
         redirect action: 'list'
         return
@@ -412,6 +414,13 @@ class PackageDetailsController {
       if ( packageInstance.forumId != null && grailsApplication.config.ZenDeskBaseURL ) {
         result.forum_url = "${grailsApplication.config.ZenDeskBaseURL}/forums/${packageInstance.forumId}"
       }
+
+        // tasks
+        def contextOrg  = contextService.getOrg()?: Org.findByShortcode(User.get(springSecurityService.principal.id).defaultDash?.shortcode)
+        result.tasks    = taskService.getTasksByTenantAndObject(contextOrg, packageInstance)
+        def preCon      = taskService.getPreconditions(contextOrg)
+        result << preCon
+
 
       result.subscriptionList=[]
       // We need to cycle through all the users institutions, and their respective subscripions, and add to this list

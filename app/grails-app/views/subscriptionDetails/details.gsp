@@ -238,8 +238,9 @@
         </div>
 
         <div class="four wide column">
-          <g:render template="documents" contextPath="../templates" model="${[ ownobj:subscriptionInstance, owntp:'subscription']}" />
-          <g:render template="notes" contextPath="../templates" model="${[ ownobj:subscriptionInstance, owntp:'subscription']}" />
+            <g:render template="tasks" contextPath="../templates" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
+            <g:render template="documents" contextPath="../templates" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
+            <g:render template="notes" contextPath="../templates" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
         </div><!-- .four -->
     </div><!-- .grid -->
 

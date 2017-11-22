@@ -127,6 +127,8 @@
             </table>
         </div><!-- .six -->
         <div class="five wide column">
+            <g:render template="tasks" contextPath="../templates" model="${[]}" />
+
             <table class="ui table dashboard-widget">
                 <thead>
                     <th>
@@ -135,9 +137,6 @@
                     </th>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><g:link controller="task" action="create" class="ui primary button">${message(code:'task.create.new')}</g:link></td>
-                    </tr>
                     <g:each in="${tasks}" var="tsk">
                         <tr>
                             <td>

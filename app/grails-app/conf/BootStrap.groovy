@@ -695,7 +695,7 @@ class BootStrap {
 
         RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'])
         RefdataValue.loc('Document Type', [en: 'License', de: 'Lizenz'])
-        RefdataValue.loc('Document Type', [en: 'Note', de: 'Notiz'])
+        RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung'])
         RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'])
 
         RefdataCategory.loc('Entitlement Issue Status',
