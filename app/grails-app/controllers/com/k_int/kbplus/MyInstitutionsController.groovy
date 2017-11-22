@@ -2340,6 +2340,10 @@ AND EXISTS (
 
         //.findAllByOwner(result.user,sort:'ts',order:'asc')
 
+        def contextOrg  = contextService.getOrg()?: Org.findByShortcode(springSecurityService.getCurrentUser().defaultDash?.shortcode)
+        def tasks1       = Task.findAllByTenantUser(User.get(springSecurityService.principal.id))
+        def tasks2       = Task.findAllByTenantOrg(contextOrg)
+        result.tasks     = tasks1.plus(tasks2).unique(true)
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])

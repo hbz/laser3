@@ -126,6 +126,33 @@
               </tbody>
             </table>
         </div><!-- .six -->
+        <div class="five wide column">
+            <table class="ui table dashboard-widget">
+                <thead>
+                    <th>
+                        <h5 class="pull-left">${message(code:'myinst.dash.task.label')}</h5>
+                        <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussions" class="pull-right" />
+                    </th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><g:link controller="task" action="create" class="ui primary button">${message(code:'task.create.new')}</g:link></td>
+                    </tr>
+                    <g:each in="${tasks}" var="tsk">
+                        <tr>
+                            <td>
+                                <strong>${tsk.title}</strong><br />
+                                <span>${tsk.description}</span><br />
+                                <span>${tsk.endDate}</span>
+                                <g:link controller="task" action="show" params="${[id:tsk.id]}" class="ui primary button">${message(code:'task.show')}</g:link>
+                            </td>
+                        </tr>
+                    </g:each>
+                </tbody>
+            </table>
+        </div>
+
+        <% /*
         <g:if test="${grailsApplication.config.ZenDeskBaseURL}">
         <div class="five wide column">
            <table class="ui table dashboard-widget">
@@ -181,6 +208,7 @@
           </table>
         </div><!-- .five -->
         </g:if>
+        */ %>
       </div><!-- .grid -->
     </div>
 

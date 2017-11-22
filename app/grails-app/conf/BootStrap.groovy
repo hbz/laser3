@@ -543,6 +543,7 @@ class BootStrap {
         RefdataCategory.loc('Person Function',      [en: 'Person Function', de: 'Funktion'])
         RefdataCategory.loc('Person Responsibility',[en: 'Person Responsibility', de: 'Verantwortlich'])
         RefdataCategory.loc('Subscription Status',  [en: 'Subscription Status', de: 'Subscription Status'])
+        RefdataCategory.loc('Task Status',          [en: 'Task Status', de: 'Task Status'])
 
         // refdata values
 
@@ -606,6 +607,10 @@ class BootStrap {
 
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'])
         RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'])
+
+        RefdataValue.loc('Task Status',      [en: 'Open', de: 'Offen'])
+        RefdataValue.loc('Task Status',      [en: 'Done', de: 'Erledigt'])
+        RefdataValue.loc('Task Status',      [en: 'Deferred', de: 'Zurückgestellt'])
     }
 
     def setupOnixPlRefdata = {
