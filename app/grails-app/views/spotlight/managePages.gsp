@@ -7,13 +7,10 @@
 
   <body>
 
+    <semui:breadcrumbs>
+        <semui:crumb  message="spotlight.addSpotlightPage" class="active"/>
+    </semui:breadcrumbs>
 
-    <div>
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="spotlight" action="addPage">Add Spotlight Page</g:link></li>
-      </ul>
-    </div>
 
    <div>
 
