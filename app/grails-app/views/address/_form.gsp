@@ -47,22 +47,28 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')}">
 	<label for="state">
 		<g:message code="address.state.label" default="State" />
-		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="state" required="" value="${addressInstance?.state}"/>
-
+	<laser:select id="state" name="state.id"
+				  from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Federal State'))}"
+				  optionKey="id"
+				  optionValue="value"
+				  value="${addressInstance?.state?.id}"
+                  noSelection="['null': '']" />
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'country', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'country', 'error')}">
 	<label for="country">
 		<g:message code="address.country.label" default="Country" />
-		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="country" required="" value="${addressInstance?.country}"/>
-
+	<laser:select id="country" name="country.id"
+				  from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Country'))}"
+				  optionKey="id"
+				  optionValue="value"
+				  value="${addressInstance?.country?.id}"
+                  noSelection="['null': '']" />
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">

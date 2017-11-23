@@ -654,8 +654,8 @@ class BootStrap {
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
-        RefdataValue.loc('Person Contact',      [en: 'Personal contact', de: 'Personenkontakt'])
-        RefdataValue.loc('Person Contact',      [en: 'Functional contact', de: 'Funktionskontakt'])
+        RefdataValue.loc('Person Contact Type',      [en: 'Personal contact', de: 'Personenkontakt'])
+        RefdataValue.loc('Person Contact Type',      [en: 'Functional contact', de: 'Funktionskontakt'])
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Kontaktperson'])
 

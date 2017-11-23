@@ -140,7 +140,7 @@
 					<dd><ul>
 						<g:each in="${orgInstance.prsLinks}" var="p">
 							<li>
-								${p.roleType?.value} - 
+								${p.functionType?.value}${p.responsibilityType?.value}  -
                                 
                                 <g:if test="${p.cluster}">
                                 	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
