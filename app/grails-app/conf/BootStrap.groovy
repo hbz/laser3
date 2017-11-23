@@ -546,6 +546,8 @@ class BootStrap {
         RefdataCategory.loc('Library Type',         [en: 'Library Type', de: 'Bibliothekstyp'])
         RefdataCategory.loc('OrgType',              [en: 'Organisation Type', de: 'Organisationstyp'])
         RefdataCategory.loc('Person Function',      [en: 'Person Function', de: 'Funktion'])
+        RefdataCategory.loc('Person Contact Type',  [en: 'Person: Contact Type', de: 'Person: Typ des Kontakts'])
+        RefdataCategory.loc('Person Position',      [en: 'Person Position', de: 'Person Position'])
         RefdataCategory.loc('Person Responsibility',[en: 'Person Responsibility', de: 'Verantwortlich'])
         RefdataCategory.loc('Subscription Status',  [en: 'Subscription Status', de: 'Subscription Status'])
 
@@ -652,7 +654,17 @@ class BootStrap {
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
-        RefdataValue.loc('Person Function',          [en: 'General contact person', de: 'Kontaktperson'])
+        RefdataValue.loc('Person Contact',      [en: 'Personal contact', de: 'Personenkontakt'])
+        RefdataValue.loc('Person Contact',      [en: 'Functional contact', de: 'Funktionskontakt'])
+
+        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Kontaktperson'])
+
+        RefdataValue.loc('Person Position',     [en: 'Account Manager', de: 'Account Manager'])
+        RefdataValue.loc('Person Position',     [en: 'Head Access Services', de: 'Erwerbungsleiter'])
+        RefdataValue.loc('Person Position',     [en: 'Library Director', de: 'Bibliotheksdirektor'])
+        RefdataValue.loc('Person Position',     [en: 'Sales Director', de: 'Sales Director'])
+        RefdataValue.loc('Person Position',     [en: 'Sales Support', de: 'Sales Support'])
+        RefdataValue.loc('Person Position',     [en: 'Technichal Support', de: 'Technischer Support'])
 
         RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Lizenzbearbeiter'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor'])
@@ -660,8 +672,8 @@ class BootStrap {
         RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'])
 
-        RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'])
-        RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc('Subscription Status', [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc('Subscription Status', [en: 'Deleted', de: 'Gelöscht'])
     }
 
     def setupOnixPlRefdata = {

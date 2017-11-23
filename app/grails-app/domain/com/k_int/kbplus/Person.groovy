@@ -19,25 +19,29 @@ class Person extends BaseDomainComponent {
     String       last_name
     RefdataValue gender     // RefdataCategory 'Gender'
     Org          tenant
-    RefdataValue isPublic   // RefdataCategory 'YN'
-    
+    RefdataValue isPublic       // RefdataCategory 'YN'
+    RefdataValue contactType    // RefdataCategory 'Person Contact Type'
+    RefdataValue roleType       // RefdataCategory 'Person Position'
+
     static mapping = {
-        id          column:'prs_id'
-        globalUID   column:'prs_guid'
-        version     column:'prs_version'
-        first_name  column:'prs_first_name'
-        middle_name column:'prs_middle_name'
-        last_name   column:'prs_last_name'
-        gender      column:'prs_gender_rv_fk'
-        tenant      column:'prs_tenant_fk'
-        isPublic    column:'prs_is_public_rv_fk'
+        id              column:'prs_id'
+        globalUID       column:'prs_guid'
+        version         column:'prs_version'
+        first_name      column:'prs_first_name'
+        middle_name     column:'prs_middle_name'
+        last_name       column:'prs_last_name'
+        gender          column:'prs_gender_rv_fk'
+        tenant          column:'prs_tenant_fk'
+        isPublic        column:'prs_is_public_rv_fk'
+        contactType     column:'prs_contact_type_rv_fk'
+        roleType        column:'prs_role_type_rv_fk'
     }
     
     static mappedBy = [
-        roleLinks: 'prs',
-        addresses: 'prs',
-        contacts:  'prs',
-        privateProperties: 'owner'
+        roleLinks:          'prs',
+        addresses:          'prs',
+        contacts:           'prs',
+        privateProperties:  'owner'
     ]
   
     static hasMany = [
@@ -55,6 +59,8 @@ class Person extends BaseDomainComponent {
         gender      (nullable:true)
         tenant      (nullable:true)
         isPublic    (nullable:true)
+        contactType (nullable:true)
+        roleType    (nullable:true)
     }
     
     static getAllRefdataValues(String category) {

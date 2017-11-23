@@ -13,12 +13,11 @@ import javax.persistence.Transient
 class Org extends BaseDomainComponent {
 
     String name
-    String shortname    // new
-    String sortname     // new
-    String url          // new
+    String shortname
+    String sortname
+    String url
 
-    // Used to generate friendly semantic URLs
-    String shortcode
+    String shortcode            // Used to generate friendly semantic URLs
 
     String impId
     String comment
@@ -28,18 +27,18 @@ class Org extends BaseDomainComponent {
     Date lastUpdated
     String categoryId
 
-    int fteStudents     // new
-    int fteStaff        // new
+    int fteStudents
+    int fteStaff
 
     RefdataValue orgType
     RefdataValue sector
     RefdataValue status
     RefdataValue membership
-    RefdataValue country        // new
-    RefdataValue federalState   // new
-    RefdataValue libraryNetwork // new
-    RefdataValue fundertype     // new
-    RefdataValue librarytype    // new
+    RefdataValue country        // RefdataCategory 'Country'
+    RefdataValue federalState   // RefdataCategory 'Federal State'
+    RefdataValue libraryNetwork // RefdataCategory 'Library Network'
+    RefdataValue funderType     // RefdataCategory 'Funder Type'
+    RefdataValue libraryType    // RefdataCategory 'Library Type'
 
     Set ids = []
 
@@ -75,11 +74,11 @@ class Org extends BaseDomainComponent {
          globalUID column:'org_guid'
              impId column:'org_imp_id', index:'org_imp_id_idx'
               name column:'org_name', index:'org_name_idx'
-         shortname column:'org_shortname', index:'org_shortname_idx'   // new
-          sortname column:'org_sortname', index:'org_sortname_idx'     // new
-               url column:'org_url'         // new
-       fteStudents column:'org_fteStudents' // new
-          fteStaff column:'org_fteStaff'    // new
+         shortname column:'org_shortname', index:'org_shortname_idx'
+          sortname column:'org_sortname', index:'org_sortname_idx'
+               url column:'org_url'
+       fteStudents column:'org_fte_students'
+          fteStaff column:'org_fte_staff'
            comment column:'org_comment'
            ipRange column:'org_ip_range'
          shortcode column:'org_shortcode', index:'org_shortcode_idx'
@@ -89,21 +88,21 @@ class Org extends BaseDomainComponent {
             sector column:'org_sector_rv_fk'
             status column:'org_status_rv_fk'
         membership column:'org_membership'
-           country column:'org_country_rv_fk'           // new
-      federalState column:'org_federalState_rv_fk'      // new
-    libraryNetwork column:'org_libraryNetwork_rv_fk'    // new
-        fundertype column:'org_fundertype_rv_fk'        // new
-       librarytype column:'org_librarytype_rv_fk'       // new
+           country column:'org_country_rv_fk'
+      federalState column:'org_federal_state_rv_fk'
+    libraryNetwork column:'org_library_network_rv_fk'
+        funderType column:'org_funder_type_rv_fk'
+       libraryType column:'org_library_type_rv_fk'
     }
 
     static constraints = {
            globalUID(nullable:true, blank:false, unique:true, maxSize:255)
                 name(nullable:true, blank:false, maxSize:255)
-           shortname(nullable:true, blank:true, maxSize:255)   // new
-            sortname(nullable:true, blank:true, maxSize:255)   // new
-                 url(nullable:true, blank:true, maxSize:512)   // new
-         fteStudents(nullable:true, blank:true)   // new
-            fteStaff(nullable:true, blank:true)   // new
+           shortname(nullable:true, blank:true, maxSize:255)
+            sortname(nullable:true, blank:true, maxSize:255)
+                 url(nullable:true, blank:true, maxSize:512)
+         fteStudents(nullable:true, blank:true)
+            fteStaff(nullable:true, blank:true)
                impId(nullable:true, blank:true, maxSize:255)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
@@ -114,11 +113,11 @@ class Org extends BaseDomainComponent {
              orgType(nullable:true, blank:true, maxSize:128)
               status(nullable:true, blank:true)
           membership(nullable:true, blank:true, maxSize:128)
-             country(nullable:true, blank:true)     // new
-        federalState(nullable:true, blank:true)     // new
-      libraryNetwork(nullable:true, blank:true)     // new
-          fundertype(nullable:true, blank:true)     // new
-         librarytype(nullable:true, blank:true)     // new
+             country(nullable:true, blank:true)
+        federalState(nullable:true, blank:true)
+      libraryNetwork(nullable:true, blank:true)
+          funderType(nullable:true, blank:true)
+         libraryType(nullable:true, blank:true)
     }
 
     @Override
