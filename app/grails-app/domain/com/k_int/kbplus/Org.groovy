@@ -13,6 +13,13 @@ import javax.persistence.Transient
 class Org extends BaseDomainComponent {
 
     String name
+    String shortname    // new
+    String sortname     // new
+    String url          // new
+
+    // Used to generate friendly semantic URLs
+    String shortcode
+
     String impId
     String comment
     String ipRange
@@ -21,72 +28,97 @@ class Org extends BaseDomainComponent {
     Date lastUpdated
     String categoryId
 
+    int fteStudents     // new
+    int fteStaff        // new
+
     RefdataValue orgType
     RefdataValue sector
     RefdataValue status
     RefdataValue membership
-
-    // Used to generate friendly semantic URLs
-    String shortcode
+    RefdataValue country        // new
+    RefdataValue federalState   // new
+    RefdataValue libraryNetwork // new
+    RefdataValue fundertype     // new
+    RefdataValue librarytype    // new
 
     Set ids = []
 
     static mappedBy = [
-      ids:      'org', 
-      outgoingCombos: 'fromOrg', 
-      incomingCombos: 'toOrg',
-      links:    'org',
-      prsLinks: 'org',
-      contacts: 'org',
-      addresses: 'org',
-      affiliations: 'org',
-      customProperties: 'owner',
-      privateProperties: 'owner'
-      ]
+        ids:              'org',
+        outgoingCombos:   'fromOrg',
+        incomingCombos:   'toOrg',
+        links:            'org',
+        prsLinks:         'org',
+        contacts:         'org',
+        addresses:        'org',
+        affiliations:     'org',
+        customProperties: 'owner',
+        privateProperties:'owner'
+    ]
 
     static hasMany = [
-      ids:                IdentifierOccurrence,
-      outgoingCombos:     Combo,
-      incomingCombos:     Combo,
-      links:              OrgRole,
-      prsLinks:           PersonRole,
-      contacts:           Contact,
-      addresses:          Address,
-      affiliations:       UserOrg,
-      customProperties:   OrgCustomProperty,
-      privateProperties:  OrgPrivateProperty
-      ]
+        ids:                IdentifierOccurrence,
+        outgoingCombos:     Combo,
+        incomingCombos:     Combo,
+        links:              OrgRole,
+        prsLinks:           PersonRole,
+        contacts:           Contact,
+        addresses:          Address,
+        affiliations:       UserOrg,
+        customProperties:   OrgCustomProperty,
+        privateProperties:  OrgPrivateProperty
+    ]
 
     static mapping = {
-            id column:'org_id'
-       version column:'org_version'
-     globalUID column:'org_guid'
-         impId column:'org_imp_id', index:'org_imp_id_idx'
-          name column:'org_name', index:'org_name_idx'
-       comment column:'org_comment'
-       ipRange column:'org_ip_range'
-     shortcode column:'org_shortcode', index:'org_shortcode_idx'
-         scope column:'org_scope'
-    categoryId column:'org_cat'
-       orgType column:'org_type_rv_fk'
-        sector column:'org_sector_rv_fk'
-        status column:'org_status_rv_fk'
-    membership column:'org_membership'
+                id column:'org_id'
+           version column:'org_version'
+         globalUID column:'org_guid'
+             impId column:'org_imp_id', index:'org_imp_id_idx'
+              name column:'org_name', index:'org_name_idx'
+         shortname column:'org_shortname', index:'org_shortname_idx'   // new
+          sortname column:'org_sortname', index:'org_sortname_idx'     // new
+               url column:'org_url'         // new
+       fteStudents column:'org_fteStudents' // new
+          fteStaff column:'org_fteStaff'    // new
+           comment column:'org_comment'
+           ipRange column:'org_ip_range'
+         shortcode column:'org_shortcode', index:'org_shortcode_idx'
+             scope column:'org_scope'
+        categoryId column:'org_cat'
+           orgType column:'org_type_rv_fk'
+            sector column:'org_sector_rv_fk'
+            status column:'org_status_rv_fk'
+        membership column:'org_membership'
+           country column:'org_country_rv_fk'           // new
+      federalState column:'org_federalState_rv_fk'      // new
+    libraryNetwork column:'org_libraryNetwork_rv_fk'    // new
+        fundertype column:'org_fundertype_rv_fk'        // new
+       librarytype column:'org_librarytype_rv_fk'       // new
     }
 
     static constraints = {
-       globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-            name(nullable:true, blank:false, maxSize:255)
-           impId(nullable:true, blank:true, maxSize:255)
-         comment(nullable:true, blank:true, maxSize:2048)       // 2048
-         ipRange(nullable:true, blank:true, maxSize:1024)       // 1024
-          sector(nullable:true, blank:true)
-       shortcode(nullable:true, blank:true, maxSize:128)
-           scope(nullable:true, blank:true, maxSize:128)
-      categoryId(nullable:true, blank:true, maxSize:128)
-         orgType(nullable:true, blank:true, maxSize:128)
-          status(nullable:true, blank:true)
-      membership(nullable:true, blank:true, maxSize:128)
+           globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+                name(nullable:true, blank:false, maxSize:255)
+           shortname(nullable:true, blank:true, maxSize:255)   // new
+            sortname(nullable:true, blank:true, maxSize:255)   // new
+                 url(nullable:true, blank:true, maxSize:512)   // new
+         fteStudents(nullable:true, blank:true)   // new
+            fteStaff(nullable:true, blank:true)   // new
+               impId(nullable:true, blank:true, maxSize:255)
+             comment(nullable:true, blank:true, maxSize:2048)
+             ipRange(nullable:true, blank:true, maxSize:1024)
+              sector(nullable:true, blank:true)
+           shortcode(nullable:true, blank:true, maxSize:128)
+               scope(nullable:true, blank:true, maxSize:128)
+          categoryId(nullable:true, blank:true, maxSize:128)
+             orgType(nullable:true, blank:true, maxSize:128)
+              status(nullable:true, blank:true)
+          membership(nullable:true, blank:true, maxSize:128)
+             country(nullable:true, blank:true)     // new
+        federalState(nullable:true, blank:true)     // new
+      libraryNetwork(nullable:true, blank:true)     // new
+          fundertype(nullable:true, blank:true)     // new
+         librarytype(nullable:true, blank:true)     // new
     }
 
     @Override
