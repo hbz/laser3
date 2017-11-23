@@ -25,7 +25,7 @@
 
             <g:if test="${privatePropertyDefinitions}">
 
-                <g:form class="form-horizontal" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
+                <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
                     <table class="ui celled striped table">
                         <thead>
                             <tr>

@@ -46,7 +46,7 @@
 				</g:hasErrors>
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${identifierInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${identifierInstance?.id}" >
 						<g:hiddenField name="version" value="${identifierInstance?.version}" />
 						<fieldset>
 							<f:all bean="identifierInstance"/>

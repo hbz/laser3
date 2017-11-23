@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
 	<label for="first_name">
 		<g:message code="person.first_name.label" default="Firstname" />
 		<span class="required-indicator">*</span>
@@ -9,7 +9,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
 	<label for="middle_name">
 		<g:message code="person.middle_name.label" default="Middlename" />
 		
@@ -18,7 +18,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
 	<label for="last_name">
 		<g:message code="person.last_name.label" default="Lastname" />
 		<span class="required-indicator">*</span>
@@ -27,7 +27,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
     <label for="gender">
         <g:message code="person.gender.label" default="Gender" />
 
@@ -40,7 +40,7 @@
                   noSelection="['': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
         <g:message code="person.roleType.label" default="Person Position" />
 
@@ -53,7 +53,7 @@
                   noSelection="['': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
         <g:message code="person.contactType.label" default="Person Contact Type" />
 
@@ -66,7 +66,7 @@
                   noSelection="['': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
 	<label for="contacts">
 		<g:message code="person.contacts.label" default="Contacts" />
 	</label>
@@ -96,7 +96,7 @@
     <div id="updateMeContact"></div>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
 	<label for="contacts">
 		<g:message code="person.addresses.label" default="Addresses" />
 	</label>
@@ -126,7 +126,7 @@
     <div id="updateMeAddress"></div>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
     <label for="isPublic">
         <g:message code="person.isPublic.label" default="IsPublic" />
         <span class="required-indicator">*</span>
@@ -138,7 +138,7 @@
                   value="${personInstance?.isPublic?.id}" />
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
     <label for="org">
         <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
         <span class="required-indicator">*</span>

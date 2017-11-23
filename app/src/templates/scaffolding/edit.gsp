@@ -50,7 +50,7 @@
 				</g:hasErrors>
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="\${${propertyName}?.id}" <%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
+					<g:form class="ui form" action="edit" id="\${${propertyName}?.id}" <%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
 						<g:hiddenField name="version" value="\${${propertyName}?.version}" />
 						<fieldset>
 							<f:all bean="${propertyName}"/>

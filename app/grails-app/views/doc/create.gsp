@@ -46,7 +46,7 @@
 				</g:hasErrors>
 
 				<fieldset>
-					<g:form class="form-horizontal" action="create" >
+					<g:form class="ui form" action="create" >
 						<fieldset>
 							<f:all bean="docInstance"/>
 							<div class="form-actions">

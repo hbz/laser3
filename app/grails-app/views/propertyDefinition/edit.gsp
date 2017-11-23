@@ -53,7 +53,7 @@
         <fieldset>
               <g:set var="usages" value="${propDefInstance.countOccurrences('com.k_int.kbplus.LicenseCustomProperty','com.k_int.kbplus.SystemAdminCustomProperty','com.k_int.kbplus.OrgCustomProperty')}" />
               <g:set var="usageOwner" value="${propDefInstance.getOccurrencesOwner('com.k_int.kbplus.LicenseCustomProperty','com.k_int.kbplus.SystemAdminCustomProperty','com.k_int.kbplus.OrgCustomProperty')}" />
-            <g:form class="form-horizontal" action="edit" id="${propDefInstance?.id}">
+            <g:form class="ui form" action="edit" id="${propDefInstance?.id}">
                 <g:hiddenField name="version" value="${propDefInstance?.version}"/>
                 <fieldset>
                     <div class="control-group ">

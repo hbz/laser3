@@ -27,7 +27,7 @@
 			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${licenseInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${licenseInstance?.id}" >
 						<g:hiddenField name="version" value="${licenseInstance?.version}" />
 						<fieldset>
 							<f:all bean="licenseInstance"/>

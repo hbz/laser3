@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: docInstance, field: 'status', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="doc.status.label" default="Status" />
 		
@@ -10,7 +10,7 @@
 	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${docInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: docInstance, field: 'type', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'type', 'error')} ">
 	<label for="type">
 		<g:message code="doc.type.label" default="Type" />
 		
@@ -18,7 +18,7 @@
 	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${docInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: docInstance, field: 'alert', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'alert', 'error')} ">
 	<label for="alert">
 		<g:message code="doc.alert.label" default="Alert" />
 		
@@ -26,7 +26,7 @@
 	<g:select id="alert" name="alert.id" from="${com.k_int.kbplus.Alert.list()}" optionKey="id" value="${docInstance?.alert?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: docInstance, field: 'content', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'content', 'error')} ">
 	<label for="content">
 		<g:message code="doc.content.label" default="Content" />
 		
@@ -34,7 +34,7 @@
 	<g:textField name="content" value="${docInstance?.content}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: docInstance, field: 'uuid', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'uuid', 'error')} ">
 	<label for="uuid">
 		<g:message code="doc.uuid.label" default="Uuid" />
 		
@@ -42,7 +42,7 @@
 	<g:textField name="uuid" value="${docInstance?.uuid}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: docInstance, field: 'contentType', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'contentType', 'error')} ">
 	<label for="contentType">
 		<g:message code="doc.contentType.label" default="Content Type" />
 		
@@ -50,7 +50,7 @@
 	<g:field type="number" name="contentType" value="${docInstance.contentType}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: docInstance, field: 'title', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'title', 'error')} ">
 	<label for="title">
 		<g:message code="doc.title.label" default="Title" />
 		
@@ -58,7 +58,7 @@
 	<g:textField name="title" value="${docInstance?.title}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: docInstance, field: 'filename', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'filename', 'error')} ">
 	<label for="filename">
 		<g:message code="doc.filename.label" default="Filename" />
 		

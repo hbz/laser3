@@ -27,7 +27,7 @@
 			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${contactInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${contactInstance?.id}" >
 						<g:hiddenField name="version" value="${contactInstance?.version}" />
 						<fieldset>
 							<% // <f:all bean="contactInstance"/> %>

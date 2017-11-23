@@ -50,7 +50,7 @@
 				%{-- The following code is causing the system to hang and crash, while failing to find the required fields. Something that was tested to work is defining a template within views/identifierOccurance path, like edit/_widget.gsp --}%
 
 %{-- 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${identifierOccurrenceInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${identifierOccurrenceInstance?.id}" >
 						<g:hiddenField name="version" value="${identifierOccurrenceInstance?.version}" />
 						<fieldset>
 							<f:all bean="identifierOccurrenceInstance"/>

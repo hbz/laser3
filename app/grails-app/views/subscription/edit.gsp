@@ -26,7 +26,7 @@
 			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${subscriptionInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${subscriptionInstance?.id}" >
 						<g:hiddenField name="version" value="${subscriptionInstance?.version}" />
 						<fieldset>
 							<f:all bean="subscriptionInstance"/>

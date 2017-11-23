@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: titleInstanceInstance, field: 'ids', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: titleInstanceInstance, field: 'ids', 'error')} ">
 	<label for="ids">
 		<g:message code="titleInstance.ids.label" default="Ids" />
 		
@@ -19,7 +19,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: titleInstanceInstance, field: 'impId', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: titleInstanceInstance, field: 'impId', 'error')} ">
 	<label for="impId">
 		<g:message code="titleInstance.impId.label" default="Imp Id" />
 		
@@ -27,7 +27,7 @@
 	<g:textField name="impId" value="${titleInstanceInstance?.impId}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: titleInstanceInstance, field: 'tipps', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: titleInstanceInstance, field: 'tipps', 'error')} ">
 	<label for="tipps">
 		<g:message code="titleInstance.tipps.label" default="Tipps" />
 		
@@ -44,7 +44,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: titleInstanceInstance, field: 'title', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: titleInstanceInstance, field: 'title', 'error')} ">
 	<label for="title">
 		<g:message code="titleInstance.title.label" default="Title" />
 		

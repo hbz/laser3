@@ -27,7 +27,7 @@
 			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${platformInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${platformInstance?.id}" >
 						<g:hiddenField name="version" value="${platformInstance?.version}" />
 						<fieldset>
 							<f:all bean="platformInstance"/>

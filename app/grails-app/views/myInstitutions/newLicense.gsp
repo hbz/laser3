@@ -26,7 +26,7 @@
         </g:hasErrors>
 
         <fieldset>
-          <g:form class="form-horizontal" 
+          <g:form class="ui form"
                   action="newLicense" 
                   params="${[shortcode:params.shortcode]}">
             <fieldset>

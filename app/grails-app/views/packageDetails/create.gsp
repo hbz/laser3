@@ -14,7 +14,7 @@
         from the content provider and the package name. Identifier will be defaulted from this values, but must be checked and be unique within the database before
         the create button will activate.
       </p>
-      <g:form class="form-horizontal" action="create" >
+      <g:form class="ui form" action="create" >
         <dl>
           <dt>Content Provider*</dt>
           <dd>

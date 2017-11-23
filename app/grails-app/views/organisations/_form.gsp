@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'address', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'address', 'error')} ">
 	<label for="address">
 		<g:message code="org.address.label" default="Address" />
 		
@@ -10,7 +10,7 @@
 	<g:textArea name="address" cols="40" rows="5" maxlength="256" value="${orgInstance?.address}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'ipRange', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'ipRange', 'error')} ">
 	<label for="ipRange">
 		<g:message code="org.ipRange.label" default="Ip Range" />
 		
@@ -18,7 +18,7 @@
 	<g:textArea name="ipRange" cols="40" rows="5" maxlength="256" value="${orgInstance?.ipRange}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'sector', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'sector', 'error')} ">
 	<label for="sector">
 		<g:message code="org.sector.label" default="Sector" />
 		
@@ -26,7 +26,7 @@
 	<g:xEditableRefData name="sector" config="OrgSector"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
 
@@ -34,7 +34,7 @@
 	<g:xEditableRefData name="membership" config="YN"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'ids', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'ids', 'error')} ">
   <label for="ids">
     <g:message code="org.ids.label" default="Ids" />
 
@@ -51,7 +51,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">
 	<label for="impId">
 		<g:message code="org.impId.label" default="Imp Id" />
 		
@@ -59,7 +59,7 @@
 	<g:textField name="impId" value="${orgInstance?.impId}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
 	<label for="name">
 		<g:message code="org.name.label" default="Name" />
 		

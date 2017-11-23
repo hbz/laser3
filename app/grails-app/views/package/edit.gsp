@@ -25,7 +25,7 @@
         </g:hasErrors>
 
         <fieldset>
-          <g:form class="form-horizontal" action="edit" id="${packageInstance?.id}" autocomplete="off" >
+          <g:form class="ui form" action="edit" id="${packageInstance?.id}" autocomplete="off" >
             <g:hiddenField name="version" value="${packageInstance?.version}" />
 
             <!--

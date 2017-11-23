@@ -1,4 +1,4 @@
-<div class="fieldcontain ${hasErrors(bean: clusterInstance, field: 'orgs', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: clusterInstance, field: 'orgs', 'error')} ">
 	<label for="orgs">
 		<g:message code="cluster.orgs.label" default="Orgs" />
 	</label>

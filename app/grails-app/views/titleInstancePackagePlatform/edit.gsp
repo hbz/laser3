@@ -46,7 +46,7 @@
 				</g:hasErrors>
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${titleInstancePackagePlatformInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${titleInstancePackagePlatformInstance?.id}" >
 						<g:hiddenField name="version" value="${titleInstancePackagePlatformInstance?.version}" />
 						<fieldset>
 							<f:all bean="titleInstancePackagePlatformInstance"/>

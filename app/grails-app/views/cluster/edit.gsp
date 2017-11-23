@@ -27,7 +27,7 @@
 			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${clusterInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${clusterInstance?.id}" >
 						<g:hiddenField name="version" value="${clusterInstance?.version}" />
 						<fieldset>
 							<% // <f:all bean="clusterInstance"/> %>
