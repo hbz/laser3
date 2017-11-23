@@ -7,21 +7,13 @@
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
   <body>
-
-
-    <div>
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
-
-        <li class="pull-right">
-            <semui:modeSwitch controller="packageDetails" action="current" params="${params}" />
-        </li>
-        
-      </ul>
-    </div>
-
+      <semui:breadcrumbs>
+          <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+          <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+          <div class="pull-right">
+              <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
+          </div>
+      </semui:breadcrumbs>
 
       <div>
 

@@ -16,19 +16,11 @@
 
 <body>
 
-<!-- REMOVE; not tested
-<div>
-    <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
-    </ul>
-</div>
--->
     <semui:breadcrumbs>
-        <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
-        <semui:crumb controller="packageDetails" action="show" id="${packageInstance.id}" text="${packageInstance.name}" />
+        <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+        <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
     </semui:breadcrumbs>
+
 
 <semui:messages data="${flash}" />
 

@@ -6,14 +6,9 @@
   </head>
 
   <body>
-
-
-    <div>
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="titleDetails" action="dmIndex">${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}</g:link></li>
-      </ul>
-    </div>
+    <semui:breadcrumbs>
+      <semui:crumb text="${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}" class="active"/>
+    </semui:breadcrumbs>
 
     <div>
       <g:form action="dmIndex" method="get" params="${params}" role="form" class="form-inline">

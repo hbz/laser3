@@ -7,13 +7,11 @@
 
   <body>
 
-    <div>
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</g:link> <span class="divider">/</span> </li>
-        <li> ${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title Management')} </li>
-      </ul>
-    </div>
+    <semui:breadcrumbs>
+      <semui:crumb controller="dataManager" action="index" params="${[shortcode:params.shortcode]}" text="${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}" />
+      <semui:crumb text="${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title management')}" class="active"/>
+    </semui:breadcrumbs>
+
 
   <semui:messages data="${flash}" />
 

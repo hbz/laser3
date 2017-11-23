@@ -6,19 +6,16 @@
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
   <body>
-
-    <div>
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <g:if test="${params.shortcode}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-        </g:if>
-        <li> <g:link controller="subscriptionDetails" action="addEntitlements" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}</g:link> </li>
-        <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
-        </g:if>
-      </ul>
-    </div>
+    <semui:breadcrumbs>
+      <g:if test="${params.shortcode}">
+        <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
+      </g:if>
+      <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
+      <semui:crumb class="active" text="${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}" />
+      <g:if test="${editable}">
+        <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
+      </g:if>
+    </semui:breadcrumbs>
 
     <div>
       <h1 class="ui header"><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>

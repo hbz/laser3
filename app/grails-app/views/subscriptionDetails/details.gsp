@@ -15,24 +15,18 @@
       <g:javascript src="properties.js"/>
   </head>
   <body>
-  
-    <div>
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
+    <semui:breadcrumbs>
         <g:if test="${params.shortcode}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
+            <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
         </g:if>
-        <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.label', default:'Subscription Details')}</g:link> </li>
-        
-      
 
-        </li>
+        <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
+
         <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
+            <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
         </g:if>
         <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
-      </ul>
-    </div>
+    </semui:breadcrumbs>
 
   <semui:messages data="${flash}" />
 
