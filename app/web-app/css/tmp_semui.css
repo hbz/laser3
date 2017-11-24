@@ -35,3 +35,14 @@
     color: #b94a48;
     border-color: #ee5f5b;
 }
+
+/* stretch content vertically */
+.ui.main .inline-lists dd,
+.ui.main .inline-lists dt {
+    line-height: 2em;
+}
+
+/**/
+.ui.main .ui.segment.form-actions {
+    background-color: #F9FAFB;
+}

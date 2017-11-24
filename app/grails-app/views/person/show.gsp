@@ -162,7 +162,7 @@
 </div>
 				<g:form>
 					<g:hiddenField name="id" value="${personInstance?.id}" />
-					<div class="form-actions">
+					<div class="ui segment form-actions">
 						<g:link class="ui button" action="edit" id="${personInstance?.id}">
 							<i class="icon-pencil"></i>
 							<g:message code="default.button.edit.label" default="Edit" />

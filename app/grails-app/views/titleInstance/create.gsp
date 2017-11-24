@@ -49,7 +49,7 @@
 					<g:form class="ui form" action="create" >
 						<fieldset>
 							<f:all bean="titleInstanceInstance"/>
-							<div class="form-actions">
+							<div class="ui segment form-actions">
 								<button type="submit" class="ui primary button">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.create.label" default="Create" />

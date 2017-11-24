@@ -11,17 +11,15 @@
 
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <semui:crumb message="menu.institutions.manage_private_properties" class="active" />
+        <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui header">${institution?.name} - ${message(code: 'menu.institutions.manage_private_properties')}</h1>
+    <h1 class="ui header">${institution?.name} - ${message(code: 'menu.institutions.manage_props')}</h1>
 
     <semui:messages data="${flash}" />
 
     <div class="ui grid">
         <div class="twelve wide column">
-
-            <p>${message(code:'propertyDefinition.private.info')}</p>
 
             <g:if test="${privatePropertyDefinitions}">
 
@@ -66,6 +64,8 @@
                             </g:each>
                         </tbody>
                     </table>
+
+                    <p>${message(code:'propertyDefinition.private.info')}</p>
 
                     <g:field type="hidden" name="cmd" value="delete" />
                     <button type="submit" class="ui primary button">${message(code:'default.button.delete.label', default:'Delete')}</button>

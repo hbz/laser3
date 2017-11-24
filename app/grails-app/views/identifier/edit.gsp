@@ -50,7 +50,7 @@
 						<g:hiddenField name="version" value="${identifierInstance?.version}" />
 						<fieldset>
 							<f:all bean="identifierInstance"/>
-							<div class="form-actions">
+							<div class="ui segment form-actions">
 								<button type="submit" class="ui primary button">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.update.label" default="Update" />

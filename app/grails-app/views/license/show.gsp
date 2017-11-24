@@ -226,7 +226,7 @@
 
             <g:form>
                 <g:hiddenField name="id" value="${licenseInstance?.id}" />
-                <div class="form-actions">
+                <div class="ui segment form-actions">
                     <g:link class="ui button" action="edit" id="${licenseInstance?.id}">
                         <i class="icon-pencil"></i>
                         <g:message code="default.button.edit.label" default="Edit" />

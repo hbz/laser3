@@ -256,7 +256,7 @@
         <g:if test="${editable}">
             <g:form>
                 <g:hiddenField name="id" value="${orgInstance?.id}" />
-                <div class="form-actions">
+                <div class="ui segment form-actions">
                     <g:link class="ui button" action="edit" id="${orgInstance?.id}">
                         <i class="icon-pencil"></i>
                         <g:message code="default.button.edit.label" default="Edit" />

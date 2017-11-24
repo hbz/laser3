@@ -111,7 +111,7 @@ class UserDetailsController {
         }
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
-        redirect action: 'show', id: userInstance.id
+        redirect action: 'edit', id: userInstance.id
         break
     }
   }

@@ -14,11 +14,11 @@
 
         <semui:messages data="${flash}" />
 
-        <div>
-            <div class="ui two column grid">
+        <div class="ui two column grid">
 
-                <div class="column wide eight">
+            <div class="column wide eight">
 
+                <div class="ui segment">
                     <g:form action="updateProfile" class="ui form">
                         <h4 class="ui dividing header">
                             ${message(code: 'profile.user', default:'User Profile')}
@@ -52,10 +52,12 @@
                         </div>
 
                     </g:form>
+                </div><!-- .segment -->
 
-                </div><!-- .column -->
+            </div><!-- .column -->
 
-                <div class="column wide eight">
+            <div class="column wide eight">
+                <div class="ui segment">
                     <g:form action="updatePassword" class="ui form">
 
                         <h4 class="ui dividing header">
@@ -76,9 +78,11 @@
                         </div>
 
                     </g:form>
-                </div><!-- .column -->
+                </div><!-- .segment -->
+            </div><!-- .column -->
 
-                <div class="column wide eight">
+            <div class="column wide eight">
+                <div class="ui segment">
                     <div class="ui form">
                       <h4 class="ui dividing header">
                           ${message(code: 'profile.preferences', default:'Preferences')}
@@ -99,10 +103,12 @@
                           <g:xEditable owner="${user}" field="defaultPageSize" />
                       </div>
                     </div>
-                  </div><!-- .column -->
+                </div><!-- .segment -->
+            </div><!-- .column -->
 
-                <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-                    <div class="column wide eight">
+            <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+                <div class="column wide eight">
+                    <div class="ui segment">
                         <div class="ui form">
                             <h4 class="ui dividing header">
                                 ${message(code: 'api.label', default:'API')}
@@ -123,13 +129,12 @@
                                 <g:link class="ui button" controller="api" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
                             </div>
                         </div><!-- form -->
-                    </div><!-- .column -->
-                </g:if>
+                    </div><!-- .segment -->
+                </div><!-- .column -->
+            </g:if>
 
         </div><!-- .grid -->
-    </div><!-- -->
 
-        <div>
             <div class="ui one column grid">
                 <!--<div class="column wide sixteen">
                     <h4 class="ui dividing header">
@@ -169,43 +174,44 @@
                           </table>
               </div><!--.column-->
 
-                <div class="column wide eight">
-                    <h4 class="ui dividing header">
-                        ${message(code: 'profile.membership.request')}
-                    </h4>
+                <div class="column sixteen eight">
+                    <div class="ui segment">
+                        <h4 class="ui dividing header">
+                            ${message(code: 'profile.membership.request')}
+                        </h4>
 
-                      <p style="word-break:normal">
-                          <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
-                      </p>
+                        <p style="word-break:normal">
+                            <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
+                        </p>
 
-                  <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
-                      <div class="field">
-                        <label>Organisation</label>
-                        <g:select name="org"
-                          from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
-                          optionKey="id"
-                          optionValue="name"
-                          class="input-medium"/>
-                      </div>
+                          <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
+                              <div class="field">
+                                <label>Organisation</label>
+                                <g:select name="org"
+                                  from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                                  optionKey="id"
+                                  optionValue="name"
+                                  class="input-medium"/>
+                              </div>
 
-                      <div class="field">
-                        <label>Role</label>
-                        <g:select name="formalRole"
-                              from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
-                              optionKey="id"
-                              optionValue="${ {role->g.message(code:'cv.roles.'+role.authority) } }"
-                              class="input-medium"/>
-                      </div>
+                              <div class="field">
+                                <label>Role</label>
+                                <g:select name="formalRole"
+                                      from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
+                                      optionKey="id"
+                                      optionValue="${ {role->g.message(code:'cv.roles.'+role.authority) } }"
+                                      class="input-medium"/>
+                              </div>
 
-                      <div class="field">
-                        <label></label>
-                        <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui primary button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
-                      </div>
-                  </g:form>
+                              <div class="field">
+                                <label></label>
+                                <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui primary button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
+                              </div>
+                          </g:form>
+                    </div><!-- .segment -->
             </div><!--.column-->
 
-            </div><!-- .grid -->
-        </div><!-- -->
+    </div><!-- .grid -->
 
     <g:if test="${grailsApplication.config.feature.notifications}">
 

@@ -54,7 +54,7 @@
 						<g:hiddenField name="version" value="\${${propertyName}?.version}" />
 						<fieldset>
 							<f:all bean="${propertyName}"/>
-							<div class="form-actions">
+							<div class="ui segment form-actions">
 								<button type="submit" class="btn btn-primary">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.update.label" default="Update" />
