@@ -22,35 +22,41 @@
 				
 					<g:if test="${personInstance?.first_name}">
 						<dt><g:message code="person.first_name.label" default="Firstname" /></dt>
-						
-							<dd><g:fieldValue bean="${personInstance}" field="first_name"/></dd>
-						
+                        <dd><g:fieldValue bean="${personInstance}" field="first_name"/></dd>
 					</g:if>
 				</dl>
 				<dl>
 					<g:if test="${personInstance?.middle_name}">
 						<dt><g:message code="person.middle_name.label" default="Middlename" /></dt>
-						
-							<dd><g:fieldValue bean="${personInstance}" field="middle_name"/></dd>
-						
+						<dd><g:fieldValue bean="${personInstance}" field="middle_name"/></dd>
 					</g:if>
 				</dl>
 				<dl>
 					<g:if test="${personInstance?.last_name}">
 						<dt><g:message code="person.last_name.label" default="Lastname" /></dt>
-						
-							<dd><g:fieldValue bean="${personInstance}" field="last_name"/></dd>
-						
+						<dd><g:fieldValue bean="${personInstance}" field="last_name"/></dd>
 					</g:if>
 				</dl>
 				<dl>
 					<g:if test="${personInstance?.gender}">
 						<dt><g:message code="person.gender.label" default="Gender" /></dt>
-						
-							<dd><g:link controller="refdataValue" action="show" id="${personInstance?.gender?.id}">${personInstance?.gender?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:fieldValue bean="${personInstance}" field="gender"/></dd>
 					</g:if>
 				</dl>
+
+                <dl>
+                    <g:if test="${personInstance?.roleType}">
+                        <dt><g:message code="person.roleType.label" default="Person Position" /></dt>
+                        <dd><g:fieldValue bean="${personInstance}" field="roleType"/></dd>
+                    </g:if>
+                </dl>
+				<dl>
+					<g:if test="${personInstance?.contactType}">
+						<dt><g:message code="person.contactType.label" default="Person Contact Type" /></dt>
+						<dd><g:fieldValue bean="${personInstance}" field="contactType"/></dd>
+					</g:if>
+				</dl>
+
 				<dl>
 					<g:if test="${personInstance?.contacts}">
 						<dt><g:message code="person.contacts.label" default="Contacts" /></dt>
@@ -156,7 +162,7 @@
 </div>
 				<g:form>
 					<g:hiddenField name="id" value="${personInstance?.id}" />
-					<div class="form-actions">
+					<div class="ui segment form-actions">
 						<g:link class="ui button" action="edit" id="${personInstance?.id}">
 							<i class="icon-pencil"></i>
 							<g:message code="default.button.edit.label" default="Edit" />

@@ -907,11 +907,11 @@ input[type="tel"],
 input[type="color"],
 .uneditable-input {
   display: inline-block;
-  height: 20px;
+  /* height: 20px; */
   padding: 4px 6px;
   margin-bottom: 10px;
   font-size: 14px;
-  line-height: 20px;
+  /* line-height: 20px; */
   color: #555555;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;

@@ -140,7 +140,7 @@
 					<dd><ul>
 						<g:each in="${orgInstance.prsLinks}" var="p">
 							<li>
-								${p.roleType?.value} - 
+								${p.functionType?.value}${p.responsibilityType?.value}  -
                                 
                                 <g:if test="${p.cluster}">
                                 	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
@@ -194,7 +194,7 @@
         <g:form>
                                     <sec:ifAnyGranted roles="ROLE_ADMIN">
           <g:hiddenField name="id" value="${orgInstance?.id}" />
-          <div class="form-actions">
+          <div class="ui segment form-actions">
             <g:link class="ui button" action="edit" id="${orgInstance?.id}">
               <i class="icon-pencil"></i>
               <g:message code="default.button.edit.label" default="Edit" />

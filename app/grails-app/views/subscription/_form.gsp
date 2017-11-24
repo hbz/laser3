@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'status', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="subscription.status.label" default="Status" />
 		
@@ -10,7 +10,7 @@
 	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${subscriptionInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'type', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'type', 'error')} ">
 	<label for="type">
 		<g:message code="subscription.type.label" default="Type" />
 		
@@ -18,7 +18,7 @@
 	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${subscriptionInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'owner', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'owner', 'error')} ">
 	<label for="owner">
 		<g:message code="subscription.owner.label" default="Owner" />
 		
@@ -26,7 +26,7 @@
 	<g:select id="owner" name="owner.id" from="${com.k_int.kbplus.License.list()}" optionKey="id" value="${subscriptionInstance?.owner?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'impId', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'impId', 'error')} ">
 	<label for="impId">
 		<g:message code="subscription.impId.label" default="Imp Id" />
 		
@@ -34,7 +34,7 @@
 	<g:textField name="impId" value="${subscriptionInstance?.impId}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'startDate', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'startDate', 'error')} ">
 	<label for="startDate">
 		<g:message code="subscription.startDate.label" default="Start Date" />
 		
@@ -42,7 +42,7 @@
 	<g:datePicker name="startDate" precision="day"  value="${subscriptionInstance?.startDate}" default="none" noSelection="['': '']" />
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'endDate', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'endDate', 'error')} ">
 	<label for="endDate">
 		<g:message code="subscription.endDate.label" default="End Date" />
 		
@@ -50,7 +50,7 @@
 	<g:datePicker name="endDate" precision="day"  value="${subscriptionInstance?.endDate}" default="none" noSelection="['': '']" />
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'instanceOf', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'instanceOf', 'error')} ">
 	<label for="instanceOf">
 		<g:message code="subscription.instanceOf.label" default="Instance Of" />
 		
@@ -58,7 +58,7 @@
 	<g:select id="instanceOf" name="instanceOf.id" from="${com.k_int.kbplus.Subscription.list()}" optionKey="id" value="${subscriptionInstance?.instanceOf?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'identifier', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'identifier', 'error')} ">
 	<label for="identifier">
 		<g:message code="subscription.identifier.label" default="Identifier" />
 		
@@ -66,7 +66,7 @@
 	<g:textField name="identifier" value="${subscriptionInstance?.identifier}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'name', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'name', 'error')} ">
 	<label for="name">
 		<g:message code="subscription.name.label" default="Name" />
 		
@@ -74,7 +74,7 @@
 	<g:textField name="name" value="${subscriptionInstance?.name}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'packages', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: subscriptionInstance, field: 'packages', 'error')} ">
 	<label for="packages">
 		<g:message code="subscription.packages.label" default="Packages" />
 		

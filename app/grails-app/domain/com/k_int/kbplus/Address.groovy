@@ -16,9 +16,9 @@ class Address {
     String pob
     String zipcode
     String city
-    String state
-    String country
-    RefdataValue type   // RefdataCategory 'AddressType'
+    RefdataValue state      // RefdataCategory 'Federal State'
+    RefdataValue country    // RefdataCategory 'Country'
+    RefdataValue type       // RefdataCategory 'AddressType'
     Person prs          // person related contact; exclusive with org
     Org    org          // org related contact; exclusive with prs
     
@@ -30,8 +30,8 @@ class Address {
         pob      column:'adr_pob'
         zipcode  column:'adr_zipcode'
         city     column:'adr_city'
-        state    column:'adr_state'
-        country  column:'adr_country'
+        state    column:'adr_state_rv_fk'
+        country  column:'adr_country_rv_fk'
         type     column:'adr_type_rv_fk'
         prs      column:'adr_prs_fk'
         org      column:'adr_org_fk'
@@ -43,8 +43,8 @@ class Address {
         pob      (nullable:true,  blank:true)
         zipcode  (nullable:false, blank:false)
         city     (nullable:false, blank:false)
-        state    (nullable:false, blank:true)
-        country  (nullable:false, blank:true)
+        state    (nullable:true,  blank:true)
+        country  (nullable:true,  blank:true)
         type     (nullable:false)
         prs      (nullable:true)
         org      (nullable:true)

@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: platformInstance, field: 'name', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: platformInstance, field: 'name', 'error')} ">
 	<label for="name">
 		<g:message code="platform.name.label" default="Name" />
 		
@@ -10,7 +10,7 @@
 	<g:textField name="name" value="${platformInstance?.name}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: platformInstance, field: 'serviceProvider', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: platformInstance, field: 'serviceProvider', 'error')} ">
 	<label for="serviceProvider">
 		<g:message code="platform.serviceProvider" default="Service Provider" />
 		
@@ -18,7 +18,7 @@
 	<g:select name="serviceProvider" from="${com.k_int.kbplus.RefdataCategory.allRefdataValues('YNO')}" multiple="multiple" optionKey="id" size="5" optionValue="${{it.getI10n('value')}}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: platformInstance, field: 'tipps', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: platformInstance, field: 'tipps', 'error')} ">
 	<label for="tipps">
 		<g:message code="platform.tipps.label" default="Tipps" />
 		

@@ -9,7 +9,7 @@
 
     <!-- ${params} -->
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
         <label for="street_1">
             <g:message code="address.street_1.label" default="Street1" />
             <span class="required-indicator">*</span>
@@ -18,7 +18,7 @@
 
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'street_2', 'error')} ">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'street_2', 'error')} ">
         <label for="street_2">
             <g:message code="address.street_2.label" default="Street2" />
 
@@ -27,7 +27,7 @@
 
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
         <label for="pob">
             <g:message code="address.pob.label" default="Pob" />
 
@@ -36,7 +36,7 @@
 
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')} required">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')} required">
         <label for="zipcode">
             <g:message code="address.zipcode.label" default="Zipcode" />
             <span class="required-indicator">*</span>
@@ -45,7 +45,7 @@
 
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')} required">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')} required">
         <label for="city">
             <g:message code="address.city.label" default="City" />
             <span class="required-indicator">*</span>
@@ -54,25 +54,31 @@
 
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')} required">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')}">
         <label for="state">
             <g:message code="address.state.label" default="State" />
-            <span class="required-indicator">*</span>
         </label>
-        <g:textField name="state" required="" value="${addressInstance?.state}"/>
-
+        <laser:select id="state" name="state.id"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Federal State'))}"
+                      optionKey="id"
+                      optionValue="value"
+                      value="${addressInstance?.state?.id}"
+                      noSelection="['null': '']" />
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'country', 'error')} required">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'country', 'error')}">
         <label for="country">
             <g:message code="address.country.label" default="Country" />
-            <span class="required-indicator">*</span>
         </label>
-        <g:textField name="country" required="" value="${addressInstance?.country}"/>
-
+        <laser:select id="country" name="country.id"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Country'))}"
+                      optionKey="id"
+                      optionValue="value"
+                      value="${addressInstance?.country?.id}"
+                      noSelection="['null': '']" />
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
         <label for="type">
             <g:message code="address.type.label" default="Type" />
 
@@ -85,7 +91,7 @@
             required=""/>
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'prs', 'error')} ">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'prs', 'error')} ">
         <label for="prs">
             <g:message code="address.prs.label" default="Prs" />
 
@@ -94,7 +100,7 @@
 
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: addressInstance, field: 'org', 'error')} ">
+    <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'org', 'error')} ">
         <label for="org">
             <g:message code="address.org.label" default="Org" />
 

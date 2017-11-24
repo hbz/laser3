@@ -26,7 +26,7 @@
         </g:hasErrors>
 
         <fieldset>
-          <g:form class="form-horizontal" 
+          <g:form class="ui form"
                   action="newLicense" 
                   params="${[shortcode:params.shortcode]}">
             <fieldset>
@@ -39,7 +39,7 @@
                  </div>
               </div>
 
-              <div class="form-actions">
+              <div class="ui segment form-actions">
                 <button type="submit" class="ui primary button">
                   <i class="icon-ok icon-white"></i>
                   <g:message code="default.button.create.label" default="Create" />

@@ -15,6 +15,34 @@
 }
 
 /* myInstitutions/../dashboard */
-ui.main .home-page {
+.ui.main .home-page {
     margin-bottom: 1em;
+}
+
+/* form validation */
+.ui.form input:focus:invalid:focus,
+.ui.form textarea:focus:invalid:focus,
+.ui.form select:focus:invalid:focus {
+    border-color: #e9322d;
+    -webkit-box-shadow: 0 0 6px #f8b9b7;
+    -moz-box-shadow: 0 0 6px #f8b9b7;
+    box-shadow: 0 0 6px #f8b9b7;
+}
+/* form validation */
+.ui.form input:focus:invalid,
+.ui.form textarea:focus:invalid,
+.ui.form select:focus:invalid {
+    color: #b94a48;
+    border-color: #ee5f5b;
+}
+
+/* stretch content vertically */
+.ui.main .inline-lists dd,
+.ui.main .inline-lists dt {
+    line-height: 2em;
+}
+
+/**/
+.ui.main .ui.segment.form-actions {
+    background-color: #F9FAFB;
 }

@@ -27,13 +27,13 @@
 			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${contactInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${contactInstance?.id}" >
 						<g:hiddenField name="version" value="${contactInstance?.version}" />
 						<fieldset>
 							<% // <f:all bean="contactInstance"/> %>
 							<g:render template="form"/>
 							
-							<div class="form-actions">
+							<div class="ui segment form-actions">
 								<button type="submit" class="ui primary button">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.update.label" default="Update" />

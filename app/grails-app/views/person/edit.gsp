@@ -47,13 +47,13 @@
 				</g:hasErrors>
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${personInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${personInstance?.id}" >
 						<g:hiddenField name="version" value="${personInstance?.version}" />
 						<fieldset>
 							<% // <f:all bean="personInstance"/> %>
 							<g:render template="form"/>
 							
-							<div class="form-actions">
+							<div class="ui segment form-actions">
 								<button type="submit" class="ui primary button">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.update.label" default="Update" />

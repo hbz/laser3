@@ -16,12 +16,9 @@
 <body>
 <div>
     <div class="span12">
-
-        <ul class="breadcrumb">
-            <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-            <li><g:link controller="jasperReports" action="index">Jasper Reports</g:link> <span
-                    class="divider">/</span></li>
-        </ul>
+        <semui:breadcrumbs>
+            <semui:crumb message="jasper.reports.label" class="active"/>
+        </semui:breadcrumbs>
 
         <semui:messages data="${flash}" />
 

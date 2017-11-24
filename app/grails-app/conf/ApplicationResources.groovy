@@ -25,6 +25,7 @@ modules = {
     kbplus {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
+        
         resource url:'js/inline-content.js'
         resource url:'js/bootstrap.min.js'
         resource url:'js/bootstrap-editable.js'
@@ -52,7 +53,6 @@ modules = {
     }
 
     treeSelects {
-        dependsOn 'font-awesome'
         dependsOn 'jquery'
 
         resource url:'css/jstree-themes/default/style.min.css'
@@ -68,8 +68,6 @@ modules = {
     }
 
     deprecatedCSS {
-        dependsOn 'font-awesome'
-
         resource url:'css/jquery.dataTables.css'
         resource url:'css/dataTables.fixedColumns.min.css'
         resource url:'css/dataTables.colVis.min.css'
@@ -77,7 +75,6 @@ modules = {
         resource url:'css/select2.css'
         resource url:"css/instances/${Holders.config.defaultCssSkin?:'standard.css'}"
 
-        //resource url:'css/style.css'
         resource url:'css/tmp_semui.css'
     }
 
@@ -85,12 +82,8 @@ modules = {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
 
-        //resource url:'js/jquery-3.1.1.min.js'
-
         resource url:'semantic/semantic.js'
         resource url:'semantic/semantic.css'
-
-        //resource url:'semantic_heave/bootstrap.3.3.7.min.js'    // new
 
         // legacy CRAP ..
         // legacy CRAP ..

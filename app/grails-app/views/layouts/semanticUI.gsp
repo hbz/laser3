@@ -238,7 +238,7 @@
                             <g:link class="item" controller="admin" action="manageAffiliationRequests">Manage Affiliation Requests</g:link>
                             <g:link class="item" controller="admin" action="settings">System Settings</g:link>
 
-                            <div class="item">
+                            <div class="ui dropdown item">
                                 System Admin
                                 <i class="dropdown icon"></i>
 
@@ -259,7 +259,7 @@
                             <g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
 
-                            <div class="item">
+                            <div class="ui dropdown item">
                                 Data Management Tasks
                                 <i class="dropdown icon"></i>
 
@@ -280,7 +280,7 @@
                             <g:link class="item" controller="admin" action="manageGlobalSources">Manage Global Sources</g:link>
 
 
-                            <div class="item">
+                            <div class="ui dropdown item">
                                Bulk Operations
                                <i class="dropdown icon"></i>
 
@@ -304,7 +304,7 @@
                             <g:link class="item" controller="stats" action="statsHome">Statistics</g:link>
                             <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>
 
-                            <div class="item">
+                            <div class="ui dropdown item">
                                 Batch tasks
                                 <i class="dropdown icon"></i>
 

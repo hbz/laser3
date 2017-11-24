@@ -44,6 +44,41 @@
             <dt><g:message code="org.name.label" default="Name" /></dt>
             <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
 
+            <dt><g:message code="org.shortname.label" default="Shortname" /></dt>
+            <dd>
+                <g:xEditable owner="${orgInstance}" field="shortname"/>
+            </dd>
+
+            <dt><g:message code="org.sortname.label" default="Sortname" /></dt>
+            <dd>
+                <g:xEditable owner="${orgInstance}" field="sortname"/>
+            </dd>
+
+            <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
+            <dd>
+                <g:xEditableRefData owner="${orgInstance}" field="libraryType" config='Library Type'/>
+            </dd>
+
+            <dt><g:message code="org.libraryNetwork.label" default="Library Network" /></dt>
+            <dd>
+                <g:xEditableRefData owner="${orgInstance}" field="libraryNetwork" config='Library Network'/>
+            </dd>
+
+            <dt><g:message code="org.funderType.label" default="Funder Type" /></dt>
+            <dd>
+                <g:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
+            </dd>
+
+            <dt><g:message code="org.federalState.label" default="Federal State" /></dt>
+            <dd>
+                <g:xEditableRefData owner="${orgInstance}" field="federalState" config='Federal State'/>
+            </dd>
+
+            <dt><g:message code="org.country.label" default="Country" /></dt>
+            <dd>
+                <g:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
+            </dd>
+
             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
             <dd>
                 <g:each in="${orgInstance?.addresses}" var="a">
@@ -86,10 +121,20 @@
                 <g:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
               </dd>
             <g:if test="${editable}">
-              <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
-
+                <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
                 <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
+
+                <dt><g:message code="org.fteStudents.label" default="Fte Students" /></dt>
+                <dd>
+                    <g:xEditable owner="${orgInstance}" field="fteStudents"/>
+                </dd>
+
+                <dt><g:message code="org.fteStaff.label" default="Fte Staff" /></dt>
+                <dd>
+                    <g:xEditable owner="${orgInstance}" field="fteStaff"/>
+                </dd>
             </g:if>
+
             <dt><g:message code="org.sector.label" default="Sector" /></dt>
             <dd>
             	<g:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
@@ -211,7 +256,7 @@
         <g:if test="${editable}">
             <g:form>
                 <g:hiddenField name="id" value="${orgInstance?.id}" />
-                <div class="form-actions">
+                <div class="ui segment form-actions">
                     <g:link class="ui button" action="edit" id="${orgInstance?.id}">
                         <i class="icon-pencil"></i>
                         <g:message code="default.button.edit.label" default="Edit" />

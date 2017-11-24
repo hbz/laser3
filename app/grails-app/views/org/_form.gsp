@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Org" %>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
 	<label for="name">
 		<g:message code="org.name.label" default="Name" />
 
@@ -9,7 +9,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">
 	<label for="impId">
 		<g:message code="org.impId.label" default="Imp Id" />
 
@@ -18,7 +18,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'comment', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'comment', 'error')} ">
 	<label for="comment">
 		<g:message code="org.comment.label" default="Comment" />
 		
@@ -27,7 +27,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'ipRange', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'ipRange', 'error')} ">
 	<label for="ipRange">
 		<g:message code="org.ipRange.label" default="Ip Range" />
 		
@@ -36,7 +36,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'sector', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'sector', 'error')} ">
 	<label for="sector">
 		<g:message code="org.sector.label" default="Sector" />
 		
@@ -44,13 +44,13 @@
 	<laser:select id="sector" name="sector.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector')}" 
 		optionKey="id" 
-		optionValue="${{it.getI10n('value')}}" 
+		optionValue="value"
 		value="${orgInstance?.sector?.id}" 
 		class="many-to-one" noSelection="['null': '']"/>
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'shortcode', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'shortcode', 'error')} ">
 	<label for="shortcode">
 		<g:message code="org.shortcode.label" default="Shortcode" />
 		
@@ -59,7 +59,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'scope', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'scope', 'error')} ">
 	<label for="scope">
 		<g:message code="org.scope.label" default="Scope" />
 		
@@ -68,7 +68,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'categoryId', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'categoryId', 'error')} ">
 	<label for="categoryId">
 		<g:message code="org.categoryId.label" default="Category Id" />
 		
@@ -77,7 +77,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'orgType', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'orgType', 'error')} ">
 	<label for="orgType">
 		<g:message code="org.orgType.label" default="Org Type" />
 		
@@ -85,25 +85,25 @@
 	<laser:select id="orgType" name="orgType.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
 		optionKey="id"
-		optionValue="${{it.getI10n('value')}}" 
+		optionValue="value"
 		value="${orgInstance?.orgType?.id}" 
 		class="many-to-one" noSelection="['null': '']"/>
 	
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="org.status.label" default="Status" />
 	</label>
 	<laser:select id="status" name="status.id"
 		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('PendingChangeStatus')}"
 		optionKey="id" 
-		optionValue="${{it.getI10n('value')}}" 
+		optionValue="value"
 		value="${orgInstance?.status?.id}" 
 		class="many-to-one" noSelection="['null': '']"/>
 
 </div>
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
 		
@@ -112,13 +112,13 @@
                 from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN')}"
                 optionKey="id"
                 value="${orgInstance?.membership?.id}"
-                optionValue="${{it.getI10n('value')}}"
+                optionValue="value"
                 class="many-to-one"
                 noSelection="['null': '']"/>
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'affiliations', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'affiliations', 'error')} ">
 	<label for="affiliations">
 		<g:message code="org.affiliations.label" default="Affiliations" />
 
@@ -136,7 +136,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'customProperties', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'customProperties', 'error')} ">
 	<label for="customProperties">
 		<g:message code="org.customProperties.label" default="Custom Properties" />
 		
@@ -154,7 +154,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'ids', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'ids', 'error')} ">
 	<label for="ids">
 		<g:message code="org.ids.label" default="Ids" />
 		
@@ -172,7 +172,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'incomingCombos', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'incomingCombos', 'error')} ">
 	<label for="incomingCombos">
 		<g:message code="org.incomingCombos.label" default="Incoming Combos" />
 		
@@ -189,7 +189,7 @@
 </div>
 
 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'outgoingCombos', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'outgoingCombos', 'error')} ">
 	<label for="outgoingCombos">
 		<g:message code="org.outgoingCombos.label" default="Outgoing Combos" />
 		
@@ -208,7 +208,7 @@
 </div>
 
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
 	<label for="contacts">
 		<g:message code="person.contacts.label" default="Contacts" />
 		
@@ -224,7 +224,7 @@
 </div>
 
 <!-- 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
 	<label for="links">
 		<g:message code="org.links.other.label" default="Links" />
 		
@@ -242,7 +242,7 @@
 </div>
 -->
 <!-- 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'prsLinks', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'prsLinks', 'error')} ">
 	<label for="prsLinks">
 		<g:message code="org.prsLinks.label" default="prsLinks" />
 		
@@ -269,7 +269,7 @@
 					<dd><ul>
 						<g:each in="${orgInstance.prsLinks}" var="p">
 							<li>
-								${p.roleType?.value} - 
+								${p.functionType?.value}${p.responsibilityType?.value} -
                                 
                                 <g:if test="${p.cluster}">
                                 	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>

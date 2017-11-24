@@ -69,7 +69,7 @@
 
 				<g:form>
 					<g:hiddenField name="id" value="\${${propertyName}?.id}" />
-					<div class="form-actions">
+					<div class="ui segment form-actions">
 						<g:link class="btn" action="edit" id="\${${propertyName}?.id}">
 							<i class="icon-pencil"></i>
 							<g:message code="default.button.edit.label" default="Edit" />

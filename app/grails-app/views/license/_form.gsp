@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'status', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="license.status.label" default="Status" />
 		
@@ -10,7 +10,7 @@
 	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'type', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'type', 'error')} ">
 	<label for="type">
 		<g:message code="license.type.label" default="Type" />
 		
@@ -18,7 +18,7 @@
 	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'reference', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'reference', 'error')} ">
 	<label for="reference">
 		<g:message code="license.reference.label" default="Reference" />
 		
@@ -26,7 +26,7 @@
 	<g:textField name="reference" value="${licenseInstance?.reference}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'concurrentUsers', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'concurrentUsers', 'error')} ">
 	<label for="concurrentUsers">
 		<g:message code="license.concurrentUsers.label" default="Concurrent Users" />
 		
@@ -34,7 +34,7 @@
 	<g:select id="concurrentUsers" name="concurrentUsers.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.concurrentUsers?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'remoteAccess', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'remoteAccess', 'error')} ">
 	<label for="remoteAccess">
 		<g:message code="license.remoteAccess.label" default="Remote Access" />
 		
@@ -42,7 +42,7 @@
 	<g:select id="remoteAccess" name="remoteAccess.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.remoteAccess?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'walkinAccess', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'walkinAccess', 'error')} ">
 	<label for="walkinAccess">
 		<g:message code="license.walkinAccess.label" default="Walkin Access" />
 		
@@ -50,7 +50,7 @@
 	<g:select id="walkinAccess" name="walkinAccess.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.walkinAccess?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'multisiteAccess', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'multisiteAccess', 'error')} ">
 	<label for="multisiteAccess">
 		<g:message code="license.multisiteAccess.label" default="Multisite Access" />
 		
@@ -58,7 +58,7 @@
 	<g:select id="multisiteAccess" name="multisiteAccess.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.multisiteAccess?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'partnersAccess', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'partnersAccess', 'error')} ">
 	<label for="partnersAccess">
 		<g:message code="license.partnersAccess.label" default="Partners Access" />
 		
@@ -66,7 +66,7 @@
 	<g:select id="partnersAccess" name="partnersAccess.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.partnersAccess?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'alumniAccess', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'alumniAccess', 'error')} ">
 	<label for="alumniAccess">
 		<g:message code="license.alumniAccess.label" default="Alumni Access" />
 		
@@ -74,7 +74,7 @@
 	<g:select id="alumniAccess" name="alumniAccess.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.alumniAccess?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'ill', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'ill', 'error')} ">
 	<label for="ill">
 		<g:message code="license.ill.label" default="Ill" />
 		
@@ -82,7 +82,7 @@
 	<g:select id="ill" name="ill.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.ill?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'coursepack', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'coursepack', 'error')} ">
 	<label for="coursepack">
 		<g:message code="license.coursepack.label" default="Coursepack" />
 		
@@ -90,7 +90,7 @@
 	<g:select id="coursepack" name="coursepack.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.coursepack?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'vle', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'vle', 'error')} ">
 	<label for="vle">
 		<g:message code="license.vle.label" default="Vle" />
 		
@@ -98,7 +98,7 @@
 	<g:select id="vle" name="vle.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.vle?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'enterprise', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'enterprise', 'error')} ">
 	<label for="enterprise">
 		<g:message code="license.enterprise.label" default="Enterprise" />
 		
@@ -106,7 +106,7 @@
 	<g:select id="enterprise" name="enterprise.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.enterprise?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'pca', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'pca', 'error')} ">
 	<label for="pca">
 		<g:message code="license.pca.label" default="Pca" />
 		
@@ -114,7 +114,7 @@
 	<g:select id="pca" name="pca.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${licenseInstance?.pca?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'noticePeriod', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'noticePeriod', 'error')} ">
 	<label for="noticePeriod">
 		<g:message code="license.noticePeriod.label" default="Notice Period" />
 		
@@ -122,7 +122,7 @@
 	<g:textField name="noticePeriod" value="${licenseInstance?.noticePeriod}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'licenseUrl', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'licenseUrl', 'error')} ">
 	<label for="licenseUrl">
 		<g:message code="license.licenseUrl.label" default="License Url" />
 		
@@ -130,7 +130,7 @@
 	<g:textField name="licenseUrl" value="${licenseInstance?.licenseUrl}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'licensorRef', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'licensorRef', 'error')} ">
 	<label for="licensorRef">
 		<g:message code="license.licensorRef.label" default="Licensor Ref" />
 		
@@ -138,7 +138,7 @@
 	<g:textField name="licensorRef" value="${licenseInstance?.licensorRef}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'licenseeRef', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'licenseeRef', 'error')} ">
 	<label for="licenseeRef">
 		<g:message code="license.licenseeRef.label" default="Licensee Ref" />
 		
@@ -146,7 +146,7 @@
 	<g:textField name="licenseeRef" value="${licenseInstance?.licenseeRef}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'licenseType', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'licenseType', 'error')} ">
 	<label for="licenseType">
 		<g:message code="license.licenseType.label" default="License Type" />
 		
@@ -154,7 +154,7 @@
 	<g:textField name="licenseType" value="${licenseInstance?.licenseType}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'licenseStatus', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'licenseStatus', 'error')} ">
 	<label for="licenseStatus">
 		<g:message code="license.licenseStatus.label" default="License Status" />
 		
@@ -162,7 +162,7 @@
 	<g:textField name="licenseStatus" value="${licenseInstance?.licenseStatus}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'lastmod', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'lastmod', 'error')} required">
 	<label for="lastmod">
 		<g:message code="license.lastmod.label" default="Lastmod" />
 		<span class="required-indicator">*</span>
@@ -170,7 +170,7 @@
 	<g:field type="number" name="lastmod" required="" value="${licenseInstance.lastmod}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'documents', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'documents', 'error')} ">
 	<label for="documents">
 		<g:message code="license.documents.label" default="Documents" />
 		
@@ -187,7 +187,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'orgLinks', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'orgLinks', 'error')} ">
 	<label for="orgLinks">
 		<g:message code="license.orgLinks.label" default="Org Links" />
 		
@@ -204,7 +204,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: licenseInstance, field: 'subscriptions', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: licenseInstance, field: 'subscriptions', 'error')} ">
 	<label for="subscriptions">
 		<g:message code="license.subscriptions.label" default="Subscriptions" />
 		

@@ -25,7 +25,7 @@
         </g:hasErrors>
 
         <fieldset>
-          <g:form class="form-horizontal" action="edit" id="${packageInstance?.id}" autocomplete="off" >
+          <g:form class="ui form" action="edit" id="${packageInstance?.id}" autocomplete="off" >
             <g:hiddenField name="version" value="${packageInstance?.version}" />
 
             <!--
@@ -63,7 +63,7 @@
                 </div>
               </div>
 
-              <div class="form-actions">
+              <div class="ui segment form-actions">
                 <button type="submit" class="ui primary button">
                   <i class="icon-ok icon-white"></i>
                   <g:message code="default.button.update.label" default="Update" />

@@ -46,10 +46,10 @@
 				</g:hasErrors>
 
 				<fieldset>
-					<g:form class="form-horizontal" action="create" >
+					<g:form class="ui form" action="create" >
 						<fieldset>
 							<f:all bean="issueEntitlementInstance"/>
-							<div class="form-actions">
+							<div class="ui segment form-actions">
 								<button type="submit" class="ui primary button">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.create.label" default="Create" />

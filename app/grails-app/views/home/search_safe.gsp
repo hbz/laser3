@@ -6,13 +6,9 @@
   </head>
 
   <body>
-
-    <div>
-        <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li class="active">Search</li>
-      </ul>
-    </div>
+    <semui:breadcrumbs>
+      <semui:crumb message="default.search.label" class="active"/>
+    </semui:breadcrumbs>
 
     <div>
       <p>

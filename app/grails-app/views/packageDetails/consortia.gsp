@@ -9,17 +9,11 @@
 
 <body>
 
-<div>
-    <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">All Packages</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="show"
-                    id="${packageInstance.id}">${packageInstance.name}</g:link></li>
+    <semui:breadcrumbs>
+        <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+        <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+    </semui:breadcrumbs>
 
-        
-
-    </ul>
-</div>
 <semui:messages data="${flash}" />
 
 <div>

@@ -13,6 +13,12 @@ import javax.persistence.Transient
 class Org extends BaseDomainComponent {
 
     String name
+    String shortname
+    String sortname
+    String url
+
+    String shortcode            // Used to generate friendly semantic URLs
+
     String impId
     String comment
     String ipRange
@@ -21,72 +27,97 @@ class Org extends BaseDomainComponent {
     Date lastUpdated
     String categoryId
 
+    int fteStudents
+    int fteStaff
+
     RefdataValue orgType
     RefdataValue sector
     RefdataValue status
     RefdataValue membership
-
-    // Used to generate friendly semantic URLs
-    String shortcode
+    RefdataValue country        // RefdataCategory 'Country'
+    RefdataValue federalState   // RefdataCategory 'Federal State'
+    RefdataValue libraryNetwork // RefdataCategory 'Library Network'
+    RefdataValue funderType     // RefdataCategory 'Funder Type'
+    RefdataValue libraryType    // RefdataCategory 'Library Type'
 
     Set ids = []
 
     static mappedBy = [
-      ids:      'org', 
-      outgoingCombos: 'fromOrg', 
-      incomingCombos: 'toOrg',
-      links:    'org',
-      prsLinks: 'org',
-      contacts: 'org',
-      addresses: 'org',
-      affiliations: 'org',
-      customProperties: 'owner',
-      privateProperties: 'owner'
-      ]
+        ids:              'org',
+        outgoingCombos:   'fromOrg',
+        incomingCombos:   'toOrg',
+        links:            'org',
+        prsLinks:         'org',
+        contacts:         'org',
+        addresses:        'org',
+        affiliations:     'org',
+        customProperties: 'owner',
+        privateProperties:'owner'
+    ]
 
     static hasMany = [
-      ids:                IdentifierOccurrence,
-      outgoingCombos:     Combo,
-      incomingCombos:     Combo,
-      links:              OrgRole,
-      prsLinks:           PersonRole,
-      contacts:           Contact,
-      addresses:          Address,
-      affiliations:       UserOrg,
-      customProperties:   OrgCustomProperty,
-      privateProperties:  OrgPrivateProperty
-      ]
+        ids:                IdentifierOccurrence,
+        outgoingCombos:     Combo,
+        incomingCombos:     Combo,
+        links:              OrgRole,
+        prsLinks:           PersonRole,
+        contacts:           Contact,
+        addresses:          Address,
+        affiliations:       UserOrg,
+        customProperties:   OrgCustomProperty,
+        privateProperties:  OrgPrivateProperty
+    ]
 
     static mapping = {
-            id column:'org_id'
-       version column:'org_version'
-     globalUID column:'org_guid'
-         impId column:'org_imp_id', index:'org_imp_id_idx'
-          name column:'org_name', index:'org_name_idx'
-       comment column:'org_comment'
-       ipRange column:'org_ip_range'
-     shortcode column:'org_shortcode', index:'org_shortcode_idx'
-         scope column:'org_scope'
-    categoryId column:'org_cat'
-       orgType column:'org_type_rv_fk'
-        sector column:'org_sector_rv_fk'
-        status column:'org_status_rv_fk'
-    membership column:'org_membership'
+                id column:'org_id'
+           version column:'org_version'
+         globalUID column:'org_guid'
+             impId column:'org_imp_id', index:'org_imp_id_idx'
+              name column:'org_name', index:'org_name_idx'
+         shortname column:'org_shortname', index:'org_shortname_idx'
+          sortname column:'org_sortname', index:'org_sortname_idx'
+               url column:'org_url'
+       fteStudents column:'org_fte_students'
+          fteStaff column:'org_fte_staff'
+           comment column:'org_comment'
+           ipRange column:'org_ip_range'
+         shortcode column:'org_shortcode', index:'org_shortcode_idx'
+             scope column:'org_scope'
+        categoryId column:'org_cat'
+           orgType column:'org_type_rv_fk'
+            sector column:'org_sector_rv_fk'
+            status column:'org_status_rv_fk'
+        membership column:'org_membership'
+           country column:'org_country_rv_fk'
+      federalState column:'org_federal_state_rv_fk'
+    libraryNetwork column:'org_library_network_rv_fk'
+        funderType column:'org_funder_type_rv_fk'
+       libraryType column:'org_library_type_rv_fk'
     }
 
     static constraints = {
-       globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-            name(nullable:true, blank:false, maxSize:255)
-           impId(nullable:true, blank:true, maxSize:255)
-         comment(nullable:true, blank:true, maxSize:2048)       // 2048
-         ipRange(nullable:true, blank:true, maxSize:1024)       // 1024
-          sector(nullable:true, blank:true)
-       shortcode(nullable:true, blank:true, maxSize:128)
-           scope(nullable:true, blank:true, maxSize:128)
-      categoryId(nullable:true, blank:true, maxSize:128)
-         orgType(nullable:true, blank:true, maxSize:128)
-          status(nullable:true, blank:true)
-      membership(nullable:true, blank:true, maxSize:128)
+           globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+                name(nullable:true, blank:false, maxSize:255)
+           shortname(nullable:true, blank:true, maxSize:255)
+            sortname(nullable:true, blank:true, maxSize:255)
+                 url(nullable:true, blank:true, maxSize:512)
+         fteStudents(nullable:true, blank:true)
+            fteStaff(nullable:true, blank:true)
+               impId(nullable:true, blank:true, maxSize:255)
+             comment(nullable:true, blank:true, maxSize:2048)
+             ipRange(nullable:true, blank:true, maxSize:1024)
+              sector(nullable:true, blank:true)
+           shortcode(nullable:true, blank:true, maxSize:128)
+               scope(nullable:true, blank:true, maxSize:128)
+          categoryId(nullable:true, blank:true, maxSize:128)
+             orgType(nullable:true, blank:true, maxSize:128)
+              status(nullable:true, blank:true)
+          membership(nullable:true, blank:true, maxSize:128)
+             country(nullable:true, blank:true)
+        federalState(nullable:true, blank:true)
+      libraryNetwork(nullable:true, blank:true)
+          funderType(nullable:true, blank:true)
+         libraryType(nullable:true, blank:true)
     }
 
     @Override
