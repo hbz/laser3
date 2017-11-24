@@ -25,6 +25,7 @@ modules = {
     kbplus {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
+        
         resource url:'js/inline-content.js'
         resource url:'js/bootstrap.min.js'
         resource url:'js/bootstrap-editable.js'
@@ -52,7 +53,6 @@ modules = {
     }
 
     treeSelects {
-        dependsOn 'font-awesome'
         dependsOn 'jquery'
 
         resource url:'css/jstree-themes/default/style.min.css'
@@ -68,8 +68,6 @@ modules = {
     }
 
     deprecatedCSS {
-        dependsOn 'font-awesome'
-
         resource url:'css/jquery.dataTables.css'
         resource url:'css/dataTables.fixedColumns.min.css'
         resource url:'css/dataTables.colVis.min.css'
