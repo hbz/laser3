@@ -85,15 +85,15 @@ class LicenseDetailsController {
     result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
       // tasks
-      def contextOrg  = contextService.getOrg()?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
-      result.tasks    = taskService.getTasksByTenantAndObject(contextOrg, result.license)
+      def contextOrg  = contextService.getOrg(result.user)
+      result.tasks    = taskService.getTasksByTenantsAndObject(result.user, contextOrg, result.license)
       def preCon      = taskService.getPreconditions(contextOrg)
       result << preCon
 
       // -- private properties
 
       result.authorizedOrgs = result.user?.authorizedOrgs
-      result.contextOrg     = contextService.getOrg() ?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
+      result.contextOrg     = contextService.getOrg(result.user)
 
       // create mandatory LicensePrivateProperties if not existing
 
@@ -347,6 +347,23 @@ class LicenseDetailsController {
 
     result
   }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def tasks() {
+        log.debug("licenseDetails id:${params.id}")
+
+        def result = [:]
+        result.user     = User.get(springSecurityService.principal.id)
+        result.license  = License.get(params.id)
+
+        userAccessCheck(result.license,result.user,'view') // TODO
+        result.editable = result.license.isEditableBy(result.user) // TODO
+
+        result.taskInstanceList = taskService.getTasksByTenantsAndObject(result.user, contextService.getOrg(result.user), result.license)
+        log.debug(result.taskInstanceList)
+
+        result
+    }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def properties() {

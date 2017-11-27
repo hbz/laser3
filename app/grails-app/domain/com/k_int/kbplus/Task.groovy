@@ -11,7 +11,7 @@ class Task {
 
     String          title
     String          description
-    RefdataValue    status
+    RefdataValue    status          // RefdataCategory 'YN'
 
     User            owner
     Date            endDate

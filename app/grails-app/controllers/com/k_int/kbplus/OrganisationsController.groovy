@@ -168,7 +168,7 @@ class OrganisationsController {
         // -- private properties
 
         result.authorizedOrgs = result.user?.authorizedOrgs
-        result.contextOrg     = contextService.getOrg() ?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
+        result.contextOrg     = contextService.getOrg(result.user)
 
         // create mandatory OrgPrivateProperties if not existing
 

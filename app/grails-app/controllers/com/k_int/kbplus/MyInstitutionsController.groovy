@@ -2342,7 +2342,7 @@ AND EXISTS (
         //.findAllByOwner(result.user,sort:'ts',order:'asc')
 
         // tasks
-        def contextOrg  = contextService.getOrg()?: Org.findByShortcode(springSecurityService.getCurrentUser().defaultDash?.shortcode)
+        def contextOrg  = contextService.getOrg(springSecurityService.getCurrentUser())
         result.tasks    = taskService.getTasksByTenants(springSecurityService.getCurrentUser(), contextOrg)
         def preCon      = taskService.getPreconditions(contextOrg)
         result << preCon
@@ -2559,6 +2559,18 @@ AND EXISTS (
 
         result
       }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def tasks() {
+        def result = setResultGenerics()
+
+        result.taskInstanceList = taskService.getTasksByTenants(result.user, result.institution)
+
+        result.myTaskInstanceList = taskService.getTasksByOwner(result.user, taskService.WITHOUT_TENANT_ONLY)
+
+        log.debug(result.taskInstanceList)
+        result
+    }
 
     /**
      * Display and manage PrivateProperties for this institution

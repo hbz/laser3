@@ -6,7 +6,7 @@ grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 
 grails.plugin.location.'file-viewer' = "localRepository/file-viewer/hbz-file-viewer-0.3"
-grails.plugin.location.'jquery'      = "localRepository/jquery/jquery-1.11.1" // hbz-jquery-1.11.1
+grails.plugin.location.'jquery'      = "localRepository/jquery/hbz-jquery-1.11.1" // hbz-jquery-1.11.1
 
 // grails.project.fork = [
 //    test: [maxMemory: 768, minMemory: 64, debug: true, maxPerm: 256], // Removed ", daemon:true" because geb doesn't play nice with forked mode atm
@@ -155,6 +155,11 @@ grails.project.dependency.resolution = {
         test ":geb:$gebVersion"
 
         test ":remote-control:2.0"
+
+        // Font awesome for font based icons.
+        // not needed, but removing will e.g. cause bootstrap errors with modals
+        // TODO: remove, because of semantic-ui
+        compile ":font-awesome-resources:4.3.0.1"
 
         compile ':spring-security-core:1.2.7.4'
         compile ':spring-security-ldap:1.0.6'

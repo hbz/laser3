@@ -8,6 +8,6 @@
     <input type="submit" class="ui primary button" value="${message(code:'task.create.new')}" data-toggle="modal" href="#modalCreateTask" />
 </semui:card>
 
-<g:render template="/templates/addTask" />
+<g:render template="/templates/tasks/modal" />
 
 <div class="modal hide fade" id="modalTasks"></div>

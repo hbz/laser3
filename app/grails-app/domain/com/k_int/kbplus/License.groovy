@@ -305,7 +305,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
       result = reference
     }
     else {
-      result = super.toString();
+      result = "- no name -"
     }
     return result;
   }

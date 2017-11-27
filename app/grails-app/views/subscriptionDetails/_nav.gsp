@@ -4,6 +4,9 @@
 
   <li <%='details'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails" action="details" params="${[id:params.id, shortcode:(params.shortcode ?: null)]}">${message(code:'subscription.details.details.label', default:'Details')}</g:link></li>
 
+  <li <%='tasks'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
+                                                                      action="tasks"
+                                                                      params="${[id:params.id, shortcode: (params.shortcode ?: null)]}">${message(code:'task.plural', default:'Tasks')}</g:link></li>
   <g:if test="${editable}">
     <li <%='linkPackage'== actionName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails"
                     action="linkPackage"

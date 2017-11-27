@@ -24,7 +24,7 @@ class TaskController {
     }
 
     def create() {
-        def contextOrg  = contextService.getOrg()?: Org.findByShortcode(springSecurityService.getCurrentUser().defaultDash?.shortcode)
+        def contextOrg  = contextService.getOrg(springSecurityService.getCurrentUser())
 		def result      = taskService.getPreconditions(contextOrg)
 
 		switch (request.method) {
@@ -58,7 +58,7 @@ class TaskController {
     }
 
     def edit() {
-        def contextOrg = contextService.getOrg()?: Org.findByShortcode(springSecurityService.getCurrentUser().defaultDash?.shortcode)
+        def contextOrg = contextService.getOrg(springSecurityService.getCurrentUser())
         def result     = taskService.getPreconditions(contextOrg)
 
 		switch (request.method) {

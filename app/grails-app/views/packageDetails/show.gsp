@@ -235,7 +235,7 @@
                 </g:else>
             </semui:card>
 
-          <g:render template="/templates/tasks" model="${[ownobj:packageInstance, owntp:'pkg']}" />
+          <g:render template="/templates/tasks/card" model="${[ownobj:packageInstance, owntp:'pkg']}" />
           <g:render template="/templates/documents" model="${[ownobj:packageInstance, owntp:'pkg']}" />
           <g:render template="/templates/notes"  model="${[ownobj:packageInstance, owntp:'pkg']}" />
         </div><!-- .four -->

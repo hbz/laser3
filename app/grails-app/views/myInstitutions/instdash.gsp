@@ -12,41 +12,46 @@
     </semui:breadcrumbs>
 
     <div class="home-page">
-      <div class="ui segment">
-        <h1 class="ui header">${institution.name} - Dashboard</h1>
-        <ul class="inline">
-          <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
-          <li><g:link controller="myInstitutions" 
-                                       action="currentLicenses" 
-                                       params="${[shortcode:params.shortcode]}">${message(code:'license.plural', default:'Licenses')}</g:link></li>
-          <li><g:link controller="myInstitutions" 
-                                       action="currentSubscriptions" 
-                                       params="${[shortcode:params.shortcode]}">${message(code:'subscription.plural', default:'Subscriptions')}</g:link></li>
-          <li><g:link controller="myInstitutions" 
-                                       action="currentTitles" 
-                                       params="${[shortcode:params.shortcode]}">${message(code:'title.plural', default:'Titles')}</g:link></li>
-          <li><h5>${message(code:'myinst.renewals', default:'Renewals')}:</h5></li>
-          <li><g:link controller="myInstitutions" 
-                                       action="renewalsSearch" 
-                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link></li>
-          <li><g:link controller="myInstitutions" 
-                                       action="renewalsUpload" 
-                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link></li>
-          <g:if test="${grailsApplication.config.feature_finance}">
-            <li><g:link controller="myInstitutions"
-                                       action="finance"
-                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.finance', default:'Finance')}</g:link></li>
-          </g:if>
+        <div class="ui segment">
+            <h1 class="ui header">${institution.name} - Dashboard</h1>
+            <ul class="inline">
+
+                <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
+                <li><g:link controller="myInstitutions"
+                            action="currentLicenses"
+                            params="${[shortcode:params.shortcode]}">${message(code:'license.plural', default:'Licenses')}</g:link></li>
+                <li><g:link controller="myInstitutions"
+                            action="currentSubscriptions"
+                            params="${[shortcode:params.shortcode]}">${message(code:'subscription.plural', default:'Subscriptions')}</g:link></li>
+                <li><g:link controller="myInstitutions"
+                            action="currentTitles"
+                            params="${[shortcode:params.shortcode]}">${message(code:'title.plural', default:'Titles')}</g:link></li>
+
+                <li><h5>${message(code:'myinst.renewals', default:'Renewals')}:</h5></li>
+                <li><g:link controller="myInstitutions"
+                            action="renewalsSearch"
+                            params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link></li>
+                <li><g:link controller="myInstitutions"
+                            action="renewalsUpload"
+                            params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link></li>
+                <g:if test="${grailsApplication.config.feature_finance}">
+                    <li><g:link controller="myInstitutions"
+                            action="finance"
+                            params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.finance', default:'Finance')}</g:link></li>
+                </g:if>
           
-          <li><h5>${message(code:'default.special.label', default:'Special')}:</h5></li>
-          <li><g:link controller="myInstitutions" 
-                                       action="addressbook" 
-                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
-          <li><g:link controller="myInstitutions" 
-                                       action="managePrivateProperties"
-                                       params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_props')}</g:link></li>
-        </ul>
-      </div>
+                <li><h5>${message(code:'default.special.label', default:'Special')}:</h5></li>
+                <li><g:link controller="myInstitutions"
+                            action="tasks"
+                            params="${[shortcode:params.shortcode]}">${message(code:'task.plural', default:'Tasks')}</g:link></li>
+                <li><g:link controller="myInstitutions"
+                            action="addressbook"
+                            params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></li>
+                <li><g:link controller="myInstitutions"
+                            action="managePrivateProperties"
+                            params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_props')}</g:link></li>
+            </ul>
+        </div>
     </div>
 
     <semui:messages data="${flash}" />
@@ -59,6 +64,7 @@
                 <th>
                   <h5 class="pull-left">${message(code:'myinst.todo.label', default:'To Do')}</h5>
                   <img src="${resource(dir: 'images', file: 'icon_todo.png')}" alt="To-Dos" class="pull-right" />
+                    <!--<i class="checkmark box icon"></i>-->
                 </th>
               </thead>
               <tbody>
@@ -97,6 +103,7 @@
                 <th>
                   <h5 class="pull-left">${message(code:'announcement.plural', default:'Announcements')}</h5>
                   <img src="${resource(dir: 'images', file: 'icon_announce.png')}" alt="To-Dos" class="pull-right" />
+                    <!--<i class="info circle icon"></i>-->
                 </th>
               </thead>
               <tbody>
@@ -127,28 +134,36 @@
             </table>
         </div><!-- .six -->
         <div class="five wide column">
-            <g:render template="tasks" contextPath="../templates" model="${[]}" />
-
             <table class="ui table dashboard-widget">
                 <thead>
                     <th>
                         <h5 class="pull-left">${message(code:'myinst.dash.task.label')}</h5>
                         <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussions" class="pull-right" />
+                        <!--<i class="checked calendar icon"></i>-->
                     </th>
                 </thead>
                 <tbody>
+                    <tr>
+                        <td>
+                            <input type="submit" class="ui primary button" value="${message(code:'task.create.new')}" data-toggle="modal" href="#modalCreateTask" />
+                        </td>
+                    </tr>
                     <g:each in="${tasks}" var="tsk">
                         <tr>
                             <td>
-                                <strong>${tsk.title}</strong><br />
-                                <span>${tsk.description}</span><br />
-                                <span>${tsk.endDate}</span>
-                                <g:link controller="task" action="show" params="${[id:tsk.id]}" class="ui primary button">${message(code:'task.show')}</g:link>
+                                <strong><g:link controller="task" action="show" params="${[id:tsk.id]}">${tsk.title}</g:link></strong> <br />
+                                <g:if test="${tsk.description}">
+                                    <span><em>${tsk.description}</em></span> <br />
+                                </g:if>
+                                <span>Fällig: ${tsk.endDate}</span>
                             </td>
                         </tr>
                     </g:each>
                 </tbody>
             </table>
+
+            <g:render template="/templates/tasks/modal" />
+            <div class="modal hide fade" id="modalTasks"></div>
         </div>
 
         <% /*

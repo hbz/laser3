@@ -13,7 +13,22 @@ import grails.transaction.Transactional
 @Transactional
 class TaskService {
 
+    final static WITHOUT_TENANT_ONLY = "WITHOUT_TENANT_ONLY"
+
     def springSecurityService
+
+    def getTasksByOwner(User user, flag) {
+        def tasks = []
+        if (user) {
+            if (flag == WITHOUT_TENANT_ONLY) {
+                tasks = Task.findAllByOwnerAndTenantOrgAndTenantUser(user, null, null)
+            }
+            else {
+                tasks = Task.findAllByOwner(user)
+            }
+        }
+        tasks
+    }
 
     def getTasksByTenant(User user) {
         def tasks = []
@@ -45,16 +60,16 @@ class TaskService {
         if (user && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
-                    tasks = Task.findAllByTenantOrgAndLicense(user, obj)
+                    tasks = Task.findAllByTenantUserAndLicense(user, obj)
                     break
                 case 'Org':
-                    tasks = Task.findAllByTenantOrgAndOrg(user, obj)
+                    tasks = Task.findAllByTenantUserAndOrg(user, obj)
                     break
                 case 'Package':
-                    tasks = Task.findAllByTenantOrgAndPkg(user, obj)
+                    tasks = Task.findAllByTenantUserAndPkg(user, obj)
                     break
                 case 'Subscription':
-                    tasks = Task.findAllByTenantOrgAndSubscription(user, obj)
+                    tasks = Task.findAllByTenantUserAndSubscription(user, obj)
                     break
             }
         }
@@ -79,6 +94,15 @@ class TaskService {
                     break
             }
         }
+        tasks
+    }
+
+    def getTasksByTenantsAndObject(User user, Org org, Object obj) {
+        def tasks = []
+        def a = getTasksByTenantAndObject(user, obj)
+        def b = getTasksByTenantAndObject(org, obj)
+
+        tasks = a.plus(b).unique()
         tasks
     }
 

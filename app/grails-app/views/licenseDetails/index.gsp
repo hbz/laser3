@@ -300,7 +300,7 @@
                   </g:else>
                  </semui:card>
 
-                    <g:render template="/templates/tasks" model="${[ownobj:license, owntp:'license']}" />
+                    <g:render template="/templates/tasks/card" model="${[ownobj:license, owntp:'license']}" />
                     <g:render template="/templates/documents" model="${[ownobj:license, owntp:'license']}" />
                     <g:render template="/templates/notes"  model="${[ownobj:license, owntp:'license']}" />
                 </div><!-- .four -->

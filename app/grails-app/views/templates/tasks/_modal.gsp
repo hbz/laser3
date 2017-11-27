@@ -98,6 +98,7 @@
                     <span class="required-indicator">*</span>
                 </label>
                 <g:datePicker name="createDate" precision="day"  value="${taskInstance?.createDate}"  />
+                <input size="10" type="text" id="datepicker-createDate" name="createDate" value="${taskInstance?.createDate}">
 
             </div>
 
@@ -107,6 +108,7 @@
                     <span class="required-indicator">*</span>
                 </label>
                 <g:datePicker name="endDate" precision="day"  value="${taskInstance?.endDate}"  />
+                <input size="10" type="text" id="datepicker-endDate" name="endDate" value="${taskInstance?.endDate}">
 
             </div>
 
@@ -126,12 +128,26 @@
 
             </div>
             <!-- form -->
-
-            <input type="hidden" name="licenseNoteShared" value="0"/>
         </div>
         <div class="modal-footer">
             <a href="#" class="ui button" data-dismiss="modal">${message(code: 'default.button.close.label', default:'Close')}</a>
             <input type="submit" class="ui primary button" name ="SaveNote" value="${message(code: 'default.button.save_changes', default: 'Save Changes')}">
         </div>
+
+        <r:script type="text/javascript">
+
+            $("#datepicker-createDate").datepicker({
+                format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+                language:"${message(code:'default.locale.label', default:'en')}",
+                autoclose:true
+            })
+            $("#datepicker-endDate").datepicker({
+                format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+                language:"${message(code:'default.locale.label', default:'en')}",
+                autoclose:true
+            })
+
+        </r:script>
+
     </g:form>
 </div>

@@ -416,8 +416,8 @@ class PackageDetailsController {
       }
 
         // tasks
-        def contextOrg  = contextService.getOrg()?: Org.findByShortcode(User.get(springSecurityService.principal.id).defaultDash?.shortcode)
-        result.tasks    = taskService.getTasksByTenantAndObject(contextOrg, packageInstance)
+        def contextOrg  = contextService.getOrg(User.get(springSecurityService.principal.id))
+        result.tasks    = taskService.getTasksByTenantsAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
         def preCon      = taskService.getPreconditions(contextOrg)
         result << preCon
 
@@ -877,15 +877,27 @@ class PackageDetailsController {
   }
 
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def notes() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.packageInstance = Package.get(params.id)
-    result.editable=isEditable()
-    result
-  }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def notes() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.packageInstance = Package.get(params.id)
+        result.editable=isEditable()
+        result
+    }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def tasks() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.packageInstance = Package.get(params.id)
+        result.editable=isEditable()
+
+        result.taskInstanceList = taskService.getTasksByTenantsAndObject(result.user, contextService.getOrg(result.user), result.packageInstance)
+        log.debug(result.taskInstanceList)
+
+        result
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def packageBatchUpdate() {
