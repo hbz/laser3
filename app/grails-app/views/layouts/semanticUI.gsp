@@ -155,6 +155,8 @@
                                         params="${[shortcode:contextOrg?.shortcode]}">${contextOrg?.name}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="todo"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.todo')}</g:link>
+                                <g:link class="item" controller="myInstitutions" action="tasks"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.tasks')}</g:link>
 
                                 <g:link class="item" controller="myInstitutions" action="currentTitles"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>

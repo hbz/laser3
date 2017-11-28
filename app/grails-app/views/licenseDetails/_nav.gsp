@@ -3,6 +3,7 @@
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="licenseDetails" action="index" params="${[id:params.id]}" message="license.nav.details" />
+    <semui:subNavItem controller="licenseDetails" action="tasks" params="${[id:params.id]}" message="task.plural" />
     <semui:subNavItem controller="licenseDetails" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <semui:subNavItem controller="licenseDetails" action="notes" params="${[id:params.id]}" message="license.nav.notes" />
     <semui:subNavItem controller="licenseDetails" action="todo_history" params="${[id:params.id]}" message="license.nav.todo_history" />

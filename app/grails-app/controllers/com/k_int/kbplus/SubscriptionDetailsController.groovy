@@ -21,6 +21,7 @@ class SubscriptionDetailsController {
 
     def springSecurityService
     def contextService
+    def taskService
     def gazetteerService
     def alertsService
     def genericOIDService
@@ -823,6 +824,27 @@ class SubscriptionDetailsController {
     result
   }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def tasks() {
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
+
+        if ( result.institution ) {
+          result.subscriber_shortcode = result.institution.shortcode
+        }
+
+        userAccessCheck( result.subscriptionInstance, result.user, 'view')
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        result.taskInstanceList = taskService.getTasksByTenantsAndObject(result.user, contextService.getOrg(result.user), result.subscriptionInstance)
+
+        log.debug(result.taskInstanceList)
+        result
+    }
+
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def renewals() {
     def result = [:]
@@ -1179,13 +1201,16 @@ class SubscriptionDetailsController {
 
     result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
-
-
+    // tasks
+    def contextOrg  = contextService.getOrg(result.user)
+    result.tasks    = taskService.getTasksByTenantsAndObject(result.user, contextOrg, result.subscriptionInstance)
+    def preCon      = taskService.getPreconditions(contextOrg)
+    result << preCon
 
     // -- private properties
 
     result.authorizedOrgs = result.user?.authorizedOrgs
-    result.contextOrg     = contextService.getOrg() ?: Org.findByShortcode(result.user?.defaultDash?.shortcode)
+    result.contextOrg     = contextService.getOrg(result.user)
 
     // create mandatory OrgPrivateProperties if not existing
 

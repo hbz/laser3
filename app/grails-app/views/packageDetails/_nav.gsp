@@ -8,6 +8,8 @@
 
     <semui:subNavItem controller="packageDetails" action="previous" params="${[id:params.id]}" message="package.show.nav.previous" />
 
+    <semui:subNavItem controller="packageDetails" action="tasks" params="${[id:params.id]}" message="task.plural" />
+
     <semui:subNavItem controller="packageDetails" action="documents" params="${[id:params.id]}" message="package.show.nav.docs" />
 
     <semui:subNavItem controller="packageDetails" action="notes" params="${[id:params.id]}" message="package.show.nav.notes" />

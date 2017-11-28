@@ -171,4 +171,9 @@ class User implements Permissions {
     def hasPerm(perm, user) {
         false
     }
+
+    @Override
+    String toString() {
+        display + ' (' + id + ')'
+    }
 }
