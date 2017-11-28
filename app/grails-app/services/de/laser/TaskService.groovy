@@ -27,7 +27,7 @@ class TaskService {
                 tasks = Task.findAllByOwner(user)
             }
         }
-        tasks
+        tasks.sort{ it.endDate }
     }
 
     def getTasksByTenant(User user) {
@@ -35,7 +35,7 @@ class TaskService {
         if (user) {
             tasks = Task.findAllByTenantUser(user)
         }
-        tasks
+        tasks.sort{ it.endDate }
     }
 
     def getTasksByTenant(Org org) {
@@ -43,7 +43,7 @@ class TaskService {
         if (org) {
             tasks = Task.findAllByTenantOrg(org)
         }
-        tasks
+        tasks.sort{ it.endDate }
     }
 
     def getTasksByTenants(User user, Org org) {
@@ -52,7 +52,7 @@ class TaskService {
         def b = getTasksByTenant(org)
 
         tasks = a.plus(b).unique()
-        tasks
+        tasks.sort{ it.endDate }
     }
 
     def getTasksByTenantAndObject(User user, Object obj) {
@@ -73,7 +73,7 @@ class TaskService {
                     break
             }
         }
-        tasks
+        tasks.sort{ it.endDate }
     }
 
     def getTasksByTenantAndObject(Org org, Object obj) {
@@ -94,7 +94,7 @@ class TaskService {
                     break
             }
         }
-        tasks
+        tasks.sort{ it.endDate }
     }
 
     def getTasksByTenantsAndObject(User user, Org org, Object obj) {
@@ -103,32 +103,33 @@ class TaskService {
         def b = getTasksByTenantAndObject(org, obj)
 
         tasks = a.plus(b).unique()
-        tasks
+        tasks.sort{ it.endDate }
     }
 
     def getPreconditions(Org contextOrg) {
         def result = [:]
 
-        def qry_params = [
-                lic_org:    contextOrg,
-                org_role:   RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee'),
-                lic_status: RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+        def qry_params1 = [
+            lic_org:    contextOrg,
+            org_role:   RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee'),
+            lic_status: RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+        ]
+        def qry_params2 = [
+            'roleTypes' : [
+                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber'),
+                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+            ],
+            'activeInst': contextOrg
         ]
 
-        def validLicenses 	        = License.executeQuery('select l ' + MyInstitutionsController.INSTITUTIONAL_LICENSES_QUERY, qry_params,  [max: 100, offset: 0])
-        def validOrgs               = Org.list()
-        def validPackages           = Package.list()        // TODO
-        def validSubscriptions 	    = Subscription.list()   // TODO
-
         def tenantUsersQuery        = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
-
         def validTenantOrgs         = [contextOrg]
         def validTenantUsers 	    = User.executeQuery(tenantUsersQuery, [contextOrg])
 
-        result.validLicenses        = validLicenses
-        result.validOrgs            = validOrgs
-        result.validPackages        = validPackages
-        result.validSubscriptions   = validSubscriptions
+        result.validLicenses        = License.executeQuery('select l ' + MyInstitutionsController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
+        result.validOrgs            = Org.list()
+        result.validPackages        = Package.list() // TODO
+        result.validSubscriptions   = Subscription.executeQuery("select s " + MyInstitutionsController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
 
         result.taskOwner            = springSecurityService.getCurrentUser()
         result.validTenantOrgs      = validTenantOrgs

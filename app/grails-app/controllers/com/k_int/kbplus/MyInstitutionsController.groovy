@@ -31,7 +31,10 @@ class MyInstitutionsController {
     def contextService
     def taskService
 
-    static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
+    // copied from
+    static String INSTITUTIONAL_LICENSES_QUERY      = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
+    // copied from
+    static String INSTITUTIONAL_SUBSCRIPTION_QUERY  = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
 
     // Map the parameter names we use in the webapp with the ES fields
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
@@ -2345,6 +2348,7 @@ AND EXISTS (
         def contextOrg  = contextService.getOrg(springSecurityService.getCurrentUser())
         result.tasks    = taskService.getTasksByTenants(springSecurityService.getCurrentUser(), contextOrg)
         def preCon      = taskService.getPreconditions(contextOrg)
+        result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
@@ -2565,8 +2569,8 @@ AND EXISTS (
         def result = setResultGenerics()
 
         result.taskInstanceList = taskService.getTasksByTenants(result.user, result.institution)
-
         result.myTaskInstanceList = taskService.getTasksByOwner(result.user, taskService.WITHOUT_TENANT_ONLY)
+        result.editable = true // TODO check roles !!!
 
         log.debug(result.taskInstanceList)
         result

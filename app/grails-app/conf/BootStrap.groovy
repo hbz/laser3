@@ -549,8 +549,9 @@ class BootStrap {
         RefdataCategory.loc('Person Contact Type',  [en: 'Person: Contact Type', de: 'Person: Typ des Kontakts'])
         RefdataCategory.loc('Person Position',      [en: 'Person Position', de: 'Person Position'])
         RefdataCategory.loc('Person Responsibility',[en: 'Person Responsibility', de: 'Verantwortlich'])
-        RefdataCategory.loc('Subscription Status',  [en: 'Subscription Status', de: 'Subscription Status'])
-        RefdataCategory.loc('Task Status',          [en: 'Task Status', de: 'Task Status'])
+        RefdataCategory.loc('Subscription Status',  [en: 'Subscription Status', de: 'Subskriptionsstatus'])
+        RefdataCategory.loc('Task Priority',        [en: 'Task Priority', de: 'Aufgabenpriorität'])
+        RefdataCategory.loc('Task Status',          [en: 'Task Status', de: 'Aufgabenstatus'])
 
         // refdata values
 
@@ -675,6 +676,12 @@ class BootStrap {
 
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'])
         RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'])
+
+        RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'])
+        RefdataValue.loc('Task Priority',   [en: 'Low', de: 'Niedrig'])
+        RefdataValue.loc('Task Priority',   [en: 'Normal', de: 'Mittel'])
+        RefdataValue.loc('Task Priority',   [en: 'High', de: 'Hoch'])
+        RefdataValue.loc('Task Priority',   [en: 'Extreme', de: 'Extrem'])
 
         RefdataValue.loc('Task Status',      [en: 'Open', de: 'Offen'])
         RefdataValue.loc('Task Status',      [en: 'Done', de: 'Erledigt'])

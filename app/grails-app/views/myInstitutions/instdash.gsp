@@ -155,7 +155,11 @@
                                 <g:if test="${tsk.description}">
                                     <span><em>${tsk.description}</em></span> <br />
                                 </g:if>
-                                <span>Fällig: ${tsk.endDate}</span>
+                                <span>
+                                    <strong>${tsk.status?.getI10n('value')}</strong>
+                                    / fällig am
+                                    <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
+                                </span>
                             </td>
                         </tr>
                     </g:each>
