@@ -224,7 +224,7 @@
 	</ul>
 </div>
 
-<!-- 
+<% /*
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
 	<label for="links">
 		<g:message code="org.links.other.label" default="Links" />
@@ -241,8 +241,8 @@
 </ul>
 
 </div>
--->
-<!-- 
+ */ %>
+<% /*
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'prsLinks', 'error')} ">
 	<label for="prsLinks">
 		<g:message code="org.prsLinks.label" default="prsLinks" />
@@ -259,7 +259,7 @@
 </ul>
 
 </div>
--->
+ */ %>
 
 <h3>Org-to-X-with-PersonRole (Demo only)</h3>
 <p>TODO</p>

@@ -3,6 +3,6 @@
 	<div class="controls">
 		 <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('OrgSector')}" var="orgsectorcat"/>
 		 <g:set value="${com.k_int.kbplus.RefdataValue.findAllByOwner(orgsectorcat)}" var="refvalues"/>
-	   	 <g:select from="${refvalues}" optionKey="id" name="sector" class="many-to-one" noSelection="['null': '']"/>
+	   	 <g:select from="${refvalues}" name="sector" optionKey="id" optionValue="${{it.getI10n('value')}}" value="${orgInstance?.sector?.id}" noSelection="['null': '']"/>
 	</div>
 </div>

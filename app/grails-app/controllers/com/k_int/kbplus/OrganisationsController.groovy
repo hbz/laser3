@@ -280,6 +280,7 @@ class OrganisationsController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def info() {
+
       def result = [:]
 
       result.user = User.get(springSecurityService.principal.id)
@@ -358,7 +359,7 @@ class OrganisationsController {
           }
           
           if (params.fromOrg){
-            addOrgCombo()
+            addOrgCombo(Org.get(params.fromOrg), Org.get(params.toOrg))
             render view: 'edit', model: [orgInstance: orgInstance]
             return
           }
@@ -421,11 +422,10 @@ class OrganisationsController {
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def addOrgCombo() {
-      def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
-      def fromOrg = Org.get(params.fromOrg)
-      def toOrg = Org.get(params.toOrg)
-      log.debug("Processing combo creation between ${fromOrg} AND ${toOrg}")
+    def addOrgCombo(Org fromOrg, Org toOrg) {
+      //def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
+      def comboType = RefdataValue.get(params.comboTypeTo)
+      log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])
       
       if (! dupe) {
