@@ -49,7 +49,7 @@
   <g:each in="${facets}" var="facet">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h3>
+        <h3 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h3>
       </div>
       <div class="panel-body">
         <ul>

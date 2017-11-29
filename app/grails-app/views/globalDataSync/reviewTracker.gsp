@@ -17,7 +17,7 @@
       <input type="hidden" name="synctype" value="${type}"/>
 
       <div class="container well">
-        <h1>Review Tracker</h1>
+        <h1 class="ui header">Review Tracker</h1>
         <g:if test="${type=='new'}">
           <p>This tracker will create a new local package for "${item.name}" from "${item.source.name}". Set the new package name below.</p>
           <dl>
@@ -47,7 +47,7 @@
     </g:form>
 
     <div class="container well">
-      <h1>Package Sync Impact</h1>
+      <h1 class="ui header">Package Sync Impact</h1>
       <table class="ui celled striped table">
         <tr>
           <th>

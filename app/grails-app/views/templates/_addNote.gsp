@@ -3,7 +3,7 @@
 <div class="modal hide" id="modalCreateNote">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3>${message(code:'template.addNote', default: 'Create New Note')}</h3>
+        <h3 class="ui header">${message(code:'template.addNote', default: 'Create New Note')}</h3>
     </div>
     <g:form id="create_note" url="[controller:'docWidget',action:'createNote']" method="post">
         <input type="hidden" name="ownerid" value="${ownobj.id}"/>

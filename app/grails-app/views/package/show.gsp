@@ -39,10 +39,11 @@
               
           </div>
         
-            <h6>${message(code:'package.show.byPlatform', default:'Availability of titles in this package by platform')}</h6>
+            <h6 class="ui header">${message(code:'package.show.byPlatform', default:'Availability of titles in this package by platform')}</h6>
       
           <g:set var="counter" value="${1}" />
           <table class="ui celled striped table">
+            <thead>
             <tr>
               <th rowspan="2" style="width: 2%;">#</th>
               <th rowspan="2" style="width: 20%;">${message(code:'title.label', default:'Title')}</th>
@@ -55,6 +56,7 @@
                 <th><g:link controller="platform" action="show" id="${p.id}">${p.name}</g:link></th>
               </g:each>
             </tr>
+            </thead>
             <g:each in="${titles}" var="t">
               <tr>
                 <td>${counter++}</td>

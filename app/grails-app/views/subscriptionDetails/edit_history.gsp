@@ -23,17 +23,19 @@
     </div>
 
     <div>
-      <h3>${message(code:'subscription.details.edit_history.label', default:'Subscription history')}</h3>
+      <h3 class="ui header">${message(code:'subscription.details.edit_history.label', default:'Subscription history')}</h3>
       <table  class="ui celled striped table">
-        <tr>
-          <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
-          <th>${message(code:'default.person.label', default:'Person')}</th>
-          <th>${message(code:'default.date.label', default:'Date')}</th>
-          <th>${message(code:'default.event.label', default:'Event')}</th>
-          <th>${message(code:'default.field.label', default:'Field')}</th>
-          <th>${message(code:'default.oldValue.label', default:'Old Value')}</th>
-          <th>${message(code:'default.newValue.label', default:'New Value')}</th>
-        </tr>
+        <thead>
+            <tr>
+              <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
+              <th>${message(code:'default.person.label', default:'Person')}</th>
+              <th>${message(code:'default.date.label', default:'Date')}</th>
+              <th>${message(code:'default.event.label', default:'Event')}</th>
+              <th>${message(code:'default.field.label', default:'Field')}</th>
+              <th>${message(code:'default.oldValue.label', default:'Old Value')}</th>
+              <th>${message(code:'default.newValue.label', default:'New Value')}</th>
+            </tr>
+        </thead>
         <g:if test="${historyLines}">
           <g:each in="${historyLines}" var="hl">
             <tr>

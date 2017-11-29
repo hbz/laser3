@@ -46,7 +46,7 @@
      
      <div class="modal-header">
        <button type="button" class="close" data-dismiss="modal">×</button>
-       <h3>Merge ${userMerge?.displayName} (${userMerge?.id}) into ${userKeep?.displayName} (${userKeep?.id}) </h3>
+       <h3 class="ui header">Merge ${userMerge?.displayName} (${userMerge?.id}) into ${userKeep?.displayName} (${userKeep?.id}) </h3>
      </div>
       <g:form action="userMerge" method="POST">
       

@@ -212,7 +212,7 @@
         
         <g:form controller="ajax" action="addToCollection">
           <fieldset>
-            <legend><h3>${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
+            <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
             <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
             <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
             <input type="hidden" name="__recip" value="pkg"/>

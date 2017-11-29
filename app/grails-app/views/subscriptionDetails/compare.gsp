@@ -94,7 +94,7 @@
 			<g:if test="${subInsts?.get(0) && subInsts?.get(1)}">
                                 <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 				<div class="row">
-				<h3>${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
+				<h3 class="ui header">${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
 				<table class="ui celled table">
 					<thead>
 						<tr>

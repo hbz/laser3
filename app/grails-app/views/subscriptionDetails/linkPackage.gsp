@@ -86,7 +86,7 @@
           <g:each in="${facets}" var="facet">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h3><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h3>
+                <h3 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h3>
               </div>
               <div class="panel-body">
                 <ul>
@@ -165,7 +165,7 @@
         </div>
         <div class="span2">
           <div class="well" style="word-break:normal;">
-            <h4>${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</h4>
+            <h4 class="ui header">${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</h4>
             <hr/>
             <g:each in="${subscriptionInstance.packages}" var="sp">
               <p><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></p>

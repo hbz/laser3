@@ -16,7 +16,7 @@
 
     <div>
 
-        <h2>Manage Pending Membership Requests</h2>
+        <h2 class="ui header">Manage Pending Membership Requests</h2>
 
         <table class="ui celled striped table">
             <thead>

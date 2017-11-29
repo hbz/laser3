@@ -36,7 +36,7 @@
 							<td>${fieldValue(bean: packageInstance, field: "name")} (${packageInstance?.contentProvider?.name})</td>
 						
 							<td class="link">
-								<g:link action="show" id="${packageInstance.id}" class="ui tiny button">Show &raquo;</g:link>
+								<g:link action="show" id="${packageInstance.id}" class="ui tiny button">Show</g:link>
 							</td>
 						</tr>
 					</g:each>

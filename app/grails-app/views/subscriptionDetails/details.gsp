@@ -42,7 +42,7 @@
     <div id="collapseableSubDetails" class="ui grid">
         <div class="twelve wide column">
 
-            <h6>${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
+            <h6 class="ui header">${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
 
             <div class="inline-lists"> 
               <dl><dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
@@ -163,6 +163,7 @@
                <dl><dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt><dd><g:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd></dl>
                <dL><dt>${message(code:'license.details.incoming.child', default:'Child')} </dt><dd>
                         <g:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
+                        ${subscriptionInstance.isSlaved} ###
                </dd></dL>
                <dl>
                  <dt>

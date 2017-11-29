@@ -1,5 +1,5 @@
 <semui:card message="license.notes" class="card-grey notes">
-<%-- <h5>Notes</h5> --%>
+<%-- <h5 class="ui header">Notes</h5> --%>
   <ul>
     <g:each in="${ownobj.documents}" var="docctx">
       <g:if test="${((docctx.owner?.contentType==0) && !(docctx.domain) && (docctx.status?.value!='Deleted') )}">

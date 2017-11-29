@@ -351,7 +351,7 @@
                 </sec:ifAnyGranted>
             </sec:ifLoggedIn>
 
-            <!-- TODO
+<% /* TODO
             <sec:ifLoggedIn>
                 <div class="right menu">
                     <div class="item">
@@ -360,11 +360,10 @@
                             <i class="search link icon"></i>
                         </div>
                     </div>
--->
-                    <!-- <a class="item dlpopover" href="#"><i class="icon-search icon-white"></i></a> -->
-         <!--       </div>
+                    <a class="item dlpopover" href="#"><i class="icon-search icon-white"></i></a>
+                </div>
             </sec:ifLoggedIn>
--->
+ */ %>
             <div class="right menu">
                 <sec:ifLoggedIn>
                     <g:if test="${user}">
@@ -421,13 +420,9 @@
 
 
   <div id="Footer">
-
       <div class="clearfix"></div>
-
       <div class="footer-links container">
-          <div class="row">
-
-          </div>
+          <div class="row"></div>
       </div>
   </div>
 

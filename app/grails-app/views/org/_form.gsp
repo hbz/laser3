@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Org" %>
-<h2>DEPRECATED</h2>
+<h2 class="ui header">DEPRECATED</h2>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
 	<label for="name">
@@ -261,7 +261,7 @@
 </div>
  */ %>
 
-<h3>Org-to-X-with-PersonRole (Demo only)</h3>
+<h3 class="ui header">Org-to-X-with-PersonRole (Demo only)</h3>
 <p>TODO</p>
 
 <g:if test="${orgInstance?.prsLinks}">
@@ -291,7 +291,7 @@
 				</dl>
 			</g:if>
 			
-<h3>Org-to-X-with-Role (Demo only)</h3>
+<h3 class="ui header">Org-to-X-with-Role (Demo only)</h3>
 
 <div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>
 <div id="ui-placeholder-lic" class="ui-ajax"></div><hr/>

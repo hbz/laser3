@@ -7,8 +7,12 @@
     <body>
         <semui:messages data="${flash}" />
 
-        <div>
-            <p>${message(code:'serverCode.forbidden.message')}</p>
-        </div>
+        <div class="ui grid">
+            <div class="twelve wide column">
+
+                <p>${message(code:'serverCode.forbidden.message')}</p>
+
+            </div><!-- .twelve -->
+        </div><!-- .grid -->
     </body>
 </html>

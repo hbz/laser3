@@ -29,7 +29,7 @@
 
             <div class="twelve wide column">
   
-                <h6>${message(code:'license.details.information', default:'Information')}</h6>
+                <h6 class="ui header">${message(code:'license.details.information', default:'Information')}</h6>
 
                 <div class="inline-lists">
 

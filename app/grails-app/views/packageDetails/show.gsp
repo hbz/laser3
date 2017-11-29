@@ -76,7 +76,7 @@
 
     <div class="ui grid">
         <div class="twelve wide column">
-            <h6>
+            <h6 class="ui header">
               ${message(code: 'package.show.pkg_information')}
 
               <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>

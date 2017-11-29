@@ -52,7 +52,7 @@
 							<td>${licenseInstance.walkinAccess?.value}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${licenseInstance.id}" class="ui tiny button">Show &raquo;</g:link>
+								<g:link action="show" id="${licenseInstance.id}" class="ui tiny button">Show</g:link>
 							</td>
 						</tr>
 					</g:each>

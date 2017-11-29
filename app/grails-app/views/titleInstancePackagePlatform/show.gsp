@@ -35,7 +35,7 @@
               <g:if test="${titleInstancePackagePlatformInstance?.title}">
                   <dl>
                       <dt><g:message code="title.label" default="Title" /></dt>
-                      <dd><g:link controller="titleInstance" action="show" id="${titleInstancePackagePlatformInstance?.title?.id}">${titleInstancePackagePlatformInstance?.title?.title?.encodeAsHTML()}</g:link></dd>
+                      <dd><g:link controller="titleDetails" action="show" id="${titleInstancePackagePlatformInstance?.title?.id}">${titleInstancePackagePlatformInstance?.title?.title?.encodeAsHTML()}</g:link></dd>
                   </dl>
               </g:if>
 

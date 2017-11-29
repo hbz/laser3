@@ -39,7 +39,7 @@
 							<td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"  date="${subscriptionInstance.endDate}" /></td>
 						
 							<td class="link">
-								<g:link action="show" id="${subscriptionInstance.id}" class="ui tiny button">Show &raquo;</g:link>
+								<g:link action="show" id="${subscriptionInstance.id}" class="ui tiny button">Show</g:link>
 							</td>
 						</tr>
 					</g:each>

@@ -1,7 +1,7 @@
 <div id="unlinkPackageModal" class="modal hide">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">×</button>
-    <h6>${message(code:'default.button.unlink.label', default:'Unlink')}: ${pkg}</h6>
+    <h6 class="ui header">${message(code:'default.button.unlink.label', default:'Unlink')}: ${pkg}</h6>
   </div>
   <div class="modal-body">
     <p> ${message(code:'subscription.details.unlink.note', default:'No user actions required for this process.')}</p>

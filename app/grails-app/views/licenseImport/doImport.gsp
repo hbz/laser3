@@ -47,7 +47,7 @@
 
         <g:if test="${validationResult.success==true}">
             <div class="alert alert-success">
-                      <h2>${message(code:'onix.import.success', default:'Upload successful')}</h2>
+                      <h2 class="ui header">${message(code:'onix.import.success', default:'Upload successful')}</h2>
 
                       ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</b>
             <g:if test="${validationResult.license}">
@@ -110,7 +110,7 @@
 
 
         <g:if test="${validationResult.termStatuses}">
-            <h2>Usage terms summary</h2>
+            <h2 class="ui header">Usage terms summary</h2>
             <ul>
                 <g:each in="${validationResult.termStatuses}" var="ts">
                     <li>${ts.value} &times ${ts.key}</li>

@@ -101,7 +101,7 @@
           </div>
 
           <g:if test="${subscriptionInstance?.orgRelations}">
-              <h6>Relations</h6>
+              <h6 class="ui header">Relations</h6>
               <table class="ui celled striped table">
                   <tr>
                       <th>Relation</th>
@@ -117,7 +117,7 @@
           </g:if>
 
           <g:if test="${subscriptionInstance?.issueEntitlements}">
-              <h6>Entitlements</h6>
+              <h6 class="ui header">Entitlements</h6>
               <table class="ui celled striped table">
                   <tr>
                       <th>Title</th>

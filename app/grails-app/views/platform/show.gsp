@@ -81,16 +81,18 @@
         ${message(code:'platform.show.availability', default:'Availability of titles in this platform by package')}
 
             <table class="ui celled table">
-              <tr>
-                <th rowspan="2" style="width: 25%;">${message(code:'title.label', default:'Title')}</th>
-                <th rowspan="2" style="width: 20%;">${message(code:'identifier.plural', default:'Identifiers')}</th>
-                <th colspan="${packages.size()}">${message(code:'platform.show.provided_by', default:'Provided by package')}</th>
-              </tr>
-              <tr>
-                <g:each in="${packages}" var="p">
-                  <td><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></td>
-                </g:each>
-              </tr>
+                <thead>
+                  <tr>
+                    <th rowspan="2" style="width: 25%;">${message(code:'title.label', default:'Title')}</th>
+                    <th rowspan="2" style="width: 20%;">${message(code:'identifier.plural', default:'Identifiers')}</th>
+                    <th colspan="${packages.size()}">${message(code:'platform.show.provided_by', default:'Provided by package')}</th>
+                  </tr>
+                  <tr>
+                    <g:each in="${packages}" var="p">
+                      <td><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></td>
+                    </g:each>
+                  </tr>
+                </thead>
               <g:each in="${titles}" var="t">
                 <tr>
                   <td style="text-align:left;"><g:link controller="titleInstance" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>

@@ -22,7 +22,7 @@
 
             <semui:messages data="${flash}" />
 
-          <h3>${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
+          <h3 class="ui header">${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 
           <table class="ui celled table">
             <thead>
@@ -47,7 +47,7 @@
             </tbody>
           </table>
 
-          <h3>${message(code:'user.role.plural', default:'Roles')}</h3>
+          <h3 class="ui header">${message(code:'user.role.plural', default:'Roles')}</h3>
 
           <table class="ui celled table">
             <thead>
@@ -79,7 +79,7 @@
         <div class="row">
             <div class="span12">
                 <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-                    <h3>${message(code: 'api.label', default:'API')}</h3>
+                    <h3 class="ui header">${message(code: 'api.label', default:'API')}</h3>
 
                     <p>${message(code: 'api.apikey.label', default:'API-Key')}</p>
                     <input type="text" readonly="readonly" value="${ui.apikey}">

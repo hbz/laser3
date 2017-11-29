@@ -71,7 +71,7 @@
                             </td>
 						
 							<td class="link">
-								<g:link action="index" id="${onixplLicenseInstance.id}" class="ui tiny button">Show &raquo;</g:link>
+								<g:link action="index" id="${onixplLicenseInstance.id}" class="ui tiny button">Show</g:link>
 							</td>
 						</tr>
 					</g:each>

@@ -1,7 +1,7 @@
 <div id="pkg_details_modal" class="modal hide">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">×</button>
-    <h6>Hard Delete: ${pkg}</h6>
+    <h6 class="ui header">Hard Delete: ${pkg}</h6>
   </div>
   <div class="modal-body">
     <p> Items requiring action are marked with red circle. When these items are addressed, 'Confirm Delete' button will be enabled.</p>

@@ -90,7 +90,7 @@
             <g:if test="${facet.key != 'type'}">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h5><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
+                <h5 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
               </div>
               <div class="panel-body">
                 <ul>

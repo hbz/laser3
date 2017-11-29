@@ -33,7 +33,7 @@
     <div class="row">
         <div class="span8">
 
-            <h6>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.information')}</h6>
+            <h6 class="ui header">${message(code:'laser', default:'LAS:eR')} ${message(code:'license.information')}</h6>
 
             <g:if test="${!onixplLicense}">
             ${message(code:'onix.cannot.find.license')}
@@ -50,7 +50,7 @@
                 </dl>
                 </div>
 
-            <h6>ONIX-PL License Properties</h6>
+            <h6 class="ui header">ONIX-PL License Properties</h6>
 
             
             </g:else>

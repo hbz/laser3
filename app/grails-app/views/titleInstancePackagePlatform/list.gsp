@@ -41,7 +41,7 @@
               <td>${fieldValue(bean: tipp, field: "endVolume")}</td>
               <td>${fieldValue(bean: tipp, field: "endIssue")}</td>
               <td class="link">
-                <g:link action="show" id="${tipp.id}" class="ui tiny button">Show &raquo;</g:link>
+                <g:link action="show" id="${tipp.id}" class="ui tiny button">Show</g:link>
               </td>
             </tr>
           </g:each>

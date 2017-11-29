@@ -22,7 +22,7 @@
 </div>
 
 <div>
-<h3> Institutions for ${consortia.name} consortia </h3>
+<h3 class="ui header"> Institutions for ${consortia.name} consortia </h3>
 <br><p> The following list displays all members of ${consortia.name} consortia. To create child subscriptions
     select the desired checkboxes and click 'Create child subscriptions'</p><br>
 <g:form action="generateSlaveSubscriptions" controller="packageDetails" method="POST">

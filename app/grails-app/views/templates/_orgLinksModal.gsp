@@ -3,7 +3,7 @@
     <g:form id="create_org_role_link" url="[controller:'ajax',action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">×</button>
-            <h3>${message(code:'template.orgLinksModal')}</h3>
+            <h3 class="ui header">${message(code:'template.orgLinksModal')}</h3>
         </div>
 
         <input type="hidden" name="parent" value="${parent}"/>

@@ -14,11 +14,11 @@
     <g:render template="nav" />
 
     <div>
-      <h2>${message(code:'license.permissionInfo.perms', default:'Permissions for user')}</h2>
+      <h2 class="ui header">${message(code:'license.permissionInfo.perms', default:'Permissions for user')}</h2>
       <table  class="ui celled striped table">
       </table>
 
-      <h2>${message(code:'subscription.details.permissionInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
+      <h2 class="ui header">${message(code:'subscription.details.permissionInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
       <table class="ui celled striped table">
         <thead>
           <tr>
@@ -49,7 +49,7 @@
         </g:each>
       </table>
 
-      <h2>${message(code:'subscription.details.user.permissions', default:'Logged in user permissions')}</h2>
+      <h2 class="ui header">${message(code:'subscription.details.user.permissions', default:'Logged in user permissions')}</h2>
       <table class="ui celled striped table">
         <thead>
           <tr>

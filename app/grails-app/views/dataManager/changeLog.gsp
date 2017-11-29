@@ -22,8 +22,8 @@
     <semui:messages data="${flash}" />
 
     <div>
-      <h2>${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
-      <h6>${message(code:'menu.institutions.change_log', default:'Change Log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
+      <h2 class="ui header">${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
+      <h6 class="ui header">${message(code:'menu.institutions.change_log', default:'Change Log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
       <g:form action="changeLog" controller="dataManager" method="get">
         ${message(code:'datamanager.changeLog.from_date')}:
             <div class="input-append date datepicker-class">

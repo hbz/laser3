@@ -36,13 +36,13 @@
         <table class="ui celled table">
           <thead>
             <tr>
-              <td>${message(code:'event.component', default:'Name')}</td>
-              <td>${message(code:'event.actor', default:'Actor')}</td>
-              <td>${message(code:'event.name', default:'Event name')}</td>
-              <td>${message(code:'event.property', default:'Property')}</td>
-              <td>${message(code:'event.old', default:'Old')}</td>
-              <td>${message(code:'event.new', default:'New')}</td>
-              <td>${message(code:'default.date.label', default:'Date')}</td>
+              <th>${message(code:'event.component', default:'Name')}</th>
+              <th>${message(code:'event.actor', default:'Actor')}</th>
+              <th>${message(code:'event.name', default:'Event name')}</th>
+              <th>${message(code:'event.property', default:'Property')}</th>
+              <th>${message(code:'event.old', default:'Old')}</th>
+              <th>${message(code:'event.new', default:'New')}</th>
+              <th>${message(code:'default.date.label', default:'Date')}</th>
             </tr>
           </thead>
           <tbody>

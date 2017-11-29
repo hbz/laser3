@@ -20,7 +20,7 @@
     <semui:messages data="${flash}" />
 
     <g:each in="${authorizedOrgs}" var="authOrg">
-        <h6>@ ${authOrg.name}</h6>
+        <h6 class="ui header">@ ${authOrg.name}</h6>
 
         <div id="custom_props_div_${authOrg.shortcode}" class="span12">
             <g:render template="/templates/properties/private" model="${[

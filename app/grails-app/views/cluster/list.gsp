@@ -40,7 +40,7 @@
 							<td>${fieldValue(bean: clusterInstance, field: "type")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${clusterInstance.id}" class="ui tiny button">Show &raquo;</g:link>
+								<g:link action="show" id="${clusterInstance.id}" class="ui tiny button">Show</g:link>
 								<g:link action="edit" id="${clusterInstance.id}" class="ui tiny button">Edit</g:link>
 							</td>
 						</tr>

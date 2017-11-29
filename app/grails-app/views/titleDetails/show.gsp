@@ -23,7 +23,7 @@
         <semui:messages data="${flash}" />
 
 
-        <h3>${message(code:'title.identifiers.label')}</h3>
+        <h3 class="ui header">${message(code:'title.identifiers.label')}</h3>
 
         <div class="ui grid">
 
@@ -31,11 +31,11 @@
 
             <table class="ui celled table">
               <thead>
-              <tr>
-                <th>${message(code:'title.edit.component_id.label')}</th>
-                <th>${message(code:'title.edit.namespace.label')}</th>
-                <th>${message(code:'title.edit.identifier.label')}</th>
-              </tr>
+                  <tr>
+                    <th>${message(code:'title.edit.component_id.label')}</th>
+                    <th>${message(code:'title.edit.namespace.label')}</th>
+                    <th>${message(code:'title.edit.identifier.label')}</th>
+                  </tr>
               </thead>
               <tbody>
               <g:each in="${ti.ids}" var="io">
@@ -73,7 +73,7 @@
           </div><!-- .eight -->
         </div><!-- .grid -->
 
-            <h3>${message(code:'title.edit.orglink')}</h3>
+            <h3 class="ui header">${message(code:'title.edit.orglink')}</h3>
             <table class="ui celled table">
               <thead>
                 <tr>
@@ -101,7 +101,7 @@
               </tbody>
             </table>
 
-            <h3>${message(code: 'title.show.history.label')}</h3>
+            <h3 class="ui header">${message(code: 'title.show.history.label')}</h3>
             <table class="ui celled striped table">
               <thead>
                 <tr>
@@ -138,21 +138,22 @@
               </span>
             </g:if>
 
-            <h3>${message(code:'title.edit.tipp')}</h3>
+            <h3 class="ui header">${message(code:'title.edit.tipp')}</h3>
             <g:form id="${params.id}" controller="titleDetails" action="batchUpdate">
               <table class="ui celled striped table">
-                <tr>
-                  <th rowspan="2"></th>
-                  <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>
-                  <th>${message(code:'tipp.start')}</th>
-                  <th>${message(code:'tipp.end')}</th>
-                  <th>${message(code:'tipp.coverageDepth')}</th>
-                  <th>${message(code:'title.edit.actions.label')}</th>
-                </tr>
-                <tr>
-                  <th colspan="6">${message(code:'tipp.coverageNote')}</th>
-                </tr>
-
+                  <thead>
+                    <tr>
+                      <th rowspan="2"></th>
+                      <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>
+                      <th>${message(code:'tipp.start')}</th>
+                      <th>${message(code:'tipp.end')}</th>
+                      <th>${message(code:'tipp.coverageDepth')}</th>
+                      <th>${message(code:'title.edit.actions.label')}</th>
+                    </tr>
+                    <tr>
+                      <th colspan="6">${message(code:'tipp.coverageNote')}</th>
+                    </tr>
+                  </thead>
                 <g:if test="${editable}">
                   <tr>
                     <td rowspan="2"><input type="checkbox" name="checkall" onClick="javascript:$('.bulkcheck').attr('checked', true);"/></td>

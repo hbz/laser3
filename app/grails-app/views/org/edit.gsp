@@ -7,7 +7,7 @@
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<h2>DEPRECATED</h2>
+		<h2 class="ui header">DEPRECATED</h2>
 		<div class="row-fluid">
 
 			<div class="span3">

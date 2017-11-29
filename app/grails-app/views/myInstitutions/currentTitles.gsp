@@ -116,16 +116,16 @@
           <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="form-inline">
           <g:set var="counter" value="${offset+1}" />
           <table  class="ui celled striped table">
-
-            <tr>
-              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-              <th>ISSN</th>
-              <th>eISSN</th>
-              <th>${message(code:'subscription.details.startDate', default:'Earliest Date')}</th>
-              <th>${message(code:'subscription.details.endDate', default:'Latest Date')}</th>
-              <th>${message(code:'myinst.currentTitles.sub_content', default:'Subscribed Content')}</th>
-            </tr>  
-            
+            <thead>
+                <tr>
+                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                  <th>ISSN</th>
+                  <th>eISSN</th>
+                  <th>${message(code:'subscription.details.startDate', default:'Earliest Date')}</th>
+                  <th>${message(code:'subscription.details.endDate', default:'Latest Date')}</th>
+                  <th>${message(code:'myinst.currentTitles.sub_content', default:'Subscribed Content')}</th>
+                </tr>
+            </thead>
             <g:each in="${titles}" var="ti">
               <tr>
                 <td>

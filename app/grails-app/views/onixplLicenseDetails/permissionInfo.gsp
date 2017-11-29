@@ -23,11 +23,11 @@
 
 
     <div>
-      <h2>Permissions for user</h2>
+      <h2 class="ui header">Permissions for user</h2>
       <table  class="ui celled striped table">
       </table>
 
-      <h2>The following organisations are granted the listed permissions from this license</h2>
+      <h2 class="ui header">The following organisations are granted the listed permissions from this license</h2>
       <table  class="ui celled striped table">
         <tr>
           <th>Organisation</th><th>Roles and Permissions</th>
@@ -56,7 +56,7 @@
         </g:each>
       </table>
 
-      <h2>Logged in user permissions</h2>
+      <h2 class="ui header">Logged in user permissions</h2>
       <table  class="ui celled striped table">
         <tr>
           <th>Affiliated via Role</th><th>Permissions</th>

@@ -20,7 +20,7 @@
 
 <div>
 <g:if test="${consortia}">
-<h3> Institutions for ${consortia.name} consortia </h3>
+<h3 class="ui header"> Institutions for ${consortia.name} consortia </h3>
 <br><p> The following list displays all members of ${consortia.name} consortia. To create child licenses
     select the desired checkboxes and click 'Create child licenses'</p><br>
 <g:form action="generateSlaveLicenses" controller="licenseDetails" method="POST">

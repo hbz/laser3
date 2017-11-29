@@ -13,7 +13,7 @@
       <div>
         <div class="span4">
           <div class="well">
-            <h6>${message(code:'license.plural', default:'Licenses')}</h6>
+            <h6 class="ui header">${message(code:'license.plural', default:'Licenses')}</h6>
             <dl>
               <g:each in="${user.authorizedOrgs}" var="org">
                 <dd><g:link controller="myInstitutions" 
@@ -25,7 +25,7 @@
         </div>
         <div class="span4">
           <div class="well">
-            <h6>${message(code:'subscription.plural', default:'Subscriptions')}</h6>
+            <h6 class="ui header">${message(code:'subscription.plural', default:'Subscriptions')}</h6>
             <dl>
               <g:each in="${user.authorizedOrgs}" var="org">
                 <dd><g:link controller="myInstitutions" 
@@ -37,7 +37,7 @@
         </div>
         <div class="span4">
           <div class="well">
-            <h6>${message(code:'title.plural', default:'Titles')}</h6>
+            <h6 class="ui header">${message(code:'title.plural', default:'Titles')}</h6>
             <dl>
               <g:each in="${user.authorizedOrgs}" var="org">
                 <dd><g:link controller="myInstitutions" 

@@ -8,7 +8,7 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<h2>DEPRECATED</h2>
+		<h2 class="ui header">DEPRECATED</h2>
 		<div class="row-fluid">
 			
 			<div class="span3">
@@ -75,7 +75,7 @@
 							<td>${fieldValue(bean: orgInstance, field: "shortcode")}</td>						
 							<td>${fieldValue(bean: orgInstance, field: "scope")}</td>						
 							<td class="link">
-								<g:link action="show" id="${orgInstance.id}" class="ui tiny button">Show &raquo;</g:link>
+								<g:link action="show" id="${orgInstance.id}" class="ui tiny button">Show</g:link>
 								<g:link action="edit" id="${orgInstance.id}" class="ui tiny button">Edit</g:link>
 							</td>
 						</tr>

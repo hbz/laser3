@@ -94,7 +94,7 @@
 
             <br/>
             
-            <h6><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
+            <h6 class="ui header"><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
 
             <table class="ui celled striped table">
                 <tr>
@@ -128,7 +128,7 @@
 
             <br/>
             
-            <h6><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
+            <h6 class="ui header"><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
 
             <table class="ui celled striped table">
                 <tr>
@@ -166,7 +166,7 @@
                 <!-- PID== IID== JID==JUSP Journal ID -->
                 <a href="${jusplink}">[JUSP]</a>
               </span>
-              <h6>JUSP Usage Statistics</h6>
+              <h6 class="ui header">JUSP Usage Statistics</h6>
               <table class="ui celled striped table">
                 <tr>
                   <th>Reporting Period</th>
@@ -190,7 +190,7 @@
 
                 <br/>
                 
-                <h6><strong><g:message code="titleInstance.tipps.label" default="Occurrences of this title against Packages / Platforms" /></strong></h6>
+                <h6 class="ui header"><strong><g:message code="titleInstance.tipps.label" default="Occurrences of this title against Packages / Platforms" /></strong></h6>
 
 
                 <g:form action="show" params="${params}" method="get" class="form-inline">

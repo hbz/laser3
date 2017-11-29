@@ -32,7 +32,7 @@
         <div class="span2">
           <div class="well">
               <g:each in="${facets}" var="facet">
-                <h5><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
+                <h5 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
                     <g:each in="${facet.value.sort{it.display}}" var="fe">
                       <g:set var="facetname" value="fct:${facet.key}:${fe.display}" />
                       <div><g:checkBox class="pull-right" name="${facetname}" value="${params[facetname]}" />${fe.display} (${fe.count})</div>
@@ -82,7 +82,7 @@
         </div>
         <div class="span2">
           <div class="well">
-            <h5>${message(code:'myinst.renewalSearch.basket', default:'Basket')}</h5>
+            <h5 class="ui header">${message(code:'myinst.renewalSearch.basket', default:'Basket')}</h5>
             <g:each in="${basket}" var="itm">
               <div>
                 <hr/>

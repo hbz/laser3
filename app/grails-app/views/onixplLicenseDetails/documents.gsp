@@ -49,7 +49,7 @@
         <div class="row">
         <div class="span8">
         <g:if test="${onixplLicense.doc}">
-            <h6>Document Details</h6>
+            <h6 class="ui header">Document Details</h6>
 
             <div class="inline-lists">
                 <dl>
@@ -104,7 +104,7 @@
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
 
-        <h3>Create New Document</h3>
+        <h3 class="ui header">Create New Document</h3>
     </div>
     <g:form id="upload_new_doc_form" url="[controller: 'licenseDetails', action: 'uploadDocument']" method="post"
             enctype="multipart/form-data">

@@ -42,7 +42,7 @@
 
         <g:if test="${validationResult}">
           <g:if test="${validationResult.stats != null}">
-            <h3>${message(code:'default.stats.label', default:'Stats')}</h3>
+            <h3 class="ui header">${message(code:'default.stats.label', default:'Stats')}</h3>
             <ul>
               <g:each in="${validationResult?.stats}" var="msg">
                 <li>${msg.key} = ${msg.value}</li>

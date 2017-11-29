@@ -24,7 +24,7 @@
 
       <div>
         <div class="span12">
-          <h3>${message(code:'myinst.tip.coreDates', default:'Core dates')}</h3>
+          <h3 class="ui header">${message(code:'myinst.tip.coreDates', default:'Core dates')}</h3>
           <ul>
             <g:each in="${tip.coreDates}" var="cd">
               <li>${cd}</li>
@@ -34,7 +34,7 @@
             ${message(code:'myinst.tip.no_coreDates', default:'No Core Dates Currently')}
           </g:if>
 
-          <h3>${message(code:'myinst.tip.usageRecords', default:'Usage Records')}</h3>
+          <h3 class="ui header">${message(code:'myinst.tip.usageRecords', default:'Usage Records')}</h3>
           <table class="ui celled table">
           <thead>
             <tr>
@@ -65,7 +65,7 @@
             </tbody>
           </table>
 
-          <h4>${message(code:'myinst.tip.addUsage', default:'Add usage information')}</h4>
+          <h4 class="ui header">${message(code:'myinst.tip.addUsage', default:'Add usage information')}</h4>
           <g:form action="tip" params="${[shortcode:params.shortcode]}" id="${params.id}">
             ${message(code:'myinst.tip.usageDate', default:'Usage Date')} : <input type="date" name="usageDate"/><br/>
             ${message(code:'myinst.tip.usageRecord', default:'Usage Record')} : <input type="text" name="usageValue"/><br/>

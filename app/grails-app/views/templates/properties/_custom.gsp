@@ -116,7 +116,7 @@ TODO !!! this modal dialog has not been refactored ..
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">×</button>
 
-            <h3>Create Custom Property Definition</h3>
+            <h3 class="ui header">Create Custom Property Definition</h3>
         </div>
 
         <input type="hidden" name="parent" value="${parent}"/>

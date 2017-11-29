@@ -2,7 +2,7 @@
 
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">×</button>
-    <h3>Select X</h3>
+    <h3 class="ui header">Select X</h3>
   </div>
   
   <div>

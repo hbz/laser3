@@ -223,7 +223,7 @@
                 <div class="column wide sixteen">
                     <div id="reminders">
                         <div class="well">
-                            <h2>${message(code: 'profile.reminder.new', default:'Create new Reminders / Notifications')}</h2>
+                            <h2 class="ui header">${message(code: 'profile.reminder.new', default:'Create new Reminders / Notifications')}</h2>
                             <p>${message(code: 'profile.reminder.new.text', default:'Select the condition you are interested about and time period you wished to be notified about said topic.')}</p>
                             <p><i>${message(code: 'profile.reminder.new.email', default:'Ensure your email or other method of contact is a valid means of reaching yourself')}</i></p>
 
@@ -271,7 +271,7 @@
 
                 <div class="column wide sixteen">
                     <div class="well">
-                        <h2>${message(code: 'profile.reminder.active', default:'Active Reminders')}</h2>
+                        <h2 class="ui header">${message(code: 'profile.reminder.active', default:'Active Reminders')}</h2>
 
                   <table class="ui celled striped table">
                       <thead>

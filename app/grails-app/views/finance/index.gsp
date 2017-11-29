@@ -58,7 +58,7 @@
     <div class="modal hide" id="recentDialog">
         <div class="modal-header">
             <button class="close" data-dismiss="modal">×</button>
-            <h3>Recently Updated Cost Items</h3>
+            <h3 class="ui header">Recently Updated Cost Items</h3>
         </div>
         <div class="modal-body">
             <div id="recent">

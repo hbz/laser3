@@ -1,4 +1,4 @@
-<h2>DEPRECATED</h2>
+<h2 class="ui header">DEPRECATED</h2>
 <div>
 	<label for="orgs"><strong>${type}</strong></label>
 	

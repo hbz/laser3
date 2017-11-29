@@ -16,7 +16,7 @@
             <h1 class="ui header">${institution.name} - Dashboard</h1>
             <ul class="inline">
 
-                <li><h5>${message(code:'myinst.view', default:'View')}:</h5></li>
+                <li><h5 class="ui header">${message(code:'myinst.view', default:'View')}:</h5></li>
                 <li><g:link controller="myInstitutions"
                             action="currentLicenses"
                             params="${[shortcode:params.shortcode]}">${message(code:'license.plural', default:'Licenses')}</g:link></li>
@@ -27,7 +27,7 @@
                             action="currentTitles"
                             params="${[shortcode:params.shortcode]}">${message(code:'title.plural', default:'Titles')}</g:link></li>
 
-                <li><h5>${message(code:'myinst.renewals', default:'Renewals')}:</h5></li>
+                <li><h5 class="ui header">${message(code:'myinst.renewals', default:'Renewals')}:</h5></li>
                 <li><g:link controller="myInstitutions"
                             action="renewalsSearch"
                             params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link></li>
@@ -40,7 +40,7 @@
                             params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.finance', default:'Finance')}</g:link></li>
                 </g:if>
           
-                <li><h5>${message(code:'default.special.label', default:'Special')}:</h5></li>
+                <li><h5 class="ui header">${message(code:'default.special.label', default:'Special')}:</h5></li>
                 <li><g:link controller="myInstitutions"
                             action="tasks"
                             params="${[shortcode:params.shortcode]}">${message(code:'task.plural', default:'Tasks')}</g:link></li>

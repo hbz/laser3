@@ -17,7 +17,7 @@
 
 <div>
 
-    <h6>${message(code:'sys.properties')}</h6>
+    <h6 class="ui header">${message(code:'sys.properties')}</h6>
 
     <div id="custom_props_div_1">
         <g:render template="/templates/properties/custom" model="${[
@@ -34,7 +34,7 @@
     <g:form action="appConfig" method="POST">
         <input type="submit" name="one"class="ui button"value="Refresh"  />
     </g:form>
-    <h3> Current output for Holders.config</h3>
+    <h3 class="ui header"> Current output for Holders.config</h3>
     <ul>
         <g:each in="${currentconf.keySet().sort()}" var="key">
             <li>${key}: &nbsp; &nbsp; <g:textArea readonly="" style="width:95%" name="key" value="${currentconf.get(key)}"/> </li>

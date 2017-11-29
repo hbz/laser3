@@ -62,19 +62,21 @@
 
       <div class="subscription-results">
         <table class="ui celled striped table table-tworow">
-          <tr>
-            <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
-            <th rowspan="2">${message(code:'default.action.label', default:'Action')}</th>
-          </tr>
+          <thead>
+            <tr>
+              <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
+              <th rowspan="2">${message(code:'default.action.label', default:'Action')}</th>
+            </tr>
 
-          <tr>
-            <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
-            <th>${message(code:'consortium.plural', default:'Consortia')}</th>
-            <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-            <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
-            <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
-            <th>${message(code:'tipp.platform', default:'Platform')}</th>
-          </tr>
+            <tr>
+              <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
+              <th>${message(code:'consortium.plural', default:'Consortia')}</th>
+              <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+              <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+              <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
+              <th>${message(code:'tipp.platform', default:'Platform')}</th>
+            </tr>
+          </thead>
           <g:each in="${subscriptions}" var="s">
             <tr>
               <td colspan="7">

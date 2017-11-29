@@ -2,7 +2,7 @@
 <div class="modal hide" id="compare_details${currentTitle.id}">
 	<div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3>${message(code:'subscription.details.details.further.label', default:'Further details')}</h3>
+        <h3 class="ui header">${message(code:'subscription.details.details.further.label', default:'Further details')}</h3>
     </div>
 
     <div class="modal-body">

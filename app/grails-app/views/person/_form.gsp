@@ -150,7 +150,7 @@
 <div id="person-role-manager">
 
 	<div class="person-role-function-manager">
-		<h3>Functions</h3>
+		<h3 class="ui header">Functions</h3>
 		
 		<laser:select class="values"
 			name="ignore-functionType-selector"
@@ -161,16 +161,16 @@
 		<button class="add-person-role" type="button">Add</button>
 		
 		<div class="workspace">
-			<h4>* New</h4>
+			<h4 class="ui header">* New</h4>
 			<div class="adding"></div>
-			<h4>Existing</h4>
+			<h4 class="ui header">Existing</h4>
 			<div class="existing"></div>			
 		</div>
 	</div>
 	
 	
 	<div class="person-role-responsibility-manager">
-		<h3>Responsibilities</h3>
+		<h3 class="ui header">Responsibilities</h3>
 		
 		<laser:select class="values"
 			name="ignore-responsibilityType-selector"
@@ -181,9 +181,9 @@
 		<button class="add-person-role" type="button">Add</button>
 
 		<div class="workspace">
-			<h4>* New</h4>
+			<h4 class="ui header">* New</h4>
 			<div class="adding"></div>
-			<h4>Existing</h4>
+			<h4 class="ui header">Existing</h4>
 			<div class="existing"></div>			
 		</div>
 	</div>

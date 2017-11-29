@@ -14,12 +14,12 @@
     <semui:messages data="${flash}" />
 
     <div>
-      <h2>${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h2>
+      <h2 class="ui header">${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h2>
     </div>
 
     <g:if test="${pendingChanges?.size() > 0}">
       <div class="container alert-warn">
-        <h6>${message(code:'datamanager.pending.label')}</h6>
+        <h6 class="ui header">${message(code:'datamanager.pending.label')}</h6>
         <table class="ui celled table">
           <thead>
             <tr>
@@ -43,7 +43,7 @@
     </g:if>
     <g:else>
       <div class="container alert-warn">
-        <h6>${message(code:'datamanager.none_pending.label', default:'No pending package changes')}</h6>
+        <h6 class="ui header">${message(code:'datamanager.none_pending.label', default:'No pending package changes')}</h6>
       </div>
     </g:else>
 

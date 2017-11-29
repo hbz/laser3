@@ -43,9 +43,9 @@
             <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
             
-            <h3>${message(code:'default.status.label')}:<span style="color:initial;cursor:pointer;"> <g:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></span></h3>
+            <h3 class="ui header">${message(code:'default.status.label')}:<span style="color:initial;cursor:pointer;"> <g:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></span></h3>
 
-            <h3>${message(code:'identifier.plural', default:'Identifiers')}</h3>
+            <h3 class="ui header">${message(code:'identifier.plural', default:'Identifiers')}</h3>
 
               <g:each in="${duplicates}" var="entry">
 
@@ -90,7 +90,7 @@
             </g:if>
 
 
-            <h3>${message(code:'title.edit.orglink')}</h3>
+            <h3 class="ui header">${message(code:'title.edit.orglink')}</h3>
 
           <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:ti?.orgs,editmode:editable]}" />
 
@@ -101,7 +101,7 @@
           <div class="span12">
 
 
-            <h3>${message(code:'title.edit.tipp')}</h3>
+            <h3 class="ui header">${message(code:'title.edit.tipp')}</h3>
             <table class="ui celled striped table">
                     <tr>
                         <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>

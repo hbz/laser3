@@ -92,7 +92,7 @@
 <g:if test="${pkgInsts?.get(0) && pkgInsts?.get(1)}">
 
 	<div class="row">
-	<h3>${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
+	<h3 class="ui header">${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
 	<table class="ui celled table">
 		<thead>
 			<tr>

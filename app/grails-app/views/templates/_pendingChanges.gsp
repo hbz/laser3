@@ -3,7 +3,7 @@
 </g:if>
 <g:if test="${pendingChanges?.size() > 0}">
   <div class="container alert-warn">
-    <h6>${message(code:'template.pendingChanges', default:'There are pending change notifications')}</h6>
+    <h6 class="ui header">${message(code:'template.pendingChanges', default:'There are pending change notifications')}</h6>
     <g:if test="${editable && !processingpc}">
       <g:link controller="pendingChange" action="acceptAll" id="${model.class.name}:${model.id}" class="ui positive button"><i class="icon-white icon-ok "></i>${message(code:'template.pendingChanges.accept_all', default:'Accept All')}</g:link>
       <g:link controller="pendingChange" action="rejectAll" id="${model.class.name}:${model.id}" class="ui negative button"><i class="icon-white icon-remove"></i>${message(code:'template.pendingChanges.reject_all', default:'Reject All')}</g:link>

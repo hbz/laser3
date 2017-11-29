@@ -78,7 +78,7 @@
       <div class="row">
         <div class="span12">
           <div class="well">
-            <h4>Cufts style index of subscriptions offered</h4>
+            <h4 class="ui header">Cufts style index of subscriptions offered</h4>
             <p>
               Use the contents of this URI to drive a full crawl of the ${message(code:'laser', default:'LAS:eR')} subscriptions offered data. Each row gives an identifier that can be used to
               construct individual subscription requests.
@@ -150,7 +150,7 @@
             <g:if test="${facet.key != 'type'}">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h5><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
+                <h5 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
               </div>
               <div class="panel-body">
                 <ul>

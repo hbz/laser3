@@ -70,14 +70,16 @@
           </div>
 
           <g:if test="${titleInstanceInstance?.tipps}">
-              <h6><g:message code="titleInstance.tipps.label" default="Occurences of this title against Packages / Platforms" /></h6>
+              <h6 class="ui header"><g:message code="titleInstance.tipps.label" default="Occurences of this title against Packages / Platforms" /></h6>
 
               <table class="ui celled striped table">
-                  <tr>
-                      <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
-                      <th>${message(code:'tipp.endDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th><th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-                      <th>${message(code:'platform.label', default:'Platform')}</th><th>${message(code:'package.label', default:'Package')}</th><th>${message(code:'default.actions.label', default:'Actions')}</th>
-                  </tr>
+                  <thead>
+                      <tr>
+                          <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
+                          <th>${message(code:'tipp.endDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th><th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                          <th>${message(code:'platform.label', default:'Platform')}</th><th>${message(code:'package.label', default:'Package')}</th><th>${message(code:'default.actions.label', default:'Actions')}</th>
+                      </tr>
+                  </thead>
                   <g:each in="${titleInstanceInstance.tipps}" var="t">
                       <tr>
                           <td><g:formatDate formatName="default.date.format.notime" date="${t.startDate}"/></td>

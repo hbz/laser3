@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2>Meine Aufgaben</h2>
+        <h2 class="ui header">Meine Aufgaben</h2>
 
         <table class="ui celled striped table">
             <thead>

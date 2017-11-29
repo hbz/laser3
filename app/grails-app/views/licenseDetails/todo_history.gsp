@@ -15,13 +15,15 @@
     <g:render template="nav" />
 
     <div>
-      <h3>${message(code:'license.nav.todo_history', default:'ToDo History')}</h3>
+      <h3 class="ui header">${message(code:'license.nav.todo_history', default:'ToDo History')}</h3>
       <table  class="ui celled striped table">
-        <tr>
-          <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
-          <th>${message(code:'default.outcome.label', default:'Outcome')}</th>
-          <th>${message(code:'default.date.label', default:'Date')}</th>
-        </tr>
+          <thead>
+            <tr>
+              <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
+              <th>${message(code:'default.outcome.label', default:'Outcome')}</th>
+              <th>${message(code:'default.date.label', default:'Date')}</th>
+            </tr>
+          </thead>
         <g:if test="${todoHistoryLines}">
           <g:each in="${todoHistoryLines}" var="hl">
             <tr>

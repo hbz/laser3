@@ -14,7 +14,7 @@
 
           <semui:messages data="${flash}" />
 
-          <h3>${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
+          <h3 class="ui header">${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 
           <table class="ui celled table">
             <thead>
@@ -37,7 +37,7 @@
             </tbody>
           </table>
 
-          <h3>${message(code:'user.role.plural', default:'Roles')}</h3>
+          <h3 class="ui header">${message(code:'user.role.plural', default:'Roles')}</h3>
 
           <table class="ui celled table">
             <thead>

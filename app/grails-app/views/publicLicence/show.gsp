@@ -39,7 +39,7 @@
 
     <div>
             <div class="row">
-                <h6>${message(code:'license.properties')}</h6>
+                <h6 class="ui header">${message(code:'license.properties')}</h6>
 
                 <div id="custom_props_div_props">
                     <g:render template="/templates/properties/custom" model="${[
@@ -48,7 +48,7 @@
                             custom_props_div: "custom_props_div_props" ]}"/>
                 </div>
 
-                <h6>${message(code:'license.openaccess.properties')}</h6>
+                <h6 class="ui header">${message(code:'license.openaccess.properties')}</h6>
 
                 <div id="custom_props_div_oa">
                     <g:render template="/templates/properties/custom" model="${[
@@ -57,7 +57,7 @@
                             custom_props_div: "custom_props_div_oa" ]}"/>
                 </div>
 
-                <h6>${message(code:'license.archive.properties')}</h6>
+                <h6 class="ui header">${message(code:'license.archive.properties')}</h6>
 
                 <div id="custom_props_div_archive">
                     <g:render template="/templates/properties/custom" model="${[
@@ -79,7 +79,7 @@
         <div class="row">
               <div class="span8">
   
-                <h6>Information</h6>
+                <h6 class="ui header">Information</h6>
 
                 <div class="inline-lists">
 

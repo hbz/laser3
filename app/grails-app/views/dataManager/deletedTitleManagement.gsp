@@ -16,7 +16,7 @@
   <semui:messages data="${flash}" />
 
     <div>
-      <h2>${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title Management')} : ${titleInstanceTotal} ${message(code:'datamanager.deletedTitleManagement.del_titles', default:'Deleted Titles')}</h2>
+      <h2 class="ui header">${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title Management')} : ${titleInstanceTotal} ${message(code:'datamanager.deletedTitleManagement.del_titles', default:'Deleted Titles')}</h2>
     </div>
 
     <div>
