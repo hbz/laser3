@@ -8,6 +8,10 @@ import org.apache.log4j.RollingFileAppender
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
+// pilot version
+// access via grailsApplication.config.pilotDisableFlag
+pilotDisableFlag = false
+
 // @NotificationsJob
 // - enable notification
 // - enable reminder

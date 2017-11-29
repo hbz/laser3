@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Org" %>
+<h2>DEPRECATED</h2>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
 	<label for="name">

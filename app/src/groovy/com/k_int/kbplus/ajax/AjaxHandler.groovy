@@ -2,6 +2,7 @@ package com.k_int.kbplus.ajax
 
 import com.k_int.kbplus.OrgRole
 
+@Deprecated
 abstract class AjaxHandler {
 
     /**
@@ -9,13 +10,17 @@ abstract class AjaxHandler {
      * 
      * @return
      */
+    @Deprecated
     def ajax() {
     }
-    
+
+    @Deprecated
     def private ajaxList() {
     }
+    @Deprecated
     def private ajaxAdd() {
     }
+    @Deprecated
     def private ajaxDelete() {
     }
 }
