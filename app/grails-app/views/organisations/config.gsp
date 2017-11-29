@@ -16,8 +16,8 @@
 
     <g:render template="nav" contextPath="." />
 
-     <h6>${message(code:'org.properties')}</h6>
-        <div id="custom_props_div_1" class="span12">
+     <h6 class="ui header">${message(code:'org.properties')}</h6>
+        <div id="custom_props_div_1">
             <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.ORG_CONF,
                     ownobj: orgInstance,

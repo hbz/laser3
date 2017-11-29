@@ -563,6 +563,11 @@ class MyInstitutionsController {
             cal.set(Calendar.DAY_OF_MONTH, 31)
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
+
+            if(result.orgType?.value == 'Consortium') {
+                result.cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
+            }
+
             result
         } else {
             redirect action: 'currentSubscriptions', params: [shortcode: params.shortcode]
@@ -608,12 +613,24 @@ class MyInstitutionsController {
                         sub: new_sub,
                         roleType: orgRole).save();
                         
-                if(result.orgType?.value == 'Consortium' && params.linkToAll == "Y"){
-                  def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?",[result.institution])
-                  
-                  cons_members.each { cm ->
-              
-                    if(params.generateSlavedSubs == "Y"){
+                // if(result.orgType?.value == 'Consortium' && params.linkToAll == "Y"){ // old code
+
+                if(result.orgType?.value == 'Consortium') {
+                    
+                    def cons_members = []
+
+                    (params.selectedConsortiaMembers).each{ it ->
+                        def fo =  Org.findById(Long.valueOf(it))
+                        cons_members << Combo.executeQuery(
+                                "select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?",
+                                [result.institution, fo] )
+                    }
+
+                    //def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
+
+                    cons_members.each { cm ->
+
+                    if (params.generateSlavedSubs == "Y") {
                       log.debug("Generating seperate slaved instances for consortia members")
                       def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
                                           status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
@@ -641,7 +658,7 @@ class MyInstitutionsController {
                   }
                 }
 
-                if ( params.newEmptySubId ) {
+                if (params.newEmptySubId) {
                   def sub_id_components = params.newEmptySubId.split(':');
                   if ( sub_id_components.length == 2 ) {
                     def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);

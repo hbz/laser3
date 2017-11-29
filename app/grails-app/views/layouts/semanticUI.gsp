@@ -84,14 +84,13 @@
             </sec:ifLoggedIn>
 
             <sec:ifLoggedIn>
-                <div class="ui simple dropdown item">
-                    ${message(code:'menu.institutions.subs')}
-                    <i class="dropdown icon"></i>
+                <g:if test="${user}">
+                    <g:if test="${contextOrg}">
+                        <div class="ui simple dropdown item">
+                            ${message(code:'menu.institutions.subs')}
+                            <i class="dropdown icon"></i>
 
-                    <div class="menu">
-                        <g:if test="${user}">
-                            <g:if test="${contextOrg}">
-
+                            <div class="menu">
                                 <g:link class="item" controller="myInstitutions" action="currentSubscriptions"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.mySubs')}</g:link>
 
@@ -116,41 +115,39 @@
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
                                 <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>
-
-
-                            </g:if>
-                        </g:if>
-                    </div>
-                </div>
+                            </div>
+                        </div>
+                    </g:if>
+                </g:if>
             </sec:ifLoggedIn>
 
             <sec:ifLoggedIn>
-                <div class="ui simple dropdown item">
-                    ${message(code:'menu.institutions.lic')}
-                    <i class="dropdown icon"></i>
+                <g:if test="${user}">
+                    <g:if test="${contextOrg}">
+                        <div class="ui simple dropdown item">
+                            ${message(code:'menu.institutions.lic')}
+                            <i class="dropdown icon"></i>
 
-                    <div class="menu">
-                        <g:if test="${user}">
-                            <g:if test="${contextOrg}">
+                            <div class="menu">
                                 <g:link class="item" controller="myInstitutions" action="currentLicenses"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.myLics')}</g:link>
 
                                 <g:link class="item" controller="licenseCompare" action="index"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.comp_lic')}</g:link>
-                            </g:if>
-                        </g:if>
-                    </div>
-                </div>
+                            </div>
+                        </div>
+                    </g:if>
+                </g:if>
             </sec:ifLoggedIn>
 
             <sec:ifLoggedIn>
-                <div class="ui simple dropdown item">
-                    ${message(code:'menu.institutions')}
-                    <i class="dropdown icon"></i>
+                <g:if test="${user}">
+                    <g:if test="${contextOrg}">
+                        <div class="ui simple dropdown item">
+                            ${message(code:'menu.institutions.myInst')}
+                            <i class="dropdown icon"></i>
 
-                    <div class="menu">
-                        <g:if test="${user}">
-                            <g:if test="${contextOrg}">
+                            <div class="menu">
                                 <g:link class="item" controller="myInstitutions" action="instdash"
                                         params="${[shortcode:contextOrg?.shortcode]}">${contextOrg?.name}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="todo"
@@ -180,10 +177,10 @@
 
                                 <g:link class="item" controller="myInstitutions" action="tipview"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.core_ttl')}</g:link>
-                            </g:if>
-                        </g:if>
-                    </div>
-                </div>
+                            </div>
+                        </div>
+                    </g:if>
+                </g:if>
             </sec:ifLoggedIn>
 
             <sec:ifLoggedIn>

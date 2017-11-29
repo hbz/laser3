@@ -11,29 +11,20 @@
 			<semui:crumb message="menu.admin.manageI10n" class="active"/>
 		</semui:breadcrumbs>
 
-		<div>
-			<h1 class="ui header"><g:message code="menu.admin.manageRefdatas"/></h1>
-		</div>
-
-        <div>
-            <div class="row">
-                <div class="span12">
-                    <semui:card class="card-grey">
-                        <input class="ui primary button" value="${message(code:'refdataValue.create_new.label')}"
-                               data-toggle="modal" href="#addRefdataValueModal" type="submit">
-                        &nbsp;
-                        <input class="ui primary button" value="${message(code:'refdataCategory.create_new.label')}"
-                               data-toggle="modal" href="#addRefdataCategoryModal" type="submit">
-                    </semui:card>
-                </div>
-            </div>
-        </div>
+		<h1 class="ui header"><g:message code="menu.admin.manageRefdatas"/></h1>
 
         <semui:messages data="${flash}" />
 
-		<div>
-			<div class="row">
-				<div class="span12">
+        <semui:card class="card-grey">
+            <input class="ui primary button" value="${message(code:'refdataValue.create_new.label')}"
+                   data-toggle="modal" href="#addRefdataValueModal" type="submit">
+            &nbsp;
+            <input class="ui primary button" value="${message(code:'refdataCategory.create_new.label')}"
+                   data-toggle="modal" href="#addRefdataCategoryModal" type="submit">
+        </semui:card>
+
+        <div class="ui grid">
+            <div class="twelve wide column">
 					<table class="ui celled striped table">
 						<thead>
 						<tr>
@@ -83,9 +74,8 @@
                             </g:each>
 						</tbody>
 					</table>
-				</div><!--.span12-->
-			</div><!--.row-->
-		</div>
+				</div><!--.twelve-->
+        </div><!--.grid-->
 
         <div id="addRefdataValueModal" class="modal hide">
 

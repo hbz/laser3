@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Combo" %>
 <!doctype html>
 <html>
     <head>
@@ -13,6 +14,8 @@
 
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
 
+        <semui:messages data="${flash}"/>
+
         <g:render template="subsNav" contextPath="." />
 
     <div>
@@ -25,31 +28,51 @@
           <dt><label>${message(code:'myinst.emptySubscription.valid_to', default:'Valid To')}: </label></dt><dd> <g:simpleHiddenValue id="valid_to" name="valid_to" type="date" value="${defaultEndYear}"/>&nbsp;</dd>
           <g:if test="${orgType?.value == 'Consortium'}">
             <dt>
-              <label></label>
-            </dt>
-            <dt>
               ${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}:
-              <g:select name="asOrgType"
-                        from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value <> ? and rdv.owner.desc = ?', ['Other', 'OrgType'])}"
-                        optionKey="id"
-                        optionValue="${{it.getI10n('value')}}"
-                        class="input-medium"/>
             </dt>
-            <dd>
-              <div class="cons-options hidden">
-                <div style="padding:10px;">${message(code:'myinst.emptySubscription.subscribe_members', default:'Also subscribe all Consortia Members to this Subscription')}: 
-                  <g:checkBox name="linkToAll" 
-                              value="Y" 
-                              style="vertical-align:text-bottom;" 
-                              checked="false" 
-                              onchange="showGSS()"/>
-                </div>
-                <div style="padding:10px;" class="sep-sub-select hidden">${message(code:'myinst.emptySubscription.seperate_subs', default:'Generate seperate Subscriptions for all Consortia Members')}: 
-                  <g:checkBox type="checkbox" 
-                              name="generateSlavedSubs" 
-                              value="Y" 
-                              style="vertical-align:text-bottom;" />
-                </div>
+              <dd>
+              <select id="asOrgType" name="asOrgType" class="input-medium">
+                <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value <> ? and rdv.owner.desc = ?', ['Other', 'OrgType'])}" var="opt">
+                    <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
+                </g:each>
+              </select>
+              <br />
+              <br />
+
+              <div class="cons-options">
+
+                <g:checkBox type="checkbox"
+                  name="generateSlavedSubs"
+                  value="Y" />
+                ${message(code:'myinst.emptySubscription.seperate_subs', default:'Generate seperate Subscriptions for all Consortia Members')}
+
+
+                <table class="ui celled striped table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <g:checkBox name="cmToggler" id="cmToggler" checked="false"/>
+                            </th>
+                            <th>Alle Konsortialteilnehmer der Subskription hinzufügen</th>
+                            <th>Ausgehende Verknüpfung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <g:each in="${cons_members}" var="cm">
+                            <tr>
+                                <td>
+                                    <g:checkBox type="text" name="selectedConsortiaMembers" value="${cm.id}" checked="false" />
+                                </td>
+                                <td>
+                                    <g:link controller="organisations" action="show" id="${cm.id}">${cm}</g:link>
+                                </td>
+                                <td>
+                                    ${Combo.findByFromOrgAndToOrg(cm, institution)?.type?.getI10n('value')}
+                                </td>
+                            </tr>
+                        </g:each>
+                    </tbody>
+                </table>
               </div>
             </dd>
           </g:if>
@@ -59,31 +82,24 @@
       </g:form>
     </div>       
     <r:script language="JavaScript">
-      function showGSS(){
-        if($(".sep-sub-select").hasClass("hidden")){
-          $(".sep-sub-select").removeClass('hidden');
-        }else{
-          $(".sep-sub-select").addClass('hidden');
-        }
-      };
-      $(document).ready(function(){
-        var val = "${orgType?.value}";
-        
-        if(val == 'Consortium'){
-          $(".cons-options").removeClass("hidden");
-        }else{
-          $(".cons-options").addClass("hidden");
-        }
-      });
-      $("[name='asOrgType']").change(function(){
-        var val = $(this)['context']['selectedOptions'][0]['label'];
-        
-        if(val == 'Consortium'){
-          $(".cons-options").removeClass("hidden");
-        }else{
-          $(".cons-options").addClass("hidden");
-        }
-      })
+        $('#cmToggler').click(function() {
+            if($(this).prop('checked')) {
+                $("input[name=selectedConsortiaMembers]").prop('checked', true)
+            }
+            else {
+                $("input[name=selectedConsortiaMembers]").prop('checked', false)
+            }
+        })
+        $('#asOrgType').change(function() {
+            var selVal = $(this).find('option:selected').attr('data-value')
+            if ('Consortium' == selVal) {
+                $('.cons-options').show()
+            }
+            else {
+                $('.cons-options').hide()
+            }
+        })
+        $('#asOrgType').trigger('change') // init
     </r:script>
     </body>
 </html>

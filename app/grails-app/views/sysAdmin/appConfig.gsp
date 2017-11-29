@@ -19,7 +19,7 @@
 
     <h6>${message(code:'sys.properties')}</h6>
 
-    <div id="custom_props_div_1" class="span12">
+    <div id="custom_props_div_1">
         <g:render template="/templates/properties/custom" model="${[
                 prop_desc: PropertyDefinition.SYS_CONF,
                 ownobj: adminObj,

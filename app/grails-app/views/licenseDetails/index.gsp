@@ -25,64 +25,9 @@
 
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':license]}"/>
 
-                    <h6>${message(code:'license.properties')}</h6>
+        <div class="ui grid">
 
-                    <div id="custom_props_div_props">
-                        <g:render template="/templates/properties/custom" model="${[
-                                prop_desc: PropertyDefinition.LIC_PROP,
-                                ownobj: license,
-                                custom_props_div: "custom_props_div_props" ]}"/>
-                    </div>
-
-                    <h6>${message(code:'license.openaccess.properties')}</h6>
-
-                    <div id="custom_props_div_oa">
-                        <g:render template="/templates/properties/custom" model="${[
-                                prop_desc: PropertyDefinition.LIC_OA_PROP,
-                                ownobj: license,
-                                custom_props_div: "custom_props_div_oa" ]}"/>
-                    </div>
-
-                    <h6>${message(code:'license.archive.properties')}</h6>
-
-                    <div id="custom_props_div_archive">
-                        <g:render template="/templates/properties/custom" model="${[
-                                prop_desc: PropertyDefinition.LIC_ARC_PROP,
-                                ownobj: license,
-                                custom_props_div: "custom_props_div_archive" ]}"/>
-                    </div>
-
-                    <g:each in="${authorizedOrgs}" var="authOrg">
-                        <g:if test="${authOrg.name == contextOrg?.name}">
-                            <h6>${message(code:'license.properties')} ( ${authOrg.name} )</h6>
-
-                            <div id="custom_props_div_${authOrg.shortcode}">
-                                  <g:render template="/templates/properties/private" model="${[
-                                          prop_desc: PropertyDefinition.LIC_PROP,
-                                          ownobj: license,
-                                          custom_props_div: "custom_props_div_${authOrg.shortcode}",
-                                          tenant: authOrg]}"/>
-
-                                  <r:script language="JavaScript">
-                                        $(document).ready(function(){
-                                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
-                                        });
-                                  </r:script>
-                             </div>
-                        </g:if>
-                    </g:each>
-
-                    <r:script language="JavaScript">
-                        $(document).ready(function(){
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
-                        });
-                    </r:script>
-
-               <div class="ui grid">
-
-                <div class="twelve wide column">
+            <div class="twelve wide column">
   
                 <h6>${message(code:'license.details.information', default:'Information')}</h6>
 
@@ -267,6 +212,62 @@
                         </ul>
                       </dd>
                   </dl>
+
+
+                    <h6 class="ui header">${message(code:'license.properties')}</h6>
+
+                    <div id="custom_props_div_props">
+                        <g:render template="/templates/properties/custom" model="${[
+                                prop_desc: PropertyDefinition.LIC_PROP,
+                                ownobj: license,
+                                custom_props_div: "custom_props_div_props" ]}"/>
+                    </div>
+
+                    <h6 class="ui header">${message(code:'license.openaccess.properties')}</h6>
+
+                    <div id="custom_props_div_oa">
+                        <g:render template="/templates/properties/custom" model="${[
+                                prop_desc: PropertyDefinition.LIC_OA_PROP,
+                                ownobj: license,
+                                custom_props_div: "custom_props_div_oa" ]}"/>
+                    </div>
+
+                    <h6 class="ui header">${message(code:'license.archive.properties')}</h6>
+
+                    <div id="custom_props_div_archive">
+                        <g:render template="/templates/properties/custom" model="${[
+                                prop_desc: PropertyDefinition.LIC_ARC_PROP,
+                                ownobj: license,
+                                custom_props_div: "custom_props_div_archive" ]}"/>
+                    </div>
+
+                    <g:each in="${authorizedOrgs}" var="authOrg">
+                        <g:if test="${authOrg.name == contextOrg?.name}">
+                            <h6 class="ui header">${message(code:'license.properties')} ( ${authOrg.name} )</h6>
+
+                            <div id="custom_props_div_${authOrg.shortcode}">
+                                <g:render template="/templates/properties/private" model="${[
+                                        prop_desc: PropertyDefinition.LIC_PROP,
+                                        ownobj: license,
+                                        custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                        tenant: authOrg]}"/>
+
+                                <r:script language="JavaScript">
+                                        $(document).ready(function(){
+                                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                        });
+                                </r:script>
+                            </div>
+                        </g:if>
+                    </g:each>
+
+                    <r:script language="JavaScript">
+                        $(document).ready(function(){
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                        });
+                    </r:script>
 
                   <div class="clearfix"></div>
                 </div>

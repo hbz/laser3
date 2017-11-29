@@ -11,28 +11,19 @@
 			<semui:crumb message="menu.admin.manageI10n" class="active"/>
 		</semui:breadcrumbs>
 
-		<div>
-			<h1 class="ui header"><g:message code="menu.admin.managePropertyDefinitions"/></h1>
-		</div>
-
-		<div>
-			<div class="row">
-				<div class="span12">
-					<semui:card class="card-grey">
-						<input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
-							   data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
-					</semui:card>
-				</div>
-			</div>
-		</div>
+		<h1 class="ui header"><g:message code="menu.admin.managePropertyDefinitions"/></h1>
 
 		<semui:messages data="${flash}" />
 
-		<div>
-			<div class="row">
-				<div class="span12">
+		<semui:card class="card-grey">
+			<input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
+				   data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
+		</semui:card>
+
+        <div class="ui grid">
+            <div class="twelve wide column">
 					<g:each in="${propertyDefinitions}" var="entry">
-						<h3>${entry.key}</h3>
+						<h6 class="ui header">${entry.key}</h6>
                         <table class="ui celled striped table">
 							<thead>
 							<tr>
@@ -67,9 +58,8 @@
 							</tbody>
 						</table>
 					</g:each>
-				</div><!--.span12-->
-			</div><!--.row-->
-		</div>
+            </div><!-- .twelve -->
+        </div><!-- .grid -->
 
 		<div id="addPropertyDefinitionModal" class="modal hide">
 

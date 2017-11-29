@@ -76,6 +76,13 @@
                   </g:else>
               </dl>
 
+              <g:if test="${orgInstance?.orgType}">
+                  <dl>
+                      <dt><g:message code="org.orgType.label" default="Org Type" /></dt>
+                      <dd><g:fieldValue bean="${orgInstance}" field="orgType"/></dd>
+                  </dl>
+              </g:if>
+
               <g:if test="${orgInstance?.ids}">
                   <dl>
                       <dt><g:message code="org.ids.label" default="Ids" /></dt>

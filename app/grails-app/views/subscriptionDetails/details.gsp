@@ -42,41 +42,6 @@
     <div id="collapseableSubDetails" class="ui grid">
         <div class="twelve wide column">
 
-            <h6>${message(code:'subscription.properties')}</h6>
-
-            <div id="custom_props_div_props">
-                <g:render template="/templates/properties/custom" model="${[
-                        prop_desc: PropertyDefinition.SUB_PROP,
-                        ownobj: subscriptionInstance,
-                        custom_props_div: "custom_props_div_props" ]}"/>
-            </div>
-
-            <r:script language="JavaScript">
-                $(document).ready(function(){
-                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                });
-            </r:script>
-
-            <g:each in="${authorizedOrgs}" var="authOrg">
-                <g:if test="${authOrg.name == contextOrg?.name}">
-                    <h6>${message(code:'subscription.properties')} ( ${authOrg.name} )</h6>
-
-                    <div id="custom_props_div_${authOrg.shortcode}">
-                        <g:render template="/templates/properties/private" model="${[
-                                prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: subscriptionInstance,
-                                custom_props_div: "custom_props_div_${authOrg.shortcode}",
-                                tenant: authOrg]}"/>
-
-                        <r:script language="JavaScript">
-                                $(document).ready(function(){
-                                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
-                                });
-                        </r:script>
-                    </div>
-                </g:if>
-            </g:each>
-
             <h6>${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
 
             <div class="inline-lists"> 
@@ -226,6 +191,41 @@
                      </dd>
                </dl>
                </g:if>
+
+                <h6 class="ui header">${message(code:'subscription.properties')}</h6>
+
+                <div id="custom_props_div_props">
+                    <g:render template="/templates/properties/custom" model="${[
+                            prop_desc: PropertyDefinition.SUB_PROP,
+                            ownobj: subscriptionInstance,
+                            custom_props_div: "custom_props_div_props" ]}"/>
+                </div>
+
+                <r:script language="JavaScript">
+                $(document).ready(function(){
+                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                });
+                </r:script>
+
+                <g:each in="${authorizedOrgs}" var="authOrg">
+                    <g:if test="${authOrg.name == contextOrg?.name}">
+                        <h6 class="ui header">${message(code:'subscription.properties')} ( ${authOrg.name} )</h6>
+
+                        <div id="custom_props_div_${authOrg.shortcode}">
+                            <g:render template="/templates/properties/private" model="${[
+                                    prop_desc: PropertyDefinition.SUB_PROP,
+                                    ownobj: subscriptionInstance,
+                                    custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                    tenant: authOrg]}"/>
+
+                            <r:script language="JavaScript">
+                                $(document).ready(function(){
+                                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                });
+                            </r:script>
+                        </div>
+                    </g:if>
+                </g:each>
 
                <div class="clear-fix"></div>
             </div>

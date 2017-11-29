@@ -20,26 +20,6 @@
 
     <div class="inline-lists">
 
-          <g:each in="${authorizedOrgs}" var="authOrg">
-              <g:if test="${authOrg.name == contextOrg?.name}">
-              <h6>${message(code:'org.properties')} ( ${authOrg.name} )</h6>
-
-                  <div id="custom_props_div_${authOrg.shortcode}">
-                      <g:render template="/templates/properties/private" model="${[
-                              prop_desc: PropertyDefinition.ORG_PROP,
-                              ownobj: orgInstance,
-                              custom_props_div: "custom_props_div_${authOrg.shortcode}",
-                              tenant: authOrg]}"/>
-
-                      <r:script language="JavaScript">
-                            $(document).ready(function(){
-                                initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
-                            });
-                      </r:script>
-                  </div>
-              </g:if>
-          </g:each>
-
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
             <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
@@ -250,6 +230,26 @@
               <dd><g:fieldValue bean="${orgInstance}" field="impId"/></dd>
             
           </g:if>
+
+            <g:each in="${authorizedOrgs}" var="authOrg">
+                <g:if test="${authOrg.name == contextOrg?.name}">
+                    <h6 class="ui header">${message(code:'org.properties')} ( ${authOrg.name} )</h6>
+
+                    <div id="custom_props_div_${authOrg.shortcode}">
+                        <g:render template="/templates/properties/private" model="${[
+                                prop_desc: PropertyDefinition.ORG_PROP,
+                                ownobj: orgInstance,
+                                custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                tenant: authOrg]}"/>
+
+                        <r:script language="JavaScript">
+                            $(document).ready(function(){
+                                initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                            });
+                        </r:script>
+                    </div>
+                </g:if>
+            </g:each>
 
         </dl>
 

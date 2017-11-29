@@ -11,23 +11,20 @@
 			<semui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
 		</semui:breadcrumbs>
 
-		<div>
+		<h1 class="ui header"><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
 
-				<h1 class="ui header"><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
+		<semui:messages data="${flash}" />
 
+		<g:hasErrors bean="${identifierNamespaceInstance}">
+			<bootstrap:alert class="alert-error">
+				<ul>
+					<g:eachError bean="${identifierNamespaceInstance}" var="error">
+						<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+					</g:eachError>
+				</ul>
+			</bootstrap:alert>
+		</g:hasErrors>
 
-			<semui:messages data="${flash}" />
-
-			<g:hasErrors bean="${identifierNamespaceInstance}">
-				<bootstrap:alert class="alert-error">
-					<ul>
-						<g:eachError bean="${identifierNamespaceInstance}" var="error">
-							<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-						</g:eachError>
-					</ul>
-				</bootstrap:alert>
-			</g:hasErrors>
-		</div>
 
 
 			<div class="ui grid">
