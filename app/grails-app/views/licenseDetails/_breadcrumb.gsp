@@ -23,8 +23,8 @@
           </ul>
         </li>
 
-        <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
-        </g:if>
+          <g:if test="${editable}">
+              <semui:crumbAsBadge message="default.editable" class="orange" />
+          </g:if>
         <li class="pull-right"><g:annotatedLabel owner="${license}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
       </ul>

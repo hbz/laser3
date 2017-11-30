@@ -67,12 +67,12 @@
                 <g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
             </div>
 
-            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'owner', 'error')} required">
-                <label for="owner">
-                    <g:message code="task.owner.label" default="Owner" />
+            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
+                <label for="creator">
+                    <g:message code="task.creator.label" default="Creator" />
                     <span class="required-indicator">*</span>
                 </label>
-                <g:select id="owner" name="owner.id" from="${taskOwner}" optionKey="id" optionValue="display" required="" value="${taskInstance?.owner?.id}" class="many-to-one"/>
+                <g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
             </div>
 
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'createDate', 'error')} required">
@@ -93,18 +93,18 @@
                 <!--input size="10" type="text" id="datepicker-endDate" name="endDate" value="${taskInstance?.endDate}"-->
             </div>
 
-            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'tenantUser', 'error')}">
-                <label for="tenantUser">
-                    <g:message code="task.tenantUser.label" default="Tenant User" />
+            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
+                <label for="responsibleUser">
+                    <g:message code="task.responsibleUser.label" default="Responsible User" />
                 </label>
-                <g:select id="tenantUser" name="tenantUser.id" from="${validTenantUsers}" optionKey="id" optionValue="display" value="${taskInstance?.tenantUser?.id}" class="many-to-one" noSelection="['null': '']"/>
+                <g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="many-to-one" noSelection="['null': '']"/>
             </div>
 
-            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'tenantOrg', 'error')}">
-                <label for="tenantOrg">
-                    <g:message code="task.tenantOrg.label" default="Tenant Org" />
+            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleOrg', 'error')}">
+                <label for="responsibleOrg">
+                    <g:message code="task.responsibleOrg.label" default="Responsible Org" />
                 </label>
-                <g:select id="tenantOrg" name="tenantOrg.id" from="${validTenantOrgs}" optionKey="id" value="${taskInstance?.tenantOrg?.id}" class="many-to-one" noSelection="['null': '']"/>
+                <g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id}" class="many-to-one" noSelection="['null': '']"/>
             </div>
             <!-- form -->
         </div>

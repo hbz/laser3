@@ -11,13 +11,10 @@
         <g:if test="${issueEntitlementInstance?.subscription.subscriber}">
             <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance?.subscription.subscriber.name} - ${message(code:'subscription.plural', default:'Subscriptions')}"/>
         </g:if>
-
         <semui:crumb controller="subscriptionDetails" action="index" id="${issueEntitlementInstance?.subscription.id}"  text="${issueEntitlementInstance?.subscription.name}" />
-
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
-
         <g:if test="${editable}">
-            <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
+            <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
     </semui:breadcrumbs>
 
@@ -97,18 +94,22 @@
             <h6 class="ui header"><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
 
             <table class="ui celled striped table">
-                <tr>
-                    <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
-                    <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
-                </tr>
-                <tr>
-                  <td><g:xEditable owner="${issueEntitlementInstance}" field="startDate" type="date"/></td>
-                  <td><g:xEditable owner="${issueEntitlementInstance}" field="startVolume"/></td>
-                  <td><g:xEditable owner="${issueEntitlementInstance}" field="startIssue"/></td>
-                  <td><g:xEditable owner="${issueEntitlementInstance}" field="endDate" type="date"/></td>
-                  <td><g:xEditable owner="${issueEntitlementInstance}" field="endVolume"/></td>
-                  <td><g:xEditable owner="${issueEntitlementInstance}" field="endIssue"/></td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
+                        <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startDate" type="date"/></td>
+                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startVolume"/></td>
+                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startIssue"/></td>
+                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endDate" type="date"/></td>
+                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endVolume"/></td>
+                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endIssue"/></td>
+                    </tr>
+                </tbody>
             </table>
 
             <dl>
@@ -131,19 +132,22 @@
             <h6 class="ui header"><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
 
             <table class="ui celled striped table">
-                <tr>
-                    <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
-                    <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
-                </tr>
-                
-                <tr>
-                  <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.startDate}"/></td>
-                  <td>${issueEntitlementInstance.tipp.startVolume}</td>
-                  <td>${issueEntitlementInstance.tipp.startIssue}</td>
-                  <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.endDate}"/></td>
-                  <td>${issueEntitlementInstance.tipp.endVolume}</td>
-                  <td>${issueEntitlementInstance.tipp.endIssue}</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
+                        <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                      <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.startDate}"/></td>
+                      <td>${issueEntitlementInstance.tipp.startVolume}</td>
+                      <td>${issueEntitlementInstance.tipp.startIssue}</td>
+                      <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.endDate}"/></td>
+                      <td>${issueEntitlementInstance.tipp.endVolume}</td>
+                      <td>${issueEntitlementInstance.tipp.endIssue}</td>
+                    </tr>
+                </tbody>
             </table>
 
             <dl>
@@ -193,38 +197,44 @@
                 <h6 class="ui header"><strong><g:message code="titleInstance.tipps.label" default="Occurrences of this title against Packages / Platforms" /></strong></h6>
 
 
-                <g:form action="show" params="${params}" method="get" class="form-inline">
-                  <input type="hidden" name="sort" value="${params.sort}">
-                  <input type="hidden" name="order" value="${params.order}">
-                  <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-                  &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-                  <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
-                  &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-                  <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
-                  <input type="submit" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
-                </g:form>
+                <semui:filter>
+                    <g:form action="show" params="${params}" method="get" class="form-inline">
+                      <input type="hidden" name="sort" value="${params.sort}">
+                      <input type="hidden" name="order" value="${params.order}">
+                      <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
+                      &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
+                      <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                      &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
+                      <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+                      <input type="submit" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+                    </g:form>
+                </semui:filter>
 
                 <table class="ui celled striped table">
-                    <tr>
-                        <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
-                        <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
-                        <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-                        <th>${message(code:'platform.label', default:'Platform')}</th><th>${message(code:'package.label', default:'Package')}</th><th>${message(code:'default.actions.label', default:'Actions')}</th>
-                    </tr>
-                    <g:each in="${tippList}" var="t">
+                    <thead>
                         <tr>
-                            <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.startDate}"/></td>
-                        <td>${t.startVolume}</td>
-                        <td>${t.startIssue}</td>
-                        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.endDate}"/></td>
-                        <td>${t.endVolume}</td>
-                        <td>${t.endIssue}</td>
-                        <td>${t.coverageDepth}</td>
-                        <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
-                        <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
-                        <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.details', default:'View Details')}</g:link></td>
+                            <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
+                            <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
+                            <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                            <th>${message(code:'platform.label', default:'Platform')}</th><th>${message(code:'package.label', default:'Package')}</th><th>${message(code:'default.actions.label', default:'Actions')}</th>
                         </tr>
-                    </g:each>
+                    </thead>
+                    <tbody>
+                        <g:each in="${tippList}" var="t">
+                            <tr>
+                                <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.startDate}"/></td>
+                            <td>${t.startVolume}</td>
+                            <td>${t.startIssue}</td>
+                            <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.endDate}"/></td>
+                            <td>${t.endVolume}</td>
+                            <td>${t.endIssue}</td>
+                            <td>${t.coverageDepth}</td>
+                            <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
+                            <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
+                            <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.details', default:'View Details')}</g:link></td>
+                            </tr>
+                        </g:each>
+                    </tbody>
                 </table>
             </g:if>
         </div>

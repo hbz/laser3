@@ -11,8 +11,7 @@
       <semui:crumb message="menu.institutions.all_titles" class="active" />
     </semui:breadcrumbs>
 
-    <div>
-      <div class="well">
+    <semui:form>
       <g:form action="index" role="form" class="form-inline" method="get" params="${params}">
 
         <input type="hidden" name="offset" value="${params.offset}"/>
@@ -25,14 +24,11 @@
        
         <button type="submit" name="search" value="yes">${message(code: 'default.button.search.label')}</button>
       </g:form>
-      </div>
-    </div>
-    
-    <div>
-      <div class="row">
+    </semui:form>
 
-        <div class="span12">
-          <div class="well">
+    <div class="ui grid">
+        <div class="sixteen wide column">
+
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
                   <g:if test="${params.int('offset')}">
@@ -47,7 +43,7 @@
                   <g:else>
                     ${message(code: 'title.search.no_pagination.text', args: [resultsTotal])}
                   </g:else>
-                </div>
+                </div><!-- .paginateButtons -->
 
                 <div id="resultsarea">
                   <table class="ui celled striped table">
@@ -81,16 +77,14 @@
                       </g:each>
                     </tbody>
                   </table>
-                </div>
+                </div><!-- #resultsarea -->
              </g:if>
              <div class="paginateButtons" style="text-align:center">
                 <g:if test="${hits}" >
                   <span><g:paginate controller="titleDetails" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" /></span>
                 </g:if>
-              </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              </div><!-- .paginateButtons -->
+        </div><!-- .sixteen -->
+      </div><!-- .grid -->
   </body>
 </html>

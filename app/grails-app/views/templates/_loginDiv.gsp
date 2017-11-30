@@ -1,9 +1,12 @@
-<div class="well">
-    <h2 class="ui header">${message(code:'menu.user.login', default:'Login')}</h2>
+<div class="ui card">
+    <div class="content">
+        <div class="header">${message(code:'menu.user.login', default:'Login')}</div>
 
-    <p>
-        <g:link controller="home" action="index">
-            <span class="ui button">${message(code:'template.loginDiv.label', default:'LAS:eR Member Login')}</span>
-        </g:link>
-    </p>
+        <br />
+        <p>
+            <g:link controller="home" action="index" class="ui fluid button" >
+                ${message(code:'template.loginDiv.label', default:'LAS:eR Member Login')}
+            </g:link>
+        </p>
+    </div>
 </div>

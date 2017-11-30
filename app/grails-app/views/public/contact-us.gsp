@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="pubbootstrap"/>
+    <meta name="layout" content="public"/>
     <title>${message(code: 'public.nav.contact.label', default: 'Contact Us')} | ${message(code: 'laser', default: 'LAS:eR')}</title>
 </head>
 
@@ -11,12 +11,12 @@
     <div class="ui container">
         <h1 class="ui header">${message(code: 'public.nav.contact.label', default: 'Contact Us')}</h1>
 
-        <div class="row">
-            <div class="span8">
+        <div class="ui grid">
+            <div class="twelve wide column">
                 <markdown:renderHtml><g:dbContent key="kbplus.contact.text"/></markdown:renderHtml>
             </div>
 
-            <div class="span4">
+            <div class="four wide column">
                 <g:render template="/templates/loginDiv"/>
             </div>
         </div>

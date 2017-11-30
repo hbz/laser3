@@ -1,20 +1,14 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
-import grails.converters.*
 import grails.plugins.springsecurity.Secured
 import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
-import groovy.xml.StreamingMarkupBuilder
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 
 //For Transform
-import groovyx.net.http.*
 import static groovyx.net.http.ContentType.*
-import static groovyx.net.http.Method.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 class SubscriptionDetailsController {
@@ -839,7 +833,7 @@ class SubscriptionDetailsController {
         userAccessCheck( result.subscriptionInstance, result.user, 'view')
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
-        result.taskInstanceList = taskService.getTasksByTenantsAndObject(result.user, contextService.getOrg(result.user), result.subscriptionInstance)
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(result.user), result.subscriptionInstance)
 
         log.debug(result.taskInstanceList)
         result
@@ -1203,7 +1197,7 @@ class SubscriptionDetailsController {
 
     // tasks
     def contextOrg  = contextService.getOrg(result.user)
-    result.tasks    = taskService.getTasksByTenantsAndObject(result.user, contextOrg, result.subscriptionInstance)
+    result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
     def preCon      = taskService.getPreconditions(contextOrg)
     result << preCon
 

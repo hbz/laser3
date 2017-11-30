@@ -17,90 +17,90 @@ class TaskService {
 
     def springSecurityService
 
-    def getTasksByOwner(User user, flag) {
+    def getTasksByCreator(User user, flag) {
         def tasks = []
         if (user) {
             if (flag == WITHOUT_TENANT_ONLY) {
-                tasks = Task.findAllByOwnerAndTenantOrgAndTenantUser(user, null, null)
+                tasks = Task.findAllByCreatorAndResponsibleOrgAndResponsibleUser(user, null, null)
             }
             else {
-                tasks = Task.findAllByOwner(user)
+                tasks = Task.findAllByCreator(user)
             }
         }
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByTenant(User user) {
+    def getTasksByResponsible(User user) {
         def tasks = []
         if (user) {
-            tasks = Task.findAllByTenantUser(user)
+            tasks = Task.findAllByResponsibleUser(user)
         }
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByTenant(Org org) {
+    def getTasksByResponsible(Org org) {
         def tasks = []
         if (org) {
-            tasks = Task.findAllByTenantOrg(org)
+            tasks = Task.findAllByResponsibleOrg(org)
         }
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByTenants(User user, Org org) {
+    def getTasksByResponsibles(User user, Org org) {
         def tasks = []
-        def a = getTasksByTenant(user)
-        def b = getTasksByTenant(org)
+        def a = getTasksByResponsible(user)
+        def b = getTasksByResponsible(org)
 
         tasks = a.plus(b).unique()
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByTenantAndObject(User user, Object obj) {
+    def getTasksByResponsibleAndObject(User user, Object obj) {
         def tasks = []
         if (user && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
-                    tasks = Task.findAllByTenantUserAndLicense(user, obj)
+                    tasks = Task.findAllByResponsibleUserAndLicense(user, obj)
                     break
                 case 'Org':
-                    tasks = Task.findAllByTenantUserAndOrg(user, obj)
+                    tasks = Task.findAllByResponsibleUserAndOrg(user, obj)
                     break
                 case 'Package':
-                    tasks = Task.findAllByTenantUserAndPkg(user, obj)
+                    tasks = Task.findAllByResponsibleUserAndPkg(user, obj)
                     break
                 case 'Subscription':
-                    tasks = Task.findAllByTenantUserAndSubscription(user, obj)
+                    tasks = Task.findAllByResponsibleUserAndSubscription(user, obj)
                     break
             }
         }
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByTenantAndObject(Org org, Object obj) {
+    def getTasksByResponsibleAndObject(Org org, Object obj) {
         def tasks = []
         if (org && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
-                    tasks = Task.findAllByTenantOrgAndLicense(org, obj)
+                    tasks = Task.findAllByResponsibleOrgAndLicense(org, obj)
                     break
                 case 'Org':
-                    tasks = Task.findAllByTenantOrgAndOrg(org, obj)
+                    tasks = Task.findAllByResponsibleOrgAndOrg(org, obj)
                     break
                 case 'Package':
-                    tasks = Task.findAllByTenantOrgAndPkg(org, obj)
+                    tasks = Task.findAllByResponsibleOrgAndPkg(org, obj)
                     break
                 case 'Subscription':
-                    tasks = Task.findAllByTenantOrgAndSubscription(org, obj)
+                    tasks = Task.findAllByResponsibleOrgAndSubscription(org, obj)
                     break
             }
         }
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByTenantsAndObject(User user, Org org, Object obj) {
+    def getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
         def tasks = []
-        def a = getTasksByTenantAndObject(user, obj)
-        def b = getTasksByTenantAndObject(org, obj)
+        def a = getTasksByResponsibleAndObject(user, obj)
+        def b = getTasksByResponsibleAndObject(org, obj)
 
         tasks = a.plus(b).unique()
         tasks.sort{ it.endDate }
@@ -122,18 +122,18 @@ class TaskService {
             'activeInst': contextOrg
         ]
 
-        def tenantUsersQuery        = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
-        def validTenantOrgs         = [contextOrg]
-        def validTenantUsers 	    = User.executeQuery(tenantUsersQuery, [contextOrg])
+        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
+        def validResponsibleOrgs    = [contextOrg]
+        def validResponsibleUsers   = User.executeQuery(responsibleUsersQuery, [contextOrg])
 
         result.validLicenses        = License.executeQuery('select l ' + MyInstitutionsController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
         result.validOrgs            = Org.list()
         result.validPackages        = Package.list() // TODO
         result.validSubscriptions   = Subscription.executeQuery("select s " + MyInstitutionsController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
 
-        result.taskOwner            = springSecurityService.getCurrentUser()
-        result.validTenantOrgs      = validTenantOrgs
-        result.validTenantUsers     = validTenantUsers
+        result.taskCreator          = springSecurityService.getCurrentUser()
+        result.validResponsibleOrgs = validResponsibleOrgs
+        result.validResponsibleUsers = validResponsibleUsers
 
         result
     }

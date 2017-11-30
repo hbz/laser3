@@ -39,17 +39,17 @@
           <table class="ui celled table">
             <thead>
               <tr>
-                <td>${message(code:'title.label', default:'Title')}</td>
-                <td>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</td>
-                <td>ISSN</td>
-                <td>eISSN</td>
-                <td>${message(code:'default.startDate.label', default:'Start Date')}</td>
-                <td>${message(code:'tipp.startVolume', default:'Start Volume')}</td>
-                <td>${message(code:'tipp.startIssue', default:'Start Issue')}</td>
-                <td>${message(code:'default.endDate.label', default:'End Date')}</td>
-                <td>${message(code:'tipp.endVolume', default:'End Volume')}</td>
-                <td>${message(code:'tipp.endIssue', default:'End Issue')}</td>
-                <td>${message(code:'subscription.details.core_medium', default:'Core Medium')}</td>
+                <th>${message(code:'title.label', default:'Title')}</th>
+                <th>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</th>
+                <th>ISSN</th>
+                <th>eISSN</th>
+                <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
+                <th>${message(code:'tipp.startVolume', default:'Start Volume')}</th>
+                <th>${message(code:'tipp.startIssue', default:'Start Issue')}</th>
+                <th>${message(code:'default.endDate.label', default:'End Date')}</th>
+                <th>${message(code:'tipp.endVolume', default:'End Volume')}</th>
+                <th>${message(code:'tipp.endIssue', default:'End Issue')}</th>
+                <th>${message(code:'subscription.details.core_medium', default:'Core Medium')}</th>
               </tr>
             </thead>
             <tbody>

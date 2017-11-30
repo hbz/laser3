@@ -2,10 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.StreamingMarkupBuilder
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.springframework.security.access.annotation.Secured
@@ -86,7 +82,7 @@ class LicenseDetailsController {
 
       // tasks
       def contextOrg  = contextService.getOrg(result.user)
-      result.tasks    = taskService.getTasksByTenantsAndObject(result.user, contextOrg, result.license)
+      result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
       def preCon      = taskService.getPreconditions(contextOrg)
       result << preCon
 
@@ -359,7 +355,7 @@ class LicenseDetailsController {
         userAccessCheck(result.license,result.user,'view') // TODO
         result.editable = result.license.isEditableBy(result.user) // TODO
 
-        result.taskInstanceList = taskService.getTasksByTenantsAndObject(result.user, contextService.getOrg(result.user), result.license)
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(result.user), result.license)
         log.debug(result.taskInstanceList)
 
         result

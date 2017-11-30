@@ -2363,7 +2363,7 @@ AND EXISTS (
 
         // tasks
         def contextOrg  = contextService.getOrg(springSecurityService.getCurrentUser())
-        result.tasks    = taskService.getTasksByTenants(springSecurityService.getCurrentUser(), contextOrg)
+        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg)
         def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
@@ -2585,8 +2585,8 @@ AND EXISTS (
     def tasks() {
         def result = setResultGenerics()
 
-        result.taskInstanceList = taskService.getTasksByTenants(result.user, result.institution)
-        result.myTaskInstanceList = taskService.getTasksByOwner(result.user, taskService.WITHOUT_TENANT_ONLY)
+        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution)
+        result.myTaskInstanceList = taskService.getTasksByCreator(result.user, taskService.WITHOUT_TENANT_ONLY)
         result.editable = true // TODO check roles !!!
 
         log.debug(result.taskInstanceList)

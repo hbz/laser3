@@ -20,7 +20,7 @@
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="licenseDetails" action="index" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
         <g:if test="${editable}">
-            <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+            <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
 </ul>
     </div>

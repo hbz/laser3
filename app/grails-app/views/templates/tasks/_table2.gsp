@@ -13,7 +13,7 @@
 
                 <th>${message(code: 'task.object.label', default: 'Object')}</th>
 
-                <th>${message(code: 'task.owner.label', default: 'owner')}</th>
+                <th>${message(code: 'task.creator.label', default: 'Creator')}</th>
 
                 <th>${message(code: 'task.createDate.label', default: 'Create Date')}</th>
 
@@ -42,7 +42,7 @@
                         </g:if>
                     </td>
 
-                    <td>${fieldValue(bean: taskInstance, field: "owner")}</td>
+                    <td>${fieldValue(bean: taskInstance, field: "creator")}</td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
 

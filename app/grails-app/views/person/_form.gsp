@@ -149,7 +149,7 @@
 
 <div id="person-role-manager">
 
-	<div class="person-role-function-manager">
+	<div class="ui segment person-role-function-manager">
 		<h3 class="ui header">Functions</h3>
 		
 		<laser:select class="values"
@@ -158,7 +158,7 @@
 		    optionKey="id" 
 		    optionValue="value" />
 		    
-		<button class="add-person-role" type="button">Add</button>
+		<button class="ui primary mini button add-person-role" type="button">Add</button>
 		
 		<div class="workspace">
 			<h4 class="ui header">* New</h4>
@@ -169,7 +169,7 @@
 	</div>
 	
 	
-	<div class="person-role-responsibility-manager">
+	<div class="ui segment person-role-responsibility-manager">
 		<h3 class="ui header">Responsibilities</h3>
 		
 		<laser:select class="values"
@@ -178,7 +178,7 @@
 		    optionKey="id" 
 		    optionValue="value" />
 		    
-		<button class="add-person-role" type="button">Add</button>
+		<button class="ui primary mini button add-person-role" type="button">Add</button>
 
 		<div class="workspace">
 			<h4 class="ui header">* New</h4>

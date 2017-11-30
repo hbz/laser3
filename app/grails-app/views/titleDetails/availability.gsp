@@ -22,10 +22,9 @@
     <li> <g:link controller="titleDetails" action="show" id="${ti?.id}">Title ${ti?.title}</g:link> </li>
 
     <li class="dropdown pull-right">
-
-    <g:if test="${editable}">
-      <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
-    </g:if>
+      <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+      </g:if>
   </ul>
 </div>
 

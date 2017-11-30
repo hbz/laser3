@@ -21,7 +21,7 @@
                     id="${params.id}">License Documents</g:link></li>
 
         <g:if test="${editable}">
-            <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+            <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
 
     </ul>

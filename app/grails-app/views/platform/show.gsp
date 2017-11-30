@@ -14,9 +14,9 @@
     <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
 
         <li class="pull-right">
-          <g:if test="${editable}">
-            <span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;
-          </g:if>
+            <g:if test="${editable}">
+                <semui:crumbAsBadge message="default.editable" class="orange" />
+            </g:if>
           View:
           <div class="btn-group" data-toggle="buttons-radio">
             <g:link controller="platform" action="show" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>

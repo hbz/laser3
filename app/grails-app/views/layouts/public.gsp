@@ -13,7 +13,7 @@
     <meta name="author" content="">
 
     <meta name="viewport" content="initial-scale = 1.0">
-    <r:require modules="kbplus"/>
+    <r:require modules="semanticUI"/>
 
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->

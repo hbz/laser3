@@ -10,42 +10,44 @@
   <body>
 
 
-        <h1 class="ui header">${message(code:'package.search')}</h1>
-        <semui:messages data="${flash}" />
+    <h1 class="ui header">${message(code:'package.search')}</h1>
 
-    <div class="container" style="text-align:center">
+    <semui:messages data="${flash}" />
+
+  <semui:filter>
       <g:form action="list" method="get" class="form-inline">
          <table class="ui celled table">
-          <tr>
-            <td style="white-space:nowrap">
-              <label>${message(code:'package.search.text')} : </label> <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
-            </td>
-            <td style="width:31%;text-align:right;">
-              <div style="padding:5px 5px;white-space:nowrap;">
-                <label>${message(code:'package.search.updated_after')} : </label> <g:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date"/>
-              </div>
-              <div style="padding:5px 5px;white-space:nowrap;">
-                <label>${message(code:'package.search.created_after')} : </label> <g:simpleHiddenValue id="createStartDate" name="createStartDate" type="date"/>
-              </div>
-            </td>
-            <td style="width:31%;text-align:right;">
-              <div style="padding:5px 5px;white-space:nowrap;">
-                <label>${message(code:'package.search.updated_before')} : </label> <g:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date"/>
-              </div>
-              <div style="padding:5px 5px;white-space:nowrap;">
-                <label>${message(code:'package.search.created_before')} : </label> <g:simpleHiddenValue  id="createEndDate" name="createEndDate" type="date"/>
-              </div>
-            </td>
-            <td>
-              <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}" style="margin:10px 5px;min-width:100px;font-size:1.3em;"></input>
-              <button type="submit" name="format" value="csv" class="ui primary button" value="Search"  style="margin:10px 5px;">${message(code:'default.button.exports.csv')}</button>
-            </td>
-          </tr>
+           <tbody>
+            <tr>
+              <td style="white-space:nowrap">
+                <label>${message(code:'package.search.text')} : </label> <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
+              </td>
+              <td style="width:31%;text-align:right;">
+                <div style="padding:5px 5px;white-space:nowrap;">
+                  <label>${message(code:'package.search.updated_after')} : </label> <g:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date"/>
+                </div>
+                <div style="padding:5px 5px;white-space:nowrap;">
+                  <label>${message(code:'package.search.created_after')} : </label> <g:simpleHiddenValue id="createStartDate" name="createStartDate" type="date"/>
+                </div>
+              </td>
+              <td style="width:31%;text-align:right;">
+                <div style="padding:5px 5px;white-space:nowrap;">
+                  <label>${message(code:'package.search.updated_before')} : </label> <g:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date"/>
+                </div>
+                <div style="padding:5px 5px;white-space:nowrap;">
+                  <label>${message(code:'package.search.created_before')} : </label> <g:simpleHiddenValue  id="createEndDate" name="createEndDate" type="date"/>
+                </div>
+              </td>
+              <td>
+                <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}" style="margin:10px 5px;min-width:100px;font-size:1.3em;"></input>
+                <button type="submit" name="format" value="csv" class="ui primary button" value="Search"  style="margin:10px 5px;">${message(code:'default.button.exports.csv')}</button>
+              </td>
+            </tr>
+           </tbody>
         </table>
-      </g:form><br/>
-    </div>
+      </g:form>
+  </semui:filter>
 
-    <div>
         
       <table class="ui celled striped table">
         <thead>
@@ -74,6 +76,6 @@
       <div class="pagination">
         <bootstrap:paginate  action="list" controller="packageDetails" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
       </div>
-    </div>
+
   </body>
 </html>

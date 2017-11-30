@@ -18,9 +18,8 @@
 
   <semui:breadcrumbs>
     <semui:crumb class="active" text="${message(code:'title.title.label')}: ${titleInstance.title}" />
-
     <g:if test="${editable}">
-      <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable')}</span>&nbsp;</li>
+      <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
   </semui:breadcrumbs>
 

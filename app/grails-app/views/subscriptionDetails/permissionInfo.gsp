@@ -15,7 +15,7 @@
       <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
       <semui:crumb class="active" text="${message(code:'default.permissions.label', default:'Permissions')}" />
       <g:if test="${editable}">
-        <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
+        <semui:crumbAsBadge message="default.editable" class="orange" />
       </g:if>
     </semui:breadcrumbs>
 

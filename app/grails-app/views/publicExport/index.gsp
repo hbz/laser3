@@ -43,7 +43,7 @@
 <html>
 
   <head>
-    <meta name="layout" content="pubbootstrap"/>
+    <meta name="layout" content="public"/>
     <title>${message(code:'public.nav.exports.label', default:'Exports')} | ${message(code:'laser', default:'LAS:eR')}</title>
         <r:require module='annotations' />
 

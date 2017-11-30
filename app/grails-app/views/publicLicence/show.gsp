@@ -4,7 +4,7 @@
 
 <html>
   <head>
-    <meta name="layout" content="pubbootstrap"/>
+    <meta name="layout" content="public"/>
     <title>${message(code:'laser', default:'LAS:eR')} <g:message code="public.license" default=" PublicLicense"/></title>
   </head>
 

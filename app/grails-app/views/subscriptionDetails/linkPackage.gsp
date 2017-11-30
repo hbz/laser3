@@ -52,7 +52,7 @@
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.notes.label', default:'Notes')}</g:link> </li>
         <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
+          <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
       </ul>
     </div>

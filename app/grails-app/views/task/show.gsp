@@ -68,10 +68,10 @@
 						
 					</g:if>
 				
-					<g:if test="${taskInstance?.owner}">
-						<dt><g:message code="task.owner.label" default="Owner" /></dt>
+					<g:if test="${taskInstance?.creator}">
+						<dt><g:message code="task.creator.label" default="Creator" /></dt>
 						
-							<dd><g:link controller="user" action="show" id="${taskInstance?.owner?.id}">${taskInstance?.owner?.display?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="user" action="show" id="${taskInstance?.creator?.id}">${taskInstance?.creator?.display?.encodeAsHTML()}</g:link></dd>
 						
 					</g:if>
 
@@ -89,17 +89,17 @@
 						
 					</g:if>
 				
-					<g:if test="${taskInstance?.tenantUser}">
-						<dt><g:message code="task.tenantUser.label" default="Tenant User" /></dt>
+					<g:if test="${taskInstance?.responsibleUser}">
+						<dt><g:message code="task.responsibleUser.label" default="Responsible User" /></dt>
 						
-							<dd><g:link controller="user" action="show" id="${taskInstance?.tenantUser?.id}">${taskInstance?.tenantUser?.display?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="user" action="show" id="${taskInstance?.responsibleUser?.id}">${taskInstance?.responsibleUser?.display?.encodeAsHTML()}</g:link></dd>
 						
 					</g:if>
 				
-					<g:if test="${taskInstance?.tenantOrg}">
-						<dt><g:message code="task.tenantOrg.label" default="Tenant Org" /></dt>
+					<g:if test="${taskInstance?.responsibleOrg}">
+						<dt><g:message code="task.responsibleOrg.label" default="Responsible Org" /></dt>
 						
-							<dd><g:link controller="org" action="show" id="${taskInstance?.tenantOrg?.id}">${taskInstance?.tenantOrg?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="organisations" action="show" id="${taskInstance?.responsibleOrg?.id}">${taskInstance?.responsibleOrg?.encodeAsHTML()}</g:link></dd>
 						
 					</g:if>
 				

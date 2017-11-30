@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-      <meta name="layout" content="pubbootstrap"/>
+      <meta name="layout" content="public"/>
       <title>Journals | ${message(code:'laser', default:'LAS:eR')}</title>
           <r:require modules="onixMatrix" />
   </head>

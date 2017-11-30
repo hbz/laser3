@@ -1,16 +1,10 @@
 package com.k_int.kbplus
 
-import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
-import groovy.xml.StreamingMarkupBuilder
 import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.hssf.usermodel.*
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import java.text.SimpleDateFormat
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 
@@ -417,7 +411,7 @@ class PackageDetailsController {
 
         // tasks
         def contextOrg  = contextService.getOrg(User.get(springSecurityService.principal.id))
-        result.tasks    = taskService.getTasksByTenantsAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
+        result.tasks    = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
         def preCon      = taskService.getPreconditions(contextOrg)
         result << preCon
 
@@ -893,7 +887,7 @@ class PackageDetailsController {
         result.packageInstance = Package.get(params.id)
         result.editable=isEditable()
 
-        result.taskInstanceList = taskService.getTasksByTenantsAndObject(result.user, contextService.getOrg(result.user), result.packageInstance)
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(result.user), result.packageInstance)
         log.debug(result.taskInstanceList)
 
         result

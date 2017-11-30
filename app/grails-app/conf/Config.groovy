@@ -17,16 +17,11 @@ pilotDisableFlag = false
 // - enable reminder
 //hbzMaster = true
 
-// @ApplicationResources
-defaultCssSkin = "hbz.css"
-
 // FEATURE-CONFIG:
-
 localauth = true
 feature_finance = true
 
 // Database Migration Plugin
-
 grails.plugin.databasemigration.updateOnStart = false
 grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
 

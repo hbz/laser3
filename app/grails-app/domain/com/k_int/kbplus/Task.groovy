@@ -13,12 +13,12 @@ class Task {
     String          description
     RefdataValue    status          // RefdataCategory 'YN'
 
-    User            owner
+    User            creator
     Date            endDate
     Date            createDate
 
-    User            tenantUser
-    Org             tenantOrg
+    User            responsibleUser
+    Org             responsibleOrg
 
     static constraints = {
         license         (nullable:true, blank:false)
@@ -28,11 +28,11 @@ class Task {
         title           (nullable:false, blank:false)
         description     (nullable:true, blank:true)
         status          (nullable:false, blank:false)
-        owner           (nullable:false, blank:false)
+        creator         (nullable:false, blank:false)
         endDate         (nullable:false, blank:false)
         createDate      (nullable:false, blank:false)
-        tenantUser      (nullable:true,  blank:true)
-        tenantOrg       (nullable:true,  blank:true)
+        responsibleUser (nullable:true,  blank:true)
+        responsibleOrg  (nullable:true,  blank:true)
     }
 
     static mapping = {
@@ -48,11 +48,11 @@ class Task {
         description     column:'tsk_description'
         status          column:'tsk_status_rdv_fk'
 
-        owner           column:'tsk_owner_fk'
+        creator         column:'tsk_creator_fk'
         endDate         column:'tsk_end_date'
         createDate      column:'tsk_create_date'
 
-        tenantUser      column:'tsk_tenant_user_fk'
-        tenantOrg       column:'tsk_tenant_org_fk'
+        responsibleUser      column:'tsk_responsible_user_fk'
+        responsibleOrg       column:'tsk_responsible_org_fk'
     }
 }

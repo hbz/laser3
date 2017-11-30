@@ -18,7 +18,7 @@
         <li> <g:link controller="onixplLicenseDetails" action="notes" id="${params.id}">License Notes</g:link> </li>
 
         <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+            <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
 
       </ul>
@@ -32,7 +32,7 @@
         <semui:crumb controller="onixplLicenseDetails" action="index" id="${params.id}" text="ONIX-PL License Details" />
         <semui:crumb controller="onixplLicenseDetails" action="notes" id="${params.id}" text="License Notes" />
         <g:if test="${editable}">
-            <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
+            <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
     </semui:breadcrumbs>
 

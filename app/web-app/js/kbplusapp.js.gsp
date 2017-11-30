@@ -65,6 +65,10 @@ $(document).ready(function() {
                           content:function() {
                           return getContent();}
   });
+
+
+  semanticUiStuff()
+
 });
 
 function getContent() {
@@ -76,5 +80,12 @@ function getContent() {
     }).responseText;
 }
 
+function semanticUiStuff() {
+
+    // close semui:messages alerts
+    $(".close.icon").click(function(){
+        $(this).parent().hide();
+    });
+}
 
 

@@ -61,12 +61,12 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'owner', 'error')} required">
-	<label for="owner">
-		<g:message code="task.owner.label" default="Owner" />
+<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
+	<label for="creator">
+		<g:message code="task.creator.label" default="Creator" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="owner" name="owner.id" from="${taskOwner}" optionKey="id" optionValue="display" required="" value="${taskInstance?.owner?.id}" class="many-to-one"/>
+	<g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
 
 </div>
 
@@ -88,18 +88,18 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'tenantUser', 'error')} required">
-	<label for="tenantUser">
-		<g:message code="task.tenantUser.label" default="Tenant User" />
+<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
+	<label for="responsibleUser">
+		<g:message code="task.responsibleUser.label" default="Tenant User" />
 	</label>
-	<g:select id="tenantUser" name="tenantUser.id" from="${validTenantUsers}" optionKey="id" optionValue="display" value="${taskInstance?.tenantUser?.id}" class="many-to-one" noSelection="['null': '']" />
+	<g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="many-to-one" noSelection="['null': '']" />
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'tenantOrg', 'error')} required">
-	<label for="tenantOrg">
-		<g:message code="task.tenantOrg.label" default="Tenant Org" />
+<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleOrg', 'error')} required">
+	<label for="responsibleOrg">
+		<g:message code="task.responsibleOrg.label" default="Tenant Org" />
 	</label>
-	<g:select id="tenantOrg" name="tenantOrg.id" from="${validTenantOrgs}" optionKey="id" value="${taskInstance?.tenantOrg?.id}" class="many-to-one" noSelection="['null': '']" />
+	<g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id}" class="many-to-one" noSelection="['null': '']" />
 
 </div>

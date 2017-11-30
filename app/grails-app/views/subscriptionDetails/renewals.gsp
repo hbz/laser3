@@ -14,9 +14,9 @@
           <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.notes.label', default:'Notes')}</g:link> </li>
-        <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
-        </g:if>
+          <g:if test="${editable}">
+              <semui:crumbAsBadge message="default.editable" class="orange" />
+          </g:if>
       </ul>
     </div>
 

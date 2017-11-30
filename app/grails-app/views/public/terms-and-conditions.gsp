@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="pubbootstrap"/>
+    <meta name="layout" content="public"/>
     <title>Terms and Conditions | ${message(code: 'laser', default: 'LAS:eR')}</title>
 </head>
 
@@ -11,12 +11,12 @@
     <div class="ui container">
         <h1 class="ui header">Terms and Conditions</h1>
 
-        <div class="row">
-            <div class="span8">
+        <div class="ui grid">
+            <div class="twelve wide column">
                 <markdown:renderHtml><g:dbContent key="kbplus.termsAndConditions"/></markdown:renderHtml>
             </div>
 
-            <div class="span4">
+            <div class="four wide column">
                 <g:render template="/templates/loginDiv"/>
             </div>
         </div>

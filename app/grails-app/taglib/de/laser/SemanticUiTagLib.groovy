@@ -220,4 +220,13 @@ class SemanticUiTagLib {
         out <<   body()
         out << '</div>'
     }
+
+    //<semui:form> CONTENT <semui:form>
+
+    def form = { attrs, body ->
+
+        out << '<div class="ui blue segment">'
+        out <<   body()
+        out << '</div>'
+    }
 }

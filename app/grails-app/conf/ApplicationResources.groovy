@@ -73,7 +73,7 @@ modules = {
         resource url:'css/dataTables.colVis.min.css'
         resource url:'css/bootstrap-editable.css'
         resource url:'css/select2.css'
-        resource url:"css/instances/${Holders.config.defaultCssSkin?:'standard.css'}"
+        resource url:"css/instances/deprecated.css" // legacy
 
         resource url:'css/tmp_semui.css'
     }
@@ -108,5 +108,6 @@ modules = {
 
         resource url:'semantic_heave/select2.css'       // new version 3.5.4
         resource url:'semantic_heave/select2.min.js'    // new version 3.5.4
+
     }
 }

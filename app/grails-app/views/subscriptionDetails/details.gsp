@@ -23,7 +23,7 @@
         <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
 
         <g:if test="${editable}">
-            <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
+            <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
         <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
     </semui:breadcrumbs>
