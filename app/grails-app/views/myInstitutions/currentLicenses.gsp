@@ -38,9 +38,7 @@
         </g:if>
     </semui:subNav>
 
-    <div class="license-searches">
-      <div class="well">
-
+    <semui:filter class="license-searches">
         <form class="form-inline">
           <div>
             <label>${message(code:'license.valid_on', default:'Valid On')}:</label>
@@ -56,8 +54,7 @@
             <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
           </div>
         </form>
-      </div>
-    </div>
+    </semui:filter>
 
         <div class="license-results">
         <g:if test="${licenseCount && licenseCount>0}">

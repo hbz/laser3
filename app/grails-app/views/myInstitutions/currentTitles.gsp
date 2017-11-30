@@ -34,11 +34,13 @@
 
     </semui:breadcrumbs>
 
-  <semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
-    <div>
+    <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
+
+    <semui:filter>
       <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
-        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
+
         <g:set var="filterSub" value="${params.filterSub?params.list('filterSub'):"all"}" />
         <g:set var="filterPvd" value="${params.filterPvd?params.list('filterPvd'):"all"}" />
         <g:set var="filterHostPlat" value="${params.filterHostPlat?params.list('filterHostPlat'):"all"}" />
@@ -104,10 +106,10 @@
             <g:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
             &nbsp;<input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
           </div>
+            <br />
         </div>
       </g:form>
-      <br/>
-    </div>
+    </semui:filter>
 
     <div>
       <div>

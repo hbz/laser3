@@ -5,29 +5,28 @@
     <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
-  <body>
-    <semui:breadcrumbs>
-      <g:if test="${params.shortcode}">
-        <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-      </g:if>
-      <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
-      <semui:crumb class="active" text="${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}" />
-      <g:if test="${editable}">
-        <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
-      </g:if>
-    </semui:breadcrumbs>
+    <body>
+        <semui:breadcrumbs>
+            <g:if test="${params.shortcode}">
+                <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
+            </g:if>
+        <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
+        <semui:crumb class="active" text="${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}" />
+        <g:if test="${editable}">
+            <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
+        </g:if>
+        </semui:breadcrumbs>
 
-    <div>
-      <h1 class="ui header"><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
-      <g:render template="nav" contextPath="." />
-    </div>
 
-    <g:set var="counter" value="${offset+1}" />
+        <h1 class="ui header"><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
 
-    <div>
+        <g:render template="nav" contextPath="." />
 
-      <dl>
-        <dt>${message(code:'subscription.details.availableTitles', default:'Available Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(tipps?.size())),num_tipp_rows])} )
+
+        <g:set var="counter" value="${offset+1}" />
+
+      <semui:filter>
+        ${message(code:'subscription.details.availableTitles', default:'Available Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(tipps?.size())),num_tipp_rows])} )
           <g:form action="addEntitlements" params="${params}" method="get" class="form-inline">
             <input type="hidden" name="sort" value="${params.sort}">
             <input type="hidden" name="order" value="${params.order}">
@@ -45,8 +44,8 @@
 
             <input type="submit" style="margin-left:10px;" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
           </g:form>
-        </dt>
-        <dd>
+      </semui:filter>
+
           <g:form action="processAddEntitlements">
             <input type="hidden" name="siid" value="${subscriptionInstance.id}"/>
             <table class="ui celled stripped table">
@@ -109,9 +108,6 @@
               </g:if>
             </div>
           </g:form>
-        </dd>
-      </dl>
-    </div>
 
     <r:script language="JavaScript">
       $(document).ready(function() {

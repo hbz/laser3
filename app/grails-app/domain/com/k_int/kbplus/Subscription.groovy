@@ -27,7 +27,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
   Subscription instanceOf
 
   // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
-  RefdataValue isSlaved
+  RefdataValue isSlaved // RefdataCategory 'YN'
 
   String noticePeriod
   Date dateCreated
@@ -106,6 +106,10 @@ class Subscription extends BaseDomainComponent implements Permissions {
     cancellationAllowances(nullable:true, blank:true)
     lastUpdated(nullable: true, blank: true)
     // vendor(nullable:true, blank:false)
+  }
+
+  def getIsSlavedAsString() {
+    isSlaved?.value == "Yes" ? "Yes" : "No"
   }
 
   def getSubscriber() {

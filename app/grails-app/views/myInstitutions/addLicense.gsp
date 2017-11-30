@@ -44,6 +44,7 @@
         </g:form>
       </div>
 
+  <!--
       <div>
           <div class="well license-options">
             <g:if test="${is_inst_admin}">
@@ -52,7 +53,7 @@
             <g:else>${message(code:'myinst.addLicense.no_permission', default:'Sorry, you must have editor role to be able to add licenses')}</g:else>
           </div>
       </div>
-
+-->
       <semui:messages data="${flash}" />
 
       <g:if test="${licenses?.size() > 0}">

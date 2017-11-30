@@ -211,4 +211,13 @@ class SemanticUiTagLib {
         out <<   body()
         out << '</div>'
     }
+
+    //<semui:filter> CONTENT <semui:filter>
+
+    def filter = { attrs, body ->
+
+        out << '<div class="ui yellow segment">'
+        out <<   body()
+        out << '</div>'
+    }
 }

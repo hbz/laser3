@@ -15,12 +15,12 @@
 
 				<semui:messages data="${flash}" />
 
-				<div class="container" style="text-align:left">
+				<semui:filter>
 					<g:form action="list" method="get" class="form-inline">
 						<label>${message(code:'default.search.text', default:'Search text')} : </label> <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
 						<input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
 					</g:form><br/>
-				</div>
+				</semui:filter>
 
 				<table class="ui celled striped table">
 					<thead>

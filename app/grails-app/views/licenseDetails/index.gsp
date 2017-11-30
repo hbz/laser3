@@ -204,8 +204,8 @@
                         <ul>
                           <g:each in="${license?.incomingLinks}" var="il">
                             <li><g:link controller="licenseDetails" action="index" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> - 
-                            ${message(code:'license.details.incoming.child', default:'Child')}: <g:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
-
+                            ${message(code:'license.details.incoming.child', default:'Child')}:
+                            <g:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
                             </li>
                           </g:each>
               

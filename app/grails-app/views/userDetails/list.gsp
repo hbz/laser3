@@ -6,21 +6,21 @@
     <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
-  <body>
-    <div>
+    <body>
+        <div>
 
-          <h1 class="ui header">Users</h1>
+            <h1 class="ui header">Users</h1>
 
-          <div class="well form-horizontal">
 
-          <g:form action="list" method="get">
-            Name Contains: <input type="text" name="name" value="${params.name}"/>
-            Role:    
-             <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
-             <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" value="authority "optionKey="id" optionValue="authority" name="authority" />
-            <input type="submit" value="Search" class="ui primary button"/>
-          </g:form>
-        </div>
+                <semui:filter>
+                  <g:form action="list" method="get">
+                    Name Contains: <input type="text" name="name" value="${params.name}"/>
+                    Role:
+                     <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
+                     <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" value="authority "optionKey="id" optionValue="authority" name="authority" />
+                    <input type="submit" value="Search" class="ui primary button"/>
+                  </g:form>
+                </semui:filter>
 
         <semui:messages data="${flash}" />
         

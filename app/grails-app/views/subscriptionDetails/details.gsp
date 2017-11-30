@@ -162,8 +162,7 @@
 
                <dl><dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt><dd><g:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd></dl>
                <dL><dt>${message(code:'license.details.incoming.child', default:'Child')} </dt><dd>
-                        <g:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
-                        ${subscriptionInstance.isSlaved} ###
+                        ${subscriptionInstance.getIsSlavedAsString()}
                </dd></dL>
                <dl>
                  <dt>

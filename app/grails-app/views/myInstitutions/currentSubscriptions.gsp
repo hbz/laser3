@@ -22,42 +22,38 @@
 
       <g:render template="subsNav" contextPath="." />
 
+      <semui:filter>
+        <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
 
-    <div>
-      <div class="well">
-      <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
+          <label class="control-label">${message(code:'default.search.text', default:'Search text')}: </label>
+          <input style="margin-top:10px" type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"/>
 
-
-
-        <label class="control-label">${message(code:'default.search.text', default:'Search text')}: </label>
-        <input style="margin-top:10px" type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"/>
-            
-        <label class="control-label">${message(code:'default.valid_on.label', default:'Valid On')}: </label>
-        <div class="input-append date">
-          <input class="span2 datepicker-class" size="16" type="text" name="validOn" value="${validOn}">
-        </div>
-
-        <label class="control-label">${message(code:'default.filter.label', default:'Filter')}: </label>
-        <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
-        <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
-        <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
-        <g:select style="margin-top:10px;padding:0px 6px;"
-                  name="dateBeforeFilter"
-                  value="${params.dateBeforeFilter}"
-                  from="${['renewalDate' : renewalDate, 'endDate' : endDate]}"
-                  noSelection="${['null' : noDate]}"
-                  optionKey="key"
-                  optionValue="value" />
-
-        <span class="dateBefore hidden">
-          <label class="control-label" style="margin-right:10px;">${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}</label>
+          <label class="control-label">${message(code:'default.valid_on.label', default:'Valid On')}: </label>
           <div class="input-append date">
-              <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
+            <input class="span2 datepicker-class" size="16" type="text" name="validOn" value="${validOn}">
           </div>
-        <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
-      </g:form>
-      </div>
-    </div>
+
+          <label class="control-label">${message(code:'default.filter.label', default:'Filter')}: </label>
+          <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
+          <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
+          <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
+          <g:select style="margin-top:10px;padding:0px 6px;"
+                    name="dateBeforeFilter"
+                    value="${params.dateBeforeFilter}"
+                    from="${['renewalDate' : renewalDate, 'endDate' : endDate]}"
+                    noSelection="${['null' : noDate]}"
+                    optionKey="key"
+                    optionValue="value" />
+
+          <span class="dateBefore hidden">
+            <label class="control-label" style="margin-right:10px;">${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}</label>
+            <div class="input-append date">
+                <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
+            </div>
+          <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+        </g:form>
+      </semui:filter>
+
 
 
       <div class="subscription-results">

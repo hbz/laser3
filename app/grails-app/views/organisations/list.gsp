@@ -10,18 +10,17 @@
     <div>
 
 
-          <h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
+        <h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
+        <semui:messages data="${flash}" />
 
+        <semui:filter>
+            <g:form action="list" method="get" class="form-inline">
+                ${message(code: 'org.search.contains')}: <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> ${message(code: 'org.search.restrict')}
+                <g:select name="orgRole" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
+                <input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button"/> (${orgInstanceTotal} Matches)
+            </g:form>
+        </semui:filter>
 
-        <div class="well">
-          <g:form action="list" method="get" class="form-inline">
-            ${message(code: 'org.search.contains')}: <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> ${message(code: 'org.search.restrict')}
-            <g:select name="orgRole" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
-            <input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button"/> (${orgInstanceTotal} Matches)
-          </g:form>
-        </div>
-
-      <semui:messages data="${flash}" />
         
         <table class="ui celled striped table">
           <thead>
