@@ -63,8 +63,9 @@
               <thead>
                 <th>
                   <h5 class="pull-left">${message(code:'myinst.todo.label', default:'To Do')}</h5>
-                  <img src="${resource(dir: 'images', file: 'icon_todo.png')}" alt="To-Dos" class="pull-right" />
-                    <!--<i class="checkmark box icon"></i>-->
+                  <span class="pull-right">
+                    <i class="checkmark box icon large"></i>
+                  </span>
                 </th>
               </thead>
               <tbody>
@@ -72,8 +73,8 @@
                 <tr>
                   <td>
                     <div class="pull-left icon">
-                      <img src="${resource(dir: 'images', file: 'icon_todo.png')}" alt="To-Dos" /><br/>
-                      <span class="badge badge-warning">${todo.num_changes}</span>
+                        <i class="checkmark box icon"></i>
+                        <span class="badge badge-warning">${todo.num_changes}</span>
                     </div>
                     <div class="pull-right message">
                       <p>
@@ -102,8 +103,9 @@
               <thead>
                 <th>
                   <h5 class="pull-left">${message(code:'announcement.plural', default:'Announcements')}</h5>
-                  <img src="${resource(dir: 'images', file: 'icon_announce.png')}" alt="To-Dos" class="pull-right" />
-                    <!--<i class="info circle icon"></i>-->
+                    <span class="pull-right">
+                        <i class="warning circle icon large"></i>
+                    </span>
                 </th>
               </thead>
               <tbody>
@@ -111,7 +113,7 @@
                 <tr>
                   <td>
                     <div class="pull-left icon">
-                      <img src="${resource(dir: 'images', file: 'icon_announce.png')}" alt="Annoucement" />
+                        <i class="warning circle icon"></i>
                     </div>
                     <div class="pull-right message">
                       <g:set var="ann_nws" value="${ra.title.replaceAll(' ','')}" />
@@ -138,8 +140,9 @@
                 <thead>
                     <th>
                         <h5 class="pull-left">${message(code:'myinst.dash.task.label')}</h5>
-                        <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussions" class="pull-right" />
-                        <!--<i class="checked calendar icon"></i>-->
+                        <span class="pull-right">
+                            <i class="checked calendar icon large"></i>
+                        </span>
                     </th>
                 </thead>
                 <tbody>
