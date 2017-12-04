@@ -1,5 +1,5 @@
 %{--<%@page defaultCodec="HTML" %>--}%
-<table  class="ui celled striped table" id="recentUpdatesTable" data-resultsTo="${to}" data-resultsFrom="${from}">
+<table class="ui celled striped table" id="recentUpdatesTable" data-resultsTo="${to}" data-resultsFrom="${from}">
     <thead>
     <tr>
         <td style="text-align: center" colspan="4">

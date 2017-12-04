@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import grails.util.Holder
 
 import javax.persistence.Transient
 
@@ -113,9 +112,12 @@ class CostItem {
     }
 
     def getBudgetcodes() {
+        def result = BudgetCode.executeQuery("select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = ?", [this])
+        return result
+        /*
         return CostItemGroup.findAllByCostItem(this).collect {
             [id:it.id, value:it.budgetcode.value]
-        }
+        } */
     }
 
     /**

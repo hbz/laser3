@@ -1,4 +1,4 @@
-<table id="help" hidden="hidden">
+<table id="help" class="ui table" hidden="hidden">
     <thead>
         <tr>
             <th><g:message code="financials.help.status" default="Problem/Update"/></th>
