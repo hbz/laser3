@@ -14,13 +14,18 @@ class PropertyDefinitionController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [propDefInstanceList: PropertyDefinition.list(params), propertyDefinitionTotal: PropertyDefinition.count(), editable:isEditable()]
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
-    
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
         log.debug("edit:: ${params} - ${request.method}")
 
         switch (request.method) {
@@ -71,36 +76,42 @@ class PropertyDefinitionController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
-      flash.error =  message(code:"default.access.error")
-      response.sendError(401)
-      return;
-    }
-    switch (request.method) {
-            case 'GET':
-            default:
-                [propertyDefinitionInstance: new PropertyDefinition(params)]
-                break
-            case 'POST':
-                def propertyDefinitionInstance = new PropertyDefinition(params)
-                if (!propertyDefinitionInstance.save(flush: true)) {
-                    render view: 'create', model: [propertyDefinitionInstance: propertyDefinitionInstance]
-                    return
-                }
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'propertyDefinition.label', default: 'PropertyDefinition'), propertyDefinitionInstance.id])
-                redirect action: 'edit', id: propertyDefinitionInstance.id
-                break
+        if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+          flash.error =  message(code:"default.access.error")
+          response.sendError(401)
+          return;
         }
+        switch (request.method) {
+                case 'GET':
+                default:
+                    [propertyDefinitionInstance: new PropertyDefinition(params)]
+                    break
+                case 'POST':
+                    def propertyDefinitionInstance = new PropertyDefinition(params)
+                    if (!propertyDefinitionInstance.save(flush: true)) {
+                        render view: 'create', model: [propertyDefinitionInstance: propertyDefinitionInstance]
+                        return
+                    }
+
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'propertyDefinition.label', default: 'PropertyDefinition'), propertyDefinitionInstance.id])
+                    redirect action: 'edit', id: propertyDefinitionInstance.id
+                    break
+            }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
-      flash.error =  message(code:"default.access.error")
-      response.sendError(401)
-      return;
-    }
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
+        if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+          flash.error =  message(code:"default.access.error")
+          response.sendError(401)
+          return;
+        }
         log.debug(" delete :: ${params}")
         def propDefInstance = PropertyDefinition.get(params.id)
         if (!propDefInstance) {
@@ -122,9 +133,8 @@ class PropertyDefinitionController {
   
    def isEditable(){
     if ( SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN') ) {
-      return false
+        return false
     }
-
     return true
   }
 }

@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.User
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugins.springsecurity.Secured
 
-
+@Deprecated
 class IdentifierController {
 
 	def springSecurityService
@@ -13,17 +13,26 @@ class IdentifierController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
+        redirect controller: 'home', action: 'index'
+		return // ----- deprecated
+
         redirect action: 'list', params: params
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
 		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [identifierInstanceList: Identifier.list(params), identifierInstanceTotal: Identifier.count()]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
 		switch (request.method) {
 		case 'GET':
         	[identifierInstance: new Identifier(params)]
@@ -43,6 +52,9 @@ class IdentifierController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
         def identifierInstance = Identifier.get(params.id)
         if (!identifierInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label', default: 'Identifier'), params.id])
@@ -55,6 +67,9 @@ class IdentifierController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
 		switch (request.method) {
 		case 'GET':
 	        def identifierInstance = Identifier.get(params.id)
@@ -100,6 +115,9 @@ class IdentifierController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
         def identifierInstance = Identifier.get(params.id)
         if (!identifierInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifier.label', default: 'Identifier'), params.id])

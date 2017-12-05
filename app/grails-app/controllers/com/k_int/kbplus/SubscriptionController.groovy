@@ -8,7 +8,7 @@ import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 
 
-
+@Deprecated
 class SubscriptionController {
 
     def springSecurityService
@@ -17,11 +17,17 @@ class SubscriptionController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
+        redirect controller: 'subscriptionDetails', action: 'index', params: params
+        return // ----- deprecated
+
         redirect action: 'list', params: params
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
+        redirect controller: 'subscriptionDetails', action: 'list', params: params
+        return // ----- deprecated
+
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         
@@ -34,25 +40,31 @@ class SubscriptionController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-    switch (request.method) {
-    case 'GET':
-          [subscriptionInstance: new Subscription(params)]
-      break
-    case 'POST':
-          def subscriptionInstance = new Subscription(params)
-          if (!subscriptionInstance.save(flush: true)) {
-              render view: 'create', model: [subscriptionInstance: subscriptionInstance]
-              return
-          }
+        redirect controller: 'subscriptionDetails', action: 'create', params: params
+        return // ----- deprecated
 
-      flash.message = message(code: 'default.created.message', args: [message(code: 'subscription.label', default: 'Subscription'), subscriptionInstance.id])
-          redirect action: 'show', id: subscriptionInstance.id
-      break
-    }
+        switch (request.method) {
+        case 'GET':
+              [subscriptionInstance: new Subscription(params)]
+          break
+        case 'POST':
+              def subscriptionInstance = new Subscription(params)
+              if (!subscriptionInstance.save(flush: true)) {
+                  render view: 'create', model: [subscriptionInstance: subscriptionInstance]
+                  return
+              }
+
+          flash.message = message(code: 'default.created.message', args: [message(code: 'subscription.label', default: 'Subscription'), subscriptionInstance.id])
+              redirect action: 'show', id: subscriptionInstance.id
+          break
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
+        redirect controller: 'subscriptionDetails', action: 'show', params: params
+        return // ----- deprecated
+
         def subscriptionInstance = Subscription.get(params.id)
         if (!subscriptionInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
@@ -83,47 +95,50 @@ class SubscriptionController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
-    switch (request.method) {
-    case 'GET':
-          def subscriptionInstance = Subscription.get(params.id)
-          if (!subscriptionInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
-              redirect action: 'list'
-              return
-          }
+        redirect controller: 'subscriptionDetails', action: 'edit', params: params
+        return // ----- deprecated
 
-          [subscriptionInstance: subscriptionInstance]
-      break
-    case 'POST':
-          def subscriptionInstance = Subscription.get(params.id)
-          if (!subscriptionInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
-              redirect action: 'list'
-              return
-          }
+        switch (request.method) {
+        case 'GET':
+              def subscriptionInstance = Subscription.get(params.id)
+              if (!subscriptionInstance) {
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
+                  redirect action: 'list'
+                  return
+              }
 
-          if (params.version) {
-              def version = params.version.toLong()
-              if (subscriptionInstance.version > version) {
-                  subscriptionInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'subscription.label', default: 'Subscription')] as Object[],
-                            "Another user has updated this Subscription while you were editing")
+              [subscriptionInstance: subscriptionInstance]
+          break
+        case 'POST':
+              def subscriptionInstance = Subscription.get(params.id)
+              if (!subscriptionInstance) {
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'subscription.label', default: 'Subscription'), params.id])
+                  redirect action: 'list'
+                  return
+              }
+
+              if (params.version) {
+                  def version = params.version.toLong()
+                  if (subscriptionInstance.version > version) {
+                      subscriptionInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                                [message(code: 'subscription.label', default: 'Subscription')] as Object[],
+                                "Another user has updated this Subscription while you were editing")
+                      render view: 'edit', model: [subscriptionInstance: subscriptionInstance]
+                      return
+                  }
+              }
+
+              subscriptionInstance.properties = params
+
+              if (!subscriptionInstance.save(flush: true)) {
                   render view: 'edit', model: [subscriptionInstance: subscriptionInstance]
                   return
               }
-          }
 
-          subscriptionInstance.properties = params
-
-          if (!subscriptionInstance.save(flush: true)) {
-              render view: 'edit', model: [subscriptionInstance: subscriptionInstance]
-              return
-          }
-
-      flash.message = message(code: 'default.updated.message', args: [message(code: 'subscription.label', default: 'Subscription'), subscriptionInstance.id])
-          redirect action: 'show', id: subscriptionInstance.id
-      break
-    }
+          flash.message = message(code: 'default.updated.message', args: [message(code: 'subscription.label', default: 'Subscription'), subscriptionInstance.id])
+              redirect action: 'show', id: subscriptionInstance.id
+          break
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
