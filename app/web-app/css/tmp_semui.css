@@ -46,3 +46,9 @@
 .ui.main .ui.segment.form-actions {
     background-color: #F9FAFB;
 }
+
+/* new semui modals .. MUST BE FIXED */
+.ui.main .ui.modal {
+    top: 15%;
+    z-index: 9999;
+}

@@ -16,11 +16,9 @@
         <semui:messages data="${flash}" />
 
         <semui:card class="card-grey">
-            <input class="ui primary button" value="${message(code:'refdataValue.create_new.label')}"
-                   data-toggle="modal" href="#addRefdataValueModal" type="submit">
+            <input class="ui primary button" value="${message(code:'refdataValue.create_new.label')}" onclick="$('#addRefdataValueModal').modal()" type="submit">
             &nbsp;
-            <input class="ui primary button" value="${message(code:'refdataCategory.create_new.label')}"
-                   data-toggle="modal" href="#addRefdataCategoryModal" type="submit">
+            <input class="ui primary button" value="${message(code:'refdataCategory.create_new.label')}" onclick="$('#addRefdataCategoryModal').modal()" type="submit">
         </semui:card>
 
         <div class="ui grid">
@@ -77,61 +75,41 @@
 				</div><!--.twelve-->
         </div><!--.grid-->
 
-        <div id="addRefdataValueModal" class="modal hide">
+        <semui:modal id="addRefdataValueModal" message="refdataValue.create_new.label">
 
-            <g:form id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataValue']" >
+            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataValue']" >
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
 
-                <div class="modal-body">
-                    <dl>
-                        <dt>
-                            <label class="control-label">${message(code:'refdataValue.create_new.label')}</label>
-                        </dt>
-                        <dd>
-                            <label class="property-label">Wert:</label> <input type="text" name="refdata_value"/>
-                        </dd>
+                <dl>
+                    <dd>
+                        <label class="property-label">Wert:</label> <input type="text" name="refdata_value"/>
+                    </dd>
 
-                        <dd>
-                            <label class="property-label">Category:</label> <g:select
-                                from="${rdCategories}"
-                                optionKey="id" optionValue="desc"
-                                name="refdata_category_id"
-                                id="refdata_modal_select" />
-                        </dd>
+                    <dd>
+                        <label class="property-label">Category:</label> <g:select
+                            from="${rdCategories}"
+                            optionKey="id" optionValue="desc"
+                            name="refdata_category_id"
+                            id="refdata_modal_select" />
+                    </dd>
+                </dl>
 
-                    </dl>
-                </div>
-
-                <div class="modal-footer">
-                    <a href="#" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-                    <input class="ui positive button" name="SaveRefdataValue" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
-                </div>
             </g:form>
-        </div>
+        </semui:modal>
 
-        <div id="addRefdataCategoryModal" class="modal hide">
+        <semui:modal id="addRefdataCategoryModal" message="refdataCategory.create_new.label">
 
-            <g:form id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataCategory']" >
+            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataCategory']" >
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
 
-                <div class="modal-body">
-                    <dl>
-                        <dt>
-                            <label class="control-label">${message(code:'refdataCategory.create_new.label')}</label>
-                        </dt>
-                        <dd>
-                            <label class="property-label">Beschreibung:</label> <input type="text" name="refdata_category"/>
-                        </dd>
+                <dl>
+                    <dd>
+                        <label class="property-label">Beschreibung:</label> <input type="text" name="refdata_category"/>
+                    </dd>
+                </dl>
 
-                    </dl>
-                </div>
-
-                <div class="modal-footer">
-                    <a href="#" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-                    <input class="ui positive button" name="SaveRefdataCategory" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
-                </div>
             </g:form>
-        </div>
+        </semui:modal>
 
 	</body>
 </html>

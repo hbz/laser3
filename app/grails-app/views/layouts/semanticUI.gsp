@@ -336,15 +336,6 @@
                                 <g:link class="item" controller="cluster" action="index">Cluster Controller</g:link>
                                 <g:link class="item" controller="contact" action="index">Contact Controller</g:link>
                                 <g:link class="item" controller="person" action="index">Person Controller</g:link>
-
-                                <div class="divider"></div>
-
-                                <g:link class="item" controller="identifier" action="index">Identifier Controller</g:link>
-                                <g:link class="item" controller="organisations" action="index">Organisations Controller</g:link>
-                                <g:link class="item" controller="license" action="index">License Controller</g:link>
-                                <g:link class="item" controller="package" action="index">Package Controller</g:link>
-                                <g:link class="item" controller="subscription" action="index">Subscription Controller</g:link>
-                                <g:link class="item" controller="titleInstance" action="index">Title Controller</g:link>
                             </div>
                         </div>
                     </g:if>
