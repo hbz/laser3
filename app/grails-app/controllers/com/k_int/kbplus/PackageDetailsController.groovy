@@ -118,8 +118,9 @@ class PackageDetailsController {
       def isAdmin
       if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
           isAdmin = true;
-      }else{
-        hasAccess = result.packageInstance.orgLinks.find{it.roleType?.value == 'Package Consortia' && permissionHelperService.hasUserWithRole(result.user, it.org, 'INST_ADM') }
+      }
+      else {
+        hasAccess = result.packageInstance.orgs.find{it.roleType?.value == 'Package Consortia' && permissionHelperService.hasUserWithRole(result.user, it.org, 'INST_ADM') }
       }
 
       if( !isAdmin &&  hasAccess == null ) {

@@ -248,7 +248,7 @@ class Org extends BaseDomainComponent {
         def consLink = new Combo(fromOrg:result,
                                  toOrg:db_consortium,
                                  status:null,
-                                 type: RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')).save()
+                                 type: RefdataCategory.lookupOrCreate('Combo Type', 'Consortium')).save()
       }
     }
  
