@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.User
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugins.springsecurity.Secured
 
-
+@Deprecated
 class IdentifierOccurrenceController {
 
 	def springSecurityService
@@ -12,17 +12,26 @@ class IdentifierOccurrenceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
+		redirect controller: 'home', action: 'index'
+		return // ----- deprecated
+
         redirect action: 'list', params: params
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
 		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [identifierOccurrenceInstanceList: IdentifierOccurrence.list(params), identifierOccurrenceInstanceTotal: IdentifierOccurrence.count()]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
 		switch (request.method) {
 		case 'GET':
         	[identifierOccurrenceInstance: new IdentifierOccurrence(params)]
@@ -42,6 +51,9 @@ class IdentifierOccurrenceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
         def identifierOccurrenceInstance = IdentifierOccurrence.get(params.id)
         if (!identifierOccurrenceInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifierOccurrence.label', default: 'IdentifierOccurrence'), params.id])
@@ -54,6 +66,9 @@ class IdentifierOccurrenceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
 		switch (request.method) {
 		case 'GET':
 	        def identifierOccurrenceInstance = IdentifierOccurrence.get(params.id)
@@ -99,6 +114,9 @@ class IdentifierOccurrenceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
+        redirect controller: 'home', action: 'index'
+        return // ----- deprecated
+
         def identifierOccurrenceInstance = IdentifierOccurrence.get(params.id)
         if (!identifierOccurrenceInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'identifierOccurrence.label', default: 'IdentifierOccurrence'), params.id])

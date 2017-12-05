@@ -16,10 +16,7 @@
 <g:set var="currency"         scope="page" value="${com.k_int.kbplus.CostItem.orderedCurrency()}"/>
 
 
-<div>
-
-    <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+    <semui:breadcrumbs>
         <li>
             <g:if test="${inSubMode}">
                 <li> <g:link controller="subscriptionDetails" action="index" params="${[shortcode: params.shortcode, sub:fixedSubscription?.id]}" id="${fixedSubscription?.id}">${fixedSubscription?.name}</g:link> <span class="divider">/</span> </li>
@@ -32,45 +29,48 @@
         <g:if test="${editable}">
             <semui:crumbAsBadge message="default.editable" class="orange" />
 
-            <li class="pull-right"><span style="font-weight: 400;" class="badge"><a href="${createLink(controller: 'myInstitutions', action: 'financeImport', params: [shortcode:params.shortcode])}">Finance Import</a></span> </li>
+            <li class="pull-right"><a href="${createLink(controller: 'myInstitutions', action: 'financeImport', params: [shortcode:params.shortcode])}" class="ui button">Finance Import</a></li>
         </g:if>
         <li class="pull-left"><a class="badge badge-info" onclick="quickHelpInfo()">?</a>&nbsp;</li>
 
-        <li class="dropdown pull-right">
-            <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
-
-            <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-                <li><a data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a></li>
-                 <li><a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a></li>
-                 <li><a data-mode="code" class="disabled export" style="cursor: pointer">CSV Costs by Code</a></li>
-            </ul>
-        </li>
-    </ul>
-</div>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <a data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
+            </semui:exportDropdownItem>
+            <!--
+            <semui:exportDropdownItem>
+                <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <a data-mode="code" class="disabled export" style="cursor: pointer">CSV Costs by Code</a>
+            </semui:exportDropdownItem>
+            -->
+        </semui:exportDropdown>
+    </semui:breadcrumbs>
 
 <br/>
 <br/>
 
-<div style="padding-left: 2%" hidden="hidden" class="loadingData">
-    <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
-</div>
+    <div style="padding-left: 2%" hidden="hidden" class="loadingData">
+        <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
+    </div>
 
-<div id="recentModalWrapper" class="wrapper">
-    <div class="modal hide" id="recentDialog">
-        <div class="modal-header">
-            <button class="close" data-dismiss="modal">×</button>
-            <h3 class="ui header">Recently Updated Cost Items</h3>
-        </div>
-        <div class="modal-body">
-            <div id="recent">
-                <g:render template="recentlyAdded"></g:render>
+    <div class="ui grid">
+        <div class="sixteen wide column">
+
+    <div id="recentModalWrapper" class="wrapper">
+        <div class="modal hide" id="recentDialog">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3 class="ui header">Recently Updated Cost Items</h3>
+            </div>
+            <div class="modal-body">
+                <div id="recent">
+                    <g:render template="recentlyAdded"></g:render>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-
-<div class="container-fluid">
 
     <div id="userError" hidden="">
         <table class="ui celled striped table">
@@ -98,11 +98,11 @@
             <g:render template="create"></g:render>
         </div>
     </g:if>
-    <button class="btn btn-primary pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
-</div>
 
-</body>
+    <button class="ui primary button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
 
+    </div><!-- .sixteen -->
+</div><!-- .grid -->
 <r:script type="text/javascript">
 
      //todo use AJAX promises
@@ -1326,4 +1326,5 @@
     //////////////////////////////////////////////LEAVE FOR NOW//////////////////////////////////////////////
 
 </r:script>
+</body>
 </html>

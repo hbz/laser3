@@ -16,7 +16,7 @@
 
     <div>
       <h1 class="ui header">${institution.name} Cost Items</h1>
-      <g:form action="index" method="post" params="${[shortcode:params.shortcode]}">
+      <g:form action="index" class="ui form" method="post" params="${[shortcode:params.shortcode]}">
         <input type="hidden" name="shortcode" value="${params.shortcode}"/>
         <table class="ui celled striped table table table-tworow">
           <thead>
@@ -43,7 +43,7 @@
               <td>
                   <input name="newIe" class="input-medium" id="newIE" value="${params.newIe}">
               </td>
-              <td rowspan="2"><button type="submit" name="Add" value="add">Add</button></td>
+              <td rowspan="2"><button class="ui button" type="submit" name="Add" value="add">Add</button></td>
           </tr>
           <tr>
               <td>

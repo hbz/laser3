@@ -7,8 +7,7 @@ import groovy.xml.MarkupBuilder
 import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 
-
-
+@Deprecated
 class TitleInstancePackagePlatformController {
 
     def springSecurityService
@@ -16,11 +15,17 @@ class TitleInstancePackagePlatformController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
+        redirect controller: 'tipp', action: 'index', params: params
+        return // ----- deprecated
+
         redirect action: 'list', params: params
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
+        redirect controller: 'tipp', action: 'list', params: params
+        return // ----- deprecated
+
         def result=[:]
         result.user = User.get(springSecurityService.principal.id)
 
@@ -33,28 +38,34 @@ class TitleInstancePackagePlatformController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-    switch (request.method) {
-    case 'GET':
-          [titleInstancePackagePlatformInstance: new TitleInstancePackagePlatform(params)]
-      break
-    case 'POST':
-          def titleInstancePackagePlatformInstance = new TitleInstancePackagePlatform(params)
-          if (! titleInstancePackagePlatformInstance.save(flush: true)) {
-              render view: 'create', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
-              return
-          }
+        redirect controller: 'tipp', action: 'create', params: params
+        return // ----- deprecated
 
-    flash.message = message(code: 'default.created.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), titleInstancePackagePlatformInstance.id])
-          redirect action: 'show', id: titleInstancePackagePlatformInstance.id
-      break
-    }
+        switch (request.method) {
+        case 'GET':
+              [titleInstancePackagePlatformInstance: new TitleInstancePackagePlatform(params)]
+          break
+        case 'POST':
+              def titleInstancePackagePlatformInstance = new TitleInstancePackagePlatform(params)
+              if (! titleInstancePackagePlatformInstance.save(flush: true)) {
+                  render view: 'create', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
+                  return
+              }
+
+        flash.message = message(code: 'default.created.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), titleInstancePackagePlatformInstance.id])
+              redirect action: 'show', id: titleInstancePackagePlatformInstance.id
+          break
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
+        redirect controller: 'tipp', action: 'show', params: params
+        return // ----- deprecated
+
         def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
         if (! titleInstancePackagePlatformInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
             redirect action: 'list'
             return
         }
@@ -64,51 +75,57 @@ class TitleInstancePackagePlatformController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
-    switch (request.method) {
-    case 'GET':
-          def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
-          if (! titleInstancePackagePlatformInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
-              redirect action: 'list'
-              return
-          }
+        redirect controller: 'tipp', action: 'edit', params: params
+        return // ----- deprecated
 
-          [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
-      break
-    case 'POST':
-          def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
-          if (! titleInstancePackagePlatformInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
-              redirect action: 'list'
-              return
-          }
+        switch (request.method) {
+        case 'GET':
+              def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
+              if (! titleInstancePackagePlatformInstance) {
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+                  redirect action: 'list'
+                  return
+              }
 
-          if (params.version) {
-              def version = params.version.toLong()
-              if (titleInstancePackagePlatformInstance.version > version) {
-                  titleInstancePackagePlatformInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform')] as Object[],
-                            "Another user has updated this TitleInstancePackagePlatform while you were editing")
+              [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
+          break
+        case 'POST':
+              def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
+              if (! titleInstancePackagePlatformInstance) {
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])
+                  redirect action: 'list'
+                  return
+              }
+
+              if (params.version) {
+                  def version = params.version.toLong()
+                  if (titleInstancePackagePlatformInstance.version > version) {
+                      titleInstancePackagePlatformInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                                [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform')] as Object[],
+                                "Another user has updated this TitleInstancePackagePlatform while you were editing")
+                      render view: 'edit', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
+                      return
+                  }
+              }
+
+              titleInstancePackagePlatformInstance.properties = params
+
+              if (! titleInstancePackagePlatformInstance.save(flush: true)) {
                   render view: 'edit', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
                   return
               }
-          }
 
-          titleInstancePackagePlatformInstance.properties = params
-
-          if (! titleInstancePackagePlatformInstance.save(flush: true)) {
-              render view: 'edit', model: [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
-              return
-          }
-
-      flash.message = message(code: 'default.updated.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), titleInstancePackagePlatformInstance.id])
-          redirect action: 'show', id: titleInstancePackagePlatformInstance.id
-      break
-    }
+          flash.message = message(code: 'default.updated.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), titleInstancePackagePlatformInstance.id])
+              redirect action: 'show', id: titleInstancePackagePlatformInstance.id
+          break
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
+        redirect controller: 'tipp', action: 'delete', params: params
+        return // ----- deprecated
+
         def titleInstancePackagePlatformInstance = TitleInstancePackagePlatform.get(params.id)
         if (!titleInstancePackagePlatformInstance) {
           flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform'), params.id])

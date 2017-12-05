@@ -8,6 +8,7 @@ import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*
 import org.springframework.security.access.annotation.Secured;
 
+@Deprecated
 class LicenseController {
 
     def springSecurityService
@@ -16,11 +17,17 @@ class LicenseController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
+        redirect controller: 'licenseDetails', action: 'index', params: params
+        return // ----- deprecated
+
         redirect action: 'list', params: params
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
+        redirect controller: 'licenseDetails', action: 'list', params: params
+        return // ----- deprecated
+
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
 
@@ -33,6 +40,9 @@ class LicenseController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
+        redirect controller: 'licenseDetails', action: 'create', params: params
+        return // ----- deprecated
+
     switch (request.method) {
     case 'GET':
       [licenseInstance: new License(params)]
@@ -52,6 +62,9 @@ class LicenseController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
+        redirect controller: 'licenseDetails', action: 'show', params: params
+        return // ----- deprecated
+
         def licenseInstance = License.get(params.id)
         if (!licenseInstance) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'license', default: 'License'), params.id])
@@ -64,6 +77,9 @@ class LicenseController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
+        redirect controller: 'licenseDetails', action: 'edit', params: params
+        return // ----- deprecated
+
     switch (request.method) {
       case 'GET':
             def licenseInstance = License.get(params.id)
@@ -109,6 +125,9 @@ class LicenseController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
+        redirect controller: 'licenseDetails', action: 'delete', params: params
+        return // ----- deprecated
+
         def licenseInstance = License.get(params.id)
         if (!licenseInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'license', default: 'License'), params.id])

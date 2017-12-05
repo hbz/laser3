@@ -10,37 +10,31 @@ class OrgController extends AjaxHandler {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Deprecated
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         redirect controller: 'organisations', action: 'index', params: params
     }
 
-    @Deprecated
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
         redirect controller: 'organisations', action: 'list', params: params
     }
 
-    @Deprecated
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
         redirect controller: 'organisations', action: 'create', params: params
     }
 
-    @Deprecated
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
         redirect controller: 'organisations', action: 'show', params: params
     }
 
-    @Deprecated
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
         redirect controller: 'organisations', action: 'edit', params: params
     }
 
-    @Deprecated
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
         redirect controller: 'organisations', action: 'delete', params: params

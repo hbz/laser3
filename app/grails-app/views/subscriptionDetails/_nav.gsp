@@ -28,6 +28,9 @@
     <semui:subNavItem controller="subscriptionDetails" action="documents" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="default.documents.label" />
 
     <semui:subNavItem controller="subscriptionDetails" action="notes" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="default.notes.label" />
+</semui:subNav>
+
+<semui:subNav actionName="${actionName}">
 
     <semui:subNavItem controller="subscriptionDetails" action="permissionInfo" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="default.permissionInfo.label" />
 
