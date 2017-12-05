@@ -4,6 +4,29 @@
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <%-- <style>
+        .alert {
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+            display: none;
+        }
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .closebtn:hover {
+            color: black;
+        }
+    </style> --%>
   </head>
   <body>
 
@@ -42,9 +65,55 @@
           </table>
           </dd>
         </dl>
-        <input type="submit"/>
-      </div>
-    </g:form>
+          <%-- <input type="submit"/> --%>
+          <input type="submit" onclick="toggleAlert()"/>
+    <%-- <button onclick="alertBox()">Daten absenden</button> --%>
+    <%-- <button onclick="toggleAlert()">Daten absenden</button> --%>
+</div>
+</g:form>
+
+<%-- // begin added by frank 04.12.2017
+<script>
+function alertBox() {
+    alert("Bestätigen mit 'OK', um die Bearbeitung zu starten.\nDiese kann, abbhängig von der Größe des Pakets, mehrere Minuten in Anspruch nehmen.")
+}
+
+</script>
+<%-- // end added by frank 04.12.2017
+
+<%-- //begin added by frank 04.12.2017 --%>
+    <%-- <div class="alert" id="durationAlert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+        </span>
+            Die Anfrage ist in Bearbeitung. Diese kann einige Minuten dauern.
+    </div> --%>
+
+    <div class="ui icon message" id="durationAlert" style="display: none">
+        <i class="notched circle loading icon"></i>
+        <div class="content">
+            <div class="header">
+                Ihre Anfrage ist in Bearbeitung.
+            </div>
+            <p>Bitte haben sie einen Moment Geduld</p>
+            <p>Die Verarbeitung kann einige Minuten dauern</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleAlert() {
+            var alert = document.getElementById('durationAlert');
+            var displaySetting = alert.style.display;
+
+            if(displaySetting == 'block') {
+                alert.style.display = 'none';
+            }
+            else {
+                alert.style.display = 'block';
+            }
+        }
+    </script>
+
+<%-- // end added by frank 04.12.2017 --%>
 
     <div class="container well">
       <h1 class="ui header">Package Sync Impact</h1>
