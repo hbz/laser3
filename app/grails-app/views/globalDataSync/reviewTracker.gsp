@@ -59,15 +59,7 @@
 
     <script>
         function toggleAlert() {
-            var alert = document.getElementById('durationAlert');
-            var displaySetting = alert.style.display;
-
-            if(displaySetting == 'block') {
-                alert.style.display = 'none';
-            }
-            else {
-                alert.style.display = 'block';
-            }
+            $('#durationAlert').toggle();
         }
     </script>
 
