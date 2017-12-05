@@ -42,9 +42,26 @@
           </table>
           </dd>
         </dl>
-        <input type="submit"/>
+          <input type="submit" onclick="toggleAlert()"/>
       </div>
-    </g:form>
+</g:form>
+
+    <div class="ui icon message" id="durationAlert" style="display: none">
+        <i class="notched circle loading icon"></i>
+        <div class="content">
+            <div class="header">
+                Ihre Anfrage ist in Bearbeitung.
+            </div>
+            <p>Bitte haben sie einen Moment Geduld</p>
+            <p>Die Verarbeitung kann einige Minuten dauern</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleAlert() {
+            $('#durationAlert').toggle();
+        }
+    </script>
 
     <div class="container well">
       <h1 class="ui header">Package Sync Impact</h1>
