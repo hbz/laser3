@@ -5,6 +5,7 @@
 		<title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'serverCode.error.message1')}</title>
 		<link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css">
 	</head>
+	<body>
 
 		<div class="ui grid">
 			<div class="twelve wide column">

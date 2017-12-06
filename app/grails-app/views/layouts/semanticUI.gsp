@@ -150,31 +150,31 @@
                             <div class="menu">
                                 <g:link class="item" controller="myInstitutions" action="instdash"
                                         params="${[shortcode:contextOrg?.shortcode]}">${contextOrg?.name}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="todo"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.todo')}</g:link>
+                                <g:link class="item" controller="organisations" action="show"
+                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.org_info')}</g:link>
+
                                 <g:link class="item" controller="myInstitutions" action="tasks"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.tasks')}</g:link>
+                                <g:link class="item" controller="myInstitutions" action="todo"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.todo')}</g:link>
 
-                                <g:link class="item" controller="myInstitutions" action="currentTitles"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="addressbook"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="managePrivateProperties"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link>
 
-                                <g:link class="item" controller="organisations" action="show"
-                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.org_info')}</g:link>
-
                                 <g:link class="item" controller="myInstitutions" action="changeLog"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.change_log')}</g:link>
 
                                 <g:if test="${grailsApplication.config.feature_finance}">
-                                    <g:link class="item" controller="myInstitutions" action="financeImport"
-                                            params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.financeImport')}</g:link>
                                     <g:link class="item" controller="myInstitutions" action="finance"
                                             params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.finance')}</g:link>
+                                    <g:link class="item" controller="myInstitutions" action="financeImport"
+                                            params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.financeImport')}</g:link>
                                 </g:if>
 
+                                <g:link class="item" controller="myInstitutions" action="currentTitles"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="tipview"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.core_ttl')}</g:link>
                             </div>

@@ -22,7 +22,8 @@
 /* form validation */
 .ui.form input:focus:invalid:focus,
 .ui.form textarea:focus:invalid:focus,
-.ui.form select:focus:invalid:focus {
+.ui.form select:focus:invalid:focus,
+.ui.form input.calc.invalidCostCalc {
     border-color: #e9322d;
     -webkit-box-shadow: 0 0 6px #f8b9b7;
     -moz-box-shadow: 0 0 6px #f8b9b7;

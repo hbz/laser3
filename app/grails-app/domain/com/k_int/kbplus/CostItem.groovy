@@ -21,10 +21,9 @@ class CostItem {
     RefdataValue taxCode
     Boolean includeInSubscription //include in sub details page
 
-
     Double costInBillingCurrency   //The actual amount - new cost ex tax
-    Double costInLocalCurrency     //local amount entered or calculated using temp field currency exachange in create
-
+    Double costInLocalCurrency     //local amount entered
+    Double currencyRate
 
     String costDescription
     String reference
@@ -38,7 +37,6 @@ class CostItem {
     Date dateCreated
     User createdBy
 
-
     @Transient
     def budgetcodes //Binds getBudgetcodes
 
@@ -46,52 +44,54 @@ class CostItem {
     def springSecurityService
 
     static mapping = {
-        id column: 'ci_id'
-        version column: 'ci_version'
-        sub column: 'ci_sub_fk'
-        owner column: 'ci_owner'
-        subPkg column: 'ci_subPkg_fk'
-        issueEntitlement column: 'ci_e_fk'
-        order column: 'ci_ord_fk'
-        invoice column: 'ci_inv_fk'
-        costItemStatus column: 'ci_status_rv_fk'
+        id              column: 'ci_id'
+        version         column: 'ci_version'
+        sub             column: 'ci_sub_fk'
+        owner           column: 'ci_owner'
+        subPkg          column: 'ci_subPkg_fk'
+        issueEntitlement    column: 'ci_e_fk'
+        order           column: 'ci_ord_fk'
+        invoice         column: 'ci_inv_fk'
+        costItemStatus  column: 'ci_status_rv_fk'
         billingCurrency column: 'ci_billing_currency_rv_fk'
         costDescription column: 'ci_cost_description', type:'text'
         costInBillingCurrency column: 'ci_cost_in_billing_currency'
-        datePaid column: 'ci_date_paid'
+        datePaid            column: 'ci_date_paid'
         costInLocalCurrency column: 'ci_cost_in_local_currency'
-        taxCode column: 'ci_tax_code'
+        currencyRate    column: 'ci_currency_rate'
+        taxCode         column: 'ci_tax_code'
         includeInSubscription column: 'ci_include_in_subscr'
-        costItemCategory column: 'ci_cat_rv_fk'
-        costItemElement column: 'ci_element_rv_fk'
-        endDate column: 'ci_end_date'
-        startDate column: 'ci_start_date'
-        reference column: 'ci_reference'
+        costItemCategory    column: 'ci_cat_rv_fk'
+        costItemElement     column: 'ci_element_rv_fk'
+        endDate         column: 'ci_end_date'
+        startDate       column: 'ci_start_date'
+        reference       column: 'ci_reference'
         autoTimestamp true
     }
 
     static constraints = {
-        owner(nullable: false, blank: false)
-        sub(nullable: true, blank: false)
-        subPkg(nullable: true, blank: false)
+        owner           (nullable: false, blank: false)
+        sub             (nullable: true, blank: false)
+        subPkg          (nullable: true, blank: false)
         issueEntitlement(nullable: true, blank: false)
-        order(nullable: true, blank: false)
-        invoice(nullable: true, blank: false)
-        billingCurrency(nullable: true, blank: false)
-        costDescription(nullable: true, blank: false)
+        order           (nullable: true, blank: false)
+        invoice         (nullable: true, blank: false)
+        billingCurrency (nullable: true, blank: false)
+        costDescription (nullable: true, blank: false)
         costInBillingCurrency(nullable: true, blank: false)
-        datePaid(nullable: true, blank: false)
+        datePaid        (nullable: true, blank: false)
         costInLocalCurrency(nullable: true, blank: false)
-        taxCode(nullable: true, blank: false)
+        currencyRate    (nullable: true, blank: false, scale: 9)
+        taxCode         (nullable: true, blank: false)
         includeInSubscription(nullable: true, blank: false)
         costItemCategory(nullable: true, blank: false)
-        costItemStatus(nullable: true, blank: false)
-        costItemElement(nullable: true, blank: false)
-        reference(nullable: true, blank: false)
-        startDate(nullable: true, blank: false)
-        endDate(nullable: true, blank: false)
-        lastUpdatedBy(nullable: true)
-        createdBy(nullable: true)
+        costItemStatus  (nullable: true, blank: false)
+        costItemElement (nullable: true, blank: false)
+        reference       (nullable: true, blank: false)
+        startDate       (nullable: true, blank: false)
+        endDate         (nullable: true, blank: false)
+        lastUpdatedBy   (nullable: true)
+        createdBy       (nullable: true)
     }
 
     def beforeInsert() {

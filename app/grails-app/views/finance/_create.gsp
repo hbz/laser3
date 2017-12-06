@@ -90,15 +90,16 @@
             </td>
             <td>
                 <h4 class="ui header">Cost values and Currency</h4>
-                <input type="number" name="newCostInBillingCurrency" class="calc" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" step="0.01"/> <br/>
-                <input title="${g.message(code: 'financials.addNew.exchangeRate')}" type="number" class="calc" step="0.01" name="newCostExchangeRate" placeholder="Exchange Rate" id="newCostExchangeRate" value="1" /> <br/>
-                <input type="number" class="calc" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" step="0.01"/> <br/>
+                <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" name="newCostInBillingCurrency" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" value="1" step="0.01"/> <br/>
 
                 <g:select name="newCostCurrency"
                           from="${currency}"
                           optionKey="id"
                           title="${g.message(code: 'financials.addNew.currencyType')}"
                           optionValue="text"/>
+
+                <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc" name="newCostCurrencyRate" placeholder="Exchange Rate" id="newCostCurrencyRate" value="1" step="0.01" /> <br/>
+                <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" value="1" step="0.01"/> <br/>
             </td>
             <td>
                 <h4 class="ui header">Reference/Codes</h4>
@@ -110,8 +111,8 @@
             </td>
             <td colspan="2">
                 <h4 class="ui header">Description</h4>
-                <textarea name="newDescription"
-                          placeholder="New Item Description" id="newCostItemDescription"/></textarea>
+                <textarea name="newDescription" placeholder="New Item Description" id="newCostItemDescription"/></textarea>
+            </td>
         </tr>
         <g:hiddenField name="shortcode" value="${params.shortcode}"></g:hiddenField>
         </tbody>
