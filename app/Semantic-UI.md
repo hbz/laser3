@@ -28,4 +28,14 @@ Our custom theme overrides some optional packaged themes, which override default
     gulp build-css -->like build but only css
     or
     gulp watch -->Watch every change in folder [laser]/app/semantic and build 
+    
+-----------------------------------------------------
+
+# Important Informations
+
+## Datepicker
+
+- 'by hand' implemented the sementic-ui datepicker
+- it is not in current semantic-ui version (2.2)
+- https://github.com/Semantic-Org/Semantic-UI/pull/3256/files
 
