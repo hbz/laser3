@@ -1,56 +1,45 @@
-<div id="osel_add_modal" class="modal hide">
 
-    <g:form id="create_org_role_link" url="[controller:'ajax',action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            <h3 class="ui header">${message(code:'template.orgLinksModal')}</h3>
-        </div>
+<semui:modal id="osel_add_modal" message="template.orgLinksModal">
 
+    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}"/>
         <input type="hidden" name="property" value="${property}"/>
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
-        <div class="modal-body">
-            <dl>
-                <dt><label class="control-label">${message(code:'template.orgLinksModal.label')}</label></dt>
-                <dd>
-                    <table id="org_role_tab" class="ui celled table">
-                        <thead>
-                            <tr id="add_org_head_row">
-                            </tr>
-                        </thead>
-                    </table>
-                </dd>
-            </dl>
 
-            <dl>         
-                <dt><label class="control-label">${message(code:'template.orgLinksModal.role')}</label></dt>
-                <dd>    
-                <g:if test="${linkType}">
-                    <g:select name="orm_orgRole"
-                          noSelection="${['':'Select One...']}" 
-                          from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'),linkType)}" 
-                          optionKey="id" 
-                          optionValue="${{it.getI10n('value')}}"/>
-                </g:if>
-                <g:else>
-                    <g:select name="orm_orgRole" 
-                          noSelection="${['':'Select One...']}" 
-                          from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" 
-                          optionKey="id" 
-                          optionValue="${{it.getI10n('value')}}"/>
-                </g:else>
-                </dd>
-            </dl>
+        <dl>
+            <dd>
+                <table id="org_role_tab" class="ui celled table">
+                    <thead>
+                        <tr id="add_org_head_row">
+                        </tr>
+                    </thead>
+                </table>
+            </dd>
+        </dl>
 
-        </div>
+        <dl>
+            <dt><label class="control-label">${message(code:'template.orgLinksModal.role')}</label></dt>
+            <dd>
+            <g:if test="${linkType}">
+                <g:select name="orm_orgRole"
+                      noSelection="${['':'Select One...']}"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'),linkType)}"
+                      optionKey="id"
+                      optionValue="${{it.getI10n('value')}}"/>
+            </g:if>
+            <g:else>
+                <g:select name="orm_orgRole"
+                      noSelection="${['':'Select One...']}"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}"
+                      optionKey="id"
+                      optionValue="${{it.getI10n('value')}}"/>
+            </g:else>
+            </dd>
+        </dl>
 
-        <div class="modal-footer">
-            <input id="org_role_add_btn" type="submit" class="ui primary button" value="${message(code:'default.button.add.label')}" />
-            <a href="#" data-dismiss="modal" class="ui primary button">${message(code:'default.button.close.label')}</a>
-        </div>
     </g:form>
 
-</div>
+</semui:modal>
 
 <g:javascript>
     var oOrTable;

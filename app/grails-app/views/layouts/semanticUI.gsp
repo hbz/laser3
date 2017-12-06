@@ -150,31 +150,31 @@
                             <div class="menu">
                                 <g:link class="item" controller="myInstitutions" action="instdash"
                                         params="${[shortcode:contextOrg?.shortcode]}">${contextOrg?.name}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="todo"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.todo')}</g:link>
+                                <g:link class="item" controller="organisations" action="show"
+                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.org_info')}</g:link>
+
                                 <g:link class="item" controller="myInstitutions" action="tasks"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.tasks')}</g:link>
+                                <g:link class="item" controller="myInstitutions" action="todo"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.todo')}</g:link>
 
-                                <g:link class="item" controller="myInstitutions" action="currentTitles"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="addressbook"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="managePrivateProperties"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link>
 
-                                <g:link class="item" controller="organisations" action="show"
-                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.org_info')}</g:link>
-
                                 <g:link class="item" controller="myInstitutions" action="changeLog"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.change_log')}</g:link>
 
                                 <g:if test="${grailsApplication.config.feature_finance}">
-                                    <g:link class="item" controller="myInstitutions" action="financeImport"
-                                            params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.financeImport')}</g:link>
                                     <g:link class="item" controller="myInstitutions" action="finance"
                                             params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.finance')}</g:link>
+                                    <g:link class="item" controller="myInstitutions" action="financeImport"
+                                            params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.financeImport')}</g:link>
                                 </g:if>
 
+                                <g:link class="item" controller="myInstitutions" action="currentTitles"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
                                 <g:link class="item" controller="myInstitutions" action="tipview"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.core_ttl')}</g:link>
                             </div>
@@ -336,15 +336,6 @@
                                 <g:link class="item" controller="cluster" action="index">Cluster Controller</g:link>
                                 <g:link class="item" controller="contact" action="index">Contact Controller</g:link>
                                 <g:link class="item" controller="person" action="index">Person Controller</g:link>
-
-                                <div class="divider"></div>
-
-                                <g:link class="item" controller="identifier" action="index">Identifier Controller</g:link>
-                                <g:link class="item" controller="organisations" action="index">Organisations Controller</g:link>
-                                <g:link class="item" controller="license" action="index">License Controller</g:link>
-                                <g:link class="item" controller="package" action="index">Package Controller</g:link>
-                                <g:link class="item" controller="subscription" action="index">Subscription Controller</g:link>
-                                <g:link class="item" controller="titleInstance" action="index">Title Controller</g:link>
                             </div>
                         </div>
                     </g:if>

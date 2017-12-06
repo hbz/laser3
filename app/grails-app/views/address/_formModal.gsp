@@ -1,13 +1,6 @@
 <%@ page import="com.k_int.kbplus.Address" %>
 
-<div class="modal-body">
-
-    <dl><dt>
-        <label class="control-label">${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}</label>
-    </dt></dl>
-    <br /><br />
-
-    <!-- ${params} -->
+<semui:modal id="addressFormModal" text="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
 
     <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
         <label for="street_1">
@@ -109,12 +102,8 @@
 
     </div>
 
-</div>
+</semui:modal>
 
-<div class="modal-footer">
-
-    <a href="#" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-
-    <input class="ui positive button" name="saveAddress" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
-
-</div>
+<script>
+    $('#addressFormModal').show()
+</script>

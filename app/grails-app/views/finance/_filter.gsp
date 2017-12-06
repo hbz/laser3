@@ -33,19 +33,19 @@
     <input type="hidden" name="shortcode" value="${params.shortcode}"/>
         <table id="costTable" class="ui striped celled table table-tworow">
             <thead>
-                <tr style="width: 100%;">
-                    <th rowspan="2" style="width: 10%; vertical-align: top; cursor: pointer;"><a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*</th>
-                    <th style="width: 10%;"><a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>* <br/>
+                <tr>
+                    <th rowspan="2" style="vertical-align: top; cursor: pointer;"><a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*</th>
+                    <th><a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>* <br/>
                         <input autofocus="true" type="text" name="invoiceNumberFilter"
                                class="input-medium required-indicator filterUpdated"
                                id="filterInvoiceNumber" value="${params.invoiceNumberFilter}"/>
                     </th>
-                    <th style="width: 10%;"><a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
+                    <th><a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
                         <input type="text" name="orderNumberFilter"
                                class="input-medium required-indicator filterUpdated"
                                id="filterOrderNumber"  value="${params.orderNumberFilter}" data-type="select"/>
                     </th>
-                    <th style="width: 20%;"><a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*<br/>
+                    <th><a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*<br/>
                         <g:if test="${inSubMode == true}">
                             <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
                                    data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}" class="input-medium required-indicator" style="width:250px;"  /> <br/>
@@ -55,22 +55,24 @@
                         </g:else>
                         <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
                     </th>
-                    <th style="width: 10%;"> <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>* <br/>
+                    <th> <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>* <br/>
                         <input class="input-medium required-indicator filterUpdated" style="width:250px;" name="packageFilter" id="packageFilter" value="${params.packageFilter}"/> <br/>
                     </th>
-                    <th style="vertical-align: top; width: 10%;">IE</th>
-                    <th rowspan="2" style="vertical-align: top; text-align: center; width: 5%">Filter
+                    <th style="vertical-align: top">IE</th>
+                    <th rowspan="2" style="vertical-align: top; text-align: center">Filter
                         <span ${wildcard && filterMode=='ON'? hidden="hidden" : ''}>
                             (${g.message(code: 'financials.help.wildcard')} : <g:checkBox name="wildcard" title="${g.message(code: 'financials.wildcard.title')}" type="checkbox" value="${wildcard}"></g:checkBox> )
-                        </span><br/>
+                        </span>
+                        <br/>
                         <div id="filtering" class="btn-group" data-toggle="buttons-radio">
                             <g:if test="${filterMode=='OFF'}">
-                                <g:select name="filterMode" from="['OFF','ON']" type="button" class="btn btn-primary btn-mini"></g:select><br/><br/>
+                                <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui mini button"></g:select><br/><br/>
                             </g:if>
                             <g:hiddenField type="hidden" name="resetMode" value="${params.resetMode}"></g:hiddenField>
-                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="btn-block"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
+                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui mini primary button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
 
                         </div>
+                        <br />
                         %{-- Advanced search options, todo complete... --}%
                         <a style="cursor: pointer;" ${filterMode=="ON"?"hidden='hidden'":''} id="advancedFilter" data-toggle="#">More filter options</a>
                     </th>

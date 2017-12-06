@@ -101,8 +101,8 @@ class LicenseDetailsController {
           }
       }
       mandatories.flatten().each{ pd ->
-          if (! LicensePrivateProperty.findWhere(owner: licenseInstance, type: pd)) {
-              def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, licenseInstance, pd)
+          if (! LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
+              def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
 
               if (newProp.hasErrors()) {
                   log.error(newProp.errors)

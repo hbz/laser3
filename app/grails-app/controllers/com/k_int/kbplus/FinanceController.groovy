@@ -676,17 +676,18 @@ class FinanceController {
         if (params.long('newCostCurrency')) //GBP,etc
         {
             billing_currency = RefdataValue.get(params.newCostCurrency)
-            if (!billing_currency)
+            if (! billing_currency)
                 billing_currency = defaultCurrency
         }
 
-        def tempCurrencyVal       = params.newCostExchangeRate? params.double('newCostExchangeRate',1.00) : 1.00
-        def cost_item_status      = params.newCostItemStatus ? (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
-        def cost_item_element     = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
-        def cost_tax_type         = params.newCostTaxType ? (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
-        def cost_item_category    = params.newCostItemCategory ? (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
+        //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
+        def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', 0.00) : 0.00
+        def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
+        def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
+        def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
+        def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
         def cost_billing_currency = params.newCostInBillingCurrency? params.double('newCostInBillingCurrency',0.00) : 0.00
-        def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency',cost_billing_currency * tempCurrencyVal) : 0.00
+        def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
 
         //def inclSub = params.includeInSubscription? (RefdataValue.get(params.long('includeInSubscription'))): defaultInclSub //todo Speak with Owen, unknown behaviour
 
@@ -705,6 +706,7 @@ class FinanceController {
                 costDescription: params.newDescription? params.newDescription.trim()?.toLowerCase():null,
                 costInBillingCurrency: cost_billing_currency as Double,
                 costInLocalCurrency: cost_local_currency as Double,
+                currencyRate: cost_currency_rate as Double,
                 datePaid: datePaid,
                 startDate: startDate,
                 endDate: endDate,

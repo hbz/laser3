@@ -78,10 +78,10 @@
               <td>
                   <h3 class="ui header">Cost values and tax</h3>
                   <input type="number" name="newCostInBillingCurrency" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" step="0.01"/> <br/>
-                  <input type="number" name="newCostExchangeRate" placeholder="Exchange Rate" id="newCostExchangeRate" step="0.01"/> <br/>
+                  <input type="number" name="newCostCurrencyRate" placeholder="Exchange Rate" id="newCostCurrencyRate" step="0.01"/> <br/>
                   <input type="number" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" step="0.01"/>
-                  <input type="number" name="newCostTaxRate" placeholder="New Cost Tax Rate" id="newCostInLocalCurrency" step="0.01"/>
-                  <input type="number" name="newCostTaxAmount" placeholder="New Cost Tax Amount" id="newCostInLocalCurrency" step="0.01"/>
+                  <input type="number" name="newCostTaxRate" placeholder="New Cost Tax Rate" id="newCostTaxRate" step="0.01"/>
+                  <input type="number" name="newCostTaxAmount" placeholder="New Cost Tax Amount" id="newCostTaxAmount" step="0.01"/>
               </td>
               <td>
                   <h3 class="ui header">Reference</h3>
@@ -91,6 +91,7 @@
                   <h3 class="ui header">Description</h3>
                   <textarea name="newDescription"
                             placeholder="New Item Description" id="newCostItemDescription"/></textarea>
+              </td>
           </tr>
 
           </thead>

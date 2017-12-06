@@ -1155,15 +1155,25 @@
             //calculation for billed amount
             s.mybody.on('change','input.calc', function() {
                 var billed   = $('#newCostInBillingCurrency');
-                var exchange = $('#newCostExchangeRate');
+                var exchange = $('#newCostCurrencyRate');
                 var local    = $('#newCostInLocalCurrency');
                 
-                var billedAmount = billed.val().length > 0? (parseFloat(billed.val()).toFixed(2)) : 0.00;
-                var exchangeAmount = exchange.val().length > 0? parseFloat(exchange.val()) : 1;
-                var localAmount = local.val().length > 0? parseFloat(local.val()) : 0.00;
+                var billedAmount   = billed.val().length > 0? (parseFloat(billed.val()).toFixed(2)) : 0.00;
+                var exchangeAmount = exchange.val().length > 0? (parseFloat(exchange.val()).toFixed(2)) : 1.00;
+                var localAmount    = local.val().length > 0? (parseFloat(local.val()).toFixed(2)) : 0.00;
 
-                billed.val(billedAmount);
-                local.val((billedAmount * exchangeAmount).toFixed(2));
+                var check = (localAmount == (billedAmount * exchangeAmount).toFixed(2))
+
+                if (! check) {
+                    $(billed).addClass('invalidCostCalc')
+                    $(exchange).addClass('invalidCostCalc')
+                    $(local).addClass('invalidCostCalc')
+
+                } else {
+                    $(billed).removeClass('invalidCostCalc')
+                    $(exchange).removeClass('invalidCostCalc')
+                    $(local).removeClass('invalidCostCalc')
+                }
             });
 
             //export
@@ -1175,14 +1185,14 @@
                 var data  = {
                     shortcode: "${params.shortcode}",
                     filterMode: paginateData.filtermode,
-                    wildcard:paginateData.wildcard,
-                    opSort:false,
-                    sort:paginateData.sort,
+                    wildcard: paginateData.wildcard,
+                    opSort: false,
+                    sort: paginateData.sort,
                     order: paginateData.order,
-                    offset:0,
-                    estTotal:totalResults,
-                    format:'csv',
-                    csvMode:exportMode
+                    offset: 0,
+                    estTotal: totalResults,
+                    format: 'csv',
+                    csvMode: exportMode
                 };
                 
                 if(paginateData.filtermode == "ON")

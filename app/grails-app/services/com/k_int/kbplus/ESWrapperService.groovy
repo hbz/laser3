@@ -16,9 +16,11 @@ class ESWrapperService {
 
     log.debug("ESWrapperService::init");
 
-    def es_cluster_name = grailsApplication.config.aggr_es_cluster?:"elasticsearch"
+    def es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: "elasticsearch"
+    def es_host         = grailsApplication.config.aggr_es_hostname ?: "localhost"
 
-    log.debug("es_cluster = ${es_cluster_name}");
+    log.debug("~ es_host = ${es_host}")
+    log.debug("~ es_cluster = ${es_cluster_name}")
 
     esclient = new TransportClient(ImmutableSettings.settingsBuilder {
       cluster {
@@ -31,8 +33,7 @@ class ESWrapperService {
       }
     })
 
-    esclient.addTransportAddress(new InetSocketTransportAddress("localhost", 9300))
-    log.debug("ES Init completed");
+    esclient.addTransportAddress(new InetSocketTransportAddress(es_host, 9300))
   }
 
   def getClient() {

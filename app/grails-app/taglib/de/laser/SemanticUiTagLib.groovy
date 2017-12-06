@@ -229,4 +229,30 @@ class SemanticUiTagLib {
         out <<   body()
         out << '</div>'
     }
+
+    //<semui:modal id="myModalDialog" text="${text}" message="local.string"> CONTENT <semui:form>
+
+    def modal = { attrs, body ->
+
+        def id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        def text      = attrs.text ? attrs.text : ''
+        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def title     = (text && message) ? text + " - " + message : text + message
+
+        def msgClose = "Schließen"
+        def msgSave  = "Änderungen speichern"
+
+        out << '<div class="ui modal"' + id + '>'
+        out <<   '<div class="header">' + title + '</div>'
+        out <<   '<div class="scrolling content">'
+        out <<     body()
+        out <<   '</div>'
+        out <<   '<div class="actions">'
+        out <<     '<a href="#" class="ui button" data-dismiss="modal">' + msgClose + '</a>'
+        //          TODO remove legacy bootstrap: data-dismiss="modal"
+        out <<     '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+        out <<   '</div>'
+        out << '</div>'
+    }
+
 }

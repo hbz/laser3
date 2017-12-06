@@ -16,8 +16,7 @@
 		<semui:messages data="${flash}" />
 
 		<semui:card class="card-grey">
-			<input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
-				   data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
+			<input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}" onclick="$('#addPropertyDefinitionModal').modal()" />
 		</semui:card>
 
         <div class="ui grid">
@@ -61,54 +60,46 @@
             </div><!-- .twelve -->
         </div><!-- .grid -->
 
-		<div id="addPropertyDefinitionModal" class="modal hide">
+        <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
-			<g:form id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
-				<input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
-				<input type="hidden" name="ownerClass" value="${this.class}"/>
+            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
+                <input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
+                <input type="hidden" name="ownerClass" value="${this.class}"/>
 
-				<div class="modal-body">
-					<dl>
-						<dt>
-							<label class="control-label">${message(code:'propertyDefinition.create_new.label')}</label>
-						</dt>
-						<dd>
-							<label class="property-label">Name:</label> <input type="text" name="cust_prop_name"/>
-						</dd>
+                <dl>
+                    <dd>
+                        <label class="property-label">Name:</label> <input type="text" name="cust_prop_name"/>
+                    </dd>
 
-						<dd>
-							<label class="property-label">Type:</label> <g:select
-								from="${PropertyDefinition.validTypes.entrySet()}"
-								optionKey="value" optionValue="key"
-								name="cust_prop_type"
-								id="cust_prop_modal_select" />
-						</dd>
+                    <dd>
+                        <label class="property-label">Type:</label> <g:select
+                            from="${PropertyDefinition.validTypes.entrySet()}"
+                            optionKey="value" optionValue="key"
+                            name="cust_prop_type"
+                            id="cust_prop_modal_select" />
+                    </dd>
 
-						<div class="hide" id="cust_prop_ref_data_name">
-							<dd>
-								<label class="property-label">Refdata Category:</label>
-								<input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-							</dd>
-						</div>
+                    <div class="hide" id="cust_prop_ref_data_name">
+                        <dd>
+                            <label class="property-label">Refdata Category:</label>
+                            <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                        </dd>
+                    </div>
 
-						<dd>
-							<label class="property-label">Context:</label>
-							<g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
-						</dd>
+                    <dd>
+                        <label class="property-label">Context:</label>
+                        <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
+                    </dd>
 
-						<dd>
-							<label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
-                            <g:checkBox type="text" name="cust_prop_multiple_occurence" />
-						</dd>
-					</dl>
-				</div>
+                    <dd>
+                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
+                        <g:checkBox type="text" name="cust_prop_multiple_occurence" />
+                    </dd>
+                </dl>
 
-				<div class="modal-footer">
-					<a href="#" class="ui button" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-					<input class="ui positive button" name="SavePropertyDefinition" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
-				</div>
-			</g:form>
-		</div>
+            </g:form>
+
+        </semui:modal>
 
 		<g:javascript>
 
