@@ -1,71 +1,59 @@
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'myinst.tipview.label', default:'Edit Core Titles')}</title>
-  </head>
+    <head>
+        <meta name="layout" content="semanticUI"/>
+        <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'myinst.tipview.label', default:'Edit Core Titles')}</title>
+    </head>
 
-  <body>
+    <body>
 
-    <semui:breadcrumbs>
-      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-      <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
-    </semui:breadcrumbs>
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+            <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
+        </semui:breadcrumbs>
 
+        <ul class="nav nav-pills">
+            <g:set var="nparams" value="${params.clone()}"/>
+            <g:set var="active_filter" value="${nparams.remove('filter')}"/>
 
+            <li class="${(active_filter=='core' || active_filter == null)?'active':''}">
+                <g:link action="tipview" params="${nparams + [filter:'core']}">${message(code:'subscription.details.core', default:'Core')}</g:link>
+            </li>
+            <li class="${active_filter=='not'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'not']}">${message(code:'myinst.tipview.notCore', default:'Not Core')}</g:link></li>
+            <li class="${active_filter=='all'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'all']}">${message(code:'myinst.tipview.all', default:'All')}</g:link></li>
+        </ul>
 
-      <semui:messages data="${flash}" />
+        <semui:messages data="${flash}" />
 
-      <ul class="nav nav-pills">
-          <g:set var="nparams" value="${params.clone()}"/>
-          <g:set var="active_filter" value="${nparams.remove('filter')}"/>
+        <semui:filter>
+            <g:form class="ui form" action="tipview" method="get" params="${[shortcode:params.shortcode]}">
 
-          <li class="${(active_filter=='core' || active_filter == null)?'active':''}">
-            <g:link action="tipview" params="${nparams + [filter:'core']}">${message(code:'subscription.details.core', default:'Core')}</g:link>
-          </li>
-          <li class="${active_filter=='not'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'not']}">${message(code:'myinst.tipview.notCore', default:'Not Core')}</g:link></li>
-          <li class="${active_filter=='all'?'active':''}"><g:link action="tipview" params="${nparams + [filter:'all']}">${message(code:'myinst.tipview.all', default:'All')}</g:link></li>
-
-      </ul>
-
-          <g:form action="tipview" method="get" params="${[shortcode:params.shortcode]}">
-
-          <div class="well form-horizontal" style="clear:both">
-            <div style="float:left;margin:8px;">
               ${message(code:'title.search', default:'Search For')}:
               <select name="search_for">
                 <option ${params.search_for=='title' ? 'selected' : ''} value="title">${message(code:'title.label', default:'Title')}</option>
                 <option ${params.search_for=='provider' ? 'selected' : ''} value="provider">${message(code:'default.provider.label', default:'Provider')}</option>
               </select>
-            </div>
-            <div style="float:left;margin:8px;">
+
               ${message(code:'default.name.label', default:'Name')}:
               <input name="search_str" style="padding-left:8px" placeholder="${message(code:'myinst.tipview.search.ph', default:'Partial terms accepted')}" value="${params.search_str}"/>
-            </div>
-            <div style="float:left;margin:8px;">
+
               ${message(code:'default.sort.label', default:'Sort')}:
               <select name="sort">
                 <option ${params.sort=='title-title' ? 'selected' : ''} value="title-title">${message(code:'title.label', default:'Title')}</option>
                 <option ${params.sort=='provider-name' ? 'selected' : ''} value="provider-name">${message(code:'default.provider.label', default:'Provider')}</option>
               </select>
-            </div>
-            <div style="float:left;margin:8px;">
+
               ${message(code:'default.order.label', default:'Order')}:
               <select name="order" value="${params.order}">
                 <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
                 <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
               </select>
               <input type="hidden" name="filter" value="${params.filter}"/>
-            </div>
-            <div style="float:left;margin:8px;">
-              <button type="submit" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
-            </div>
-            <div style="clear:both">
-          </div>
-          </g:form>
-        </div>
 
+              <button type="submit" class="ui primary button" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
 
+            </g:form>
+        </semui:filter>
 
         <table class="ui celled striped table">
           <thead>

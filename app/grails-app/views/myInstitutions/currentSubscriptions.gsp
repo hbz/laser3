@@ -65,12 +65,12 @@
             </tr>
 
             <tr>
-              <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
-              <th>${message(code:'consortium.plural', default:'Consortia')}</th>
-              <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-              <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
-              <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
-              <th>${message(code:'tipp.platform', default:'Platform')}</th>
+                <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
+                <th>${message(code:'consortium.plural', default:'Consortia')}</th>
+                <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
+                <g:sortableColumn params="${params}" property="s.manualCancellationDate" title="${message(code:'default.cancellationDate.label', default:'Cancellation Date')}" />
             </tr>
           </thead>
           <g:each in="${subscriptions}" var="s">
@@ -114,11 +114,7 @@
               <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
               <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
               <td><g:formatDate formatName="default.date.format.notime" date="${s.renewalDate}"/></td>
-              <td>
-                <g:each in="${s.instanceOf?.packages}" var="sp">
-                  ${sp.pkg?.nominalPlatform?.name}<br/>
-                </g:each>
-              </td>
+              <td><g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/></td>
             </tr>
           </g:each>
         </table>

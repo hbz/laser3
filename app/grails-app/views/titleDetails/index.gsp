@@ -11,7 +11,7 @@
       <semui:crumb message="menu.institutions.all_titles" class="active" />
     </semui:breadcrumbs>
 
-    <semui:form>
+    <semui:filter>
       <g:form action="index" role="form" class="form-inline" method="get" params="${params}">
 
         <input type="hidden" name="offset" value="${params.offset}"/>
@@ -24,7 +24,7 @@
        
         <button type="submit" name="search" value="yes">${message(code: 'default.button.search.label')}</button>
       </g:form>
-    </semui:form>
+    </semui:filter>
 
     <div class="ui grid">
         <div class="sixteen wide column">

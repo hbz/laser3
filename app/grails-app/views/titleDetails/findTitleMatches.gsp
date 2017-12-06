@@ -6,23 +6,17 @@
     <title><g:message code="default.edit.label" args="[entityName ?: message(code:'title.label')]" /></title>
   </head>
   <body>
-      <div>
-        <div class="row">
-          <div class="span12">
 
+    <h1 class="ui header">${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
 
-              <h1 class="ui header">${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
+    <semui:messages data="${flash}" />
 
+    <p>${message(code:'title.findTitleMatches.note')}</p>
 
-            <semui:messages data="${flash}" />
-
-            <p>${message(code:'title.findTitleMatches.note')}</p>
-
-            <g:form controller="titleDetails" action="findTitleMatches" method="GET" class="form-inline">
-                <label>${message(code:'title.findTitleMatches.proposed', default:'Proposed Title')}:</label>
-                <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
-                <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui primary button">
-            </g:form>
+            <semui:simpleForm controller="titleDetails" action="findTitleMatches" method="get" message="title.findTitleMatches.proposed">
+              <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
+              <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui primary button">
+            </semui:simpleForm>
 
             <br/>
 
@@ -68,10 +62,6 @@
             </g:if>
             <g:else>
             </g:else>
-
-          </div>
-        </div>
-      </div>
 
   </body>
 </html>

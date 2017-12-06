@@ -845,7 +845,7 @@ class PackageDetailsController {
         params.remove("search")
       }
 
-      result =  ESSearchService.search(params)   
+      result =  ESSearchService.search(params)
     }
     result  
   }

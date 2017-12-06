@@ -28,13 +28,13 @@
         <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
     </semui:breadcrumbs>
 
-  <semui:messages data="${flash}" />
-
-    <div>
-      <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1></g:if>
+      <g:if test="${params.asAt}">
+          <h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1>
+      </g:if>
        <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
        <g:render template="nav"  />
-    </div>
+
+       <semui:messages data="${flash}" />
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
@@ -42,14 +42,40 @@
     <div id="collapseableSubDetails" class="ui grid">
         <div class="twelve wide column">
 
-            <h6 class="ui header">${message(code:'subscription.information.label', default:'Subscription Information')}</h6>
+            <h4 class="ui header">${message(code:'subscription.information.label', default:'Subscription Information')}</h4>
 
-            <div class="inline-lists"> 
-              <dl><dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
-                  <dd>
-                      <g:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' />
-                  </dd>
-              </dl>
+            <div class="inline-lists">
+
+                <dl>
+                    <dt>${message(code:'default.startDate.label', default:'Start Date')}</dt>
+                    <dd><g:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
+                </dl>
+
+                <dl>
+                    <dt>${message(code:'default.endDate.label', default:'End Date')}</dt>
+                    <dd><g:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
+                </dl>
+
+                <dl>
+                    <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
+                    <dd><g:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
+                </dl>
+
+                <dl>
+                    <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
+                    <dd><g:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
+                </dl>
+
+                <dl>
+                    <dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
+                    <dd><g:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
+                </dl>
+
+                <dl>
+                    <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
+                    <dd><g:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
+                </dl>
+
               <dl>
                 <dt>${message(code:'license')}</dt>
                 <dd>
@@ -126,10 +152,6 @@
                    </dd>
                </dl>
 
-               <dl><dt>${message(code:'default.startDate.label', default:'Start Date')}</dt><dd><g:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd></dl>
-
-               <dl><dt>${message(code:'default.endDate.label', default:'End Date')}</dt><dd><g:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd></dl>
-
                <dl><dt>${message(code:'financials.label', default:'Financials')}</dt>
                    <dd>
                      <table class="ui celled striped table">
@@ -159,25 +181,27 @@
                    </dd>
                </dl>
 
+                <% /* <dl>
+                   <dt>${message(code:'license.details.incoming.child', default:'Child')} </dt>
+                   <dd>${subscriptionInstance.getIsSlavedAsString()}</dd>
+               </dl> */ %>
 
-               <dl><dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt><dd><g:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd></dl>
-               <dL><dt>${message(code:'license.details.incoming.child', default:'Child')} </dt><dd>
-                        ${subscriptionInstance.getIsSlavedAsString()}
-               </dd></dL>
-               <dl>
-                 <dt>
-                   <g:annotatedLabel owner="${subscriptionInstance}" property="nominalPlatform">${message(code:'package.nominalPlatform', default:'Nominal Platform')}</g:annotatedLabel>
-                 </dt><dd>
-                    <g:each in="${subscriptionInstance.packages}" var="sp">
-                        ${sp.pkg?.nominalPlatform?.name}<br/>
-                    </g:each></dd></dl>
-
-             <dl>
-                <dt>${message(code:'financials.cancellationAllowances', default:'Cancellation Allowances')}</dt>
-                <dd>
-                  <g:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" />
-                </dd>
-              </dl>
+                <% /*
+                <dl>
+                    <dt>
+                        <g:annotatedLabel owner="${subscriptionInstance}" property="nominalPlatform">${message(code:'package.nominalPlatform', default:'Nominal Platform')}</g:annotatedLabel>
+                    </dt>
+                    <dd>
+                        <g:each in="${subscriptionInstance.packages}" var="sp">
+                            ${sp.pkg?.nominalPlatform?.name}<br/>
+                        </g:each>
+                    </dd>
+                </dl>
+                */ %>
+                <% /* <dl>
+                    <dt>${message(code:'financials.cancellationAllowances', default:'Cancellation Allowances')}</dt>
+                    <dd> <g:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" /></dd>
+                </dl> */ %>
 
 
                <dl><dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
@@ -185,12 +209,12 @@
                      </dd>
                </dl>
 
-               <g:if test="${params.mode=='advanced'}">
+               <% /*g:if test="${params.mode=='advanced'}">
                  <dl><dt><label class="control-label" for="licenseeRef">${message(code:'default.status.label', default:'Status')}</label></dt><dd>
                       <g:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status'/>
                      </dd>
                </dl>
-               </g:if>
+               </g:if */ %>
 
                 <h6 class="ui header">${message(code:'subscription.properties')}</h6>
 

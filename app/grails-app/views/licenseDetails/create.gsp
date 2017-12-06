@@ -6,20 +6,17 @@
     <title><g:message code="default.edit.label" args="[entityName ?: message(code:'license.label')]" /></title>
   </head>
   <body>
-      <div>
 
-            <h1 class="ui header">${message(code:'license.create.label', default:'New Template License')}</h1>
+        <h1 class="ui header">${message(code:'license.create.label', default:'New Template License')}</h1>
 
-            <semui:messages data="${flash}" />
+        <semui:messages data="${flash}" />
 
-            <p>${message(code:'license.create.note')}</p>
+        <p>${message(code:'license.create.note')}</p>
 
-            <p>
-              <g:form action="processNewTemplateLicense"> ${message(code:'license.create.ref', default:'New license Reference')}: <input type="text" name="reference"/>
-              <br/><input class="ui primary button" type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/></g:form>
-            </p>
-
-      </div>
+        <semui:simpleForm action="processNewTemplateLicense" method="get" message="license.create.ref">
+            <input type="text" name="reference"/>
+            <input class="ui primary button" type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/>
+        </semui:simpleForm>
 
   </body>
 </html>

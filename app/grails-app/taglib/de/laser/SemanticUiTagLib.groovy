@@ -230,6 +230,25 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    //<semui:form> CONTENT <semui:form>
+
+    def simpleForm = { attrs, body ->
+
+        def method      = attrs.method ?: 'GET'
+        def controller  = attrs.controller ?: ''
+        def action      = attrs.action ?: ''
+        def text        = attrs.text ? attrs.text : ''
+        def message     = attrs.message ? "${message(code: attrs.message)}" : ''
+        def title       = (text && message) ? text + " - " + message : text + message
+
+        out << '<div class="ui segment">'
+        out <<   '<form class="ui form" controller="' + controller + '" action="' + action + '" method="' + method + '">'
+        out <<     '<label>' + title + '</label>'
+        out <<     body()
+        out <<   '</form>'
+        out << '</div>'
+    }
+
     //<semui:modal id="myModalDialog" text="${text}" message="local.string"> CONTENT <semui:form>
 
     def modal = { attrs, body ->

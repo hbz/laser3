@@ -65,7 +65,7 @@
                     </td>
                     <td><g:if test="${p.license!=null}"><g:link controller="licenseDetails" action="index" id="${p.license.id}">${p.license.reference}</g:link></g:if></td>
                   </tr>
-                  
+
                 </g:each>
              </table>
           </g:form>

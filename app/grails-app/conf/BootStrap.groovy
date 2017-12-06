@@ -676,6 +676,11 @@ class BootStrap {
 
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'])
         RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc('Subscription Status',      [en: 'Expired', de: 'Abgelaufen'])
+        RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Beendet'])
+        RefdataValue.loc('Subscription Status',      [en: 'Under Negotiation',   de: 'In Verhandlung'])
+        RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'])
+        RefdataValue.loc('Subscription Status',      [en: 'Under Examination',   de: 'Wird konsortial geprüft'])
 
         RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'])
         RefdataValue.loc('Task Priority',   [en: 'Low', de: 'Niedrig'])

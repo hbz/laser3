@@ -101,6 +101,7 @@
             <g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id}" class="many-to-one" noSelection="['null': '']"/>
         </div>
 
+
         <r:script type="text/javascript">
 
             $("#datepicker-createDate").datepicker({

@@ -22,9 +22,11 @@ class Subscription extends BaseDomainComponent implements Permissions {
   Date startDate
   Date endDate
   Date manualRenewalDate
+  Date manualCancellationDate
   String cancellationAllowances
 
   Subscription instanceOf
+  Subscription previousSubscription
 
   // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
   RefdataValue isSlaved // RefdataCategory 'YN'
@@ -68,45 +70,49 @@ class Subscription extends BaseDomainComponent implements Permissions {
                       privateProperties: 'owner'
                       ]
 
-  static mapping = {
-                  id column:'sub_id'
-             version column:'sub_version'
-           globalUID column:'sub_guid'
-              status column:'sub_status_rv_fk'
-                type column:'sub_type_rv_fk'
-               owner column:'sub_owner_license_fk'
-                name column:'sub_name'
-          identifier column:'sub_identifier'
-               impId column:'sub_imp_id', index:'sub_imp_id_idx'
-           startDate column:'sub_start_date'
-             endDate column:'sub_end_date'
-   manualRenewalDate column:'sub_manual_renewal_date'
-          instanceOf column:'sub_parent_sub_fk'
-            isSlaved column:'sub_is_slaved'
-        noticePeriod column:'sub_notice_period'
-            isPublic column:'sub_is_public'
-        pendingChanges sort: 'ts', order: 'asc'
-  }
+    static mapping = {
+        id          column:'sub_id'
+        version     column:'sub_version'
+        globalUID   column:'sub_guid'
+        status      column:'sub_status_rv_fk'
+        type        column:'sub_type_rv_fk'
+        owner       column:'sub_owner_license_fk'
+        name        column:'sub_name'
+        identifier  column:'sub_identifier'
+        impId       column:'sub_imp_id', index:'sub_imp_id_idx'
+        startDate   column:'sub_start_date'
+        endDate     column:'sub_end_date'
+        manualRenewalDate       column:'sub_manual_renewal_date'
+        manualCancellationDate  column:'sub_manual_cancellation_date'
+        instanceOf  column:'sub_parent_sub_fk'
+        previousSubscription    column:'sub_previous_subscription_fk'
+        isSlaved    column:'sub_is_slaved'
+        noticePeriod            column:'sub_notice_period'
+        isPublic    column:'sub_is_public'
+        pendingChanges          sort: 'ts', order: 'asc'
+    }
 
-  static constraints = {
-    globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-    status(nullable:true, blank:false)
-    type(nullable:true, blank:false)
-    owner(nullable:true, blank:false)
-    impId(nullable:true, blank:false)
-    startDate(nullable:true, blank:false)
-    endDate(nullable:true, blank:false)
-    manualRenewalDate(nullable:true, blank:false)
-    instanceOf(nullable:true, blank:false)
-    isSlaved(nullable:true, blank:false)
-    noticePeriod(nullable:true, blank:true)
-    isPublic(nullable:true, blank:true)
-    customProperties(nullable:true)
-    privateProperties(nullable:true)
-    cancellationAllowances(nullable:true, blank:true)
-    lastUpdated(nullable: true, blank: true)
-    // vendor(nullable:true, blank:false)
-  }
+    static constraints = {
+        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        status(nullable:true, blank:false)
+        type(nullable:true, blank:false)
+        owner(nullable:true, blank:false)
+        impId(nullable:true, blank:false)
+        startDate(nullable:true, blank:false)
+        endDate(nullable:true, blank:false)
+        manualRenewalDate(nullable:true, blank:false)
+        manualCancellationDate(nullable:true, blank:false)
+        instanceOf(nullable:true, blank:false)
+        previousSubscription(nullable:true, blank:false)
+        isSlaved(nullable:true, blank:false)
+        noticePeriod(nullable:true, blank:true)
+        isPublic(nullable:true, blank:true)
+        customProperties(nullable:true)
+        privateProperties(nullable:true)
+        cancellationAllowances(nullable:true, blank:true)
+        lastUpdated(nullable: true, blank: true)
+        // vendor(nullable:true, blank:false)
+    }
 
   def getIsSlavedAsString() {
     isSlaved?.value == "Yes" ? "Yes" : "No"
