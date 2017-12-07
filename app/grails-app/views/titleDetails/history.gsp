@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ioannis
-  Date: 15/05/2014
-  Time: 15:00
---%>
-
 <%@ page import="com.k_int.kbplus.TitleInstance" %>
 <!doctype html>
 <html>
@@ -16,18 +9,19 @@
 
 <body>
 
-  <semui:breadcrumbs>
-    <semui:crumb class="active" text="${message(code:'title.title.label')}: ${titleInstance.title}" />
-    <g:if test="${editable}">
-      <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
-  </semui:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb class="active" text="${message(code:'title.title.label')}: ${titleInstance.title}" />
+    </semui:breadcrumbs>
 
-   <h1 class="ui header">${titleInstance.title}</h1>
+    <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
+
+    <h1 class="ui header">${titleInstance.title}</h1>
 
     <g:render template="nav" />
 
-        <semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
     <g:if test="${formattedHistoryLines?.size() > 0}">
 

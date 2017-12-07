@@ -9,9 +9,6 @@
   <semui:breadcrumbs>
       <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
       <semui:crumb message="license.current" class="active" />
-      <g:if test="${is_inst_admin}">
-          <semui:crumbAsBadge message="default.editable" class="orange" />
-      </g:if>
 
       <semui:exportDropdown>
           <semui:exportDropdownItem>
@@ -25,6 +22,10 @@
       </semui:exportDropdown>
 
   </semui:breadcrumbs>
+
+  <g:if test="${is_inst_admin}">
+      <semui:crumbAsBadge message="default.editable" class="orange" />
+  </g:if>
 
   <semui:messages data="${flash}" />
 

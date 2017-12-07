@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ioannis
-  Date: 15/05/2014
-  Time: 14:00
---%>
-
 <%@ page import="com.k_int.kbplus.Package" %>
 <!doctype html>
 <html>

@@ -7,7 +7,7 @@
 
 <body>
 
-<!-- REMOVE; not tested
+<% /* REMOVE; not tested
     <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
@@ -23,26 +23,25 @@
 
       </ul>
     </div>
--->
+*/ %>
 
-    <semui:breadcrumbs>
-        <g:if test="${onixplLicense.license.licensee}">
-            <semui:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:onixplLicense.license.licensee.shortcode]}" text="${onixplLicense.license.licensee.name} Current Licenses" />
-        </g:if>
-        <semui:crumb controller="onixplLicenseDetails" action="index" id="${params.id}" text="ONIX-PL License Details" />
-        <semui:crumb controller="onixplLicenseDetails" action="notes" id="${params.id}" text="License Notes" />
+        <semui:breadcrumbs>
+            <g:if test="${onixplLicense.license.licensee}">
+                <semui:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:onixplLicense.license.licensee.shortcode]}" text="${onixplLicense.license.licensee.name} Current Licenses" />
+            </g:if>
+            <semui:crumb controller="onixplLicenseDetails" action="index" id="${params.id}" text="ONIX-PL License Details" />
+            <semui:crumb controller="onixplLicenseDetails" action="notes" id="${params.id}" text="License Notes" />
+        </semui:breadcrumbs>
+
         <g:if test="${editable}">
             <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
-    </semui:breadcrumbs>
 
 
-    <div>
         <h1 class="ui header">${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
 
-<g:render template="nav" contextPath="." />
+        <g:render template="nav" contextPath="." />
 
-    </div>
 
     <div>
         <g:form id="delete_doc_form" url="[controller:'licenseDetails',action:'deleteDocuments']" method="post">

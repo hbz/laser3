@@ -12,11 +12,11 @@
             </g:if>
             <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
             <semui:crumb class="active" text="${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}" />
-            <g:if test="${editable}">
-                <semui:crumbAsBadge message="default.editable" class="orange" />
-            </g:if>
         </semui:breadcrumbs>
 
+        <g:if test="${editable}">
+            <semui:crumbAsBadge message="default.editable" class="orange" />
+        </g:if>
 
         <h1 class="ui header"><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
 

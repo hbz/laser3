@@ -13,23 +13,19 @@
           </g:if>
           <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
           <semui:crumb class="active" text="${message(code:'default.notes.label', default:'Notes')}" />
-          <g:if test="${editable}">
-              <semui:crumbAsBadge message="default.editable" class="orange" />
-          </g:if>
       </semui:breadcrumbs>
 
-   <div>
+      <g:if test="${editable}">
+          <semui:crumbAsBadge message="default.editable" class="orange" />
+      </g:if>
 
-       <h1 class="ui header">${subscriptionInstance?.name}</h1>
+    <h1 class="ui header">${subscriptionInstance?.name}</h1>
 
-       <g:render template="nav" />
+    <g:render template="nav" />
 
-    </div>
+    <g:render template="/templates/notes_table" model="${[instance: subscriptionInstance, redirect: 'notes']}"/>
 
-    <div>
-        <g:render template="/templates/notes_table" model="${[instance: subscriptionInstance, redirect: 'notes']}"/>
-    </div>
-  <g:render template="/templates/addNote"
+    <g:render template="/templates/addNote"
             model="${[doclist: subscriptionInstance.documents, ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     
   </body>

@@ -82,8 +82,8 @@ modules = {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
 
-        resource url:'semantic/semantic.js'
-        resource url:'semantic/semantic.css'
+        resource url:'semantic/semantic.min.js'
+        resource url:'semantic/semantic.min.css'
 
         // legacy CRAP ..
         // legacy CRAP ..

@@ -13,24 +13,24 @@
     <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
       <g:javascript src="properties.js"/>
-  </head>
-  <body>
-    <semui:breadcrumbs>
-        <g:if test="${params.shortcode}">
-            <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-        </g:if>
-
-        <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
+    </head>
+    <body>
+        <semui:breadcrumbs>
+            <g:if test="${params.shortcode}">
+                <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
+            </g:if>
+            <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
+            <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
+        </semui:breadcrumbs>
 
         <g:if test="${editable}">
             <semui:crumbAsBadge message="default.editable" class="orange" />
         </g:if>
-        <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
-    </semui:breadcrumbs>
 
       <g:if test="${params.asAt}">
           <h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1>
       </g:if>
+
        <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
        <g:render template="nav"  />
 

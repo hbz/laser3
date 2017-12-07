@@ -21,9 +21,9 @@
         </g:each>
     </semui:exportDropdown>
 
-    <g:if test="${editable}">
-        <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
-
         <li class="pull-right"><g:annotatedLabel owner="${license}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
 </semui:breadcrumbs>
+
+<g:if test="${editable}">
+    <semui:crumbAsBadge message="default.editable" class="orange" />
+</g:if>

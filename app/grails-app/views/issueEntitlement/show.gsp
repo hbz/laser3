@@ -13,10 +13,11 @@
         </g:if>
         <semui:crumb controller="subscriptionDetails" action="index" id="${issueEntitlementInstance?.subscription.id}"  text="${issueEntitlementInstance?.subscription.name}" />
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
     </semui:breadcrumbs>
+
+    <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
 
     <div>
 

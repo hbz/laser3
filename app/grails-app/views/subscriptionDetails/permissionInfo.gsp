@@ -14,16 +14,15 @@
       </g:if>
       <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
       <semui:crumb class="active" text="${message(code:'default.permissions.label', default:'Permissions')}" />
-      <g:if test="${editable}">
-        <semui:crumbAsBadge message="default.editable" class="orange" />
-      </g:if>
     </semui:breadcrumbs>
 
-    <div>
-      <h1 class="ui header">${subscriptionInstance?.name} - ${message(code:'subscription.details.user.permissions', default:'Permissions against Current User')}</h1>
-      <g:render template="nav" contextPath="." />
-    </div>
+    <g:if test="${editable}">
+      <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
 
+    <h1 class="ui header">${subscriptionInstance?.name} - ${message(code:'subscription.details.user.permissions', default:'Permissions against Current User')}</h1>
+
+    <g:render template="nav" contextPath="." />
 
    <div>
 

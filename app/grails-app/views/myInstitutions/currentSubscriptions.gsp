@@ -6,19 +6,20 @@
     <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
   </head>
-  <body>
+    <body>
 
-    <semui:breadcrumbs>
-      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
-      <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
-      <g:if test="${editable}">
-        <semui:crumbAsBadge message="default.editable" class="orange" />
-      </g:if>
-    </semui:breadcrumbs>
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
+            <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
+        </semui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
+        <g:if test="${editable}">
+            <semui:crumbAsBadge message="default.editable" class="orange" />
+        </g:if>
 
-      <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
+        <semui:messages data="${flash}" />
+
+        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
       <g:render template="subsNav" contextPath="." />
 

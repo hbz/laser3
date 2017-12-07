@@ -16,28 +16,21 @@
           <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.details.label', default:'Details')}</g:link> </li>
-        <g:if test="${editable}">
-          <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
       </ul>
     </div>
 
-  <semui:messages data="${flash}" />
+    <g:if test="${editable}">
+      <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
 
-    <div>
+    <semui:messages data="${flash}" />
 
-       <h1 class="ui header">${subscriptionInstance?.name}</h1>
+    <h1 class="ui header">${subscriptionInstance?.name}</h1>
 
-       <g:render template="nav" />
+    <g:render template="nav" />
 
-    </div>
-
-
-    <div>
-
-        <g:render template="/templates/documents_table"
+    <g:render template="/templates/documents_table"
                   model="${[instance:subscriptionInstance,context:'documents',redirect:'documents']}" />
-    </div>
 
   </body>
 </html>

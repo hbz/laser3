@@ -10,10 +10,11 @@
 
       <semui:breadcrumbs>
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
-          <g:if test="${editable}">
-              <semui:crumbAsBadge message="default.editable" class="orange" />
-          </g:if>
       </semui:breadcrumbs>
+
+      <g:if test="${editable}">
+          <semui:crumbAsBadge message="default.editable" class="orange" />
+      </g:if>
 
         <h1 class="ui header">${ti.title} <g:if test="${ti.status?.value && ti.status.value != 'Current'}"><span class="badge badge-error" style="vertical-align:middle;">${ti.status.getI10n('value')}</span></g:if></h1>
 

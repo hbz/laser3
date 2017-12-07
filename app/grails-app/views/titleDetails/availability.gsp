@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ioannis
-  Date: 15/05/2014
-  Time: 15:00
---%>
-
 <%@ page import="com.k_int.kbplus.TitleInstance" %>
 <!doctype html>
 <html>
@@ -20,17 +13,15 @@
   <ul class="breadcrumb">
     <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
     <li> <g:link controller="titleDetails" action="show" id="${ti?.id}">Title ${ti?.title}</g:link> </li>
-
-    <li class="dropdown pull-right">
-      <g:if test="${editable}">
-        <semui:crumbAsBadge message="default.editable" class="orange" />
-      </g:if>
   </ul>
 </div>
 
 <div>
     <div class="span12">
 
+      <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+      </g:if>
 
   <h1 class="ui header">${ti.title}</h1>
 

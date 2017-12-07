@@ -9,17 +9,16 @@
   </head>
   <body>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="platform" action="index" message="platform.show.all" />
-    <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
+    <semui:breadcrumbs>
+        <semui:crumb controller="platform" action="index" message="platform.show.all" />
+        <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
 
-        <li class="pull-right">
-            <g:if test="${editable}">
-                <semui:crumbAsBadge message="default.editable" class="orange" />
-            </g:if>
-            <semui:modeSwitch controller="platform" action="show" params="${params}" />
-         </li>
-</semui:breadcrumbs>
+        <semui:modeSwitch controller="platform" action="show" params="${params}" />
+    </semui:breadcrumbs>
+
+      <g:if test="${editable}">
+          <semui:crumbAsBadge message="default.editable" class="orange" />
+      </g:if>
 
           <h1 class="ui header">Platform : <g:if test="${editable}"><span id="platformNameEdit"
                                                         class="xEditableValue"

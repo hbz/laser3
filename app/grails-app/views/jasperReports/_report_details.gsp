@@ -1,11 +1,4 @@
 <%@ page import="com.k_int.kbplus.JasperReportsController" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: ioannis
-  Date: 02/07/2014
-  Time: 14:33
---%>
-
 <div class="well">
     ${message(code:'jasper.reports.desc', default:'Report Description')}: ${reportdesc}
 

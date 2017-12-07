@@ -7,15 +7,14 @@
   </head>
   <body>
 
-  <semui:breadcrumbs>
-
+    <semui:breadcrumbs>
       <semui:crumb controller="packageDetails" action="show" id="${tipp.pkg.id}" text="${tipp.pkg.name} [${message(code:'package.label', default:'package')}]" />
       <semui:crumb controller="tipp" action="show" id="${tipp.id}" text="${tipp.title.title} [${message(code:'title.label', default:'title')}]" />
+    </semui:breadcrumbs>
 
       <g:if test="${editable}">
           <semui:crumbAsBadge message="default.editable" class="orange" />
       </g:if>
-  </semui:breadcrumbs>
 
     <h1 class="ui header">${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}</h1>
 

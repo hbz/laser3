@@ -12,10 +12,11 @@
         </g:if>
         <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
         <semui:crumb class="active" text="${message(code:'task.plural', default:'Tasks')}" />
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
     </semui:breadcrumbs>
+
+    <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
 
     <h1 class="ui header">${subscriptionInstance?.name}</h1>
 

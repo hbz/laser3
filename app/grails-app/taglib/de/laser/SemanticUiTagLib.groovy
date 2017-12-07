@@ -176,7 +176,7 @@ class SemanticUiTagLib {
 
     def exportDropdown = { attrs, body ->
 
-        out << '<div class="ui compact menu">'
+        out << '<div class="ui right floated compact menu">'
         out <<   '<div class="ui simple dropdown item">'
         out <<     'Export'
         out <<     '<i class="dropdown icon"></i>'

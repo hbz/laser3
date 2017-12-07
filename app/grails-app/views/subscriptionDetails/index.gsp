@@ -16,40 +16,38 @@
 
         <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
 
-        <div class="pull-right">
-            <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
+        <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
 
-            <semui:exportDropdown>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
+            </semui:exportDropdownItem>
+            <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
+                    <g:link action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
                 </semui:exportDropdownItem>
-                <semui:exportDropdownItem>
-                    <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
-                </semui:exportDropdownItem>
-                <g:each in="${transforms}" var="transkey,transval">
-                    <semui:exportDropdownItem>
-                        <g:link action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
-                    </semui:exportDropdownItem>
-                </g:each>
-            </semui:exportDropdown>
-
-        </div>
-
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
+            </g:each>
+        </semui:exportDropdown>
 
         <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
 
     </semui:breadcrumbs>
 
+  <g:if test="${editable}">
+      <semui:crumbAsBadge message="default.editable" class="orange" />
+  </g:if>
+
   <semui:messages data="${flash}" />
 
-    <div>
-      <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>
-       <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
-       <g:render template="nav" />
-    </div>
+  <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>
+
+  <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
+
+  <g:render template="nav" />
+
 
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>

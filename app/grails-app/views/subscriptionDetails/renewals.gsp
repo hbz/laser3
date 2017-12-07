@@ -14,22 +14,20 @@
           <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.notes.label', default:'Notes')}</g:link> </li>
-          <g:if test="${editable}">
-              <semui:crumbAsBadge message="default.editable" class="orange" />
-          </g:if>
       </ul>
     </div>
 
-   <div>
-       <h1 class="ui header">${subscriptionInstance?.name}</h1>
-       <g:render template="nav" contextPath="." />
-    </div>
+    <g:if test="${editable}">
+      <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
 
-    <div>
+    <h1 class="ui header">${subscriptionInstance?.name}</h1>
+
+    <g:render template="nav" contextPath="." />
+
       <g:link controller="subscriptionDetails"
                     action="launchRenewalsProcess" 
                     params="${[id:params.id]}">${message(code:'subscription.details.renewals.click_here', default:'Click Here')}</g:link> ${message(code:'subscription.details.renewals.note')}
-    </div>
     
   </body>
 </html>

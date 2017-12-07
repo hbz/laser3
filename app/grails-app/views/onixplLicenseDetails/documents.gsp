@@ -19,22 +19,18 @@
                     id="${params.id}">ONIX-PL License Details</g:link> <span class="divider">/</span></li>
         <li><g:link controller="onixplLicenseDetails" action="documents"
                     id="${params.id}">License Documents</g:link></li>
-
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
-
     </ul>
 </div>
 
-<div>
+    <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
+
     <h1 class="ui header">${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
                                                                                                      style="padding-top: 5px;">${onixplLicense.license.reference}</span>
     </h1>
 
     <g:render template="nav" contextPath="."/>
-
-</div>
 
 <div>
     <g:form id="delete_doc_form" url="[controller: 'licenseDetails', action: 'deleteDocuments']" method="post">

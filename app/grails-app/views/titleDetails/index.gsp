@@ -79,9 +79,9 @@
                   </table>
                 </div><!-- #resultsarea -->
              </g:if>
-             <div class="paginateButtons" style="text-align:center">
+             <div class="pagination" style="text-align:center">
                 <g:if test="${hits}" >
-                  <span><g:paginate controller="titleDetails" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" /></span>
+                  <bootstrap:paginate controller="titleDetails" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" />
                 </g:if>
               </div><!-- .paginateButtons -->
         </div><!-- .sixteen -->

@@ -1,11 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: rwincewicz
-  Date: 10/07/2013
-  Time: 09:11
-  To change this template use File | Settings | File Templates.
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!doctype html>
 <html>
@@ -15,19 +7,18 @@
 </head>
 <body>
 
-<div>
-    <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="licenseDetails" action="index" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
-</ul>
+    <div>
+        <ul class="breadcrumb">
+            <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+            <li> <g:link controller="licenseDetails" action="index" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
+        </ul>
     </div>
 
-<div>
+    <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
+
     <h1 class="ui header">ONIX-PL License : ${onixplLicense?.title}</h1>
-</div>
 
 <div>
     <div class="row">

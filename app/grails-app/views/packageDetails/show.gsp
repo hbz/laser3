@@ -13,32 +13,27 @@
         <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
         <semui:crumb class="active" text="${packageInstance.name}" />
 
-        <div class="pull-right">
+        <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
-            <g:if test="${editable}">
-                <semui:crumbAsBadge message="default.editable" class="orange" />
-            </g:if>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link action="show" params="${params+[format:'xml']}">XML</g:link>
+            </semui:exportDropdownItem>
 
-            <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
-
-            <semui:exportDropdown>
+            <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
+                    <g:link action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
                 </semui:exportDropdownItem>
-                <semui:exportDropdownItem>
-                    <g:link action="show" params="${params+[format:'xml']}">XML</g:link>
-                </semui:exportDropdownItem>
-
-                <g:each in="${transforms}" var="transkey,transval">
-                    <semui:exportDropdownItem>
-                        <g:link action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
-                    </semui:exportDropdownItem>
-                </g:each>
-            </semui:exportDropdown>
-        </div>
-
+            </g:each>
+        </semui:exportDropdown>
     </semui:breadcrumbs>
 
+    <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':packageInstance]}"/>
 
