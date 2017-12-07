@@ -17,7 +17,12 @@ pilotDisableFlag = false
 // - enable reminder
 //hbzMaster = true
 
-// FEATURE-CONFIG:
+// ES-CONFIG
+aggr_es_cluster  = 'elasticsearch'
+aggr_es_index    = 'kbplus'
+aggr_es_hostname = 'localhost'
+
+// FEATURE-CONFIG
 localauth = true
 feature_finance = true
 

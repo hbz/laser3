@@ -17,10 +17,10 @@ class ESWrapperService {
     log.debug("ESWrapperService::init");
 
     def es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: "elasticsearch"
+    def es_index_name   = grailsApplication.config.aggr_es_index    ?: "kbplus"
     def es_host         = grailsApplication.config.aggr_es_hostname ?: "localhost"
 
-    log.debug("~ es_host = ${es_host}")
-    log.debug("~ es_cluster = ${es_cluster_name}")
+    log.debug("~ host: ${es_host} / cluster: ${es_cluster_name} / index: ${es_index_name}")
 
     esclient = new TransportClient(ImmutableSettings.settingsBuilder {
       cluster {
