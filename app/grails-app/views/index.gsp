@@ -14,7 +14,7 @@
     <p>
         Currently, you can review:
 
-    <ul class="nav">test
+    <ul class="nav">
         <li><g:link controller="package">Packages</g:link></li>
         <li><g:link controller="org">Organisations</g:link></li>
         <li><g:link controller="platform">Platforms</g:link></li>
