@@ -1,7 +1,8 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
-        <div class="ui container">
-        	<img class="brand-img" alt="LAS:eR" src="${resource(dir: 'images', file: 'laser-logo-1.png')}"/>
+        <div class="ui container center aligned">
+        	<img class="brand-img"  style="float: none;" alt="LAS:eR" src="${resource(dir: 'images', file: 'laser-logo-1.png')}"/>
+            <!--
             <ul class="nav">
                 <li id="home" <g:if test="${active.equals("home")}"> class="active" </g:if>>
                     <a href="${createLink(uri: '/')}">${message(code:'default.home.label', default:'Home')}</a>
@@ -23,6 +24,7 @@
                     <a href="${createLink(uri: '/contact-us')}">${message(code:'public.nav.contact.label', default:'Contact Us')}</a>
                 </li>
             </ul>
+            -->
         </div>
     </div>
 </div>
