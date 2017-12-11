@@ -5,9 +5,9 @@
   <head>
     <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+
   </head>
     <body>
-
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
@@ -24,15 +24,63 @@
       <g:render template="subsNav" contextPath="." />
 
       <semui:filter>
-        <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
 
-          <label class="control-label">${message(code:'default.search.text', default:'Search text')}: </label>
-          <input style="margin-top:10px" type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"/>
+        <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline ui form">
+            <div class="fields">
+                <!-- SEARCH -->
+                <div class="field">
 
-          <label class="control-label">${message(code:'default.valid_on.label', default:'Valid On')}: </label>
-          <div class="input-append date">
-            <input class="span2 datepicker-class" size="16" type="text" name="validOn" value="${validOn}">
-          </div>
+                    <label>${message(code: 'default.search.text', default: 'Search text')}:</label>
+                    <div class="ui action icon input">
+
+                    <input type="text" name="q"
+                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           value="${params.q?.encodeAsHTML()}"/>
+
+                    <div class="ui icon dropdown button">
+                        <input type="hidden" name="filters">
+                        <i class="filter icon"></i>
+                        <span class="text">Spalte</span>
+                        <i class="dropdown icon"></i>
+
+                        <div class="menu">
+                            <div class="scrolling menu">
+                                <div class="item">
+                                    Subskription
+                                </div>
+                                <div class="item">
+                                    Pakete
+                                </div>
+                                <div class="item">
+                                    Konsortien
+                                </div>
+                                <div class="item">
+                                    Lizenz
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- SEARCH END -->
+
+                <!-- DATE -->
+                <!--
+                <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">
+                -->
+            <div class="field">
+                <label>${message(code:'default.valid_on.label', default:'Valid On')}: </label>
+                <div class="ui calendar" id="example2">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input name="validOn" type="text" placeholder="Date" value="${validOn}">
+                    </div>
+                </div>
+            </div>
+            <!-- DATE END-->
+
+
+
 
           <label class="control-label">${message(code:'default.filter.label', default:'Filter')}: </label>
           <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
@@ -51,7 +99,12 @@
             <div class="input-append date">
                 <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
             </div>
-          <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+            <!-- SEND-BUTTON -->
+            <div class="field">
+                <label>&nbsp</label>
+                    <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+            </div>
+            <!-- SEND-BUTTON END-->
         </g:form>
       </semui:filter>
 
@@ -78,11 +131,27 @@
             <tr>
               <td colspan="7">
                 <g:link controller="subscriptionDetails" action="details" params="${[shortcode:institution.shortcode]}" id="${s.id}">
-                  <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
-                  <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
+                  <div class="ui list">
+                    <div class="item">
+                      <i class="handshake icon"></i>
+                        <div class="content">
+                          <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
+                          <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
+                        </div>
+                    </div>
+                  </div>
                 </g:link>
-                <g:if test="${s.owner}"> 
-                  <span class="pull-right">${message(code:'license')} : <g:link controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link></span>
+                <g:if test="${s.owner}">
+                  <span class="pull-right">
+                    <div class="ui list">
+                      <div class="item">
+                        <i class="law icon"></i>
+                        <div class="content">
+                          ${message(code:'license')} : <g:link controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link>
+                        </div>
+                      </div>
+                    </div>
+                  </span>
                 </g:if>
               </td>
               <td rowspan="2">
@@ -93,18 +162,24 @@
             </tr>
             <tr>
               <td>
-                <ul>
                   <g:each in="${s.packages}" var="sp" status="ind">
                     <g:if test="${ind < 10}">
-                      <li>
-                        <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">${sp.pkg.name}</g:link>
-                      </li>
+                          <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">
+                            <div class="ui list">
+                              <div class="item">
+                                <i class="archive icon"></i>
+                                <div class="content">
+                                    ${sp.pkg.name}
+                                </div>
+                              </div>
+                            </div>
+                          </g:link>
                     </g:if>
                   </g:each>
                   <g:if test="${s.packages.size() > 10}">
                     <div>${message(code:'myinst.currentSubscriptions.etc.label', args:[s.packages.size() - 10])}</div>
                   </g:if>
-                </ul>
+                </div>
                 <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
                   <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link></i>
                 </g:if>
@@ -121,24 +196,19 @@
         </table>
       </div>
 
-  
+
       <div class="pagination" style="text-align:center">
         <g:if test="${subscriptions}" >
           <bootstrap:paginate  action="currentSubscriptions" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
         </g:if>
       </div>
-
-    <r:script type="text/javascript">
-
-        $(".datepicker-class").datepicker({
-            format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-            language:"${message(code:'default.locale.label', default:'en')}",
-            autoclose:true
-        });
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+    <script type="text/javascript">
 
         $(document).ready(function(){
+            $('.ui.dropdown').dropdown();
           var val = "${params.dateBeforeFilter}";
-          console.log(val);
+          console.log("test");
           if(val == "null"){
             $(".dateBefore").addClass("hidden");
           }else{
@@ -155,7 +225,8 @@
             $(".dateBefore").addClass("hidden");
           }
         })
-    </r:script>
+
+    </script>
 
   </body>
 </html>
