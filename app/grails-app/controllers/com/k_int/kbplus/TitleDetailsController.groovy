@@ -10,9 +10,93 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class TitleDetailsController {
 
-  def springSecurityService
-  def ESSearchService
+    def springSecurityService
+    def ESSearchService
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def index() {
+        redirect controller: 'titleDetails', action: 'list', params: params
+        return // ----- deprecated
+
+        log.debug("titleSearch : ${params}");
+
+        def result=[:]
+
+        if (springSecurityService.isLoggedIn()) {
+            params.rectype = "Title" // Tells ESSearchService what to look for
+            result.user = springSecurityService.getCurrentUser()
+            params.max = result.user.defaultPageSize
+
+
+            if(params.search.equals("yes")){
+                //when searching make sure results start from first page
+                params.offset = 0
+                params.remove("search")
+            }
+
+            def old_q = params.q
+            if(!params.q ){
+                params.remove('q');
+                if(!params.sort){
+                    params.sort = "sortTitle"
+                }
+            }
+
+            if(params.filter) params.q ="${params.filter}:${params.q}";
+
+            result =  ESSearchService.search(params)
+            //Double-Quoted search strings wont display without this
+            params.q = old_q?.replace("\"","&quot;")
+        }
+
+        result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        log.debug(result);
+
+        result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def list() {
+        log.debug("titleSearch : ${params}");
+
+        // TODO: copied from index() because no list() given | DB_QUERY
+
+        def result=[:]
+
+        if (springSecurityService.isLoggedIn()) {
+            params.rectype = "Title" // Tells ESSearchService what to look for
+            result.user = springSecurityService.getCurrentUser()
+            params.max = result.user.defaultPageSize
+
+
+            if(params.search.equals("yes")){
+                //when searching make sure results start from first page
+                params.offset = 0
+                params.remove("search")
+            }
+
+            def old_q = params.q
+            if(!params.q ){
+                params.remove('q');
+                if(!params.sort){
+                    params.sort = "sortTitle"
+                }
+            }
+
+            if(params.filter) params.q ="${params.filter}:${params.q}";
+
+            result =  ESSearchService.search(params)
+            //Double-Quoted search strings wont display without this
+            params.q = old_q?.replace("\"","&quot;")
+        }
+
+        result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        log.debug(result);
+
+        result
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def findTitleMatches() { 
@@ -138,47 +222,7 @@ class TitleDetailsController {
     redirect(controller:'titleDetails', action:'show', id:params.id);
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def index() {
 
-    log.debug("titleSearch : ${params}");
-
-    def result=[:]
-
-    if (springSecurityService.isLoggedIn()) {
-      params.rectype = "Title" // Tells ESSearchService what to look for
-      result.user = springSecurityService.getCurrentUser()
-      params.max = result.user.defaultPageSize
-
-
-      if(params.search.equals("yes")){
-        //when searching make sure results start from first page
-        params.offset = 0
-        params.remove("search")
-      }
-
-      def old_q = params.q
-      if(!params.q ){
-         params.remove('q');
-         if(!params.sort){
-            params.sort = "sortTitle"
-         }
-      }
-      
-      if(params.filter) params.q ="${params.filter}:${params.q}";
-
-      result =  ESSearchService.search(params)  
-      //Double-Quoted search strings wont display without this
-      params.q = old_q?.replace("\"","&quot;") 
-    }
-
-    result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
-    log.debug(result);
-
-    result  
-   
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def history() {

@@ -24,10 +24,33 @@ class PackageDetailsController {
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def index() {
+        redirect controller: 'packageDetails', action: 'list', params: params
+        return // ----- deprecated
+
+        def result = [:]
+        result.user = springSecurityService.getCurrentUser()
+        params.max = result.user.defaultPageSize
+
+        if (springSecurityService.isLoggedIn()) {
+            params.rectype = "Package" // Tells ESSearchService what to look for
+            if(params.q == "")  params.remove('q');
+
+            if(params.search.equals("yes")){
+                //when searching make sure results start from first page
+                params.offset = 0
+                params.remove("search")
+            }
+
+            result =  ESSearchService.search(params)
+        }
+        result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
-
       result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
 
       result.editable = true
@@ -102,7 +125,6 @@ class PackageDetailsController {
            out.close()
         }
       }
-
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -827,27 +849,6 @@ class PackageDetailsController {
         }
       }
     }
-  }
-
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def index() {
-    def result = [:]
-    result.user = springSecurityService.getCurrentUser()
-    params.max = result.user.defaultPageSize
-
-    if (springSecurityService.isLoggedIn()) {
-      params.rectype = "Package" // Tells ESSearchService what to look for
-      if(params.q == "")  params.remove('q');
-     
-      if(params.search.equals("yes")){
-        //when searching make sure results start from first page
-        params.offset = 0
-        params.remove("search")
-      }
-
-      result =  ESSearchService.search(params)
-    }
-    result  
   }
 
   def isEditable(){

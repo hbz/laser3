@@ -83,9 +83,24 @@
                 </div>
             </sec:ifLoggedIn>
 
-            <sec:ifLoggedIn>
-                <g:if test="${user}">
-                    <g:if test="${contextOrg}">
+            <g:if test="${user}">
+                <g:if test="${contextOrg}">
+
+                    <sec:ifLoggedIn>
+                        <div class="ui simple dropdown item">
+                            ${message(code:'menu.institutions.ttls')}
+                            <i class="dropdown icon"></i>
+
+                            <div class="menu">
+                                <g:link class="item" controller="myInstitutions" action="currentTitles"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
+                                <g:link class="item" controller="myInstitutions" action="tipview"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.core_ttl')}</g:link>
+                            </div>
+                        </div>
+                    </sec:ifLoggedIn>
+
+                    <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
                             ${message(code:'menu.institutions.subs')}
                             <i class="dropdown icon"></i>
@@ -117,13 +132,9 @@
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>
                             </div>
                         </div>
-                    </g:if>
-                </g:if>
-            </sec:ifLoggedIn>
+                    </sec:ifLoggedIn>
 
-            <sec:ifLoggedIn>
-                <g:if test="${user}">
-                    <g:if test="${contextOrg}">
+                    <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
                             ${message(code:'menu.institutions.lic')}
                             <i class="dropdown icon"></i>
@@ -136,13 +147,9 @@
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.comp_lic')}</g:link>
                             </div>
                         </div>
-                    </g:if>
-                </g:if>
-            </sec:ifLoggedIn>
+                    </sec:ifLoggedIn>
 
-            <sec:ifLoggedIn>
-                <g:if test="${user}">
-                    <g:if test="${contextOrg}">
+                    <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
                             ${message(code:'menu.institutions.myInst')}
                             <i class="dropdown icon"></i>
@@ -173,15 +180,11 @@
                                             params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.financeImport')}</g:link>
                                 </g:if>
 
-                                <g:link class="item" controller="myInstitutions" action="currentTitles"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="tipview"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.core_ttl')}</g:link>
                             </div>
                         </div>
-                    </g:if>
+                    </sec:ifLoggedIn>
                 </g:if>
-            </sec:ifLoggedIn>
+            </g:if>
 
             <sec:ifLoggedIn>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
@@ -324,7 +327,7 @@
                 </sec:ifAnyGranted>
             </sec:ifLoggedIn>
 
-            <sec:ifLoggedIn>
+            <% /*sec:ifLoggedIn>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
                     <g:if env="development">
                         <div class="ui simple dropdown item">
@@ -340,7 +343,7 @@
                         </div>
                     </g:if>
                 </sec:ifAnyGranted>
-            </sec:ifLoggedIn>
+            </sec:ifLoggedIn */ %>
 
 <% /* TODO
             <sec:ifLoggedIn>
