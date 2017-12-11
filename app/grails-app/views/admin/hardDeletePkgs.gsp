@@ -7,23 +7,13 @@
   </head>
 
   <body>
-    
-    <div>
-       <div class="span10">
 
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="admin" action="hardDeletePkgs">Package Delete </g:link> </li>
       </ul>
-      </div>
-    </div>
-  
-    
-  <div>
+
       <semui:messages data="${flash}" />
-
-
-   <div class="span10">
 
           <g:form action="hardDeletePkgs" method="get" params="${params}">
           <input type="hidden" name="offset" value="${params.offset}"/>
@@ -55,14 +45,14 @@
           </g:each>
           </tbody>
         </table>
-          <div class="paginateButtons" style="text-align:center">
-          <span><g:paginate action="hardDeletePkgs" params="${params}" next="Next" prev="Prev" total="${pkgs.totalCount}" /></span>
-          </div>
-        </div>
-        </div>
 
-        <div id="packageDetails_div">
-        </div>
+      <div class="paginateButtons" style="text-align:center">
+        <span><g:paginate action="hardDeletePkgs" params="${params}" next="Next" prev="Prev" total="${pkgs.totalCount}" /></span>
+      </div>
+
+
+        <div id="packageDetails_div"></div>
+
         <g:javascript>
         function showDetails(id){
           jQuery.ajax({type:'get', url:"${createLink(controller:'admin', action:'hardDeletePkgs')}"+"/"+id,success:function(data,textStatus){jQuery('#packageDetails_div').html(data);$("#pkg_details_modal").modal("show")},error:function(XMLHttpRequest,textStatus,errorThrown){}

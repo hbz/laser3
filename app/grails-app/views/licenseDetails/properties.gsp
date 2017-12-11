@@ -27,7 +27,7 @@
     <g:each in="${authorizedOrgs}" var="authOrg">
         <h6 class="ui header">@ ${authOrg.name}</h6>
 
-        <div id="custom_props_div_${authOrg.shortcode}" class="span12">
+        <div id="custom_props_div_${authOrg.shortcode}">
             <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,

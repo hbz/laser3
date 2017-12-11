@@ -7,28 +7,27 @@
 </head>
 
 <body>
-<div>
-    <div class="span12">
-        <semui:breadcrumbs>
-            <semui:crumb message="jasper.reports.label" class="active"/>
-        </semui:breadcrumbs>
 
-        <semui:messages data="${flash}" />
+    <semui:breadcrumbs>
+        <semui:crumb message="jasper.reports.label" class="active"/>
+    </semui:breadcrumbs>
 
-        <p>The types of accepted files are .jasper and .jrxml. Any other files selected will be ignored.</p>
-        <g:uploadForm action="uploadReport" controller="jasperReports">
+    <semui:messages data="${flash}" />
 
-            <b>Select Reports</b>:
+    <p>The types of accepted files are .jasper and .jrxml. Any other files selected will be ignored.</p>
 
-            <input type="file" name="report_files" multiple="multiple"><br/>
+    <g:uploadForm action="uploadReport" controller="jasperReports">
 
-            <b>Upload Selected</b>
+        <b>Select Reports</b>:
 
-            <input type="submit" class="btn-primary" value="Upload Files"/>
+        <input type="file" name="report_files" multiple="multiple"><br/>
 
-        </g:uploadForm>
-    </div>
-</div>
+        <b>Upload Selected</b>
+
+        <input type="submit" class="btn-primary" value="Upload Files"/>
+
+    </g:uploadForm>
+
 
 </body>
 

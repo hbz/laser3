@@ -7,9 +7,6 @@
     <title><g:message code="default.create.label" args="[entityName]" /></title>
   </head>
   <body>
-    <div class="row-fluid">
-      
-      <div class="span11">
 
         <h1 class="ui header"><g:message code="default.create.label" args="[entityName]" /></h1>
 
@@ -48,9 +45,6 @@
             </fieldset>
           </g:form>
         </fieldset>
-        
-      </div>
 
-    </div>
   </body>
 </html>

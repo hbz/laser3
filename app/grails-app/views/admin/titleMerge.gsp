@@ -6,8 +6,7 @@
   </head>
 
   <body>
-    <div>
-      <div class="span12">
+
         <h1 class="ui header">Title Merge</h1>
         <g:form action="titleMerge" method="get">
           <p>Add the appropriate ID's below. Detailed information and confirmation will be presented before proceeding</p>
@@ -71,7 +70,6 @@
             <button name="LookupButton" type="submit" value="Go">Look Up Title Info...</button>
           </dl>
         </g:form>
-      </div>
-    </div>
+
   </body>
 </html>

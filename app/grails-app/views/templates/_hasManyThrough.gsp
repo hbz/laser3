@@ -1,8 +1,7 @@
 hasManyThrough template
 
 <div>
-  <div class="row">
-    <div class="span12">
+
       <table class="ui celled table">
         <thead>
           <tr>
@@ -50,6 +49,5 @@ hasManyThrough template
           </div>
         </div>
       </div>
-    </div>
-  </div>
+
 </div>

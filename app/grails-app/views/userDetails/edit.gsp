@@ -6,10 +6,6 @@
     <title>${ui.display}</title>
   </head>
   <body>
-    <div>
-      <div class="row">
-        <div class="span12">
-
 
              <h1 class="ui header"><span id="displayEdit"
                        class="xEditableValue"
@@ -52,7 +48,7 @@
           <table class="ui celled table">
             <thead>
               <tr>
-                <th>${message(code:'user.role', default:'Role')}</td>
+                <th>${message(code:'user.role', default:'Role')}</th>
                 <th>${message(code:'user.actions', default:'Actions')}</th>
               </tr>
             </thead>
@@ -73,24 +69,19 @@
               <input type="hidden" name="role" id="userRoleSelect"/>
               <input type="submit" value="${message(code:'user.role.add', default:'Add Role...')}"/>
             </g:form>
+
+
+        <div>
+            <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+                <h3 class="ui header">${message(code: 'api.label', default:'API')}</h3>
+
+                <p>${message(code: 'api.apikey.label', default:'API-Key')}</p>
+                <input type="text" readonly="readonly" value="${ui.apikey}">
+
+                <p>${message(code: 'api.apisecret.label', default:'API-Secret')}</p>
+                <input type="text" readonly="readonly" value="${ui.apisecret}">
+            </g:if>
         </div>
-      </div>
-
-        <div class="row">
-            <div class="span12">
-                <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-                    <h3 class="ui header">${message(code: 'api.label', default:'API')}</h3>
-
-                    <p>${message(code: 'api.apikey.label', default:'API-Key')}</p>
-                    <input type="text" readonly="readonly" value="${ui.apikey}">
-
-                    <p>${message(code: 'api.apisecret.label', default:'API-Secret')}</p>
-                    <input type="text" readonly="readonly" value="${ui.apisecret}">
-                </g:if>
-            </div>
-        </div>
-    </div>
-
 
   <r:script language="JavaScript">
 

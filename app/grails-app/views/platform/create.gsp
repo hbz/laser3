@@ -7,41 +7,34 @@
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div>
-			
-			<div class="span12">
 
-					<h1 class="ui header"><g:message code="default.create.label" args="[entityName]" /></h1>
+			<h1 class="ui header"><g:message code="default.create.label" args="[entityName]" /></h1>
 
+			<semui:messages data="${flash}" />
 
-				<semui:messages data="${flash}" />
+			<g:hasErrors bean="${platformInstance}">
+			<bootstrap:alert class="alert-error">
+			<ul>
+				<g:eachError bean="${platformInstance}" var="error">
+				<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+				</g:eachError>
+			</ul>
+			</bootstrap:alert>
+			</g:hasErrors>
 
-				<g:hasErrors bean="${platformInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${platformInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+			<fieldset>
+				<g:form class="ui form" action="create" >
+					<fieldset>
+						<f:all bean="platformInstance"/>
+						<div class="ui segment form-actions">
+							<button type="submit" class="ui primary button">
+								<i class="icon-ok icon-white"></i>
+								<g:message code="default.button.create.label" default="Create" />
+							</button>
+						</div>
+					</fieldset>
+				</g:form>
+			</fieldset>
 
-				<fieldset>
-					<g:form class="ui form" action="create" >
-						<fieldset>
-							<f:all bean="platformInstance"/>
-							<div class="ui segment form-actions">
-								<button type="submit" class="ui primary button">
-									<i class="icon-ok icon-white"></i>
-									<g:message code="default.button.create.label" default="Create" />
-								</button>
-							</div>
-						</fieldset>
-					</g:form>
-				</fieldset>
-				
-			</div>
-
-		</div>
 	</body>
 </html>

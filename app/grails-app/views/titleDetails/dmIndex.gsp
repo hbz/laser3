@@ -10,12 +10,11 @@
       <semui:crumb text="${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}" class="active"/>
     </semui:breadcrumbs>
 
-    <div>
       <g:form action="dmIndex" method="get" params="${params}" role="form" class="form-inline">
-      <input type="hidden" name="offset" value="${params.offset}"/>
 
-      <div class="row">
-        <div class="span12">
+        <input type="hidden" name="offset" value="${params.offset}"/>
+
+
           <div class="well container">
             ${message(code:'title.label', default:'Title')} : <input name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/> (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})
             ${message(code:'default.status.label', default:'Status')} : <g:select name="status" 
@@ -29,13 +28,7 @@
             <div class="pull-right">
             </div>
           </div>
-        </div>
-      </div>
 
-
-      <div class="row">
-
-        <div class="span12">
           <div class="well">
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
@@ -99,10 +92,8 @@
                 </g:if>
               </div>
           </div>
-        </div>
-      </div>
       </g:form>
-    </div>
+
     <!-- ES Query: ${es_query} -->
   </body>
 </html>

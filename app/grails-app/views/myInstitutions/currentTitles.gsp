@@ -46,7 +46,7 @@
         <g:set var="filterHostPlat" value="${params.filterHostPlat?params.list('filterHostPlat'):"all"}" />
         <g:set var="filterOtherPlat" value="${params.filterOtherPlat?params.list('filterOtherPlat'):"all"}" />
   
-        <select size="5" name="filterSub" class="span3" multiple="multiple"> <!-- onchange="this.form.submit()" -->
+        <select size="5" name="filterSub" multiple="multiple"> <!-- onchange="this.form.submit()" -->
           <option<%= (filterSub.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_subs', default:'All Subscriptions')}</option>
           <g:each in="${subscriptions}" var="s">
             <option<%= (filterSub.contains(s.id.toString())) ? ' selected="selected"' : '' %> value="${s.id}" title="${s.name}${s.consortia?' ('+s.consortia.name+')':''}">
@@ -54,7 +54,7 @@
             </option>
           </g:each>
         </select>
-        <select size="5" name="filterPvd" class="span3" multiple="multiple">
+        <select size="5" name="filterPvd" multiple="multiple">
           <option<%= (filterPvd.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_providers', default:'All Content Providers')}</option>
           <g:each in="${providers}" var="p">
             <% 
@@ -66,7 +66,7 @@
             </option>
           </g:each>
         </select>
-        <select size="5" name="filterHostPlat" class="span3" multiple="multiple">
+        <select size="5" name="filterHostPlat" multiple="multiple">
           <option<%= (filterHostPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_host_platforms', default:'All Host Platforms')}</option>
           <g:each in="${hostplatforms}" var="hp">
             <% 
@@ -78,7 +78,7 @@
             </option>
           </g:each>
         </select>
-        <select size="5" name="filterOtherPlat" class="span3" multiple="multiple">
+        <select size="5" name="filterOtherPlat" multiple="multiple">
           <option<%= (filterOtherPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_other_platforms', default:'All Additional Platforms')}</option>
           <g:each in="${otherplatforms}" var="op">
             <% 

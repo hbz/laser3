@@ -7,19 +7,16 @@
 
   <body>
 
-    <div class="container-fluid">
+
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="myInstitutions" action="financeImport" params="${[shortcode:params.shortcode]}">${institution.name} Finance Import</g:link> </li>
       </ul>
-    </div>
 
     <semui:messages data="${flash}" />
 
     <h1 class="ui header">${institution?.name} - Finance Import</h1>
-  
-    <div class="container-fluid">
-      <div class="span12">
+
         <g:if test="${loaderResult==null}">
           <p>This service allows institutonal admins to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
           <table class="ui celled striped table">
@@ -67,7 +64,7 @@
             </dl>
           </g:form>
         </g:if>
-      </div>
+
 
       <g:if test="${loaderResult}">
         <table class="ui celled striped table">
@@ -101,6 +98,6 @@
           </tbody>
         </table>
       </g:if>
-    </div>
+
   </body>
 </html>

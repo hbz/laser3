@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div>
+
       <g:form action="generateImportWorksheet" method="get" params="${params}">
       <input type="hidden" name="offset" value="${params.offset}"/>
       <div class="row">
@@ -90,6 +90,6 @@
 
       </div>
       </g:form>
-    </div>
+
   </body>
 </html>

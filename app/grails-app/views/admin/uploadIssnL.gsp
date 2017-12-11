@@ -6,8 +6,7 @@
   </head>
 
   <body>
-    <div>
-      <div class="span12">
+
         <h1 class="ui header">Import Identifier Same-As Relations</h1>
       <g:if test="${hasStarted}">
         <div>
@@ -27,7 +26,6 @@
             <button name="load" type="submit" value="Go">Upload...</button>
           </dl>
         </g:form>
-      </div>
-    </div>
+
   </body>
 </html>

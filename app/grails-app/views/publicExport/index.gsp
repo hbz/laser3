@@ -52,31 +52,20 @@
 
   <body class="public">
 
-  <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicExport']"/>
+    <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicExport']"/>
+
+    <h1 class="ui header">${message(code:'public.nav.exports.label', default:'Exports')}</h1>
 
 
-  <div>
-      <h1 class="ui header">${message(code:'public.nav.exports.label', default:'Exports')}</h1>
-    </div>
+    <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
+     <a rel="license"
+        href="http://creativecommons.org/publicdomain/zero/1.0/">
+       <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+     </a>
+    </p>
 
-    <div>
-      <div class="row">
-        <div class="span12">
 
-<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
- <a rel="license"
-    href="http://creativecommons.org/publicdomain/zero/1.0/">
-   <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
- </a>
-</p>
 
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="row">
-        <div class="span12">
           <div class="well">
             <h4 class="ui header">Cufts style index of subscriptions offered</h4>
             <p>
@@ -87,11 +76,6 @@
             <g:link action="idx" params="${[format:'xml']}">XML</g:link><br/>
             <g:link action="idx" params="${[format:'json']}">JSON</g:link><br/>
           </div>
-        </div>
-      </div>
-    </div>
-
-
 
 
     <div>

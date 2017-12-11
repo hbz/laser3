@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div>
+
 
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link>
@@ -22,9 +22,8 @@
 
         <semui:messages data="${flash}" />
 
-      <div>
-        <div class="span12">
           <h3 class="ui header">${message(code:'myinst.tip.coreDates', default:'Core dates')}</h3>
+
           <ul>
             <g:each in="${tip.coreDates}" var="cd">
               <li>${cd}</li>
@@ -35,6 +34,7 @@
           </g:if>
 
           <h3 class="ui header">${message(code:'myinst.tip.usageRecords', default:'Usage Records')}</h3>
+
           <table class="ui celled table">
           <thead>
             <tr>
@@ -76,9 +76,6 @@
 
             <button type="submit">${message(code:'default.add.label', args:[message(code:'default.usage.label', default:'Usage')], default:'Add Usage')}</button>
           </g:form>
-        </div>
-      </div>
-
 
   </body>
 </html>
