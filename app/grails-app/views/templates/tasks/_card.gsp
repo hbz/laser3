@@ -5,7 +5,7 @@
         ${tsk?.endDate}
         <br />
     </g:each>
-    <input type="submit" class="ui primary button" value="${message(code:'task.create.new')}" data-toggle="modal" href="#modalCreateTask" />
+    <input type="submit" class="ui primary button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
 </semui:card>
 
 <g:render template="/templates/tasks/modal" />

@@ -40,7 +40,7 @@
         </tbody>
     </table>
     <g:if test="${editable}">
-        <input type="button" class="ui primary button" value="${message(code:'template.addNote', default:'Add new Note')}" data-toggle="modal"
+        <input type="button" class="ui primary button" value="${message(code:'template.addNote', default:'Add new Note')}" data-semui="modal"
                    href="#modalCreateNote"/>
    </g:if>
 </g:form>

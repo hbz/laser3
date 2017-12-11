@@ -82,16 +82,10 @@
         </li>
         -->
         <input class="ui primary button" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
-               data-toggle="modal" href="#addContactModal" type="submit">
+               data-semui="modal" href="#contactFormModal">
 	</ul>
 
-    <div id="addContactModal" class="modal hide">
-        <g:formRemote name="remoteContactForm"
-                      update="updateMeContact"
-                      url="[controller: 'contact', action: 'create']">
-            <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
-        </g:formRemote>
-    </div>
+	<g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
 
     <div id="updateMeContact"></div>
 </div>
@@ -112,16 +106,10 @@
         </li>
         -->
         <input class="ui primary button" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
-               data-toggle="modal" href="#addAddressModal" type="submit">
+               data-semui="modal" href="#addressFormModal">
 	</ul>
 
-    <div id="addAddressModal" class="modal hide">
-        <g:formRemote name="remoteAddressForm"
-                      update="updateMeAddress"
-                      url="[controller: 'address', action: 'create']">
-            <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
-        </g:formRemote>
-    </div>
+    <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
 
     <div id="updateMeAddress"></div>
 </div>

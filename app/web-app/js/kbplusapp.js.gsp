@@ -86,6 +86,11 @@ function semanticUiStuff() {
     $(".close.icon").click(function(){
         $(this).parent().hide();
     });
+
+    // modal opener
+    $("*[data-semui=modal]").click(function(){
+        $($(this).attr('href') + '.ui.modal').modal('show')
+    })
 }
 
 

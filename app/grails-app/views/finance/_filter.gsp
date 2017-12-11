@@ -23,7 +23,7 @@
 %{--Basic static help text--}%
 <g:render template="help" />
 
-<button class="ui primary button pull-right" type="submit" data-toggle="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
+<button class="ui primary button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
 <g:if test="${editable}">
     <button class="ui primary button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
     <button class="ui primary button pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>

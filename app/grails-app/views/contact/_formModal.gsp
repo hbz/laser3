@@ -2,6 +2,8 @@
 
 <semui:modal id="contactFormModal" text="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
 
+    <g:form class="ui form" url="[controller: 'contact', action: 'create']" method="POST">
+
     <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'contentType', 'error')} ">
         <label for="contentType">
             <g:message code="contact.contentType.label" default="ContentType" />
@@ -43,7 +45,7 @@
             <g:message code="contact.prs.label" default="Prs" />
 
         </label>
-        <g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${contactInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
+        <g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${personInstance?.id}" class="many-to-one" noSelection="['null': '']"/>
 
     </div>
 
@@ -52,12 +54,10 @@
             <g:message code="contact.org.label" default="Org" />
 
         </label>
-        <g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${contactInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
+        <g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${org?.id}" class="many-to-one" noSelection="['null': '']"/>
 
     </div>
 
-</semui:modal>
+    </g:form>
 
-<script>
-    $('#contactFormModal').show()
-</script>
+</semui:modal>

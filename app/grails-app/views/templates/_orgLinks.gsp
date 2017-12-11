@@ -24,6 +24,5 @@
     </g:each>
   </table>
   <g:if test="${editmode}">
-    <a class="ui primary button" data-toggle="modal" href="#osel_add_modal" >${message(code:'license.addOrgLink')}</a>
-<%-- <a class="ui primary button" data-toggle="modal" href="#osel_add_modal" >Add Org Link</a> --%>
+    <a class="ui primary button" data-semui="modal" href="#osel_add_modal" >${message(code:'license.addOrgLink')}</a>
   </g:if>

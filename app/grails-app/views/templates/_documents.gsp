@@ -15,8 +15,8 @@
     </g:each>
   </ul>
   <g:if test="${editable}">
-    <input type="submit" class="ui primary button" value="${message(code:'license.addNewDocument', default: 'Add new document')}" data-toggle="modal" href="#modalCreateDocument" />
-<%-- <input type="submit" class="ui primary button" value="Add new document" data-toggle="modal" href="#modalCreateDocument" /> --%>
+    <input type="submit" class="ui primary button" value="${message(code:'license.addNewDocument', default: 'Add new document')}" data-semui="modal" href="#modalCreateDocument" />
+<%-- <input type="submit" class="ui primary button" value="Add new document" data-semui="modal" href="#modalCreateDocument" /> --%>
   </g:if>
 </semui:card>
 <g:render template="/templates/addDocument"  />

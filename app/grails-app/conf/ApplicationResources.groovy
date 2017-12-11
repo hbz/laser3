@@ -18,7 +18,7 @@ modules = {
         dependsOn 'jquery'
 
         resource url:'js/application.js'
-        resource url:'js/plugins.min.js'
+        resource url:'js/plugins.js'  // successively removing legacy bootstrap plugins
     }
 
     // deprecated
@@ -82,9 +82,6 @@ modules = {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
 
-        resource url:'semantic/semantic.min.js'
-        resource url:'semantic/semantic.min.css'
-
         // legacy CRAP ..
         // legacy CRAP ..
         // legacy CRAP ..
@@ -102,12 +99,18 @@ modules = {
         resource url:'js/dataTables.scroller.js'
         resource url:'js/jquery.dotdotdot.min.js'
 
+        // new semui here
+
+        resource url:'semantic/semantic.min.js'
+        resource url:'semantic/semantic.min.css'
+
+        // legacy app js
+
         resource url:'js/kbplusapp.js.gsp'
 
         // updated stuff
 
         resource url:'semantic_heave/select2.css'       // new version 3.5.4
         resource url:'semantic_heave/select2.min.js'    // new version 3.5.4
-
     }
 }

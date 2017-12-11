@@ -36,7 +36,7 @@
     <g:form id="delete_doc_form" url="[controller: 'licenseDetails', action: 'deleteDocuments']" method="post">
         <div class="well hide license-documents-options">
             <button class="ui negative button" id="delete-doc">Delete Selected Documents</button>&nbsp;
-            <input type="submit" class="ui primary button" value="Add new document" data-toggle="modal"
+            <input type="submit" class="ui primary button" value="Add new document" data-semui="modal"
                    href="#modalCreateDocument"/>
 
             <input type="hidden" name="licid" value="${params.id}"/>
@@ -95,10 +95,9 @@
 </div>
 </div>
 
-<!-- Lightbox modal for creating a document taken from licenseDocuments.html -->
-<div class="modal hide" id="modalCreateDocument">
+<div class="ui modal" id="modalCreateDocument">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
+        <button type="button" class="close" onclick="$('#modalCreateDocument').modal('hide')">×</button>
 
         <h3 class="ui header">Create New Document</h3>
     </div>
@@ -140,7 +139,7 @@
         </div>
 
         <div class="modal-footer">
-            <a href="#" class="ui button" data-dismiss="modal">Close</a>
+            <a href="#" class="ui button" onclick="$('#modalCreateDocument').modal('hide')">Close</a>
             <input type="submit" class="ui primary button" value="Save Changes">
         </div>
     </g:form>

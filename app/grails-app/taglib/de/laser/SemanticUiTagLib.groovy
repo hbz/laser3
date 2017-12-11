@@ -267,8 +267,7 @@ class SemanticUiTagLib {
         out <<     body()
         out <<   '</div>'
         out <<   '<div class="actions">'
-        out <<     '<a href="#" class="ui button" data-dismiss="modal">' + msgClose + '</a>'
-        //          TODO remove legacy bootstrap: data-dismiss="modal"
+        out <<     '<a href="#" class="ui button" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
         out <<     '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
         out <<   '</div>'
         out << '</div>'

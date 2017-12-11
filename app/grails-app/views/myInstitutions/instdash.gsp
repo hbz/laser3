@@ -148,7 +148,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            <input type="submit" class="ui primary button" value="${message(code:'task.create.new')}" data-toggle="modal" href="#modalCreateTask" />
+                            <input type="submit" class="ui primary button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
                         </td>
                     </tr>
                     <g:each in="${tasks}" var="tsk">
