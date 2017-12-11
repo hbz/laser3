@@ -105,6 +105,7 @@
                     <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
             </div>
             <!-- SEND-BUTTON END-->
+          </span>
         </g:form>
       </semui:filter>
 
@@ -202,31 +203,33 @@
           <bootstrap:paginate  action="currentSubscriptions" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
         </g:if>
       </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
-    <script type="text/javascript">
 
+    <r:script type="text/javascript">
         $(document).ready(function(){
-            $('.ui.dropdown').dropdown();
-          var val = "${params.dateBeforeFilter}";
-          console.log("test");
-          if(val == "null"){
-            $(".dateBefore").addClass("hidden");
-          }else{
-            $(".dateBefore").removeClass("hidden");
-          }
+            var val = "${params.dateBeforeFilter}";
+            console.log("test");
+            if(val == "null"){
+                $(".dateBefore").addClass("hidden");
+            }else{
+                $(".dateBefore").removeClass("hidden");
+            }
         });
 
         $("[name='dateBeforeFilter']").change(function(){
-          var val = $(this)['context']['selectedOptions'][0]['label'];
+            var val = $(this)['context']['selectedOptions'][0]['label'];
 
-          if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
-            $(".dateBefore").removeClass("hidden");
-          }else{
-            $(".dateBefore").addClass("hidden");
-          }
+            if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
+                $(".dateBefore").removeClass("hidden");
+            }else{
+                $(".dateBefore").addClass("hidden");
+            }
         })
+    </r:script>
 
-    </script>
+
+    <r:script>
+        $('.ui.dropdown').dropdown()
+    </r:script>
 
   </body>
 </html>

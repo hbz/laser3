@@ -82,9 +82,6 @@ modules = {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
 
-        resource url:'semantic/semantic.min.js'
-        resource url:'semantic/semantic.min.css'
-
         // legacy CRAP ..
         // legacy CRAP ..
         // legacy CRAP ..
@@ -101,6 +98,13 @@ modules = {
         resource url:'js/dataTables.fixedColumns.min.js'
         resource url:'js/dataTables.scroller.js'
         resource url:'js/jquery.dotdotdot.min.js'
+
+        // new semui here
+
+        resource url:'semantic/semantic.min.js'
+        resource url:'semantic/semantic.min.css'
+
+        // legacy app js
 
         resource url:'js/kbplusapp.js.gsp'
 
