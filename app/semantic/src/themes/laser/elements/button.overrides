@@ -1,0 +1,6 @@
+/*******************************
+         Theme Overrides
+*******************************/
+.ui.button.la-nolabel {
+    margin-top: 1.7em;
+}

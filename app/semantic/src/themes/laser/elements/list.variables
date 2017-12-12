@@ -45,7 +45,7 @@
 @imageAlign: top;
 
 /* Content */
-@contentDistance: 0.1em;
+@contentDistance: 0.5em;
 @contentLineHeight: @itemLineHeight;
 @contentLineHeightOffset: (@contentLineHeight - 1em) / 2;
 @contentVerticalAlign: top;
