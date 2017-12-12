@@ -171,8 +171,8 @@
 
                   <dl>
                       <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
-                      <dd>
-                        <g:xEditable owner="${license}" type="date" field="startDate" />
+                      <dd>TODO: HEREWEGO:
+                        <semui:xEditable owner="${license}" type="date" field="startDate" />
                       </dd>
                   </dl>
 

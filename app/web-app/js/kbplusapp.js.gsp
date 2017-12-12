@@ -1,33 +1,34 @@
 // KBPlusApp.gsp.js
 //
 $(document).ready(function() {
-  console.log("${message(code:'default.locale.label')}");
-  console.log(gspLocale);
-  $.fn.editable.defaults.mode = 'inline';
-  $.fn.editable.defaults.emptytext = 'Edit';
-  $.fn.datepicker.defaults.language = gspLocale;
+  console.log("${message(code:'default.locale.label')}")
+  console.log(gspLocale)
+  console.log(gspDateFormat)
+  $.fn.editable.defaults.mode = 'inline'
+  $.fn.editable.defaults.emptytext = 'Edit'
+  // TODO $.fn.datepicker.defaults.language = gspLocale
   
   $('.xEditable').editable({
-    language: gspLocale,
+    language: gspLocale, /*
     datepicker: {
       language: gspLocale
-    },
+    }, */
     format: gspDateFormat,
   });
 
   $('.xEditableValue').editable({
-    language: gspLocale,
+    language: gspLocale, /*
     datepicker: {
       language: gspLocale
-    },
+    }, */
     format: gspDateFormat,
   });
   $(".xEditableManyToOne").editable();
   $(".simpleHiddenRefdata").editable({
-    language: gspLocale,
+    language: gspLocale, /*
     datepicker: {
       language: gspLocale
-    },
+    }, */
     format: gspDateFormat,
     url: function(params) {
       var hidden_field_id = $(this).data('hidden-id');

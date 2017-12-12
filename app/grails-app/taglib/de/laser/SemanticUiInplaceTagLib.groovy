@@ -16,155 +16,90 @@ class SemanticUiInplaceTagLib {
     *   class [optional] - additional classes
     */
     def xEditable = { attrs, body ->
-    
-    boolean editable = request.getAttribute('editable')
-    if ( editable == true ) {
-      def oid = "${attrs.owner.class.name}:${attrs.owner.id}"
-      def id = attrs.id ?: "${oid}:${attrs.field}"
-      def default_empty = message(code:'default.button.edit.label')
 
-      out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class?:''}\""
-      out << " data-type=\"${attrs.type?:'textarea'}\" data-pk=\"${oid}\""
-      out << " data-name=\"${attrs.field}\""
+        // TODO: data-type="combodate" data-value="1984-05-15" data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY" data-template="D / MMM / YYYY"
 
-      def data_link = null
-      switch ( attrs.type ) {
-        case 'date':
-          data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"]).encodeAsHTML()
-          break;
-        case 'string':
-        default:
-          data_link = createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
-          break;
-      }
+        boolean editable = request.getAttribute('editable')
+        if (editable == true) {
 
-      if (attrs?.emptytext)
-          out << " data-emptytext=\"${attrs.emptytext}\""
-      else {
-          out << " data-emptytext=\"${default_empty}\""
-      }
-      
-      if( attrs.type == "date" && attrs.language ) {
-        out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
-      }
+            def oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
+            def id            = attrs.id ?: "${oid}:${attrs.field}"
+            def default_empty = message(code:'default.button.edit.label')
+            def data_link     = null
 
-      out << " data-url=\"${data_link}\""
-      out << ">"
+            out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class?:''}\""
+            if (attrs.type == "date") {
+                out << " data-type=\"combodate\""
+                def df = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toUpperCase()}"
+                out << " data-format=\"${df}\""
+                out << " data-viewformat=\"${df}\""
+                out << " data-template=\"${df}\""
 
-      if ( body ) {
-        out << body()
-      }
-      else {
-        if ( attrs.owner[attrs.field] && attrs.type=='date' ) {
-          def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-          out << sdf.format(attrs.owner[attrs.field])
-        }
-        else {
-          if ( ( attrs.owner[attrs.field] == null ) || ( attrs.owner[attrs.field].toString().length()==0 ) ) {
-          }
-          else
-            out << attrs.owner[attrs.field].encodeAsHTML()
-        }
-      }
-      out << "</span>"
-    }
-    else {
-      if ( body ) {
-        out << body()
-      }
-      else {
-        if ( attrs.owner[attrs.field] && attrs.type=='date' ) {
-          def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-          out << sdf.format(attrs.owner[attrs.field])
-        }
-        else {
-          if ( ( attrs.owner[attrs.field] == null ) || ( attrs.owner[attrs.field].toString().length()==0 ) ) {
-          }
-          else
-            out << attrs.owner[attrs.field]
-        }
-      }
-    }
-  }
+            } else {
+                out << " data-type=\"${attrs.type?:'textarea'}\""
+            }
+            out << " data-pk=\"${oid}\""
+            out << " data-name=\"${attrs.field}\""
 
-    def xEditableRefData = { attrs, body ->
-//     log.debug("xEditableRefData ${attrs}");
-        try {
-            boolean editable = request.getAttribute('editable')
-     
-            if ( editable == true ) {
+            switch (attrs.type) {
+                case 'date':
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"]).encodeAsHTML()
+                break
+                case 'string':
+                default:
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
+                break
+            }
 
-                def oid = "${attrs.owner.class.name}:${attrs.owner.id}"
-                def dataController = attrs.dataController ?: 'ajax'
-                def dataAction = attrs.dataAction ?: 'sel2RefdataSearch'
-                def data_link = createLink(controller:dataController, action: dataAction, params:[id:attrs.config,format:'json',oid:oid]).encodeAsHTML()
-                def update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
-                def id = attrs.id ?: "${oid}:${attrs.field}"
-                def default_empty = message(code:'default.button.edit.label')
-                def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+            if (attrs?.emptytext)
+                out << " data-emptytext=\"${attrs.emptytext}\""
+            else {
+                out << " data-emptytext=\"${default_empty}\""
+            }
 
-                out << "<span>"
+            if (attrs.type == "date" && attrs.language) {
+                out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
+            }
 
-                // Output an editable link
-                out << "<span id=\"${id}\" class=\"xEditableManyToOne\" data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
+            out << " data-url=\"${data_link}\""
+            out << ">"
 
-
-
-                // Here we can register different ways of presenting object references. The most pressing need to be
-                // outputting a span containing an icon for refdata fields.
-
-                out << renderObjectValue(attrs.owner[attrs.field])
-
-                out << "</span></span>"
+            if (body) {
+                out << body()
             }
             else {
-                out << renderObjectValue(attrs.owner[attrs.field])
-            }
-        }
-        catch ( Throwable e ) {
-            log.error("Problem processing editable refdata ${attrs}",e)
-        }
-    }
-
-    def renderObjectValue(value) {
-        def result=''
-        def not_set = message(code:'refdata.notSet')
-
-        if ( value ) {
-            switch ( value.class ) {
-                case com.k_int.kbplus.RefdataValue.class:
-
-                    if ( value.icon != null ) {
-                        result="<span class=\"select-icon ${value.icon}\"></span>"
-                        result += value.value ? value.getI10n('value') : not_set
+                if (attrs.owner[attrs.field] && attrs.type=='date') {
+                    def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                    out << sdf.format(attrs.owner[attrs.field])
+                }
+                else {
+                    if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
                     else {
-                        result = value.value ? value.getI10n('value') : not_set
+                        out << attrs.owner[attrs.field].encodeAsHTML()
                     }
-                    break;
-                default:
-                    if(value instanceof String){
-
-                    }else{
-                        value = value.toString()
+                }
+            }
+            out << "</span>"
+        }
+        // !editable
+        else {
+            if ( body ) {
+                out << body()
+            }
+            else {
+                if (attrs.owner[attrs.field] && attrs.type=='date') {
+                    def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                    out << sdf.format(attrs.owner[attrs.field])
+                }
+                else {
+                    if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
-                    def no_ws = value.replaceAll(' ','')
-
-                    result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
+                    else {
+                        out << attrs.owner[attrs.field]
+                    }
+                }
             }
         }
-        result
-    }
-
-    def simpleHiddenValue = { attrs, body ->
-        def default_empty = message(code:'default.button.edit.label')
-        def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
-
-        out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\" data-type=\"${attrs.type?:'textarea'}\" "
-        if( attrs.type == "date" && attrs.language ) {
-            out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
-        }
-        out << "data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
-        out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
     }
 }

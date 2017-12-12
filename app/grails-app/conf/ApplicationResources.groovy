@@ -29,11 +29,15 @@ modules = {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
 
-        // deprecated ..
         resource url:'js/inline-content.js'
         resource url:'js/bootstrap.min.js'
-        resource url:'js/bootstrap-editable.js'
-        resource url:'js/bootstrap-datepicker.de.js'
+        //resource url:'js/bootstrap-editable.js' // switched to query-editable-poshytip.min.js
+        //resource url:'js/bootstrap-datepicker.de.js'
+
+        resource url:'semantic_heave/jquery-editable.css'               // updated stuff
+        resource url:'semantic_heave/jquery.poshytip.js'                // updated stuff
+        resource url:'semantic_heave/jquery-editable-poshytip.min.js'   // updated stuff
+
         resource url:'js/moment-with-locales.min.js'
         resource url:'js/moment.min.js'
         resource url:'js/select2.min.js'
@@ -42,7 +46,7 @@ modules = {
         resource url:'js/dataTables.fixedColumns.min.js'
         resource url:'js/dataTables.scroller.js'
         resource url:'js/jquery.dotdotdot.min.js'
-        // .. deprecated
+
         resource url:'js/kbplusapp.js.gsp'
 
         resource url:'css/onix.css'
@@ -53,11 +57,12 @@ modules = {
         resource url:'css/jquery.dataTables.css'
         resource url:'css/dataTables.fixedColumns.min.css'
         resource url:'css/dataTables.colVis.min.css'
-        resource url:'css/bootstrap-editable.css'
+        //resource url:'css/bootstrap-editable.css'
         resource url:'css/select2.css'
         resource url:"css/instances/deprecated.css" // legacy
 
-        resource url:'css/tmp_semui.css'
+        resource url:'js/tmp_semui.js'   // only tmp
+        resource url:'css/tmp_semui.css' // only tmp
     }
 
     semanticUI {
@@ -69,30 +74,31 @@ modules = {
         // legacy CRAP ..
 
         resource url:'js/bootstrap.min.js'
-        resource url:'js/bootstrap-editable.js'
-        resource url:'js/bootstrap-datepicker.de.js'
+        //resource url:'js/bootstrap-editable.js' // switched to query-editable-poshytip.min.js
+        //resource url:'js/bootstrap-datepicker.de.js'
+
+        resource url:'semantic_heave/jquery-editable.css'               // updated stuff
+        resource url:'semantic_heave/jquery.poshytip.js'                // updated stuff
+        resource url:'semantic_heave/jquery-editable-poshytip.min.js'   // updated stuff
+
         resource url:'js/moment-with-locales.min.js'
         resource url:'js/inline-content.js'
         resource url:'js/moment.min.js'
-        //resource url:'js/select2.min.js' // updated
+
         resource url:'js/jquery.dataTables.min.js'
         resource url:'js/dataTables.colVis.min.js'
         resource url:'js/dataTables.fixedColumns.min.js'
         resource url:'js/dataTables.scroller.js'
         resource url:'js/jquery.dotdotdot.min.js'
 
-        // new semui here
-
-        resource url:'semantic/semantic.min.js'
-        resource url:'semantic/semantic.min.css'
+        resource url:'semantic/semantic.min.js'     // new stuff
+        resource url:'semantic/semantic.min.css'    // new stuff
 
         // legacy app js
 
         resource url:'js/kbplusapp.js.gsp'
 
-        // updated stuff
-
-        resource url:'semantic_heave/select2.css'       // new version 3.5.4
-        resource url:'semantic_heave/select2.min.js'    // new version 3.5.4
+        resource url:'semantic_heave/select2.css'       // updated stuff // new version 3.5.4
+        resource url:'semantic_heave/select2.min.js'    // updated stuff // new version 3.5.4
     }
 }
