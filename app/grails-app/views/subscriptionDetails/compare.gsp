@@ -20,14 +20,11 @@
 			<semui:breadcrumbs>
 				<semui:crumb class="active" message="subscription.compare.label" />
 
-			        <li class="dropdown pull-right">
-			          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
-
-			          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-			            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
-			            
-			          </ul>
-			        </li>
+				<semui:exportDropdown>
+					<semui:exportDropdownItem>
+						<g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+					</semui:exportDropdownItem>
+				</semui:exportDropdown>
 			</semui:breadcrumbs>
 
 				<semui:messages data="${flash}" />

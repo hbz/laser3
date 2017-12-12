@@ -15,18 +15,15 @@
 		<semui:crumb controller="packageDetails" action="index" message="package.show.all" />
 		<semui:crumb class="active" message="package.compare.compare" />
 
-        <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
-
-          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
-            
-          </ul>
-        </li>
-
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
 	</semui:breadcrumbs>
 
 	<semui:messages data="${flash}" />
+
         <g:if test="${request.message}">
 		    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
 	    </g:if>

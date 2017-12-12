@@ -63,6 +63,7 @@
                 </g:if>
             </sec:ifLoggedIn>
 
+            <% /*
             <sec:ifLoggedIn>
                 <div class="ui simple dropdown item">
                     Public
@@ -82,10 +83,43 @@
                     </div>
                 </div>
             </sec:ifLoggedIn>
+            */ %>
 
             <g:if test="${user}">
                 <g:if test="${contextOrg}">
+                    <sec:ifLoggedIn>
+                        <div class="ui simple dropdown item">
+                            ${message(code:'menu.institutions.titlesAndPackages')}
+                            <i class="dropdown icon"></i>
 
+                            <div class="menu">
+                                <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
+                                <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
+
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="myInstitutions" action="currentTitles"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.myTitles')}</g:link>
+                                <g:link class="item" controller="myInstitutions" action="tipview"
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.myCoreTitles')}</g:link>
+
+                                <div class="divider"></div>
+
+                                <g:if test="${grailsApplication.config.feature.eBooks}">
+                                    <a class="item" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
+                                    <div class="divider"></div>
+                                </g:if>
+
+                                <g:link class="item" controller="packageDetails" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
+                                <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
+
+                                <div class="divider"></div>
+
+                                <a class="item" href="${message(code:'help.location')}">${message(code:'menu.institutions.help')}</a>
+                            </div>
+                        </div>
+                    </sec:ifLoggedIn>
+                    <% /*
                     <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
                             ${message(code:'menu.institutions.ttls')}
@@ -99,7 +133,7 @@
                             </div>
                         </div>
                     </sec:ifLoggedIn>
-
+                    */ %>
                     <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
                             ${message(code:'menu.institutions.subs')}
@@ -142,6 +176,8 @@
                             <div class="menu">
                                 <g:link class="item" controller="myInstitutions" action="currentLicenses"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.myLics')}</g:link>
+
+                                <div class="divider"></div>
 
                                 <g:link class="item" controller="licenseCompare" action="index"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.comp_lic')}</g:link>
@@ -394,33 +430,33 @@
         </div><!-- container -->
     </div><!-- inverted menu -->
 
-   <div class="navbar-push"></div>
+        <div class="navbar-push"></div>
 
-   <sec:ifLoggedIn>
-     <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
-       <div>
-         <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
-            Your display name</g:link> as soon as possible.
-         </bootstrap:alert>
-       </div>
-     </g:if>
-   </sec:ifLoggedIn>
+        <sec:ifLoggedIn>
+            <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
+                <div>
+                    <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
+                        Your display name</g:link> as soon as possible.
+                    </bootstrap:alert>
+                </div>
+            </g:if>
+        </sec:ifLoggedIn>
 
-    <div class="ui main container">
-        <div class="ui right aligned sub header">${contextOrg?.name}</div>
+        <div class="ui main container">
+            <div class="ui right aligned sub header">${contextOrg?.name}</div>
 
-        <g:layoutBody/>
-    </div><!-- .main -->
+            <g:layoutBody/>
+        </div><!-- .main -->
 
+        <div id="Footer">
+            <div class="clearfix"></div>
+            <div class="footer-links container">
+                <div class="row"></div>
+            </div>
+        </div>
 
-  <div id="Footer">
-      <div class="clearfix"></div>
-      <div class="footer-links container">
-          <div class="row"></div>
-      </div>
-  </div>
+        <r:layoutResources/>
 
-  <r:layoutResources/>
-
-  </body>
+        <% flash.clear() %>
+    </body>
 </html>

@@ -121,6 +121,20 @@ class SemanticUiTagLib {
         }
     }
 
+    // <semui:msg class="negative|positive|warning|.." text="${flash}" />
+
+    def msg = { attrs, body ->
+
+        if (attrs.text) {
+            out << '<div class="ui ' + attrs.class + ' message">'
+            out <<   '<i class="close icon"></i>'
+            out <<   '<p>'
+            out <<     attrs.text
+            out <<   '</p>'
+            out << '</div>'
+        }
+    }
+
     // <semui:card text="${text}" message="local.string" class="some_css_class">
     //
     // <semui:card>

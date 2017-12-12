@@ -1,17 +1,3 @@
-import grails.util.Holders
-
-// OK this works, but isn't ideal
-// import grails.util.Environment
-// switch (Environment.current) {
-//     case Environment.DEVELOPMENT:
-//         println("AppRes - Development");
-//         break
-//     case Environment.PRODUCTION:
-//         println("AppRes - Prod");
-//         break
-// }
-// resource url:"css/instances/${ApplicationHolder.application.config.defaultCssSkin?:'standard.css'}"
-
 
 modules = {
     application {
@@ -19,27 +5,6 @@ modules = {
 
         resource url:'js/application.js'
         resource url:'js/plugins.js'  // successively removing legacy bootstrap plugins
-    }
-
-    // deprecated
-    kbplus {
-        dependsOn 'jquery'
-        dependsOn 'deprecatedCSS'
-        
-        resource url:'js/inline-content.js'
-        resource url:'js/bootstrap.min.js'
-        resource url:'js/bootstrap-editable.js'
-        resource url:'js/bootstrap-datepicker.de.js'
-        resource url:'js/moment-with-locales.min.js'
-        resource url:'js/moment.min.js'
-        resource url:'js/select2.min.js'
-        resource url:'js/jquery.dataTables.min.js'
-        resource url:'js/dataTables.colVis.min.js'
-        resource url:'js/dataTables.fixedColumns.min.js'
-        resource url:'js/dataTables.scroller.js'
-        resource url:'js/jquery.dotdotdot.min.js'
-
-        resource url:'js/kbplusapp.js.gsp'
     }
 
     annotations {
@@ -61,7 +26,24 @@ modules = {
     }
 
     onixMatrix {
-        dependsOn 'kbplus'
+        dependsOn 'jquery'
+        dependsOn 'deprecatedCSS'
+
+        // deprecated ..
+        resource url:'js/inline-content.js'
+        resource url:'js/bootstrap.min.js'
+        resource url:'js/bootstrap-editable.js'
+        resource url:'js/bootstrap-datepicker.de.js'
+        resource url:'js/moment-with-locales.min.js'
+        resource url:'js/moment.min.js'
+        resource url:'js/select2.min.js'
+        resource url:'js/jquery.dataTables.min.js'
+        resource url:'js/dataTables.colVis.min.js'
+        resource url:'js/dataTables.fixedColumns.min.js'
+        resource url:'js/dataTables.scroller.js'
+        resource url:'js/jquery.dotdotdot.min.js'
+        // .. deprecated
+        resource url:'js/kbplusapp.js.gsp'
 
         resource url:'css/onix.css'
         resource url:'js/onix.js'
