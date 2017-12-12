@@ -8,17 +8,32 @@
 <body class="public">
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'home']"/>
 
-    <div class="ui container">
-        <h1 class="ui header">${message(code: 'public.welcome.label', default: 'Welcome to LAS:eR')}</h1>
+    <div class="ui container center aligned">
 
-        <div class="ui grid">
-            <div class="twelve wide column">
-                <markdown:renderHtml><g:dbContent key="kbplus.welcome.text"/></markdown:renderHtml>
+
+        <div class="ui grid ">
+            <div class="four wide column "></div>
+
+            <div class="four wide column ">
+                <div class="ui card">
+                    <div class="content">
+                        <div class="header">Informationen zu LAS:eR</div>
+
+                        <br>
+                        <p>
+                            <a href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" class="ui fluid button">
+                                LAS:eR wiki
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
             </div>
 
             <div class="four wide column">
                 <g:render template="/templates/loginDiv"/>
             </div>
+            <div class="four wide column "></div>
         </div>
     </div>
 </body>
