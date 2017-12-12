@@ -82,9 +82,9 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${orgInstanceTotal}" />
-				</div>
+
+                <semui:paginate total="${orgInstanceTotal}" />
+
 			</div>
 
 		</div>

@@ -21,9 +21,9 @@
 
     <div class="home-page">
 
-      <div class="pagination" style="text-align:center">
+      <div style="text-align:center">
         ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br/>
-        <bootstrap:paginate  action="changeLog" controller="myInstitutions" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br/>
+        <semui:paginate  action="changeLog" controller="myInstitutions" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br/>
         <g:form method="get" action="changeLog" params="${params}">
           ${message(code:'myinst.changeLog.restrictTo', default:'Restrict to')}: <select name="restrict" onchange="this.form.submit()">
             <option value="">${message(code:'myinst.changelog.all', default:'ALL')}</option>
@@ -53,9 +53,9 @@
         </g:each>
       </table>
 
-      <div class="pagination" style="text-align:center">
-        <bootstrap:paginate  action="changeLog" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_changes}" />
-      </div>
+
+        <semui:paginate  action="changeLog" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_changes}" />
+
 
     </div>
 

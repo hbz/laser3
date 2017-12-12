@@ -71,11 +71,11 @@
           </g:form>
         </g:if>
   
-        <div class="pagination" style="text-align:center">
+
           <g:if test="${packages}" >
-            <bootstrap:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
+            <semui:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
           </g:if>
-        </div>
+
     </div>
     <r:script type="text/javascript">
         $(document).ready(function() {

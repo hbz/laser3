@@ -83,7 +83,7 @@
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
-        <g:form params="${['shortcode':params.shortcode]}" action="managePrivateProperties" >
+        <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" >
             <g:field type="hidden" name="cmd" value="add" />
 
             <dl>

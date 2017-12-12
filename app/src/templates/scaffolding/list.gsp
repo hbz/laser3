@@ -52,9 +52,9 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="\${${propertyName}Total}" />
-				</div>
+
+					<semui:paginate total="\${${propertyName}Total}" />
+
 			</div><!-- .twelve -->
 
 			<div class="four wide column">

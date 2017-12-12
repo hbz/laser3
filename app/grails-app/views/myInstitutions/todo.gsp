@@ -15,11 +15,11 @@
     <div class="home-page">
       <h1 class="ui header">${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}</h1>
    
-      <div class="pagination" style="text-align:center">
+
         <g:if test="${todos!=null}" >
-          <bootstrap:paginate  action="todo" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
+          <semui:paginate  action="todo" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
         </g:if>
-      </div>
+
 
             <table class="ui table">
               <g:each in="${todos}" var="todo">
@@ -41,11 +41,9 @@
               </g:each>
             </table>
 
-      <div class="pagination" style="text-align:center">
         <g:if test="${todos!=null}" >
-          <bootstrap:paginate  action="todo" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
+          <semui:paginate  action="todo" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
         </g:if>
-      </div>
 
     </div>
 

@@ -22,11 +22,10 @@
               </g:each>
             </table>
 
-      <div class="pagination" style="text-align:center">
+
         <g:if test="${recentAnnouncements!=null}" >
-          <bootstrap:paginate  action="announcements" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_announcements}" />
+          <semui:paginate  action="announcements" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_announcements}" />
         </g:if>
-      </div>
 
 
     </div>

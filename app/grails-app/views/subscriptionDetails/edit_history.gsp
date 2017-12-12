@@ -50,9 +50,9 @@
           </g:each>
         </g:if>
       </table>
-       <div class="pagination">
-        <bootstrap:paginate  action="edit_history" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
-      </div>
+
+        <semui:paginate  action="edit_history" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
+
     </div>
 
 </body>

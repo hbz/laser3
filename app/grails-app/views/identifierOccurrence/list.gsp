@@ -48,9 +48,9 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${identifierOccurrenceInstanceTotal}" />
-				</div>
+
+					<semui:paginate total="${identifierOccurrenceInstanceTotal}" />
+
 
 		</div>
 	</body>

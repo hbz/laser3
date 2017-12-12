@@ -81,9 +81,9 @@
           </g:each>
         </tbody>
       </table>
-      <div class="pagination">
-        <bootstrap:paginate  action="index" controller="globalDataSync" params="${params}" next="Next" prev="Prev" max="${max}" total="${globalItemTotal}" />
-      </div>
+
+        <semui:paginate  action="index" controller="globalDataSync" params="${params}" next="Next" prev="Prev" max="${max}" total="${globalItemTotal}" />
+
     </div>
   </body>
 </html>

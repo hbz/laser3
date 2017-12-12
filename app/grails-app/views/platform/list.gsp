@@ -36,15 +36,15 @@
 						<td>${fieldValue(bean: platformInstance, field: "name")}</td>
 
 						<td class="link">
-							<g:link action="show" id="${platformInstance.id}" class="ui tiny button">${message(code:'default.button.show.label', default:'Show')} &raquo;</g:link>
+							<g:link action="show" id="${platformInstance.id}" class="ui tiny button">${message(code:'default.button.show.label', default:'Show')}</g:link>
 						</td>
 					</tr>
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
-				<bootstrap:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${platformInstanceTotal}" />
-			</div>
+
+				<semui:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${platformInstanceTotal}" />
+
 
 	</body>
 </html>

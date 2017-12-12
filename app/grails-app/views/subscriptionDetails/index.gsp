@@ -227,11 +227,11 @@
         </dd>
       </dl>
 
-      <div class="pagination" style="text-align:center">
+
         <g:if test="${entitlements}" >
-          <bootstrap:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
+          <semui:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
         </g:if>
-      </div>
+
     </div>
 
 

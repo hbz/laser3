@@ -45,9 +45,8 @@
           </tbody>
         </table>
 
-        <div class="pagination">
-          <bootstrap:paginate total="${total}" params="${params}" />
-        </div>
+          <semui:paginate total="${total}" params="${params}" />
+
 
     </div>
   </body>

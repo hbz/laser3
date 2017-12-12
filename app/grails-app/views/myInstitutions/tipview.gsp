@@ -84,9 +84,9 @@
           </g:each>
           </tbody>
         </table>
-          <div class="pagination" style="text-align:center">
-            <span><bootstrap:paginate action="tipview" max="${user?.defaultPageSize?:10}" params="${[:]+params}" next="Next" prev="Prev" total="${tips.totalCount}" /></span>
-          </div>
+
+          <semui:paginate action="tipview" max="${user?.defaultPageSize?:10}" params="${[:]+params}" next="Next" prev="Prev" total="${tips.totalCount}" />
+
         <div id="magicArea">
         </div>
 

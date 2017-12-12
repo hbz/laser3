@@ -79,11 +79,11 @@
                   </table>
                 </div><!-- #resultsarea -->
              </g:if>
-             <div class="pagination" style="text-align:center">
-                <g:if test="${hits}" >
-                  <bootstrap:paginate controller="titleDetails" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" />
-                </g:if>
-              </div><!-- .paginateButtons -->
+
+              <g:if test="${hits}" >
+                <semui:paginate controller="titleDetails" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" />
+              </g:if>
+
         </div><!-- .sixteen -->
       </div><!-- .grid -->
   </body>

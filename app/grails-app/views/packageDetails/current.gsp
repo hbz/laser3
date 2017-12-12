@@ -200,13 +200,10 @@
           </dd>
         </dl>
 
-        <div class="pagination" style="text-align:center">
+
           <g:if test="${titlesList}" >
-            <bootstrap:paginate  action="show" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate  action="show" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
-        </div>
-
-
 
         <g:if test="${editable}">
         

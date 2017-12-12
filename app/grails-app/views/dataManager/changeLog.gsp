@@ -129,11 +129,10 @@
         </table>
       </div>
 
-      <div class="pagination" style="text-align:center">
+
         <g:if test="${historyLines != null}" >
-          <bootstrap:paginate  action="changeLog" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
+          <semui:paginate  action="changeLog" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
-      </div>
 
     </g:if>
     <g:else>

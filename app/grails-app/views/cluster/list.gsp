@@ -47,9 +47,9 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${clusterInstanceTotal}" />
-				</div>
+
+					<semui:paginate total="${clusterInstanceTotal}" />
+
 
 		</div>
 	</body>

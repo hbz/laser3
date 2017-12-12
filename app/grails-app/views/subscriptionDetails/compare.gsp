@@ -193,9 +193,9 @@
 						</g:each>						
 					</tbody>
 				</table>
-				<div class="pagination" style="text-align:center">
-		 <bootstrap:paginate  action="compare" controller="subscriptionDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
-				</div>	
+
+		        <semui:paginate  action="compare" controller="subscriptionDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
+
 				</div>
 			</g:if>
 		</div>

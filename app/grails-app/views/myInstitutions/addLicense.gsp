@@ -98,11 +98,11 @@
             </tbody>
           </table>
 
-          <div class="pagination" style="text-align:center">
+
             <g:if test="${licenses}" >
-              <bootstrap:paginate  action="addLicense" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${numLicenses}" />
+              <semui:paginate  action="addLicense" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${numLicenses}" />
             </g:if>
-          </div>
+
         </div>
 
       </g:if>

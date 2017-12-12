@@ -98,15 +98,14 @@
             </div>
 
 
-            <div class="pagination" style="text-align:center">
               <g:if test="${tipps}" >
-                <bootstrap:paginate controller="subscriptionDetails" 
+                <semui:paginate controller="subscriptionDetails"
                                   action="addEntitlements" 
                                   params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}"
                                   max="${max}" 
                                   total="${num_tipp_rows}" />
               </g:if>
-            </div>
+
           </g:form>
 
     <r:script language="JavaScript">

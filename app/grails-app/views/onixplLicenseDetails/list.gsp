@@ -77,9 +77,8 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${onixplLicenseInstanceTotal}" />
-				</div>
+
+                <semui:paginate total="${onixplLicenseInstanceTotal}" />
 
 		</div>
 	</body>

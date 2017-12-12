@@ -67,15 +67,15 @@
               <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format', default:'yyyy-MM-dd HH:mm:ss z')}"/></td>
               <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format', default:'yyyy-MM-dd HH:mm:ss z')}"/></td>
               <td class="link">
-                <g:link action="show" id="${packageInstance.id}" class="ui tiny button">${message(code:'package.search.show')} &raquo;</g:link>
+                <g:link action="show" id="${packageInstance.id}" class="ui tiny button">${message(code:'package.search.show')}</g:link>
               </td>
             </tr>
           </g:each>
         </tbody>
       </table>
-      <div class="pagination">
-        <bootstrap:paginate  action="list" controller="packageDetails" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
-      </div>
+
+    <semui:paginate action="list" controller="packageDetails" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
+
 
   </body>
 </html>
