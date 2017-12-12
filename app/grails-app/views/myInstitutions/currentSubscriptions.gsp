@@ -31,81 +31,64 @@
                 <div class="field">
 
                     <label>${message(code: 'default.search.text', default: 'Search text')}:</label>
-                    <div class="ui action icon input">
+                    <div class="ui  input">
 
                     <input type="text" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
                            value="${params.q?.encodeAsHTML()}"/>
+                    </div>
 
-                    <div class="ui icon dropdown button">
-                        <input type="hidden" name="filters">
-                        <i class="filter icon"></i>
-                        <span class="text">Spalte</span>
-                        <i class="dropdown icon"></i>
+                </div>
 
-                        <div class="menu">
-                            <div class="scrolling menu">
-                                <div class="item">
-                                    Subskription
-                                </div>
-                                <div class="item">
-                                    Pakete
-                                </div>
-                                <div class="item">
-                                    Konsortien
-                                </div>
-                                <div class="item">
-                                    Lizenz
-                                </div>
-                            </div>
+                <!-- SEARCH END -->
+
+                <!-- DATE VALID ON -->
+                <div class="field">
+                    <label>${message(code:'default.valid_on.label', default:'Valid On')}: </label>
+                    <div class="ui calendar" id="valid-on">
+                        <div class="ui input left icon">
+                            <i class="calendar icon"></i>
+                            <input name="validOn" type="text" placeholder="Date" value="${validOn}">
                         </div>
                     </div>
                 </div>
-            </div>
-                <!-- SEARCH END -->
+                <!-- DATE VALID ON END-->
 
-                <!-- DATE -->
-                <!--
-                <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">
-                -->
-            <div class="field">
-                <label>${message(code:'default.valid_on.label', default:'Valid On')}: </label>
-                <div class="ui calendar" id="example2">
-                    <div class="ui input left icon">
-                        <i class="calendar icon"></i>
-                        <input name="validOn" type="text" placeholder="Date" value="${validOn}">
+                <!-- DROPDOWN DATE -->
+                <div class="field">
+                    <label class="control-label">${message(code:'default.filter.label', default:'Filter')}: </label>
+                    <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
+                    <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
+                    <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
+                    <g:select class="ui dropdown"
+                              name="dateBeforeFilter"
+                              value="${params.dateBeforeFilter}"
+                              from="${['renewalDate' : renewalDate, 'endDate' : endDate]}"
+                              noSelection="${['null' : noDate]}"
+                              optionKey="key"
+                              optionValue="value" />
+                </div>
+                <!-- DROPDOWN DATE END -->
+
+                <!-- dateBeforeVal -->
+                <div class="field">
+                    <label >${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}</label>
+                    <div class="ui calendar" id="date-before-val">
+                        <div class="ui input left icon">
+                            <i class="calendar icon"></i>
+                            <input  type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
+                        </div>
                     </div>
                 </div>
+                <!-- dateBeforeVal -->
+
+               <!-- SEND-BUTTON -->
+                <div class="field">
+
+                        <input type="submit" class="ui primary button la-nolabel" value="${message(code:'default.button.search.label', default:'Search')}" />
+                </div>
+                <!-- SEND-BUTTON END-->
             </div>
-            <!-- DATE END-->
-
-
-
-
-          <label class="control-label">${message(code:'default.filter.label', default:'Filter')}: </label>
-          <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
-          <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
-          <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
-          <g:select style="margin-top:10px;padding:0px 6px;"
-                    name="dateBeforeFilter"
-                    value="${params.dateBeforeFilter}"
-                    from="${['renewalDate' : renewalDate, 'endDate' : endDate]}"
-                    noSelection="${['null' : noDate]}"
-                    optionKey="key"
-                    optionValue="value" />
-
-          <span class="dateBefore hidden">
-            <label class="control-label" style="margin-right:10px;">${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}</label>
-            <div class="input-append date">
-                <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
-            </div>
-            <!-- SEND-BUTTON -->
-            <div class="field">
-                <label>&nbsp</label>
-                    <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
-            </div>
-            <!-- SEND-BUTTON END-->
-          </span>
         </g:form>
       </semui:filter>
 
@@ -180,7 +163,7 @@
                   <g:if test="${s.packages.size() > 10}">
                     <div>${message(code:'myinst.currentSubscriptions.etc.label', args:[s.packages.size() - 10])}</div>
                   </g:if>
-                </div>
+
                 <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
                   <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link></i>
                 </g:if>
@@ -207,7 +190,6 @@
     <r:script type="text/javascript">
         $(document).ready(function(){
             var val = "${params.dateBeforeFilter}";
-            console.log("test");
             if(val == "null"){
                 $(".dateBefore").addClass("hidden");
             }else{
@@ -228,7 +210,37 @@
 
 
     <r:script>
-        $('.ui.dropdown').dropdown()
+        $('.ui.dropdown').dropdown();
+        $('#valid-on').calendar({
+            type: 'date',
+            firstDayOfWeek: 1,
+            formatter: {
+                date: function (date, settings) {
+                    if (!date) return '';
+                    var day = date.getDate();
+                    var month = date.getMonth() + 1;
+                    var year = date.getFullYear();
+                    return day + '.' + month + '.' + year;
+                }
+            }
+        });
+
+        $('#date-before-val').calendar({
+            type: 'date',
+            firstDayOfWeek: 1,
+            formatter: {
+                date: function (date, settings) {
+                    if (!date) return '';
+                    var day = date.getDate();
+                    var month = date.getMonth() + 1;
+                    var year = date.getFullYear();
+                    return day + '.' + month + '.' + year;
+                }
+            }
+        });
+
+
+
     </r:script>
 
   </body>
