@@ -60,7 +60,7 @@
               <dt>New Content (Markdown)</dt>
               <dd><textarea name="content" rows="5"></textarea></dd>
             </dl>
-            <input type="submit" value="Create" class="ui primary button"/>
+            <input type="submit" value="Create" class="ui button"/>
           </g:form>
             </semui:card>
         </div><!-- .four -->

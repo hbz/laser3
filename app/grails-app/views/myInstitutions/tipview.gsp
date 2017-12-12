@@ -50,7 +50,7 @@
               </select>
               <input type="hidden" name="filter" value="${params.filter}"/>
 
-              <button type="submit" class="ui primary button" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
+              <button type="submit" class="ui button" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
 
             </g:form>
         </semui:filter>

@@ -68,13 +68,13 @@
                     <p>${message(code:'propertyDefinition.private.info')}</p>
 
                     <g:field type="hidden" name="cmd" value="delete" />
-                    <button type="submit" class="ui primary button">${message(code:'default.button.delete.label', default:'Delete')}</button>
+                    <button type="submit" class="ui button">${message(code:'default.button.delete.label', default:'Delete')}</button>
                 </g:form>
             </g:if>
         </div>
         <div class="four wide column">
             <semui:card class="card-grey">
-                <input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
+                <input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}"
                        data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
             </semui:card>
         </div>

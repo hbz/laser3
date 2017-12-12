@@ -81,7 +81,7 @@
 			</tbody>
 		</table>
 
-		<input type="submit" class="ui primary button" value="${message(code:'default.button.compare.label', default:'Compare')}">
+		<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}">
 	</g:form>
 </div>
 
@@ -144,7 +144,7 @@
 				${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:
                                 <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
 			</td>
-			<td style="padding-left:10px;"> <input type='button' class="ui primary button" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
+			<td style="padding-left:10px;"> <input type='button' class="ui button" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
 		</tr>
 		<tr>
 		<td style="text-align:right;padding-right:10px;">
@@ -155,7 +155,7 @@
 			<g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 		</td>
 
-			<td  style="padding-left:10px;"> <input type="submit" class="ui primary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>
+			<td  style="padding-left:10px;"> <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>
 		</tr>
 	</table>
 

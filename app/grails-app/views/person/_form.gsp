@@ -81,7 +81,7 @@
             </g:link>
         </li>
         -->
-        <input class="ui primary button" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+        <input class="ui button" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
                data-semui="modal" href="#contactFormModal">
 	</ul>
 
@@ -105,7 +105,7 @@
             </g:link>
         </li>
         -->
-        <input class="ui primary button" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
+        <input class="ui button" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
                data-semui="modal" href="#addressFormModal">
 	</ul>
 
@@ -146,7 +146,7 @@
 		    optionKey="id" 
 		    optionValue="value" />
 		    
-		<button class="ui primary mini button add-person-role" type="button">Add</button>
+		<button class="ui button add-person-role" type="button">Add</button>
 		
 		<div class="workspace">
 			<h4 class="ui header">* New</h4>
@@ -166,7 +166,7 @@
 		    optionKey="id" 
 		    optionValue="value" />
 		    
-		<button class="ui primary mini button add-person-role" type="button">Add</button>
+		<button class="ui button add-person-role" type="button">Add</button>
 
 		<div class="workspace">
 			<h4 class="ui header">* New</h4>

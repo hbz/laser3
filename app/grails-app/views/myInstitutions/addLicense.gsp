@@ -27,7 +27,7 @@
             <div class="span6">&nbsp;
                 <!--
                 <input type="text" name="keyword-search" placeholder="enter search term..." />
-                <input type="submit" class="ui primary button" value="Search" />
+                <input type="submit" class="ui button" value="Search" />
                 -->
             </div>
             <div class="span6">
@@ -40,7 +40,7 @@
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
           <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'license.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-          <input type="submit" class="ui primary button" value="${message(code:'default.button.submit.label')}" />
+          <input type="submit" class="ui button" value="${message(code:'default.button.submit.label')}" />
         </g:form>
       </div>
 

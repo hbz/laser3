@@ -18,7 +18,7 @@
                     Role:
                      <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
                      <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" value="authority "optionKey="id" optionValue="authority" name="authority" />
-                    <input type="submit" value="Search" class="ui primary button"/>
+                    <input type="submit" value="Search" class="ui button"/>
                   </g:form>
                 </semui:filter>
 

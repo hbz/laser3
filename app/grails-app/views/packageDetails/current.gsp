@@ -70,7 +70,7 @@
             &nbsp;<label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
             <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 
-           <input type="submit" class="ui primary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+           <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
         </g:form>
 
           <table class="ui celled table">
@@ -115,8 +115,8 @@
                           <input type="checkbox" name="clear_embargo"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                   </table>
-                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui primary button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
-                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui primary button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
+                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
+                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
                 </g:if>
               </th>
             </tr>

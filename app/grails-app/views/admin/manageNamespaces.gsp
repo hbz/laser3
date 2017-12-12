@@ -112,7 +112,7 @@
 
 								<br />
 
-								<button type="submit" class="ui primary button">
+								<button type="submit" class="ui button">
 									<i class="icon-ok icon-white"></i>
 									<g:message code="default.button.create.label" default="Create" />
 								</button>

@@ -17,7 +17,7 @@
             <g:form action="list" method="get" class="form-inline">
                 ${message(code: 'org.search.contains')}: <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> ${message(code: 'org.search.restrict')}
                 <g:select name="orgRole" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}" from="${RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" value="${params.orgRole}" optionKey="id" optionValue="value"/>
-                <input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button"/> (${orgInstanceTotal} Matches)
+                <input type="submit" value="${message(code:'default.button.search.label')}" class="ui button"/> (${orgInstanceTotal} Matches)
             </g:form>
         </semui:filter>
 

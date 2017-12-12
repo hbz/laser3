@@ -154,8 +154,8 @@ TODO !!! this modal dialog has not been refactored ..
         </div>
 
         <div class="modal-footer">
-            <input id="new_cust_prop_add_btn" type="submit" class="ui primary button" value="${message(code:'default.button.add.label', default:'Add')}">
-            <a href="#" data-dismiss="modal" class="ui primary button">${message(code:'default.button.close.label', default:'Close')}</a>
+            <input id="new_cust_prop_add_btn" type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}">
+            <a href="#" data-dismiss="modal" class="ui button">${message(code:'default.button.close.label', default:'Close')}</a>
         </div>
     </g:formRemote>
 

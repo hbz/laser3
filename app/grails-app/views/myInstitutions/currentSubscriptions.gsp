@@ -51,7 +51,7 @@
             <div class="input-append date">
                 <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
             </div>
-          <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+          <input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}" />
         </g:form>
       </semui:filter>
 

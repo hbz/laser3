@@ -157,7 +157,7 @@
                 <g:if test="${editable}">
                   <tr>
                     <td rowspan="2"><input type="checkbox" name="checkall" onClick="javascript:$('.bulkcheck').attr('checked', true);"/></td>
-                    <td colspan="2"><button class="ui primary button" type="submit" value="Go" name="BatchEdit">${message(code:'title.edit.tipp.clear')}</button></td>
+                    <td colspan="2"><button class="ui button" type="submit" value="Go" name="BatchEdit">${message(code:'title.edit.tipp.clear')}</button></td>
                     <td>${message(code:'title.show.history.date')}:<g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
                        - <input type="checkbox" name="clear_start_date"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>

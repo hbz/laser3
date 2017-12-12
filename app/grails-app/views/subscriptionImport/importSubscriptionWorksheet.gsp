@@ -9,7 +9,7 @@
     <div>
       <g:form action="importSubscriptionWorksheet" method="post" enctype="multipart/form-data" params="${params}">
         <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/>
-        <button type="submit" class="ui primary button"><g:message code="subscription.upload.worksheet" default="Upload New Subscription Taken Worksheet"/></button>
+        <button type="submit" class="ui button"><g:message code="subscription.upload.worksheet" default="Upload New Subscription Taken Worksheet"/></button>
       </g:form>
     </div>
 
@@ -81,7 +81,7 @@
           <input type="hidden" name="ecount" value="${counter}"/>
 
           <div class="pull-right">
-            <button type="submit" class="ui primary button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
+            <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
           </div>
         </div>
       </g:form>

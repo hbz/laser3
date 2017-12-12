@@ -66,7 +66,7 @@
                             <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
                     </g:if>
                 </g:each>
-                <g:link controller="address" action="create" class="ui primary button" params="['org.id': orgInstance.id]" >
+                <g:link controller="address" action="create" class="ui button" params="['org.id': orgInstance.id]" >
                     ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}
                 </g:link>
             </dd>
@@ -78,7 +78,7 @@
                             <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
                     </g:if>
                 </g:each>
-                <g:link controller="contact" action="create" class="ui primary button" params="['org.id': orgInstance.id]" >
+                <g:link controller="contact" action="create" class="ui button" params="['org.id': orgInstance.id]" >
                     ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
                 </g:link>
             </dd>
@@ -90,7 +90,7 @@
                         <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
                     </g:if>
                 </g:each>
-                <g:link controller="person" action="create" class="ui primary button"
+                <g:link controller="person" action="create" class="ui button"
                         params="['tenant.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
                     ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
                 </g:link>

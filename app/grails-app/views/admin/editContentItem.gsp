@@ -27,7 +27,7 @@
           <dt>Content (Markdown)</dt>
           <dd><textarea name="content" rows="5">${contentItem.content}</textarea></dd>
         </dl>
-        <input type="submit" class="ui primary button"/>
+        <input type="submit" class="ui button"/>
       </g:form>
     </div>
   </body>

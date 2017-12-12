@@ -84,7 +84,7 @@
               <dt>Credentials (Password)</dt>
               <dd><input type="text" name="credentials" placeholder=""/></dd>
             </dl>
-            <input type="submit" value="Submit" class="ui primary button"/>
+            <input type="submit" value="Submit" class="ui button"/>
           </g:form>
         </div><!-- .four -->
 

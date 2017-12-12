@@ -84,7 +84,7 @@
 							</tr>
 						</tbody>
 					</table>	
-					<input type="submit" class="ui primary button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
+					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
 				</g:form>
 			</div>
 
@@ -141,8 +141,8 @@
 							<td>
 								${message(code:'subscription.compare.filter.title', default:'Filters - Title')}: <input name="filter" value="${params.filter}">
 							</td>
-							<td> <input type="submit" class="ui primary button" value="Filter Results" /> </td>
-							<td> <input id="resetFilters" type="submit" class="ui primary button" value="${message(code:'default.button.clear.label', default:'Clear')}" /> </td>
+							<td> <input type="submit" class="ui button" value="Filter Results" /> </td>
+							<td> <input id="resetFilters" type="submit" class="ui button" value="${message(code:'default.button.clear.label', default:'Clear')}" /> </td>
 						</tr>
 					</table>
 				</g:form>

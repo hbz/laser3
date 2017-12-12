@@ -431,8 +431,8 @@
                       </tr>
                     </g:if>
                   </table>
-                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui primary button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
-                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui primary button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
+                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
+                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
                 </g:if>
               </th>
             </tr>

@@ -36,7 +36,7 @@
     optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to merge-']}"/>
     </dd>
      </dl>
-     <input type="submit" value="Merge" class="ui primary button"/>
+     <input type="submit" value="Merge" class="ui button"/>
   </g:form>
   </div>
   </div>
@@ -74,7 +74,7 @@
         </div>
         
         <div class="modal-footer">
-        <input type="submit" id="mergeUsersBtn" value="Apply" class="ui primary button"/>
+        <input type="submit" id="mergeUsersBtn" value="Apply" class="ui button"/>
      </div>
         </g:form>
   </div>

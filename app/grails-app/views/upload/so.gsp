@@ -33,7 +33,7 @@
 
             Override Character Set Test: <input type="checkbox" name="OverrideCharset" checked="false"/>
 
-            <button type="submit" class="ui primary button">Upload SO</button>
+            <button type="submit" class="ui button">Upload SO</button>
         </g:form>
 
         <g:if test="${new_pkg_id && new_sub_id}">

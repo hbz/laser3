@@ -24,7 +24,7 @@
           <button id="submitAICForm"
                   data-complete-text="Add Org Combo"
                   type="submit"
-                  class="ui primary button">
+                  class="ui button">
             ${message(code: 'default.add.label', args:[message(code:'combo.label', default:'Combo')],default:'Add Combo')}
           </button>
         </g:form>

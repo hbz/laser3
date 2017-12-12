@@ -77,7 +77,7 @@
             </dd>
           </g:if>
           <br/>
-          <input type="submit" class="ui primary button" value="${message(code:'default.button.create.label', default:'Create')}" />
+          <input type="submit" class="ui button" value="${message(code:'default.button.create.label', default:'Create')}" />
         </dl>
       </g:form>
     </div>       

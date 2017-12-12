@@ -21,7 +21,7 @@
             ${message(code:'announcement.subject.label', default:'Subject')}: <input type="text" name="subjectTxt" value="${params.as}" /><br/>
             <textarea name="annTxt">${params.at}</textarea>
             <br />
-            <input type="submit" class="ui primary button" value="${message(code:'announcement.create.button.label', default:'Create Announcement...')}" />
+            <input type="submit" class="ui button" value="${message(code:'announcement.create.button.label', default:'Create Announcement...')}" />
         </g:form>
     </semui:form>
 
@@ -50,7 +50,7 @@
     <r:script language="JavaScript">
       $(document).ready(function() {
         $(".ann-content ul").wrap("<div class='collapse'/>");
-        $(".collapse").before("<div class='ui primary mini button toggle' style='margin-bottom:5px;' type='button'>${message(code:'default.button.show.label')}</div>");
+        $(".collapse").before("<div class='ui primary button toggle' style='margin-bottom:5px;' type='button'>${message(code:'default.button.show.label')}</div>");
         $('.toggle').click(function(){
           if ( $(this).next().hasClass('in') ){
             $(this).text("${message(code:'default.button.show.label')}")

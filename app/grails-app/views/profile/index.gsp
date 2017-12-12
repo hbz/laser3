@@ -48,7 +48,7 @@
 
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui primary button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
+                            <button type="submit" class="ui button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
                         </div>
 
                     </g:form>
@@ -74,7 +74,7 @@
                         </div>
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui primary button">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
+                            <button type="submit" class="ui button">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
                         </div>
 
                     </g:form>
@@ -205,7 +205,7 @@
 
                               <div class="field">
                                 <label></label>
-                                <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui primary button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
+                                <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
                               </div>
                           </g:form>
                     </div><!-- .segment -->
@@ -262,7 +262,7 @@
                                     </select>
                                 </div>
 
-                                <button id="submitReminder" type="submit" class="ui primary button">${message(code:'default.button.create.label', default: 'Create')}</button>
+                                <button id="submitReminder" type="submit" class="ui button">${message(code:'default.button.create.label', default: 'Create')}</button>
                             </g:form>
                         </div>
                     </div><!-- #reminders -->
