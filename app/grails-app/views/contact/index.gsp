@@ -52,9 +52,9 @@
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
-				<g:paginate total="${contactInstanceCount ?: 0}" />
-			</div>
+
+			<semui:paginate total="${contactInstanceCount ?: 0}" />
+
 		</div>
 	</body>
 </html>

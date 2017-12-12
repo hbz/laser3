@@ -50,9 +50,9 @@
             </g:each>
             </tbody>
         </table>
-        <div class="pagination">
-            <!--bootstrap:paginate total="${taskInstanceTotal}" /-->
-        </div>
+
+        <semui:paginate total="${taskInstanceTotal}" />
+
     </div><!-- .sixteen -->
 
 </div><!-- .grid -->

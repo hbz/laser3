@@ -48,9 +48,9 @@
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
-				<g:paginate total="${personInstanceCount ?: 0}" />
-			</div>
+
+				<semui:paginate total="${personInstanceCount ?: 0}" />
+
 		</div>
 	</body>
 </html>

@@ -44,9 +44,9 @@
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
-				<g:paginate total="${clusterInstanceCount ?: 0}" />
-			</div>
+
+				<semui:paginate total="${clusterInstanceCount ?: 0}" />
+
 		</div>
 	</body>
 </html>
