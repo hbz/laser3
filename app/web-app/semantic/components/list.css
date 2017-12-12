@@ -141,7 +141,7 @@ ol.ui.list ol li,
 .ui.list > .item > .image + .content,
 .ui.list > .item > .icon + .content {
   display: table-cell;
-  padding: 0em 0em 0em 0.1em;
+  padding: 0em 0em 0em 0.5em;
   vertical-align: top;
 }
 .ui.list .list > .item > img.image + .content,

@@ -4944,6 +4944,10 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
          Theme Overrides
 *******************************/
 
+.ui.button.la-nolabel {
+  margin-top: 1.7em;
+}
+
 /*******************************
          Site Overrides
 *******************************/
@@ -5370,6 +5374,1277 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   .ui.grid .stackable.row .ui.vertical.divider:after {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABaAAAAACCAYAAACuTHuKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1OThBRDY4OUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1OThBRDY4QUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjU5OEFENjg3Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU5OEFENjg4Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+VU513gAAADVJREFUeNrs0DENACAQBDBIWLGBJQby/mUcJn5sJXQmOQMAAAAAAJqt+2prAAAAAACg2xdgANk6BEVuJgyMAAAAAElFTkSuQmCC');
   }
+}
+
+/*******************************
+         Site Overrides
+*******************************/
+/*!
+ * # Semantic UI 2.2.13 - Flag
+ * http://github.com/semantic-org/semantic-ui/
+ *
+ *
+ * Released under the MIT license
+ * http://opensource.org/licenses/MIT
+ *
+ */
+
+/*******************************
+             Flag
+*******************************/
+
+i.flag:not(.icon) {
+  display: inline-block;
+  width: 16px;
+  height: 11px;
+  line-height: 11px;
+  vertical-align: baseline;
+  margin: 0em 0.5em 0em 0em;
+  text-decoration: inherit;
+  speak: none;
+  font-smoothing: antialiased;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Sprite */
+
+i.flag:not(.icon):before {
+  display: inline-block;
+  content: '';
+  background: url("./themes/default/assets/images/flags.png") no-repeat -108px -1976px;
+  width: 16px;
+  height: 11px;
+}
+
+/* Flag Sprite Based On http://www.famfamfam.com/lab/icons/flags/ */
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+i.flag.ad:before,
+i.flag.andorra:before {
+  background-position: 0px 0px;
+}
+
+i.flag.ae:before,
+i.flag.united.arab.emirates:before,
+i.flag.uae:before {
+  background-position: 0px -26px;
+}
+
+i.flag.af:before,
+i.flag.afghanistan:before {
+  background-position: 0px -52px;
+}
+
+i.flag.ag:before,
+i.flag.antigua:before {
+  background-position: 0px -78px;
+}
+
+i.flag.ai:before,
+i.flag.anguilla:before {
+  background-position: 0px -104px;
+}
+
+i.flag.al:before,
+i.flag.albania:before {
+  background-position: 0px -130px;
+}
+
+i.flag.am:before,
+i.flag.armenia:before {
+  background-position: 0px -156px;
+}
+
+i.flag.an:before,
+i.flag.netherlands.antilles:before {
+  background-position: 0px -182px;
+}
+
+i.flag.ao:before,
+i.flag.angola:before {
+  background-position: 0px -208px;
+}
+
+i.flag.ar:before,
+i.flag.argentina:before {
+  background-position: 0px -234px;
+}
+
+i.flag.as:before,
+i.flag.american.samoa:before {
+  background-position: 0px -260px;
+}
+
+i.flag.at:before,
+i.flag.austria:before {
+  background-position: 0px -286px;
+}
+
+i.flag.au:before,
+i.flag.australia:before {
+  background-position: 0px -312px;
+}
+
+i.flag.aw:before,
+i.flag.aruba:before {
+  background-position: 0px -338px;
+}
+
+i.flag.ax:before,
+i.flag.aland.islands:before {
+  background-position: 0px -364px;
+}
+
+i.flag.az:before,
+i.flag.azerbaijan:before {
+  background-position: 0px -390px;
+}
+
+i.flag.ba:before,
+i.flag.bosnia:before {
+  background-position: 0px -416px;
+}
+
+i.flag.bb:before,
+i.flag.barbados:before {
+  background-position: 0px -442px;
+}
+
+i.flag.bd:before,
+i.flag.bangladesh:before {
+  background-position: 0px -468px;
+}
+
+i.flag.be:before,
+i.flag.belgium:before {
+  background-position: 0px -494px;
+}
+
+i.flag.bf:before,
+i.flag.burkina.faso:before {
+  background-position: 0px -520px;
+}
+
+i.flag.bg:before,
+i.flag.bulgaria:before {
+  background-position: 0px -546px;
+}
+
+i.flag.bh:before,
+i.flag.bahrain:before {
+  background-position: 0px -572px;
+}
+
+i.flag.bi:before,
+i.flag.burundi:before {
+  background-position: 0px -598px;
+}
+
+i.flag.bj:before,
+i.flag.benin:before {
+  background-position: 0px -624px;
+}
+
+i.flag.bm:before,
+i.flag.bermuda:before {
+  background-position: 0px -650px;
+}
+
+i.flag.bn:before,
+i.flag.brunei:before {
+  background-position: 0px -676px;
+}
+
+i.flag.bo:before,
+i.flag.bolivia:before {
+  background-position: 0px -702px;
+}
+
+i.flag.br:before,
+i.flag.brazil:before {
+  background-position: 0px -728px;
+}
+
+i.flag.bs:before,
+i.flag.bahamas:before {
+  background-position: 0px -754px;
+}
+
+i.flag.bt:before,
+i.flag.bhutan:before {
+  background-position: 0px -780px;
+}
+
+i.flag.bv:before,
+i.flag.bouvet.island:before {
+  background-position: 0px -806px;
+}
+
+i.flag.bw:before,
+i.flag.botswana:before {
+  background-position: 0px -832px;
+}
+
+i.flag.by:before,
+i.flag.belarus:before {
+  background-position: 0px -858px;
+}
+
+i.flag.bz:before,
+i.flag.belize:before {
+  background-position: 0px -884px;
+}
+
+i.flag.ca:before,
+i.flag.canada:before {
+  background-position: 0px -910px;
+}
+
+i.flag.cc:before,
+i.flag.cocos.islands:before {
+  background-position: 0px -962px;
+}
+
+i.flag.cd:before,
+i.flag.congo:before {
+  background-position: 0px -988px;
+}
+
+i.flag.cf:before,
+i.flag.central.african.republic:before {
+  background-position: 0px -1014px;
+}
+
+i.flag.cg:before,
+i.flag.congo.brazzaville:before {
+  background-position: 0px -1040px;
+}
+
+i.flag.ch:before,
+i.flag.switzerland:before {
+  background-position: 0px -1066px;
+}
+
+i.flag.ci:before,
+i.flag.cote.divoire:before {
+  background-position: 0px -1092px;
+}
+
+i.flag.ck:before,
+i.flag.cook.islands:before {
+  background-position: 0px -1118px;
+}
+
+i.flag.cl:before,
+i.flag.chile:before {
+  background-position: 0px -1144px;
+}
+
+i.flag.cm:before,
+i.flag.cameroon:before {
+  background-position: 0px -1170px;
+}
+
+i.flag.cn:before,
+i.flag.china:before {
+  background-position: 0px -1196px;
+}
+
+i.flag.co:before,
+i.flag.colombia:before {
+  background-position: 0px -1222px;
+}
+
+i.flag.cr:before,
+i.flag.costa.rica:before {
+  background-position: 0px -1248px;
+}
+
+i.flag.cs:before,
+i.flag.serbia:before {
+  background-position: 0px -1274px;
+}
+
+i.flag.cu:before,
+i.flag.cuba:before {
+  background-position: 0px -1300px;
+}
+
+i.flag.cv:before,
+i.flag.cape.verde:before {
+  background-position: 0px -1326px;
+}
+
+i.flag.cx:before,
+i.flag.christmas.island:before {
+  background-position: 0px -1352px;
+}
+
+i.flag.cy:before,
+i.flag.cyprus:before {
+  background-position: 0px -1378px;
+}
+
+i.flag.cz:before,
+i.flag.czech.republic:before {
+  background-position: 0px -1404px;
+}
+
+i.flag.de:before,
+i.flag.germany:before {
+  background-position: 0px -1430px;
+}
+
+i.flag.dj:before,
+i.flag.djibouti:before {
+  background-position: 0px -1456px;
+}
+
+i.flag.dk:before,
+i.flag.denmark:before {
+  background-position: 0px -1482px;
+}
+
+i.flag.dm:before,
+i.flag.dominica:before {
+  background-position: 0px -1508px;
+}
+
+i.flag.do:before,
+i.flag.dominican.republic:before {
+  background-position: 0px -1534px;
+}
+
+i.flag.dz:before,
+i.flag.algeria:before {
+  background-position: 0px -1560px;
+}
+
+i.flag.ec:before,
+i.flag.ecuador:before {
+  background-position: 0px -1586px;
+}
+
+i.flag.ee:before,
+i.flag.estonia:before {
+  background-position: 0px -1612px;
+}
+
+i.flag.eg:before,
+i.flag.egypt:before {
+  background-position: 0px -1638px;
+}
+
+i.flag.eh:before,
+i.flag.western.sahara:before {
+  background-position: 0px -1664px;
+}
+
+i.flag.er:before,
+i.flag.eritrea:before {
+  background-position: 0px -1716px;
+}
+
+i.flag.es:before,
+i.flag.spain:before {
+  background-position: 0px -1742px;
+}
+
+i.flag.et:before,
+i.flag.ethiopia:before {
+  background-position: 0px -1768px;
+}
+
+i.flag.eu:before,
+i.flag.european.union:before {
+  background-position: 0px -1794px;
+}
+
+i.flag.fi:before,
+i.flag.finland:before {
+  background-position: 0px -1846px;
+}
+
+i.flag.fj:before,
+i.flag.fiji:before {
+  background-position: 0px -1872px;
+}
+
+i.flag.fk:before,
+i.flag.falkland.islands:before {
+  background-position: 0px -1898px;
+}
+
+i.flag.fm:before,
+i.flag.micronesia:before {
+  background-position: 0px -1924px;
+}
+
+i.flag.fo:before,
+i.flag.faroe.islands:before {
+  background-position: 0px -1950px;
+}
+
+i.flag.fr:before,
+i.flag.france:before {
+  background-position: 0px -1976px;
+}
+
+i.flag.ga:before,
+i.flag.gabon:before {
+  background-position: -36px 0px;
+}
+
+i.flag.gb:before,
+i.flag.united.kingdom:before {
+  background-position: -36px -26px;
+}
+
+i.flag.gd:before,
+i.flag.grenada:before {
+  background-position: -36px -52px;
+}
+
+i.flag.ge:before,
+i.flag.georgia:before {
+  background-position: -36px -78px;
+}
+
+i.flag.gf:before,
+i.flag.french.guiana:before {
+  background-position: -36px -104px;
+}
+
+i.flag.gh:before,
+i.flag.ghana:before {
+  background-position: -36px -130px;
+}
+
+i.flag.gi:before,
+i.flag.gibraltar:before {
+  background-position: -36px -156px;
+}
+
+i.flag.gl:before,
+i.flag.greenland:before {
+  background-position: -36px -182px;
+}
+
+i.flag.gm:before,
+i.flag.gambia:before {
+  background-position: -36px -208px;
+}
+
+i.flag.gn:before,
+i.flag.guinea:before {
+  background-position: -36px -234px;
+}
+
+i.flag.gp:before,
+i.flag.guadeloupe:before {
+  background-position: -36px -260px;
+}
+
+i.flag.gq:before,
+i.flag.equatorial.guinea:before {
+  background-position: -36px -286px;
+}
+
+i.flag.gr:before,
+i.flag.greece:before {
+  background-position: -36px -312px;
+}
+
+i.flag.gs:before,
+i.flag.sandwich.islands:before {
+  background-position: -36px -338px;
+}
+
+i.flag.gt:before,
+i.flag.guatemala:before {
+  background-position: -36px -364px;
+}
+
+i.flag.gu:before,
+i.flag.guam:before {
+  background-position: -36px -390px;
+}
+
+i.flag.gw:before,
+i.flag.guinea-bissau:before {
+  background-position: -36px -416px;
+}
+
+i.flag.gy:before,
+i.flag.guyana:before {
+  background-position: -36px -442px;
+}
+
+i.flag.hk:before,
+i.flag.hong.kong:before {
+  background-position: -36px -468px;
+}
+
+i.flag.hm:before,
+i.flag.heard.island:before {
+  background-position: -36px -494px;
+}
+
+i.flag.hn:before,
+i.flag.honduras:before {
+  background-position: -36px -520px;
+}
+
+i.flag.hr:before,
+i.flag.croatia:before {
+  background-position: -36px -546px;
+}
+
+i.flag.ht:before,
+i.flag.haiti:before {
+  background-position: -36px -572px;
+}
+
+i.flag.hu:before,
+i.flag.hungary:before {
+  background-position: -36px -598px;
+}
+
+i.flag.id:before,
+i.flag.indonesia:before {
+  background-position: -36px -624px;
+}
+
+i.flag.ie:before,
+i.flag.ireland:before {
+  background-position: -36px -650px;
+}
+
+i.flag.il:before,
+i.flag.israel:before {
+  background-position: -36px -676px;
+}
+
+i.flag.in:before,
+i.flag.india:before {
+  background-position: -36px -702px;
+}
+
+i.flag.io:before,
+i.flag.indian.ocean.territory:before {
+  background-position: -36px -728px;
+}
+
+i.flag.iq:before,
+i.flag.iraq:before {
+  background-position: -36px -754px;
+}
+
+i.flag.ir:before,
+i.flag.iran:before {
+  background-position: -36px -780px;
+}
+
+i.flag.is:before,
+i.flag.iceland:before {
+  background-position: -36px -806px;
+}
+
+i.flag.it:before,
+i.flag.italy:before {
+  background-position: -36px -832px;
+}
+
+i.flag.jm:before,
+i.flag.jamaica:before {
+  background-position: -36px -858px;
+}
+
+i.flag.jo:before,
+i.flag.jordan:before {
+  background-position: -36px -884px;
+}
+
+i.flag.jp:before,
+i.flag.japan:before {
+  background-position: -36px -910px;
+}
+
+i.flag.ke:before,
+i.flag.kenya:before {
+  background-position: -36px -936px;
+}
+
+i.flag.kg:before,
+i.flag.kyrgyzstan:before {
+  background-position: -36px -962px;
+}
+
+i.flag.kh:before,
+i.flag.cambodia:before {
+  background-position: -36px -988px;
+}
+
+i.flag.ki:before,
+i.flag.kiribati:before {
+  background-position: -36px -1014px;
+}
+
+i.flag.km:before,
+i.flag.comoros:before {
+  background-position: -36px -1040px;
+}
+
+i.flag.kn:before,
+i.flag.saint.kitts.and.nevis:before {
+  background-position: -36px -1066px;
+}
+
+i.flag.kp:before,
+i.flag.north.korea:before {
+  background-position: -36px -1092px;
+}
+
+i.flag.kr:before,
+i.flag.south.korea:before {
+  background-position: -36px -1118px;
+}
+
+i.flag.kw:before,
+i.flag.kuwait:before {
+  background-position: -36px -1144px;
+}
+
+i.flag.ky:before,
+i.flag.cayman.islands:before {
+  background-position: -36px -1170px;
+}
+
+i.flag.kz:before,
+i.flag.kazakhstan:before {
+  background-position: -36px -1196px;
+}
+
+i.flag.la:before,
+i.flag.laos:before {
+  background-position: -36px -1222px;
+}
+
+i.flag.lb:before,
+i.flag.lebanon:before {
+  background-position: -36px -1248px;
+}
+
+i.flag.lc:before,
+i.flag.saint.lucia:before {
+  background-position: -36px -1274px;
+}
+
+i.flag.li:before,
+i.flag.liechtenstein:before {
+  background-position: -36px -1300px;
+}
+
+i.flag.lk:before,
+i.flag.sri.lanka:before {
+  background-position: -36px -1326px;
+}
+
+i.flag.lr:before,
+i.flag.liberia:before {
+  background-position: -36px -1352px;
+}
+
+i.flag.ls:before,
+i.flag.lesotho:before {
+  background-position: -36px -1378px;
+}
+
+i.flag.lt:before,
+i.flag.lithuania:before {
+  background-position: -36px -1404px;
+}
+
+i.flag.lu:before,
+i.flag.luxembourg:before {
+  background-position: -36px -1430px;
+}
+
+i.flag.lv:before,
+i.flag.latvia:before {
+  background-position: -36px -1456px;
+}
+
+i.flag.ly:before,
+i.flag.libya:before {
+  background-position: -36px -1482px;
+}
+
+i.flag.ma:before,
+i.flag.morocco:before {
+  background-position: -36px -1508px;
+}
+
+i.flag.mc:before,
+i.flag.monaco:before {
+  background-position: -36px -1534px;
+}
+
+i.flag.md:before,
+i.flag.moldova:before {
+  background-position: -36px -1560px;
+}
+
+i.flag.me:before,
+i.flag.montenegro:before {
+  background-position: -36px -1586px;
+}
+
+i.flag.mg:before,
+i.flag.madagascar:before {
+  background-position: -36px -1613px;
+}
+
+i.flag.mh:before,
+i.flag.marshall.islands:before {
+  background-position: -36px -1639px;
+}
+
+i.flag.mk:before,
+i.flag.macedonia:before {
+  background-position: -36px -1665px;
+}
+
+i.flag.ml:before,
+i.flag.mali:before {
+  background-position: -36px -1691px;
+}
+
+i.flag.mm:before,
+i.flag.myanmar:before,
+i.flag.burma:before {
+  background-position: -73px -1821px;
+}
+
+i.flag.mn:before,
+i.flag.mongolia:before {
+  background-position: -36px -1743px;
+}
+
+i.flag.mo:before,
+i.flag.macau:before {
+  background-position: -36px -1769px;
+}
+
+i.flag.mp:before,
+i.flag.northern.mariana.islands:before {
+  background-position: -36px -1795px;
+}
+
+i.flag.mq:before,
+i.flag.martinique:before {
+  background-position: -36px -1821px;
+}
+
+i.flag.mr:before,
+i.flag.mauritania:before {
+  background-position: -36px -1847px;
+}
+
+i.flag.ms:before,
+i.flag.montserrat:before {
+  background-position: -36px -1873px;
+}
+
+i.flag.mt:before,
+i.flag.malta:before {
+  background-position: -36px -1899px;
+}
+
+i.flag.mu:before,
+i.flag.mauritius:before {
+  background-position: -36px -1925px;
+}
+
+i.flag.mv:before,
+i.flag.maldives:before {
+  background-position: -36px -1951px;
+}
+
+i.flag.mw:before,
+i.flag.malawi:before {
+  background-position: -36px -1977px;
+}
+
+i.flag.mx:before,
+i.flag.mexico:before {
+  background-position: -72px 0px;
+}
+
+i.flag.my:before,
+i.flag.malaysia:before {
+  background-position: -72px -26px;
+}
+
+i.flag.mz:before,
+i.flag.mozambique:before {
+  background-position: -72px -52px;
+}
+
+i.flag.na:before,
+i.flag.namibia:before {
+  background-position: -72px -78px;
+}
+
+i.flag.nc:before,
+i.flag.new.caledonia:before {
+  background-position: -72px -104px;
+}
+
+i.flag.ne:before,
+i.flag.niger:before {
+  background-position: -72px -130px;
+}
+
+i.flag.nf:before,
+i.flag.norfolk.island:before {
+  background-position: -72px -156px;
+}
+
+i.flag.ng:before,
+i.flag.nigeria:before {
+  background-position: -72px -182px;
+}
+
+i.flag.ni:before,
+i.flag.nicaragua:before {
+  background-position: -72px -208px;
+}
+
+i.flag.nl:before,
+i.flag.netherlands:before {
+  background-position: -72px -234px;
+}
+
+i.flag.no:before,
+i.flag.norway:before {
+  background-position: -72px -260px;
+}
+
+i.flag.np:before,
+i.flag.nepal:before {
+  background-position: -72px -286px;
+}
+
+i.flag.nr:before,
+i.flag.nauru:before {
+  background-position: -72px -312px;
+}
+
+i.flag.nu:before,
+i.flag.niue:before {
+  background-position: -72px -338px;
+}
+
+i.flag.nz:before,
+i.flag.new.zealand:before {
+  background-position: -72px -364px;
+}
+
+i.flag.om:before,
+i.flag.oman:before {
+  background-position: -72px -390px;
+}
+
+i.flag.pa:before,
+i.flag.panama:before {
+  background-position: -72px -416px;
+}
+
+i.flag.pe:before,
+i.flag.peru:before {
+  background-position: -72px -442px;
+}
+
+i.flag.pf:before,
+i.flag.french.polynesia:before {
+  background-position: -72px -468px;
+}
+
+i.flag.pg:before,
+i.flag.new.guinea:before {
+  background-position: -72px -494px;
+}
+
+i.flag.ph:before,
+i.flag.philippines:before {
+  background-position: -72px -520px;
+}
+
+i.flag.pk:before,
+i.flag.pakistan:before {
+  background-position: -72px -546px;
+}
+
+i.flag.pl:before,
+i.flag.poland:before {
+  background-position: -72px -572px;
+}
+
+i.flag.pm:before,
+i.flag.saint.pierre:before {
+  background-position: -72px -598px;
+}
+
+i.flag.pn:before,
+i.flag.pitcairn.islands:before {
+  background-position: -72px -624px;
+}
+
+i.flag.pr:before,
+i.flag.puerto.rico:before {
+  background-position: -72px -650px;
+}
+
+i.flag.ps:before,
+i.flag.palestine:before {
+  background-position: -72px -676px;
+}
+
+i.flag.pt:before,
+i.flag.portugal:before {
+  background-position: -72px -702px;
+}
+
+i.flag.pw:before,
+i.flag.palau:before {
+  background-position: -72px -728px;
+}
+
+i.flag.py:before,
+i.flag.paraguay:before {
+  background-position: -72px -754px;
+}
+
+i.flag.qa:before,
+i.flag.qatar:before {
+  background-position: -72px -780px;
+}
+
+i.flag.re:before,
+i.flag.reunion:before {
+  background-position: -72px -806px;
+}
+
+i.flag.ro:before,
+i.flag.romania:before {
+  background-position: -72px -832px;
+}
+
+i.flag.rs:before,
+i.flag.serbia:before {
+  background-position: -72px -858px;
+}
+
+i.flag.ru:before,
+i.flag.russia:before {
+  background-position: -72px -884px;
+}
+
+i.flag.rw:before,
+i.flag.rwanda:before {
+  background-position: -72px -910px;
+}
+
+i.flag.sa:before,
+i.flag.saudi.arabia:before {
+  background-position: -72px -936px;
+}
+
+i.flag.sb:before,
+i.flag.solomon.islands:before {
+  background-position: -72px -962px;
+}
+
+i.flag.sc:before,
+i.flag.seychelles:before {
+  background-position: -72px -988px;
+}
+
+i.flag.gb.sct:before,
+i.flag.scotland:before {
+  background-position: -72px -1014px;
+}
+
+i.flag.sd:before,
+i.flag.sudan:before {
+  background-position: -72px -1040px;
+}
+
+i.flag.se:before,
+i.flag.sweden:before {
+  background-position: -72px -1066px;
+}
+
+i.flag.sg:before,
+i.flag.singapore:before {
+  background-position: -72px -1092px;
+}
+
+i.flag.sh:before,
+i.flag.saint.helena:before {
+  background-position: -72px -1118px;
+}
+
+i.flag.si:before,
+i.flag.slovenia:before {
+  background-position: -72px -1144px;
+}
+
+i.flag.sj:before,
+i.flag.svalbard:before,
+i.flag.jan.mayen:before {
+  background-position: -72px -1170px;
+}
+
+i.flag.sk:before,
+i.flag.slovakia:before {
+  background-position: -72px -1196px;
+}
+
+i.flag.sl:before,
+i.flag.sierra.leone:before {
+  background-position: -72px -1222px;
+}
+
+i.flag.sm:before,
+i.flag.san.marino:before {
+  background-position: -72px -1248px;
+}
+
+i.flag.sn:before,
+i.flag.senegal:before {
+  background-position: -72px -1274px;
+}
+
+i.flag.so:before,
+i.flag.somalia:before {
+  background-position: -72px -1300px;
+}
+
+i.flag.sr:before,
+i.flag.suriname:before {
+  background-position: -72px -1326px;
+}
+
+i.flag.st:before,
+i.flag.sao.tome:before {
+  background-position: -72px -1352px;
+}
+
+i.flag.sv:before,
+i.flag.el.salvador:before {
+  background-position: -72px -1378px;
+}
+
+i.flag.sy:before,
+i.flag.syria:before {
+  background-position: -72px -1404px;
+}
+
+i.flag.sz:before,
+i.flag.swaziland:before {
+  background-position: -72px -1430px;
+}
+
+i.flag.tc:before,
+i.flag.caicos.islands:before {
+  background-position: -72px -1456px;
+}
+
+i.flag.td:before,
+i.flag.chad:before {
+  background-position: -72px -1482px;
+}
+
+i.flag.tf:before,
+i.flag.french.territories:before {
+  background-position: -72px -1508px;
+}
+
+i.flag.tg:before,
+i.flag.togo:before {
+  background-position: -72px -1534px;
+}
+
+i.flag.th:before,
+i.flag.thailand:before {
+  background-position: -72px -1560px;
+}
+
+i.flag.tj:before,
+i.flag.tajikistan:before {
+  background-position: -72px -1586px;
+}
+
+i.flag.tk:before,
+i.flag.tokelau:before {
+  background-position: -72px -1612px;
+}
+
+i.flag.tl:before,
+i.flag.timorleste:before {
+  background-position: -72px -1638px;
+}
+
+i.flag.tm:before,
+i.flag.turkmenistan:before {
+  background-position: -72px -1664px;
+}
+
+i.flag.tn:before,
+i.flag.tunisia:before {
+  background-position: -72px -1690px;
+}
+
+i.flag.to:before,
+i.flag.tonga:before {
+  background-position: -72px -1716px;
+}
+
+i.flag.tr:before,
+i.flag.turkey:before {
+  background-position: -72px -1742px;
+}
+
+i.flag.tt:before,
+i.flag.trinidad:before {
+  background-position: -72px -1768px;
+}
+
+i.flag.tv:before,
+i.flag.tuvalu:before {
+  background-position: -72px -1794px;
+}
+
+i.flag.tw:before,
+i.flag.taiwan:before {
+  background-position: -72px -1820px;
+}
+
+i.flag.tz:before,
+i.flag.tanzania:before {
+  background-position: -72px -1846px;
+}
+
+i.flag.ua:before,
+i.flag.ukraine:before {
+  background-position: -72px -1872px;
+}
+
+i.flag.ug:before,
+i.flag.uganda:before {
+  background-position: -72px -1898px;
+}
+
+i.flag.um:before,
+i.flag.us.minor.islands:before {
+  background-position: -72px -1924px;
+}
+
+i.flag.us:before,
+i.flag.america:before,
+i.flag.united.states:before {
+  background-position: -72px -1950px;
+}
+
+i.flag.uy:before,
+i.flag.uruguay:before {
+  background-position: -72px -1976px;
+}
+
+i.flag.uz:before,
+i.flag.uzbekistan:before {
+  background-position: -108px 0px;
+}
+
+i.flag.va:before,
+i.flag.vatican.city:before {
+  background-position: -108px -26px;
+}
+
+i.flag.vc:before,
+i.flag.saint.vincent:before {
+  background-position: -108px -52px;
+}
+
+i.flag.ve:before,
+i.flag.venezuela:before {
+  background-position: -108px -78px;
+}
+
+i.flag.vg:before,
+i.flag.british.virgin.islands:before {
+  background-position: -108px -104px;
+}
+
+i.flag.vi:before,
+i.flag.us.virgin.islands:before {
+  background-position: -108px -130px;
+}
+
+i.flag.vn:before,
+i.flag.vietnam:before {
+  background-position: -108px -156px;
+}
+
+i.flag.vu:before,
+i.flag.vanuatu:before {
+  background-position: -108px -182px;
+}
+
+i.flag.gb.wls:before,
+i.flag.wales:before {
+  background-position: -108px -208px;
+}
+
+i.flag.wf:before,
+i.flag.wallis.and.futuna:before {
+  background-position: -108px -234px;
+}
+
+i.flag.ws:before,
+i.flag.samoa:before {
+  background-position: -108px -260px;
+}
+
+i.flag.ye:before,
+i.flag.yemen:before {
+  background-position: -108px -286px;
+}
+
+i.flag.yt:before,
+i.flag.mayotte:before {
+  background-position: -108px -312px;
+}
+
+i.flag.za:before,
+i.flag.south.africa:before {
+  background-position: -108px -338px;
+}
+
+i.flag.zm:before,
+i.flag.zambia:before {
+  background-position: -108px -364px;
+}
+
+i.flag.zw:before,
+i.flag.zimbabwe:before {
+  background-position: -108px -390px;
 }
 
 /*******************************
@@ -12960,7 +14235,7 @@ ol.ui.list ol li,
 .ui.list > .item > .image + .content,
 .ui.list > .item > .icon + .content {
   display: table-cell;
-  padding: 0em 0em 0em 0.1em;
+  padding: 0em 0em 0em 0.5em;
   vertical-align: top;
 }
 
@@ -24081,6 +25356,295 @@ Floated Menu / Item
          Site Overrides
 *******************************/
 /*!
+ * # Semantic UI 2.2.13 - Ad
+ * http://github.com/semantic-org/semantic-ui/
+ *
+ *
+ * Copyright 2013 Contributors
+ * Released under the MIT license
+ * http://opensource.org/licenses/MIT
+ *
+ */
+
+/*******************************
+         Advertisement
+*******************************/
+
+.ui.ad {
+  display: block;
+  overflow: hidden;
+  margin: 1em 0em;
+}
+
+.ui.ad:first-child {
+  margin: 0em;
+}
+
+.ui.ad:last-child {
+  margin: 0em;
+}
+
+.ui.ad iframe {
+  margin: 0em;
+  padding: 0em;
+  border: none;
+  overflow: hidden;
+}
+
+/*--------------
+     Common
+---------------*/
+
+/* Leaderboard */
+
+.ui.leaderboard.ad {
+  width: 728px;
+  height: 90px;
+}
+
+/* Medium Rectangle */
+
+.ui[class*="medium rectangle"].ad {
+  width: 300px;
+  height: 250px;
+}
+
+/* Large Rectangle */
+
+.ui[class*="large rectangle"].ad {
+  width: 336px;
+  height: 280px;
+}
+
+/* Half Page */
+
+.ui[class*="half page"].ad {
+  width: 300px;
+  height: 600px;
+}
+
+/*--------------
+     Square
+---------------*/
+
+/* Square */
+
+.ui.square.ad {
+  width: 250px;
+  height: 250px;
+}
+
+/* Small Square */
+
+.ui[class*="small square"].ad {
+  width: 200px;
+  height: 200px;
+}
+
+/*--------------
+    Rectangle
+---------------*/
+
+/* Small Rectangle */
+
+.ui[class*="small rectangle"].ad {
+  width: 180px;
+  height: 150px;
+}
+
+/* Vertical Rectangle */
+
+.ui[class*="vertical rectangle"].ad {
+  width: 240px;
+  height: 400px;
+}
+
+/*--------------
+     Button
+---------------*/
+
+.ui.button.ad {
+  width: 120px;
+  height: 90px;
+}
+
+.ui[class*="square button"].ad {
+  width: 125px;
+  height: 125px;
+}
+
+.ui[class*="small button"].ad {
+  width: 120px;
+  height: 60px;
+}
+
+/*--------------
+   Skyscrapers
+---------------*/
+
+/* Skyscraper */
+
+.ui.skyscraper.ad {
+  width: 120px;
+  height: 600px;
+}
+
+/* Wide Skyscraper */
+
+.ui[class*="wide skyscraper"].ad {
+  width: 160px;
+}
+
+/*--------------
+     Banners
+---------------*/
+
+/* Banner */
+
+.ui.banner.ad {
+  width: 468px;
+  height: 60px;
+}
+
+/* Vertical Banner */
+
+.ui[class*="vertical banner"].ad {
+  width: 120px;
+  height: 240px;
+}
+
+/* Top Banner */
+
+.ui[class*="top banner"].ad {
+  width: 930px;
+  height: 180px;
+}
+
+/* Half Banner */
+
+.ui[class*="half banner"].ad {
+  width: 234px;
+  height: 60px;
+}
+
+/*--------------
+    Boards
+---------------*/
+
+/* Leaderboard */
+
+.ui[class*="large leaderboard"].ad {
+  width: 970px;
+  height: 90px;
+}
+
+/* Billboard */
+
+.ui.billboard.ad {
+  width: 970px;
+  height: 250px;
+}
+
+/*--------------
+    Panorama
+---------------*/
+
+/* Panorama */
+
+.ui.panorama.ad {
+  width: 980px;
+  height: 120px;
+}
+
+/*--------------
+     Netboard
+---------------*/
+
+/* Netboard */
+
+.ui.netboard.ad {
+  width: 580px;
+  height: 400px;
+}
+
+/*--------------
+     Mobile
+---------------*/
+
+/* Large Mobile Banner */
+
+.ui[class*="large mobile banner"].ad {
+  width: 320px;
+  height: 100px;
+}
+
+/* Mobile Leaderboard */
+
+.ui[class*="mobile leaderboard"].ad {
+  width: 320px;
+  height: 50px;
+}
+
+/*******************************
+             Types
+*******************************/
+
+/* Mobile Sizes */
+
+.ui.mobile.ad {
+  display: none;
+}
+
+@media only screen and (max-width: 767px) {
+  .ui.mobile.ad {
+    display: block;
+  }
+}
+
+/*******************************
+           Variations
+*******************************/
+
+.ui.centered.ad {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ui.test.ad {
+  position: relative;
+  background: #545454;
+}
+
+.ui.test.ad:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  text-align: center;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+  content: 'Ad';
+  color: #FFFFFF;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.ui.mobile.test.ad:after {
+  font-size: 0.85714286em;
+}
+
+.ui.test.ad[data-text]:after {
+  content: attr(data-text);
+}
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+/*******************************
+    User Variable Overrides
+*******************************/
+/*!
  * # Semantic UI 2.2.13 - Item
  * http://github.com/semantic-org/semantic-ui/
  *
@@ -27205,6 +28769,165 @@ a.ui.card:hover,
 
 /*******************************
         User Overrides
+*******************************/
+/*!
+ * # Semantic UI 2.2.13 - Calendar
+ * http://github.com/semantic-org/semantic-ui/
+ *
+ *
+ * Released under the MIT license
+ * http://opensource.org/licenses/MIT
+ *
+ */
+
+/*******************************
+            Popup
+*******************************/
+
+.ui.calendar .ui.popup {
+  max-width: none;
+  padding: 0;
+  border: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/*******************************
+            Calendar
+*******************************/
+
+.ui.calendar .calendar:focus {
+  outline: 0;
+}
+
+/*******************************
+            Grid
+*******************************/
+
+.ui.calendar .ui.popup .ui.grid {
+  display: block;
+  white-space: nowrap;
+}
+
+.ui.calendar .ui.popup .ui.grid > .column {
+  width: auto;
+}
+
+/*******************************
+            Table
+*******************************/
+
+.ui.calendar .ui.table.year,
+.ui.calendar .ui.table.month,
+.ui.calendar .ui.table.minute {
+  min-width: 15em;
+}
+
+.ui.calendar .ui.table.day {
+  min-width: 18em;
+}
+
+.ui.calendar .ui.table.hour {
+  min-width: 20em;
+}
+
+.ui.calendar .ui.table tr th,
+.ui.calendar .ui.table tr td {
+  padding: 0.5em;
+  white-space: nowrap;
+}
+
+.ui.calendar .ui.table tr th {
+  border-left: none;
+}
+
+.ui.calendar .ui.table tr th .icon {
+  margin: 0;
+}
+
+.ui.calendar .ui.table tr th .icon {
+  margin: 0;
+}
+
+.ui.calendar .ui.table tr:first-child th {
+  position: relative;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.ui.calendar .ui.table.day tr:first-child th {
+  border: none;
+}
+
+.ui.calendar .ui.table.day tr:nth-child(2) th {
+  padding-top: 0.2em;
+  padding-bottom: 0.3em;
+}
+
+.ui.calendar .ui.table tr td {
+  padding-left: 0.1em;
+  padding-right: 0.1em;
+}
+
+.ui.calendar .ui.table tr .link {
+  cursor: pointer;
+}
+
+.ui.calendar .ui.table tr .prev.link {
+  width: 14.28571429%;
+  position: absolute;
+  left: 0;
+}
+
+.ui.calendar .ui.table tr .next.link {
+  width: 14.28571429%;
+  position: absolute;
+  right: 0;
+}
+
+.ui.calendar .ui.table tr .disabled {
+  pointer-events: none;
+  color: rgba(40, 40, 40, 0.3);
+}
+
+/*--------------
+     States
+---------------*/
+
+.ui.calendar .ui.table tr td.today {
+  font-weight: bold;
+}
+
+.ui.calendar .ui.table tr td.range {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.95);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.ui.calendar .ui.table.inverted tr td.range {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.ui.calendar .calendar:focus .ui.table tbody tr td.focus,
+.ui.calendar .calendar.active .ui.table tbody tr td.focus {
+  -webkit-box-shadow: inset 0 0 0 1px #85B7D9;
+  box-shadow: inset 0 0 0 1px #85B7D9;
+}
+
+.ui.calendar .calendar:focus .ui.table.inverted tbody tr td.focus,
+.ui.calendar .calendar.active .ui.table.inverted tbody tr td.focus {
+  -webkit-box-shadow: inset 0 0 0 1px #85B7D9;
+  box-shadow: inset 0 0 0 1px #85B7D9;
+}
+
+/*******************************
+         Theme Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Checkbox
@@ -32128,6 +33851,283 @@ a.ui.nag {
          Site Overrides
 *******************************/
 /*!
+ * # Semantic UI 2.2.13 - Rating
+ * http://github.com/semantic-org/semantic-ui/
+ *
+ *
+ * Released under the MIT license
+ * http://opensource.org/licenses/MIT
+ *
+ */
+
+/*******************************
+           Rating
+*******************************/
+
+.ui.rating {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.ui.rating:last-child {
+  margin-right: 0em;
+}
+
+/* Icon */
+
+.ui.rating .icon {
+  padding: 0em;
+  margin: 0em;
+  text-align: center;
+  font-weight: normal;
+  font-style: normal;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 0 auto;
+  flex: 1 0 auto;
+  cursor: pointer;
+  width: 1.25em;
+  height: auto;
+  -webkit-transition: opacity 0.1s ease, background 0.1s ease, text-shadow 0.1s ease, color 0.1s ease;
+  transition: opacity 0.1s ease, background 0.1s ease, text-shadow 0.1s ease, color 0.1s ease;
+}
+
+/*******************************
+             Types
+*******************************/
+
+/*-------------------
+      Standard
+--------------------*/
+
+/* Inactive Icon */
+
+.ui.rating .icon {
+  background: transparent;
+  color: rgba(0, 0, 0, 0.15);
+}
+
+/* Active Icon */
+
+.ui.rating .active.icon {
+  background: transparent;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* Selected Icon */
+
+.ui.rating .icon.selected,
+.ui.rating .icon.selected.active {
+  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+/*-------------------
+        Star
+--------------------*/
+
+/* Inactive */
+
+.ui.star.rating .icon {
+  width: 1.25em;
+  height: auto;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.15);
+  text-shadow: none;
+}
+
+/* Active Star */
+
+.ui.star.rating .active.icon {
+  background: transparent !important;
+  color: #FFE623 !important;
+  text-shadow: 0px -1px 0px #DDC507, -1px 0px 0px #DDC507, 0px 1px 0px #DDC507, 1px 0px 0px #DDC507 !important;
+}
+
+/* Selected Star */
+
+.ui.star.rating .icon.selected,
+.ui.star.rating .icon.selected.active {
+  background: transparent !important;
+  color: #FFCC00 !important;
+  text-shadow: 0px -1px 0px #E6A200, -1px 0px 0px #E6A200, 0px 1px 0px #E6A200, 1px 0px 0px #E6A200 !important;
+}
+
+/*-------------------
+        Heart
+--------------------*/
+
+.ui.heart.rating .icon {
+  width: 1.4em;
+  height: auto;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.15);
+  text-shadow: none !important;
+}
+
+/* Active Heart */
+
+.ui.heart.rating .active.icon {
+  background: transparent !important;
+  color: #FF6D75 !important;
+  text-shadow: 0px -1px 0px #CD0707, -1px 0px 0px #CD0707, 0px 1px 0px #CD0707, 1px 0px 0px #CD0707 !important;
+}
+
+/* Selected Heart */
+
+.ui.heart.rating .icon.selected,
+.ui.heart.rating .icon.selected.active {
+  background: transparent !important;
+  color: #FF3000 !important;
+  text-shadow: 0px -1px 0px #AA0101, -1px 0px 0px #AA0101, 0px 1px 0px #AA0101, 1px 0px 0px #AA0101 !important;
+}
+
+/*******************************
+             States
+*******************************/
+
+/*-------------------
+       Disabled
+--------------------*/
+
+/* disabled rating */
+
+.ui.disabled.rating .icon {
+  cursor: default;
+}
+
+/*-------------------
+   User Interactive
+--------------------*/
+
+/* Selected Rating */
+
+.ui.rating.selected .active.icon {
+  opacity: 1;
+}
+
+.ui.rating.selected .icon.selected,
+.ui.rating .icon.selected {
+  opacity: 1;
+}
+
+/*******************************
+          Variations
+*******************************/
+
+.ui.mini.rating {
+  font-size: 0.78571429rem;
+}
+
+.ui.tiny.rating {
+  font-size: 0.85714286rem;
+}
+
+.ui.small.rating {
+  font-size: 0.92857143rem;
+}
+
+.ui.rating {
+  font-size: 1rem;
+}
+
+.ui.large.rating {
+  font-size: 1.14285714rem;
+}
+
+.ui.huge.rating {
+  font-size: 1.42857143rem;
+}
+
+.ui.massive.rating {
+  font-size: 2rem;
+}
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+@font-face {
+  font-family: 'Rating';
+  src: url(data:application/x-font-ttf;charset=utf-8;base64,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) format('truetype'), url(data:application/font-woff;charset=utf-8;base64,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kIiRi5MI5vdUFfcni4vCBYufhJx8mn2ZepJ3i3aLeoR9fX18g3qLdwiLVAUO+yaLshWL+AQFi5GNkY+RjpCQj5KNj42PjI+LCPfAiwWPi4+Kj4mRiZCHj4aPhY2Fi4UIi/wEBYuEiYWHhoeGhoeFiIiKhoqHi4GLhI6EkQj7EvcN+xL7DQWEhYOIgouHi4eLh42EjoaPiJCHkImRi5IIDov3XRWLko2Rj5Kltq+vuKW4pbuZvYu9i7t9uHG4ca9npWCPhI2Fi4SLhYmEh4RxYGdoXnAIXnFbflmLWYtbmF6lXqZnrnG2h5KJkouRCLCLFaRkq2yxdLF0tH+4i7iLtJexorGiq6qksm64Z61goZZ3kXaLdItnfm1ycnJybX9oiwhoi22XcqRypH6pi6+LopGglp9gdWdpbl4I9xiwFYuHjIiOiI6IjoqPi4+LjoyOjo2OjY6Lj4ubkJmXl5eWmZGbi4+LjoyOjo2OjY6LjwiLj4mOiY6IjYiNh4tzi3eCenp6eoJ3i3MIDov3XRWLko2Sj5GouK+utqW3pbqYvouci5yJnIgIm6cFjY6NjI+LjIuNi42JjYqOio+JjomOiY6KjomOiY6JjoqNioyKjomMiYuHi4qLiouLCHdnbVVjQ2NDbVV3Zwh9cgWJiIiJiIuJi36SdJiIjYmOi46LjY+UlJlvl3KcdJ90oHeie6WHkYmSi5IIsIsVqlq0Z711CKGzBXqXfpqCnoKdhp6LoIuikaCWn2B1Z2luXgj3GLAVi4eMiI6IjoiOio+Lj4uOjI6OjY6NjouPi5uQmZeXl5aZkZuLj4uOjI6OjY6NjouPCIuPiY6JjoiNiI2Hi3OLd4J6enp6gneLcwji+10VoLAFtI+wmK2hrqKnqKKvdq1wp2uhCJ2rBZ1/nHycepx6mHqWeY+EjYWLhIuEiYWHhIR/gH1+fG9qaXJmeWV5Y4Jhiwi53BXb9yQFjIKMg4uEi3CDc3x1fHV3fHOBCA6L1BWL90sFi5WPlJKSkpKTj5aLCNmLBZKPmJqepJaZlZeVlY+Qj5ONl42WjpeOmI+YkZWTk5OSk46Vi5uLmYiYhZiFlIGSfgiSfo55i3WLeYd5gXgIvosFn4uchJl8mn2Seot3i3qGfIJ9jYSLhYuEi3yIfoR+i4eLh4uHi3eGen99i3CDdnt8CHt8dYNwiwhmiwV5i3mNeY95kHeRc5N1k36Ph4sIOYsFgIuDjoSShJKHlIuVCLCdFYuGjIePiI+Hj4mQi5CLj42Pj46OjY+LkIuQiZCIjoePh42Gi4aLh4mHh4eIioaLhgjUeRWUiwWNi46Lj4qOi4+KjYqOi4+Kj4mQio6KjYqNio+Kj4mQio6KjIqzfquEpIsIrosFr4uemouri5CKkYqQkY6QkI6SjpKNkouSi5KJkoiRlZWQlouYi5CKkImRiZGJj4iOCJGMkI+PlI+UjZKLkouViJODk4SSgo+CiwgmiwWLlpCalJ6UnpCbi5aLnoiYhJSFlH+QeYuGhoeDiYCJf4h/h3+IfoWBg4KHh4SCgH4Ii4qIiYiGh4aIh4mIiIiIh4eGh4aHh4eHiIiHiIeHiIiHiIeKh4mIioiLCIKLi/tLBQ6L90sVi/dLBYuVj5OSk5KSk46WiwjdiwWPi5iPoZOkk6CRnZCdj56Nn4sIq4sFpougg5x8m3yTd4txCIuJBZd8kHuLd4uHi4eLh5J+jn6LfIuEi4SJhZR9kHyLeot3hHp8fH19eoR3iwhYiwWVeI95i3mLdIh6hH6EfoKBfoV+hX2He4uBi4OPg5KFkYaTh5SHlYiTipOKk4qTiJMIiZSIkYiPgZSBl4CaeKR+moSPCD2LBYCLg4+EkoSSh5SLlQiw9zgVi4aMh4+Ij4ePiZCLkIuPjY+Pjo6Nj4uQi5CJkIiOh4+HjYaLhouHiYeHh4iKhouGCNT7OBWUiwWOi46Kj4mPio+IjoiPh4+IjoePiI+Hj4aPho6HjoiNiI6Hj4aOho6Ii4qWfpKDj4YIk4ORgY5+j36OgI1/jYCPg5CGnYuXj5GUkpSOmYuei5aGmoKfgp6GmouWCPCLBZSLlI+SkpOTjpOLlYuSiZKHlIeUho+Fi46PjY+NkY2RjJCLkIuYhpaBlY6RjZKLkgiLkomSiJKIkoaQhY6MkIyRi5CLm4aXgpOBkn6Pe4sIZosFcotrhGN9iouIioaJh4qHiomKiYqIioaKh4mHioiKiYuHioiLh4qIi4mLCIKLi/tLBQ77lIv3txWLkpCPlo0I9yOgzPcWBY6SkI+RiwiL/BL7FUcFh4mHioiLh4uIjImOiY6KjouPi4yLjYyOCKP3IyPwBYaQiZCLjwgOi/fFFYu1l6yjoqOjrZe2i5aLl4mYh5eHloWWhJaElIWShZOEkoWShJKSkpGTkpKRlJGWkgiWkpaRl4+Yj5eNlou2i61/o3OjdJdqi2GLYXVgYGAI+0b7QAWHiIeJhouGi4eNh44I+0b3QAWJjYmNh4+IjoaRg5SElIWVhZSFlYaWh5mGmImYi5gIsIsVi2ucaa9oCPc6+zT3OvczBa+vnK2Lq4ubiZiHl4eXhpSFkoSSg5GCj4KQgo2CjYONgYuBi4KLgIl/hoCGgIWChAiBg4OFhISEhYaFhoaIhoaJhYuFi4aNiJCGkIaRhJGEkoORgZOCkoCRgJB/kICNgosIgYuBi4OJgomCiYKGgoeDhYSEhYSGgod/h3+Jfot7CA77JouyFYv4BAWLkY2Rj5GOkJCPko2PjY+Mj4sI98CLBY+Lj4qPiZGJkIePho+FjYWLhQiL/AQFi4SJhYeGh4aGh4WIiIqGioeLgYuEjoSRCPsS9w37EvsNBYSFg4iCi4eLh4uHjYSOho+IkIeQiZGLkgiwkxX3JvchpHL3DfsIi/f3+7iLi/v3BQ5ni8sVi/c5BYuSjpKQkJCQko6Siwj3VIuLwgWLrpippKSkpKmYrouvi6l+pHKkcpdti2gIi0IFi4aKhoeIh4eHiYaLCHmLBYaLh42Hj4eOipCLkAiL1AWLn4OcfZp9mXqSdot3i3qEfX18fIR6i3cIi1SniwWSi5KIkIaQho6Ei4QIi/s5BYuDiIWGhoaFhImEiwj7p4sFhIuEjYaRhpCIkYuTCA5njPe6FYyQkI6UjQj3I6DM9xYFj5KPj5GLkIuQh4+ECMv7FvcjdgWUiZCIjYaNhoiFhYUIIyak+yMFjIWKhomHiYiIiYaLiIuHjIeNCPsUz/sVRwWHiYeKiIuHi4eNiY6Jj4uQjJEIo/cjI/AFhZGJkY2QCPeB+z0VnILlW3rxiJ6ZmNTS+wydgpxe54v7pwUOZ4vCFYv3SwWLkI2Pjo+Pjo+NkIsI3osFkIuPiY6Ij4eNh4uGCIv7SwWLhomHh4eIh4eKhosIOIsFhouHjIePiI+Jj4uQCLCvFYuGjIePh46IkImQi5CLj42Pjo6PjY+LkIuQiZCIjoePh42Gi4aLhomIh4eIioaLhgjvZxWL90sFi5CNj46Oj4+PjZCLj4ySkJWWlZaVl5SXmJuVl5GRjo6OkI6RjZCNkIyPjI6MkY2TCIySjJGMj4yPjZCOkY6RjpCPjo6Pj42Qi5SLk4qSiZKJkYiPiJCIjoiPho6GjYeMhwiNh4yGjIaMhYuHi4iLiIuHi4eLg4uEiYSJhImFiYeJh4mFh4WLioqJiomJiIqJiokIi4qKiIqJCNqLBZqLmIWWgJaAkH+LfIt6hn2Af46DjYSLhIt9h36Cf4+Bi3+HgImAhYKEhI12hnmAfgh/fXiDcosIZosFfot+jHyOfI5/joOOg41/j32Qc5N8j4SMhouHjYiOh4+Jj4uQCA5ni/c5FYuGjYaOiI+Hj4mQiwjeiwWQi4+Njo+Pjo2Qi5AIi/dKBYuQiZCHjoiPh42Giwg4iwWGi4eJh4eIiImGi4YIi/tKBbD3JhWLkIyPj4+OjpCNkIuQi4+Jj4iOh42Hi4aLhomHiIeHh4eKhouGi4aMiI+Hj4qPi5AI7/snFYv3SwWLkI2Qj46Oj4+NkIuSi5qPo5OZkJePk46TjZeOmo6ajpiMmIsIsIsFpIueg5d9ln6Qeol1koSRgo2Aj4CLgIeAlH+Pfot9i4WJhIiCloCQfIt7i3yFfoGACICAfoZ8iwg8iwWMiIyJi4mMiYyJjYmMiIyKi4mPhI2GjYeNh42GjYOMhIyEi4SLhouHi4iLiYuGioYIioWKhomHioeJh4iGh4eIh4aIh4iFiISJhImDioKLhouHjYiPh4+Ij4iRiJGJkIqPCIqPipGKkomTipGKj4qOiZCJkYiQiJCIjoWSgZZ+nIKXgZaBloGWhJGHi4aLh42HjwiIjomQi48IDviUFPiUFYsMCgAAAAADAgABkAAFAAABTAFmAAAARwFMAWYAAAD1ABkAhAAAAAAAAAAAAAAAAAAAAAEQAAAAAAAAAAAAAAAAAAAAAEAAAPFlAeD/4P/gAeAAIAAAAAEAAAAAAAAAAAAAACAAAAAAAAIAAAADAAAAFAADAAEAAAAUAAQAkAAAACAAIAAEAAAAAQAg5gXwBvAN8CPwLvBu8HDwivCX8JzxI/Fl//3//wAAAAAAIOYA8ATwDPAj8C7wbvBw8Ifwl/Cc8SPxZP/9//8AAf/jGgQQBhABD+wP4g+jD6IPjA+AD3wO9g62AAMAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAf//AA8AAQAAAAEAAJrVlLJfDzz1AAsCAAAAAADP/GODAAAAAM/8Y4MAAP/bAgAB2wAAAAgAAgAAAAAAAAABAAAB4P/gAAACAAAAAAACAAABAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAEAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAdwAAAHcAAACAAAjAZMAHwFJAAABbgAAAgAAAAIAAAACAAAAAgAAAAEAAAACAAAAAW4AAAHcAAAB3AABAdwAAAHcAAAAAFAAABwAAAAAAA4ArgABAAAAAAABAAwAAAABAAAAAAACAA4AQAABAAAAAAADAAwAIgABAAAAAAAEAAwATgABAAAAAAAFABYADAABAAAAAAAGAAYALgABAAAAAAAKADQAWgADAAEECQABAAwAAAADAAEECQACAA4AQAADAAEECQADAAwAIgADAAEECQAEAAwATgADAAEECQAFABYADAADAAEECQAGAAwANAADAAEECQAKADQAWgByAGEAdABpAG4AZwBWAGUAcgBzAGkAbwBuACAAMQAuADAAcgBhAHQAaQBuAGdyYXRpbmcAcgBhAHQAaQBuAGcAUgBlAGcAdQBsAGEAcgByAGEAdABpAG4AZwBGAG8AbgB0ACAAZwBlAG4AZQByAGEAdABlAGQAIABiAHkAIABJAGMAbwBNAG8AbwBuAC4AAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==) format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.ui.rating .icon {
+  font-family: 'Rating';
+  line-height: 1;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  font-weight: normal;
+  font-style: normal;
+  text-align: center;
+}
+
+/* Empty Star */
+
+.ui.rating .icon:before {
+  content: '\f005';
+}
+
+/* Active Star */
+
+.ui.rating .active.icon:before {
+  content: '\f005';
+}
+
+/*-------------------
+        Star
+--------------------*/
+
+/* Unfilled Star */
+
+.ui.star.rating .icon:before {
+  content: '\f005';
+}
+
+/* Active Star */
+
+.ui.star.rating .active.icon:before {
+  content: '\f005';
+}
+
+/* Partial */
+
+.ui.star.rating .partial.icon:before {
+  content: '\f006';
+}
+
+.ui.star.rating .partial.icon {
+  content: '\f005';
+}
+
+/*-------------------
+        Heart
+--------------------*/
+
+/* Empty Heart
+.ui.heart.rating .icon:before {
+  content: '\f08a';
+}
+*/
+
+.ui.heart.rating .icon:before {
+  content: '\f004';
+}
+
+/* Active */
+
+.ui.heart.rating .active.icon:before {
+  content: '\f004';
+}
+
+/*******************************
+         Site Overrides
+*******************************/
+/*!
  * # Semantic UI 2.2.13 - Search
  * http://github.com/semantic-org/semantic-ui/
  *
@@ -32567,6 +34567,166 @@ a.ui.nag {
 
 /*******************************
          Site Overrides
+*******************************/
+/*!
+ * # Semantic UI 2.2.13 - Shape
+ * http://github.com/semantic-org/semantic-ui/
+ *
+ *
+ * Released under the MIT license
+ * http://opensource.org/licenses/MIT
+ *
+ */
+
+/*******************************
+              Shape
+*******************************/
+
+.ui.shape {
+  position: relative;
+  vertical-align: top;
+  display: inline-block;
+  -webkit-perspective: 2000px;
+  perspective: 2000px;
+  -webkit-transition: left 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
+  transition: left 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
+  transition: transform 0.6s ease-in-out, left 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out;
+  transition: transform 0.6s ease-in-out, left 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
+}
+
+.ui.shape .sides {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.ui.shape .side {
+  opacity: 1;
+  width: 100%;
+  margin: 0em !important;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.ui.shape .side {
+  display: none;
+}
+
+.ui.shape .side * {
+  -webkit-backface-visibility: visible !important;
+  backface-visibility: visible !important;
+}
+
+/*******************************
+             Types
+*******************************/
+
+.ui.cube.shape .side {
+  min-width: 15em;
+  height: 15em;
+  padding: 2em;
+  background-color: #E6E6E6;
+  color: rgba(0, 0, 0, 0.87);
+  -webkit-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
+}
+
+.ui.cube.shape .side > .content {
+  width: 100%;
+  height: 100%;
+  display: table;
+  text-align: center;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.ui.cube.shape .side > .content > div {
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 2em;
+}
+
+/*******************************
+          Variations
+*******************************/
+
+.ui.text.shape.animating .sides {
+  position: static;
+}
+
+.ui.text.shape .side {
+  white-space: nowrap;
+}
+
+.ui.text.shape .side > * {
+  white-space: normal;
+}
+
+/*******************************
+             States
+*******************************/
+
+/*--------------
+    Loading
+---------------*/
+
+.ui.loading.shape {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+/*--------------
+    Animating
+---------------*/
+
+.ui.shape .animating.side {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  display: block;
+  z-index: 100;
+}
+
+.ui.shape .hidden.side {
+  opacity: 0.6;
+}
+
+/*--------------
+      CSS
+---------------*/
+
+.ui.shape.animating .sides {
+  position: absolute;
+}
+
+.ui.shape.animating .sides {
+  -webkit-transition: left 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
+  transition: left 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
+  transition: transform 0.6s ease-in-out, left 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out;
+  transition: transform 0.6s ease-in-out, left 0.6s ease-in-out, width 0.6s ease-in-out, height 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
+}
+
+.ui.shape.animating .side {
+  -webkit-transition: opacity 0.6s ease-in-out;
+  transition: opacity 0.6s ease-in-out;
+}
+
+/*--------------
+     Active
+---------------*/
+
+.ui.shape .active.side {
+  display: block;
+}
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+/*******************************
+        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Sidebar
