@@ -34,12 +34,12 @@
         <fieldset class="inline-lists">
             <dl>
               <dt>${message(code:'platform.name', default:'Platform Name')}</dt>
-              <dd> <g:xEditable owner="${platformInstance}" field="name"/></dd>
+              <dd> <semui:xEditable owner="${platformInstance}" field="name"/></dd>
             </dl>
 
             <dl>
               <dt>${message(code:'platform.primaryUrl', default:'Primary URL')}</dt>
-              <dd> <g:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>
+              <dd> <semui:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>
             </dl>
 
             <dl>

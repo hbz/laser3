@@ -43,58 +43,58 @@
         </dl>
         <dl>
           <dt>${message(code:'tipp.show.accessStart', default:'Access Start Date (Enters Package)')}</dt>
-          <dd><g:xEditable owner="${tipp}" type="date" field="accessStartDate" /></dd>
+          <dd><semui:xEditable owner="${tipp}" type="date" field="accessStartDate" /></dd>
         </dl>
         <dl>
           <dt>${message(code:'tipp.show.accessEnd', default:'Access End Date (Leaves Package)')}</dt>
-          <dd><g:xEditable owner="${tipp}" type="date" field="accessEndDate" /></dd>
+          <dd><semui:xEditable owner="${tipp}" type="date" field="accessEndDate" /></dd>
         </dl>
         <dl>
           <dt>${message(code:'tipp.show.tippStartDate', default:'TIPP Start Date')}</dt>
-          <dd><g:xEditable owner="${tipp}" type="date" field="startDate"/></dd>
+          <dd><semui:xEditable owner="${tipp}" type="date" field="startDate"/></dd>
         </dl>
         <dl>
           <dt>${message(code:'tipp.show.tippStartVol', default:'TIPP Start Volume')}</dt>
-          <dd><g:xEditable owner="${tipp}" field="startVolume"/></dd>
+          <dd><semui:xEditable owner="${tipp}" field="startVolume"/></dd>
         </dl>
         <dl>
           <dt>${message(code:'tipp.show.tippStartIss', default:'TIPP Start Issue')}</dt>
-          <dd><g:xEditable owner="${tipp}" field="startIssue"/></dd>
+          <dd><semui:xEditable owner="${tipp}" field="startIssue"/></dd>
         </dl>
         <dl>
 
           <dt>${message(code:'tipp.show.tippEndDate', default:'TIPP End Date')}</dt>
-          <dd><g:xEditable owner="${tipp}"  type="date" field="endDate"/></dd>
+          <dd><semui:xEditable owner="${tipp}"  type="date" field="endDate"/></dd>
         </dl>
         <dl>
 
           <dt>${message(code:'tipp.show.tippEndVol', default:'TIPP End Volume')}</dt>
-          <dd><g:xEditable owner="${tipp}" field="endVolume"/></dd>
+          <dd><semui:xEditable owner="${tipp}" field="endVolume"/></dd>
         </dl>
         <dl>
 
           <dt>${message(code:'tipp.show.tippEndIss', default:'TIPP End Issue')}</dt>
-          <dd><g:xEditable owner="${tipp}" field="endIssue"/></dd>
+          <dd><semui:xEditable owner="${tipp}" field="endIssue"/></dd>
         </dl>
         <dl>
 
           <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
-          <dd><g:xEditable owner="${tipp}" field="coverageDepth"/></dd>
+          <dd><semui:xEditable owner="${tipp}" field="coverageDepth"/></dd>
         </dl>
         <dl>
 
           <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
-          <dd><g:xEditable owner="${tipp}" field="coverageNote"/></dd>
+          <dd><semui:xEditable owner="${tipp}" field="coverageNote"/></dd>
         </dl>
         <dl>
 
           <dt>${message(code:'tipp.embargo', default:'Embargo')}</dt>
-          <dd><g:xEditable owner="${tipp}" field="embargo"/></dd>
+          <dd><semui:xEditable owner="${tipp}" field="embargo"/></dd>
         </dl>
         <dl>
 
           <dt>${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}</dt>
-          <dd><g:xEditable type="text" owner="${tipp}" field="hostPlatformURL"/></dd>
+          <dd><semui:xEditable type="text" owner="${tipp}" field="hostPlatformURL"/></dd>
         </dl>
         <dl>
 

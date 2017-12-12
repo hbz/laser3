@@ -44,7 +44,7 @@
 
   <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>
 
-  <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
+  <h1 class="ui header"><semui:xEditable owner="${subscriptionInstance}" field="name" /></h1>
 
   <g:render template="nav" />
 
@@ -185,8 +185,8 @@
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessEndDate}"/>
                    </g:if>
                    <g:if test="${params.mode=='advanced' && editable}">
-                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
-                     <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
+                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <semui:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
+                     <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
                    </g:if>
 
                 </td>
@@ -195,8 +195,8 @@
                   <g:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                 </td>
                 <td>
-                    <g:xEditable owner="${ie}" type="date" field="startDate" /><br/>
-                    <g:xEditable owner="${ie}" type="date" field="endDate" />
+                    <semui:xEditable owner="${ie}" type="date" field="startDate" /><br/>
+                    <semui:xEditable owner="${ie}" type="date" field="endDate" />
                 </td>
                 <td>
                 <g:render template="/templates/coreStatus" model="${['issueEntitlement': ie, 'date': params.asAt]}"/>

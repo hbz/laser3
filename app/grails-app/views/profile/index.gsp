@@ -100,7 +100,7 @@
 
                       <div class="field">
                           <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
-                          <g:xEditable owner="${user}" field="defaultPageSize" />
+                          <semui:xEditable owner="${user}" field="defaultPageSize" />
                       </div>
                     </div>
                 </div><!-- .segment -->

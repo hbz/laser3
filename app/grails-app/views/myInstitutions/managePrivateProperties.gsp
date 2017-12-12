@@ -52,8 +52,8 @@
                                             <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
                                         </g:if>
                                     </td>
-                                    <td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-                                    <td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+                                    <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+                                    <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
                                     <td>${ppd.countUsages()}</td>
                                     <td>
                                         <g:if test="${ppd.countUsages()==0}">

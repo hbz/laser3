@@ -31,7 +31,7 @@
           <h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1>
       </g:if>
 
-       <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
+       <h1 class="ui header"><semui:xEditable owner="${subscriptionInstance}" field="name" /></h1>
        <g:render template="nav"  />
 
        <semui:messages data="${flash}" />
@@ -48,22 +48,22 @@
 
                 <dl>
                     <dt>${message(code:'default.startDate.label', default:'Start Date')}</dt>
-                    <dd><g:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
+                    <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'default.endDate.label', default:'End Date')}</dt>
-                    <dd><g:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
+                    <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
-                    <dd><g:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
+                    <dd><semui:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
-                    <dd><g:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
+                    <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                 </dl>
 
                 <dl>
@@ -200,7 +200,7 @@
                 */ %>
                 <% /* <dl>
                     <dt>${message(code:'financials.cancellationAllowances', default:'Cancellation Allowances')}</dt>
-                    <dd> <g:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" /></dd>
+                    <dd> <semui:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" /></dd>
                 </dl> */ %>
 
 

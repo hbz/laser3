@@ -26,12 +26,12 @@
 
             <dt><g:message code="org.shortname.label" default="Shortname" /></dt>
             <dd>
-                <g:xEditable owner="${orgInstance}" field="shortname"/>
+                <semui:xEditable owner="${orgInstance}" field="shortname"/>
             </dd>
 
             <dt><g:message code="org.sortname.label" default="Sortname" /></dt>
             <dd>
-                <g:xEditable owner="${orgInstance}" field="sortname"/>
+                <semui:xEditable owner="${orgInstance}" field="sortname"/>
             </dd>
 
             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
@@ -106,12 +106,12 @@
 
                 <dt><g:message code="org.fteStudents.label" default="Fte Students" /></dt>
                 <dd>
-                    <g:xEditable owner="${orgInstance}" field="fteStudents"/>
+                    <semui:xEditable owner="${orgInstance}" field="fteStudents"/>
                 </dd>
 
                 <dt><g:message code="org.fteStaff.label" default="Fte Staff" /></dt>
                 <dd>
-                    <g:xEditable owner="${orgInstance}" field="fteStaff"/>
+                    <semui:xEditable owner="${orgInstance}" field="fteStaff"/>
                 </dd>
             </g:if>
 

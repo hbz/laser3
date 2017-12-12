@@ -4,7 +4,7 @@
     <g:each in="${ownobj.documents}" var="docctx">
       <g:if test="${((docctx.owner?.contentType==0) && !(docctx.domain) && (docctx.status?.value!='Deleted') )}">
         <li>
-          <g:xEditable owner="${docctx.owner}" field="content"/><br/>
+          <semui:xEditable owner="${docctx.owner}" field="content"/><br/>
           <i>${message(code:'template.notes.created')} <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
           <g:if test="${docctx.alert}">
             ${message(code:'template.notes.shared')} ${docctx.alert.createdBy.displayName}

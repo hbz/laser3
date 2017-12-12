@@ -33,7 +33,7 @@
     </div>
 
     <div>
-      <h1 class="ui header">${license.licensee?.name} ${license.type?.value} License : <g:xEditable owner="${license}" field="reference" id="reference"/></h1>
+      <h1 class="ui header">${license.licensee?.name} ${license.type?.value} License : <semui:xEditable owner="${license}" field="reference" id="reference"/></h1>
     </div>
 
 
@@ -124,7 +124,7 @@
                   <dl>
                       <dt><label class="control-label" for="reference">Reference</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="reference" id="reference"/>
+                        <semui:xEditable owner="${license}" field="reference" id="reference"/>
                       </dd>
                   </dl>
 
@@ -139,7 +139,7 @@
                   <dl>
                       <dt><label class="control-label" for="noticePeriod">Notice Period</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="noticePeriod" id="noticePeriod"/>
+                        <semui:xEditable owner="${license}" field="noticePeriod" id="noticePeriod"/>
                      </dd>
                   </dl>
 
@@ -158,21 +158,21 @@
                   <dl>
                       <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> Url</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
+                        <semui:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
                       </dd>
                   </dl>
       
                   <dl>
                       <dt><label class="control-label" for="licensorRef">Licensor Ref</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
+                        <semui:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
                       </dd>
                   </dl>
       
                   <dl>
                       <dt><label class="control-label" for="licenseeRef">Licensee Ref</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
+                        <semui:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
                       </dd>
                   </dl>
 
@@ -186,14 +186,14 @@
                   <dl>
                       <dt><label class="control-label" for="isPublic">Start Date</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" type="date" field="startDate" />
+                        <semui:xEditable owner="${license}" type="date" field="startDate" />
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="isPublic">End Date</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" type="date" field="endDate" />
+                        <semui:xEditable owner="${license}" type="date" field="endDate" />
                       </dd>
                   </dl>
 

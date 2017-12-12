@@ -26,10 +26,10 @@
                     <g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/>
                     </td></g:if>
                     <td style="max-width: 300px;overflow: hidden;text-overflow: ellipsis;">
-                        <g:xEditable owner="${docctx.owner}" field="title" id="title"/>
+                        <semui:xEditable owner="${docctx.owner}" field="title" id="title"/>
                     </td>
                     <td style="max-width: 300px;overflow: hidden;text-overflow: ellipsis;">
-                        <g:xEditable owner="${docctx.owner}" field="filename" id="filename"/>
+                        <semui:xEditable owner="${docctx.owner}" field="filename" id="filename"/>
                     </td>
                     <td>
                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
@@ -37,7 +37,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:xEditable owner="${docctx.owner}" field="creator" id="creator"/>
+                        <semui:xEditable owner="${docctx.owner}" field="creator" id="creator"/>
                     </td>
                     <td>${docctx.owner?.type?.value}</td>
                 </tr>

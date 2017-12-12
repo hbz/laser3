@@ -47,10 +47,10 @@
 												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
 											</g:if>
 										</td>
-										<td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-										<!--<td><g:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
+										<td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+										<td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+										<!--<td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
+										<td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
 									</tr>
 								</g:each>
 

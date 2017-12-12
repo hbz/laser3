@@ -91,10 +91,10 @@
                     <td><g:link controller="organisations" action="info" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>
-                      <g:xEditable owner="${org}" type="date" field="startDate"/>
+                      <semui:xEditable owner="${org}" type="date" field="startDate"/>
                     </td>
                     <td>
-                      <g:xEditable owner="${org}" type="date" field="endDate"/>
+                      <semui:xEditable owner="${org}" type="date" field="endDate"/>
                     </td>
                   </tr>
                 </g:each>

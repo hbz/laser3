@@ -62,16 +62,16 @@
                     </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
-                            <g:xEditable owner="${prop}" type="text" field="intValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="intValue"/>
                         </g:if>
                         <g:elseif test="${prop.type.type == String.toString()}">
-                            <g:xEditable owner="${prop}" type="text" field="stringValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="stringValue"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == BigDecimal.toString()}">
-                            <g:xEditable owner="${prop}" type="text" field="decValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="decValue"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == Date.toString()}">
-                            <g:xEditable owner="${prop}" type="date" field="dateValue"/>
+                            <semui:xEditable owner="${prop}" type="date" field="dateValue"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
@@ -79,11 +79,11 @@
                     </td>
                     <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                         <td>
-                            <g:xEditable owner="${prop}" type="text" field="paragraph"/>
+                            <semui:xEditable owner="${prop}" type="text" field="paragraph"/>
                         </td>
                     </g:if>
                     <td>
-                        <g:xEditable owner="${prop}" type="textarea" field="note"/>
+                        <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
                     <td>
                         <g:if test="${editable == true}">

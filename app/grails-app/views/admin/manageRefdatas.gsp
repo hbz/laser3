@@ -44,10 +44,10 @@
                                     </td>
                                     <td></td>
                                     <td>
-                                        <strong><g:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
                                     </td>
                                     <td>
-                                        <strong><g:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
                                     </td>
                                 </tr>
 
@@ -61,10 +61,10 @@
                                                 </g:if>
                                             </td>
                                             <td>
-                                                <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
+                                                <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
                                             </td>
                                             <td>
-                                                <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
+                                                <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
                                             </td>
                                         </tr>
                                     </g:each>

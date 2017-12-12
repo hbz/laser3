@@ -67,13 +67,13 @@
                         <tr>
                             <td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td>
                             <td>
-                              <g:xEditable owner="${docctx.owner}" field="title" id="title"/>
+                              <semui:xEditable owner="${docctx.owner}" field="title" id="title"/>
                             </td>
                             <td>
-                              <g:xEditable owner="${docctx.owner}" field="content" id="content"/>
+                              <semui:xEditable owner="${docctx.owner}" field="content" id="content"/>
                             </td>
                             <td>
-                              <g:xEditable owner="${docctx.owner}" field="creator" id="creator"/>
+                              <semui:xEditable owner="${docctx.owner}" field="creator" id="creator"/>
                             </td>
                             <td>${docctx.owner?.type?.value}</td>
                         </tr>

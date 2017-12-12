@@ -24,10 +24,10 @@
          <g:each in="${coreDates}" var="coreDate">
             <tr>
               <td>
-                <g:xEditable owner="${coreDate}" type="date" field="startDate" /> 
+                <semui:xEditable owner="${coreDate}" type="date" field="startDate" />
               </td>
               <td>
-                <g:xEditable owner="${coreDate}" type="date" field="endDate" /> 
+                <semui:xEditable owner="${coreDate}" type="date" field="endDate" />
               </td>
               <td>
               <g:if test="${editable == 'true' || editable == true}">

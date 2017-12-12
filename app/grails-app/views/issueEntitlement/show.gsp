@@ -103,29 +103,29 @@
                 </thead>
                 <tbody>
                     <tr>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startDate" type="date"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startVolume"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startIssue"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endDate" type="date"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endVolume"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endIssue"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startDate" type="date"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startVolume"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startIssue"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endDate" type="date"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endVolume"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endIssue"/></td>
                     </tr>
                 </tbody>
             </table>
 
             <dl>
                 <dt>${message(code:'tipp.embargo', default:'Embargo')}</dt>
-                <dd><g:xEditable owner="${issueEntitlementInstance}" field="embargo"/></dd>
+                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="embargo"/></dd>
             </dl>
 
             <dl>
                 <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
-                <dd><g:xEditable owner="${issueEntitlementInstance}" field="coverageDepth"/></dd>
+                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="coverageDepth"/></dd>
             </dl>
 
             <dl>
                 <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
-                <dd><g:xEditable owner="${issueEntitlementInstance}" field="coverageNote"/></dd>
+                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="coverageNote"/></dd>
             </dl>
 
             <br/>

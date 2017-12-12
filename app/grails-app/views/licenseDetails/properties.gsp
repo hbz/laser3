@@ -16,7 +16,7 @@
     <h1 class="ui header">
         ${license.licensee?.name}
         ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
-        <g:xEditable owner="${license}" field="reference" id="reference"/>
+        <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
     <g:render template="nav" />
