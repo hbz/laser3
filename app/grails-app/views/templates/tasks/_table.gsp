@@ -36,7 +36,7 @@
                     </td>
 
                     <td>
-                        <g:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" />
+                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" />
                     </td>
 
                     <td>${fieldValue(bean: taskInstance, field: "creator")}</td>

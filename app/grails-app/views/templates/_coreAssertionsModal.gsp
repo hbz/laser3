@@ -52,11 +52,11 @@
           <tr>
             <td>
               <label class="property-label">${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}:</label>
-              <g:simpleHiddenValue  id="coreStartDate" name="coreStartDate" type="date"/>
+              <semui:simpleHiddenValue  id="coreStartDate" name="coreStartDate" type="date"/>
             </td>
             <td>
              <label class="property-label">${message(code:'subscription.details.coreEndDate', default:'Core End Date')}:</label>
-              <g:simpleHiddenValue id="coreEndDate" name="coreEndDate" type="date"/>
+              <semui:simpleHiddenValue id="coreEndDate" name="coreEndDate" type="date"/>
             </td>
             <td>
               <input type="submit" value="${message(code:'default.button.apply.label', default:'Apply')}" class="ui button"/>&nbsp;

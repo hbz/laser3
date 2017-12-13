@@ -70,7 +70,7 @@
                             <semui:xEditable owner="${prop}" type="text" field="decValue"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                            <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
                         </g:elseif>
                     </td>
                     <td>

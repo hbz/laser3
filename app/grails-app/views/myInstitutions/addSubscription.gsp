@@ -81,7 +81,7 @@
         $(document).ready(function() {
             var activateButton = function() {
                 $('.subscription-create input').removeClass('disabled');
-                $('.subscription-create input').addClass('btn-primary');
+                $('.subscription-create input').addClass('ui button');
             }
             
             // Disables radio selection when using back button.

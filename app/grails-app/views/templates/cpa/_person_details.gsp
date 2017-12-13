@@ -1,4 +1,4 @@
-<div class="person-details">
+<div class="ui segment person-details">
 	<g:if test="${person}">
 		<div>
 			<strong>

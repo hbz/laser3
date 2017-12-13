@@ -55,7 +55,7 @@ $(document).ready(function() {
       }
     }
   });
-
+  /* todo remove @spotlight
   $('.dlpopover').popover({html:true,
                           placement:'left',
                           title:'search', 
@@ -66,12 +66,13 @@ $(document).ready(function() {
                           content:function() {
                           return getContent();}
   });
-
+  */
 
   semanticUiStuff()
 
 });
 
+/*
 function getContent() {
     return $.ajax({
         type: "GET",
@@ -80,6 +81,7 @@ function getContent() {
         async: false
     }).responseText;
 }
+*/
 
 function semanticUiStuff() {
 

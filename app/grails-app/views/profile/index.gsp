@@ -90,12 +90,12 @@
 
                       <div class="field">
                           <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
-                          <g:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
+                          <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
                       </div>
 
                       <div class="field">
                           <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
-                          <g:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />
+                          <semui:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />
                       </div>
 
                       <div class="field">

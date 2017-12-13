@@ -20,7 +20,7 @@ pilotDisableFlag = false
 // ES-CONFIG
 aggr_es_cluster  = 'elasticsearch'
 aggr_es_index    = 'kbplus'
-aggr_es_hostname = 'localhost'
+aggr_es_hostname = 'localhost' // localhost
 
 // FEATURE-CONFIG
 localauth = true

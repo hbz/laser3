@@ -40,14 +40,14 @@
 			<tbody>
 				<tr>
 					<td>${message(code:'package.show.pkg_name', default:'Package Name')}</td>
-					<td>${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <g:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/>
+					<td>${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/>
                                               ${message(code:'package.compare.select.first', default:'Now select first package to compare (Filtered by dates above). Use \'%\' as wildcard.')}<br/>
                                               <input type="hidden" name="pkgA" id="packageSelectA" value="${pkgA}"/> 
 					</td>
 					<td> 
-					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
+					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
                                               ${message(code:'package.compare.select.second', default:'Select second package to compare (Filtered by dates above). Use \'%\' as wildcard.')}<br/>
                                               <input type="hidden" name="pkgB" id="packageSelectB" value="${pkgB}" />
 					</td>
@@ -142,7 +142,7 @@
 			</td>
 			<td>
 				${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:
-                                <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                                <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
 			</td>
 			<td style="padding-left:10px;"> <input type='button' class="ui button" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
 		</tr>
@@ -152,7 +152,7 @@
 		</td>
 		<td>
 			${message(code:'package.compare.filter.coverage_endsAfter', default:'Coverage Ends After')}:
-			<g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+			<semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 		</td>
 
 			<td  style="padding-left:10px;"> <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>

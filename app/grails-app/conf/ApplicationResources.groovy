@@ -30,7 +30,7 @@ modules = {
         dependsOn 'deprecatedCSS'
 
         resource url:'js/inline-content.js'
-        resource url:'js/bootstrap.min.js'
+        //  resource url:'js/bootstrap.min.js'
         //resource url:'js/bootstrap-editable.js' // switched to query-editable-poshytip.min.js
         //resource url:'js/bootstrap-datepicker.de.js'
 
@@ -73,7 +73,7 @@ modules = {
         // legacy CRAP ..
         // legacy CRAP ..
 
-        resource url:'js/bootstrap.min.js'
+        //  resource url:'js/bootstrap.min.js'
         //resource url:'js/bootstrap-editable.js' // switched to query-editable-poshytip.min.js
         //resource url:'js/bootstrap-datepicker.de.js'
 

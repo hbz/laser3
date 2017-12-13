@@ -100,7 +100,7 @@
                      <g:else>
                       <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                      </g:else>
-                       <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
+                       <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">

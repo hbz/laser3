@@ -36,27 +36,27 @@
 
             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
             <dd>
-                <g:xEditableRefData owner="${orgInstance}" field="libraryType" config='Library Type'/>
+                <semui:xEditableRefData owner="${orgInstance}" field="libraryType" config='Library Type'/>
             </dd>
 
             <dt><g:message code="org.libraryNetwork.label" default="Library Network" /></dt>
             <dd>
-                <g:xEditableRefData owner="${orgInstance}" field="libraryNetwork" config='Library Network'/>
+                <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork" config='Library Network'/>
             </dd>
 
             <dt><g:message code="org.funderType.label" default="Funder Type" /></dt>
             <dd>
-                <g:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
+                <semui:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
             </dd>
 
             <dt><g:message code="org.federalState.label" default="Federal State" /></dt>
             <dd>
-                <g:xEditableRefData owner="${orgInstance}" field="federalState" config='Federal State'/>
+                <semui:xEditableRefData owner="${orgInstance}" field="federalState" config='Federal State'/>
             </dd>
 
             <dt><g:message code="org.country.label" default="Country" /></dt>
             <dd>
-                <g:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
+                <semui:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
             </dd>
 
             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
@@ -98,7 +98,7 @@
 
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
               <dd>
-                <g:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
+                <semui:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
               </dd>
             <g:if test="${editable}">
                 <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
@@ -117,13 +117,13 @@
 
             <dt><g:message code="org.sector.label" default="Sector" /></dt>
             <dd>
-            	<g:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
+            	<semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
             </dd>
 
             <dt><g:message code="org.membership.label" default="Membership Organisation" /></dt>
             <dd>
                 <g:if test="${editable}">
-                    <g:xEditableRefData owner="${orgInstance}" field="membership" config='YN'/>
+                    <semui:xEditableRefData owner="${orgInstance}" field="membership" config='YN'/>
                 </g:if>
                 <g:else>
                     <g:fieldValue bean="${orgInstance}" field="membership"/>

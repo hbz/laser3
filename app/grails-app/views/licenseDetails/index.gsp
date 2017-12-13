@@ -119,7 +119,7 @@
                   <dl>
                       <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="status" config='License Status'/>
+                        <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                       </dd>
                   </dl>
       
@@ -165,7 +165,7 @@
                   <dl>
                       <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
+                        <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
                       </dd>
                   </dl>
 
@@ -186,7 +186,7 @@
                   <dl>
                       <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
+                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
                       </dd>
                   </dl>
 
@@ -205,7 +205,7 @@
                           <g:each in="${license?.incomingLinks}" var="il">
                             <li><g:link controller="licenseDetails" action="index" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> - 
                             ${message(code:'license.details.incoming.child', default:'Child')}:
-                            <g:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+                            <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
                             </li>
                           </g:each>
               

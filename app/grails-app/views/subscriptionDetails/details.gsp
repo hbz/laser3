@@ -68,19 +68,19 @@
 
                 <dl>
                     <dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
-                    <dd><g:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
+                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
-                    <dd><g:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
+                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                 </dl>
 
               <dl>
                 <dt>${message(code:'license')}</dt>
                 <dd>
                   <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
-                    <g:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                    <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
                     <g:if test="${subscriptionInstance.owner != null}">
                     (
                       <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> 
@@ -211,7 +211,7 @@
 
                <% /*g:if test="${params.mode=='advanced'}">
                  <dl><dt><label class="control-label" for="licenseeRef">${message(code:'default.status.label', default:'Status')}</label></dt><dd>
-                      <g:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status'/>
+                      <semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status'/>
                      </dd>
                </dl>
                </g:if */ %>

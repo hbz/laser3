@@ -24,18 +24,18 @@
               </td>
               <td style="width:31%;text-align:right;">
                 <div style="padding:5px 5px;white-space:nowrap;">
-                  <label>${message(code:'package.search.updated_after')} : </label> <g:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date"/>
+                  <label>${message(code:'package.search.updated_after')} : </label> <semui:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date"/>
                 </div>
                 <div style="padding:5px 5px;white-space:nowrap;">
-                  <label>${message(code:'package.search.created_after')} : </label> <g:simpleHiddenValue id="createStartDate" name="createStartDate" type="date"/>
+                  <label>${message(code:'package.search.created_after')} : </label> <semui:simpleHiddenValue id="createStartDate" name="createStartDate" type="date"/>
                 </div>
               </td>
               <td style="width:31%;text-align:right;">
                 <div style="padding:5px 5px;white-space:nowrap;">
-                  <label>${message(code:'package.search.updated_before')} : </label> <g:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date"/>
+                  <label>${message(code:'package.search.updated_before')} : </label> <semui:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date"/>
                 </div>
                 <div style="padding:5px 5px;white-space:nowrap;">
-                  <label>${message(code:'package.search.created_before')} : </label> <g:simpleHiddenValue  id="createEndDate" name="createEndDate" type="date"/>
+                  <label>${message(code:'package.search.created_before')} : </label> <semui:simpleHiddenValue  id="createEndDate" name="createEndDate" type="date"/>
                 </div>
               </td>
               <td>

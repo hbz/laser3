@@ -38,9 +38,9 @@
                                </g:each>
                             </select> &nbsp;
             &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-            <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+            <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
             &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-            <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+            <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 
             <input type="submit" style="margin-left:10px;" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}">
           </g:form>

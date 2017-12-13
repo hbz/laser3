@@ -99,27 +99,27 @@
         <dl>
 
           <dt>${message(code:'default.status.label', default:'Status')}</dt>
-          <dd><g:xEditableRefData owner="${tipp}" field="status" config='TIPP Status'/><dd>
+          <dd><semui:xEditableRefData owner="${tipp}" field="status" config='TIPP Status'/><dd>
         </dl>
         <dl>
 
           <dt>${message(code:'tipp.show.statusReason', default:'Status Reason')}</dt>
-          <dd><g:xEditableRefData owner="${tipp}" field="statusReason" config="Tipp.StatusReason"/><dd>
+          <dd><semui:xEditableRefData owner="${tipp}" field="statusReason" config="Tipp.StatusReason"/><dd>
         </dl>
 
         <dl>
           <dt>${message(code:'tipp.delayedOA', default:'Delayed OA')}</dt>
-          <dd><g:xEditableRefData owner="${tipp}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/><dd>
+          <dd><semui:xEditableRefData owner="${tipp}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/><dd>
         </dl>
 
         <dl>
           <dt>${message(code:'tipp.hybridOA', default:'Hybrid OA')}</dt>
-          <dd><g:xEditableRefData owner="${tipp}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/><dd>
+          <dd><semui:xEditableRefData owner="${tipp}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/><dd>
         </dl>
 
         <dl>
           <dt>${message(code:'tipp.paymentType', default:'Payment')}</dt>
-          <dd><g:xEditableRefData owner="${tipp}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/><dd>
+          <dd><semui:xEditableRefData owner="${tipp}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/><dd>
         </dl>
 
         <dl>
@@ -158,9 +158,9 @@
                   <input type="hidden" name="order" value="${params.order}">
                   <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
                   &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-                  <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                  <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
                   &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-                  <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+                  <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
                   <input type="submit" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}">
                 </g:form>
 

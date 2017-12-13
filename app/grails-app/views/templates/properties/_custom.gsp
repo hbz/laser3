@@ -74,7 +74,7 @@
                             <semui:xEditable owner="${prop}" type="date" field="dateValue"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                            <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
                         </g:elseif>
                     </td>
                     <g:if test="${ownobj instanceof com.k_int.kbplus.License}">

@@ -131,14 +131,14 @@
               <dl>
                 <dt>${message(code: 'license.is_public')}</dt>
                 <dd>
-                  <g:xEditableRefData owner="${packageInstance}" field="isPublic" config='YN'/>
+                  <semui:xEditableRefData owner="${packageInstance}" field="isPublic" config='YN'/>
                 </dd>
               </dl> 
 
               <dl>
                 <dt><g:message code="license" default="License"/></dt>
                 <dd>
-                  <g:xEditableRefData owner="${packageInstance}" field="license" config="Licenses"/>
+                  <semui:xEditableRefData owner="${packageInstance}" field="license" config="Licenses"/>
                 </dd>
               </dl>
 
@@ -175,35 +175,35 @@
              <dl>
                 <dt>${message(code: 'package.list_status')}</dt>
                 <dd>
-                  <g:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RefdataCategory.PKG_LIST_STAT}"/>
+                  <semui:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RefdataCategory.PKG_LIST_STAT}"/>
                 </dd>
              </dl>
 
              <dl>
                 <dt>${message(code: 'package.breakable')}</dt>
                 <dd>
-                  <g:xEditableRefData owner="${packageInstance}" field="breakable" config="${RefdataCategory.PKG_BREAKABLE}"/>
+                  <semui:xEditableRefData owner="${packageInstance}" field="breakable" config="${RefdataCategory.PKG_BREAKABLE}"/>
                 </dd>
              </dl>
 
              <dl>
                 <dt>${message(code: 'package.consistent')}</dt>
                 <dd>
-                  <g:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>
+                  <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>
                 </dd>
              </dl>
 
              <dl>
                 <dt>${message(code: 'package.fixed')}</dt>
                 <dd>
-                  <g:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
+                  <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
                 </dd>
              </dl>
 
               <dl>
                 <dt>${message(code: 'package.scope')}</dt>
                 <dd>
-                  <g:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
+                  <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
                 </dd>
               </dl>
 
@@ -268,12 +268,12 @@
             </div>
             <div>
               <label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
-              <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/> -
+              <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/> -
               <label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
-              <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/> -
+              <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/> -
               <g:if test="${params.mode!='advanced'}">
                 <label>${message(code:'package.show.atDate', default:'Show package contents on specific date')}:</label>
-                <g:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
+                <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
               </g:if>
 
               <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
@@ -308,7 +308,7 @@
                     <tr>
                       <td>
                         <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
+                          ${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
                         </div>
                         <div style="display:inline-block;white-space:nowrap;">
                           <i style="text-transform:uppercase">${message(code:'default.or', default:'or')}</i> 
@@ -318,7 +318,7 @@
                       </td>
                       <td>
                         <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.startVolume', default:'Start Volume')}: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
+                          ${message(code:'tipp.startVolume', default:'Start Volume')}: <semui:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
                         </div>
                         <div style="display:inline-block;white-space:nowrap;">
                           <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
@@ -328,7 +328,7 @@
                       </td>
                       <td>
                         <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.startIssue', default:'Start Issue')}: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                          ${message(code:'tipp.startIssue', default:'Start Issue')}: <semui:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
                         </div>
                         <div style="display:inline-block;white-space:nowrap;">
                           <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
@@ -340,7 +340,7 @@
                     <tr>
                       <td>
                         <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
+                          ${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
                         </div>
                         <div style="display:inline-block;white-space:nowrap;">
                           <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
@@ -350,7 +350,7 @@
                       </td>
                       <td>
                         <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.endVolume', default:'End Volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+                          ${message(code:'tipp.endVolume', default:'End Volume')}: <semui:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
                         </div>
                         <div style="display:inline-block;white-space:nowrap;">
                           <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
@@ -360,7 +360,7 @@
                       </td>
                       <td>
                         <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.endIssue', default:'End Issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+                          ${message(code:'tipp.endIssue', default:'End Issue')}: <semui:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
                         </div>
                         <div style="display:inline-block;white-space:nowrap;">
                           <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
@@ -372,7 +372,7 @@
                     <tr>
                        <td>
                         <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
+                          ${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <semui:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
                         </div>
                         <div style="display:inline-block;white-space:nowrap;">
                           <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
@@ -382,7 +382,7 @@
                       </td>
                       <td>
                         <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.coverageNote', default:'Coverage Note')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+                          ${message(code:'tipp.coverageNote', default:'Coverage Note')}: <semui:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
                         </div>
                         <div style="display:inline-block;white-space:nowrap;">
                           <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
@@ -390,7 +390,7 @@
                           ${message(code:'package.show.checkToClear', default:'Check to clear')}
                         </div>
                       </td>
-                      <td>${message(code:'tipp.embargo', default:'Embargo')}:  <g:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
+                      <td>${message(code:'tipp.embargo', default:'Embargo')}:  <semui:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
                           <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
                           <input type="checkbox" name="clear_embargo"/>
                           ${message(code:'package.show.checkToClear', default:'Check to clear')}
@@ -483,7 +483,7 @@
                     ${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus.getI10n('value')}
                   </span>
                    <g:if test="${params.mode=='advanced'}">
-                     <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
+                     <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
                      <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
                      <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
@@ -497,7 +497,7 @@
                    </g:else>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
-                   <g:xEditableRefData owner="${t}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/>
+                   <semui:xEditableRefData owner="${t}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                   <g:each in="${t.title.ids}" var="id">
@@ -531,9 +531,9 @@
                   <td colspan="8">coverageNote: ${t.coverageNote}
                   <g:if test="${params.mode=='advanced'}">
                     <br/> ${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <semui:xEditable owner="${t}" field="hostPlatformURL" />
-                    <br/> ${message(code:'tipp.delayedOA', default:'Delayed OA')}: <g:xEditableRefData owner="${t}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/> &nbsp;
-                    ${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <g:xEditableRefData owner="${t}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/> &nbsp;
-                    ${message(code:'tipp.paymentType', default:'Payment')}: <g:xEditableRefData owner="${t}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/> &nbsp;
+                    <br/> ${message(code:'tipp.delayedOA', default:'Delayed OA')}: <semui:xEditableRefData owner="${t}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/> &nbsp;
+                    ${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <semui:xEditableRefData owner="${t}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/> &nbsp;
+                    ${message(code:'tipp.paymentType', default:'Payment')}: <semui:xEditableRefData owner="${t}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/> &nbsp;
                   </g:if>
                   </td>
                 </tr>

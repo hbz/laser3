@@ -50,7 +50,7 @@
     <r:script language="JavaScript">
       $(document).ready(function() {
         $(".ann-content ul").wrap("<div class='collapse'/>");
-        $(".collapse").before("<div class='ui primary button toggle' style='margin-bottom:5px;' type='button'>${message(code:'default.button.show.label')}</div>");
+        $(".collapse").before("<div class='ui button toggle' style='margin-bottom:5px;' type='button'>${message(code:'default.button.show.label')}</div>");
         $('.toggle').click(function(){
           if ( $(this).next().hasClass('in') ){
             $(this).text("${message(code:'default.button.show.label')}")

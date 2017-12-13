@@ -47,14 +47,14 @@
 							<tr>
 								<td> ${message(code:'subscription.compare.name', default:'Subscription name')} </td>
 					<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
-					<g:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-					${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> ${message(code:'default.compare.select.first', args:[sub_message] )}<br/>
+					<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+					${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> ${message(code:'default.compare.select.first', args:[sub_message] )}<br/>
                       <input type="hidden" name="subA" id="subSelectA" value="${subA}"/> 
 					</td>
 					<td> 
 					    ${message(code:'default.compare.restrict.after', args:[subs_message] )}
-					    <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-				${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/> ${message(code:'default.compare.select.second', args:[sub_message] )}<br/>
+					    <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+				${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/> ${message(code:'default.compare.select.second', args:[sub_message] )}<br/>
 	                      <input type="hidden" name="subB" id="subSelectB" value="${subB}" />
 					</td>
 							</tr>

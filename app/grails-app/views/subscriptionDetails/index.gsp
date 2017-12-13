@@ -88,7 +88,7 @@
                             </select>
             <g:if test="${params.mode!='advanced'}">
               <label style="margin:0px 10px">${message(code:'subscription.details.asAt', default:'Entitlements as at')}:</label>
-              <g:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
+              <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
             </g:if>
             <input type="submit" style="margin-left:10px;" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
           </g:form>
@@ -142,8 +142,8 @@
                   <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="IEMedium"/>
               </th>
 
-              <th> <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>  <br/>
-                   <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/> 
+              <th> <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>  <br/>
+                   <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
               </th>
               <th>
                 <g:simpleHiddenRefdata id="bulk_coreStatus" name="bulk_coreStatus" refdataCategory="CoreStatus"/> <br/>
@@ -192,7 +192,7 @@
                 </td>
               
                 <td>
-                  <g:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
+                  <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                 </td>
                 <td>
                     <semui:xEditable owner="${ie}" type="date" field="startDate" /><br/>
@@ -202,7 +202,7 @@
                 <g:render template="/templates/coreStatus" model="${['issueEntitlement': ie, 'date': params.asAt]}"/>
                <br/>
 
-               <g:xEditableRefData owner="${ie}" field="coreStatus" config='CoreStatus'/>
+               <semui:xEditableRefData owner="${ie}" field="coreStatus" config='CoreStatus'/>
                 </td>
                 <td>
                   <g:if test="${editable}"><g:link action="removeEntitlement" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">${message(code:'default.button.delete.label', default:'Delete')}</g:link></g:if>

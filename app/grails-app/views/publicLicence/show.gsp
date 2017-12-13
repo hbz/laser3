@@ -131,7 +131,7 @@
                   <dl>
                       <dt><label class="control-label" for="reference">Status</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="status" config='License Status'/>
+                        <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                       </dd>
                   </dl>
       
@@ -179,7 +179,7 @@
                   <dl>
                       <dt><label class="control-label" for="isPublic">Public?</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
+                        <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
                       </dd>
                   </dl>
 
@@ -200,7 +200,7 @@
                   <dl>
                       <dt><label class="control-label" for="licenseCategory">License Category</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
+                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
                       </dd>
                   </dl>
 
@@ -217,7 +217,7 @@
                         <ul>
                           <g:each in="${license?.incomingLinks}" var="il">
                             <li>${il.fromLic.reference} (${il.type?.value}) - 
-                            Child: <g:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+                            Child: <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
 
                             </li>
                           </g:each>
