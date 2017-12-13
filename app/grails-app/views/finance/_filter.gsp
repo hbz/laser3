@@ -23,10 +23,10 @@
 %{--Basic static help text--}%
 <g:render template="help" />
 
-<button class="ui primary button pull-right" type="submit" data-toggle="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
+<button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
 <g:if test="${editable}">
-    <button class="ui primary button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
-    <button class="ui primary button pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
+    <button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
+    <button class="ui button pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
 </g:if>
 <h1 class="ui header">${institution.name} Cost Items</h1>
 <g:form id="filterView" class="ui form" action="index" method="post" params="${[shortcode:params.shortcode]}">
@@ -66,10 +66,10 @@
                         <br/>
                         <div id="filtering" class="btn-group" data-toggle="buttons-radio">
                             <g:if test="${filterMode=='OFF'}">
-                                <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui mini button"></g:select><br/><br/>
+                                <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui button"></g:select><br/><br/>
                             </g:if>
                             <g:hiddenField type="hidden" name="resetMode" value="${params.resetMode}"></g:hiddenField>
-                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui mini primary button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
+                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
 
                         </div>
                         <br />

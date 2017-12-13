@@ -4,7 +4,7 @@
 
             <input type="hidden" name="redirectAction" value="${redirect}"/>
             <input type="hidden" name="instanceId" value="${instance.id}"/>
-            <input type="submit" class="btn btn-danger delete-document" value="${message(code:'template.notes.delete', default:'Delete Selected Notes')}"/>
+            <input type="submit" class="ui negative button delete-document" value="${message(code:'template.notes.delete', default:'Delete Selected Notes')}"/>
         </div>
 
     </g:if>
@@ -25,13 +25,13 @@
                     <g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/>
                     </td></g:if>
                     <td>
-                        <g:xEditable owner="${docctx.owner}" field="title" id="title"/>
+                        <semui:xEditable owner="${docctx.owner}" field="title" id="title"/>
                     </td>
                     <td>
-                        <g:xEditable owner="${docctx.owner}" field="content" id="content"/>
+                        <semui:xEditable owner="${docctx.owner}" field="content" id="content"/>
                     </td>
                     <td>
-                        <g:xEditable owner="${docctx.owner}" field="creator" id="creator"/>
+                        <semui:xEditable owner="${docctx.owner}" field="creator" id="creator"/>
                     </td>
                     <td>${docctx.owner?.type?.value}</td>
                 </tr>
@@ -40,7 +40,7 @@
         </tbody>
     </table>
     <g:if test="${editable}">
-        <input type="button" class="ui primary button" value="${message(code:'template.addNote', default:'Add new Note')}" data-toggle="modal"
+        <input type="button" class="ui button" value="${message(code:'template.addNote', default:'Add new Note')}" data-semui="modal"
                    href="#modalCreateNote"/>
    </g:if>
 </g:form>

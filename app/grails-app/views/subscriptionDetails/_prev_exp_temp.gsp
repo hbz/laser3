@@ -112,11 +112,10 @@
         </dd>
     </dl>
 
-    <div class="pagination" style="text-align:center">
+
         <g:if test="${titlesList}" >
-            <bootstrap:paginate  action="${screen}" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_ie_rows}" />
+            <semui:paginate  action="${screen}" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_ie_rows}" />
         </g:if>
-    </div>
 
 </div>
 </body>

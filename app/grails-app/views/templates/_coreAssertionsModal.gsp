@@ -24,10 +24,10 @@
          <g:each in="${coreDates}" var="coreDate">
             <tr>
               <td>
-                <g:xEditable owner="${coreDate}" type="date" field="startDate" /> 
+                <semui:xEditable owner="${coreDate}" type="date" field="startDate" />
               </td>
               <td>
-                <g:xEditable owner="${coreDate}" type="date" field="endDate" /> 
+                <semui:xEditable owner="${coreDate}" type="date" field="endDate" />
               </td>
               <td>
               <g:if test="${editable == 'true' || editable == true}">
@@ -52,14 +52,14 @@
           <tr>
             <td>
               <label class="property-label">${message(code:'subscription.details.coreStartDate', default:'Core Start Date')}:</label>
-              <g:simpleHiddenValue  id="coreStartDate" name="coreStartDate" type="date"/>
+              <semui:simpleHiddenValue  id="coreStartDate" name="coreStartDate" type="date"/>
             </td>
             <td>
              <label class="property-label">${message(code:'subscription.details.coreEndDate', default:'Core End Date')}:</label>
-              <g:simpleHiddenValue id="coreEndDate" name="coreEndDate" type="date"/>
+              <semui:simpleHiddenValue id="coreEndDate" name="coreEndDate" type="date"/>
             </td>
             <td>
-              <input type="submit" value="${message(code:'default.button.apply.label', default:'Apply')}" class="btn btn-primary btn-small pull-right"/>&nbsp;
+              <input type="submit" value="${message(code:'default.button.apply.label', default:'Apply')}" class="ui button"/>&nbsp;
             </td>
           </tr>
         </table>

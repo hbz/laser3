@@ -82,7 +82,7 @@
         ${message(code:'datamanager.changeLog.how_changed')}:
         <input type="checkbox" style="vertical-align:top;" name="creates" value="Y" ${params.creates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.new_items" default="New Items"/> &nbsp;
         <input type="checkbox" style="vertical-align:top;" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
-        <div><input  class="ui primary button" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/></div>
+        <div><input  class="ui button" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/></div>
       </g:form>
 
     </div>
@@ -129,11 +129,10 @@
         </table>
       </div>
 
-      <div class="pagination" style="text-align:center">
+
         <g:if test="${historyLines != null}" >
-          <bootstrap:paginate  action="changeLog" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
+          <semui:paginate  action="changeLog" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
-      </div>
 
     </g:if>
     <g:else>

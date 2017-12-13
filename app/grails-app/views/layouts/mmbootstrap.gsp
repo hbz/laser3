@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
-    <r:require modules="kbplus" />
+    <r:require modules="kbplus" /><!-- DEPRECATED; legacy menu structure backup -->
     
     <script type="text/javascript">
      var gspLocale = "${message(code:'default.locale.label', default:'en')}";

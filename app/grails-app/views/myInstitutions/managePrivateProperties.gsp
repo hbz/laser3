@@ -52,8 +52,8 @@
                                             <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
                                         </g:if>
                                     </td>
-                                    <td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-                                    <td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+                                    <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+                                    <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
                                     <td>${ppd.countUsages()}</td>
                                     <td>
                                         <g:if test="${ppd.countUsages()==0}">
@@ -68,14 +68,14 @@
                     <p>${message(code:'propertyDefinition.private.info')}</p>
 
                     <g:field type="hidden" name="cmd" value="delete" />
-                    <button type="submit" class="ui primary button">${message(code:'default.button.delete.label', default:'Delete')}</button>
+                    <button type="submit" class="ui button">${message(code:'default.button.delete.label', default:'Delete')}</button>
                 </g:form>
             </g:if>
         </div>
         <div class="four wide column">
             <semui:card class="card-grey">
-                <input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}"
-                       data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
+                <input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}"
+                       data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
             </semui:card>
         </div>
     </div><!-- .grid -->
@@ -83,7 +83,7 @@
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
-        <g:form params="${['shortcode':params.shortcode]}" action="managePrivateProperties" >
+        <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" >
             <g:field type="hidden" name="cmd" value="add" />
 
             <dl>

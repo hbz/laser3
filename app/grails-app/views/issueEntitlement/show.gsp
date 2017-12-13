@@ -76,7 +76,7 @@
 
                 <g:if test="${issueEntitlementInstance?.coreStatus}">
                     <dt>${message(code:'subscription.details.core_medium', default:'Core Medium')}</dt>
-                    <dd><g:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus" config='CoreStatus'/> </dd>
+                    <dd><semui:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus" config='CoreStatus'/> </dd>
                 </g:if>
               <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>                 
               <dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
@@ -103,29 +103,29 @@
                 </thead>
                 <tbody>
                     <tr>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startDate" type="date"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startVolume"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="startIssue"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endDate" type="date"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endVolume"/></td>
-                      <td><g:xEditable owner="${issueEntitlementInstance}" field="endIssue"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startDate" type="date"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startVolume"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startIssue"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endDate" type="date"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endVolume"/></td>
+                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endIssue"/></td>
                     </tr>
                 </tbody>
             </table>
 
             <dl>
                 <dt>${message(code:'tipp.embargo', default:'Embargo')}</dt>
-                <dd><g:xEditable owner="${issueEntitlementInstance}" field="embargo"/></dd>
+                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="embargo"/></dd>
             </dl>
 
             <dl>
                 <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
-                <dd><g:xEditable owner="${issueEntitlementInstance}" field="coverageDepth"/></dd>
+                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="coverageDepth"/></dd>
             </dl>
 
             <dl>
                 <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
-                <dd><g:xEditable owner="${issueEntitlementInstance}" field="coverageNote"/></dd>
+                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="coverageNote"/></dd>
             </dl>
 
             <br/>
@@ -204,10 +204,10 @@
                       <input type="hidden" name="order" value="${params.order}">
                       <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
                       &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-                      <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                      <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
                       &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-                      <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
-                      <input type="submit" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+                      <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+                      <input type="submit" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}">
                     </g:form>
                 </semui:filter>
 

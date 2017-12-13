@@ -51,5 +51,5 @@
         </tr>
         </tbody>
     </table>
-    <g:submitButton name="submit" class="btn-primary" value="${message(code:'jasper.generate.label', default:'Generate Report')}"/>
+    <g:submitButton name="submit" class="ui button" value="${message(code:'jasper.generate.label', default:'Generate Report')}"/>
 </g:form>

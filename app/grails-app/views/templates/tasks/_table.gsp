@@ -36,7 +36,7 @@
                     </td>
 
                     <td>
-                        <g:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" />
+                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" />
                     </td>
 
                     <td>${fieldValue(bean: taskInstance, field: "creator")}</td>
@@ -50,9 +50,9 @@
             </g:each>
             </tbody>
         </table>
-        <div class="pagination">
-            <!--bootstrap:paginate total="${taskInstanceTotal}" /-->
-        </div>
+
+        <semui:paginate total="${taskInstanceTotal}" />
+
     </div><!-- .sixteen -->
 
 </div><!-- .grid -->

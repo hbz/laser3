@@ -16,7 +16,7 @@
         <h1 class="ui header">
             ${license.licensee?.name}
             ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
-            <g:xEditable owner="${license}" field="reference" id="reference"/>
+            <semui:xEditable owner="${license}" field="reference" id="reference"/>
         </h1>
 
         <g:render template="nav" />
@@ -107,19 +107,19 @@
                   <dl>
                       <dt><label class="control-label" for="reference">${message(code:'license.reference', default:'Reference')}</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="reference" id="reference"/>
+                        <semui:xEditable owner="${license}" field="reference" id="reference"/>
                       </dd>
                   </dl>
                   <dl>
                       <dt><label class="control-label" for="contact">${message(code:'license.licenseContact', default:'License Contact')}</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="contact" id="contact"/>
+                        <semui:xEditable owner="${license}" field="contact" id="contact"/>
                       </dd>
                   </dl>
                   <dl>
                       <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="status" config='License Status'/>
+                        <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                       </dd>
                   </dl>
       
@@ -130,11 +130,11 @@
                             <g:if test="${license.onixplLicense}">
                                 <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
                                 <g:if test="${editable}">
-                                    <g:link class="btn btn-warning" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">${message(code:'default.button.unlink.label', default:'Unlink')}</g:link>
+                                    <g:link class="ui negative button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">${message(code:'default.button.unlink.label', default:'Unlink')}</g:link>
                                 </g:if>
                             </g:if>
                             <g:else>
-                                <g:link class="btn btn-warning" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
+                                <g:link class="ui negative button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
                             </g:else>
                         </dd>
                     </dl>
@@ -143,7 +143,7 @@
                   <dl>
                       <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
+                        <semui:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
                         <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
                       </dd>
                   </dl>
@@ -151,42 +151,42 @@
                   <dl>
                       <dt><label class="control-label" for="licensorRef">${message(code:'license.licensorRef', default:'Licensor Ref')}</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
+                        <semui:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
                       </dd>
                   </dl>
       
                   <dl>
                       <dt><label class="control-label" for="licenseeRef">${message(code:'license.licenseeRef', default:'Licensee Ref')}</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
+                        <semui:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
+                        <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" type="date" field="startDate" />
+                        <semui:xEditable owner="${license}" type="date" field="startDate" />
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" type="date" field="endDate" />
+                        <semui:xEditable owner="${license}" type="date" field="endDate" />
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
+                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
                       </dd>
                   </dl>
 
@@ -205,7 +205,7 @@
                           <g:each in="${license?.incomingLinks}" var="il">
                             <li><g:link controller="licenseDetails" action="index" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> - 
                             ${message(code:'license.details.incoming.child', default:'Child')}:
-                            <g:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+                            <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
                             </li>
                           </g:each>
               

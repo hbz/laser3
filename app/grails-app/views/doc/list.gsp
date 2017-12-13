@@ -56,9 +56,9 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${docInstanceTotal}" />
-				</div>
+
+					<semui:paginate total="${docInstanceTotal}" />
+
 
 		</div>
 	</body>

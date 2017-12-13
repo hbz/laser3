@@ -8,25 +8,22 @@
   </head>
   <body>
 
-    <div>
       <h1 class="ui header">${orgInstance.name}</h1>
       <g:render template="nav" contextPath="." />
-    </div>
-
-    <div>
 
       <semui:messages data="${flash}" />
 
-
       <table  class="ui celled striped table">
-        <tr>
-          <th>${message(code:'user.label', default:'User')}</th>
-          <th>${message(code:'user.email', default:'Email')}</th>
-          <th>${message(code:'user.sys_role', default:'System Role')}</th>
-          <th>${message(code:'user.inst_role', default:'Institutional Role')}</th>
-          <th>${message(code:'user.status', default:'Status')}</th>
-          <th>${message(code:'user.actions', default:'Actions')}</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>${message(code:'user.label', default:'User')}</th>
+            <th>${message(code:'user.email', default:'Email')}</th>
+            <th>${message(code:'user.sys_role', default:'System Role')}</th>
+            <th>${message(code:'user.inst_role', default:'Institutional Role')}</th>
+            <th>${message(code:'user.status', default:'Status')}</th>
+            <th>${message(code:'user.actions', default:'Actions')}</th>
+          </tr>
+        </thead>
 
         <g:each in="${users}" var="userOrg">
           <tr>
@@ -61,6 +58,6 @@
           </tr>
         </g:each>
       </table>
-    </div>
+
   </body>
 </html>

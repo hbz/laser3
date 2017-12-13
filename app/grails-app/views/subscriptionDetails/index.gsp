@@ -44,7 +44,7 @@
 
   <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>
 
-  <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
+  <h1 class="ui header"><semui:xEditable owner="${subscriptionInstance}" field="name" /></h1>
 
   <g:render template="nav" />
 
@@ -88,9 +88,9 @@
                             </select>
             <g:if test="${params.mode!='advanced'}">
               <label style="margin:0px 10px">${message(code:'subscription.details.asAt', default:'Entitlements as at')}:</label>
-              <g:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
+              <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
             </g:if>
-            <input type="submit" style="margin-left:10px;" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
+            <input type="submit" style="margin-left:10px;" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
           </g:form>
         </dt>
         <dd>
@@ -135,15 +135,15 @@
                     <option value="remove">${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</option>
                   </select>
 
-                  <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="ui primary button"/>
+                  <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="ui button"/>
               </th>
 
               <th>
                   <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="IEMedium"/>
               </th>
 
-              <th> <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>  <br/>
-                   <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/> 
+              <th> <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>  <br/>
+                   <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
               </th>
               <th>
                 <g:simpleHiddenRefdata id="bulk_coreStatus" name="bulk_coreStatus" refdataCategory="CoreStatus"/> <br/>
@@ -185,24 +185,24 @@
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessEndDate}"/>
                    </g:if>
                    <g:if test="${params.mode=='advanced' && editable}">
-                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
-                     <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
+                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <semui:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
+                     <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
                    </g:if>
 
                 </td>
               
                 <td>
-                  <g:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
+                  <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                 </td>
                 <td>
-                    <g:xEditable owner="${ie}" type="date" field="startDate" /><br/>
-                    <g:xEditable owner="${ie}" type="date" field="endDate" />
+                    <semui:xEditable owner="${ie}" type="date" field="startDate" /><br/>
+                    <semui:xEditable owner="${ie}" type="date" field="endDate" />
                 </td>
                 <td>
                 <g:render template="/templates/coreStatus" model="${['issueEntitlement': ie, 'date': params.asAt]}"/>
                <br/>
 
-               <g:xEditableRefData owner="${ie}" field="coreStatus" config='CoreStatus'/>
+               <semui:xEditableRefData owner="${ie}" field="coreStatus" config='CoreStatus'/>
                 </td>
                 <td>
                   <g:if test="${editable}"><g:link action="removeEntitlement" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">${message(code:'default.button.delete.label', default:'Delete')}</g:link></g:if>
@@ -227,11 +227,11 @@
         </dd>
       </dl>
 
-      <div class="pagination" style="text-align:center">
+
         <g:if test="${entitlements}" >
-          <bootstrap:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
+          <semui:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
         </g:if>
-      </div>
+
     </div>
 
 

@@ -30,7 +30,7 @@
                             <input type="text" name="email" value="${params.email}"/>
                         </div>
                         <div class="field">
-                            <input type="submit" value="Create &amp; Don't forget to set ENABLED flag in database" class="ui primary button"/>
+                            <input type="submit" value="Create &amp; Don't forget to set ENABLED flag in database" class="ui button"/>
                         </div>
                     </fieldset>
                 </g:form>

@@ -16,7 +16,7 @@
 		<semui:messages data="${flash}" />
 
 		<semui:card class="card-grey">
-			<input class="ui primary button" value="${message(code:'propertyDefinition.create_new.label')}" onclick="$('#addPropertyDefinitionModal').modal()" />
+			<input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}" onclick="$('#addPropertyDefinitionModal').modal()" />
 		</semui:card>
 
         <div class="ui grid">
@@ -47,10 +47,10 @@
 												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
 											</g:if>
 										</td>
-										<td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-										<!--<td><g:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
+										<td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+										<td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+										<!--<td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
+										<td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
 									</tr>
 								</g:each>
 

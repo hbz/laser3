@@ -15,20 +15,16 @@ import="com.k_int.kbplus.RefdataCategory"
   </head>
   <body>
 
-    <div>
       <h1 class="ui header">${orgInstance.name}</h1>
+
       <g:render template="nav" contextPath="." />
-    </div>
-
-    <div>
-
 
         <semui:messages data="${flash}" />
 
 		<p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership ..')}</p>
 		
 		<div> 
-			<g:link controller="person" action="create" params="['org.id': orgInstance?.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No').id ]">
+			<g:link class="ui button" controller="person" action="create" params="['org.id': orgInstance?.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No').id ]">
 				${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
 			</g:link>	
 		</div>
@@ -43,6 +39,6 @@ import="com.k_int.kbplus.RefdataCategory"
 			</g:if>
 				
 		</dl>
-    </div>
+
   </body>
 </html>

@@ -31,7 +31,7 @@
           <h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1>
       </g:if>
 
-       <h1 class="ui header"><g:xEditable owner="${subscriptionInstance}" field="name" /></h1>
+       <h1 class="ui header"><semui:xEditable owner="${subscriptionInstance}" field="name" /></h1>
        <g:render template="nav"  />
 
        <semui:messages data="${flash}" />
@@ -48,39 +48,39 @@
 
                 <dl>
                     <dt>${message(code:'default.startDate.label', default:'Start Date')}</dt>
-                    <dd><g:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
+                    <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'default.endDate.label', default:'End Date')}</dt>
-                    <dd><g:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
+                    <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
-                    <dd><g:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
+                    <dd><semui:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
-                    <dd><g:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
+                    <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
-                    <dd><g:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
+                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
                 </dl>
 
                 <dl>
                     <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
-                    <dd><g:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
+                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                 </dl>
 
               <dl>
                 <dt>${message(code:'license')}</dt>
                 <dd>
                   <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
-                    <g:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                    <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
                     <g:if test="${subscriptionInstance.owner != null}">
                     (
                       <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> 
@@ -200,7 +200,7 @@
                 */ %>
                 <% /* <dl>
                     <dt>${message(code:'financials.cancellationAllowances', default:'Cancellation Allowances')}</dt>
-                    <dd> <g:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" /></dd>
+                    <dd> <semui:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" /></dd>
                 </dl> */ %>
 
 
@@ -211,7 +211,7 @@
 
                <% /*g:if test="${params.mode=='advanced'}">
                  <dl><dt><label class="control-label" for="licenseeRef">${message(code:'default.status.label', default:'Status')}</label></dt><dd>
-                      <g:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status'/>
+                      <semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status'/>
                      </dd>
                </dl>
                </g:if */ %>

@@ -42,7 +42,7 @@
     	if (timeoutReference) clearTimeout(timeoutReference);
 
         if(event.keyCode == 27){ //esc
-        	$('.dlpopover').popover('toggle')
+        	$('.dlpopover').popover('toggle') // TODO: removed
         }else{
 	        timeoutReference = setTimeout(function() {
 	            reloadSpotlightSearchResults();

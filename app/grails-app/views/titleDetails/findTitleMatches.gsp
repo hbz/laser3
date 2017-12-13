@@ -15,7 +15,7 @@
 
             <semui:simpleForm controller="titleDetails" action="findTitleMatches" method="get" message="title.findTitleMatches.proposed">
               <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
-              <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui primary button">
+              <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui button">
             </semui:simpleForm>
 
             <br/>
@@ -51,7 +51,7 @@
                 <bootstrap:alert class="alert-info">
                   ${message(code:'title.findTitleMatches.match', args:[params.proposedTitle])}
                 </bootstrap:alert>
-                <g:link controller="titleDetails" action="createTitle" class="btn btn-warning" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui negative button" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
               </g:if>
               <g:else>
                 <bootstrap:alert class="alert-info">${message(code:'title.findTitleMatches.no_match', args:[params.proposedTitle])}</bootstrap:alert>

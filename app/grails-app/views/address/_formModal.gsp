@@ -2,6 +2,8 @@
 
 <semui:modal id="addressFormModal" text="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
 
+    <g:form class="ui form" url="[controller: 'address', action: 'create']" method="POST">
+
     <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
         <label for="street_1">
             <g:message code="address.street_1.label" default="Street1" />
@@ -89,7 +91,7 @@
             <g:message code="address.prs.label" default="Prs" />
 
         </label>
-        <g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${addressInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
+        <g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${personInstance?.id}" class="many-to-one" noSelection="['null': '']"/>
 
     </div>
 
@@ -98,12 +100,10 @@
             <g:message code="address.org.label" default="Org" />
 
         </label>
-        <g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${addressInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
+        <g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${org?.id}" class="many-to-one" noSelection="['null': '']"/>
 
     </div>
 
-</semui:modal>
+    </g:form>
 
-<script>
-    $('#addressFormModal').show()
-</script>
+</semui:modal>

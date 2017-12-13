@@ -33,7 +33,7 @@
 	    <input type="hidden" name="editable"   value="${editable}"/>
 	    <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="ui mini primary button"/>
+        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="ui button"/>
 	</g:formRemote>
 </g:if>
 
@@ -61,20 +61,20 @@
                     </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
-                            <g:xEditable owner="${prop}" type="text" field="intValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="intValue"/>
                         </g:if>
                         <g:elseif test="${prop.type.type == String.toString()}">
-                            <g:xEditable owner="${prop}" type="text" field="stringValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="stringValue"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == BigDecimal.toString()}">
-                            <g:xEditable owner="${prop}" type="text" field="decValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="decValue"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                            <g:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
                         </g:elseif>
                     </td>
                     <td>
-                        <g:xEditable owner="${prop}" type="textarea" field="note"/>
+                        <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
                     <td>
                         <g:if test="${editable == true}">

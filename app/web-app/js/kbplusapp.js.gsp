@@ -1,33 +1,34 @@
 // KBPlusApp.gsp.js
 //
 $(document).ready(function() {
-  console.log("${message(code:'default.locale.label')}");
-  console.log(gspLocale);
-  $.fn.editable.defaults.mode = 'inline';
-  $.fn.editable.defaults.emptytext = 'Edit';
-  $.fn.datepicker.defaults.language = gspLocale;
+  console.log("${message(code:'default.locale.label')}")
+  console.log(gspLocale)
+  console.log(gspDateFormat)
+  $.fn.editable.defaults.mode = 'inline'
+  $.fn.editable.defaults.emptytext = 'Edit'
+  // TODO $.fn.datepicker.defaults.language = gspLocale
   
   $('.xEditable').editable({
-    language: gspLocale,
+    language: gspLocale, /*
     datepicker: {
       language: gspLocale
-    },
+    }, */
     format: gspDateFormat,
   });
 
   $('.xEditableValue').editable({
-    language: gspLocale,
+    language: gspLocale, /*
     datepicker: {
       language: gspLocale
-    },
+    }, */
     format: gspDateFormat,
   });
   $(".xEditableManyToOne").editable();
   $(".simpleHiddenRefdata").editable({
-    language: gspLocale,
+    language: gspLocale, /*
     datepicker: {
       language: gspLocale
-    },
+    }, */
     format: gspDateFormat,
     url: function(params) {
       var hidden_field_id = $(this).data('hidden-id');
@@ -54,7 +55,7 @@ $(document).ready(function() {
       }
     }
   });
-
+  /* todo remove @spotlight
   $('.dlpopover').popover({html:true,
                           placement:'left',
                           title:'search', 
@@ -65,12 +66,13 @@ $(document).ready(function() {
                           content:function() {
                           return getContent();}
   });
-
+  */
 
   semanticUiStuff()
 
 });
 
+/*
 function getContent() {
     return $.ajax({
         type: "GET",
@@ -79,6 +81,7 @@ function getContent() {
         async: false
     }).responseText;
 }
+*/
 
 function semanticUiStuff() {
 
@@ -86,6 +89,11 @@ function semanticUiStuff() {
     $(".close.icon").click(function(){
         $(this).parent().hide();
     });
+
+    // modal opener
+    $("*[data-semui=modal]").click(function(){
+        $($(this).attr('href') + '.ui.modal').modal('show')
+    })
 }
 
 

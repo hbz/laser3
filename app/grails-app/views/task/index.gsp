@@ -58,9 +58,9 @@
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
-				<g:paginate total="${taskInstanceCount ?: 0}" />
-			</div>
+
+				<semui:paginate total="${taskInstanceCount ?: 0}" />
+
 		</div>
 	</body>
 </html>

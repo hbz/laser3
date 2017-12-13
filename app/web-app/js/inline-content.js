@@ -1,5 +1,6 @@
 (function($) {
-  
+  // used by: sysAdmin/logViewer.gsp
+
   var modCache = {};
   
   $(document).ready(function() {

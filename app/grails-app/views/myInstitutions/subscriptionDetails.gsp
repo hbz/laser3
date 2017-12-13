@@ -111,15 +111,13 @@
       </dl>
     </div>
 
-    <div class="pagination" style="text-align:center">
       <g:if test="${entitlements}" >
-        <ul><g:paginate controller="myInstitutions" 
+        <semui:paginate controller="myInstitutions"
                           action="subscriptionDetails" 
                           params="${params}" next="Next" prev="Prev" 
                           max="15" 
-                          total="${num_sub_rows}" /></ul>
+                          total="${num_sub_rows}" />
       </g:if>
-    </div>
 
     </div>
     <r:script language="JavaScript">

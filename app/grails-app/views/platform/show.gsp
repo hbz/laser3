@@ -34,25 +34,25 @@
         <fieldset class="inline-lists">
             <dl>
               <dt>${message(code:'platform.name', default:'Platform Name')}</dt>
-              <dd> <g:xEditable owner="${platformInstance}" field="name"/></dd>
+              <dd> <semui:xEditable owner="${platformInstance}" field="name"/></dd>
             </dl>
 
             <dl>
               <dt>${message(code:'platform.primaryUrl', default:'Primary URL')}</dt>
-              <dd> <g:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>
+              <dd> <semui:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>
             </dl>
 
             <dl>
               <dt>${message(code:'platform.serviceProvider', default:'Service Provider')}</dt>
               <dd>
-                <g:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="YN"/>
+                <semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="YN"/>
               </dd>
             </dl>
 
             <dl>
               <dt>${message(code:'platform.softwareProvider', default:'Software Provider')}</dt>
               <dd>
-                <g:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="YN"/>
+                <semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="YN"/>
               </dd>
             </dl>
 
@@ -60,12 +60,12 @@
 
               <dl>
                 <dt>${message(code:'platform.type', default:'Type')}</dt>
-                <dd> <g:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
+                <dd> <semui:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
               </dl>
 
               <dl>
                 <dt>${message(code:'platform.status', default:'Status')}</dt>
-                <dd> <g:xEditableRefData owner="${platformInstance}" field="status" config="UsageStatus"/></dd>
+                <dd> <semui:xEditableRefData owner="${platformInstance}" field="status" config="UsageStatus"/></dd>
               </dl>
 
             </g:if>

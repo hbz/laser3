@@ -103,8 +103,8 @@
             <label>${message(code:'default.search.text', default:'Search text')}:</label>
             <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
             <label>${message(code:'myinst.currentTitles.subs_valid_on', default:'Subscriptions Valid on')}</label>
-            <g:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
-            &nbsp;<input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
+            <semui:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
+            &nbsp;<input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}"/>
           </div>
             <br />
         </div>
@@ -165,12 +165,11 @@
         </div>
       </div>
 
-      <div class="pagination" style="text-align:center">
+
         <g:if test="${titles}" >
-          <bootstrap:paginate  action="currentTitles" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_ti_rows}" />
+          <semui:paginate  action="currentTitles" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_ti_rows}" />
         </g:if>
-      </div>
-      
+
       <g:if env="development">
       <!-- For Test Only -->
 	      <div class="accordion" id="accordions">

@@ -59,9 +59,9 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${contactInstanceTotal}" />
-				</div>
+
+					<semui:paginate total="${contactInstanceTotal}" />
+
 
 		</div>
 	</body>

@@ -27,7 +27,7 @@
             <div class="span6">&nbsp;
                 <!--
                 <input type="text" name="keyword-search" placeholder="enter search term..." />
-                <input type="submit" class="ui primary button" value="Search" />
+                <input type="submit" class="ui button" value="Search" />
                 -->
             </div>
             <div class="span6">
@@ -40,7 +40,7 @@
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
           <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'license.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-          <input type="submit" class="ui primary button" value="${message(code:'default.button.submit.label')}" />
+          <input type="submit" class="ui button" value="${message(code:'default.button.submit.label')}" />
         </g:form>
       </div>
 
@@ -48,7 +48,7 @@
       <div>
           <div class="well license-options">
             <g:if test="${is_inst_admin}">
-              <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="btn btn-warning" />
+              <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="ui negative button" />
             </g:if>
             <g:else>${message(code:'myinst.addLicense.no_permission', default:'Sorry, you must have editor role to be able to add licenses')}</g:else>
           </div>
@@ -98,11 +98,11 @@
             </tbody>
           </table>
 
-          <div class="pagination" style="text-align:center">
+
             <g:if test="${licenses}" >
-              <bootstrap:paginate  action="addLicense" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${numLicenses}" />
+              <semui:paginate  action="addLicense" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${numLicenses}" />
             </g:if>
-          </div>
+
         </div>
 
       </g:if>

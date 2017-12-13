@@ -40,9 +40,9 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${titleInstanceInstanceTotal}" />
-				</div>
+
+					<semui:paginate total="${titleInstanceInstanceTotal}" />
+
 
 		</div>
 	</body>

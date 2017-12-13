@@ -20,14 +20,11 @@
 			<semui:breadcrumbs>
 				<semui:crumb class="active" message="subscription.compare.label" />
 
-			        <li class="dropdown pull-right">
-			          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
-
-			          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-			            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
-			            
-			          </ul>
-			        </li>
+				<semui:exportDropdown>
+					<semui:exportDropdownItem>
+						<g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+					</semui:exportDropdownItem>
+				</semui:exportDropdown>
 			</semui:breadcrumbs>
 
 				<semui:messages data="${flash}" />
@@ -50,14 +47,14 @@
 							<tr>
 								<td> ${message(code:'subscription.compare.name', default:'Subscription name')} </td>
 					<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
-					<g:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-					${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> ${message(code:'default.compare.select.first', args:[sub_message] )}<br/>
+					<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+					${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> ${message(code:'default.compare.select.first', args:[sub_message] )}<br/>
                       <input type="hidden" name="subA" id="subSelectA" value="${subA}"/> 
 					</td>
 					<td> 
 					    ${message(code:'default.compare.restrict.after', args:[subs_message] )}
-					    <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-				${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/> ${message(code:'default.compare.select.second', args:[sub_message] )}<br/>
+					    <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+				${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/> ${message(code:'default.compare.select.second', args:[sub_message] )}<br/>
 	                      <input type="hidden" name="subB" id="subSelectB" value="${subB}" />
 					</td>
 							</tr>
@@ -87,7 +84,7 @@
 							</tr>
 						</tbody>
 					</table>	
-					<input type="submit" class="ui primary button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
+					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
 				</g:form>
 			</div>
 
@@ -144,8 +141,8 @@
 							<td>
 								${message(code:'subscription.compare.filter.title', default:'Filters - Title')}: <input name="filter" value="${params.filter}">
 							</td>
-							<td> <input type="submit" class="ui primary button" value="Filter Results" /> </td>
-							<td> <input id="resetFilters" type="submit" class="ui primary button" value="${message(code:'default.button.clear.label', default:'Clear')}" /> </td>
+							<td> <input type="submit" class="ui button" value="Filter Results" /> </td>
+							<td> <input id="resetFilters" type="submit" class="ui button" value="${message(code:'default.button.clear.label', default:'Clear')}" /> </td>
 						</tr>
 					</table>
 				</g:form>
@@ -196,9 +193,9 @@
 						</g:each>						
 					</tbody>
 				</table>
-				<div class="pagination" style="text-align:center">
-		 <bootstrap:paginate  action="compare" controller="subscriptionDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
-				</div>	
+
+		        <semui:paginate  action="compare" controller="subscriptionDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
+
 				</div>
 			</g:if>
 		</div>

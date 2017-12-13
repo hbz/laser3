@@ -16,9 +16,9 @@
         <semui:messages data="${flash}" />
 
         <semui:card class="card-grey">
-            <input class="ui primary button" value="${message(code:'refdataValue.create_new.label')}" onclick="$('#addRefdataValueModal').modal()" type="submit">
+            <input class="ui button" value="${message(code:'refdataValue.create_new.label')}" onclick="$('#addRefdataValueModal').modal()" type="submit">
             &nbsp;
-            <input class="ui primary button" value="${message(code:'refdataCategory.create_new.label')}" onclick="$('#addRefdataCategoryModal').modal()" type="submit">
+            <input class="ui button" value="${message(code:'refdataCategory.create_new.label')}" onclick="$('#addRefdataCategoryModal').modal()" type="submit">
         </semui:card>
 
         <div class="ui grid">
@@ -44,10 +44,10 @@
                                     </td>
                                     <td></td>
                                     <td>
-                                        <strong><g:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
                                     </td>
                                     <td>
-                                        <strong><g:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
                                     </td>
                                 </tr>
 
@@ -61,10 +61,10 @@
                                                 </g:if>
                                             </td>
                                             <td>
-                                                <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
+                                                <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
                                             </td>
                                             <td>
-                                                <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
+                                                <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
                                             </td>
                                         </tr>
                                     </g:each>

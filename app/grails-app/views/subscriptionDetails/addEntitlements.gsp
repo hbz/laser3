@@ -38,11 +38,11 @@
                                </g:each>
                             </select> &nbsp;
             &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-            <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+            <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
             &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-            <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+            <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 
-            <input type="submit" style="margin-left:10px;" class="ui primary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+            <input type="submit" style="margin-left:10px;" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}">
           </g:form>
       </semui:filter>
 
@@ -94,19 +94,18 @@
             </table>
 
             <div class="paginateButtons" style="text-align:center">
-              <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="ui primary button"/>
+              <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="ui button"/>
             </div>
 
 
-            <div class="pagination" style="text-align:center">
               <g:if test="${tipps}" >
-                <bootstrap:paginate controller="subscriptionDetails" 
+                <semui:paginate controller="subscriptionDetails"
                                   action="addEntitlements" 
                                   params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}"
                                   max="${max}" 
                                   total="${num_tipp_rows}" />
               </g:if>
-            </div>
+
           </g:form>
 
     <r:script language="JavaScript">

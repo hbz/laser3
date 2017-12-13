@@ -46,15 +46,15 @@
 							<td>\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</td>
 						<%  }   }   } %>
 							<td class="link">
-								<g:link action="show" id="\${${propertyName}.id}" class="btn btn-small">Show</g:link>
+								<g:link action="show" id="\${${propertyName}.id}" class="ui button">Show</g:link>
 							</td>
 						</tr>
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="\${${propertyName}Total}" />
-				</div>
+
+					<semui:paginate total="\${${propertyName}Total}" />
+
 			</div><!-- .twelve -->
 
 			<div class="four wide column">

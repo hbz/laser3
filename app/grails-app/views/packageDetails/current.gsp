@@ -66,11 +66,11 @@
            <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
            <label>${message(code:'tipp.coverageNote', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
             &nbsp;<label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
-            <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+            <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
             &nbsp;<label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
-            <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+            <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 
-           <input type="submit" class="ui primary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+           <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
         </g:form>
 
           <table class="ui celled table">
@@ -91,32 +91,32 @@
                   <br/>
                   <table class="ui celled table">
                     <tr>
-                      <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
+                      <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
                           <input type="checkbox" name="clear_start_date"/> (${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.startVolume', default:'Start Volume')}: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
+                      <td>${message(code:'tipp.startVolume', default:'Start Volume')}: <semui:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
                           <input type="checkbox" name="clear_start_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.startIssue', default:'Start Issue')}: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                      <td>${message(code:'tipp.startIssue', default:'Start Issue')}: <semui:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
                           <input type="checkbox" name="clear_start_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <tr>
-                      <td>${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
+                      <td>${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
                           <input type="checkbox" name="clear_end_date"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.endVolume', default:'End Volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+                      <td>${message(code:'tipp.endVolume', default:'End Volume')}: <semui:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
                           <input type="checkbox" name="clear_end_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.endIssue', default:'End Issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+                      <td>${message(code:'tipp.endIssue', default:'End Issue')}: <semui:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
                           <input type="checkbox" name="clear_end_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <tr>
-                      <td>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}: <g:simpleHiddenValue id="bulk_coverage_depth" name="bulk_coverage_depth"/>
+                      <td>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}: <semui:simpleHiddenValue id="bulk_coverage_depth" name="bulk_coverage_depth"/>
                           <input type="checkbox" name="clear_coverage_depth"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.coverageNote', default:'Coverage Note')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+                      <td>${message(code:'tipp.coverageNote', default:'Coverage Note')}: <semui:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
                           <input type="checkbox" name="clear_coverage_note"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.embargo', default:'Embargo')}:  <g:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
+                      <td>${message(code:'tipp.embargo', default:'Embargo')}:  <semui:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
                           <input type="checkbox" name="clear_embargo"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                   </table>
-                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui primary button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
-                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui primary button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
+                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
+                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
                 </g:if>
               </th>
             </tr>
@@ -146,9 +146,9 @@
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
                    <g:if test="${params.mode=='advanced'}">
-                     <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
-                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
-                     <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                     <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
+                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
+                     <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
@@ -172,18 +172,18 @@
                 </td>
 
                 <td style="white-space: nowrap">
-                  ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="startDate" /><br/>
-                  ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="startVolume" /><br/>
-                  ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="startIssue" />
+                  ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                  ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="startVolume" /><br/>
+                  ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="startIssue" />
                 </td>
 
                 <td style="white-space: nowrap"> 
-                   ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="endDate" /><br/>
-                   ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="endVolume" /><br/>
-                   ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="endIssue" />
+                   ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                   ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="endVolume" /><br/>
+                   ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="endIssue" />
                 </td>
                 <td>
-                  <g:xEditable owner="${t}" field="coverageDepth" />
+                  <semui:xEditable owner="${t}" field="coverageDepth" />
                 </td>
               </tr>
 
@@ -200,13 +200,10 @@
           </dd>
         </dl>
 
-        <div class="pagination" style="text-align:center">
+
           <g:if test="${titlesList}" >
-            <bootstrap:paginate  action="show" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate  action="show" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
-        </div>
-
-
 
         <g:if test="${editable}">
         

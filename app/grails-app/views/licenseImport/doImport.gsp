@@ -54,7 +54,7 @@
                 ${message(code:'onix.import.assoc', default:'and associated with')}
                 <g:link action="index"
                         controller="licenseDetails"
-                        class="btn btn-info"
+                        class="ui button"
                         id="${validationResult.license.id}">
                     ${message(code:'license.label')} ${validationResult.license.id}
                 </g:link>
@@ -85,7 +85,7 @@
                     <button name="replace_opl" id="replace_opl" value="replace"
                             type="submit" class="ui negative button">${message(code:'default.button.replace.label', default:'Replace')}</button>
                     <button name="replace_opl" id="replace_opl" value="create"
-                            type="submit" class="ui primary button">${message(code:'default.button.create_new.label', default:'Create New')}</button>
+                            type="submit" class="ui button">${message(code:'default.button.create_new.label', default:'Create New')}</button>
 
                     <g:hiddenField name="upload_title" value="${upload_title}" />
                     <g:hiddenField name="uploaded_file" value="${uploaded_file}" />
@@ -103,7 +103,7 @@
                     <input type="file" id="import_file" name="import_file" value="${import_file}"/>
                     <br/>
                     <br/>
-                    <button type="submit" class="ui primary button">${message(code:'onix.import.import', default:'Import license')}</button>
+                    <button type="submit" class="ui button">${message(code:'onix.import.import', default:'Import license')}</button>
                 </g:else>
             </g:form>
         </g:else>
@@ -125,7 +125,7 @@
                 <g:link action="index"
                         style="margin-top:10px;"
                         controller="onixplLicenseDetails"
-                        class="btn btn-info"
+                        class="ui button"
                         id="${validationResult.onixpl_license.id}">
                     ${message(code:'onix.import.view', args:[(validationResult.replace ? message(code:'onix.import.view.updated', default:'updated') : message(code:'onix.import.view.new', default:'new'))])}</g:link>
         </g:if>

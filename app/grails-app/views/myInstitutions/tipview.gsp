@@ -50,7 +50,7 @@
               </select>
               <input type="hidden" name="filter" value="${params.filter}"/>
 
-              <button type="submit" class="ui primary button" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
+              <button type="submit" class="ui button" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
 
             </g:form>
         </semui:filter>
@@ -84,9 +84,9 @@
           </g:each>
           </tbody>
         </table>
-          <div class="pagination" style="text-align:center">
-            <span><bootstrap:paginate action="tipview" max="${user?.defaultPageSize?:10}" params="${[:]+params}" next="Next" prev="Prev" total="${tips.totalCount}" /></span>
-          </div>
+
+          <semui:paginate action="tipview" max="${user?.defaultPageSize?:10}" params="${[:]+params}" next="Next" prev="Prev" total="${tips.totalCount}" />
+
         <div id="magicArea">
         </div>
 

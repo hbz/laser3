@@ -53,10 +53,10 @@
   <div class="modal-footer">
     <g:form action="performPackageDelete" id="${pkg.id}" onsubmit="return confirm('Deleting this package is PERMANENT. Delete package?')" method="POST">
     <g:if test="${actions_needed == 'true'}">
-      <button type="submit" disabled="disabled" class="btn btn-danger btn-small">Confirm Delete</button>
+      <button type="submit" disabled="disabled" class="ui negative button">Confirm Delete</button>
     </g:if>
     <g:else>
-      <button type="submit"class="btn btn-danger btn-small">Confirm Delete</button>
+      <button type="submit"class="ui negative button">Confirm Delete</button>
     </g:else>
     </g:form>
   </div>

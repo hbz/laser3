@@ -15,7 +15,7 @@
     <div>
       <g:form action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
         <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/>
-        <button type="submit" class="ui primary button">${message(code:'myinst.renewalUpload.upload', default:'Upload Renewals Worksheet')}</button>
+        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload', default:'Upload Renewals Worksheet')}</button>
       </g:form>
     </div>
 
@@ -105,7 +105,7 @@
           </table>
 
           <div class="pull-right">
-            <button type="submit" class="ui primary button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
+            <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
           </div>
         </div>
         <input type="hidden" name="ecount" value="${counter}"/>

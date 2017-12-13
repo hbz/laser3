@@ -39,7 +39,7 @@
             <g:form controller="alert" action="addComment">
               <input type="hidden" name="alertid" value="${params.id}"/>
               <textarea name="newcomment" height="4"/><br/>
-              <input type="submit" class="ui primary button" value="Save Comment">
+              <input type="submit" class="ui button" value="Save Comment">
             </g:form>
           </div>
         </g:if>

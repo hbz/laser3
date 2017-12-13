@@ -40,16 +40,14 @@
                     <td> ${num_lcp} </td>
                     <td class="link">
                         <g:link action="edit" id="${propDefInstance.id}"
-                                class="ui tiny button">Edit &raquo;</g:link>
+                                class="ui tiny button">Edit</g:link>
                     </td>
                 </tr>
             </g:each>
             </tbody>
         </table>
 
-        <div class="pagination">
-            <bootstrap:paginate total="${propertyDefinitionTotal}"/>
-        </div>
+        <semui:paginate total="${propertyDefinitionTotal}"/>
 
 </div>
 </body>

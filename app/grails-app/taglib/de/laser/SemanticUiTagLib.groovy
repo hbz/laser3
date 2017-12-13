@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.auth.User
+import org.springframework.web.servlet.support.RequestContextUtils
 
 // Semantic UI
 
@@ -12,89 +13,6 @@ class SemanticUiTagLib {
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 
     static namespace = "semui"
-
-    // <semui:breadcrumbs>
-    //     <semui:crumb controller="controller" action="action" params="params" text="${text}" message="local.string" />
-    // <semui:breadcrumbs>
-
-    def breadcrumbs = { attrs, body ->
-
-        out << '<div>'
-        out <<   '<div class="ui large breadcrumb">'
-        out <<     crumb([controller: 'home', text:'<i class="home icon"></i>'])
-        out <<     body()
-        out <<   '</div>'
-        out << '</div>'
-    }
-
-    // text             = raw text
-    // message          = translate via i18n
-    // class="active"   = no link
-
-    def crumb = { attrs, body ->
-
-        def lbText    = attrs.text ? attrs.text : ''
-        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
-        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
-
-        if (attrs.controller) {
-            out << g.link(linkBody,
-                    controller: attrs.controller,
-                    action: attrs.action,
-                    params: attrs.params,
-                    class: 'section ' + attrs.class,
-                    id: attrs.id
-            )
-        }
-        else {
-            out << linkBody
-        }
-        if (! "active".equalsIgnoreCase(attrs.class.toString())) {
-            out << ' <div class="divider">/</div> '
-        }
-    }
-
-    // <semui:crumbAsBadge message="default.editable" class="orange" />
-
-    def crumbAsBadge = { attrs, body ->
-
-        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
-
-        out << '<div class="ui horizontal label ' + attrs.class + '">' + lbMessage + '</div>'
-    }
-
-    // <semui:subNav actionName="${actionName}">
-    //     <semui:subNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" />
-    // </semui:subNav>
-
-    def subNav = { attrs, body ->
-
-        out << '<div class="ui secondary pointing menu">'
-        out <<   body()
-        out << '</div>'
-    }
-
-    def subNavItem = { attrs, body ->
-
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
-        def linkBody  = (text && message) ? text + " - " + message : text + message
-        def aClass    = 'item'
-        if (this.pageScope.variables?.actionName == attrs.action) {
-            aClass = 'item active'
-        }
-        if (attrs.controller) {
-            out << g.link(linkBody,
-                    class: aClass,
-                    controller: attrs.controller,
-                    action: attrs.action,
-                    params: attrs.params
-            )
-        }
-        else {
-            out << linkBody
-        }
-    }
 
     // <semui:messages data="${flash}" />
 
@@ -116,6 +34,20 @@ class SemanticUiTagLib {
             out <<   '<i class="close icon"></i>'
             out <<   '<p>'
             out <<     flash.error
+            out <<   '</p>'
+            out << '</div>'
+        }
+    }
+
+    // <semui:msg class="negative|positive|warning|.." text="${flash}" />
+
+    def msg = { attrs, body ->
+
+        if (attrs.text) {
+            out << '<div class="ui ' + attrs.class + ' message">'
+            out <<   '<i class="close icon"></i>'
+            out <<   '<p>'
+            out <<     attrs.text
             out <<   '</p>'
             out << '</div>'
         }
@@ -267,8 +199,7 @@ class SemanticUiTagLib {
         out <<     body()
         out <<   '</div>'
         out <<   '<div class="actions">'
-        out <<     '<a href="#" class="ui button" data-dismiss="modal">' + msgClose + '</a>'
-        //          TODO remove legacy bootstrap: data-dismiss="modal"
+        out <<     '<a href="#" class="ui button" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
         out <<     '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
         out <<   '</div>'
         out << '</div>'

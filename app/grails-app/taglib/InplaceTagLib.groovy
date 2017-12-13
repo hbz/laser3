@@ -59,7 +59,7 @@ class InplaceTagLib {
    *   id [optional] - 
    *   class [optional] - additional classes
    */
-  def xEditable = { attrs, body ->
+  /* def xEditable = { attrs, body ->
     
     boolean editable = request.getAttribute('editable')
     if ( editable == true ) {
@@ -129,10 +129,10 @@ class InplaceTagLib {
         }
       }
     }
-  }
+  } */
 
 
-  def xEditableRefData = { attrs, body ->
+  /* def xEditableRefData = { attrs, body ->
 //     log.debug("xEditableRefData ${attrs}");
     try {
       boolean editable = request.getAttribute('editable')
@@ -169,11 +169,12 @@ class InplaceTagLib {
     catch ( Throwable e ) {
       log.error("Problem processing editable refdata ${attrs}",e)
     }
-  }
+  } */
 
   /**
    * ToDo: This function is a duplicate of the one found in AjaxController, both should be moved to a shared static utility
    */
+    /*
   def renderObjectValue(value) {
     def result=''
     def not_set = message(code:'refdata.notSet')
@@ -203,6 +204,7 @@ class InplaceTagLib {
     }
     result;
   }
+    */
   
   def relation = { attrs, body ->
     out << "<span class=\"${attrs.class}\" id=\"${attrs.domain}:${attrs.pk}:${attrs.field}:${attrs.id}\">"
@@ -286,7 +288,7 @@ class InplaceTagLib {
     out << "</a>";
   }
 
-  def simpleHiddenValue = { attrs, body ->
+  /* def simpleHiddenValue = { attrs, body ->
     def default_empty = message(code:'default.button.edit.label')
     def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
@@ -296,5 +298,5 @@ class InplaceTagLib {
     }
     out << "data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
     out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
-  }
+  } */
 }

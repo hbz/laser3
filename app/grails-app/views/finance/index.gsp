@@ -99,7 +99,7 @@
         </div>
     </g:if>
 
-    <button class="ui primary button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
+    <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
 
     </div><!-- .sixteen -->
 </div><!-- .grid -->

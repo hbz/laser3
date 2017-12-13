@@ -92,7 +92,7 @@
               </g:each>
                 <tr>
                   <td>
-                    <g:link action="todo" params="${[shortcode:params.shortcode]}" class="ui primary button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
+                    <g:link action="todo" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
                   </td>
                 </tr>
               </tbody>
@@ -129,7 +129,7 @@
               </g:each>
                 <tr>
                   <td>
-                     <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="ui primary button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
+                     <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
                   </td>
                 </tr>
               </tbody>
@@ -148,7 +148,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            <input type="submit" class="ui primary button" value="${message(code:'task.create.new')}" data-toggle="modal" href="#modalCreateTask" />
+                            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
                         </td>
                     </tr>
                     <g:each in="${tasks}" var="tsk">

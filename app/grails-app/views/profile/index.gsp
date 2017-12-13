@@ -48,7 +48,7 @@
 
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui primary button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
+                            <button type="submit" class="ui button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
                         </div>
 
                     </g:form>
@@ -74,7 +74,7 @@
                         </div>
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui primary button">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
+                            <button type="submit" class="ui button">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
                         </div>
 
                     </g:form>
@@ -90,17 +90,17 @@
 
                       <div class="field">
                           <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
-                          <g:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
+                          <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
                       </div>
 
                       <div class="field">
                           <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
-                          <g:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />
+                          <semui:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />
                       </div>
 
                       <div class="field">
                           <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
-                          <g:xEditable owner="${user}" field="defaultPageSize" />
+                          <semui:xEditable owner="${user}" field="defaultPageSize" />
                       </div>
                     </div>
                 </div><!-- .segment -->
@@ -205,7 +205,7 @@
 
                               <div class="field">
                                 <label></label>
-                                <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui primary button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
+                                <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
                               </div>
                           </g:form>
                     </div><!-- .segment -->
@@ -262,7 +262,7 @@
                                     </select>
                                 </div>
 
-                                <button id="submitReminder" type="submit" class="ui primary button">${message(code:'default.button.create.label', default: 'Create')}</button>
+                                <button id="submitReminder" type="submit" class="ui button">${message(code:'default.button.create.label', default: 'Create')}</button>
                             </g:form>
                         </div>
                     </div><!-- #reminders -->
@@ -296,8 +296,8 @@
                                   <g:if test="${r.lastRan}"><td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${r.lastRan}" /></td></g:if>
                                   <g:else><td>${message(code:'reminder.never_ran', default:'Never executed!')}</td></g:else>
                                   <td>
-                                      <button data-op="delete" data-id="${r.id}" class="btn btn-small reminderBtn">${message(code:'default.button.remove.label', default:'Remove')}</button>&nbsp;/&nbsp;
-                                      <button data-op="toggle" data-id="${r.id}" class="btn btn-small reminderBtn">${r.active? "${message(code:'default.button.disable.label', default:'disable')}":"${message(code:'default.button.enable.label', default:'enable')}"}</button>
+                                      <button data-op="delete" data-id="${r.id}" class="ui button reminderBtn">${message(code:'default.button.remove.label', default:'Remove')}</button>&nbsp;/&nbsp;
+                                      <button data-op="toggle" data-id="${r.id}" class="ui button reminderBtn">${r.active? "${message(code:'default.button.disable.label', default:'disable')}":"${message(code:'default.button.enable.label', default:'enable')}"}</button>
                                   </td>
                               </tr>
                           </g:each>

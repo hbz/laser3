@@ -81,17 +81,11 @@
             </g:link>
         </li>
         -->
-        <input class="ui primary button" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
-               data-toggle="modal" href="#addContactModal" type="submit">
+        <input class="ui button" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+               data-semui="modal" href="#contactFormModal">
 	</ul>
 
-    <div id="addContactModal" class="modal hide">
-        <g:formRemote name="remoteContactForm"
-                      update="updateMeContact"
-                      url="[controller: 'contact', action: 'create']">
-            <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
-        </g:formRemote>
-    </div>
+	<g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
 
     <div id="updateMeContact"></div>
 </div>
@@ -111,17 +105,11 @@
             </g:link>
         </li>
         -->
-        <input class="ui primary button" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
-               data-toggle="modal" href="#addAddressModal" type="submit">
+        <input class="ui button" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
+               data-semui="modal" href="#addressFormModal">
 	</ul>
 
-    <div id="addAddressModal" class="modal hide">
-        <g:formRemote name="remoteAddressForm"
-                      update="updateMeAddress"
-                      url="[controller: 'address', action: 'create']">
-            <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
-        </g:formRemote>
-    </div>
+    <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
 
     <div id="updateMeAddress"></div>
 </div>
@@ -158,7 +146,7 @@
 		    optionKey="id" 
 		    optionValue="value" />
 		    
-		<button class="ui primary mini button add-person-role" type="button">Add</button>
+		<button class="ui button add-person-role" type="button">Add</button>
 		
 		<div class="workspace">
 			<h4 class="ui header">* New</h4>
@@ -178,7 +166,7 @@
 		    optionKey="id" 
 		    optionValue="value" />
 		    
-		<button class="ui primary mini button add-person-role" type="button">Add</button>
+		<button class="ui button add-person-role" type="button">Add</button>
 
 		<div class="workspace">
 			<h4 class="ui header">* New</h4>

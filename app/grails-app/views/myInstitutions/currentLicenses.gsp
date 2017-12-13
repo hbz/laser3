@@ -52,7 +52,7 @@
             <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
             <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
             <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
-            <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+            <input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}" />
           </div>
         </form>
     </semui:filter>
@@ -104,9 +104,9 @@
           </table>
         </div>
        
-        <div class="pagination" style="text-align:center">
-          <bootstrap:paginate action="currentLicenses" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
-        </div>
+
+          <semui:paginate action="currentLicenses" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
+
 
     <r:script type="text/javascript">
 

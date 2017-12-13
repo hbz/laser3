@@ -44,13 +44,13 @@
               <g:each in="${pages}" var="page">
                 <tr>
                   <td>
-                    <g:xEditable owner="${page}" type="text" field="controller"/>
+                    <semui:xEditable owner="${page}" type="text" field="controller"/>
                   </td>
                   <td>
-                    <g:xEditable owner="${page}" type="text" field="action"/>
+                    <semui:xEditable owner="${page}" type="text" field="action"/>
                   </td>
                   <td>
-                    <g:xEditable owner="${page}" type="text" field="alias"/>
+                    <semui:xEditable owner="${page}" type="text" field="alias"/>
                   </td>
                   <td><a href="${page.getLink().url}">${page.getLink().linktext}</a></td>
                   <td>
@@ -66,7 +66,7 @@
         <label>Controller: </label><input type="text" name="newCtrl"/>
         <label>Action: </label><input type="text" name="newAction"/>
         <label>Alias: </label><input type="text" name="newAlias"/>
-        <label></label><input type="submit" value="Add New Page" class="btn-primary"/>
+        <label></label><input type="submit" value="Add New Page" class="ui button"/>
       </g:form>
       </div>
     </div>

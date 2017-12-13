@@ -110,7 +110,7 @@
                     <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
                     <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
                   </select>
-            ${message(code:'default.search.modified_after', default:'Modified After')}: <g:simpleHiddenValue  id="lastUpdated" value="${params.lastUpdated}" name="lastUpdated" type="date"/>
+            ${message(code:'default.search.modified_after', default:'Modified After')}: <semui:simpleHiddenValue  id="lastUpdated" value="${params.lastUpdated}" name="lastUpdated" type="date"/>
  
             <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
           </div>

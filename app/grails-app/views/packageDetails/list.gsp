@@ -24,23 +24,23 @@
               </td>
               <td style="width:31%;text-align:right;">
                 <div style="padding:5px 5px;white-space:nowrap;">
-                  <label>${message(code:'package.search.updated_after')} : </label> <g:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date"/>
+                  <label>${message(code:'package.search.updated_after')} : </label> <semui:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date"/>
                 </div>
                 <div style="padding:5px 5px;white-space:nowrap;">
-                  <label>${message(code:'package.search.created_after')} : </label> <g:simpleHiddenValue id="createStartDate" name="createStartDate" type="date"/>
+                  <label>${message(code:'package.search.created_after')} : </label> <semui:simpleHiddenValue id="createStartDate" name="createStartDate" type="date"/>
                 </div>
               </td>
               <td style="width:31%;text-align:right;">
                 <div style="padding:5px 5px;white-space:nowrap;">
-                  <label>${message(code:'package.search.updated_before')} : </label> <g:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date"/>
+                  <label>${message(code:'package.search.updated_before')} : </label> <semui:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date"/>
                 </div>
                 <div style="padding:5px 5px;white-space:nowrap;">
-                  <label>${message(code:'package.search.created_before')} : </label> <g:simpleHiddenValue  id="createEndDate" name="createEndDate" type="date"/>
+                  <label>${message(code:'package.search.created_before')} : </label> <semui:simpleHiddenValue  id="createEndDate" name="createEndDate" type="date"/>
                 </div>
               </td>
               <td>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}" style="margin:10px 5px;min-width:100px;font-size:1.3em;"></input>
-                <button type="submit" name="format" value="csv" class="ui primary button" value="Search"  style="margin:10px 5px;">${message(code:'default.button.exports.csv')}</button>
+                <input type="submit" class="ui button" value="${message(code:'default.button.search.label')}" style="margin:10px 5px;min-width:100px;font-size:1.3em;"></input>
+                <button type="submit" name="format" value="csv" class="ui button" value="Search"  style="margin:10px 5px;">${message(code:'default.button.exports.csv')}</button>
               </td>
             </tr>
            </tbody>
@@ -67,15 +67,15 @@
               <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format', default:'yyyy-MM-dd HH:mm:ss z')}"/></td>
               <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format', default:'yyyy-MM-dd HH:mm:ss z')}"/></td>
               <td class="link">
-                <g:link action="show" id="${packageInstance.id}" class="ui tiny button">${message(code:'package.search.show')} &raquo;</g:link>
+                <g:link action="show" id="${packageInstance.id}" class="ui tiny button">${message(code:'package.search.show')}</g:link>
               </td>
             </tr>
           </g:each>
         </tbody>
       </table>
-      <div class="pagination">
-        <bootstrap:paginate  action="list" controller="packageDetails" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
-      </div>
+
+    <semui:paginate action="list" controller="packageDetails" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
+
 
   </body>
 </html>

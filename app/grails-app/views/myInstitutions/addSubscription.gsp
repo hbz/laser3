@@ -20,7 +20,7 @@
               <g:form action="addSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
                   <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"  value="${params.q?.encodeAsHTML()}"  />
                   <label>${message(code:'default.valid_on.label', default:'Valid On')}</label>: <input name="validOn" type="text" value="${validOn}"/>
-                  <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+                  <input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}" />
               </g:form>
           </div>
       </div>
@@ -34,7 +34,7 @@
               <select name="createSubAction"> 
                 <option value="copy">${message(code:'myinst.addSubscription.copy_with_ent', default:'Copy With Entitlements')}</option>
                 <option value="nocopy">${message(code:'myinst.addSubscription.copy_wo_ent', default:'Copy Without Entitlements')}</option>
-                <input type="submit" class="btn disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
+                <input type="submit" class="ui button disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
             </g:if>
             <g:else>${message(code:'myinst.addLicense.no_permission')}</g:else>
             </div>
@@ -71,17 +71,17 @@
           </g:form>
         </g:if>
   
-        <div class="pagination" style="text-align:center">
+
           <g:if test="${packages}" >
-            <bootstrap:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
+            <semui:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
           </g:if>
-        </div>
+
     </div>
     <r:script type="text/javascript">
         $(document).ready(function() {
             var activateButton = function() {
                 $('.subscription-create input').removeClass('disabled');
-                $('.subscription-create input').addClass('btn-primary');
+                $('.subscription-create input').addClass('ui button');
             }
             
             // Disables radio selection when using back button.

@@ -36,7 +36,7 @@
                 <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
             
-            <h3 class="ui header">${message(code:'default.status.label')}:<span style="color:initial;cursor:pointer;"> <g:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></span></h3>
+            <h3 class="ui header">${message(code:'default.status.label')}:<span style="color:initial;cursor:pointer;"> <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></span></h3>
 
             <h3 class="ui header">${message(code:'identifier.plural', default:'Identifiers')}</h3>
 

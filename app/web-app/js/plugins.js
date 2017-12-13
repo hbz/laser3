@@ -270,7 +270,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ========================================================= */
+ * =========================================================
 
 
 !function ($) {
@@ -279,7 +279,7 @@
 
 
  /* MODAL CLASS DEFINITION
-  * ====================== */
+  * ======================
 
   var Modal = function (content, options) {
     this.options = options
@@ -359,7 +359,7 @@
 
 
  /* MODAL PRIVATE METHODS
-  * ===================== */
+  * =====================
 
   function hideWithTransition() {
     var that = this
@@ -434,7 +434,7 @@
 
 
  /* MODAL PLUGIN DEFINITION
-  * ======================= */
+  * =======================
 
   $.fn.modal = function (option) {
     return this.each(function () {
@@ -457,7 +457,7 @@
 
 
  /* MODAL DATA-API
-  * ============== */
+  * ==============
 
   $(function () {
     $('body').on('click.modal.data-api', '[data-toggle="modal"]', function ( e ) {

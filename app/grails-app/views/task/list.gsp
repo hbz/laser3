@@ -53,15 +53,15 @@
 							<td>${fieldValue(bean: taskInstance, field: "endDate")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${taskInstance.id}" class="btn btn-small">Show</g:link>
+								<g:link action="show" id="${taskInstance.id}" class="ui button">Show</g:link>
 							</td>
 						</tr>
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${taskInstanceTotal}" />
-				</div>
+
+					<semui:paginate total="${taskInstanceTotal}" />
+
 			</div><!-- .twelve -->
 
 			<div class="four wide column">

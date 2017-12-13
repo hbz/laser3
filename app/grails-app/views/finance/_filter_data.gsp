@@ -47,11 +47,11 @@
     <tr id="bulkdelete-b${ci.id}">
         <td>
             <g:if test="${editable}">
-                <g:xEditable emptytext="Edit Paid-Date" owner="${ci}" type="date" field="datePaid" /> </br></br>
-                <g:xEditableRefData config="CostItemStatus" emptytext="Edit Status" owner="${ci}" field="costItemStatus" /> </br>
-                <g:xEditableRefData config="CostItemCategory" emptytext="Edit Category" owner="${ci}" field="costItemCategory" /> </br>
-                <g:xEditableRefData config="CostItemElement" emptytext="Edit Element" owner="${ci}" field="costItemElement" /> </br>
-                <g:xEditableRefData config="TaxType" emptytext="Edit Tax Code" owner="${ci}" field="taxCode" />
+                <semui:xEditable emptytext="Edit Paid-Date" owner="${ci}" type="date" field="datePaid" /> </br></br>
+                <semui:xEditableRefData config="CostItemStatus" emptytext="Edit Status" owner="${ci}" field="costItemStatus" /> </br>
+                <semui:xEditableRefData config="CostItemCategory" emptytext="Edit Category" owner="${ci}" field="costItemCategory" /> </br>
+                <semui:xEditableRefData config="CostItemElement" emptytext="Edit Element" owner="${ci}" field="costItemElement" /> </br>
+                <semui:xEditableRefData config="TaxType" emptytext="Edit Tax Code" owner="${ci}" field="taxCode" />
             </g:if>
             <g:else>
                 <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci?.datePaid}"/>
@@ -59,9 +59,9 @@
         </td>
         <td>
             <g:if test="${editable}">
-                <g:xEditable emptytext="Edit Cost" owner="${ci}" field="costInBillingCurrency" /> </br>
-                <g:xEditableRefData config="Currency" emptytext="Edit billed" owner="${ci}" field="billingCurrency" /> </br>
-                <g:xEditable emptytext="Edit local" owner="${ci}" field="costInLocalCurrency" />
+                <semui:xEditable emptytext="Edit Cost" owner="${ci}" field="costInBillingCurrency" /> </br>
+                <semui:xEditableRefData config="Currency" emptytext="Edit billed" owner="${ci}" field="billingCurrency" /> </br>
+                <semui:xEditable emptytext="Edit local" owner="${ci}" field="costInLocalCurrency" />
             </g:if>
             <g:else>
                 ${ci?.costInBillingCurrency} </br> 
@@ -71,7 +71,7 @@
         </td>
         <td>
             <g:if test="${editable}">
-                <g:xEditable emptytext="Edit Ref" owner="${ci}" field="reference" /> </br></br>
+                <semui:xEditable emptytext="Edit Ref" owner="${ci}" field="reference" /> </br></br>
                 <div style="display: inline-block" class="budgetCodeWrapper">
                     <div id="budgetcodes_${ci.id}">
                         <g:each in="${ci.budgetcodes}" var="bc">
@@ -81,8 +81,8 @@
                         <a class="editable-empty budgetCode" style="cursor: pointer;" data-owner="${ci.id}">Add Codes...</a>
                     </div>
                 </div> </br></br>
-                <g:xEditable emptytext="Edit Start-Date" owner="${ci}" type="date" field="startDate" /> &nbsp;<i>to</i>&nbsp;
-                <g:xEditable emptytext="Edit End-Date" owner="${ci}" type="date" field="endDate" />
+                <semui:xEditable emptytext="Edit Start-Date" owner="${ci}" type="date" field="startDate" /> &nbsp;<i>to</i>&nbsp;
+                <semui:xEditable emptytext="Edit End-Date" owner="${ci}" type="date" field="endDate" />
             </g:if>
             <g:else>
                 ${ci?.reference} &nbsp;/&nbsp;
@@ -93,7 +93,7 @@
         </td>
         <td colspan="3">
             <g:if test="${editable}">
-                <g:xEditable emptytext="Edit Description" owner="${ci}" field="costDescription" />
+                <semui:xEditable emptytext="Edit Description" owner="${ci}" field="costDescription" />
             </g:if>
             <g:else>
                 ${ci?.costDescription}

@@ -38,9 +38,9 @@
           </g:each>
         </g:if>
       </table>
-            <div class="pagination">
-        <bootstrap:paginate  action="todo_history" controller="licenseDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
-      </div>
+
+        <semui:paginate  action="todo_history" controller="licenseDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
+
     </div>
 
 </body>

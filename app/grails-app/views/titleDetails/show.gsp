@@ -91,10 +91,10 @@
                     <td><g:link controller="organisations" action="info" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>
-                      <g:xEditable owner="${org}" type="date" field="startDate"/>
+                      <semui:xEditable owner="${org}" type="date" field="startDate"/>
                     </td>
                     <td>
-                      <g:xEditable owner="${org}" type="date" field="endDate"/>
+                      <semui:xEditable owner="${org}" type="date" field="endDate"/>
                     </td>
                   </tr>
                 </g:each>
@@ -157,37 +157,37 @@
                 <g:if test="${editable}">
                   <tr>
                     <td rowspan="2"><input type="checkbox" name="checkall" onClick="javascript:$('.bulkcheck').attr('checked', true);"/></td>
-                    <td colspan="2"><button class="ui primary button" type="submit" value="Go" name="BatchEdit">${message(code:'title.edit.tipp.clear')}</button></td>
-                    <td>${message(code:'title.show.history.date')}:<g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
+                    <td colspan="2"><button class="ui button" type="submit" value="Go" name="BatchEdit">${message(code:'title.edit.tipp.clear')}</button></td>
+                    <td>${message(code:'title.show.history.date')}:<semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
                        - <input type="checkbox" name="clear_start_date"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>
-                        ${message(code:'tipp.volume')}:<g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume"/>
+                        ${message(code:'tipp.volume')}:<semui:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume"/>
                        - <input type="checkbox" name="clear_start_volume"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>
-                        ${message(code:'tipp.issue')}:<g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                        ${message(code:'tipp.issue')}:<semui:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
                        - <input type="checkbox" name="clear_start_issue"/> (${message(code:'title.edit.tipp.clear')})
 
                     </td>
-                    <td>${message(code:'title.show.history.date')}:<g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
+                    <td>${message(code:'title.show.history.date')}:<semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
                        - <input type="checkbox" name="clear_end_date"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>
-                        ${message(code:'tipp.volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+                        ${message(code:'tipp.volume')}: <semui:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
                        - <input type="checkbox" name="clear_end_volume"/> (${message(code:'title.edit.tipp.clear')})
                         <br/>
-                        ${message(code:'tipp.issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+                        ${message(code:'tipp.issue')}: <semui:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
                        - <input type="checkbox" name="clear_end_issue"/> (${message(code:'title.edit.tipp.clear')})
 
                     </td>
-                    <td><g:simpleHiddenValue id="bulk_coverage_depth" name="bulk_coverage_depth"/>
+                    <td><semui:simpleHiddenValue id="bulk_coverage_depth" name="bulk_coverage_depth"/>
                         - <input type="checkbox" name="clear_coverage_depth"/> (${message(code:'title.edit.tipp.clear')})
                     </td>
                     <td/>
                   </tr>
                   <tr>
                     <td colspan="6">
-                      ${message(code:'title.edit.tipp.bulk_notes_change')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+                      ${message(code:'title.edit.tipp.bulk_notes_change')}: <semui:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
                        - <input type="checkbox" name="clear_coverage_note"/> (${message(code:'title.edit.tipp.clear')}) <br/>
-                      ${message(code:'title.edit.tipp.bulk_platform_change')}: <g:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
+                      ${message(code:'title.edit.tipp.bulk_platform_change')}: <semui:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
                        - <input type="checkbox" name="clear_hostPlatformURL"/> (${message(code:'title.edit.tipp.clear')}) <br/>
                     </td>
                   </tr>

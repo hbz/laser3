@@ -62,10 +62,10 @@
 			      </table>
  			</div>
 
-              <button onclick="return confirm('All source IEs will be moved to target. Continue?')" class="btn-success" name="transfer" type="submit" value="Go">Transfer</button>
+              <button onclick="return confirm('All source IEs will be moved to target. Continue?')" class="ui positive button" name="transfer" type="submit" value="Go">Transfer</button>
   			</g:if>
 
-            <button class="btn-primary" type="submit" value="Go">Look Up TIPP Info...</button>
+            <button class="ui button" type="submit" value="Go">Look Up TIPP Info...</button>
           </dl>
         </g:form>
       </div>

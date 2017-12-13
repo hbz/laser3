@@ -23,7 +23,7 @@
 		<g:message code="org.sector.label" default="Sector" />
 		
 	</label>
-	<g:xEditableRefData name="sector" config="OrgSector"/>
+	<semui:xEditableRefData name="sector" config="OrgSector"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
@@ -31,7 +31,7 @@
 		<g:message code="org.membership.label" default="Membership" />
 
 	</label>
-	<g:xEditableRefData name="membership" config="YN"/>
+	<semui:xEditableRefData name="membership" config="YN"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'ids', 'error')} ">
