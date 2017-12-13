@@ -102,7 +102,7 @@ class SemanticUiNavigationTagLib {
     def paginate = { attrs ->
 
         if (attrs.total == null) {
-            throwTagError("Tag [paginate] is missing required attribute [total]")
+            log.debug("throwTagError(\"Tag [paginate] is missing required attribute [total]\")")
         }
 
         def messageSource = grailsAttributes.messageSource
