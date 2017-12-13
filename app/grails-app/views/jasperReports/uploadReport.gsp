@@ -24,7 +24,7 @@
 
         <b>Upload Selected</b>
 
-        <input type="submit" class="btn-primary" value="Upload Files"/>
+        <input type="submit" class="ui button" value="Upload Files"/>
 
     </g:uploadForm>
 

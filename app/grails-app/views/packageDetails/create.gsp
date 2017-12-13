@@ -33,7 +33,7 @@
              <input class="input-xxlarge" type="text" name="identifier" id="packageIdentifier" onKeyUp="validateIdentifier()"/>
           </dd>     
         </dl>   
-        <button id="addbtn" class="btn btn-primary disabled">Create Package</button>
+        <button id="addbtn" class="ui button disabled">Create Package</button>
       </g:form>
     </div>
     <r:script language="JavaScript">

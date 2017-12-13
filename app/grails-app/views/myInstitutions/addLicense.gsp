@@ -48,7 +48,7 @@
       <div>
           <div class="well license-options">
             <g:if test="${is_inst_admin}">
-              <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="btn btn-warning" />
+              <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="ui negative button" />
             </g:if>
             <g:else>${message(code:'myinst.addLicense.no_permission', default:'Sorry, you must have editor role to be able to add licenses')}</g:else>
           </div>

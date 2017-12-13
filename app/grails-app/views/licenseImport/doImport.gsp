@@ -54,7 +54,7 @@
                 ${message(code:'onix.import.assoc', default:'and associated with')}
                 <g:link action="index"
                         controller="licenseDetails"
-                        class="btn btn-info"
+                        class="ui button"
                         id="${validationResult.license.id}">
                     ${message(code:'license.label')} ${validationResult.license.id}
                 </g:link>
@@ -125,7 +125,7 @@
                 <g:link action="index"
                         style="margin-top:10px;"
                         controller="onixplLicenseDetails"
-                        class="btn btn-info"
+                        class="ui button"
                         id="${validationResult.onixpl_license.id}">
                     ${message(code:'onix.import.view', args:[(validationResult.replace ? message(code:'onix.import.view.updated', default:'updated') : message(code:'onix.import.view.new', default:'new'))])}</g:link>
         </g:if>

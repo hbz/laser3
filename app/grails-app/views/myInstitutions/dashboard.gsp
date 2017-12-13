@@ -122,7 +122,7 @@
               </td>
               <td>
                 <input type="submit" 
-                       class="btn btn-primary announce" 
+                       class="ui button announce"
                        value="${n.alert?.comments != null ? n.alert?.comments?.size() : 0} Comment(s)" 
                        data-id="${n.alert.id}" 
                        />

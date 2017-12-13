@@ -59,7 +59,7 @@
               <g:simpleHiddenValue id="coreEndDate" name="coreEndDate" type="date"/>
             </td>
             <td>
-              <input type="submit" value="${message(code:'default.button.apply.label', default:'Apply')}" class="btn btn-primary btn-small pull-right"/>&nbsp;
+              <input type="submit" value="${message(code:'default.button.apply.label', default:'Apply')}" class="ui button"/>&nbsp;
             </td>
           </tr>
         </table>

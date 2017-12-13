@@ -4,7 +4,7 @@
 
             <input type="hidden" name="redirectAction" value="${redirect}"/>
             <input type="hidden" name="instanceId" value="${instance.id}"/>
-            <input type="submit" class="btn btn-danger delete-document" value="${message(code:'template.notes.delete', default:'Delete Selected Notes')}"/>
+            <input type="submit" class="ui negative button delete-document" value="${message(code:'template.notes.delete', default:'Delete Selected Notes')}"/>
         </div>
 
     </g:if>

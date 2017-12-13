@@ -296,8 +296,8 @@
                                   <g:if test="${r.lastRan}"><td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${r.lastRan}" /></td></g:if>
                                   <g:else><td>${message(code:'reminder.never_ran', default:'Never executed!')}</td></g:else>
                                   <td>
-                                      <button data-op="delete" data-id="${r.id}" class="btn btn-small reminderBtn">${message(code:'default.button.remove.label', default:'Remove')}</button>&nbsp;/&nbsp;
-                                      <button data-op="toggle" data-id="${r.id}" class="btn btn-small reminderBtn">${r.active? "${message(code:'default.button.disable.label', default:'disable')}":"${message(code:'default.button.enable.label', default:'enable')}"}</button>
+                                      <button data-op="delete" data-id="${r.id}" class="ui button reminderBtn">${message(code:'default.button.remove.label', default:'Remove')}</button>&nbsp;/&nbsp;
+                                      <button data-op="toggle" data-id="${r.id}" class="ui button reminderBtn">${r.active? "${message(code:'default.button.disable.label', default:'disable')}":"${message(code:'default.button.enable.label', default:'enable')}"}</button>
                                   </td>
                               </tr>
                           </g:each>

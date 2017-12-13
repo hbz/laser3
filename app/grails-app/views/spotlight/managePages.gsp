@@ -66,7 +66,7 @@
         <label>Controller: </label><input type="text" name="newCtrl"/>
         <label>Action: </label><input type="text" name="newAction"/>
         <label>Alias: </label><input type="text" name="newAlias"/>
-        <label></label><input type="submit" value="Add New Page" class="btn-primary"/>
+        <label></label><input type="submit" value="Add New Page" class="ui button"/>
       </g:form>
       </div>
     </div>

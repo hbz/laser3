@@ -276,7 +276,7 @@
                 <g:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
               </g:if>
 
-              <input type="submit" class="btn btn-primary pull-right" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+              <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
             </div>
           </g:form>
         </div>

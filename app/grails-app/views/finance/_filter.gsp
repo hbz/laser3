@@ -69,7 +69,7 @@
                                 <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui button"></g:select><br/><br/>
                             </g:if>
                             <g:hiddenField type="hidden" name="resetMode" value="${params.resetMode}"></g:hiddenField>
-                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui mini primary button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
+                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
 
                         </div>
                         <br />

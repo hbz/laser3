@@ -34,7 +34,7 @@
               <select name="createSubAction"> 
                 <option value="copy">${message(code:'myinst.addSubscription.copy_with_ent', default:'Copy With Entitlements')}</option>
                 <option value="nocopy">${message(code:'myinst.addSubscription.copy_wo_ent', default:'Copy Without Entitlements')}</option>
-                <input type="submit" class="btn disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
+                <input type="submit" class="ui button disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
             </g:if>
             <g:else>${message(code:'myinst.addLicense.no_permission')}</g:else>
             </div>
