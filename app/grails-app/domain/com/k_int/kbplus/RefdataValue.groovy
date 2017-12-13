@@ -3,6 +3,7 @@ import com.k_int.ClassUtils
 import de.laser.domain.I10nTranslatableAbstract
 import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
+import javax.persistence.Transient
 
 class RefdataValue extends I10nTranslatableAbstract {
 
@@ -28,11 +29,8 @@ class RefdataValue extends I10nTranslatableAbstract {
     // permissions of "EDIT" and "VIEW" indicating that anyone who has the corresponding rights via their
     // connection to that org can perform the indicated action.
     // Object Side = Share Permission, User side == grant permission
-    Set sharedPermissions = []
-
-    static hasMany = [
-        sharedPermissions:OrgPermShare
-    ]
+    @Transient
+    Set<OrgPermShare> sharedPermissions = []
 
     static mapping = {
                     id column: 'rdv_id'
@@ -123,5 +121,15 @@ class RefdataValue extends I10nTranslatableAbstract {
         def rc = this.getClass().getName()
         def id = this.getId()
         I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
+    }
+
+    /*
+    * Error 500: Internal Server Error
+    * URI /laser/licenseDetails/index/12
+    * Class org.hibernate.AssertionFailure
+    * Message collection [com.k_int.kbplus.RefdataValue.sharedPermissions] was not processed by flush()
+     */
+    def getSharedPermissions() {
+        sharedPermissions
     }
 }
