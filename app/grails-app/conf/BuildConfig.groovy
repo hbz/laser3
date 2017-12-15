@@ -159,7 +159,7 @@ grails.project.dependency.resolution = {
         // Font awesome for font based icons.
         // not needed, but removing will e.g. cause bootstrap errors with modals
         // TODO: remove, because of semantic-ui
-        compile ":font-awesome-resources:4.3.0.1"
+        //compile ":font-awesome-resources:4.3.0.1"
 
         compile ':spring-security-core:1.2.7.4'
         compile ':spring-security-ldap:1.0.6'

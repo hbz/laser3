@@ -32,7 +32,7 @@
                   <td>${item.key}</td>
                   <td>${item.locale}</td>
                   <td>${item.content}</td>
-                  <td><g:link action="editContentItem" id="${item.key}:${item.locale?:''}">Edit</g:link></td>
+                  <td><g:link action="editContentItem" id="${item.key}:${item.locale?:''}">${message('code':'default.button.edit.label')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>

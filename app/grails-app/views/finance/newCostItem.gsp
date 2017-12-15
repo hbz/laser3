@@ -43,7 +43,7 @@
               <td>
                   <input name="newIe" class="input-medium" id="newIE" value="${params.newIe}">
               </td>
-              <td rowspan="2"><button class="ui button" type="submit" name="Add" value="add">Add</button></td>
+              <td rowspan="2"><button class="ui button" type="submit" name="Add" value="add">${message('code':'default.button.add.label')}</button></td>
           </tr>
           <tr>
               <td>

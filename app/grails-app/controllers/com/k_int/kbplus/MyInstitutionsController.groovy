@@ -2362,7 +2362,7 @@ AND EXISTS (
         //.findAllByOwner(result.user,sort:'ts',order:'asc')
 
         // tasks
-        def contextOrg  = contextService.getOrg(springSecurityService.getCurrentUser())
+        def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg)
         def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields

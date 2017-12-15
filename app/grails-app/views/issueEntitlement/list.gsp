@@ -52,7 +52,7 @@
 							<td>${fieldValue(bean: issueEntitlementInstance, field: "startIssue")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${issueEntitlementInstance.id}" class="ui tiny button">Show</g:link>
+								<g:link action="show" id="${issueEntitlementInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
 							</td>
 						</tr>
 					</g:each>

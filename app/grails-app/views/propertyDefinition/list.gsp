@@ -40,7 +40,7 @@
                     <td> ${num_lcp} </td>
                     <td class="link">
                         <g:link action="edit" id="${propDefInstance.id}"
-                                class="ui tiny button">Edit</g:link>
+                                class="ui tiny button">${message('code':'default.button.edit.label')}</g:link>
                     </td>
                 </tr>
             </g:each>

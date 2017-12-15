@@ -81,7 +81,7 @@ class LicenseDetailsController {
     result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
       // tasks
-      def contextOrg  = contextService.getOrg(result.user)
+      def contextOrg  = contextService.getOrg()
       result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
       def preCon      = taskService.getPreconditions(contextOrg)
       result << preCon
@@ -89,7 +89,7 @@ class LicenseDetailsController {
       // -- private properties
 
       result.authorizedOrgs = result.user?.authorizedOrgs
-      result.contextOrg     = contextService.getOrg(result.user)
+      result.contextOrg     = contextService.getOrg()
 
       // create mandatory LicensePrivateProperties if not existing
 
@@ -355,7 +355,7 @@ class LicenseDetailsController {
         userAccessCheck(result.license,result.user,'view') // TODO
         result.editable = result.license.isEditableBy(result.user) // TODO
 
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(result.user), result.license)
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
         log.debug(result.taskInstanceList)
 
         result

@@ -53,54 +53,68 @@
             </div>
         </g:if>
 
-        <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
-            <label for="status">
-                <g:message code="task.status.label" default="Status" />
-                <span class="required-indicator">*</span>
-            </label>
-            <g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
+        <div class="field">
+            <div class="two fields">
+
+                <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
+                    <label for="status">
+                        <g:message code="task.status.label" default="Status" />
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
+                </div>
+
+                <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'endDate', 'error')} required">
+                    <label for="endDate">
+                        <g:message code="task.endDate.label" default="End Date" />
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <g:datePicker name="endDate" precision="day"  value="${taskInstance?.endDate}" />
+                    <!--input size="10" type="text" id="datepicker-endDate" name="endDate" value="${taskInstance?.endDate}"-->
+                </div>
+
+            </div>
         </div>
 
-        <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
-            <label for="creator">
-                <g:message code="task.creator.label" default="Creator" />
-                <span class="required-indicator">*</span>
-            </label>
-            <g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
+        <div class="field">
+            <div class="two fields">
+                <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleOrg', 'error')}">
+                    <label for="responsibleOrg">
+                        <g:message code="task.responsibleOrg.label" default="Responsible Org" />
+                    </label>
+                    <g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id}" class="many-to-one" noSelection="['null': '']"/>
+                </div>
+                <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
+                    <label for="responsibleUser">
+                        <g:message code="task.responsibleUser.label" default="Responsible User" />
+                    </label>
+                    <g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="many-to-one" noSelection="['null': '']"/>
+                </div>
+            </div>
         </div>
 
-        <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'createDate', 'error')} required">
-            <label for="createDate">
-                <g:message code="task.createDate.label" default="Create Date" />
-                <span class="required-indicator">*</span>
-            </label>
-            <g:datePicker name="createDate" precision="day"  value="${taskInstance?.createDate}" />
-            <!--input size="10" type="text" id="datepicker-createDate" name="createDate" value="${taskInstance?.createDate}"-->
-        </div>
+        <div class="field">
+            <div class="two fields">
 
-        <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'endDate', 'error')} required">
-            <label for="endDate">
-                <g:message code="task.endDate.label" default="End Date" />
-                <span class="required-indicator">*</span>
-            </label>
-            <g:datePicker name="endDate" precision="day"  value="${taskInstance?.endDate}" />
-            <!--input size="10" type="text" id="datepicker-endDate" name="endDate" value="${taskInstance?.endDate}"-->
-        </div>
+                <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
+                    <label for="creator">
+                        <g:message code="task.creator.label" default="Creator" />
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
+                </div>
 
-        <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
-            <label for="responsibleUser">
-                <g:message code="task.responsibleUser.label" default="Responsible User" />
-            </label>
-            <g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="many-to-one" noSelection="['null': '']"/>
-        </div>
+                <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'createDate', 'error')} required">
+                    <label for="createDate">
+                        <g:message code="task.createDate.label" default="Create Date" />
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <g:datePicker name="createDate" precision="day"  value="${taskInstance?.createDate}" />
+                    <!--input size="10" type="text" id="datepicker-createDate" name="createDate" value="${taskInstance?.createDate}"-->
+                </div>
 
-        <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleOrg', 'error')}">
-            <label for="responsibleOrg">
-                <g:message code="task.responsibleOrg.label" default="Responsible Org" />
-            </label>
-            <g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id}" class="many-to-one" noSelection="['null': '']"/>
+            </div>
         </div>
-
 
         <r:script type="text/javascript">
 

@@ -833,7 +833,7 @@ class SubscriptionDetailsController {
         userAccessCheck( result.subscriptionInstance, result.user, 'view')
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(result.user), result.subscriptionInstance)
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance)
 
         log.debug(result.taskInstanceList)
         result
@@ -1196,7 +1196,7 @@ class SubscriptionDetailsController {
     result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
     // tasks
-    def contextOrg  = contextService.getOrg(result.user)
+    def contextOrg  = contextService.getOrg()
     result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
     def preCon      = taskService.getPreconditions(contextOrg)
     result << preCon
@@ -1204,7 +1204,7 @@ class SubscriptionDetailsController {
     // -- private properties
 
     result.authorizedOrgs = result.user?.authorizedOrgs
-    result.contextOrg     = contextService.getOrg(result.user)
+    result.contextOrg     = contextService.getOrg()
 
     // create mandatory OrgPrivateProperties if not existing
 

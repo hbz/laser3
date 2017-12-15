@@ -29,7 +29,7 @@ modules = {
         dependsOn 'jquery'
         dependsOn 'deprecatedCSS'
 
-        resource url:'js/inline-content.js'
+        // resource url:'js/inline-content.js'
         //  resource url:'js/bootstrap.min.js'
         //resource url:'js/bootstrap-editable.js' // switched to query-editable-poshytip.min.js
         //resource url:'js/bootstrap-datepicker.de.js'
@@ -82,7 +82,7 @@ modules = {
         resource url:'semantic_heave/jquery-editable-poshytip.min.js'   // updated stuff
 
         resource url:'js/moment-with-locales.min.js'
-        resource url:'js/inline-content.js'
+        //resource url:'js/inline-content.js'
         resource url:'js/moment.min.js'
 
         resource url:'js/jquery.dataTables.min.js'

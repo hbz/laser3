@@ -168,7 +168,7 @@ class OrganisationsController {
         // -- private properties
 
         result.authorizedOrgs = result.user?.authorizedOrgs
-        result.contextOrg     = contextService.getOrg(result.user)
+        result.contextOrg     = contextService.getOrg()
 
         // create mandatory OrgPrivateProperties if not existing
 

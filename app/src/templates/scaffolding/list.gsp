@@ -46,7 +46,7 @@
 							<td>\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</td>
 						<%  }   }   } %>
 							<td class="link">
-								<g:link action="show" id="\${${propertyName}.id}" class="ui button">Show</g:link>
+								<g:link action="show" id="\${${propertyName}.id}" class="ui button">${message('code':'default.button.show.label')}</g:link>
 							</td>
 						</tr>
 					</g:each>

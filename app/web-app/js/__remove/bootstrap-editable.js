@@ -2166,7 +2166,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
         /**
         How to toggle editable. Can be <code>click|dblclick|mouseenter|manual</code>.   
         When set to <code>manual</code> you should manually call <code>show/hide</code> methods of editable.    
-        **Note**: if you call <code>show</code> or <code>toggle</code> inside **click** handler of some DOM element, 
+        **Note**: if you call <code>${message('code':'default.button.show.label')}</code> or <code>toggle</code> inside **click** handler of some DOM element,
         you need to apply <code>e.stopPropagation()</code> because containers are being closed on any click on document.
         
         @example

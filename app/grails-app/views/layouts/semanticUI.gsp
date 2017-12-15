@@ -28,7 +28,7 @@
 </head>
 
 <body>
-    <g:set var="contextOrg" value="${contextService.getOrg() ?: Org.findByShortcode(user?.defaultDash?.shortcode)}" />
+    <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
 

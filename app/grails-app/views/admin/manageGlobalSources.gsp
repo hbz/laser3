@@ -52,7 +52,7 @@
                             controller="admin" 
                             onclick="return confirm('Deleting this package will remove all tracking info and unlink any local packages - Are you sure?')"
                             action="deleteGlobalSource" 
-                            id="${source.id}">Delete</g:link>
+                            id="${source.id}">${message('code':'default.button.delete.label')}</g:link>
                   </td>
                 </tr>
               </g:each>

@@ -53,7 +53,7 @@
 							<td>${fieldValue(bean: taskInstance, field: "endDate")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${taskInstance.id}" class="ui button">Show</g:link>
+								<g:link action="show" id="${taskInstance.id}" class="ui button">${message('code':'default.button.show.label')}</g:link>
 							</td>
 						</tr>
 					</g:each>

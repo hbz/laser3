@@ -60,18 +60,19 @@
           </dt>
           <dd>
 
-        <g:form action="show" params="${params}" method="get" class="form-inline">
-           <input type="hidden" name="sort" value="${params.sort}">
-           <input type="hidden" name="order" value="${params.order}">
-           <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
-           <label>${message(code:'tipp.coverageNote', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
-            &nbsp;<label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
-            <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
-            &nbsp;<label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
-            <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
-
-           <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
-        </g:form>
+        <semui:filter>
+            <g:form action="show" params="${params}" method="get" class="form-inline">
+                <input type="hidden" name="sort" value="${params.sort}">
+                <input type="hidden" name="order" value="${params.order}">
+                <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
+                <label>${message(code:'tipp.coverageNote', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
+                &nbsp;<label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
+                <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                &nbsp;<label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
+                <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+                <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+            </g:form>
+        </semui:filter>
 
           <table class="ui celled table">
             <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
@@ -206,26 +207,28 @@
           </g:if>
 
         <g:if test="${editable}">
-        
-        <g:form controller="ajax" action="addToCollection">
-          <fieldset>
-            <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
-            <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
-            <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
-            <input type="hidden" name="__recip" value="pkg"/>
 
-            <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
-            <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
+            <semui:form>
+                <g:form class="ui form" controller="ajax" action="addToCollection">
+                  <fieldset>
+                    <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
+                    <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
+                    <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
+                    <input type="hidden" name="__recip" value="pkg"/>
 
-            <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-            <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
-            <span class="help-block"></span>
-            <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-            <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
-            <span class="help-block"></span>
-            <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
-          </fieldset>
-        </g:form>
+                    <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
+                    <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
+
+                    <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
+                    <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
+                    <span class="help-block"></span>
+                    <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
+                    <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
+                    <span class="help-block"></span>
+                    <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
+                  </fieldset>
+                </g:form>
+            </semui:form>
 
 
         </g:if>

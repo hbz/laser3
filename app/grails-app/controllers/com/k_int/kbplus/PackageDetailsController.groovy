@@ -433,7 +433,7 @@ class PackageDetailsController {
       }
 
         // tasks
-        def contextOrg  = contextService.getOrg(User.get(springSecurityService.principal.id))
+        def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
         def preCon      = taskService.getPreconditions(contextOrg)
         result << preCon
@@ -889,7 +889,7 @@ class PackageDetailsController {
         result.packageInstance = Package.get(params.id)
         result.editable=isEditable()
 
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(result.user), result.packageInstance)
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance)
         log.debug(result.taskInstanceList)
 
         result

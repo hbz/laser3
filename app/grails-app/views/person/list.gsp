@@ -48,8 +48,8 @@
 							<td>${fieldValue(bean: personInstance, field: "isPublic")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${personInstance.id}" class="ui tiny button">Show</g:link>
-								<g:link action="edit" id="${personInstance.id}" class="ui tiny button">Edit</g:link>
+								<g:link action="show" id="${personInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
+								<g:link action="edit" id="${personInstance.id}" class="ui tiny button">${message('code':'default.button.edit.label')}</g:link>
 							</td>
 						</tr>
 					</g:each>

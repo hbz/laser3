@@ -67,8 +67,8 @@
                   <th><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></th>
                   <th colspan="4"><input type="Submit" value="Apply Batch Changes" class="ui positive button"/></th>
                   <th><span id="entitlementBatchEdit" class="entitlementBatchEdit"></span><input type="hidden" name="bulk_core" id="bulk_core"/></th>
-                  <th><span>edit</span> <input name="bulk_start_date" type="hidden" class="hdp" /></th>
-                  <th><span>edit</span> <input name="bulk_end_date" type="hidden" class="hdp" /></th>
+                  <th><span>${message('code':'default.button.edit.label')}</span> <input name="bulk_start_date" type="hidden" class="hdp" /></th>
+                  <th><span>${message('code':'default.button.edit.label')}</span> <input name="bulk_end_date" type="hidden" class="hdp" /></th>
                   <th><span id="embargoBatchEdit" class="embargoBatchEdit"></span><input type="hidden" name="bulk_embargo" id="bulk_embargo"></th>
                   <th></th>
                   <th><span id="coverageBatchEdit" class="coverageBatchEdit"></span><input type="hidden" name="bulk_coverage" id="bulk_coverage"></th>
