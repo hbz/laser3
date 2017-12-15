@@ -2,23 +2,23 @@
 <r:require module="annotations" />
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
-  </head>
-  <body>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}" />
+        <title><g:message code="default.show.label" args="[entityName]" /></title>
+    </head>
+    <body>
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="platform" action="index" message="platform.show.all" />
-        <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
+        <semui:breadcrumbs>
+            <semui:crumb controller="platform" action="index" message="platform.show.all" />
+            <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
+        </semui:breadcrumbs>
+
+        <g:if test="${editable}">
+            <semui:crumbAsBadge message="default.editable" class="orange" />
+        </g:if>
 
         <semui:modeSwitch controller="platform" action="show" params="${params}" />
-    </semui:breadcrumbs>
-
-      <g:if test="${editable}">
-          <semui:crumbAsBadge message="default.editable" class="orange" />
-      </g:if>
 
           <h1 class="ui header">Platform : <g:if test="${editable}"><span id="platformNameEdit"
                                                         class="xEditableValue"
@@ -27,7 +27,6 @@
                                                         data-name="name"
                                                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${platformInstance.name}</span></g:if><g:else>${platformInstance.name}</g:else>
           </h1>
-
 
         <semui:messages data="${flash}" />
 
@@ -83,7 +82,7 @@
                   </tr>
                   <tr>
                     <g:each in="${packages}" var="p">
-                      <td><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></td>
+                      <th><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></th>
                     </g:each>
                   </tr>
                 </thead>

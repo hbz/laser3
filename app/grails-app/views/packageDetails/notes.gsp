@@ -13,9 +13,6 @@
         <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
         <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
         <div class="pull-right">
-
-            <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
-
             <semui:exportDropdown>
                 <semui:exportDropdownItem>
                     <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
@@ -32,6 +29,8 @@
             </semui:exportDropdown>
         </div>
     </semui:breadcrumbs>
+
+    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
 <semui:messages data="${flash}" />
 

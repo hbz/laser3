@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Task" %>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
 	<label for="license">
 		<g:message code="task.license.label" default="License" />
 		
@@ -9,7 +9,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
 	<label for="org">
 		<g:message code="task.org.label" default="Org" />
 		
@@ -18,7 +18,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} ">
 	<label for="pkg">
 		<g:message code="task.pkg.label" default="Pkg" />
 		
@@ -27,7 +27,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
 	<label for="subscription">
 		<g:message code="task.subscription.label" default="Subscription" />
 		
@@ -36,7 +36,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
 	<label for="title">
 		<g:message code="task.title.label" default="Title" />
 		<span class="required-indicator">*</span>
@@ -45,14 +45,14 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')} required">
 	<label for="description">
 		<g:message code="task.description.label" default="Description" />
 	</label>
 	<g:textField name="description" value="${taskInstance?.description}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
 	<label for="status">
 		<g:message code="task.status.label" default="Status" />
 		<span class="required-indicator">*</span>
@@ -61,7 +61,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
 	<label for="creator">
 		<g:message code="task.creator.label" default="Creator" />
 		<span class="required-indicator">*</span>
@@ -70,7 +70,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'createDate', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'createDate', 'error')} required">
     <label for="createDate">
         <g:message code="task.createDate.label" default="Create Date" />
         <span class="required-indicator">*</span>
@@ -79,7 +79,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'endDate', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'endDate', 'error')} required">
 	<label for="endDate">
 		<g:message code="task.endDate.label" default="End Date" />
 		<span class="required-indicator">*</span>
@@ -88,7 +88,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
 	<label for="responsibleUser">
 		<g:message code="task.responsibleUser.label" default="Tenant User" />
 	</label>
@@ -96,7 +96,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleOrg', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleOrg', 'error')} required">
 	<label for="responsibleOrg">
 		<g:message code="task.responsibleOrg.label" default="Tenant Org" />
 	</label>

@@ -1,10 +1,10 @@
 <table id="kb_tip_table">
     <thead>
       <tr>
-        <td>TIP ID</td>
-        <td>Core Date ID</td>
-        <td>Start Date</td>
-        <td>End Date</td>
+        <th>TIP ID</th>
+        <th>Core Date ID</th>
+        <th>Start Date</th>
+        <th>End Date</th>
       </tr>
     </thead>
     <tbody>

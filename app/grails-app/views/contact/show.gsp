@@ -28,7 +28,7 @@
 					</dl>
 					<dl>
                         <dt><g:message code="contact.type.label" default="Type" /></dt>
-                        <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="ContactType" /></dd>>
+                        <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="ContactType" /></dd>
 					</dl>
 					<dl>
                         <g:if test="${contactInstance?.prs}">

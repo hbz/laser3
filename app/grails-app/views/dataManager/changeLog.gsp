@@ -100,14 +100,14 @@
         <table class="ui celled table">
           <thead>
             <tr>
-              <td></td>
-              <td>${message(code:'event.component')}</td>
-              <td>${message(code:'event.actor')}</td>
-              <td>${message(code:'event.name')}</td>
-              <td>${message(code:'event.property')}</td>
-              <td>${message(code:'event.old')}</td>
-              <td>${message(code:'event.new')}</td>
-              <td>${message(code:'event.timestamp')}</td>
+              <th></th>
+              <th>${message(code:'event.component')}</th>
+              <th>${message(code:'event.actor')}</th>
+              <th>${message(code:'event.name')}</th>
+              <th>${message(code:'event.property')}</th>
+              <th>${message(code:'event.old')}</th>
+              <th>${message(code:'event.new')}</th>
+              <th>${message(code:'event.timestamp')}</th>
             </tr>
           </thead>
           <tbody>

@@ -70,9 +70,9 @@
         <table class="ui celled striped table">
           <thead>
             <tr>
-              <td></td>
+              <th></th>
               <g:each in="${loaderResult.columns}" var="c">
-                <td>${c}</td>
+                <th>${c}</th>
               </g:each>
             </tr>
           </thead>

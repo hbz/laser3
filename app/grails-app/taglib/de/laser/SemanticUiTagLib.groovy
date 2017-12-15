@@ -85,7 +85,7 @@ class SemanticUiTagLib {
             attrs.params.mode = mode
         }
 
-        out << '<div class="ui buttons">'
+        out << '<div class="ui tiny buttons">'
         out << g.link( "${message(code:'profile.simpleView', default:'Basic')}",
                 controller: attrs.controller,
                 action: attrs.action,

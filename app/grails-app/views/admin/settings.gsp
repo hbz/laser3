@@ -16,8 +16,8 @@
       <table class="ui celled table">
         <thead>
           <tr>
-            <td>Setting</td>
-            <td>Value</td>
+            <th>Setting</th>
+            <th>Value</th>
           </tr>
         </thead>
         <tbody>

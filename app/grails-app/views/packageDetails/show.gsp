@@ -12,9 +12,6 @@
     <semui:breadcrumbs>
         <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
         <semui:crumb class="active" text="${packageInstance.name}" />
-
-        <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
-
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
@@ -34,6 +31,8 @@
     <g:if test="${editable}">
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
+
+    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':packageInstance]}"/>
 
@@ -71,12 +70,9 @@
 
     <div class="ui grid">
         <div class="twelve wide column">
-            <h6 class="ui header">
+            <h5 class="ui header">
               ${message(code: 'package.show.pkg_information')}
-
-              <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
-              &nbsp;
-            </h6>
+            </h5>
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">
 

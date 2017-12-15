@@ -12,8 +12,8 @@
     <table class="ui celled table">
       <thead>
         <tr>
-          <td>${message(code:'default.info.label', default:'Info')}</td>
-          <td>${message(code:'default.actions.label', default:'Action')}</td>
+          <th>${message(code:'default.info.label', default:'Info')}</th>
+          <th>${message(code:'default.actions.label', default:'Action')}</th>
         </tr>
       </thead>
       <tbody>

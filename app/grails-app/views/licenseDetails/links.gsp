@@ -23,8 +23,8 @@
       <table class="ui celled striped table">
         <thead>
           <tr>
-            <td>Link Type</td>
-            <td>Linked Object</td>
+            <th>Link Type</th>
+            <th>Linked Object</th>
           </tr>
         </thead>
         <tbody>

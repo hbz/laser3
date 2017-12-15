@@ -30,7 +30,7 @@
                 <g:sortableColumn property="username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
                 <g:sortableColumn property="display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
                 <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
-                <td>Enabled</td>
+                <th>Enabled</th>
             </tr>
           </thead>
           <tbody>

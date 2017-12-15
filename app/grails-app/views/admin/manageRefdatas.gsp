@@ -16,9 +16,9 @@
         <semui:messages data="${flash}" />
 
         <semui:card class="card-grey">
-            <input class="ui button" value="${message(code:'refdataValue.create_new.label')}" onclick="$('#addRefdataValueModal').modal()" type="submit">
+            <input class="ui button" value="${message(code:'refdataValue.create_new.label')}" href="#addRefdataValueModal" data-semui="modal">
             &nbsp;
-            <input class="ui button" value="${message(code:'refdataCategory.create_new.label')}" onclick="$('#addRefdataCategoryModal').modal()" type="submit">
+            <input class="ui button" value="${message(code:'refdataCategory.create_new.label')}" href="#addRefdataCategoryModal" data-semui="modal">
         </semui:card>
 
         <div class="ui grid">

@@ -16,7 +16,7 @@
 		<semui:messages data="${flash}" />
 
 		<semui:card class="card-grey">
-			<input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}" onclick="$('#addPropertyDefinitionModal').modal()" />
+			<input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}" href="#addPropertyDefinitionModal"  data-semui="modal"/>
 		</semui:card>
 
         <div class="ui grid">

@@ -18,14 +18,14 @@
     <div class="ui grid">
       <div class="twelve wide column">
           <table class="ui celled table">
-            <thead>
-              <tr>
-                <td>Key</td>
-                <td>Locale</td>
-                <td>Content</td>
-                 <td></td>
-              </tr>
-            </thead>
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Locale</th>
+                        <th>Content</th>
+                        <th></th>
+                    </tr>
+                </thead>
             <tbody>
               <g:each in="${items}" var="item">
                 <tr>

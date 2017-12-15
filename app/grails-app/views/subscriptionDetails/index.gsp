@@ -16,9 +16,7 @@
 
         <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
 
-        <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
-
-        <semui:exportDropdown>
+          <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
             </semui:exportDropdownItem>
@@ -39,6 +37,8 @@
   <g:if test="${editable}">
       <semui:crumbAsBadge message="default.editable" class="orange" />
   </g:if>
+
+  <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
 
   <semui:messages data="${flash}" />
 
@@ -74,24 +74,26 @@
               ${message(code:'subscription.details.no_ents', default:'No entitlements yet')}
             </g:else>
           </g:annotatedLabel>
-          <g:form action="index" params="${params}" method="get" class="form-inline">
-             <input type="hidden" name="sort" value="${params.sort}">
-             <input type="hidden" name="order" value="${params.order}">
+            <semui:filter>
+              <g:form action="index" params="${params}" method="get" class="ui form">
+                 <input type="hidden" name="sort" value="${params.sort}">
+                 <input type="hidden" name="order" value="${params.order}">
 
-             <label><g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')}: </g:annotatedLabel></label>
-             <input name="filter" value="${params.filter}"/>
-             <label>${message(code:'subscription.details.from_pkg', default:'From Package')}:</label> <select name="pkgfilter">
-                                <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
-                               <g:each in="${subscriptionInstance.packages}" var="sp">
-                                 <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
-                               </g:each>
-                            </select>
-            <g:if test="${params.mode!='advanced'}">
-              <label style="margin:0px 10px">${message(code:'subscription.details.asAt', default:'Entitlements as at')}:</label>
-              <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
-            </g:if>
-            <input type="submit" style="margin-left:10px;" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
-          </g:form>
+                 <label><g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')}: </g:annotatedLabel></label>
+                 <input name="filter" value="${params.filter}"/>
+                 <label>${message(code:'subscription.details.from_pkg', default:'From Package')}:</label> <select name="pkgfilter">
+                                    <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
+                                   <g:each in="${subscriptionInstance.packages}" var="sp">
+                                     <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
+                                   </g:each>
+                                </select>
+                <g:if test="${params.mode!='advanced'}">
+                  <label style="margin:0px 10px">${message(code:'subscription.details.asAt', default:'Entitlements as at')}:</label>
+                  <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
+                </g:if>
+                <input type="submit" style="margin-left:10px;" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
+              </g:form>
+            </semui:filter>
         </dt>
         <dd>
           <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="form-inline">

@@ -168,9 +168,9 @@
 <table class="ui celled table">
 	<thead>
 		<tr> 
-			<td> ${message(code:'title.label', default:'Title')} </td>
-			<td> ${pkgInsts.get(0).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(0)} </td>
-			<td> ${pkgInsts.get(1).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(1)} </td>
+			<th> ${message(code:'title.label', default:'Title')} </th>
+			<th> ${pkgInsts.get(0).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(0)} </th>
+			<th> ${pkgInsts.get(1).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(1)} </th>
 		</tr>
 	</thead>
 	<tbody>

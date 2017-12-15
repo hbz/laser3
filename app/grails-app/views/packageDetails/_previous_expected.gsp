@@ -11,12 +11,9 @@
       <semui:breadcrumbs>
           <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
           <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
-
-          <li class="pull-right">
-              <semui:modeSwitch controller="packageDetails" action="${params.action}" params="${params}" />
-          </li>
-
       </semui:breadcrumbs>
+
+      <semui:modeSwitch controller="packageDetails" action="${params.action}" params="${params}" />
 
       <div>
 

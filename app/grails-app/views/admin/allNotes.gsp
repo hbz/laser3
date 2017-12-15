@@ -14,15 +14,17 @@
 
     <div>
       <table class="ui celled table">
-        <tr>
-          <th colspan="4">Note attached to</th>
-        </tr>
-        <tr>
-          <th>Date</th>
-          <th>Sharing</th>
-          <th>Note</th>
-          <th>By</th>
-        </tr>
+        <thead>
+          <tr>
+            <th colspan="4">Note attached to</th>
+          </tr>
+          <tr>
+            <th>Date</th>
+            <th>Sharing</th>
+            <th>Note</th>
+            <th>By</th>
+          </tr>
+        </thead>
         <g:each in="${alerts}" var="ua">
           <tr>
             <td colspan="4">

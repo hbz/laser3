@@ -29,7 +29,7 @@
             <div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${taskInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${taskInstance?.id}" >
 						<g:hiddenField name="version" value="${taskInstance?.version}" />
 						<fieldset>
 							<% /* f:all bean="taskInstance"/ */ %>

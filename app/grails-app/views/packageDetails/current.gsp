@@ -1,19 +1,18 @@
 <%@ page import="com.k_int.kbplus.Package" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
-    <title><g:message code="default.edit.label" args="[entityName]" /></title>
-  </head>
-  <body>
-      <semui:breadcrumbs>
-          <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
-          <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
-          <div class="pull-right">
-              <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
-          </div>
-      </semui:breadcrumbs>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
+        <title><g:message code="default.edit.label" args="[entityName]" /></title>
+    </head>
+    <body>
+        <semui:breadcrumbs>
+            <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+            <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+        </semui:breadcrumbs>
+
+        <semui:modeSwitch controller="packageDetails" action="show" params="${params}" />
 
       <div>
 

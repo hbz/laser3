@@ -19,18 +19,18 @@
           <table class="ui celled table">
             <thead>
               <tr>
-                <td>Identifier</td>
-                <td>Name</td>
-                <td>Type</td>
-                <td>Up To</td>
-                <td>URL</td>
-                <td>List Prefix</td>
-                <td>Full Prefix</td>
-                <td>Principal</td>
-                <td>Credentials</td>
-                <td>RecType</td>
-                <td># Local Copies</td>
-                <td>Actions</td>
+                <th>Identifier</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Up To</th>
+                <th>URL</th>
+                <th>List Prefix</th>
+                <th>Full Prefix</th>
+                <th>Principal</th>
+                <th>Credentials</th>
+                <th>RecType</th>
+                <th># Local Copies</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
