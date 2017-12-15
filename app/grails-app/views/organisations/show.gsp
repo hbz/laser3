@@ -1,5 +1,5 @@
-
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
+
 <!doctype html>
 <html>
     <head>
@@ -63,24 +63,36 @@
             <dd>
                 <g:each in="${orgInstance?.addresses}" var="a">
                     <g:if test="${a.org}">
-                            <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+                        <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
                     </g:if>
                 </g:each>
-                <g:link controller="address" action="create" class="ui button" params="['org.id': orgInstance.id]" >
+                <input class="ui button"
+                       value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
+                       data-semui="modal"
+                       href="#addressFormModal" />
+                <g:render template="/address/formModal" model="['orgId': orgInstance?.id, 'redirect': '.']"/>
+
+                <% /* <g:link controller="address" action="create" class="ui button" params="['org.id': orgInstance.id]" >
                     ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}
-                </g:link>
+                </g:link>*/ %>
             </dd>
 
             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
             <dd>
                 <g:each in="${orgInstance?.contacts}" var="c">
                     <g:if test="${c.org}">
-                            <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+                        <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
                     </g:if>
                 </g:each>
-                <g:link controller="contact" action="create" class="ui button" params="['org.id': orgInstance.id]" >
+                <input class="ui button"
+                       value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+                       data-semui="modal"
+                       href="#contactFormModal" />
+                <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>
+
+                <% /* <g:link controller="contact" action="create" class="ui button" params="['org.id': orgInstance.id]" >
                     ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
-                </g:link>
+                </g:link>*/ %>
             </dd>
 
             <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
@@ -90,8 +102,15 @@
                         <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
                     </g:if>
                 </g:each>
+                <% /*
+                <input class="ui button"
+                       value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                       data-semui="modal"
+                       href="#personFormModal" />
+                <g:render template="/person/formModal" model="['orgId': orgInstance?.id]"/>
+                */ %>
                 <g:link controller="person" action="create" class="ui button"
-                        params="['tenant.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
+                        params="['tenant.id': contextOrg.id, 'org.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
                     ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
                 </g:link>
             </dd>

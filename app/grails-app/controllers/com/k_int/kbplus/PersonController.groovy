@@ -63,7 +63,7 @@ class PersonController {
             return
         }
 
-        [personInstance: personInstance]
+        [personInstance: personInstance, editable: true] // TODO
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

@@ -74,44 +74,34 @@
 		<g:each in="${personInstance?.contacts?}" var="c">
 		    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
 		</g:each>
-        <!--
-		<li class="add">
-            <g:link controller="contact" action="create" params="['prs.id': personInstance?.id]">
-                ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
-            </g:link>
-        </li>
-        -->
-        <input class="ui button" value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
-               data-semui="modal" href="#contactFormModal">
 	</ul>
-
-	<g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
-
-    <div id="updateMeContact"></div>
+    <% /* <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
+			   value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"> */ %>
+    <g:if test="${personInstance.id}">
+        <g:link class="ui button" controller="contact" action="create" params="['prs.id': personInstance?.id]">
+            ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
+        </g:link>
+    </g:if>
+    <% /* <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/> */ %>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
-	<label for="contacts">
+	<label for="addresses">
 		<g:message code="person.addresses.label" default="Addresses" />
 	</label>
 	<ul class="one-to-many">
 		<g:each in="${personInstance?.addresses?}" var="a">
 		    <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
 		</g:each>
-        <!--
-		<li class="add">
-            <g:link controller="address" action="create" params="['prs.id': personInstance?.id]">
-                ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}
-            </g:link>
-        </li>
-        -->
-        <input class="ui button" value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"
-               data-semui="modal" href="#addressFormModal">
+        <% /* <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
+			   value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"> */ %>
 	</ul>
-
-    <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
-
-    <div id="updateMeAddress"></div>
+    <g:if test="${personInstance.id}">
+        <g:link class="ui button" controller="address" action="create" params="['prs.id': personInstance?.id]">
+            ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}
+        </g:link>
+    </g:if>
+    <% /* <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/> */ %>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
@@ -139,43 +129,58 @@
 
 	<div class="ui segment person-role-function-manager">
 		<h3 class="ui header">Functions</h3>
-		
-		<laser:select class="values"
-			name="ignore-functionType-selector"
-		    from="${PersonRole.getAllRefdataValues('Person Function')}" 
-		    optionKey="id" 
-		    optionValue="value" />
-		    
-		<button class="ui button add-person-role" type="button">Add</button>
-		
-		<div class="workspace">
-			<h4 class="ui header">* New</h4>
-			<div class="adding"></div>
-			<h4 class="ui header">Existing</h4>
-			<div class="existing"></div>			
+
+		<div class="field">
+			<div class="two fields">
+				<div class="field wide ten">
+					<laser:select class="values"
+								  name="ignore-functionType-selector"
+								  from="${PersonRole.getAllRefdataValues('Person Function')}"
+								  optionKey="id"
+								  optionValue="value" />
+				</div>
+				<div class="field wide six">
+					<button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
+				</div>
+			</div>
 		</div>
-	</div>
-	
-	
-	<div class="ui segment person-role-responsibility-manager">
-		<h3 class="ui header">Responsibilities</h3>
-		
-		<laser:select class="values"
-			name="ignore-responsibilityType-selector"
-		    from="${PersonRole.getAllRefdataValues('Person Responsibility')}" 
-		    optionKey="id" 
-		    optionValue="value" />
-		    
-		<button class="ui button add-person-role" type="button">Add</button>
 
 		<div class="workspace">
-			<h4 class="ui header">* New</h4>
+			<h4 class="ui header">Adding</h4>
 			<div class="adding"></div>
 			<h4 class="ui header">Existing</h4>
-			<div class="existing"></div>			
+			<div class="existing"></div>
 		</div>
 	</div>
-	
+
+
+	<div class="ui segment person-role-responsibility-manager">
+		<h3 class="ui header">Responsibilities</h3>
+
+		<div class="field">
+			<div class="two fields">
+				<div class="field wide ten">
+					<laser:select class="values"
+								  name="ignore-responsibilityType-selector"
+								  from="${PersonRole.getAllRefdataValues('Person Responsibility')}"
+								  optionKey="id"
+								  optionValue="value" />
+				</div>
+				<div class="field wide six">
+					<button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="workspace">
+			<h4 class="ui header">Adding</h4>
+			<div class="adding"></div>
+			<h4 class="ui header">Existing</h4>
+			<div class="existing"></div>
+		</div>
+	</div>
+
+
 	<script>
 		$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=func').done(function(data){
 			$('.person-role-function-manager .workspace .existing').append(data);

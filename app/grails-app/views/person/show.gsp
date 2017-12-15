@@ -19,71 +19,60 @@
 
 			<div class="inline-lists">
 				<dl>
-				
-					<g:if test="${personInstance?.first_name}">
-						<dt><g:message code="person.first_name.label" default="Firstname" /></dt>
-                        <dd><g:fieldValue bean="${personInstance}" field="first_name"/></dd>
-					</g:if>
+                    <dt><g:message code="person.first_name.label" default="Firstname" /></dt>
+                    <dd><semui:xEditable owner="${personInstance}" field="first_name" /></dd>
 				</dl>
 				<dl>
-					<g:if test="${personInstance?.middle_name}">
-						<dt><g:message code="person.middle_name.label" default="Middlename" /></dt>
-						<dd><g:fieldValue bean="${personInstance}" field="middle_name"/></dd>
-					</g:if>
+                    <dt><g:message code="person.middle_name.label" default="Middlename" /></dt>
+                    <dd><semui:xEditable owner="${personInstance}" field="middle_name" /></dd>
 				</dl>
 				<dl>
-					<g:if test="${personInstance?.last_name}">
-						<dt><g:message code="person.last_name.label" default="Lastname" /></dt>
-						<dd><g:fieldValue bean="${personInstance}" field="last_name"/></dd>
-					</g:if>
+                    <dt><g:message code="person.last_name.label" default="Lastname" /></dt>
+                    <dd><semui:xEditable owner="${personInstance}" field="last_name" /></dd>
 				</dl>
 				<dl>
-					<g:if test="${personInstance?.gender}">
-						<dt><g:message code="person.gender.label" default="Gender" /></dt>
-						<dd><g:fieldValue bean="${personInstance}" field="gender"/></dd>
-					</g:if>
+                    <dt><g:message code="person.gender.label" default="Gender" /></dt>
+                    <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="Gender" /></dd>
 				</dl>
 
                 <dl>
-                    <g:if test="${personInstance?.roleType}">
-                        <dt><g:message code="person.roleType.label" default="Person Position" /></dt>
-                        <dd><g:fieldValue bean="${personInstance}" field="roleType"/></dd>
-                    </g:if>
+                    <dt><g:message code="person.roleType.label" default="Person Position" /></dt>
+                    <dd><semui:xEditableRefData owner="${personInstance}" field="roleType" config="Person Position" /></dd>
                 </dl>
 				<dl>
-					<g:if test="${personInstance?.contactType}">
-						<dt><g:message code="person.contactType.label" default="Person Contact Type" /></dt>
-						<dd><g:fieldValue bean="${personInstance}" field="contactType"/></dd>
-					</g:if>
+                    <dt><g:message code="person.contactType.label" default="Person Contact Type" /></dt>
+                    <dd><semui:xEditableRefData owner="${personInstance}" field="contactType" config="Person Contact Type" /></dd>
 				</dl>
 
 				<dl>
-					<g:if test="${personInstance?.contacts}">
-						<dt><g:message code="person.contacts.label" default="Contacts" /></dt>
-						
-							<dd><ul>
-								<g:each in="${personInstance.contacts}" var="c">
-									<li>
-										<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
-									</li>
-								</g:each>
-							</ul></dd>
-						
-					</g:if>
+                    <dt><g:message code="person.contacts.label" default="Contacts" /></dt>
+                    <dd>
+                        <ul>
+                        <g:each in="${personInstance.contacts}" var="c">
+                            <li>
+                                <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+                            </li>
+                        </g:each>
+                        </ul>
+                        <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
+                                value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
+                        <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
+                    </dd>
 				</dl>
 				<dl>
-					<g:if test="${personInstance?.addresses}">
-						<dt><g:message code="person.addresses.label" default="Addresses" /></dt>
-						
-							<dd><ul>
-								<g:each in="${personInstance.addresses}" var="a">
-									<li>
-										<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
-									</li>
-								</g:each>
-							</ul></dd>
-						
-					</g:if>
+                    <dt><g:message code="person.addresses.label" default="Addresses" /></dt>
+                    <dd>
+                        <ul>
+                        <g:each in="${personInstance.addresses}" var="a">
+                            <li>
+                                <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+                            </li>
+                        </g:each>
+                        </ul>
+                        <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
+                               value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
+                        <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
+                    </dd>
 				</dl>
 				<dl class="debug-only">
 					<g:if test="${personInstance?.tenant}">
@@ -94,72 +83,63 @@
 				<dl class="debug-only">
 					<g:if test="${personInstance?.isPublic}">
 						<dt><g:message code="person.isPublic.label" default="IsPublic" /></dt>
-						<dd><g:fieldValue bean="${personInstance}" field="isPublic"/></dd>	
+						<dd><semui:xEditableRefData owner="${personInstance}" field="isPublic" config="YN" /></dd>
 					</g:if>
 				</dl>
 				<dl>
-					<g:if test="${personInstance?.roleLinks}">
-						<dt><g:message code="person.functions.label" default="Functions" /></dt>
-						
-							<dd><ul>
-								<g:each in="${personInstance.roleLinks}" var="link">
-									<g:if test="${link.functionType}">
-										<li>
-											${link.functionType?.value}
-											<br/>
-		
-			                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
-			                                (Organisation) 
-			                            </li>
-		                            </g:if>
-								</g:each>
-							</ul></dd>
-				
-					</g:if>
-				
+                    <dt><g:message code="person.functions.label" default="Functions" /></dt>
+                    <dd><ul>
+                        <g:each in="${personInstance.roleLinks}" var="link">
+                            <g:if test="${link.functionType}">
+                                <li>
+                                    ${link.functionType?.value}
+                                    <br/>
+
+                                    <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                    (Organisation)
+                                </li>
+                            </g:if>
+                        </g:each>
+                    </ul></dd>
 				</dl>
 				<dl>
-					<g:if test="${personInstance?.roleLinks}">
-						<dt><g:message code="person.responsibilites.label" default="Responsibilites" /></dt>
-						
-							<dd><ul>
-								<g:each in="${personInstance.roleLinks}" var="link">
-									<g:if test="${link.responsibilityType}">
-										<li>
-											${link.responsibilityType?.value}<br/>
-										 	
-										 	<g:if test="${link.pkg}">
-										 		<g:link controller="package" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
-										 		(Package) <br />
-										 	</g:if>
-			                                <g:if test="${link.cluster}">
-			                                	<g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
-			                                	(Cluster) <br />
-			                                </g:if>
-			                                <g:if test="${link.sub}">
-			                                	<g:link controller="subscription" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
-			                                	(Subscription) <br />
-			                                </g:if>
-			                                <g:if test="${link.lic}">
-			                                	${link.lic}
-			                                	(License) <br />
-			                                </g:if>
-			                                <g:if test="${link.title}">
-			                                	<g:link controller="titleInstance" action="show" id="${link.title.id}">${link.title.title}</g:link>
-			                                	(Title) <br />
-			                                </g:if>
-		
-			                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
-			                                (Organisation) 
-			                            </li>
-			                    	</g:if>
-								</g:each>
-							</ul></dd>
-				
-					</g:if>
-				
-				</dl>
-</div>
+                    <dt><g:message code="person.responsibilites.label" default="Responsibilites" /></dt>
+                    <dd><ul>
+                        <g:each in="${personInstance.roleLinks}" var="link">
+                            <g:if test="${link.responsibilityType}">
+                                <li>
+                                    ${link.responsibilityType?.value}<br/>
+
+                                    <g:if test="${link.pkg}">
+                                        <g:link controller="packageDetails" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
+                                        (Package) <br />
+                                    </g:if>
+                                    <g:if test="${link.cluster}">
+                                        <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
+                                        (Cluster) <br />
+                                    </g:if>
+                                    <g:if test="${link.sub}">
+                                        <g:link controller="subscriptionDetails" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
+                                        (Subscription) <br />
+                                    </g:if>
+                                    <g:if test="${link.lic}">
+                                        ${link.lic}
+                                        (License) <br />
+                                    </g:if>
+                                    <g:if test="${link.title}">
+                                        <g:link controller="titleInstance" action="show" id="${link.title.id}">${link.title.title}</g:link>
+                                        (Title) <br />
+                                    </g:if>
+
+                                    <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                    (Organisation)
+                                </li>
+                            </g:if>
+                        </g:each>
+                    </ul>
+                    </dd>
+                </dl>
+            </div>
 				<g:form>
 					<g:hiddenField name="id" value="${personInstance?.id}" />
 					<div class="ui segment form-actions">

@@ -40,9 +40,12 @@ import="com.k_int.kbplus.RefdataCategory"
             </div>
             <div class="four wide column">
                 <semui:card message="person.create_new.label" class="card-grey">
-                    <g:link class="ui button" controller="person" action="create" params="['tenant.id': institution?.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No').id ]" >
-                        ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
-                    </g:link>
+
+                    <input class="ui button"
+                           value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                           data-semui="modal"
+                           href="#personFormModal" />
+                    <g:render template="/person/formModal" model="['org': institution, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
                 </semui:card>
             </div>
         </div><!--.grid-->

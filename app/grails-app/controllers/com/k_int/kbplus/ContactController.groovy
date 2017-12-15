@@ -30,13 +30,21 @@ class ContactController {
 			break
 		case 'POST':
 	        def contactInstance = new Contact(params)
-	        if (!contactInstance.save(flush: true)) {
-	            render view: 'create', model: [contactInstance: contactInstance]
+	        if (! contactInstance.save(flush: true)) {
+				if (params.redirect) {
+					redirect(url: request.getHeader('referer'), params: params)
+				} else {
+					render view: 'create', model: [contactInstance: contactInstance]
+				}
 	            return
 	        }
 
 			flash.message = message(code: 'default.created.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])
-	        redirect action: 'show', id: contactInstance.id
+			if (params.redirect) {
+				redirect(url: request.getHeader('referer'), params: params)
+			} else {
+				redirect action: 'show', id: contactInstance.id
+			}
 			break
 		}
     }
@@ -50,7 +58,7 @@ class ContactController {
             return
         }
 
-        [contactInstance: contactInstance]
+        [contactInstance: contactInstance, editable: true]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

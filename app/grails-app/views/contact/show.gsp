@@ -13,66 +13,48 @@
 		<semui:messages data="${flash}" />
 
 
-	<div class="ui grid">
-
+		<div class="ui grid">
 			<div class="twelve wide column">
 
-				
 				<div class="inline-lists">
-				<dl>			
-					<g:if test="${contactInstance?.contentType}">
-						<dt><g:message code="contact.contentType.label" default="ContentType" /></dt>
-						
-							<dd><g:fieldValue bean="${contactInstance}" field="contentType"/></dd>
-						
-					</g:if>
-				</dl>
-				<dl>
-					<g:if test="${contactInstance?.content}">
-						<dt><g:message code="contact.content.label" default="Content" /></dt>
-						
-							<dd><g:fieldValue bean="${contactInstance}" field="content"/></dd>
-						
-					</g:if>
-				</dl>
-				<dl>
-					<g:if test="${contactInstance?.type}">
-						<dt><g:message code="contact.type.label" default="Type" /></dt>
-						
-							<dd><g:link controller="refdataValue" action="show" id="${contactInstance?.type?.id}">${contactInstance?.type?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				</dl>
-				<dl>
-					<g:if test="${contactInstance?.prs}">
-						<dt><g:message code="contact.prs.label" default="Prs" /></dt>
-						
-							<dd><g:link controller="person" action="show" id="${contactInstance?.prs?.id}">${contactInstance?.prs?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				</dl>
-				<dl>
-					<g:if test="${contactInstance?.org}">
-						<dt><g:message code="contact.org.label" default="Org" /></dt>
-						
-							<dd><g:link controller="org" action="show" id="${contactInstance?.org?.id}">${contactInstance?.org?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
-				</dl>
-				
-				<dl class="debug-only">
-					<g:if test="${contactInstance?.prs?.tenant}">
-						<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
-						<dd><g:link controller="org" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
-					</g:if>
-				</dl>
-				<dl class="debug-only">
-					<g:if test="${contactInstance?.prs?.isPublic}">
-						<dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
-						<dd><g:link controller="org" action="show" id="${contactInstance?.prs?.isPublic?.id}">${contactInstance?.prs?.isPublic?.encodeAsHTML()}</g:link></dd>
-					</g:if>
-				</dl>
+					<dl>
+                        <dt><g:message code="contact.contentType.label" default="ContentType" /></dt>
+                        <dd><semui:xEditableRefData owner="${contactInstance}" field="contentType" config="ContactContentType" /></dd>
+					</dl>
+					<dl>
+
+                        <dt><g:message code="contact.content.label" default="Content" /></dt>
+                        <dd><semui:xEditable owner="${contactInstance}" field="content" /></dd>
+					</dl>
+					<dl>
+                        <dt><g:message code="contact.type.label" default="Type" /></dt>
+                        <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="ContactType" /></dd>>
+					</dl>
+					<dl>
+                        <g:if test="${contactInstance?.prs}">
+                            <dt><g:message code="contact.prs.label" default="Prs" /></dt>
+                            <dd><g:link controller="person" action="show" id="${contactInstance?.prs?.id}">${contactInstance?.prs?.encodeAsHTML()}</g:link></dd>
+                        </g:if>
+					</dl>
+					<dl>
+                        <g:if test="${contactInstance?.org}">
+                            <dt><g:message code="contact.org.label" default="Org" /></dt>
+                            <dd><g:link controller="organisations" action="show" id="${contactInstance?.org?.id}">${contactInstance?.org?.encodeAsHTML()}</g:link></dd>
+                        </g:if>
+					</dl>
+
+					<dl class="debug-only">
+						<g:if test="${contactInstance?.prs?.tenant}">
+							<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
+							<dd><g:link controller="organisations" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
+						</g:if>
+					</dl>
+					<dl class="debug-only">
+						<g:if test="${contactInstance?.prs?.isPublic}">
+							<dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
+							<dd>${contactInstance?.prs?.isPublic?.encodeAsHTML()}</dd>
+						</g:if>
+					</dl>
 				</div>
 				<g:form>
 					<g:hiddenField name="id" value="${contactInstance?.id}" />

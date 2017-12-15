@@ -29,6 +29,8 @@
 
 <body>
     <g:set var="contextOrg" value="${contextService.getOrg() ?: Org.findByShortcode(user?.defaultDash?.shortcode)}" />
+    <g:set var="contextUser" value="${contextService.getUser()}" />
+    <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
 
     <script>
         dataLayer = [{
@@ -457,6 +459,6 @@
 
         <r:layoutResources/>
 
-        <% flash.clear() %>
+        <% if(! flash.redirectFrom) { flash.clear() } %>
     </body>
 </html>

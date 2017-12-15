@@ -7,6 +7,8 @@ import org.codehaus.groovy.grails.web.util.WebUtils
 
 class ContextService {
 
+    def springSecurityService
+
     def setOrg(Org context) {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
         session.setAttribute('contextOrg', context)
@@ -20,5 +22,13 @@ class ContextService {
     def getOrg(User user) {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
         session.getAttribute('contextOrg') ?: Org.findByShortcode(user?.defaultDash?.shortcode)
+    }
+
+    def getUser() {
+        springSecurityService.getCurrentUser()
+    }
+
+    def getMemberships() {
+        getUser()?.authorizedOrgs
     }
 }

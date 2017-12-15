@@ -23,10 +23,12 @@ import="com.k_int.kbplus.RefdataCategory"
 
 		<p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership ..')}</p>
 		
-		<div> 
-			<g:link class="ui button" controller="person" action="create" params="['org.id': orgInstance?.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No').id ]">
-				${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
-			</g:link>	
+		<div>
+			<input class="ui button"
+				   value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+				   data-semui="modal"
+				   href="#personFormModal" />
+			<g:render template="/person/formModal" model="['org': orgInstance, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
 		</div>
 		
 		
