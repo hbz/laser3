@@ -274,7 +274,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   @Transient
   public String getURL() {
-    "${grailsApplication.config.SystemBaseURL}/packageDetails/show/${id}".toString();
+    "${grailsApplication.config.grails.serverURL}/packageDetails/show/${id}".toString();
   }
 
   // @Transient
