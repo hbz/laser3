@@ -93,7 +93,22 @@ function semanticUiStuff() {
     // modal opener
     $("*[data-semui=modal]").click(function(){
         $($(this).attr('href') + '.ui.modal').modal('show')
-    })
+    });
+
+    //datepicker
+    $('.datepicker').calendar({
+        type: 'date',
+        firstDayOfWeek: 1,
+        formatter: {
+            date: function (date, settings) {
+                if (!date) return '';
+                var day = date.getDate();
+                var month = date.getMonth() + 1;
+                var year = date.getFullYear();
+                return day + '.' + month + '.' + year;
+            }
+        }
+    });
 }
 
 
