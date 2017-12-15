@@ -181,7 +181,7 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:modal id="myModalDialog" text="${text}" message="local.string"> CONTENT <semui:form>
+    //<semui:modal id="myModalDialog" text="${text}" message="local.string"> CONTENT <semui:modal>
 
     def modal = { attrs, body ->
 
@@ -203,6 +203,28 @@ class SemanticUiTagLib {
         out <<     '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
         out <<   '</div>'
         out << '</div>'
+    }
+
+    //<semui:datepicker label="" text="${text}" message="local.string"><semui:datepicker>
+
+    def datepicker = { attrs, body ->
+
+
+        def label               = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
+        def inputName           = attrs.inputName ? "${message(code: attrs.inputName)}" : ''
+        def inputPlaceholder    = attrs.inputPlaceholder ? "${message(code: attrs.inputPlaceholder)}" : 'Date'
+        def inputValue          = attrs.inputValue ? "${message(code: attrs.inputValue)}" : ''
+
+        out << '<div class="field">'
+        out <<  '<label>' + label + '</label>'
+        out <<  '<div class="ui calendar datepicker">'
+        out <<      '<div class="ui input left icon">'
+        out <<          '<i class="calendar icon"></i>'
+        out <<          '<input name="' + inputName +'" type="text" placeholder="'+ inputPlaceholder + '" value="'+  inputValue + '">'
+        out <<      '</div>'
+        out <<  '</div>'
+        out << '</div>'
+
     }
 
 }

@@ -28,29 +28,18 @@
             <div class="fields">
                 <!-- SEARCH -->
                 <div class="field">
-
                     <label>${message(code: 'default.search.text', default: 'Search text')}:</label>
                     <div class="ui  input">
-
                     <input type="text" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
                            value="${params.q?.encodeAsHTML()}"/>
                     </div>
-
                 </div>
-
                 <!-- SEARCH END -->
 
                 <!-- DATE VALID ON -->
-                <div class="field">
-                    <label>${message(code:'default.valid_on.label', default:'Valid On')}: </label>
-                    <div class="ui calendar" id="valid-on">
-                        <div class="ui input left icon">
-                            <i class="calendar icon"></i>
-                            <input name="validOn" type="text" placeholder="Date" value="${validOn}">
-                        </div>
-                    </div>
-                </div>
+                <semui:datepicker label ="default.valid_on.label" inputName="validOn" inputPlaceholder ="default.date.label" inputValue ="${validOn}">
+                </semui:datepicker>
                 <!-- DATE VALID ON END-->
 
                 <!-- DROPDOWN DATE -->
@@ -70,21 +59,13 @@
                 <!-- DROPDOWN DATE END -->
 
                 <!-- dateBeforeVal -->
-                <div class="field">
-                    <label >${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}</label>
-                    <div class="ui calendar" id="date-before-val">
-                        <div class="ui input left icon">
-                            <i class="calendar icon"></i>
-                            <input  type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
-                        </div>
-                    </div>
-                </div>
+                <semui:datepicker label ="myinst.currentSubscriptions.filter.before" inputName="dateBeforeVal" inputPlaceholder ="default.date.label" inputValue ="${dateBeforeVal}">
+                </semui:datepicker>
                 <!-- dateBeforeVal -->
 
                <!-- SEND-BUTTON -->
                 <div class="field">
-
-                        <input type="submit" class="ui primary button la-nolabel" value="${message(code:'default.button.search.label', default:'Search')}" />
+                    <input type="submit" class="ui primary button la-nolabel" value="${message(code:'default.button.search.label', default:'Search')}" />
                 </div>
                 <!-- SEND-BUTTON END-->
             </div>
@@ -207,39 +188,6 @@
     </r:script>
 
 
-    <r:script>
-        $('.ui.dropdown').dropdown();
-        $('#valid-on').calendar({
-            type: 'date',
-            firstDayOfWeek: 1,
-            formatter: {
-                date: function (date, settings) {
-                    if (!date) return '';
-                    var day = date.getDate();
-                    var month = date.getMonth() + 1;
-                    var year = date.getFullYear();
-                    return day + '.' + month + '.' + year;
-                }
-            }
-        });
-
-        $('#date-before-val').calendar({
-            type: 'date',
-            firstDayOfWeek: 1,
-            formatter: {
-                date: function (date, settings) {
-                    if (!date) return '';
-                    var day = date.getDate();
-                    var month = date.getMonth() + 1;
-                    var year = date.getFullYear();
-                    return day + '.' + month + '.' + year;
-                }
-            }
-        });
-
-
-
-    </r:script>
 
   </body>
 </html>
