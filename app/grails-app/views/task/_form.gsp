@@ -32,12 +32,11 @@
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
 	<label for="title">
 		<g:message code="task.title.label" default="Title" />
-		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="title" required="" value="${taskInstance?.title}"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
 	<label for="description">
 		<g:message code="task.description.label" default="Description" />
 	</label>
@@ -47,7 +46,6 @@
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
 	<label for="status">
 		<g:message code="task.status.label" default="Status" />
-		<span class="required-indicator">*</span>
 	</label>
 	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
 </div>
@@ -55,27 +53,13 @@
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
 	<label for="creator">
 		<g:message code="task.creator.label" default="Creator" />
-		<span class="required-indicator">*</span>
 	</label>
 	<g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
-
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'createDate', 'error')} required">
-    <label for="createDate">
-        <g:message code="task.createDate.label" default="Create Date" />
-        <span class="required-indicator">*</span>
-    </label>
-    <semui:datepicker label="task.createDate.label" inputName="createDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.createDate}" />
-</div>
+<semui:datepicker label="task.createDate.label" inputName="createDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.createDate}" required="true" bean="${taskInstance}" />
 
-<div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'endDate', 'error')} required">
-	<label for="endDate">
-		<g:message code="task.endDate.label" default="End Date" />
-		<span class="required-indicator">*</span>
-	</label>
-    <semui:datepicker label="task.endDate.label" inputName="endDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.endDate}" />
-</div>
+<semui:datepicker label="task.endDate.label" inputName="endDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.endDate}" required="true" bean="${taskInstance}" />
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
 	<label for="responsibleUser">
