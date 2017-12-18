@@ -20,7 +20,7 @@
 
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
-      <g:render template="subsNav" contextPath="." />
+        <g:render template="subsNav" contextPath="." />
 
       <semui:filter>
 
@@ -73,27 +73,23 @@
       </semui:filter>
 
 
-
       <div class="subscription-results">
         <table class="ui celled striped table table-tworow">
           <thead>
             <tr>
-              <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
-              <th rowspan="2">${message(code:'default.action.label', default:'Action')}</th>
-            </tr>
-
-            <tr>
+                <g:sortableColumn params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
                 <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
-                <th>${message(code:'consortium.plural', default:'Consortia')}</th>
+                <th>${message(code:'consortium', default:'Consortia')}</th>
                 <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                 <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                 <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
-                <g:sortableColumn params="${params}" property="s.manualCancellationDate" title="${message(code:'default.cancellationDate.label', default:'Cancellation Date')}" />
+                <!--<g:sortableColumn params="${params}" property="s.manualCancellationDate" title="${message(code:'default.cancellationDate.label', default:'Cancellation Date')}" />-->
+                <th>${message(code:'default.action.label', default:'Action')}</th>
             </tr>
           </thead>
           <g:each in="${subscriptions}" var="s">
             <tr>
-              <td colspan="7">
+              <td>
                 <g:link controller="subscriptionDetails" action="details" params="${[shortcode:institution.shortcode]}" id="${s.id}">
                   <div class="ui list">
                     <div class="item">
@@ -106,7 +102,6 @@
                   </div>
                 </g:link>
                 <g:if test="${s.owner}">
-                  <span class="pull-right">
                     <div class="ui list">
                       <div class="item">
                         <i class="law icon"></i>
@@ -115,52 +110,46 @@
                         </div>
                       </div>
                     </div>
-                  </span>
                 </g:if>
               </td>
-              <td rowspan="2">
-                <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
-                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
-                </g:if>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                  <g:each in="${s.packages}" var="sp" status="ind">
-                    <g:if test="${ind < 10}">
-                          <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">
-                            <div class="ui list">
-                              <div class="item">
-                                <i class="archive icon"></i>
-                                <div class="content">
-                                    ${sp.pkg.name}
+                <td>
+                    <!-- packages -->
+                    <g:each in="${s.packages}" var="sp" status="ind">
+                        <g:if test="${ind < 10}">
+                            <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">
+                                <div class="ui list">
+                                    <div class="item">
+                                        <i class="archive icon"></i>
+                                        <div class="content">
+                                            ${sp.pkg.name}
+                                        </div>
+                                    </div>
                                 </div>
-                              </div>
-                            </div>
-                          </g:link>
+                            </g:link>
+                        </g:if>
+                    </g:each>
+                    <g:if test="${s.packages.size() > 10}">
+                        <div>${message(code:'myinst.currentSubscriptions.etc.label', args:[s.packages.size() - 10])}</div>
                     </g:if>
-                  </g:each>
-                  <g:if test="${s.packages.size() > 10}">
-                    <div>${message(code:'myinst.currentSubscriptions.etc.label', args:[s.packages.size() - 10])}</div>
-                  </g:if>
-
-                <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
-                  <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link></i>
-                </g:if>
-                &nbsp;<br/>
-                &nbsp;<br/>
-              </td>
-              <td>${s.consortia?.name}</td>
-              <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
-              <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
-              <td><g:formatDate formatName="default.date.format.notime" date="${s.renewalDate}"/></td>
-              <td><g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/></td>
+                    <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
+                        <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link></i>
+                    </g:if>
+                    <!-- packages -->
+                </td>
+                <td>${s.consortia?.name}</td>
+                <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
+                <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
+                <td><g:formatDate formatName="default.date.format.notime" date="${s.renewalDate}"/></td>
+                <!--<td><g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/></td>-->
+                <td>
+                    <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
+                        <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                    </g:if>
+                </td>
             </tr>
           </g:each>
         </table>
       </div>
-
-  
 
         <g:if test="${subscriptions}" >
           <semui:paginate  action="currentSubscriptions" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
@@ -186,8 +175,6 @@
             }
         })
     </r:script>
-
-
 
   </body>
 </html>
