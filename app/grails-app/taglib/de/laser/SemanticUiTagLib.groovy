@@ -58,7 +58,7 @@ class SemanticUiTagLib {
 
     def errors = { attrs, body ->
 
-        if (attrs.bean.errors.allErrors) {
+        if (attrs.bean?.errors?.allErrors) {
             out << '<div class="ui negative message">'
             out <<   '<i class="close icon"></i>'
             out <<   '<ul class="list">'
@@ -227,23 +227,27 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker label="" text="${text}" message="local.string" required="true" />
+    //<semui:datepicker class="grid stuff here" label="" text="${text}" message="local.string" bean="${objInstance}" required="true" />
 
     def datepicker = { attrs, body ->
 
-
-        def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
-        def name = attrs.name ? "${message(code: attrs.name)}" : ''
+        def label       = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
+        def name        = attrs.name ? "${message(code: attrs.name)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
-        def value = attrs.value ? "${message(code: attrs.value)}" : ''
+        def value       = attrs.value ? "${message(code: attrs.value)}" : ''
+        def classes     = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
 
-        out << '<div class="field fieldcontain">'
-        out <<   '<label>' + label
 
-        if (attrs.required) {
-            out << '&nbsp;<span class="required-indicator">*</span>'
+        if (attrs.class) {
+            classes += ' ' + attrs.class
         }
-        out <<   '</label>'
+        // check for field errors
+        if (attrs.bean && g.fieldError([bean:attrs.bean, field:"${name}"])) {
+            classes += ' error'
+        }
+
+        out << '<div class="' + classes + '">'
+        out <<   '<label for="' + name + '">' + label + '</label>'
         out <<   '<div class="ui calendar datepicker">'
         out <<      '<div class="ui input left icon">'
         out <<          '<i class="calendar icon"></i>'
