@@ -18,91 +18,64 @@
 			<div class="twelve wide column">
 
 				<dl>
-				
 					<g:if test="${taskInstance?.license}">
 						<dt><g:message code="task.license.label" default="License" /></dt>
-						
-							<dd><g:link controller="license" action="show" id="${taskInstance?.license?.id}">${taskInstance?.license?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:link controller="licenseDetails" action="show" id="${taskInstance?.license?.id}">${taskInstance?.license?.encodeAsHTML()}</g:link></dd>
 					</g:if>
-				
 					<g:if test="${taskInstance?.org}">
 						<dt><g:message code="task.org.label" default="Org" /></dt>
-						
-							<dd><g:link controller="org" action="show" id="${taskInstance?.org?.id}">${taskInstance?.org?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:link controller="organisations" action="show" id="${taskInstance?.org?.id}">${taskInstance?.org?.encodeAsHTML()}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.pkg}">
 						<dt><g:message code="task.pkg.label" default="Pkg" /></dt>
-						
-							<dd><g:link controller="package" action="show" id="${taskInstance?.pkg?.id}">${taskInstance?.pkg?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:link controller="packageDetails" action="show" id="${taskInstance?.pkg?.id}">${taskInstance?.pkg?.encodeAsHTML()}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.subscription}">
 						<dt><g:message code="task.subscription.label" default="Subscription" /></dt>
-						
-							<dd><g:link controller="subscription" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:link controller="subscriptionDetails" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription?.encodeAsHTML()}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.title}">
 						<dt><g:message code="task.title.label" default="Title" /></dt>
-						
-							<dd><g:fieldValue bean="${taskInstance}" field="title"/></dd>
-						
+						<dd><g:fieldValue bean="${taskInstance}" field="title"/></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.description}">
 						<dt><g:message code="task.description.label" default="Description" /></dt>
-						
-							<dd><g:fieldValue bean="${taskInstance}" field="description"/></dd>
-						
+						<dd><g:fieldValue bean="${taskInstance}" field="description"/></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.status}">
 						<dt><g:message code="task.status.label" default="Status" /></dt>
-						
-							<dd><g:link controller="refdataValue" action="show" id="${taskInstance?.status?.id}">${taskInstance?.status?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:link controller="refdataValue" action="show" id="${taskInstance?.status?.id}">${taskInstance?.status?.encodeAsHTML()}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.creator}">
 						<dt><g:message code="task.creator.label" default="Creator" /></dt>
-						
-							<dd><g:link controller="user" action="show" id="${taskInstance?.creator?.id}">${taskInstance?.creator?.display?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:link controller="userDetails" action="show" id="${taskInstance?.creator?.id}">${taskInstance?.creator?.display?.encodeAsHTML()}</g:link></dd>
 					</g:if>
 
 					<g:if test="${taskInstance?.createDate}">
 						<dt><g:message code="task.createDate.label" default="Create Date" /></dt>
-
 						<dd><g:formatDate date="${taskInstance?.createDate}" /></dd>
-
 					</g:if>
 
 					<g:if test="${taskInstance?.endDate}">
 						<dt><g:message code="task.endDate.label" default="End Date" /></dt>
-						
-							<dd><g:formatDate date="${taskInstance?.endDate}" /></dd>
-						
+						<dd><g:formatDate date="${taskInstance?.endDate}" /></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.responsibleUser}">
 						<dt><g:message code="task.responsibleUser.label" default="Responsible User" /></dt>
-						
-							<dd><g:link controller="user" action="show" id="${taskInstance?.responsibleUser?.id}">${taskInstance?.responsibleUser?.display?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:link controller="userDetails" action="show" id="${taskInstance?.responsibleUser?.id}">${taskInstance?.responsibleUser?.display?.encodeAsHTML()}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.responsibleOrg}">
 						<dt><g:message code="task.responsibleOrg.label" default="Responsible Org" /></dt>
-						
-							<dd><g:link controller="organisations" action="show" id="${taskInstance?.responsibleOrg?.id}">${taskInstance?.responsibleOrg?.encodeAsHTML()}</g:link></dd>
-						
+						<dd><g:link controller="organisations" action="show" id="${taskInstance?.responsibleOrg?.id}">${taskInstance?.responsibleOrg?.encodeAsHTML()}</g:link></dd>
 					</g:if>
-				
 				</dl>
 
 				<g:form>

@@ -227,24 +227,29 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker label="" text="${text}" message="local.string"><semui:datepicker>
+    //<semui:datepicker label="" text="${text}" message="local.string" required="true" />
 
     def datepicker = { attrs, body ->
 
 
-        def label               = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
-        def inputName           = attrs.inputName ? "${message(code: attrs.inputName)}" : ''
-        def inputPlaceholder    = attrs.inputPlaceholder ? "${message(code: attrs.inputPlaceholder)}" : 'Date'
-        def inputValue          = attrs.inputValue ? "${message(code: attrs.inputValue)}" : ''
+        def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
+        def inputName = attrs.inputName ? "${message(code: attrs.inputName)}" : ''
+        def inputPlaceholder = attrs.inputPlaceholder ? "${message(code: attrs.inputPlaceholder)}" : 'Date'
+        def inputValue = attrs.inputValue ? "${message(code: attrs.inputValue)}" : ''
 
-        out << '<div class="field">'
-        out <<  '<label>' + label + '</label>'
-        out <<  '<div class="ui calendar datepicker">'
+        out << '<div class="field fieldcontain">'
+        out <<   '<label>' + label
+
+        if (attrs.required) {
+            out << '&nbsp;<span class="required-indicator">*</span>'
+        }
+        out <<   '</label>'
+        out <<   '<div class="ui calendar datepicker">'
         out <<      '<div class="ui input left icon">'
         out <<          '<i class="calendar icon"></i>'
         out <<          '<input name="' + inputName +'" type="text" placeholder="'+ inputPlaceholder + '" value="'+  inputValue + '">'
         out <<      '</div>'
-        out <<  '</div>'
+        out <<   '</div>'
         out << '</div>'
 
     }

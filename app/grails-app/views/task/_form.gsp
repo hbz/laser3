@@ -3,7 +3,6 @@
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
 	<label for="license">
 		<g:message code="task.license.label" default="License" />
-		
 	</label>
 	<g:select id="license" name="license.id" from="${validLicenses}" optionKey="id" value="${taskInstance?.license?.id}" class="many-to-one" noSelection="['null': '']"/>
 
@@ -12,28 +11,22 @@
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
 	<label for="org">
 		<g:message code="task.org.label" default="Org" />
-		
 	</label>
 	<g:select id="org" name="org.id" from="${validOrgs}" optionKey="id" value="${taskInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} ">
 	<label for="pkg">
 		<g:message code="task.pkg.label" default="Pkg" />
-		
 	</label>
 	<g:select id="pkg" name="pkg.id" from="${validPackages}" optionKey="id" value="${taskInstance?.pkg?.id}" class="many-to-one" noSelection="['null': '']"/>
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
 	<label for="subscription">
 		<g:message code="task.subscription.label" default="Subscription" />
-		
 	</label>
 	<g:select id="subscription" name="subscription.id" from="${validSubscriptions}" optionKey="id" value="${taskInstance?.subscription?.id}" class="many-to-one" noSelection="['null': '']"/>
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
@@ -42,7 +35,6 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="title" required="" value="${taskInstance?.title}"/>
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')} required">
@@ -58,7 +50,6 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
@@ -75,8 +66,7 @@
         <g:message code="task.createDate.label" default="Create Date" />
         <span class="required-indicator">*</span>
     </label>
-    <g:datePicker name="createDate" precision="day"  value="${taskInstance?.createDate}"  />
-
+    <semui:datepicker label="task.createDate.label" inputName="createDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.createDate}" />
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'endDate', 'error')} required">
@@ -84,8 +74,7 @@
 		<g:message code="task.endDate.label" default="End Date" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:datePicker name="endDate" precision="day"  value="${taskInstance?.endDate}"  />
-
+    <semui:datepicker label="task.endDate.label" inputName="endDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.endDate}" />
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
@@ -93,7 +82,6 @@
 		<g:message code="task.responsibleUser.label" default="Tenant User" />
 	</label>
 	<g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="many-to-one" noSelection="['null': '']" />
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleOrg', 'error')} required">
@@ -101,5 +89,4 @@
 		<g:message code="task.responsibleOrg.label" default="Tenant Org" />
 	</label>
 	<g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id}" class="many-to-one" noSelection="['null': '']" />
-
 </div>

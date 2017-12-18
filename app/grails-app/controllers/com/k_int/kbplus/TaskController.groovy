@@ -27,6 +27,13 @@ class TaskController {
         def contextOrg  = contextService.getOrg()
 		def result      = taskService.getPreconditions(contextOrg)
 
+		def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+		if (params.createDate)
+			params.createDate = sdf.parse(params.createDate)
+		if (params.endDate)
+			params.endDate = sdf.parse(params.endDate)
+
 		switch (request.method) {
 		case 'GET':
             result.taskInstance = new Task(params)
@@ -60,6 +67,13 @@ class TaskController {
     def edit() {
         def contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
+
+		def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+		if (params.createDate)
+			params.createDate = sdf.parse(params.createDate)
+		if (params.endDate)
+			params.endDate = sdf.parse(params.endDate)
 
 		switch (request.method) {
 		case 'GET':

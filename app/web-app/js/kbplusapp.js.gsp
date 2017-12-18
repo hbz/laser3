@@ -105,7 +105,17 @@ function semanticUiStuff() {
                 var day = date.getDate();
                 var month = date.getMonth() + 1;
                 var year = date.getFullYear();
-                return day + '.' + month + '.' + year;
+
+                if ('dd.mm.yyyy' == gspDateFormat) {
+                    return day + '.' + month + '.' + year;
+                }
+                else if ('yyyy-mm-dd' == gspDateFormat) {
+                    return year + '-' + month + '-' + day;
+                }
+                else {
+                    // TODO
+                    alert('Please report this error: ' + gspDateFormat + ' for semui-datepicker unsupported')
+                }
             }
         }
     });
