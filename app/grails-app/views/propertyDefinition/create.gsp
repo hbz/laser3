@@ -35,15 +35,7 @@
             <h1 class="ui header"><g:message code="default.create.label" args="[entityName]"/></h1>
         <semui:messages data="${flash}" />
 
-    <g:hasErrors bean="${newProp}">
-        <bootstrap:alert class="alert-error">
-        <ul>
-            <g:eachError bean="${newProp}" var="error">
-                <li> <g:message error="${error}"/></li>
-            </g:eachError>
-        </ul>
-        </bootstrap:alert>
-    </g:hasErrors>
+        <semui:errors bean="${newProp}" />
    
 
       <p>Use the following form to create additional property definitions. Property definition names are unique.</p>

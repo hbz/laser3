@@ -5,15 +5,7 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License" %>
 
 <g:if test="${newProp}">
-    <g:hasErrors bean="${newProp}">
-        <bootstrap:alert class="alert-error">
-            <ul>
-                <g:eachError bean="${newProp}" var="error">
-                    <li> <g:message error="${error}"/></li>
-                </g:eachError>
-            </ul>
-        </bootstrap:alert>
-    </g:hasErrors>
+    <semui:errors bean="${newProp}" />
 </g:if>
 
 <g:if test="${error}">

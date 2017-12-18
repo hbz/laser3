@@ -10,16 +10,7 @@
 		<h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
 
 		<semui:messages data="${flash}" />
-
-		<g:hasErrors bean="${subscriptionInstance}">
-			<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${subscriptionInstance}" var="error">
-						<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-			</bootstrap:alert>
-		</g:hasErrors>
+			<semui:errors bean="${subscriptionInstance}" />
 
 		<div class="ui grid">
 			

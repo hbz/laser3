@@ -58,15 +58,7 @@
 
  <semui:messages data="${flash}" />
 
-        <g:hasErrors bean="${packageInstance}">
-        <bootstrap:alert class="alert-error">
-        <ul>
-          <g:eachError bean="${packageInstance}" var="error">
-          <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-          </g:eachError>
-        </ul>
-        </bootstrap:alert>
-        </g:hasErrors>
+ <semui:errors bean="${packageInstance}" />
 
     <div class="ui grid">
         <div class="twelve wide column">
@@ -253,7 +245,7 @@
           )
      </p>
 
-        <div class="well">
+       <semui:filter>
           <g:form action="show" params="${params}" method="get" class="form-inline">
             <input type="hidden" name="sort" value="${params.sort}">
             <input type="hidden" name="order" value="${params.order}">
@@ -275,7 +267,7 @@
               <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
             </div>
           </g:form>
-        </div>
+       </semui:filter>
           <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <g:hiddenField name="filter" value="${params.filter}"/>
             <g:hiddenField name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>

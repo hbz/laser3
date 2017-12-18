@@ -17,16 +17,8 @@
     <g:if test="${flash.error}">
         <bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert>
     </g:if>
-        
-    <g:hasErrors bean="${newPage}">
-        <bootstrap:alert class="alert-error">
-        <ul>
-            <g:eachError bean="${newPage}" var="error">
-                <li> <g:message error="${error}"/></li>
-            </g:eachError>
-        </ul>
-        </bootstrap:alert>
-    </g:hasErrors>
+
+    <semui:errors bean="${newPage}" />
 
       <div class="span6"> 
           <table class="ui celled striped table">

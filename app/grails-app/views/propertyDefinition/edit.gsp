@@ -39,16 +39,7 @@
 
         <semui:messages data="${flash}" />
 
-        <g:hasErrors bean="${propDefInstance}">
-            <bootstrap:alert class="alert-error">
-                <ul>
-                    <g:eachError bean="${propDefInstance}" var="error">
-                        <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message
-                                error="${error}"/></li>
-                    </g:eachError>
-                </ul>
-            </bootstrap:alert>
-        </g:hasErrors>
+            <semui:errors bean="${propDefInstance}" />
 
         <fieldset>
               <g:set var="usages" value="${propDefInstance.countOccurrences('com.k_int.kbplus.LicenseCustomProperty','com.k_int.kbplus.SystemAdminCustomProperty','com.k_int.kbplus.OrgCustomProperty')}" />

@@ -33,15 +33,7 @@
 
                 <div class="inline-lists">
 
-                <g:hasErrors bean="${titleInstanceInstance}">
-                  <bootstrap:alert class="alert-error">
-                  <ul>
-                    <g:eachError bean="${titleInstanceInstance}" var="error">
-                      <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-                    </g:eachError>
-                  </ul>
-                  </bootstrap:alert>
-                </g:hasErrors>
+                    <semui:errors bean="${titleInstanceInstance}" />
 
                     <dl>
                         <dt><g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel></dt>

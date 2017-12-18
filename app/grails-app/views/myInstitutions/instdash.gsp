@@ -13,7 +13,7 @@
 
     <div class="home-page">
         <div class="ui segment">
-            <h1 class="ui header">${institution.name} - Dashboard</h1>
+            <h1 class="ui header">${institution.name}</h1>
             <ul class="inline">
 
                 <li><h5 class="ui header">${message(code:'myinst.view', default:'View')}:</h5></li>

@@ -37,15 +37,8 @@
 
 					<semui:messages data="${flash}" />
 
-				<g:hasErrors bean="${identifierOccurrenceInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${identifierOccurrenceInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+					<semui:errors bean="${identifierOccurrenceInstance}" />
+
 				<p><b> Action disabled. Please contact system administrator if you require access. </b></p>
 				%{-- The following code is causing the system to hang and crash, while failing to find the required fields. Something that was tested to work is defining a template within views/identifierOccurance path, like edit/_widget.gsp --}%
 

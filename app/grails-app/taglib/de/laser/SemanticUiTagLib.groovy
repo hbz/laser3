@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.auth.User
+import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
 
 // Semantic UI
@@ -53,6 +54,27 @@ class SemanticUiTagLib {
         }
     }
 
+    // <semui:errors bean="${instanceOfObject}" />
+
+    def errors = { attrs, body ->
+
+        if (attrs.bean.errors.allErrors) {
+            out << '<div class="ui negative message">'
+            out <<   '<i class="close icon"></i>'
+            out <<   '<ul class="list">'
+            attrs.bean.errors.allErrors.each { e ->
+                if (e in org.springframework.validation.FieldError) {
+                    out << '<li data-field-id="${error.field}">'
+                } else {
+                    out << '<li>'
+                }
+                out << g.message(error: "${e}") + '</li>'
+            }
+            out <<   '</ul>'
+            out << '</div>'
+        }
+    }
+    
     // <semui:card text="${text}" message="local.string" class="some_css_class">
     //
     // <semui:card>

@@ -21,16 +21,7 @@
 
           <semui:messages data="${flash}" />
 
-         <g:hasErrors bean="${flash.domainError}">
-                <bootstrap:alert class="alert-error">
-                <ul>
-                    <g:eachError bean="${flash.domainError}" var="error">
-                        <li> <g:message error="${error}"/></li>
-                    </g:eachError>
-                </ul>
-                </bootstrap:alert>
-          </g:hasErrors>
-
+             <semui:errors bean="${flash.domainError}" />
 
             <g:if test="${flash.error}">
                 <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>

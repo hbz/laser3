@@ -194,7 +194,7 @@
 
                             <div class="menu">
                                 <g:link class="item" controller="myInstitutions" action="instdash"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${contextOrg?.name}</g:link>
+                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.dash')}</g:link>
                                 <g:link class="item" controller="organisations" action="show"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.org_info')}</g:link>
 

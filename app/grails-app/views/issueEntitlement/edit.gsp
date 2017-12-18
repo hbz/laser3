@@ -35,15 +35,7 @@
 
 				<semui:messages data="${flash}" />
 
-				<g:hasErrors bean="${issueEntitlementInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${issueEntitlementInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+					<semui:errors bean="${issueEntitlementInstance}" />
 
 				<fieldset>
 					<g:form class="ui form" action="edit" id="${issueEntitlementInstance?.id}" >
