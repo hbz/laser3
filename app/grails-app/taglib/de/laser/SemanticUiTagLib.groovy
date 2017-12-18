@@ -233,9 +233,9 @@ class SemanticUiTagLib {
 
 
         def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
-        def inputName = attrs.inputName ? "${message(code: attrs.inputName)}" : ''
-        def inputPlaceholder = attrs.inputPlaceholder ? "${message(code: attrs.inputPlaceholder)}" : 'Date'
-        def inputValue = attrs.inputValue ? "${message(code: attrs.inputValue)}" : ''
+        def name = attrs.name ? "${message(code: attrs.name)}" : ''
+        def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
+        def value = attrs.value ? "${message(code: attrs.value)}" : ''
 
         out << '<div class="field fieldcontain">'
         out <<   '<label>' + label
@@ -247,7 +247,7 @@ class SemanticUiTagLib {
         out <<   '<div class="ui calendar datepicker">'
         out <<      '<div class="ui input left icon">'
         out <<          '<i class="calendar icon"></i>'
-        out <<          '<input name="' + inputName +'" type="text" placeholder="'+ inputPlaceholder + '" value="'+  inputValue + '">'
+        out <<          '<input name="' + name +'" type="text" placeholder="'+ placeholder + '" value="'+  value + '">'
         out <<      '</div>'
         out <<   '</div>'
         out << '</div>'
