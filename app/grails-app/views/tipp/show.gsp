@@ -9,14 +9,13 @@
 
     <semui:breadcrumbs>
       <semui:crumb controller="packageDetails" action="show" id="${tipp.pkg.id}" text="${tipp.pkg.name} [${message(code:'package.label', default:'package')}]" />
-      <semui:crumb controller="tipp" action="show" id="${tipp.id}" text="${tipp.title.title} [${message(code:'title.label', default:'title')}]" />
+      <semui:crumb text="${tipp.title.title} [${message(code:'title.label', default:'title')}]" class="active" />
     </semui:breadcrumbs>
 
-      <g:if test="${editable}">
-          <semui:crumbAsBadge message="default.editable" class="orange" />
-      </g:if>
-
-    <h1 class="ui header">${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}</h1>
+    <h1 class="ui header">
+      <semui:editableLabel editable="${editable}" />
+      ${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}
+    </h1>
 
     <semui:messages data="${flash}" />
 
@@ -153,16 +152,18 @@
             <dt><g:message code="titleInstance.tipps.label" default="${message(code:'titleInstance.tipps.label', default:'Occurences of this title against Packages / Platforms')}" /></dt>
             <dd>
 
-               <g:form action="show" params="${params}" method="get" class="form-inline">
-                  <input type="hidden" name="sort" value="${params.sort}">
-                  <input type="hidden" name="order" value="${params.order}">
-                  <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-                  &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-                  <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
-                  &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-                  <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
-                  <input type="submit" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}">
-                </g:form>
+                <semui:filter>
+                   <g:form action="show" params="${params}" method="get" class="ui form">
+                      <input type="hidden" name="sort" value="${params.sort}">
+                      <input type="hidden" name="order" value="${params.order}">
+                      <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
+                      &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
+                      <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                      &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
+                      <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+                      <input type="submit" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+                    </g:form>
+                </semui:filter>
 
             <table class="ui celled table">
               <thead>

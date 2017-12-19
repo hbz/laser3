@@ -34,15 +34,17 @@
 
 <semui:messages data="${flash}" />
 
-<div>
-    <h1 class="ui header">${packageInstance?.name}</h1>
-    <g:render template="nav"/>
-</div>
 
-<div>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${packageInstance?.name}
+    </h1>
+
+    <g:render template="nav"/>
+
     <g:render template="/templates/notes_table" model="${[instance: packageInstance, redirect: 'notes']}"/>
 
-</div>
+
 <g:render template="/templates/addNote"
           model="${[doclist: packageInstance.documents, ownobj: packageInstance, owntp: 'pkg']}"/>
 </body>

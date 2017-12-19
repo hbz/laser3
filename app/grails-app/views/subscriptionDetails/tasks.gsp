@@ -14,11 +14,12 @@
         <semui:crumb class="active" text="${message(code:'task.plural', default:'Tasks')}" />
     </semui:breadcrumbs>
 
-    <g:if test="${editable}">
-        <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
+    <g:render template="actions" />
 
-    <h1 class="ui header">${subscriptionInstance?.name}</h1>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        <semui:xEditable owner="${subscriptionInstance}" field="name" />
+    </h1>
 
     <g:render template="nav" />
 

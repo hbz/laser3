@@ -15,28 +15,27 @@
 
       <semui:modeSwitch controller="packageDetails" action="${params.action}" params="${params}" />
 
-      <div>
 
-        <div class="page-header">
-          <div>
-          <h1 class="ui header"><g:if test="${editable}"><span id="packageNameEdit"
+          <h1 class="ui header">
+              <semui:editableLabel editable="${editable}" />
+              <g:if test="${editable}"><span id="packageNameEdit"
                         class="xEditableValue"
                         data-type="textarea"
                         data-pk="${packageInstance.class.name}:${packageInstance.id}"
                         data-name="name"
-                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if><g:else>${packageInstance.name}</g:else></h1>
+                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
+              <g:else>${packageInstance.name}</g:else>
+          </h1>
+
             <g:render template="nav" contextPath="." />
+
             <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+
             <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
             </sec:ifAnyGranted>
             <g:if test="${forum_url != null}">
               <a href="${forum_url}">| Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
             </g:if>
-
-          </div>
-
-        </div>
-    </div>
 
   <semui:messages data="${flash}" />
 

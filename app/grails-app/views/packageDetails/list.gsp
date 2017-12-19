@@ -39,8 +39,9 @@
                 </div>
               </td>
               <td>
-                <input type="submit" class="ui button" value="${message(code:'default.button.search.label')}" style="margin:10px 5px;min-width:100px;font-size:1.3em;"></input>
-                <button type="submit" name="format" value="csv" class="ui button" value="Search"  style="margin:10px 5px;">${message(code:'default.button.exports.csv')}</button>
+                <input type="submit" class="ui button" value="${message(code:'default.button.search.label')}" />
+                <br />
+                <button type="submit" name="format" value="csv" class="ui button" value="Search">${message(code:'default.button.exports.csv')}</button>
               </td>
             </tr>
            </tbody>

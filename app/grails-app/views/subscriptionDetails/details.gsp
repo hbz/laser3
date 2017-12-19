@@ -23,16 +23,18 @@
             <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
         </semui:breadcrumbs>
 
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
+        <g:render template="actions" />
 
       <g:if test="${params.asAt}">
           <h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1>
       </g:if>
 
-       <h1 class="ui header"><semui:xEditable owner="${subscriptionInstance}" field="name" /></h1>
-       <g:render template="nav"  />
+       <h1 class="ui header">
+           <semui:editableLabel editable="${editable}" />
+           <semui:xEditable owner="${subscriptionInstance}" field="name" />
+       </h1>
+
+       <g:render template="nav" />
 
        <semui:messages data="${flash}" />
 

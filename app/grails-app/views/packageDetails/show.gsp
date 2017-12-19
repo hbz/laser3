@@ -28,33 +28,32 @@
         </semui:exportDropdown>
     </semui:breadcrumbs>
 
-    <g:if test="${editable}">
-        <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
-
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':packageInstance]}"/>
 
+    <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
 
-      <div>
-        <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
+      <h1 class="ui header">
+          <semui:editableLabel editable="${editable}" />
+          <g:if test="${editable}"><span id="packageNameEdit"
+                    class="xEditableValue"
+                    data-type="textarea"
+                    data-pk="${packageInstance.class.name}:${packageInstance.id}"
+                    data-name="name"
+                    data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
+          <g:else>${packageInstance.name}</g:else>
+      </h1>
 
-          <h1 class="ui header"><g:if test="${editable}"><span id="packageNameEdit"
-                        class="xEditableValue"
-                        data-type="textarea"
-                        data-pk="${packageInstance.class.name}:${packageInstance.id}"
-                        data-name="name"
-                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if><g:else>${packageInstance.name}</g:else></h1>
-           <g:render template="nav" />
-            <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-            <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
-            </sec:ifAnyGranted>
-            <g:if test="${forum_url != null}">
-              <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-            </g:if>
+    <g:render template="nav" />
 
-    </div>
+    <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+        <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
+    </sec:ifAnyGranted>
+
+    <g:if test="${forum_url != null}">
+      <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
+    </g:if>
 
  <semui:messages data="${flash}" />
 
@@ -210,7 +209,7 @@
                       </g:each>
                     </select><br/>
                     ${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" style="vertical-align:text-bottom;"/><br/>
-                    <input id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
+                    <input class="ui button" id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
                   </g:form>
                 </g:if>
                 <g:else>

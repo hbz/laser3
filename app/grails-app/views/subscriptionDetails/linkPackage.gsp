@@ -42,9 +42,9 @@
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
 
-  <body>
+    <body>
 
-    <div>
+
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${params.shortcode}">
@@ -52,16 +52,13 @@
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.notes.label', default:'Notes')}</g:link> </li>
       </ul>
-    </div>
 
-    <g:if test="${editable}">
-      <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
+        <g:render template="actions" />
 
-    <div>
-       <h1 class="ui header">${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
-       <g:render template="nav" contextPath="." />
-    </div>
+        <h1 class="ui header">${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
+
+        <g:render template="nav" contextPath="." />
+
 
     <div>
       <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}">

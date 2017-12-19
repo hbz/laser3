@@ -7,7 +7,6 @@
 
   <body>
 
-
     <semui:breadcrumbs>
       <g:if test="${params.shortcode}">
         <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
@@ -16,11 +15,12 @@
       <semui:crumb class="active" text="${message(code:'default.permissions.label', default:'Permissions')}" />
     </semui:breadcrumbs>
 
-    <g:if test="${editable}">
-      <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
+    <g:render template="actions" />
 
-    <h1 class="ui header">${subscriptionInstance?.name} - ${message(code:'subscription.details.user.permissions', default:'Permissions against Current User')}</h1>
+    <h1 class="ui header">
+      <semui:editableLabel editable="${editable}" />
+      <semui:xEditable owner="${subscriptionInstance}" field="name" />
+    </h1>
 
     <g:render template="nav" contextPath="." />
 

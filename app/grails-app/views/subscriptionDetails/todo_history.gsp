@@ -17,12 +17,14 @@
         </ul>
     </div>
 
-    <div>
-        <h1 class="ui header">${subscription.name}</h1>
-        <g:render template="nav" contextPath="." />
-    </div>
+    <g:render template="actions" />
 
-    <div>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        <semui:xEditable owner="${subscription}" field="name" />
+    </h1>
+
+    <g:render template="nav" contextPath="." />
 
       <h3 class="ui header">${message(code:'subscription.details.todo_history.label', default:'ToDo History')}</h3>
 

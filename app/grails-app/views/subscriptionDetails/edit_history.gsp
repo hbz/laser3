@@ -17,12 +17,15 @@
         </ul>
     </div>
 
-    <div>
-        <h1 class="ui header">${subscription.name}</h1>
-        <g:render template="nav" contextPath="." />
-    </div>
+    <g:render template="actions" />
 
-    <div>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        <semui:xEditable owner="${subscription}" field="name" />
+    </h1>
+
+    <g:render template="nav" contextPath="." />
+
       <h3 class="ui header">${message(code:'subscription.details.edit_history.label', default:'Subscription history')}</h3>
       <table  class="ui celled striped table">
         <thead>
@@ -53,7 +56,6 @@
 
         <semui:paginate  action="edit_history" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
 
-    </div>
 
 </body>
 </html>

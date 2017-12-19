@@ -14,13 +14,14 @@
         <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
     </semui:breadcrumbs>
 
+    <semui:messages data="${flash}" />
 
-<semui:messages data="${flash}" />
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${packageInstance?.name}
+    </h1>
 
-
-    <h1 class="ui header">${packageInstance?.name}</h1>
     <g:render template="nav"/>
-
 
 <div>
     <g:if test="${formattedHistoryLines?.size() > 0}">

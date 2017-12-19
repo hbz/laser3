@@ -9,7 +9,10 @@
 
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <h1 class="ui header">${license.licensee?.name} ${license.type?.getI10n("value")} ${message(code:'license.label', default:'License')} : ${license.reference}</h1>
+    <h1 class="ui header">
+      <semui:editableLabel editable="${editable}" />
+      ${license.licensee?.name} ${license.type?.getI10n("value")} ${message(code:'license.label', default:'License')} : ${license.reference}
+    </h1>
 
     <g:render template="nav" />
 

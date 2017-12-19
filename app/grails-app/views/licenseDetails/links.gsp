@@ -7,18 +7,14 @@
 
   <body>
 
-    <div>
       <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    </div>
 
-    <div>
-      <h1 class="ui header">${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span></h1>
+      <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span>
+      </h1>
 
       <g:render template="nav"/>
-
-    </div>
-
-    <div>
 
       <table class="ui celled striped table">
         <thead>
@@ -42,7 +38,6 @@
           </g:each>
         </tbody>
       </table>
-    </div>
     
   </body>
 </html>

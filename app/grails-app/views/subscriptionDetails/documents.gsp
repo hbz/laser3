@@ -19,13 +19,14 @@
       </ul>
     </div>
 
-    <g:if test="${editable}">
-      <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
+    <g:render template="actions" />
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui header">${subscriptionInstance?.name}</h1>
+      <h1 class="ui header">
+          <semui:editableLabel editable="${editable}" />
+          <semui:xEditable owner="${subscriptionInstance}" field="name" />
+      </h1>
 
     <g:render template="nav" />
 

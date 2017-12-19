@@ -32,17 +32,18 @@
 
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
-<semui:messages data="${flash}" />
-<div>
-    <h1 class="ui header">${packageInstance?.name}</h1>
+    <semui:messages data="${flash}" />
+
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${packageInstance?.name}
+    </h1>
+
     <g:render template="nav" />
-</div>
-<div>
 
     <g:render template="/templates/documents_table"
               model="${[instance:packageInstance,context:'pkg',redirect:'documents']}" />
 
-</div>
 
 <g:render template="/templates/addDocument"
           model="${[doclist: packageInstance.documents, ownobj: packageInstance, owntp: 'pkg']}"/>

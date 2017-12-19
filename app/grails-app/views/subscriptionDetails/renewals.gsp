@@ -17,11 +17,12 @@
       </ul>
     </div>
 
-    <g:if test="${editable}">
-      <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
+    <g:render template="actions" />
 
-    <h1 class="ui header">${subscriptionInstance?.name}</h1>
+    <h1 class="ui header">
+      <semui:editableLabel editable="${editable}" />
+      <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+    </h1>
 
     <g:render template="nav" contextPath="." />
 

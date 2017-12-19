@@ -14,18 +14,18 @@
             <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
         </semui:breadcrumbs>
 
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
-
         <semui:modeSwitch controller="platform" action="show" params="${params}" />
 
-          <h1 class="ui header">Platform : <g:if test="${editable}"><span id="platformNameEdit"
+        <h1 class="ui header">
+            <semui:editableLabel editable="${editable}" />
+            <g:if test="${editable}"><span id="platformNameEdit"
                                                         class="xEditableValue"
                                                         data-type="textarea"
                                                         data-pk="${platformInstance.class.name}:${platformInstance.id}"
                                                         data-name="name"
-                                                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${platformInstance.name}</span></g:if><g:else>${platformInstance.name}</g:else>
+                                                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${platformInstance.name}</span>
+            </g:if>
+            <g:else>${platformInstance.name}</g:else>
           </h1>
 
         <semui:messages data="${flash}" />

@@ -34,9 +34,7 @@
 
     </semui:breadcrumbs>
 
-  <g:if test="${editable}">
-      <semui:crumbAsBadge message="default.editable" class="orange" />
-  </g:if>
+  <g:render template="actions" />
 
   <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
 
@@ -44,7 +42,10 @@
 
   <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>
 
-  <h1 class="ui header"><semui:xEditable owner="${subscriptionInstance}" field="name" /></h1>
+  <h1 class="ui header">
+      <semui:editableLabel editable="${editable}" />
+      <semui:xEditable owner="${subscriptionInstance}" field="name" />
+  </h1>
 
   <g:render template="nav" />
 

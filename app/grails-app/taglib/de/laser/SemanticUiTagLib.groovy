@@ -94,6 +94,17 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    // <semui:editableLabel editable="${editable}" />
+
+    def editableLabel = { attrs, body ->
+
+        if (attrs.editable) {
+            out << '<div class="ui orange circular label" style="margin-left:0">'
+            out << '<i class="write icon" style="margin-right:0"></i>'
+            out << '</div>'
+        }
+    }
+
     // <semui:modeSwitch controller="controller" action="action" params="params" />
 
     def modeSwitch = { attrs, body ->
@@ -123,46 +134,6 @@ class SemanticUiTagLib {
                 params: attrs.params + ['mode':'advanced'],
                 class: "ui mini button ${mode == 'advanced' ? 'positive' : ''}"
         )
-        out << '</div>'
-    }
-
-    // <semui:exportDropdown params="${params}" transforms="${transforms}" />
-
-    def exportDropdown = { attrs, body ->
-
-        out << '<div class="ui right floated compact menu">'
-        out <<   '<div class="ui simple dropdown item">'
-        out <<     'Export'
-        out <<     '<i class="dropdown icon"></i>'
-        out <<     '<div class="menu">'
-
-        out <<       body()
-        /*
-        out <<       '<div class="item">'
-        out <<         g.link("JSON Export", action:"show", params:"${params+[format:'json']}")
-        out <<       '</div>'
-        out <<       '<div class="item">'
-        out <<         g.link("XML Export", action:"show", params:"${params+[format:'xml']}")
-        out <<       '</div>'
-
-        attrs.transforms?.each{key, val ->
-            out <<       '<div class="item">'
-            out <<         g.link("${val.name}", action:"show", id:"${attrs.params.id}", params:"${[format:'xml', transformId:key, mode:attrs.params.mode]}")
-            out <<       '</div>'
-        }
-        */
-
-        out <<     '</div>'
-        out <<   '</div>'
-        out << '</div>'
-    }
-
-    //<semui:exportDropdownItem> LINK <semui:exportDropdownItem>
-
-    def exportDropdownItem = { attrs, body ->
-
-        out << '<div class="item">'
-        out <<   body()
         out << '</div>'
     }
 

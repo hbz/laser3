@@ -14,20 +14,20 @@
             <semui:crumb class="active" text="${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}" />
         </semui:breadcrumbs>
 
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
+        <g:render template="actions" />
 
-        <h1 class="ui header"><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
+        <h1 class="ui header">
+            <semui:editableLabel editable="${editable}" />
+            <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+        </h1>
 
         <g:render template="nav" contextPath="." />
-
 
         <g:set var="counter" value="${offset+1}" />
 
       <semui:filter>
         ${message(code:'subscription.details.availableTitles', default:'Available Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(tipps?.size())),num_tipp_rows])} )
-          <g:form action="addEntitlements" params="${params}" method="get" class="form-inline">
+          <g:form class="ui form" action="addEntitlements" params="${params}" method="get">
             <input type="hidden" name="sort" value="${params.sort}">
             <input type="hidden" name="order" value="${params.order}">
             <label>${message(code:'subscription.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
