@@ -99,17 +99,22 @@ function semanticUiStuff() {
     $('.datepicker').calendar({
         type: 'date',
         firstDayOfWeek: 1,
+        monthFirst: false,
         formatter: {
             date: function (date, settings) {
                 if (!date) return '';
                 var day = date.getDate();
+                if (day<10) day="0"+day;
                 var month = date.getMonth() + 1;
+                if (month<10) month="0"+month;
                 var year = date.getFullYear();
 
                 if ('dd.mm.yyyy' == gspDateFormat) {
+                    console.log('dd.mm.yyyy');
                     return day + '.' + month + '.' + year;
                 }
                 else if ('yyyy-mm-dd' == gspDateFormat) {
+                    console.log('yyyy-mm-dd');
                     return year + '-' + month + '-' + day;
                 }
                 else {
