@@ -62,7 +62,7 @@
                     <g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" inputName="endDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.endDate}" required="true" bean="${taskInstance}" />
+                <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate" placeholder="default.date.label" value="${taskInstance?.endDate}" required="true" bean="${taskInstance}" />
 
             </div>
         </div>
@@ -94,7 +94,7 @@
                     <g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
                 </div>
 
-                <semui:datepicker label="task.createDate.label" inputName="createDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.createDate}" required="true" bean="${taskInstance}"  />
+                <semui:datepicker label="task.createDate.label" name="createDate" placeholder="default.date.label" value="${taskInstance?.createDate}" required="true" bean="${taskInstance}"  />
 
             </div>
         </div>

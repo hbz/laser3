@@ -57,9 +57,9 @@
 	<g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
 </div>
 
-<semui:datepicker label="task.createDate.label" inputName="createDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.createDate}" required="true" bean="${taskInstance}" />
+<semui:datepicker label="task.createDate.label" name="createDate" placeholder="default.date.label" value="${taskInstance?.createDate}" required="true" bean="${taskInstance}" />
 
-<semui:datepicker label="task.endDate.label" inputName="endDate" inputPlaceholder="default.date.label" inputValue="${taskInstance?.endDate}" required="true" bean="${taskInstance}" />
+<semui:datepicker label="task.endDate.label" name="endDate" placeholder="default.date.label" value="${taskInstance?.endDate}" required="true" bean="${taskInstance}" />
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
 	<label for="responsibleUser">
