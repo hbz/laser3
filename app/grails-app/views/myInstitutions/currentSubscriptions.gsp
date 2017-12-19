@@ -38,7 +38,7 @@
                 <!-- SEARCH END -->
 
                 <!-- DATE VALID ON -->
-                <semui:datepicker label ="default.valid_on.label" inputName="validOn" inputPlaceholder ="default.date.label" inputValue ="${validOn}">
+                <semui:datepicker label ="default.valid_on.label" name="validOn" placeholder ="default.date.label" value ="${validOn}">
                 </semui:datepicker>
                 <!-- DATE VALID ON END-->
 
@@ -59,7 +59,7 @@
                 <!-- DROPDOWN DATE END -->
 
                 <!-- dateBeforeVal -->
-                <semui:datepicker label ="myinst.currentSubscriptions.filter.before" inputName="dateBeforeVal" inputPlaceholder ="default.date.label" inputValue ="${dateBeforeVal}">
+                <semui:datepicker label ="myinst.currentSubscriptions.filter.before" name="dateBeforeVal" placeholder ="default.date.label" value ="${dateBeforeVal}">
                 </semui:datepicker>
                 <!-- dateBeforeVal -->
 
