@@ -42,9 +42,9 @@
     <semui:filter class="license-searches">
         <form class="form-inline">
           <div>
-            <label>${message(code:'license.valid_on', default:'Valid On')}:</label>
-            <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">
-            <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label>
+              <semui:datepicker label ="license.valid_on" name="validOn" placeholder ="default.date.label" value ="${validOn}">
+              </semui:datepicker>
+            <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label
             <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
           </div>
           <div style="margin-top:10px;">
