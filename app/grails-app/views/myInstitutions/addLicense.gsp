@@ -36,7 +36,7 @@
     </div>
 
       <div>
-        <g:form action="addLicense" params="${params}" method="get" class="form-inline">
+        <g:form action="addLicense" params="${params}" method="get" class="ui form">
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
           <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'license.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;

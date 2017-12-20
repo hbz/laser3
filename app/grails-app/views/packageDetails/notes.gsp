@@ -6,7 +6,6 @@
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
 </head>
-
 <body>
 
     <semui:breadcrumbs>
@@ -42,10 +41,9 @@
 
     <g:render template="nav"/>
 
-    <g:render template="/templates/notes_table" model="${[instance: packageInstance, redirect: 'notes']}"/>
+    <g:render template="/templates/notes/table" model="${[instance: packageInstance, redirect: 'notes']}"/>
 
+    <g:render template="/templates/notes/modal" model="${[doclist: packageInstance.documents, ownobj: packageInstance, owntp: 'pkg']}"/>
 
-<g:render template="/templates/addNote"
-          model="${[doclist: packageInstance.documents, ownobj: packageInstance, owntp: 'pkg']}"/>
 </body>
 </html>

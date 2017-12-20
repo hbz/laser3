@@ -14,8 +14,8 @@
             <g:if test="${editable}"><th>${message(code:'default.select.label', default:'Select')}</th></g:if>
             <th>${message(code:'title.label', default:'Title')}</th>
             <th>${message(code:'default.note.label', default:'Note')}</th>
+            <th>${message(code:'default.date.label', default:'Date')}</th>
             <th>${message(code:'default.creator.label', default:'Creator')}</th>
-            <th>${message(code:'default.type.label', default:'Type')}</th>
         </tr>
         </thead>
         <tbody>
@@ -31,17 +31,20 @@
                         <semui:xEditable owner="${docctx.owner}" field="content" id="content"/>
                     </td>
                     <td>
-                        <semui:xEditable owner="${docctx.owner}" field="creator" id="creator"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
                     </td>
-                    <td>${docctx.owner?.type?.value}</td>
+                    <td>
+                        <g:link controller="userDetails" action="show" params="[id:"${docctx.owner?.user?.id}"]">
+                            <g:fieldValue bean="${docctx.owner}" field="user" id="user"/>
+                        </g:link>
+                    </td>
                 </tr>
             </g:if>
         </g:each>
         </tbody>
     </table>
     <g:if test="${editable}">
-        <input type="button" class="ui button" value="${message(code:'template.addNote', default:'Add new Note')}" data-semui="modal"
-                   href="#modalCreateNote"/>
+        <input type="button" class="ui button" value="${message(code:'template.addNote', default:'Add new Note')}" data-semui="modal" href="#modalCreateNote"/>
    </g:if>
 </g:form>
 

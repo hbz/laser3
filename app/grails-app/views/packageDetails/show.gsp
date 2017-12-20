@@ -224,8 +224,8 @@
             </semui:card>
 
           <g:render template="/templates/tasks/card" model="${[ownobj:packageInstance, owntp:'pkg']}" />
-          <g:render template="/templates/documents" model="${[ownobj:packageInstance, owntp:'pkg']}" />
-          <g:render template="/templates/notes"  model="${[ownobj:packageInstance, owntp:'pkg']}" />
+          <g:render template="/templates/documents/card" model="${[ownobj:packageInstance, owntp:'pkg']}" />
+          <g:render template="/templates/notes/card"  model="${[ownobj:packageInstance, owntp:'pkg']}" />
         </div><!-- .four -->
 
     </div><!-- .grid -->
@@ -251,7 +251,7 @@
      </p>
 
        <semui:filter>
-          <g:form action="show" params="${params}" method="get" class="form-inline">
+          <g:form action="show" params="${params}" method="get" class="ui form">
             <input type="hidden" name="sort" value="${params.sort}">
             <input type="hidden" name="order" value="${params.order}">
             <input type="hidden" name="mode" value="${params.mode}">

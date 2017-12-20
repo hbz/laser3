@@ -39,7 +39,7 @@
     <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
 
     <semui:filter>
-      <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
+      <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="ui form">
 
         <g:set var="filterSub" value="${params.filterSub?params.list('filterSub'):"all"}" />
         <g:set var="filterPvd" value="${params.filterPvd?params.list('filterPvd'):"all"}" />
@@ -115,7 +115,7 @@
       <div>
         <span>${message(code:'title.plural', default:'Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(titles.size())),num_ti_rows])} )</span>
         <div>
-          <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="form-inline">
+          <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="ui form">
           <g:set var="counter" value="${offset+1}" />
           <table  class="ui celled striped table">
             <thead>

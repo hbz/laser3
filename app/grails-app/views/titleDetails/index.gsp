@@ -12,7 +12,7 @@
     </semui:breadcrumbs>
 
     <semui:filter>
-      <g:form action="index" role="form" class="form-inline" method="get" params="${params}">
+      <g:form action="index" role="form" class="ui form" method="get" params="${params}">
 
         <input type="hidden" name="offset" value="${params.offset}"/>
 

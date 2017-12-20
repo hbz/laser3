@@ -36,7 +36,7 @@
     </semui:subNav>
 
     <semui:filter class="license-searches">
-        <form class="form-inline">
+        <form class="ui form">
           <div>
             <label>${message(code:'license.valid_on', default:'Valid On')}:</label>
             <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">

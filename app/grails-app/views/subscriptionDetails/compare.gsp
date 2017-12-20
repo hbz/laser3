@@ -125,7 +125,7 @@
 				</table>
 				</div>
 				<div class="row">
-				<g:form action="compare" method="GET" class="form-inline">
+				<g:form action="compare" method="GET" class="ui form">
 					<input type="hidden" name="subA" value="${params.subA}"/>
 					<input type="hidden" name="subB" value="${params.subB}"/>
 					<input type="hidden" name="dateA" value="${params.dateA}"/>

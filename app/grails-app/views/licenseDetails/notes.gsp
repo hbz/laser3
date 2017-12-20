@@ -4,9 +4,7 @@
         <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser', default:'LAS:eR')} License</title>
 </head>
-
 <body>
-
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <h1 class="ui header">
@@ -16,9 +14,9 @@
 
     <g:render template="nav" />
 
-    <g:render template="/templates/notes_table" model="${[instance: license, redirect: 'notes']}"/>
+    <g:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>
 
-    <g:render template="/templates/addNote" model="${[doclist: license.documents, ownobj: license, owntp: 'license']}"/>
+    <g:render template="/templates/notes/modal" model="${[doclist: license.documents, ownobj: license, owntp: 'license']}"/>
 
 </body>
 </html>

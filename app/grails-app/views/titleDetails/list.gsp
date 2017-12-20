@@ -4,7 +4,6 @@
     <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code: 'title.plural')} - ${message(code: 'default.button.search.label')}</title>
   </head>
-
   <body>
 
     <semui:breadcrumbs>
@@ -12,7 +11,7 @@
     </semui:breadcrumbs>
 
     <semui:filter>
-      <g:form action="index" role="form" class="form-inline" method="get" params="${params}">
+      <g:form action="index" role="form" class="ui form" method="get" params="${params}">
 
         <input type="hidden" name="offset" value="${params.offset}"/>
 

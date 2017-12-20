@@ -13,7 +13,7 @@
       <semui:messages data="${flash}" />
 
     <div class="container" style="text-align:center">
-      <g:form action="index" method="get" class="form-inline">
+      <g:form action="index" method="get" class="ui form">
         <label>${message(code: 'globalDataSync.search.text')}: </label> <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}" value="${params.q?.encodeAsHTML()}"  />
         <input type="submit" class="ui button" value="${message(code: 'default.button.search.label')}" />
       </g:form><br/>

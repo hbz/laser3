@@ -300,8 +300,8 @@
                  </semui:card>
 
                     <g:render template="/templates/tasks/card" model="${[ownobj:license, owntp:'license']}" />
-                    <g:render template="/templates/documents" model="${[ownobj:license, owntp:'license']}" />
-                    <g:render template="/templates/notes"  model="${[ownobj:license, owntp:'license']}" />
+                    <g:render template="/templates/documents/card" model="${[ownobj:license, owntp:'license']}" />
+                    <g:render template="/templates/notes/card"  model="${[ownobj:license, owntp:'license']}" />
                 </div><!-- .four -->
             </div><!-- .grid -->
 

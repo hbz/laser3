@@ -16,9 +16,9 @@
 
     <g:render template="nav" />
 
-    <g:render template="/templates/documents_table" model="${[instance:license, redirect:'documents']}"/>
+    <g:render template="/templates/documents/table" model="${[instance:license, redirect:'documents']}"/>
 
-    <g:render template="/templates/addDocument" model="${[ownobj:license, owntp:'license']}" />
+    <g:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
 
 </body>
 </html>

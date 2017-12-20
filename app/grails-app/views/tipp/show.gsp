@@ -22,7 +22,7 @@
   <div class="inline-lists">
         <dl>
           <g:if test="${titleInstanceInstance?.ids}">
-            <dt><g:message code="titleInstance.ids.label" default="Ids" /></dt>
+            <dt><g:message code="title.identifiers.label" /></dt>
             
               <dd><g:each in="${titleInstanceInstance.ids}" var="i">
                 <g:if test="${i.identifier.ns.ns != 'originediturl'}">
@@ -39,7 +39,7 @@
 
           <dl><!-- TODO: error? -->
               <dt><g:message code="titleInstance.globalUID.label" default="Global UID" /></dt>
-              <dd> <g:fieldValue bean="${titleInstanceInstance}" field="globalUID"/> </dd>
+              <dd> <g:fieldValue bean="${tipp}" field="globalUID"/> </dd>
           </dl>
 
         <dl>

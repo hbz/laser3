@@ -10,7 +10,7 @@
       <semui:crumb text="${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}" class="active"/>
     </semui:breadcrumbs>
 
-      <g:form action="dmIndex" method="get" params="${params}" role="form" class="form-inline">
+      <g:form action="dmIndex" method="get" params="${params}" role="form" class="ui form">
 
         <input type="hidden" name="offset" value="${params.offset}"/>
 

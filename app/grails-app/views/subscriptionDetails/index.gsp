@@ -97,7 +97,7 @@
             </semui:filter>
         </dt>
         <dd>
-          <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="form-inline">
+          <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="ui form">
           <g:set var="counter" value="${offset+1}" />
           <g:hiddenField name="sort" value="${params.sort}"/>
           <g:hiddenField name="order" value="${params.order}"/>

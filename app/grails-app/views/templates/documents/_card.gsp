@@ -16,8 +16,8 @@
   </ul>
   <g:if test="${editable}">
     <input type="submit" class="ui fluid button" value="${message(code:'license.addNewDocument', default: 'Add new document')}" data-semui="modal" href="#modalCreateDocument" />
-<%-- <input type="submit" class="ui button" value="Add new document" data-semui="modal" href="#modalCreateDocument" /> --%>
   </g:if>
 </semui:card>
-<g:render template="/templates/addDocument"  />
+
+<g:render template="/templates/documents/modal"  />
 

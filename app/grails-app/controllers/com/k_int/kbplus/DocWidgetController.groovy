@@ -27,9 +27,10 @@ class DocWidgetController {
         log.debug("Got owner instance ${instance}");
 
         def doc_content = new Doc(contentType:Doc.CONTENT_TYPE_STRING,
-                                  content: params.licenseNote,
-                                  type:RefdataCategory.lookupOrCreate('Document Type','Note'),
-                                  user:user).save()
+                                  title:    params.licenseNoteTitle,
+                                  content:  params.licenseNote,
+                                  type:     RefdataCategory.lookupOrCreate('Document Type','Note'),
+                                  user:     user).save()
 
         def alert = null;
         if ( params.licenseNoteShared ) {

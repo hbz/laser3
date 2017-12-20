@@ -50,7 +50,7 @@
           <dd>
 
         <semui:filter>
-            <g:form action="show" params="${params}" method="get" class="form-inline">
+            <g:form action="show" params="${params}" method="get" class="ui form">
                 <input type="hidden" name="sort" value="${params.sort}">
                 <input type="hidden" name="order" value="${params.order}">
                 <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>

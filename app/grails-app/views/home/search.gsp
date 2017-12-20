@@ -46,7 +46,7 @@
   <body>
     <div class="content"><div class="row-fluid">
       <div class="row well text-center">
-        <g:form role="form" action="search" controller="home" method="get" class="form-inline">
+        <g:form role="form" action="search" controller="home" method="get" class="ui form">
           <fieldset>
 
             <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">

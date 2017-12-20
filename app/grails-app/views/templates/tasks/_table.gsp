@@ -9,12 +9,12 @@
 
                 <th>${message(code: 'task.endDate.label', default: 'End Date')}</th>
 
+                <th>${message(code: 'task.status.label', default: 'Status')}</th>
+
                 <th>
                     ${message(code: 'task.responsibleOrg.label', default: 'responsibleOrg')} <br />
                     ${message(code: 'task.responsibleUser.label', default: 'responsibleUser')}
                 </th>
-
-                <th>${message(code: 'task.status.label', default: 'Status')}</th>
 
                 <th>${message(code: 'task.creator.label', default: 'Creator')}</th>
 
@@ -31,12 +31,12 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.endDate}"/></td>
 
                     <td>
-                        <g:if test="${taskInstance.responsibleOrg}">${fieldValue(bean: taskInstance, field: "responsibleOrg")} <br /></g:if>
-                        <g:if test="${taskInstance.responsibleUser}">${fieldValue(bean: taskInstance, field: "responsibleUser")}</g:if>
+                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" />
                     </td>
 
                     <td>
-                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" />
+                        <g:if test="${taskInstance.responsibleOrg}">${fieldValue(bean: taskInstance, field: "responsibleOrg")} <br /></g:if>
+                        <g:if test="${taskInstance.responsibleUser}">${fieldValue(bean: taskInstance, field: "responsibleUser")}</g:if>
                     </td>
 
                     <td>${fieldValue(bean: taskInstance, field: "creator")}</td>

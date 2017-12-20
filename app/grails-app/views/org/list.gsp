@@ -40,7 +40,7 @@
 
 
                 <div class="well">
-			          <g:form action="list" method="get" class="form-inline">
+			          <g:form action="list" method="get" class="ui form">
 			            Org Name Contains: 
 			            <input type="text" name="orgNameContains" value="${params.orgNameContains}"/> 
 			            Restrict to orgs who are 

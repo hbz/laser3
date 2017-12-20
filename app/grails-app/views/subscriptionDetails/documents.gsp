@@ -7,9 +7,6 @@
 
   <body>
 
-  <g:render template="/templates/addDocument" model="${[doclist:subscriptionInstance.documents, ownobj:subscriptionInstance, owntp:'subscription']}" />
-
-    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${params.shortcode}">
@@ -17,7 +14,6 @@
         </g:if>
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.details.label', default:'Details')}</g:link> </li>
       </ul>
-    </div>
 
     <g:render template="actions" />
 
@@ -30,8 +26,9 @@
 
     <g:render template="nav" />
 
-    <g:render template="/templates/documents_table"
-                  model="${[instance:subscriptionInstance,context:'documents',redirect:'documents']}" />
+    <g:render template="/templates/documents/table" model="${[instance:subscriptionInstance, context:'documents', redirect:'documents']}"/>
+
+    <g:render template="/templates/documents/modal" model="${[doclist:subscriptionInstance.documents, ownobj:subscriptionInstance, owntp:'subscription']}"/>
 
   </body>
 </html>

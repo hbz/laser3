@@ -123,7 +123,7 @@
 	</table>
 	</div>
 <div class="row">
-<g:form action="compare" method="get" class="form-inline">
+<g:form action="compare" method="get" class="ui form">
 	<input type="hidden" name="pkgA" value="${params.pkgA}"/>
 	<input type="hidden" name="pkgB" value="${params.pkgB}"/>
 	<input type="hidden" name="dateA" value="${params.dateA}"/>

@@ -14,7 +14,7 @@
 			<semui:messages data="${flash}" />
 
 			<semui:filter>
-				<g:form action="list" method="get" class="form-inline">
+				<g:form action="list" method="get" class="ui form">
 					<label>${message(code:'default.search.text', default:'Search text')} : </label> <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
 					<input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}" />
 				</g:form><br/>

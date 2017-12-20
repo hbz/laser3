@@ -1,12 +1,10 @@
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
-  </head>
-
+    <head>
+        <meta name="layout" content="semanticUI"/>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+    </head>
     <body>
-
         <semui:breadcrumbs>
             <g:if test="${params.shortcode}">
                 <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
@@ -24,10 +22,9 @@
 
         <g:render template="nav" />
 
-        <g:render template="/templates/notes_table" model="${[instance: subscriptionInstance, redirect: 'notes']}"/>
+        <g:render template="/templates/notes/table" model="${[instance: subscriptionInstance, redirect: 'notes']}"/>
 
-        <g:render template="/templates/addNote"
-            model="${[doclist: subscriptionInstance.documents, ownobj: subscriptionInstance, owntp: 'subscription']}"/>
+        <g:render template="/templates/notes/modal" model="${[doclist: subscriptionInstance.documents, ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     
   </body>
 </html>

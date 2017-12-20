@@ -203,7 +203,7 @@
 
 
                 <semui:filter>
-                    <g:form action="show" params="${params}" method="get" class="form-inline">
+                    <g:form action="show" params="${params}" method="get" class="ui form">
                       <input type="hidden" name="sort" value="${params.sort}">
                       <input type="hidden" name="order" value="${params.order}">
                       <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;

@@ -15,7 +15,7 @@
 <g:if test="${editable}">
     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
             name="cust_prop_add_value"
-            class="form-inline"
+            class="ui form"
             update="${custom_props_div}"
             onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
