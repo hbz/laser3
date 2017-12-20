@@ -7,15 +7,12 @@
 
 <body>
 
-    <div>
-        <ul class="breadcrumb">
-            <li> <g:link controller="home" action="index">${message(code:'default.home', default:'Home')}</g:link> <span class="divider">/</span> </li>
-            <g:if test="${params.shortcode}">
-              <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-            </g:if>
-            <li>${message(code:'subscription.label', default:'Subscriptions')} - ${message(code:'license.nav.edit_history')}</li>
-        </ul>
-    </div>
+    <semui:breadcrumbs>
+        <g:if test="${params.shortcode}">
+            <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span>
+        </g:if>
+        ${message(code:'subscription.label', default:'Subscriptions')} - ${message(code:'license.nav.edit_history')}
+    </semui:breadcrumbs>
 
     <g:render template="actions" />
 
@@ -54,7 +51,7 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="edit_history" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
+        <semui:paginate  action="editHistory" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
 
 
 </body>

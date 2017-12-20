@@ -7,7 +7,7 @@ import groovy.xml.MarkupBuilder
 import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 
-
+@Deprecated
 class TitleInstanceController {
 
     def springSecurityService
@@ -15,11 +15,17 @@ class TitleInstanceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
+		redirect controller: 'titleDetails', action: 'index', params: params
+		return // ----- deprecated
+
         redirect action: 'list', params: params
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
+		redirect controller: 'titleDetails', action: 'list', params: params
+		return // ----- deprecated
+
       	def result = [:]
       	result.user = User.get(springSecurityService.principal.id)
 		params.max = params.max ?: result.user?.getDefaultPageSize()
@@ -30,6 +36,9 @@ class TitleInstanceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
+		redirect controller: 'titleDetails', action: 'create', params: params
+		return // ----- deprecated
+
 		switch (request.method) {
 		case 'GET':
         	[titleInstanceInstance: new TitleInstance(params)]
@@ -49,6 +58,9 @@ class TitleInstanceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
+		redirect controller: 'titleDetails', action: 'show', params: params
+		return // ----- deprecated
+
         def titleInstanceInstance = TitleInstance.get(params.id)
         if (! titleInstanceInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), params.id])
@@ -61,6 +73,9 @@ class TitleInstanceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
+		redirect controller: 'titleDetails', action: 'edit', params: params
+		return // ----- deprecated
+
 		switch (request.method) {
 		case 'GET':
 	        def titleInstanceInstance = TitleInstance.get(params.id)
@@ -106,6 +121,9 @@ class TitleInstanceController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
+		redirect controller: 'titleDetails', action: 'delete', params: params
+		return // ----- deprecated
+
         def titleInstanceInstance = TitleInstance.get(params.id)
         if (! titleInstanceInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), params.id])

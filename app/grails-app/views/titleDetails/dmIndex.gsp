@@ -59,7 +59,7 @@
                           <td>
                             <g:link controller="titleDetails" action="show" id="${hit.id}">${hit.title}</g:link>
                             <g:if test="${editable}">
-                              <g:link controller="titleDetails" action="edit" id="${hit.id}">(Edit)</g:link>
+                              <g:link controller="titleDetails" action="show" id="${hit.id}">(Edit)</g:link>
                             </g:if>
                           </td>
                           <td>

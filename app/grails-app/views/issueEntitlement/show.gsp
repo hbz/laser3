@@ -15,15 +15,12 @@
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
     </semui:breadcrumbs>
 
-    <g:if test="${editable}">
-        <semui:crumbAsBadge message="default.editable" class="orange" />
-    </g:if>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${message(code:'issueEntitlement.for_title.label', default:'Issue Entitlements for')} "${issueEntitlementInstance?.tipp.title.title}"
+    </h1>
 
-    <div>
-
-        <h1 class="ui header">${message(code:'issueEntitlement.for_title.label', default:'Issue Entitlements for')} "${issueEntitlementInstance?.tipp.title.title}"</h1>
-
-        <semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
         <div class="inline-lists">
 
@@ -239,7 +236,7 @@
                 </table>
             </g:if>
         </div>
-    </div>
+
 
     <div id="magicArea">
       <g:render template="coreAssertionsModal" contextPath="../templates" model="${[tipID:-1,coreDates:[]]}"/>

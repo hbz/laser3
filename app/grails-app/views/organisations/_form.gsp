@@ -1,7 +1,5 @@
 <%@ page import="com.k_int.kbplus.Org" %>
 
-
-
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'address', 'error')} ">
 	<label for="address">
 		<g:message code="org.address.label" default="Address" />

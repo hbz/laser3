@@ -12,10 +12,6 @@
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
 
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
-        </g:if>
-
         <semui:messages data="${flash}" />
 
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
@@ -132,7 +128,9 @@
                         <div>${message(code:'myinst.currentSubscriptions.etc.label', args:[s.packages.size() - 10])}</div>
                     </g:if>
                     <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
-                        <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link></i>
+                        <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')}
+                            <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link>
+                        </i>
                     </g:if>
                     <!-- packages -->
                 </td>
@@ -143,7 +141,9 @@
                 <!--<td><g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/></td>-->
                 <td>
                     <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
-                        <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                        <g:link controller="myInstitutions" action="actionCurrentSubscriptions" class="ui negative button"
+                                params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}"
+                                onclick="return confirm('${message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')])}')">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                     </g:if>
                 </td>
             </tr>

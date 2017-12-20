@@ -88,7 +88,7 @@
                 </thead>
               <g:each in="${titles}" var="t">
                 <tr>
-                  <td style="text-align:left;"><g:link controller="titleInstance" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
+                  <td style="text-align:left;"><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
                   <td>
                     <g:each in="${t.title.ids}" var="tid">
                       <g:if test="${tid.identifier.ns.ns != 'originediturl'}">

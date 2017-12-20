@@ -57,7 +57,7 @@
                       <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="package">Package</g:link></li>
                       <li <%='org'== controllerName ? ' class="active"' : '' %>><g:link controller="org">Organisations</g:link></li>
                       <li <%='platform'== controllerName ? ' class="active"' : '' %>><g:link controller="platform">Platform</g:link></li>
-                      <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstance">Title Instance</g:link></li>
+                      <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleDetails">Title Instance</g:link></li>
                       <li <%='titleInstancePackagePlatform'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link></li>
                       <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscription">Subscriptions</g:link></li>
                       <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="license">Licenses</g:link></li>
@@ -379,7 +379,7 @@
                                     <li><g:link controller="license" action="index">License Controller</g:link></li>
                                     <li><g:link controller="package" action="index">Package Controller</g:link></li>
                                     <li><g:link controller="subscription" action="index">Subscription Controller</g:link></li>
-                                    <li><g:link controller="titleInstance" action="index">Title Controller</g:link></li>
+                                    <li><g:link controller="titleDetails" action="index">Title Controller</g:link></li>
                                 </ul>
                             </li>
                         </ul><!-- demo -->

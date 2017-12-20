@@ -60,7 +60,7 @@
             <g:each in="${titles}" var="t">
               <tr>
                 <td>${counter++}</td>
-                <td style="text-align:left;"><g:link controller="titleInstance" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
+                <td style="text-align:left;"><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
                 <td style="white-space:nowrap;">${t?.title?.getIdentifierValue('ISSN')}</td>
                 <td style="white-space:nowrap;">${t?.title?.getIdentifierValue('eISSN')}</td>
                 <g:each in="${crosstab[t.position]}" var="tipp">

@@ -11,8 +11,10 @@
     </head>
     <body>
 
-
-    <h1 class="ui header">${orgInstance.name}</h1>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${orgInstance.name}
+    </h1>
 
     <g:render template="nav" contextPath="." />
 
@@ -22,7 +24,9 @@
 
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
-            <dd><g:fieldValue bean="${orgInstance}" field="name"/></dd>
+            <dd>
+                <g:fieldValue bean="${orgInstance}" field="name"/>
+            </dd>
 
             <dt><g:message code="org.shortname.label" default="Shortname" /></dt>
             <dd>
@@ -116,12 +120,14 @@
             </dd>
 
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
-              <dd>
-                <semui:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
-              </dd>
+                <dd>
+                    <semui:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
+                </dd>
             <g:if test="${editable}">
                 <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
-                <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
+                <dd>
+                    <g:fieldValue bean="${orgInstance}" field="ipRange"/>
+                </dd>
 
                 <dt><g:message code="org.fteStudents.label" default="Fte Students" /></dt>
                 <dd>
@@ -217,7 +223,7 @@
                         </g:link>
                       </g:if>
                       <g:if test="${i.title}">
-                        <g:link controller="titleInstance" action="show" id="${i.title.id}">
+                        <g:link controller="titleDetails" action="show" id="${i.title.id}">
                           ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n('value')})
                         </g:link>
                       </g:if> 
@@ -243,13 +249,16 @@
               </g:each>
             </dd>
           </g:if>
-        
-          <g:if test="${orgInstance?.impId}">
-            <dt><g:message code="org.impId.label" default="Import ID" /></dt>
-            
-              <dd><g:fieldValue bean="${orgInstance}" field="impId"/></dd>
-            
-          </g:if>
+
+                <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
+                <dd>
+                    <g:fieldValue bean="${orgInstance}" field="globalUID"/>
+                </dd>
+
+                <dt><g:message code="org.impId.label" default="Import ID" /></dt>
+                <dd>
+                    <g:fieldValue bean="${orgInstance}" field="impId"/>
+                </dd>
 
             <g:each in="${authorizedOrgs}" var="authOrg">
                 <g:if test="${authOrg.name == contextOrg?.name}">

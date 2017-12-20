@@ -160,7 +160,7 @@
                                 </g:if>
                                 <g:if test="${p.lic}">${message(code:'license.label', default:'License')}: ${p.lic.id}</g:if>
                                 <g:if test="${p.title}">
-                                	<g:link controller="titleInstance" action="show" id="${p.title.id}">${message(code:'title.label', default:'Title')}: ${p.title.title}</g:link>
+                                	<g:link controller="titleDetails" action="show" id="${p.title.id}">${message(code:'title.label', default:'Title')}: ${p.title.title}</g:link>
                                 </g:if> 
 						 	</li>
 						</g:each>
@@ -180,7 +180,7 @@
                                   <g:if test="${i.cluster}"><g:link controller="cluster" action="show" id="${i.cluster.id}">Cluster: ${i.cluster.name}</g:link></g:if>
                                   <g:if test="${i.sub}">    <g:link controller="subscription" action="show" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}</g:link></g:if>
                                   <g:if test="${i.lic}">${message(code:'license.label', default:'License')}: ${i.lic.id}</g:if>
-                                  <g:if test="${i.title}">  <g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title}</g:link></g:if>
+                                  <g:if test="${i.title}">  <g:link controller="titleDetails" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title}</g:link></g:if>
                               </li>
                           </g:each>
                       </ul></dd>

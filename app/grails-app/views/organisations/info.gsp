@@ -80,7 +80,7 @@
           <g:if test="${orgInstance?.outgoingCombos}">
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
             <g:each in="${orgInstance.outgoingCombos}" var="i">
-              <dd>${i.type?.value} - <g:link controller="organisations" action="info" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
+              <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
                 (<g:each in="${i.toOrg?.ids}" var="id">
                   ${id.identifier.ns.ns}:${id.identifier.value} 
                 </g:each>)
@@ -126,7 +126,7 @@
                         </g:link>
                       </g:if>
                       <g:if test="${i.title}">
-                        <g:link controller="titleInstance" action="show" id="${i.title.id}">
+                        <g:link controller="titleDetails" action="show" id="${i.title.id}">
                           ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n('value')})
                         </g:link>
                       </g:if> 

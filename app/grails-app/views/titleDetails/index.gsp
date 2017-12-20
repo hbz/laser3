@@ -60,7 +60,7 @@
                           <td>
                             <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link>
                             <g:if test="${editable}">
-                              <g:link controller="titleDetails" action="edit" id="${hit.getSource().dbId}">(${message(code: 'default.button.edit.label')})</g:link>
+                              <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">(${message(code: 'default.button.edit.label')})</g:link>
                             </g:if>
                           </td>
                           <td>

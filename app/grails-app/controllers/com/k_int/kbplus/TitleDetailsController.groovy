@@ -115,7 +115,7 @@ class TitleDetailsController {
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString())
-    
+
     if ( new_title.save(flush:true) ) {
       log.debug("New title id is ${new_title.id}");
       redirect ( action:'edit', id:new_title.id);
@@ -127,16 +127,20 @@ class TitleDetailsController {
     }
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def edit() {
-    def result = [:]
+    @Deprecated
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    def edit() {
+        redirect controller: 'titleDetails', action: 'show', params: params
+        return // ----- deprecated
 
-    result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        def result = [:]
 
-    result.ti = TitleInstance.get(params.id)
-    result.duplicates = reusedIdentifiers(result.ti);
-    result
-  }
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.ti = TitleInstance.get(params.id)
+        result.duplicates = reusedIdentifiers(result.ti);
+        result
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def show() {

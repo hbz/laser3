@@ -17,9 +17,11 @@
     <div>
         <h2 class="ui header">Affiliations</h2>
         <table class="ui celled striped table">
-          <tr>
-            <th>Username</th><th>Affiliations</th>
-          </tr>
+          <thead>
+            <tr>
+              <th>Username</th><th>Affiliations</th>
+            </tr>
+          </thead>
           <g:each in="${users}" var="u">
             <tr>
               <td>${u.displayName} / ${u.username}</td>

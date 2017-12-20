@@ -18,7 +18,7 @@
               <g:link controller="cluster" action="show" id="${ol.cluster.id}" >${ol.cluster.name ?: ol.cluster.id} (${message(code:'cluster.label')})</g:link>
             </g:elseif>
             <g:elseif test="${ol.title?.id}">
-              <g:link controller="titleInstance" action="show" id="${ol.title.id}" >${ol.title.title ?: ol.title.id} (${message(code:'title.label')})</g:link>
+              <g:link controller="titleDetails" action="show" id="${ol.title.id}" >${ol.title.title ?: ol.title.id} (${message(code:'title.label')})</g:link>
             </g:elseif>
             <g:else>
               ${ol}

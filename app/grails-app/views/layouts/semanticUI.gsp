@@ -55,7 +55,7 @@
                         <g:link class="item" controller="package">Package</g:link>
                         <g:link class="item" controller="org">Organisations</g:link>
                         <g:link class="item" controller="platform">Platform</g:link>
-                        <g:link class="item" controller="titleInstance">Title Instance</g:link>
+                        <g:link class="item" controller="titleDetails">Title Instance</g:link>
                         <g:link class="item" controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link>
                         <g:link class="item" controller="subscription">Subscriptions</g:link>
                         <g:link class="item" controller="license">Licenses</g:link>

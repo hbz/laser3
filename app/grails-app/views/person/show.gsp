@@ -127,7 +127,7 @@
                                         (License) <br />
                                     </g:if>
                                     <g:if test="${link.title}">
-                                        <g:link controller="titleInstance" action="show" id="${link.title.id}">${link.title.title}</g:link>
+                                        <g:link controller="titleDetails" action="show" id="${link.title.id}">${link.title.title}</g:link>
                                         (Title) <br />
                                     </g:if>
 

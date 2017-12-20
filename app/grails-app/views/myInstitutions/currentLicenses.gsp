@@ -23,10 +23,6 @@
 
   </semui:breadcrumbs>
 
-  <g:if test="${is_inst_admin}">
-      <semui:crumbAsBadge message="default.editable" class="orange" />
-  </g:if>
-
   <semui:messages data="${flash}" />
 
   <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>

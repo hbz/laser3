@@ -278,6 +278,7 @@ class OrganisationsController {
     }
 
 
+    /* TODO remove, because redirected to show
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def info() {
 
@@ -324,6 +325,7 @@ class OrganisationsController {
       
       result
     }
+    */
 
 
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])

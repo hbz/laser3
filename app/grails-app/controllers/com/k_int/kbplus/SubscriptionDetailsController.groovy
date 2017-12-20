@@ -1056,8 +1056,8 @@ class SubscriptionDetailsController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def edit_history() {
-    log.debug("subscriptionDetails::edit_history ${params}");
+  def editHistory() {
+    log.debug("subscriptionDetails::editHistory ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscription = Subscription.get(params.id)
@@ -1078,8 +1078,8 @@ class SubscriptionDetailsController {
   }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def todo_history() {
-    log.debug("subscriptionDetails::todo_history ${params}");
+  def todoHistory() {
+    log.debug("subscriptionDetails::todoHistory ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscription = Subscription.get(params.id)

@@ -9,7 +9,9 @@
   <body>
 
 
-          <h1 class="ui header"><g:if test="${editable}"><span id="titleEdit"
+          <h1 class="ui header">
+              <semui:editableLabel editable="${editable}" />
+              <g:if test="${editable}"><span id="titleEdit"
                     class="xEditableValue"
                     data-type="textarea"
                     data-pk="${ti.class.name}:${ti.id}"
