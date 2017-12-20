@@ -93,7 +93,9 @@
                   <g:else>N/A (Subscription offered)</g:else>
                   </dd>
               </dl>
-              <dl>
+
+
+                <dl>
                   <dt>${message(code:'package.show.pkg_name', default:'Package Name')}</dt>
                   <dd>
                   <table class="ui celled table">
@@ -122,6 +124,15 @@
                   </table>
                   </dd>
               </dl>
+
+                <g:if test="${subscriptionInstance.globalUID}">
+                    <dl>
+                        <dt><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
+                        <dd>
+                            <g:fieldValue bean="${subscriptionInstance}" field="globalUID"/>
+                        </dd>
+                    </dl>
+                </g:if>
 
                <dl><dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
                    <dd>

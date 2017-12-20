@@ -276,10 +276,10 @@
                                 	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
                                 </g:if>
                                 <g:if test="${p.pkg}">
-                                	<g:link controller="package" action="show" id="${p.pkg.id}">Package: ${p.pkg.name}</g:link>
+                                	<g:link controller="packageDetails" action="show" id="${p.pkg.id}">Package: ${p.pkg.name}</g:link>
                                 </g:if>
                                 <g:if test="${p.sub}">
-                                	<g:link controller="subscription" action="show" id="${p.sub.id}">Subscription: ${p.sub.name}</g:link>
+                                	<g:link controller="subscriptionDetails" action="show" id="${p.sub.id}">Subscription: ${p.sub.name}</g:link>
                                 </g:if>
                                 <g:if test="${p.lic}">License: ${p.lic.id}</g:if>
                                 <g:if test="${p.title}">

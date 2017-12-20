@@ -36,13 +36,13 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Data Explorer <b class="caret"></b> </a>
                 <ul class="dropdown-menu" style="max-width:none;">
                   <li<%= request.forwardURI == "${createLink(uri: '/')}" ? ' class="active"' : '' %>><a href="${createLink(uri: '/')}">Home</a></li>
-                  <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="package">Package</g:link></li>
+                  <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="packageDetails">Package</g:link></li>
                   <li <%='org'== controllerName ? ' class="active"' : '' %>><g:link controller="org">Organisations</g:link></li>
                   <li <%='platform'== controllerName ? ' class="active"' : '' %>><g:link controller="platform">Platform</g:link></li>
                   <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleDetails">Title Instance</g:link></li>
                   <li <%='titleInstancePackagePlatform'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link></li>
-                  <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscription">Subscriptions</g:link></li>
-                  <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="license">Licenses</g:link></li>
+                  <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails">Subscriptions</g:link></li>
+                  <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="licenseDetails">Licenses</g:link></li>
                 </ul>
               </li>
 

@@ -173,7 +173,12 @@
                 </g:if>
             </dd>
 
-          <g:if test="${orgInstance?.outgoingCombos}">
+            <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
+            <dd>
+                <g:fieldValue bean="${orgInstance}" field="globalUID"/>
+            </dd>
+
+            <g:if test="${orgInstance?.outgoingCombos}">
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
               <dd>
                 <g:each in="${orgInstance.outgoingCombos}" var="i">
@@ -249,11 +254,6 @@
               </g:each>
             </dd>
           </g:if>
-
-                <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
-                <dd>
-                    <g:fieldValue bean="${orgInstance}" field="globalUID"/>
-                </dd>
 
                 <dt><g:message code="org.impId.label" default="Import ID" /></dt>
                 <dd>

@@ -215,7 +215,7 @@
                         <dd>
                             <ul>
                                 <g:each in="${licenseInstance.subscriptions}" var="s">
-                                    <li><g:link controller="subscription" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
+                                    <li><g:link controller="subscriptionDetails" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
                                 </g:each>
                             </ul>
                         </dd>

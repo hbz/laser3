@@ -36,6 +36,12 @@
             
           </g:if>
         </dl>
+
+          <dl><!-- TODO: error? -->
+              <dt><g:message code="titleInstance.globalUID.label" default="Global UID" /></dt>
+              <dd> <g:fieldValue bean="${titleInstanceInstance}" field="globalUID"/> </dd>
+          </dl>
+
         <dl>
           <dt>${message(code:'tipp.show.avStatus', default:'Availability Status')}</dt>
           <dd> <span title="${tipp.availabilityStatusExplanation}">${tipp.availabilityStatus?.value}</span></dd>

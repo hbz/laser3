@@ -71,6 +71,13 @@
 
                 </g:if>
 
+
+                <dt><g:message code="issueEntitlement.globalUID.label" default="Global UID" /></dt>
+                <dd>
+                    <g:fieldValue bean="${issueEntitlementInstance}" field="globalUID"/>
+                </dd>
+
+
                 <g:if test="${issueEntitlementInstance?.coreStatus}">
                     <dt>${message(code:'subscription.details.core_medium', default:'Core Medium')}</dt>
                     <dd><semui:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus" config='CoreStatus'/> </dd>

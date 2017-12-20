@@ -52,13 +52,13 @@
 
                     <div class="menu">
                         <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
-                        <g:link class="item" controller="package">Package</g:link>
+                        <g:link class="item" controller="packageDetails">Package</g:link>
                         <g:link class="item" controller="org">Organisations</g:link>
                         <g:link class="item" controller="platform">Platform</g:link>
                         <g:link class="item" controller="titleDetails">Title Instance</g:link>
                         <g:link class="item" controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link>
-                        <g:link class="item" controller="subscription">Subscriptions</g:link>
-                        <g:link class="item" controller="license">Licenses</g:link>
+                        <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
+                        <g:link class="item" controller="licenseDetails">Licenses</g:link>
                         <g:link class="item" controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link>
                     </div>
                 </div>

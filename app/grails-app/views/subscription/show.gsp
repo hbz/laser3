@@ -42,7 +42,7 @@
               <g:if test="${subscriptionInstance?.owner}">
                   <dl>
                       <dt><g:message code="subscription.owner.label" default="License" /></dt>
-                      <dd><g:link controller="license" action="show" id="${subscriptionInstance?.owner?.id}">${subscriptionInstance?.owner?.encodeAsHTML()}</g:link></dd>
+                      <dd><g:link controller="licenseDetails" action="show" id="${subscriptionInstance?.owner?.id}">${subscriptionInstance?.owner?.encodeAsHTML()}</g:link></dd>
                   </dl>
               </g:if>
 
@@ -63,7 +63,7 @@
               <g:if test="${subscriptionInstance?.instanceOf}">
                   <dl>
                       <dt><g:message code="subscription.instanceOf.label" default="Instance Of" /></dt>
-                      <dd><g:link controller="subscription" action="show" id="${subscriptionInstance?.instanceOf?.id}">${subscriptionInstance?.instanceOf?.name?.encodeAsHTML()}</g:link></dd>
+                      <dd><g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance?.instanceOf?.id}">${subscriptionInstance?.instanceOf?.name?.encodeAsHTML()}</g:link></dd>
                   </dl>
               </g:if>
 
@@ -93,7 +93,7 @@
                       <dt><g:message code="subscription.packages.label" default="Packages" /></dt>
 
                       <g:each in="${subscriptionInstance.packages}" var="p">
-                          <dd><g:link controller="package" action="show" id="${p.pkg.id}">${p?.pkg?.name}</g:link></dd>
+                          <dd><g:link controller="packageDetails" action="show" id="${p.pkg.id}">${p?.pkg?.name}</g:link></dd>
                       </g:each>
                   </dl>
               </g:if>

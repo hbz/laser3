@@ -30,7 +30,7 @@
 
             <div class="twelve wide column">
   
-                <h6 class="ui header">${message(code:'license.details.information', default:'Information')}</h6>
+                <h4 class="ui header">${message(code:'license.details.information', default:'Information')}</h4>
 
                 <div class="inline-lists">
 
@@ -71,7 +71,12 @@
                             </g:if>
                         </dd>
                     </dl>
-
+                <dl>
+                    <dt><g:message code="license.globalUID.label" default="Global UID" /></dt>
+                    <dd>
+                        <g:fieldValue bean="${license}" field="globalUID"/>
+                    </dd>
+                </dl>
                   <dl>
                       <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
                       <dd>

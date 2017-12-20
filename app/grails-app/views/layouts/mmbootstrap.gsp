@@ -54,13 +54,13 @@
                     <a href="#" class="dropdown-toggle explorer-link" data-toggle="dropdown"> Data Explorer <b class="caret"></b> </a>
                     <ul class="dropdown-menu" style="max-width:none;">
                       <li<%= request.forwardURI == "${createLink(uri: '/home/search')}" ? ' class="active"' : '' %>><a href="${createLink(uri: '/home/search')}">Search</a></li>
-                      <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="package">Package</g:link></li>
+                      <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="packageDetails">Package</g:link></li>
                       <li <%='org'== controllerName ? ' class="active"' : '' %>><g:link controller="org">Organisations</g:link></li>
                       <li <%='platform'== controllerName ? ' class="active"' : '' %>><g:link controller="platform">Platform</g:link></li>
                       <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleDetails">Title Instance</g:link></li>
                       <li <%='titleInstancePackagePlatform'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link></li>
-                      <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscription">Subscriptions</g:link></li>
-                      <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="license">Licenses</g:link></li>
+                      <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails">Subscriptions</g:link></li>
+                      <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="licenseDetails">Licenses</g:link></li>
                       <li <%='onixplLicenseDetails'== controllerName ? ' class="active"' : '' %>><g:link controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link></li>
                     </ul>
                   </li>
@@ -376,9 +376,9 @@
 
                                     <li><g:link controller="identifier" action="index">Identifier Controller</g:link></li>
                                     <li><g:link controller="organisations" action="index">Organisations Controller</g:link></li>
-                                    <li><g:link controller="license" action="index">License Controller</g:link></li>
-                                    <li><g:link controller="package" action="index">Package Controller</g:link></li>
-                                    <li><g:link controller="subscription" action="index">Subscription Controller</g:link></li>
+                                    <li><g:link controller="licenseDetails" action="index">License Controller</g:link></li>
+                                    <li><g:link controller="packageDetails" action="index">Package Controller</g:link></li>
+                                    <li><g:link controller="subscriptionDetails" action="index">Subscription Controller</g:link></li>
                                     <li><g:link controller="titleDetails" action="index">Title Controller</g:link></li>
                                 </ul>
                             </li>

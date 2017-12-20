@@ -57,16 +57,20 @@
 
             <g:if test="${params.mode=='advanced'}">
 
-              <dl>
-                <dt>${message(code:'platform.type', default:'Type')}</dt>
-                <dd> <semui:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
-              </dl>
+                <dl>
+                    <dt>${message(code:'platform.type', default:'Type')}</dt>
+                    <dd> <semui:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
+                </dl>
 
-              <dl>
-                <dt>${message(code:'platform.status', default:'Status')}</dt>
-                <dd> <semui:xEditableRefData owner="${platformInstance}" field="status" config="UsageStatus"/></dd>
-              </dl>
+                <dl>
+                    <dt>${message(code:'platform.status', default:'Status')}</dt>
+                    <dd> <semui:xEditableRefData owner="${platformInstance}" field="status" config="UsageStatus"/></dd>
+                </dl>
 
+                <dl>
+                    <dt><g:message code="platform.globalUID.label" default="Global UID" /></dt>
+                    <dd> <g:fieldValue bean="${platformInstance}" field="globalUID"/> </dd>
+                </dl>
             </g:if>
 
         </fieldset>
@@ -82,7 +86,7 @@
                   </tr>
                   <tr>
                     <g:each in="${packages}" var="p">
-                      <th><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></th>
+                      <th><g:link controller="packageDetails" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></th>
                     </g:each>
                   </tr>
                 </thead>

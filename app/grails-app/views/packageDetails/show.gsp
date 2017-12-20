@@ -61,9 +61,9 @@
 
     <div class="ui grid">
         <div class="twelve wide column">
-            <h5 class="ui header">
+            <h4 class="ui header">
               ${message(code: 'package.show.pkg_information')}
-            </h5>
+            </h4>
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">
 
@@ -76,7 +76,8 @@
                 <dt>${message(code: 'package.show.persistent_id')}</dt>
                 <dd>uri://laser/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
               </dl>
-              
+
+
               <dl>
                 <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
@@ -114,6 +115,11 @@
 
                 </dd>
               </dl>
+
+            <dl>
+                <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
+                <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
+            </dl>
 
               <dl>
                 <dt>${message(code: 'license.is_public')}</dt>

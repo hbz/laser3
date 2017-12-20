@@ -16,6 +16,7 @@
 
         <h1 class="ui header">
             <semui:editableLabel editable="${editable}" />
+            <% /*
             <g:if test="${editable}"><span id="titleEdit"
                                      class="xEditableValue"
                                      data-type="textarea"
@@ -23,7 +24,8 @@
                                      data-name="title"
                                      data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
                                      data-original-title="${ti.title}">${ti.title}</span></g:if>
-             <g:else>${ti.title}</g:else>
+             <g:else>${ti.title}</g:else> */ %>
+            ${ti.title}
             <g:if test="${ti.status?.value && ti.status.value != 'Current'}">
                 <span class="badge badge-error" style="vertical-align:middle;">${ti.status.getI10n('value')}</span>
             </g:if>
@@ -35,7 +37,7 @@
 
         <div class="ui grid">
 
-          <div class="eight wide column">
+            <div class="sixteen wide column">
 
               <h3 class="ui header">${message(code:'default.status.label')}:
                 <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/>
@@ -48,18 +50,12 @@
                   </dd>
               </g:if>
 
+            </div>
+
+          <div class="eight wide column">
+
               <h3 class="ui header">${message(code:'title.identifiers.label')}</h3>
 
-              <g:each in="${duplicates}" var="entry">
-                  <bootstrap:alert class="alert-info">
-                      ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
-                      <ul>
-                          <g:each in ="${entry.value}" var="dup_title">
-                              <li><g:link controller='titleDetails' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
-                          </g:each>
-                      </ul>
-                  </bootstrap:alert>
-              </g:each>
               <table class="ui celled table">
                   <thead>
                   <tr>
@@ -93,15 +89,14 @@
           <div class="eight wide column">
 
               <g:each in="${duplicates}" var="entry">
-
-                 <bootstrap:alert class="alert-info">
-                 ${message(code:'title.edit.duplicate.warn', args: [entry.key])}:
-                 <ul>
-                 <g:each in ="${entry.value}" var="dup_title">
-                 <li><g:link controller='titleDetails' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
-                 </g:each>
-                 </ul>
-                 </bootstrap:alert>
+                  <bootstrap:alert class="alert-info">
+                      ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
+                      <ul>
+                          <g:each in ="${entry.value}" var="dup_title">
+                              <li><g:link controller='titleDetails' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
+                          </g:each>
+                      </ul>
+                  </bootstrap:alert>
               </g:each>
 
           </div><!-- .eight -->

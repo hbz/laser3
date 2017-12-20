@@ -56,10 +56,10 @@
                               <g:link controller="org" action="show" id="${p.org.id}">${message(code:'org.label', default:'Org')}: ${p.org.name}</g:link>
                       </g:if>
                       <g:if test="${p.pkg}">
-                              <g:link controller="package" action="show" id="${p.pkg.id}">${message(code:'package.label', default:'Package')}: ${p.pkg.name}</g:link>
+                              <g:link controller="packageDetails" action="show" id="${p.pkg.id}">${message(code:'package.label', default:'Package')}: ${p.pkg.name}</g:link>
                       </g:if>
                       <g:if test="${p.sub}">
-                              <g:link controller="subscription" action="show" id="${p.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${p.sub.name}</g:link>
+                              <g:link controller="subscriptionDetails" action="show" id="${p.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${p.sub.name}</g:link>
                       </g:if>
                       <g:if test="${p.lic}">${message(code:'license.label', default:'License')}: ${p.lic.id}</g:if>
                     </li>
@@ -90,7 +90,7 @@
                       <td>${t.endIssue}</td>
                       <td>${t.coverageDepth}</td>
                       <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
-                      <td><g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name} (${t.pkg.contentProvider?.name})</g:link></td>
+                      <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name} (${t.pkg.contentProvider?.name})</g:link></td>
                       <td><g:link controller="titleInstancePackagePlatform" action="show" id="${t.id}">${message(code:'platform.show.full_tipp', default:'Full TIPP record')}</g:link></td>
                       </tr>
                   </g:each>
