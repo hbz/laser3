@@ -24,20 +24,14 @@
     <div>
       <h2 class="ui header">${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
       <h6 class="ui header">${message(code:'menu.institutions.change_log', default:'Change Log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
-      <g:form action="changeLog" controller="dataManager" method="get">
-        ${message(code:'datamanager.changeLog.from_date')}:
-            <div class="input-append date datepicker-class">
-              <input class="span2" size="16" type="text"
-              name="startDate" value="${params.startDate}">
-              <span class="add-on"><i class="icon-th"></i></span> 
-            </div>
-        &nbsp;
-        ${message(code:'datamanager.changeLog.to_date')}:
-            <div class="input-append date datepicker-class">
-              <input class="span2" size="16" type="text"
-              name="endDate" value="${params.endDate}">
-              <span class="add-on"><i class="icon-th"></i></span>
-            </div>
+      <g:form action="changeLog" controller="dataManager" method="get"  class="form-inline ui form">
+          <div class="fields">
+              <semui:datepicker label ="datamanager.changeLog.from_date" name="startDate" placeholder ="default.date.label" value ="${params.startDate}">
+              </semui:datepicker>
+              <semui:datepicker label ="datamanager.changeLog.to_date" name="endDate" placeholder ="default.date.label" value ="${params.endDate}">
+              </semui:datepicker>
+          </div>
+
         <div class="dropdown">
           <span style="vertical-align:bottom;">${message(code:'datamanager.changeLog.actor')} :<span>
           <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">
@@ -145,11 +139,6 @@
           e.stopPropagation();
       }});
 
-      $(".datepicker-class").datepicker({
-        format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-        language:"${message(code:'default.locale.label', default:'en')}",
-        autoclose:true
-      });
   </r:script>
   </body>
 </html>

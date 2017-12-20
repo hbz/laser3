@@ -55,18 +55,12 @@
 				<tr>
 					<td>${message(code:'package.compare.snapshot', default:'Package On date')}</td>
 					<td>
-						<div class="input-append date" id="dateA">
-							<input class="span2" size="16" type="text" 
-							name="dateA" value="${params.dateA}">
-							<span class="add-on"><i class="icon-th"></i></span> 
-						</div>
+						<semui:datepicker name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
+						</semui:datepicker>
 					</td>
-					<td> 
-						<div class="input-append date" id="dateB">
-							<input class="span2" size="16" type="text" 
-							name="dateB" value="${params.dateB}">
-							<span class="add-on"><i class="icon-th"></i></span> 
-						</div>
+					<td>
+						<semui:datepicker name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
+						</semui:datepicker>
 					</td>
 				</tr>
 				<tr>
@@ -302,16 +296,6 @@
      	applySelect2("B")
     });
 
-    $('#dateA').datepicker({
-      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-      language:"${message(code:'default.locale.label', default:'en')}",
-      autoclose:true
-    });
-    $('#dateB').datepicker({
-      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-      language:"${message(code:'default.locale.label', default:'en')}",
-      autoclose:true
-    });
 
 </r:script>
 
