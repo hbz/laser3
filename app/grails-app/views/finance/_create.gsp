@@ -60,8 +60,10 @@
         </tr>
         <tr>
             <td>
-                <h4 class="ui header">Cost date</h4>
-                <input class="datepicker-class" type="date" placeholder="Date Paid" name="newDate" id="newDatePaid" value="${params.newDate}"/><br/>
+                <div class="fields">
+                    <semui:datepicker label="financials.datePaid" name="newDate" placeholder ="financials.datePaid" value="${params.newDate}" >
+                    </semui:datepicker>
+                </div>
                 <h4 class="ui header">Statuses</h4>
                 <g:select name="newCostItemStatus"
                           id="newCostItemStatus"
@@ -106,8 +108,12 @@
                 <input type="text" name="newReference" placeholder="New Item Reference" id="newCostItemReference" value="${params.newReference}"/><br/>
                 <input type="text" class="select2" style="width: 220px; border-radius: 4px;" placeholder="New code or lookup code" name="newBudgetCode" id="newBudgetCode" ><br/><br/><br/>
                 <h4 class="ui header">Validity Period (Dates)</h4>
-                From: <input class="datepicker-class" placeholder="Start Date" type="date" id="newStartDate" name="newStartDate"/> </br>
-                To: &nbsp;&nbsp;&nbsp;&nbsp;<input class="datepicker-class" placeholder="End Date" type="date" id="newEndDate" name="newEndDate"/>
+                <div class="fields">
+                    <semui:datepicker label ="datamanager.changeLog.from_date" name="newStartDate" placeholder ="default.date.label" >
+                    </semui:datepicker>
+                    <semui:datepicker label ="datamanager.changeLog.to_date" name="newEndDate" placeholder ="default.date.label" value ="${params.endDate}">
+                    </semui:datepicker>
+                </div>
             </td>
             <td colspan="2">
                 <h4 class="ui header">Description</h4>

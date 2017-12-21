@@ -123,10 +123,12 @@
                                 <input id="adv_codes" name="adv_codes" class="input-medium"/>
                             </li>
                             <li>
-                                <span for="adv_start">Valid Period</span>
-                                <label for="adv_start">From </label>
-                                <input class="datepicker-class input-medium" type="date" placeholder="start date" id="adv_start" name="adv_start" /> </br>
-                                <label for="adv_end">To</label><input type="date" class="datepicker-class input-medium" placeholder="end date" id="adv_end" name="adv_end" />
+                                <div class="fields">
+                                    <semui:datepicker label ="datamanager.changeLog.from_date" name="newStartDate" placeholder ="default.date.label" >
+                                    </semui:datepicker>
+                                    <semui:datepicker label ="datamanager.changeLog.to_date" name="newEndDate" placeholder ="default.date.label" value ="${params.endDate}">
+                                    </semui:datepicker>
+                                </div>
                             </li>
                             <li>
                                 <label for="adv_costItemStatus">Cost Status</label>
@@ -162,7 +164,9 @@
                                     <option value="gt">&gt;</option>
                                     <option value="gt">&lt;</option>
                                 </select>
-                                <input  id="adv_datePaid" name="adv_datePaid" class="datepicker-class input-medium" type="date" class="input-small"  /> </br>
+
+                                <semui:datepicker label="financials.datePaid" name="newDate" placeholder ="financials.datePaid" value="${params.newDate}" >
+                                </semui:datepicker>
                             </li>
                             <li>
                                 <label for="adv_ie">Issue Entitlement</label>

@@ -132,7 +132,6 @@
             },
             ct: { //create template
                 resetBtn:'#resetCreate',
-                datePickers:'.datepicker-class',
                 newBudgetCode:"#newBudgetCode",
                 newIE:'#newIE',
                 newSubPkg:'#newPackage',
@@ -350,7 +349,6 @@
         var _bindBehavior = function() {
             if($(s.ft.searchBtn).val() !== 'reset')
                 $(s.ft.searchBtn).prop('disabled',${filterMode=='OFF'}); //greys out search button if inactive
-            $(s.ct.datePickers).datepicker({format: s.options.dateFormat}); //datepicker
             setupModSelect2s();
             $(s.ft.editableBind).editable(); //technically being performed twice on first run
         };
