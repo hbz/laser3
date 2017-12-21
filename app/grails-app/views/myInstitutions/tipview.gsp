@@ -103,9 +103,6 @@
          }
 
         function showCoreAssertionModal(){
-          $("input.datepicker-class").datepicker({
-            format:"${session.sessionPreferences?.globalDatepickerFormat}"
-          });
           $("[name='coreAssertionEdit']").modal('show');
           $('.xEditableValue').editable();
         }
