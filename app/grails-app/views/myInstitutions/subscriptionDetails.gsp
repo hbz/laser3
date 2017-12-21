@@ -138,19 +138,6 @@
           }
         };
 
-        $("div dl dd table tr td input.dp1").datepicker(datepicker_config);
-        $("div dl dd table tr td input.dp2").datepicker(datepicker_config);
-
-        $("input.hdp").datepicker({
-          buttonImage: '../../../images/calendar.gif',
-          buttonImageOnly: true,
-          changeMonth: true,
-          changeYear: true,
-          showOn: 'both',
-          onSelect: function(dateText, inst) {
-            inst.input.parent().find('span').html(dateText)
-          }
-        });
 
         $('span.newipe').editable('<g:createLink controller="ajax" action="genericSetValue" />', {
           type      : 'textarea',
