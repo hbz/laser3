@@ -26,9 +26,8 @@
             <td>${rparam.getDescription()}</td>
             <td>
                 <g:if test="${rparam.getValueClass().equals(java.sql.Timestamp) || rparam.getValueClass().equals(java.sql.Date) }">
-                    <div class="input-append date">
-                        <input class="span2" size="16" type="text" name="${rparam.getName()}">
-                    </div>
+                    <semui:datepicker name="${rparam.getName()}" placeholder ="default.date.label"  >
+                    </semui:datepicker>
                 </g:if>
                 <g:elseif test="${rparam.getName().contains("select")}">
                     <g:select name="${rparam.getName()}" 

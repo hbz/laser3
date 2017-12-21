@@ -106,12 +106,6 @@
 
     <r:script type="text/javascript">
 
-        $("#datepicker-validOn").datepicker({
-            format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-            language:"${message(code:'default.locale.label', default:'en')}",
-            autoclose:true
-        });
-
         $('.license-results input[type="radio"]').click(function () {
             $('.license-options').slideDown('fast');
         });

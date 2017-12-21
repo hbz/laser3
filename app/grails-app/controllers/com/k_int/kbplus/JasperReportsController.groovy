@@ -109,13 +109,13 @@ def dataSource
 			chain action: 'index', model: [errorMsg:message(code:'jasper.generate.noSelection')]
 		}
 	 
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
-		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf2 = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
 
 		def filteredDateParams =params.findAll {it.key.toString().contains("date") }
 		filteredDateParams.each { key, value ->
 			def stringVal = value
-			def newVal = sdf2.format(sdf.parse(stringVal))+" 00:00:00"
+			def newVal = sdf.format(sdf2.parse(stringVal))+" 00:00:00"
 			params.putAt(key,newVal) 
 		}
 		
