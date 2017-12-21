@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'title.plural', default:'Titles')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} - ${institution.name} - ${message(code:'myinst.currentTitles.label')}</title>
     
     <style>
       .filtering-dropdown-menu {max-height: 400px; overflow: hidden; overflow-y: auto;}
@@ -153,7 +153,8 @@
                         <g:if test="${ie.endVolume}">${message(code:'tipp.volume.short', default:'Vol.')} ${ie.endVolume}</g:if>
                         <g:if test="${ie.endIssue}">${message(code:'tipp.issue.short', default:'Iss.')} ${ie.endIssue}</g:if>
                         <g:formatDate format="yyyy" date="${ie.endDate}"/>
-                        (<g:link controller="issueEntitlement" action="show" id="${ie.id}">${message(code:'myinst.currentTitles.full_ie', default:'Full Issue Entitlement Details')}</g:link>)
+                        <br />
+                        <g:link controller="issueEntitlement" action="show" id="${ie.id}">${message(code:'myinst.currentTitles.full_ie', default:'Full Issue Entitlement Details')}</g:link>
                       </p>
                   </g:each>
                 </td>

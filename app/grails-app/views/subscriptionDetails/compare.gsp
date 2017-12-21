@@ -7,27 +7,22 @@
 		<title><g:message code="default.edit.label" args="[entityName]"/></title>
 	</head>
 
-	<body>
-		<div>
-			<div class="row">
-				<g:if test="${institutionName}">
-				<h2 class="ui header"> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
-				</g:if>
-				<g:else>
-					<h2 class="ui header"> ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
-				</g:else>
+    <body>
+        <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-			<semui:breadcrumbs>
-				<semui:crumb class="active" message="subscription.compare.label" />
+        <g:if test="${institutionName}">
+            <h2 class="ui header"> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
+        </g:if>
+        <g:else>
+            <h2 class="ui header"> ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
+        </g:else>
 
-				<semui:exportDropdown>
-					<semui:exportDropdownItem>
-						<g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-					</semui:exportDropdownItem>
-				</semui:exportDropdown>
-			</semui:breadcrumbs>
+        <semui:messages data="${flash}" />
 
-				<semui:messages data="${flash}" />
+
+        <div>
+            <div class="row">
+
 		        <g:if test="${request.message}">
 				    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
 			    </g:if>

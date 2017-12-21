@@ -15,13 +15,7 @@
       <g:javascript src="properties.js"/>
     </head>
     <body>
-        <semui:breadcrumbs>
-            <g:if test="${params.shortcode}">
-                <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-            </g:if>
-            <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
-            <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
-        </semui:breadcrumbs>
+        <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
         <g:render template="actions" />
 

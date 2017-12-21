@@ -3,20 +3,21 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addSubscription.label', default:'Add New Subscription')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} - ${institution?.name} - ${message(code:'myinst.addSubscription.label')}</title>
         </head>
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+            <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" message="myinst.currentSubscriptions.label" />
             <semui:crumb message="myinst.addSubscription.label" class="active" />
         </semui:breadcrumbs>
 
-        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
+        <g:render template="actions" />
+
+        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label')}</h1>
 
         <semui:messages data="${flash}"/>
-
-        <g:render template="subsNav" contextPath="." />
 
     <div>
       <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>

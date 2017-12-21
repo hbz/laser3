@@ -53,10 +53,10 @@
                     <div class="menu">
                         <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
                         <g:link class="item" controller="packageDetails">Package</g:link>
-                        <g:link class="item" controller="org">Organisations</g:link>
+                        <g:link class="item" controller="organisations">Organisations</g:link>
                         <g:link class="item" controller="platform">Platform</g:link>
                         <g:link class="item" controller="titleDetails">Title Instance</g:link>
-                        <g:link class="item" controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link>
+                        <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
                         <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
                         <g:link class="item" controller="licenseDetails">Licenses</g:link>
                         <g:link class="item" controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link>
@@ -247,7 +247,7 @@
                             <div class="divider"></div>
 
                             <g:link class="item" controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
-                            <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.new')}</g:link>
+                            <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
                             <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
 
                             <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>

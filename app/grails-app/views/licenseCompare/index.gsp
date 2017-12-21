@@ -4,13 +4,17 @@
 <html>
 <head>
 <meta name="layout" content="semanticUI" />
-<title>${message(code:'laser', default:'LAS:eR')}</title>
+<title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'menu.institutions.comp_lic')}</title>
 
 </head>
 
 <body>
 
 	<semui:breadcrumbs>
+		<g:if test="${institution}">
+			<semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution?.name}" />
+			<semui:crumb text="${message(code:'license.current')}" controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" />
+		</g:if>
 		<semui:crumb class="active" message="menu.institutions.comp_lic" />
 	</semui:breadcrumbs>
 

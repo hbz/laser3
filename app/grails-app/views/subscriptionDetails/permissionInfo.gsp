@@ -7,13 +7,7 @@
 
   <body>
 
-    <semui:breadcrumbs>
-      <g:if test="${params.shortcode}">
-        <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-      </g:if>
-      <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
-      <semui:crumb class="active" text="${message(code:'default.permissions.label', default:'Permissions')}" />
-    </semui:breadcrumbs>
+    <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
     <g:render template="actions" />
 

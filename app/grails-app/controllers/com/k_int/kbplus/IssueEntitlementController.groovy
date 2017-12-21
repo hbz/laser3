@@ -62,7 +62,7 @@ class IssueEntitlementController {
 
       // Get usage statistics
       def title_id = result.issueEntitlementInstance.tipp.title?.id
-      def org_id = result.issueEntitlementInstance.subscription.subscriber?.id
+      def org_id = result.issueEntitlementInstance.subscription.getSubscriber()?.id // TODO
       def supplier_id = result.issueEntitlementInstance.tipp.pkg.contentProvider?.id
 
       if ( title_id != null && 

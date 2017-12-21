@@ -8,7 +8,13 @@
   </head>
   <body>
 
-    <h1 class="ui header">${message(code:'package.search')}</h1>
+      <semui:breadcrumbs>
+          <semui:crumb message="myinst.packages" class="active" />
+      </semui:breadcrumbs>
+
+    <g:render template="actions" />
+
+    <h1 class="ui header">${message(code:'myinst.packages')}</h1>
 
     <semui:messages data="${flash}" />
 

@@ -13,6 +13,7 @@
 
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
+
         <h1 class="ui header">
             <semui:editableLabel editable="${editable}" />
             ${license.licensee?.name}

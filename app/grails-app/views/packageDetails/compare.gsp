@@ -9,8 +9,6 @@
 
 <div>
 <div class="row">
-	<h2 class="ui header">${message(code:'package.compare', default:'Package Comparison')}</h2>
-
 	<semui:breadcrumbs>
 		<semui:crumb controller="packageDetails" action="index" message="package.show.all" />
 		<semui:crumb class="active" message="package.compare.compare" />
@@ -21,6 +19,8 @@
             </semui:exportDropdownItem>
         </semui:exportDropdown>
 	</semui:breadcrumbs>
+
+	<h2 class="ui header">${message(code:'package.compare', default:'Package Comparison')}</h2>
 
 	<semui:messages data="${flash}" />
 

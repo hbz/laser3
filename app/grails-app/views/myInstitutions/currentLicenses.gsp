@@ -23,17 +23,19 @@
 
   </semui:breadcrumbs>
 
+  <g:render template="actions" />
+
   <semui:messages data="${flash}" />
 
   <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
-    <semui:subNav actionName="${actionName}">
+    <!--<semui:subNav actionName="${actionName}">
         <semui:subNavItem controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
         <semui:subNavItem controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}" message="license.copy" />
         <g:if test="${is_inst_admin}">
             <semui:subNavItem controller="myInstitutions" action="cleanLicense" params="${[shortcode:params.shortcode]}" message="license.add.blank" />
         </g:if>
-    </semui:subNav>
+    </semui:subNav>-->
 
     <semui:filter class="license-searches">
         <form class="ui form">

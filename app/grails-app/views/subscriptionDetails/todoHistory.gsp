@@ -7,15 +7,7 @@
 
 <body>
 
-    <div>
-        <ul class="breadcrumb">
-            <li> <g:link controller="home" action="index">${message(code:'default', default:'Home')}</g:link> <span class="divider">/</span> </li>
-            <g:if test="${params.shortcode}">
-              <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-            </g:if>
-            <li>${message(code:'subscription.label', default:'Subscriptions')} - ${message(code:'license.nav.todo_history')}</li>
-        </ul>
-    </div>
+    <g:render template="breadcrumb" model="${[ subscriptionInstance: subscription, params:params ]}"/>
 
     <g:render template="actions" />
 

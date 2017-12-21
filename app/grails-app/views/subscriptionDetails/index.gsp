@@ -9,30 +9,7 @@
   </head>
   <body>
 
-    <semui:breadcrumbs>
-        <g:if test="${params.shortcode}">
-            <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-        </g:if>
-
-        <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
-
-          <semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
-                <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
-            </semui:exportDropdownItem>
-            <g:each in="${transforms}" var="transkey,transval">
-                <semui:exportDropdownItem>
-                    <g:link action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
-                </semui:exportDropdownItem>
-            </g:each>
-        </semui:exportDropdown>
-
-        <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
-
-    </semui:breadcrumbs>
+  <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
   <g:render template="actions" />
 

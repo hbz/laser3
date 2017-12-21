@@ -2,25 +2,28 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'license.copy')}</title>
   </head>
   <body>
 
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <semui:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
         <semui:crumb message="license.copy" class="active" />
     </semui:breadcrumbs>
 
+    <g:render template="actions" />
 
-    <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
+    <h1 class="ui header">${institution?.name} - ${message(code:'license.copy')}</h1>
 
+  <!--
     <semui:subNav actionName="${actionName}">
       <semui:subNavItem controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
       <semui:subNavItem controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}" message="license.copy" />
       <g:if test="${is_inst_admin}">
         <semui:subNavItem controller="myInstitutions" action="cleanLicense" params="${[shortcode:params.shortcode]}" message="license.add.blank" />
       </g:if>
-    </semui:subNav>
+    </semui:subNav>-->
 
     <div class="license-searches">
         <div>
@@ -35,14 +38,14 @@
         </div>
     </div>
 
-      <div>
+      <semui:filter>
         <g:form action="addLicense" params="${params}" method="get" class="ui form">
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
           <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'license.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
           <input type="submit" class="ui button" value="${message(code:'default.button.submit.label')}" />
         </g:form>
-      </div>
+      </semui:filter>
 
   <!--
       <div>
