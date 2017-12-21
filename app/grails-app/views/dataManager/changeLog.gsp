@@ -24,16 +24,18 @@
     <div>
       <h2 class="ui header">${message(code:'menu.datamanager.changelog', default:'Data Manager Change Log')}</h2>
       <h6 class="ui header">${message(code:'menu.institutions.change_log', default:'Change Log')} <span class="pull-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h6>
-      <g:form action="changeLog" controller="dataManager" method="get"  class="form-inline ui form">
-          <div class="fields">
-              <semui:datepicker label ="datamanager.changeLog.from_date" name="startDate" placeholder ="default.date.label" value ="${params.startDate}">
-              </semui:datepicker>
-              <semui:datepicker label ="datamanager.changeLog.to_date" name="endDate" placeholder ="default.date.label" value ="${params.endDate}">
-              </semui:datepicker>
-          </div>
+
+        <semui:filter>
+            <g:form action="changeLog" controller="dataManager" method="get" class="ui form">
+              <div class="fields">
+                  <semui:datepicker label="datamanager.changeLog.from_date" name="startDate" placeholder="default.date.label" value="${params.startDate}" />
+
+                  <semui:datepicker label="datamanager.changeLog.to_date" name="endDate" placeholder="default.date.label" value="${params.endDate}" />
+
+              </div>
 
         <div class="dropdown">
-          <span style="vertical-align:bottom;">${message(code:'datamanager.changeLog.actor')} :<span>
+          <span>${message(code:'datamanager.changeLog.actor')} :<span>
           <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">
               ${message(code:'datamanager.changeLog.actor_select')}
               <b class="caret"></b>
@@ -78,7 +80,7 @@
         <input type="checkbox" style="vertical-align:top;" name="updates" value="Y" ${params.updates=='Y'?'checked':''}/> <g:message code="datamanager.changeLog.updates" default="Updates to existing items"/> &nbsp;
         <div><input  class="ui button" type="submit" value="${message(code:'default.button.submit.label', default:'Submit')}"/></div>
       </g:form>
-
+      </semui:filter>
     </div>
 
     <g:set var="counter" value="${offset?:-1 +1}" />

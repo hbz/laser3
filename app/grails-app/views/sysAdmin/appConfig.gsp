@@ -31,15 +31,18 @@
     });
     </r:script>
 
-    <g:form action="appConfig" method="POST">
-        <input type="submit" name="one"class="ui button"value="Refresh"  />
+    <g:form action="appConfig" method="POST" class="ui form">
+        <input type="submit" name="one"class="ui button" value="Refresh"  />
     </g:form>
     <h3 class="ui header"> Current output for Holders.config</h3>
-    <ul>
+    <div class="ui form">
         <g:each in="${currentconf.keySet().sort()}" var="key">
-            <li>${key}: &nbsp; &nbsp; <g:textArea readonly="" style="width:95%" name="key" value="${currentconf.get(key)}"/> </li>
+            <div class="field">
+                <label>${key}</label>
+                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="${currentconf.get(key)}"/>
+            </div>
         </g:each>
-    </ul>
+    </div>
 </div>
 </body>
 </html>

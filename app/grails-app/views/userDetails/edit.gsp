@@ -7,18 +7,22 @@
   </head>
   <body>
 
-             <h1 class="ui header"><span id="displayEdit"
-                       class="xEditableValue"
-                       data-type="textarea" 
-                       data-pk="${ui.class.name}:${ui.id}"
-                       data-name="display" 
-                       data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                       data-original-title="${ui.display}">${ui.display}</span></h1>
+     <h1 class="ui header">
+         <semui:editableLabel editable="${editable}" />
+         <span id="displayEdit"
+               class="xEditableValue"
+               data-type="textarea"
+               data-pk="${ui.class.name}:${ui.id}"
+               data-name="display"
+               data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
+               data-original-title="${ui.display}">${ui.display}</span></h1>
 
 
             <semui:messages data="${flash}" />
 
-          <h3 class="ui header">${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
+          <h3 class="ui header">
+            ${message(code:'user.affiliation.plural', default:'Affiliations')}
+          </h3>
 
           <table class="ui celled table">
             <thead>
@@ -62,16 +66,16 @@
             </tbody>
           </table>
 
-           <g:form controller="ajax" action="addToCollection">
+           <g:form class="ui form" controller="ajax" action="addToCollection">
               <input type="hidden" name="__context" value="${ui.class.name}:${ui.id}"/>
               <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.auth.UserRole"/>
               <input type="hidden" name="__recip" value="user"/>
               <input type="hidden" name="role" id="userRoleSelect"/>
-              <input type="submit" value="${message(code:'user.role.add', default:'Add Role...')}"/>
+              <input type="submit" class="ui button" value="${message(code:'user.role.add', default:'Add Role...')}"/>
             </g:form>
 
 
-        <div>
+        <div class="ui form">
             <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
                 <h3 class="ui header">${message(code: 'api.label', default:'API')}</h3>
 
