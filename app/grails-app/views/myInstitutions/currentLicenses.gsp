@@ -39,19 +39,27 @@
 
     <semui:filter class="license-searches">
         <form class="ui form">
-          <div>
-              <semui:datepicker label ="license.valid_on" name="validOn" placeholder ="default.date.label" value ="${validOn}">
-              </semui:datepicker>
-            <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label
-            <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
-          </div>
-          <div style="margin-top:10px;">
-            <label>${message(code:'license.property.search')}:</label>
-            <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
-            <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
-            <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
-            <input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}" />
-          </div>
+            <div class="fields">
+                <div class="field">
+                  <semui:datepicker label="license.valid_on" name="validOn" placeholder="default.date.label" value="${validOn}" />
+                </div>
+                <div class="field">
+                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label>
+                    <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
+                </div>
+                <div class="field">
+                    <label>${message(code:'license.property.search')}:</label>
+                    <div class="two fields">
+                        <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
+                        <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
+                        <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+                </div>
+            </div><!--.fields-->
         </form>
     </semui:filter>
 

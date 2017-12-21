@@ -26,7 +26,7 @@
                 <!-- SEARCH -->
                 <div class="field">
                     <label>${message(code: 'default.search.text', default: 'Search text')}:</label>
-                    <div class="ui  input">
+                    <div class="ui input">
                     <input type="text" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
                            value="${params.q?.encodeAsHTML()}"/>
@@ -35,8 +35,7 @@
                 <!-- SEARCH END -->
 
                 <!-- DATE VALID ON -->
-                <semui:datepicker label ="default.valid_on.label" name="validOn" placeholder ="default.date.label" value ="${validOn}">
-                </semui:datepicker>
+                <semui:datepicker label ="default.valid_on.label" name="validOn" placeholder ="default.date.label" value ="${validOn}" />
                 <!-- DATE VALID ON END-->
 
                 <!-- DROPDOWN DATE -->
@@ -56,13 +55,13 @@
                 <!-- DROPDOWN DATE END -->
 
                 <!-- dateBeforeVal -->
-                <semui:datepicker label ="myinst.currentSubscriptions.filter.before" name="dateBeforeVal" placeholder ="default.date.label" value ="${dateBeforeVal}">
-                </semui:datepicker>
+                <semui:datepicker label ="myinst.currentSubscriptions.filter.before" name="dateBeforeVal" placeholder ="default.date.label" value ="${dateBeforeVal}" />
                 <!-- dateBeforeVal -->
 
                <!-- SEND-BUTTON -->
                 <div class="field">
-                    <input type="submit" class="ui primary button la-nolabel" value="${message(code:'default.button.search.label', default:'Search')}" />
+                    <label>&nbsp;</label>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
                 </div>
                 <!-- SEND-BUTTON END-->
             </div>

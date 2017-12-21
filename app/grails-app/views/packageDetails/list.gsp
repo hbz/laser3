@@ -20,36 +20,36 @@
 
     <semui:filter>
           <g:form action="list" method="get" class="ui form">
-             <table class="ui celled table">
-               <tbody>
-                <tr>
-                  <td>
-                    <label>${message(code:'package.search.text')} : </label> <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
-                  </td>
-                  <td style="width:31%;text-align:right;">
-                    <div style="padding:5px 5px;white-space:nowrap;">
-                      <label>${message(code:'package.search.updated_after')} : </label> <semui:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date"/>
-                    </div>
-                    <div style="padding:5px 5px;white-space:nowrap;">
-                      <label>${message(code:'package.search.created_after')} : </label> <semui:simpleHiddenValue id="createStartDate" name="createStartDate" type="date"/>
-                    </div>
-                  </td>
-                  <td style="width:31%;text-align:right;">
-                    <div style="padding:5px 5px;white-space:nowrap;">
-                      <label>${message(code:'package.search.updated_before')} : </label> <semui:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date"/>
-                    </div>
-                    <div style="padding:5px 5px;white-space:nowrap;">
-                      <label>${message(code:'package.search.created_before')} : </label> <semui:simpleHiddenValue  id="createEndDate" name="createEndDate" type="date"/>
-                    </div>
-                  </td>
-                  <td>
-                    <input type="submit" class="ui button" value="${message(code:'default.button.search.label')}" />
-                    <br />
-                    <button type="submit" name="format" value="csv" class="ui button" value="Search">${message(code:'default.button.exports.csv')}</button>
-                  </td>
-                </tr>
-               </tbody>
-            </table>
+              <div class="fields">
+                  <div class="field">
+                      <label>${message(code:'package.search.text')}</label>
+                      <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}" />
+                  </div>
+                  <div class="field">
+                      <label>${message(code:'package.search.updated_after')}</label>
+                      <semui:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date" />
+                  </div>
+                  <div class="field">
+                      <label>${message(code:'package.search.created_after')}</label>
+                      <semui:simpleHiddenValue id="createStartDate" name="createStartDate" type="date" />
+                  </div>
+                  <div class="field">
+                      <label>${message(code:'package.search.updated_before')}</label>
+                      <semui:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date" />
+                  </div>
+                  <div class="field">
+                      <label>${message(code:'package.search.created_before')}</label>
+                      <semui:simpleHiddenValue id="createEndDate" name="createEndDate" type="date" />
+                  </div>
+                  <div class="field">
+                      <label>&nbsp;</label>
+                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}" />
+                  </div>
+                  <div class="field">
+                      <label>&nbsp;</label>
+                      <button type="submit" name="format" value="csv" class="ui button" value="Search">${message(code:'default.button.exports.csv')}</button>
+                  </div>
+              </div>
           </g:form>
     </semui:filter>
 
