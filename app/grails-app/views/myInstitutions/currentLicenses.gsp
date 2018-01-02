@@ -44,11 +44,11 @@
                   <semui:datepicker label="license.valid_on" name="validOn" placeholder="default.date.label" value="${validOn}" />
                 </div>
                 <div class="field">
-                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label>
+                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}</label>
                     <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
                 </div>
                 <div class="field">
-                    <label>${message(code:'license.property.search')}:</label>
+                    <label>${message(code:'license.property.search')}</label>
                     <div class="two fields">
                         <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
                         <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
@@ -70,11 +70,11 @@
           <table class="ui celled striped table">
             <thead>
               <tr>
-                <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.name')}" />
+                <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                 <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
                 <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
-                <th>${message(code:'default.actions.label', default:'Action')}</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>

@@ -25,10 +25,10 @@ class ApiWriter {
 
             try {
                 def license = new License(
-                        contact:            data.contact,
+                        // removed - contact:            data.contact,
                         licenseUrl:         data.licenseUrl,
-                        licensorRef:        data.licensorRef,
-                        licenseeRef:        data.licenseeRef,
+                        // removed - licensorRef:        data.licensorRef,
+                        // removed - licenseeRef:        data.licenseeRef,
                         licenseType:        data.licenseType,
                         licenseStatus:      data.licenseStatus,
                         noticePeriod:       data.noticePeriod,

@@ -25,7 +25,7 @@
             <div class="fields">
                 <!-- SEARCH -->
                 <div class="field">
-                    <label>${message(code: 'default.search.text', default: 'Search text')}:</label>
+                    <label>${message(code: 'default.search.text', default: 'Search text')}</label>
                     <div class="ui input">
                     <input type="text" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
@@ -40,7 +40,7 @@
 
                 <!-- DROPDOWN DATE -->
                 <div class="field">
-                    <label class="control-label">${message(code:'default.filter.label', default:'Filter')}: </label>
+                    <label class="control-label">${message(code:'default.filter.label', default:'Filter')}</label>
                     <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
                     <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
                     <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
@@ -80,7 +80,7 @@
                 <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                 <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
                 <!--<g:sortableColumn params="${params}" property="s.manualCancellationDate" title="${message(code:'default.cancellationDate.label', default:'Cancellation Date')}" />-->
-                <th>${message(code:'default.action.label', default:'Action')}</th>
+                <th></th>
             </tr>
           </thead>
           <g:each in="${subscriptions}" var="s">

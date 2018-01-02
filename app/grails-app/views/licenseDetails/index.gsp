@@ -38,6 +38,82 @@
                     <semui:errors bean="${titleInstanceInstance}" />
 
                     <dl>
+                        <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
+                        <dd>
+                            <semui:xEditable owner="${license}" type="date" field="startDate" />
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
+                        <dd>
+                            <semui:xEditable owner="${license}" type="date" field="endDate" />
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
+                        <dd>
+                            <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
+                        <dd>
+                            <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
+                        <dd>
+                            <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
+                                <g:each in="${license.subscriptions}" var="sub">
+                                    <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.id} (${sub.name})</g:link><br/>
+                                </g:each>
+                            </g:if>
+                            <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
+                        <dd>
+                            <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
+                                <g:each in="${license.pkgs}" var="pkg">
+                                    <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.id} (${pkg.name})</g:link><br/>
+                                </g:each>
+                            </g:if>
+                            <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
+                        </dd>
+                    </dl>
+
+                    <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                        <dl>
+                            <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
+                            <dd>
+                                <g:if test="${license.onixplLicense}">
+                                    <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
+                                    <g:if test="${editable}">
+                                        <g:link class="ui negative button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">${message(code:'default.button.unlink.label', default:'Unlink')}</g:link>
+                                    </g:if>
+                                </g:if>
+                                <g:else>
+                                    <g:link class="ui negative button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
+                                </g:else>
+                            </dd>
+                        </dl>
+                    </sec:ifAnyGranted>
+
+                    <dl>
+                        <dt><g:message code="license.globalUID.label" default="Global UID" /></dt>
+                        <dd>
+                            <g:fieldValue bean="${license}" field="globalUID"/>
+                        </dd>
+                    </dl>
+
+                    <dl>
                         <dt><g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel></dt>
                         <dd>
                             <table class="ui celled table">
@@ -72,143 +148,41 @@
                             </g:if>
                         </dd>
                     </dl>
-                <dl>
-                    <dt><g:message code="license.globalUID.label" default="Global UID" /></dt>
-                    <dd>
-                        <g:fieldValue bean="${license}" field="globalUID"/>
-                    </dd>
-                </dl>
-                  <dl>
-                      <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
-                      <dd>
-                        <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
-                          <g:each in="${license.subscriptions}" var="sub">
-                            <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.id} (${sub.name})</g:link><br/>
-                          </g:each>
-                        </g:if>
-                        <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
-                      </dd>
-                  </dl>
-                
-                  <dl>
-                      <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
-                      <dd>
-                        <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
-                          <g:each in="${license.pkgs}" var="pkg">
-                            <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.id} (${pkg.name})</g:link><br/>
-                          </g:each>
-                        </g:if>
-                        <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
-                      </dd>
-                  </dl>
-                
-      
-                  <dl>
-                      <dt><label class="control-label" for="reference">${message(code:'license.reference', default:'Reference')}</label></dt>
-                      <dd>
-                        <semui:xEditable owner="${license}" field="reference" id="reference"/>
-                      </dd>
-                  </dl>
-                  <dl>
-                      <dt><label class="control-label" for="contact">${message(code:'license.licenseContact', default:'License Contact')}</label></dt>
-                      <dd>
-                        <semui:xEditable owner="${license}" field="contact" id="contact"/>
-                      </dd>
-                  </dl>
-                  <dl>
-                      <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
-                      <dd>
-                        <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
-                      </dd>
-                  </dl>
-      
-                  <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+
                     <dl>
-                        <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
+                        <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
                         <dd>
-                            <g:if test="${license.onixplLicense}">
-                                <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
-                                <g:if test="${editable}">
-                                    <g:link class="ui negative button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">${message(code:'default.button.unlink.label', default:'Unlink')}</g:link>
-                                </g:if>
-                            </g:if>
-                            <g:else>
-                                <g:link class="ui negative button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
-                            </g:else>
+                            <semui:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
+                            <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
                         </dd>
                     </dl>
-                  </sec:ifAnyGranted>
-      
-                  <dl>
-                      <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
-                      <dd>
-                        <semui:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
-                        <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
-                      </dd>
-                  </dl>
-      
-                  <dl>
-                      <dt><label class="control-label" for="licensorRef">${message(code:'license.licensorRef', default:'Licensor Ref')}</label></dt>
-                      <dd>
-                        <semui:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
-                      </dd>
-                  </dl>
-      
-                  <dl>
-                      <dt><label class="control-label" for="licenseeRef">${message(code:'license.licenseeRef', default:'Licensee Ref')}</label></dt>
-                      <dd>
-                        <semui:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
-                      </dd>
-                  </dl>
+
+                    <dl>
+                        <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
+                        <dd>
+                            <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
+                        <dd>
+                            <ul>
+                                <g:each in="${license?.incomingLinks}" var="il">
+                                    <li><g:link controller="licenseDetails" action="index" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> -
+                                    ${message(code:'license.details.incoming.child', default:'Child')}:
+                                    <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+                                    </li>
+                                </g:each>
+
+                            </ul>
+                        </dd>
+                    </dl>
 
                   <dl>
-                      <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
+                      <dt><label class="control-label" for="orgLinks">${message(code:'license.orgLinks', default:'Org Links')}</label></dt>
                       <dd>
-                        <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
-                      </dd>
-                  </dl>
-
-                  <dl>
-                      <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
-                      <dd>
-                        <semui:xEditable owner="${license}" type="date" field="startDate" />
-                      </dd>
-                  </dl>
-
-                  <dl>
-                      <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
-                      <dd>
-                        <semui:xEditable owner="${license}" type="date" field="endDate" />
-                      </dd>
-                  </dl>
-
-                  <dl>
-                      <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
-                      <dd>
-                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
-                      </dd>
-                  </dl>
-
-                  <dl>
-                      <dt><label class="control-label" for="licenseeRef">${message(code:'license.orgLinks', default:'Org Links')}</label></dt>
-                      <dd>
-                        <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:license?.orgLinks,editmode:editable]}" />
-                      </dd>
-                  </dl>
-
-                  <dl>
-                      <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
-                 <%-- <dt><label class="control-label" for="licenseeRef">Incoming License Links</label></dt> --%>
-                      <dd>
-                        <ul>
-                          <g:each in="${license?.incomingLinks}" var="il">
-                            <li><g:link controller="licenseDetails" action="index" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> - 
-                            ${message(code:'license.details.incoming.child', default:'Child')}:
-                            <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
-                            </li>
-                          </g:each>
-              
-                        </ul>
+                        <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
                       </dd>
                   </dl>
 
@@ -281,7 +255,7 @@
              <%-- <label for="orgShortcode">Copy license for:</label> --%>
                   <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" name="orgShortcode" id="orgShortcode" class="ui fluid dropdown"/>
                               
-                   <g:link name="copyLicenseBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui positive button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                   <g:link name="copyLicenseBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui fluid positive button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
 
                <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
           <%-- <label for="linkSubscription">Link to Subscription:</label> --%>
@@ -289,7 +263,7 @@
                <g:form id="linkSubscription" name="linkSubscription" action="linkToSubscription">
                 <input type="hidden" name="license" value="${license.id}"/>
                 <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
-                <input type="submit" class="ui positive button" style="margin-bottom:10px" value="${message(code:'default.button.link.label', default:'Link')}"/>
+                <input type="submit" class="ui fluid positive button" style="margin-bottom:10px" value="${message(code:'default.button.link.label', default:'Link')}"/>
               </g:form>
 %{--            
           leave this out for now.. it is a bit confusing.

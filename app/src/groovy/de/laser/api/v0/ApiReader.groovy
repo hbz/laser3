@@ -41,15 +41,15 @@ class ApiReader {
         lic = GrailsHibernateUtil.unwrapIfProxy(lic)
 
         result.globalUID        = lic.globalUID
-        result.contact          = lic.contact
+        // removed - result.contact          = lic.contact
         result.dateCreated      = lic.dateCreated
         result.endDate          = lic.endDate
         result.impId            = lic.impId
         result.lastmod          = lic.lastmod
         result.lastUpdated      = lic.lastUpdated
         result.licenseUrl       = lic.licenseUrl
-        result.licensorRef      = lic.licensorRef
-        result.licenseeRef      = lic.licenseeRef
+        // removed - result.licensorRef      = lic.licensorRef
+        // removed - result.licenseeRef      = lic.licenseeRef
         result.licenseType      = lic.licenseType
         result.licenseStatus    = lic.licenseStatus
         result.noticePeriod     = lic.noticePeriod

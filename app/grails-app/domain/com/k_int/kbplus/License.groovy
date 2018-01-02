@@ -34,12 +34,12 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
 
   String noticePeriod
   String licenseUrl
-  String licensorRef
-  String licenseeRef
+  //String licensorRef // - removed
+  //String licenseeRef // - removed
   String licenseType
   String licenseStatus
   String impId
-  String contact
+  //String contact // - removed
 
   long lastmod
   Date startDate
@@ -86,14 +86,14 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
               globalUID column:'lic_guid'
                  status column:'lic_status_rv_fk'
                    type column:'lic_type_rv_fk'
-                contact column:'lic_contact'          
+    // removed - contact column:'lic_contact'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
                isPublic column:'lic_is_public_rdv_fk'
            noticePeriod column:'lic_notice_period'
              licenseUrl column:'lic_license_url'
-            licensorRef column:'lic_licensor_ref'
-            licenseeRef column:'lic_licensee_ref'
+    // removed - licensorRef column:'lic_licensor_ref'
+    // removed - licenseeRef column:'lic_licensee_ref'
             licenseType column:'lic_license_type_str'
           licenseStatus column:'lic_license_status_str'
                 lastmod column:'lic_lastmod'
@@ -117,8 +117,8 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
         isPublic(nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
-        licensorRef(nullable:true, blank:true)
-        licenseeRef(nullable:true, blank:true)
+      // removed - licensorRef(nullable:true, blank:true)
+      // removed - licenseeRef(nullable:true, blank:true)
         licenseType(nullable:true, blank:true)
         licenseStatus(nullable:true, blank:true)
         lastmod(nullable:true, blank:true)
@@ -127,7 +127,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
         startDate(nullable: true, blank: true)
         endDate(nullable: true, blank: true)
         lastUpdated(nullable: true, blank: true)
-        contact(nullable:true,blank:true)
+      // removed - contact(nullable:true,blank:true)
     }
 
   def getLicensor() {
