@@ -151,9 +151,9 @@
                      </table>
                        <g:if test="${editable}">
 
-                           <laser:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
+                           <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
                               ${message(code:'identifier.select.text', args:['JC:66454'])}
-                           </laser:formAddIdentifier>
+                           </semui:formAddIdentifier>
 
                         </g:if>
                    </dd>

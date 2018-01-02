@@ -166,9 +166,9 @@
 
                 <g:if test="${editable}">
 
-                    <laser:formAddIdentifier owner="${orgInstance}">
+                    <semui:formAddIdentifier owner="${orgInstance}">
                         ${message(code:'identifier.select.text', args:['isil:DE-18'])}
-                    </laser:formAddIdentifier>
+                    </semui:formAddIdentifier>
 
                 </g:if>
             </dd>

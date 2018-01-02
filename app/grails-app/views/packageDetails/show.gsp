@@ -108,8 +108,8 @@
 
                   <g:if test="${editable}">
 
-                      <laser:formAddIdentifier owner="${packageInstance}">
-                      </laser:formAddIdentifier>
+                      <semui:formAddIdentifier owner="${packageInstance}">
+                      </semui:formAddIdentifier>
 
                   </g:if>
 

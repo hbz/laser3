@@ -19,17 +19,14 @@
 
         <semui:messages data="${flash}" />
 
+		<g:if test="${request.message}">
+			<bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
+		</g:if>
 
-        <div>
-            <div class="row">
+				<g:form action="compare" controller="subscriptionDetails" method="GET" class="ui form">
+					<g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
+					<g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
 
-		        <g:if test="${request.message}">
-				    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
-			    </g:if>
-
-				<g:form action="compare" controller="subscriptionDetails" method="GET">
-                                        <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
-                                        <g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
 					<table class="ui celled table">
 						<thead>
 							<tr>
@@ -66,10 +63,24 @@
 						<tr>
 							<td> ${message(code:'default.compare.filter.add', default:'Add Filter')}</td>
 							<td colspan="2">
-		        <input type="checkbox" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>  ${message(code:'default.compare.filter.insert', default:'Insert')}&nbsp;
-		        <input type="checkbox" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/> ${message(code:'default.compare.filter.delete', default:'Delete')} &nbsp;
-		        <input type="checkbox" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/> ${message(code:'default.compare.filter.update', default:'Update')} &nbsp;
-		        <input type="checkbox" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/> ${message(code:'default.compare.filter.no_change', default:'No Change')} &nbsp;
+
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="hidden" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
+                                    <label>${message(code:'default.compare.filter.insert', default:'Insert')}</label>
+                                </div>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="hidden" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/>
+                                    <label>${message(code:'default.compare.filter.delete', default:'Delete')}</label>
+                                </div>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="hidden" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/>
+                                    <label>${message(code:'default.compare.filter.update', default:'Update')}</label>
+                                </div>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="hidden" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/>
+                                    <label>${message(code:'default.compare.filter.no_change', default:'No Change')}</label>
+                                </div>
+
 							</td>		
 						</tr>
 							</tr>
@@ -77,7 +88,7 @@
 					</table>	
 					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
 				</g:form>
-			</div>
+
 
 			<g:if test="${subInsts?.get(0) && subInsts?.get(1)}">
                                 <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
@@ -189,7 +200,7 @@
 
 				</div>
 			</g:if>
-		</div>
+
 		%{-- Hiding the tables from compare_details inside the main table, breaks the modal hide.
  --}%
 

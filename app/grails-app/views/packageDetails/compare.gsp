@@ -7,8 +7,6 @@
   </head>
  <body>
 
-<div>
-<div class="row">
 	<semui:breadcrumbs>
 		<semui:crumb controller="packageDetails" action="index" message="package.show.all" />
 		<semui:crumb class="active" message="package.compare.compare" />
@@ -28,7 +26,7 @@
 		    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
 	    </g:if>
 
-	<g:form action="compare" controller="packageDetails" method="GET">
+	<g:form action="compare" controller="packageDetails" method="GET" class="ui form">
 		<table class="ui celled table">
 			<thead>
 				<tr>
@@ -66,10 +64,22 @@
 				<tr>
 					<td>${message(code:'package.compare.filter.add', default:'Add Filter')}</td>
 					<td colspan="2">
-        <input type="checkbox" name="insrt" style="vertical-align:top" value="Y" ${params.insrt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.insert', default:'Insert')}&nbsp;
-        <input type="checkbox" name="dlt" style="vertical-align:top" value="Y" ${params.dlt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.delete', default:'Delete')}&nbsp;
-        <input type="checkbox" name="updt" style="vertical-align:top" value="Y" ${params.updt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.update', default:'Update')}&nbsp;
-        <input type="checkbox" name="nochng" style="vertical-align:top" value="Y" ${params.nochng=='Y'?'checked':''}/> ${message(code:'package.compare.filter.no_change', default:'No Change')}&nbsp;
+						<div class="ui checkbox">
+        					<input type="checkbox" class="hidden" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
+							<label>${message(code:'package.compare.filter.insert', default:'Insert')}</label>
+						</div>
+                        <div class="ui checkbox">
+                            <input type="checkbox" class="hidden" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/>
+                            <label>${message(code:'package.compare.filter.delete', default:'Delete')}</label>
+                        </div>
+                        <div class="ui checkbox">
+                            <input type="checkbox" class="hidden" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/>
+                            <label>${message(code:'package.compare.filter.update', default:'Update')}</label>
+                        </div>
+                        <div class="ui checkbox">
+                            <input type="checkbox" class="hidden" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/>
+                            <label>${message(code:'package.compare.filter.no_change', default:'No Change')}</label>
+                        </div>
 					</td>		
 				</tr>
 			</tbody>
@@ -77,8 +87,6 @@
 
 		<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}">
 	</g:form>
-</div>
-
 
 <g:if test="${pkgInsts?.get(0) && pkgInsts?.get(1)}">
 
@@ -115,7 +123,7 @@
 			</tr>
 		</tbody>
 	</table>
-	</div>
+
 <div class="row">
 <g:form action="compare" method="get" class="ui form">
 	<input type="hidden" name="pkgA" value="${params.pkgA}"/>

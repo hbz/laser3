@@ -68,10 +68,10 @@
            
             <g:if test="${editable}">
 
-                <laser:formAddIdentifier owner="${ti}" buttonText="${message(code:'title.edit.identifier.select.add')}"
+                <semui:formAddIdentifier owner="${ti}" buttonText="${message(code:'title.edit.identifier.select.add')}"
                                          uniqueCheck="yes" uniqueWarningText="${message(code:'title.edit.duplicate.warn.list')}">
                     ${message(code:'identifier.select.text', args:['eISSN:2190-9180'])}
-                </laser:formAddIdentifier>
+                </semui:formAddIdentifier>
 
             </g:if>
 

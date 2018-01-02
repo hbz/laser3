@@ -12,7 +12,7 @@
                     <input type="hidden" name="functionType.${timestamp}" value="${roleRdv?.id}" />
                 </g:if>
 
-                <g:select
+                <g:select class="ui search dropdown"
                     name="org.${timestamp}"
                     from="${allOrgs}"
                     value="${org?.id}"
@@ -22,7 +22,7 @@
                 <g:if test="${roleType=='resp'}">
                     <input type="hidden" name="responsibilityType.${timestamp}" value="${roleRdv?.id}" />
 
-                    <g:select
+                    <g:select class="ui search dropdown"
                             name="${subjectType}.${timestamp}"
                             from="${allSubjects}"
                             optionKey="id"
@@ -35,13 +35,17 @@
                 <button class="ui button template-element-delete-${timestamp}" type="button">${message('code':'default.button.delete.label')}</button>
             </div>
 
-            <script>
-                $('.template-element-delete-${timestamp}').click(function(){
-                    $('.template-element-${timestamp}').remove()
-                })
-            </script>
+
         </div>
 	</div>
 </div>
+
+<script>
+    $('.template-element-delete-${timestamp}').click(function(){
+        $('.template-element-${timestamp}').remove()
+    })
+
+    $('.template-element-${timestamp} .ui.dropdown').dropdown({duration: 150, transition: 'fade'})
+</script>
 
 

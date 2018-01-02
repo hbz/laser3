@@ -28,29 +28,38 @@
         <semui:filter>
             <g:form class="ui form" action="tipview" method="get" params="${[shortcode:params.shortcode]}">
 
-              ${message(code:'title.search', default:'Search For')}:
-              <select name="search_for">
-                <option ${params.search_for=='title' ? 'selected' : ''} value="title">${message(code:'title.label', default:'Title')}</option>
-                <option ${params.search_for=='provider' ? 'selected' : ''} value="provider">${message(code:'default.provider.label', default:'Provider')}</option>
-              </select>
-
-              ${message(code:'default.name.label', default:'Name')}:
-              <input name="search_str" style="padding-left:8px" placeholder="${message(code:'myinst.tipview.search.ph', default:'Partial terms accepted')}" value="${params.search_str}"/>
-
-              ${message(code:'default.sort.label', default:'Sort')}:
-              <select name="sort">
-                <option ${params.sort=='title-title' ? 'selected' : ''} value="title-title">${message(code:'title.label', default:'Title')}</option>
-                <option ${params.sort=='provider-name' ? 'selected' : ''} value="provider-name">${message(code:'default.provider.label', default:'Provider')}</option>
-              </select>
-
-              ${message(code:'default.order.label', default:'Order')}:
-              <select name="order" value="${params.order}">
-                <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
-                <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
-              </select>
-              <input type="hidden" name="filter" value="${params.filter}"/>
-
-              <button type="submit" class="ui button" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
+                <div class="fields">
+                    <div class="field">
+                        <label>${message(code:'title.search', default:'Search For')}</label>
+                        <select name="search_for">
+                            <option ${params.search_for=='title' ? 'selected' : ''} value="title">${message(code:'title.label', default:'Title')}</option>
+                            <option ${params.search_for=='provider' ? 'selected' : ''} value="provider">${message(code:'default.provider.label', default:'Provider')}</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>${message(code:'default.name.label', default:'Name')}</label>
+                        <input name="search_str" style="padding-left:8px" placeholder="${message(code:'myinst.tipview.search.ph', default:'Partial terms accepted')}" value="${params.search_str}"/>
+                    </div>
+                    <div class="field">
+                        <label>${message(code:'default.sort.label', default:'Sort')}</label>
+                        <select name="sort">
+                            <option ${params.sort=='title-title' ? 'selected' : ''} value="title-title">${message(code:'title.label', default:'Title')}</option>
+                            <option ${params.sort=='provider-name' ? 'selected' : ''} value="provider-name">${message(code:'default.provider.label', default:'Provider')}</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>${message(code:'default.order.label', default:'Order')}</label>
+                        <select name="order" value="${params.order}">
+                            <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
+                            <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
+                        </select>
+                        <input type="hidden" name="filter" value="${params.filter}"/>
+                    </div>
+                    <div class="field">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="ui secondary button" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
+                    </div>
+                </div>
 
             </g:form>
         </semui:filter>

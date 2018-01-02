@@ -140,10 +140,10 @@
                             </table>
                             <g:if test="${editable}">
 
-                                <laser:formAddIdentifier owner="${license}" buttonText="${message(code:'license.edit.identifier.select.add')}"
+                                <semui:formAddIdentifier owner="${license}" buttonText="${message(code:'license.edit.identifier.select.add')}"
                                                          uniqueCheck="yes" uniqueWarningText="${message(code:'license.edit.duplicate.warn.list')}">
                                     ${message(code:'identifier.select.text', args:['gasco-lic:0815'])}
-                                </laser:formAddIdentifier>
+                                </semui:formAddIdentifier>
 
                             </g:if>
                         </dd>

@@ -64,7 +64,7 @@
                 <th>
                   <h5 class="pull-left">${message(code:'myinst.todo.label', default:'To Do')}</h5>
                   <span class="pull-right">
-                    <i class="checkmark box icon large"></i>
+                    <i class="alarm outline icon large"></i>
                   </span>
                 </th>
               </thead>
@@ -73,7 +73,7 @@
                 <tr>
                   <td>
                     <div class="pull-left icon">
-                        <i class="checkmark box icon"></i>
+                        <i class="alarm outline icon"></i>
                         <span class="badge badge-warning">${todo.num_changes}</span>
                     </div>
                     <div class="pull-right message">

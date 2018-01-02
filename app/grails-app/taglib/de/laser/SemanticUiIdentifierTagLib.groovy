@@ -3,11 +3,11 @@ package de.laser
 import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.IdentifierOccurrence
 
-class IdentifierTagLib {
+class SemanticUiIdentifierTagLib {
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 
-    static namespace = "laser"
+    static namespace = "semui"
 
     // <laser:formAddIdentifier owner="${objInstance}" buttonText="some text" placeholderText="some text" class="someCssClass" checkUnique="yes" />
 
@@ -24,22 +24,35 @@ class IdentifierTagLib {
         def namespaceSelector = "add-identifier-input-" + random
         def identSelector     = "add-identifier-select-" + random
 
-        out << '<form id="' + formSelector + '" class="form-inline' + cssClass + '" action="' + formUrl +'" method="post">'
+        out << '<form id="' + formSelector + '" class="ui form' + cssClass + '" action="' + formUrl +'" method="post">'
         out <<   body()
-        out <<   '<br />'
-        out <<   '<select name="namespace" id="' + namespaceSelector + '"/>'
 
-        IdentifierNamespace.where{}.list(sort:'ns').each{ ns ->
-            out << '<option value="' + ns.ns + '">' + ns.ns + '</option>'
-        }
-
-        out <<   '</select>'
-        out <<   '<input type="hidden" name="identifier" id="' + identSelector + '"/>'
         out <<   '<input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.IdentifierOccurrence" />'
         out <<   '<input type="hidden" name="__context" value="' + context + '" />'
         out <<   '<input type="hidden" name="__recip" value="' + recip + '" />'
-        out <<   '<br />'
-        out <<   '<input type="submit" value="' + buttonText + '" class="ui button" />'
+
+        out <<   '<div class="fields">'
+        out <<     '<div class="field">'
+        out <<       '<label></label>'
+        out <<       '<select name="namespace" id="' + namespaceSelector + '" class="ui search dropdown" />'
+        IdentifierNamespace.where{}.list(sort:'ns').each{ ns ->
+            out <<     '<option value="' + ns.ns + '">' + ns.ns + '</option>'
+        }
+        out <<       '</select>'
+        out <<     '</div>'
+
+        out <<     '<div class="field">'
+        out <<       '<label></label>'
+        out <<       '<input type="hidden" name="identifier" id="' + identSelector + '"/>'
+        out <<     '</div>'
+
+        out <<     '<div class="field">'
+        out <<       '<label></label>'
+        out <<       '<input type="submit" value="' + buttonText + '" class="ui button" />'
+        out <<     '</div>'
+
+        out <<   '</div>'
+
         out <<   '<script type="text/javascript">'
         out <<     getJS1(namespaceSelector, identSelector, attrs)
         out <<     getJS2(formSelector, identSelector, attrs)
