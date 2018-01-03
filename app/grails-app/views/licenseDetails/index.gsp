@@ -186,6 +186,15 @@
                       </dd>
                   </dl>
 
+                    <dl>
+                        <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
+                        <dd>
+                            <g:render template="/templates/links/prsLinks" />
+
+                            <g:render template="/templates/links/prsLinksModal"
+                                      model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
+                        </dd>
+                    </dl>
 
                     <h6 class="ui header">${message(code:'license.properties')}</h6>
 

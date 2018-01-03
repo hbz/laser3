@@ -497,12 +497,62 @@ class AjaxController {
             // log.debug("Org link added");
         }
         else {
-            log.error("Problem saving new org link...");
+            log.error("Problem saving new org link ..");
             new_link.errors.each { e ->
                 log.error(e);
             }
+            //flash.error = message(code: 'default.error')
         }
 
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addPrsRole() {
+        def org     = resolveOID(params.org?.split(":"))
+        def parent  = resolveOID(params.parent?.split(":"))
+        def person  = resolveOID(params.person?.split(":"))
+        def role    = resolveOID(params.role?.split(":"))
+
+        def newPrsRole
+        def existingPrsRole
+
+        if (org && person && role) {
+            newPrsRole = new PersonRole(prs: person, org: org)
+            if (parent) {
+                newPrsRole.responsibilityType = role
+                newPrsRole.setReference(parent)
+
+                def ref = newPrsRole.getReference().split(":")
+                existingPrsRole = PersonRole.findWhere(prs:person, org: org, responsibilityType: role, "${ref[0]}": parent)
+            }
+            else {
+                newPrsRole.functionType = role
+                existingPrsRole = PersonRole.findWhere(prs:person, org: org, functionType: role)
+            }
+        }
+
+        if (! existingPrsRole && newPrsRole && newPrsRole.save(flush:true)) {
+            //flash.message = message(code: 'default.success')
+        }
+        else {
+            log.error("Problem saving new person role ..")
+            //flash.error = message(code: 'default.error')
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def delPrsRole() {
+        def prsRole = PersonRole.get(params.id)
+
+        if (prsRole && prsRole.delete(flush: true)) {
+        }
+        else {
+            log.error("Problem deleting person role ..")
+            //flash.error = message(code: 'default.error')
+        }
         redirect(url: request.getHeader('referer'))
     }
 
@@ -746,9 +796,10 @@ class AjaxController {
     owner.customProperties.remove(property)
     property.delete(flush:true)
 
-    if(property.hasErrors()){
+    if(property.hasErrors()) {
         log.error(property.errors)
-    } else{
+    }
+    else {
         log.debug("Deleted custom property: " + property.type.name)
     }
     request.setAttribute("editable", params.editable == "true")

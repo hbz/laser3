@@ -133,7 +133,7 @@
 		<div class="field">
 			<div class="two fields">
 				<div class="field wide ten">
-					<laser:select class="ui dropdown values"
+					<laser:select class="ui dropdown"
 								  name="ignore-functionType-selector"
 								  from="${PersonRole.getAllRefdataValues('Person Function')}"
 								  optionKey="id"
@@ -160,7 +160,7 @@
 		<div class="field">
 			<div class="two fields">
 				<div class="field wide ten">
-					<laser:select class="ui dropdown values"
+					<laser:select class="ui dropdown"
 								  name="ignore-responsibilityType-selector"
 								  from="${PersonRole.getAllRefdataValues('Person Responsibility')}"
 								  optionKey="id"
@@ -191,7 +191,7 @@
 
 
 		$('.person-role-function-manager .add-person-role').click(function(){		
-			var tt = $('.person-role-function-manager .values').val()
+			var tt = $('.person-role-function-manager select').val()
 			
 			$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=func&roleTypeId=' + tt + '&org=${params?.org?.id}').done(function(data){
 				$('.person-role-function-manager .workspace .adding').append(data);
@@ -199,7 +199,7 @@
 		})
 		
 		$('.person-role-responsibility-manager .add-person-role').click(function(){
-			var tt = $('.person-role-responsibility-manager .values').val()
+			var tt = $('.person-role-responsibility-manager select').val()
 			
 			$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=resp&roleTypeId=' + tt + '&org=${params?.org?.id}').done(function(data){
 				$('.person-role-responsibility-manager .workspace .adding').append(data);

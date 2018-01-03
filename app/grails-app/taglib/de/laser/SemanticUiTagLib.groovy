@@ -174,7 +174,7 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:modal id="myModalDialog" text="${text}" message="local.string"> CONTENT <semui:modal>
+    //<semui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" > CONTENT <semui:modal>
 
     def modal = { attrs, body ->
 
@@ -193,7 +193,10 @@ class SemanticUiTagLib {
         out <<   '</div>'
         out <<   '<div class="actions">'
         out <<     '<a href="#" class="ui button" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
-        out <<     '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+
+        if (attrs.hideSubmitButton == null) {
+            out <<   '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+        }
         out <<   '</div>'
         out << '</div>'
     }

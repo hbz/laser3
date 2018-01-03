@@ -15,6 +15,7 @@ class SubscriptionDetailsController {
 
     def springSecurityService
     def contextService
+    def addressbookService
     def taskService
     def gazetteerService
     def alertsService
@@ -1227,7 +1228,39 @@ class SubscriptionDetailsController {
         }
     }
 
-    // -- private properties
-    result
-  }
+        // -- private properties
+
+        result.modalPrsLinkRole    = RefdataValue.findByValue('Specific subscription editor')
+        result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, result.subscriptionInstance.orgRelations)
+
+        result.subscriptionInstance.orgRelations.each { or ->
+            or.org.prsLinks.each { pl ->
+                if (pl.prs?.isPublic?.value != 'No') {
+                    if (! result.modalVisiblePersons.contains(pl.prs)) {
+                        result.modalVisiblePersons << pl.prs
+                    }
+                }
+            }
+        }
+
+          result.visiblePrsLinks = []
+
+          result.subscriptionInstance.prsLinks.each { pl ->
+              if (! result.visiblePrsLinks.contains(pl.prs)) {
+                  if (pl.prs.isPublic?.value != 'No') {
+                      result.visiblePrsLinks << pl
+                  }
+                  else {
+                      // nasty lazy loading fix
+                      result.user.authorizedOrgs.each{ ao ->
+                          if (ao.getId() == pl.prs.tenant.getId()) {
+                              result.visiblePrsLinks << pl
+                          }
+                      }
+                  }
+              }
+          }
+
+        result
+    }
 }

@@ -223,6 +223,16 @@
                </dl>
                </g:if */ %>
 
+                <dl>
+                    <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
+                    <dd>
+                        <g:render template="/templates/links/prsLinks" />
+
+                        <g:render template="/templates/links/prsLinksModal"
+                                  model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
+                    </dd>
+                </dl>
+
                 <h6 class="ui header">${message(code:'subscription.properties')}</h6>
 
                 <div id="custom_props_div_props">

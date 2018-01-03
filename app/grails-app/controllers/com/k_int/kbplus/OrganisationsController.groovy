@@ -11,6 +11,7 @@ class OrganisationsController {
     def springSecurityService
     def permissionHelperService
     def contextService
+    def addressbookService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -456,34 +457,19 @@ class OrganisationsController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addressbook() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
       
-      def orgInstance = Org.get(params.id)
-      if (!orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-        redirect action: 'list'
-        return
-      }    
-      
-      def membershipOrgIds = []
-      result.user?.authorizedOrgs?.each{ org ->
-          membershipOrgIds << org.id
-      }
-      
-      def visiblePersons = []
-      orgInstance?.prsLinks.each { pl ->
-          if(pl.prs?.isPublic?.value == 'No'){
-              if(pl.prs?.tenant?.id && membershipOrgIds.contains(pl.prs?.tenant?.id)){
-                  if(!visiblePersons.contains(pl.prs)){
-                      visiblePersons << pl.prs
-                  }
-              }
-          }
-      }
-      result.visiblePersons = visiblePersons
-      
-      result.orgInstance = orgInstance
-      result
+        def orgInstance = Org.get(params.id)
+        if (! orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        result.orgInstance = orgInstance
+        result.visiblePersons = addressbookService.getVisiblePersons(result.user, orgInstance)
+
+        result
     }
 }

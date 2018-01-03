@@ -22,86 +22,87 @@ class LicenseDetailsController {
     def executorWrapperService
     def permissionHelperService
     def contextService
+    def addressbookService
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() {
-    log.debug("licenseDetails: ${params}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.license = License.get(params.id)
-    result.transforms = grailsApplication.config.licenseTransforms
+      log.debug("licenseDetails: ${params}");
+      def result = [:]
+      result.user = User.get(springSecurityService.principal.id)
+      // result.institution = Org.findByShortcode(params.shortcode)
+      result.license = License.get(params.id)
+      result.transforms = grailsApplication.config.licenseTransforms
 
-    userAccessCheck(result.license,result.user,'view')
+      userAccessCheck(result.license, result.user, 'view')
 
-    //used for showing/hiding the License Actions menus
-    def admin_role = Role.findAllByAuthority("INST_ADM")
-    result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)",[user:result.user,role:admin_role,status:[1,3]])
+      //used for showing/hiding the License Actions menus
+      def admin_role = Role.findAllByAuthority("INST_ADM")
+      result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)", [user: result.user, role: admin_role, status: [1, 3]])
 
-    result.editable = result.license.isEditableBy(result.user)
-  
-    def license_reference_str = result.license.reference?:'NO_LIC_REF_FOR_ID_'+params.id
+      result.editable = result.license.isEditableBy(result.user)
 
-    def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
-    result.onixplLicense = result.license.onixplLicense;
+      def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-    if(executorWrapperService.hasRunningProcess(result.license)){
-      log.debug("PEndingChange processing in progress")
-      result.processingpc = true
-    }else{
+      def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
+      result.onixplLicense = result.license.onixplLicense;
 
-      def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-      def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+      if (executorWrapperService.hasRunningProcess(result.license)) {
+          log.debug("PEndingChange processing in progress")
+          result.processingpc = true
+      } else {
 
-        //Filter any deleted subscriptions out of displayed links
-        Iterator<Subscription> it = result.license.subscriptions.iterator()
-        while(it.hasNext()){
-            def sub = it.next();
-            if(sub.status == RefdataCategory.lookupOrCreate('Subscription Status','Deleted')){
-                it.remove();
-            }
-        }
+          def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+          def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
-      log.debug("pc result is ${result.pendingChanges}");
-      if(result.license.incomingLinks.find{it?.isSlaved?.value == "Yes"} && pendingChanges){
-        log.debug("Slaved lincence, auto-accept pending changes")
-        def changesDesc = []
-        pendingChanges.each{change ->
-          if(!pendingChangeService.performAccept(change,request)){
-            log.debug("Auto-accepting pending change has failed.")
-          }else{
-            changesDesc.add(PendingChange.get(change).desc)
+          //Filter any deleted subscriptions out of displayed links
+          Iterator<Subscription> it = result.license.subscriptions.iterator()
+          while (it.hasNext()) {
+              def sub = it.next();
+              if (sub.status == RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')) {
+                  it.remove();
+              }
           }
-        }
-        flash.message = changesDesc
-      }else{
-        result.pendingChanges = pendingChanges.collect{PendingChange.get(it)}
+
+          log.debug("pc result is ${result.pendingChanges}");
+          if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
+              log.debug("Slaved lincence, auto-accept pending changes")
+              def changesDesc = []
+              pendingChanges.each { change ->
+                  if (!pendingChangeService.performAccept(change, request)) {
+                      log.debug("Auto-accepting pending change has failed.")
+                  } else {
+                      changesDesc.add(PendingChange.get(change).desc)
+                  }
+              }
+              flash.message = changesDesc
+          } else {
+              result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+          }
       }
-    }
-    result.availableSubs = getAvailableSubscriptions(result.license, result.user)
+      result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
       // tasks
-      def contextOrg  = contextService.getOrg()
-      result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
-      def preCon      = taskService.getPreconditions(contextOrg)
+      def contextOrg = contextService.getOrg()
+      result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
+      def preCon = taskService.getPreconditions(contextOrg)
       result << preCon
 
       // -- private properties
 
       result.authorizedOrgs = result.user?.authorizedOrgs
-      result.contextOrg     = contextService.getOrg()
+      result.contextOrg = contextService.getOrg()
 
       // create mandatory LicensePrivateProperties if not existing
 
       def mandatories = []
-      result.user?.authorizedOrgs?.each{ org ->
+      result.user?.authorizedOrgs?.each { org ->
           def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
           if (ppd) {
               mandatories << ppd
           }
       }
-      mandatories.flatten().each{ pd ->
-          if (! LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
+      mandatories.flatten().each { pd ->
+          if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
               def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
 
               if (newProp.hasErrors()) {
@@ -114,7 +115,38 @@ class LicenseDetailsController {
 
       // -- private properties
 
-    withFormat {
+      result.modalPrsLinkRole    = RefdataValue.findByValue('Specific license editor')
+      result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, result.license.orgLinks)
+
+      result.license.orgLinks.each { or ->
+          or.org.prsLinks.each { pl ->
+              if (pl.prs?.isPublic?.value != 'No') {
+                  if (! result.modalVisiblePersons.contains(pl.prs)) {
+                      result.modalVisiblePersons << pl.prs
+                  }
+              }
+          }
+      }
+
+      result.visiblePrsLinks = []
+
+      result.license.prsLinks.each { pl ->
+          if (! result.visiblePrsLinks.contains(pl.prs)) {
+              if (pl.prs.isPublic?.value != 'No') {
+                  result.visiblePrsLinks << pl
+              }
+              else {
+                  // nasty lazy loading fix
+                  result.user.authorizedOrgs.each{ ao ->
+                      if (ao.getId() == pl.prs.tenant.getId()) {
+                          result.visiblePrsLinks << pl
+                      }
+                  }
+              }
+          }
+      }
+
+      withFormat {
       html result
       json {
         def map = exportService.addLicensesToMap([:], [result.license])
