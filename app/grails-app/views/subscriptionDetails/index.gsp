@@ -53,45 +53,59 @@
             </g:else>
           </g:annotatedLabel>
             <semui:filter>
-              <g:form action="index" params="${params}" method="get" class="ui form">
-                 <input type="hidden" name="sort" value="${params.sort}">
-                 <input type="hidden" name="order" value="${params.order}">
+                <g:form action="index" params="${params}" method="get" class="ui form">
+                    <input type="hidden" name="sort" value="${params.sort}">
+                    <input type="hidden" name="order" value="${params.order}">
 
-                 <label><g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')}: </g:annotatedLabel></label>
-                 <input name="filter" value="${params.filter}"/>
-                 <label>${message(code:'subscription.details.from_pkg', default:'From Package')}:</label> <select name="pkgfilter">
-                                    <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
-                                   <g:each in="${subscriptionInstance.packages}" var="sp">
-                                     <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
-                                   </g:each>
-                                </select>
-                <g:if test="${params.mode!='advanced'}">
-                  <label style="margin:0px 10px">${message(code:'subscription.details.asAt', default:'Entitlements as at')}:</label>
-                  <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
-                </g:if>
-                <input type="submit" style="margin-left:10px;" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
-              </g:form>
+                    <div class="fields">
+                        <div class="field">
+                            <label>
+                                <g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')} </g:annotatedLabel>
+                            </label>
+                            <input name="filter" value="${params.filter}"/>
+                        </div>
+                        <div class="field">
+                            <label>${message(code:'subscription.details.from_pkg', default:'From Package')}</label>
+                            <select name="pkgfilter">
+                                <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
+                                <g:each in="${subscriptionInstance.packages}" var="sp">
+                                    <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
+                                </g:each>
+                            </select>
+                        </div>
+                        <g:if test="${params.mode!='advanced'}">
+                            <div class="field">
+                                <label>${message(code:'subscription.details.asAt', default:'Entitlements as at')}</label>
+                                <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
+                            </div>
+                        </g:if>
+                        <div class="field">
+                            <label>&nbsp;</label>
+                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
+                        </div>
+                    </div>
+                </g:form>
             </semui:filter>
         </dt>
         <dd>
           <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="ui form">
-          <g:set var="counter" value="${offset+1}" />
-          <g:hiddenField name="sort" value="${params.sort}"/>
-          <g:hiddenField name="order" value="${params.order}"/>
-          <g:hiddenField name="offset" value="${params.offset}"/>
-          <g:hiddenField name="max" value="${params.max}"/>
+              <g:set var="counter" value="${offset+1}" />
+              <g:hiddenField name="sort" value="${params.sort}"/>
+              <g:hiddenField name="order" value="${params.order}"/>
+              <g:hiddenField name="offset" value="${params.offset}"/>
+              <g:hiddenField name="max" value="${params.max}"/>
           <table  class="ui celled striped table">
             <thead>
 
-            <tr>
-              <th rowspan="2"></th>
-              <th rowspan="2">#</th>
-              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-              <th rowspan="2">${message(code:'subscription.details.ent_medium', default:'Entitlement Medium (P/E)')}</th>
-              <g:sortableColumn params="${params}" property="startDate" title="${message(code:'subscription.details.startDate', default:'Earliest date')}" />
-              <g:sortableColumn params="${params}" property="core_status" title="${message(code:'subscription.details.core_status', default:'Core Status')}" />
-              <th rowspan="2">${message(code:'default.actions.label', default:'Actions')}</th>
-            </tr>  
+                <tr>
+                  <th rowspan="2"></th>
+                  <th rowspan="2">#</th>
+                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                  <th rowspan="2">${message(code:'subscription.details.ent_medium', default:'Entitlement Medium (P/E)')}</th>
+                  <g:sortableColumn params="${params}" property="startDate" title="${message(code:'subscription.details.startDate', default:'Earliest date')}" />
+                  <g:sortableColumn params="${params}" property="core_status" title="${message(code:'subscription.details.core_status', default:'Core Status')}" />
+                  <th rowspan="2">${message(code:'default.actions.label', default:'Actions')}</th>
+                </tr>
 
             <tr>
               <th>${message(code:'subscription.details.access_dates', default:'Access Dates')}</th>

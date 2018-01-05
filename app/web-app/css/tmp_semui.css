@@ -19,6 +19,17 @@
     margin-bottom: 1em;
 }
 
+/* hyperlinks */
+.ui.main a {
+    border-bottom: 1px solid transparent;
+}
+.ui.main a:hover {
+    border-bottom: 1px solid #4183c4;
+}
+.ui.main a[class~=button],.ui.main a[class~=button]:hover {
+    border-bottom: none;
+}
+
 /* form validation */
 .ui.form input:focus:invalid:focus,
 .ui.form textarea:focus:invalid:focus,

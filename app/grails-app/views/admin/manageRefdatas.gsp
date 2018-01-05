@@ -80,19 +80,18 @@
             <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataValue']" >
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
 
-                <dl>
-                    <dd>
-                        <label class="property-label">Wert:</label> <input type="text" name="refdata_value"/>
-                    </dd>
-
-                    <dd>
-                        <label class="property-label">Category:</label> <g:select
-                            from="${rdCategories}"
-                            optionKey="id" optionValue="desc"
-                            name="refdata_category_id"
-                            id="refdata_modal_select" />
-                    </dd>
-                </dl>
+                <div class="field">
+                    <label class="property-label">Wert</label>
+                    <input type="text" name="refdata_value"/>
+                </div>
+                <div class="field">
+                    <label class="property-label">Kategorie</label>
+                    <g:select
+                        from="${rdCategories}"
+                        optionKey="id" optionValue="desc"
+                        name="refdata_category_id"
+                        id="refdata_modal_select" />
+                </div>
 
             </g:form>
         </semui:modal>
@@ -102,11 +101,10 @@
             <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataCategory']" >
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
 
-                <dl>
-                    <dd>
-                        <label class="property-label">Beschreibung:</label> <input type="text" name="refdata_category"/>
-                    </dd>
-                </dl>
+                <div class="field">
+                    <label class="property-label">Beschreibung</label>
+                    <input type="text" name="refdata_category"/>
+                </div>
 
             </g:form>
         </semui:modal>

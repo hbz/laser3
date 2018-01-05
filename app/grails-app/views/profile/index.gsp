@@ -185,22 +185,25 @@
                         </p>
 
                           <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
-                              <div class="field">
-                                <label>Organisation</label>
-                                <g:select name="org"
-                                          from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
-                                          optionKey="id"
-                                          optionValue="name"
-                                          class="ui fluid dropdown"/>
-                              </div>
 
-                              <div class="field">
-                                <label>Role</label>
-                                <g:select name="formalRole"
-                                          from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
-                                          optionKey="id"
-                                          optionValue="${ {role->g.message(code:'cv.roles.'+role.authority) } }"
-                                          class="ui fluid dropdown"/>
+                              <div class="two fields">
+                                  <div class="field">
+                                    <label>Organisation</label>
+                                    <g:select name="org"
+                                              from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                                              optionKey="id"
+                                              optionValue="name"
+                                              class="ui fluid search dropdown"/>
+                                  </div>
+
+                                  <div class="field">
+                                    <label>Role</label>
+                                    <g:select name="formalRole"
+                                              from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
+                                              optionKey="id"
+                                              optionValue="${ {role->g.message(code:'cv.roles.'+role.authority) } }"
+                                              class="ui fluid dropdown"/>
+                                  </div>
                               </div>
 
                               <div class="field">

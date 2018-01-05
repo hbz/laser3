@@ -66,36 +66,38 @@
                 <input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
                 <input type="hidden" name="ownerClass" value="${this.class}"/>
 
-                <dl>
-                    <dd>
-                        <label class="property-label">Name:</label> <input type="text" name="cust_prop_name"/>
-                    </dd>
+				<div class="field">
+                	<label class="property-label">Name</label>
+                	<input type="text" name="cust_prop_name"/>
+                </div>
 
-                    <dd>
-                        <label class="property-label">Type:</label> <g:select
+                <div class="fields">
+                    <div class="field five wide">
+                        <label class="property-label">Context:</label>
+                        <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
+                    </div>
+
+                    <div class="field five wide">
+                        <label class="property-label">Type</label>
+                        <g:select
                             from="${PropertyDefinition.validTypes.entrySet()}"
                             optionKey="value" optionValue="key"
                             name="cust_prop_type"
                             id="cust_prop_modal_select" />
-                    </dd>
-
-                    <div class="hide" id="cust_prop_ref_data_name">
-                        <dd>
-                            <label class="property-label">Refdata Category:</label>
-                            <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                        </dd>
                     </div>
 
-                    <dd>
-                        <label class="property-label">Context:</label>
-                        <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
-                    </dd>
+                    <div class="field six wide hide" id="cust_prop_ref_data_name">
+                        <label class="property-label">Kategorie</label>
+                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                    </div>
+                </div>
 
-                    <dd>
-                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
+                <div class="fields">
+                    <div class="field five wide">
+                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}</label>
                         <g:checkBox type="text" name="cust_prop_multiple_occurence" />
-                    </dd>
-                </dl>
+                    </div>
+                </div>
 
             </g:form>
 

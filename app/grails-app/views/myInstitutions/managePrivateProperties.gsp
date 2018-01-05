@@ -86,41 +86,44 @@
         <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" >
             <g:field type="hidden" name="cmd" value="add" />
 
-            <dl>
-                <dd>
-                    <label class="property-label">Name:</label> <input type="text" name="pd_name"/>
-                </dd>
+            <div class="field">
+                <label class="property-label">Name</label>
+                <input type="text" name="pd_name"/>
+            </div>
 
-                <dd>
+            <div class="fields">
+
+                <div class="field five wide">
                     <label class="property-label">${message(code:'propertyDefinition.descr.label', default:'Description')}</label>
                     <g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>
-                </dd>
+                </div>
 
-                <dd>
-                    <label class="property-label">Type:</label> <g:select
+                <div class="field five wide">
+                    <label class="property-label">Type</label>
+                    <g:select
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="value" optionValue="key"
                         name="pd_type"
                         id="cust_prop_modal_select" />
-                </dd>
-
-                <div class="hide" id="cust_prop_ref_data_name">
-                    <dd>
-                        <label class="property-label">Refdata Kategory:</label>
-                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                    </dd>
                 </div>
 
-                <dd>
-                    <label class="property-label">${message(code:'default.mandatory.tooltip')}:</label>
-                    <g:checkBox type="text" name="pd_mandatory" />
-                </dd>
-                <dd>
-                    <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
-                    <g:checkBox type="text" name="pd_multiple_occurrence" />
-                </dd>
+                <div class="field six wide hide" id="cust_prop_ref_data_name">
+                    <label class="property-label">Kategorie</label>
+                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                </div>
+            </div>
 
-            </dl>
+            <div class="fields">
+                <div class="field five wide">
+                    <label class="property-label">${message(code:'default.mandatory.tooltip')}</label>
+                        <g:checkBox type="text" name="pd_mandatory" />
+                </div>
+                <div class="field five wide">
+                    <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}</label>
+                    <g:checkBox type="text" name="pd_multiple_occurrence" />
+                </div>
+            </div>
+
         </g:form>
     </semui:modal>
 

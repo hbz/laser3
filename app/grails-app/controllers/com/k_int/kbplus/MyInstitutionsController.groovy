@@ -132,7 +132,8 @@ class MyInstitutionsController {
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def dashboard() {
+    @Deprecated
+    def dashboard_OLD() {
         // Work out what orgs this user has admin level access to
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -2345,7 +2346,7 @@ AND EXISTS (
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def instdash() {
+    def dashboard() {
         def result = setResultGenerics()
 
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
@@ -2628,7 +2629,7 @@ AND EXISTS (
             contextService.setOrg(org)
         }
 
-        redirect action:'instdash', params:params
+        redirect action:'dashboard', params:params
     }
 
     /**

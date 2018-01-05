@@ -193,7 +193,7 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="myInstitutions" action="instdash"
+                                <g:link class="item" controller="myInstitutions" action="dashboard"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.dash')}</g:link>
                                 <g:link class="item" controller="organisations" action="show"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.org_info')}</g:link>
