@@ -1,6 +1,37 @@
 /*******************************
-         Theme Overrides
+         Button Overrides
 *******************************/
-.ui.button.la-nolabel {
-    margin-top: 1.7em;
+
+
+/* Link Icons to mark different objects in one table */
+
+
+.ico-object-link{
+    display: flex;
+
+
+    &:before{
+          display:inline-flex;
+          text-decoration: none;
+          opacity: 0.8;
+          margin:0 .25em 0 0;
+
+
+          width: 1.18em;
+          height: 1em;
+
+          font-family: 'Icons';
+          font-style: normal;
+          font-weight: normal;
+          text-align: center;
+
+          speak: none;
+          font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-font-smoothing: antialiased;
+          backface-visibility: hidden;
+          color: @grey;
+    }
+
 }
+
