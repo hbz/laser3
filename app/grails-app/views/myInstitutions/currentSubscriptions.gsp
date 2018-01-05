@@ -87,25 +87,11 @@
             <tr>
               <td>
                 <g:link controller="subscriptionDetails" action="details" params="${[shortcode:institution.shortcode]}" id="${s.id}">
-                  <div class="ui list">
-                    <div class="item">
-                      <i class="handshake icon"></i>
-                        <div class="content">
-                          <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
-                          <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
-                        </div>
-                    </div>
-                  </div>
+                    <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
+                    <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
                 </g:link>
                 <g:if test="${s.owner}">
-                    <div class="ui list">
-                      <div class="item">
-                        <i class="law icon"></i>
-                        <div class="content">
-                          ${message(code:'license')} : <g:link controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link>
-                        </div>
-                      </div>
-                    </div>
+                    <g:link class="icon ico-object-link sub-link-icon handshake" controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link>
                 </g:if>
               </td>
                 <td>
@@ -113,14 +99,7 @@
                     <g:each in="${s.packages}" var="sp" status="ind">
                         <g:if test="${ind < 10}">
                             <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">
-                                <div class="ui list">
-                                    <div class="item">
-                                        <i class="archive icon"></i>
-                                        <div class="content">
-                                            ${sp.pkg.name}
-                                        </div>
-                                    </div>
-                                </div>
+                                ${sp.pkg.name}
                             </g:link>
                         </g:if>
                     </g:each>

@@ -107,7 +107,8 @@ a {
 }
 a:hover {
   color: #1e70bf;
-  text-decoration: none;
+  -webkit-text-decoration: underline solid #4183C4;
+          text-decoration: underline solid #4183C4;
 }
 
 
@@ -193,11 +194,5 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 /*******************************
         Global Overrides
-*******************************/
-
-
-
-/*******************************
-         Site Overrides
 *******************************/
 
