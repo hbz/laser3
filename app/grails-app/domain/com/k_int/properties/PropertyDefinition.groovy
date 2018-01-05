@@ -212,16 +212,10 @@ class PropertyDefinition extends I10nTranslatableAbstract {
 
     def countUsages() {
         def table
-        // TODO : refactoring
 
-        if (this.descr == "License Property") {
-            table = "LicensePrivateProperty"
-        }
-        else if (this.descr == "Person Property") {
-            table = "PersonPrivateProperty"
-        }
-        else if (this.descr == "Org Property") {
-            table = "OrgPrivateProperty"
+        def parts = this.descr.split(" ")
+        if(parts.size() == 2) {
+            table = parts[0] + "PrivateProperty"
         }
 
         if (table) {

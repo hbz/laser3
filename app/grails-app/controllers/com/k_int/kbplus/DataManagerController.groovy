@@ -128,22 +128,24 @@ class DataManagerController {
     def query_params = ['l':types_to_include,'s':start_date,'e':end_date, 't':events_to_include]
    
 
-    def filterActors = params.findAll{it.key.startsWith("change_actor_")}
+    //def filterActors = params.findAll{it.key.startsWith("change_actor_")}
+    def filterActors = params.change_actors
+
     if(filterActors) {
       def multipleActors = false;
       def condition = "AND ( "
       filterActors.each{        
-          if(multipleActors){
+          if (multipleActors) {
             condition = "OR"
           }
           if ( it == "change_actor_PEOPLE" ) {
             base_query += " ${condition} e.actor <> \'system\' AND e.actor <> \'anonymousUser\' "
             multipleActors = true
           }
-          else if(it.key != 'change_actor_ALL' && it.key != 'change_actor_PEOPLE'){
-            def paramKey = it.key.replaceAll("[^A-Za-z]", "")//remove things that can cause problems in sql
+          else if(it != 'change_actor_ALL' && it != 'change_actor_PEOPLE') {
+            def paramKey = it.replaceAll("[^A-Za-z]", "") //remove things that can cause problems in sql
             base_query += " ${condition} e.actor = :${paramKey} "
-            query_params."${paramKey}" = it.key.split("change_actor_")[1]
+            query_params."${paramKey}" = it.split("change_actor_")[1]
             multipleActors = true
           }     
       } 
@@ -273,23 +275,26 @@ class DataManagerController {
 
   def getActorNameList(params) {
     def actors = []
-    def filterActors = params.findAll{it.key.startsWith("change_actor_")}
+    //def filterActors = params.findAll{it.key.startsWith("change_actor_")}
+    def filterActors = params.change_actors
+
     if(filterActors) {
 
-      if ( params.change_actor_PEOPLE == 'Y' ) {
-        actors += "All Real Users"
-      }
-      if(params.change_actor_ALL == "Y"){
-        actors += "All Including System"
-      }
-      filterActors.each{      
-          if(it.key != 'change_actor_ALL' && it.key != 'change_actor_PEOPLE'){
-            def paramKey = it.key.replaceAll("[^A-Za-z]", "")//remove things that can cause problems in sql
-            def username = it.key.split("change_actor_")[1]
+      filterActors.each{
+
+        if (it == "change_actor_PEOPLE" ) {
+          actors += "All Real Users"
+        }
+        if (it == "change_actor_ALL" ) {
+          actors += "All Including System"
+        }
+
+          if(it != 'change_actor_ALL' && it != 'change_actor_PEOPLE') {
+            def paramKey = it.replaceAll("[^A-Za-z]", "")//remove things that can cause problems in sql
+            def username = it.split("change_actor_")[1]
             def user = User.findByUsername(username)
-            if(user){
+            if (user){
               actors += user.displayName
-              
             }
           }     
       }     
