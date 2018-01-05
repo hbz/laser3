@@ -29,6 +29,9 @@
 .ui.main a[class~=button],.ui.main a[class~=button]:hover {
     border-bottom: none;
 }
+.ui.main .select2-container .select2-choice {
+    border-bottom: 1px solid #aaa;
+}
 
 /* form validation */
 .ui.form input:focus:invalid:focus,

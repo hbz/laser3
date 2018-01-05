@@ -23,10 +23,8 @@
 
     <g:render template="nav"/>
 
-<div>
     <g:if test="${formattedHistoryLines?.size() > 0}">
 
-      <div class="container alert-warn">
         <table class="ui celled table">
           <thead>
             <tr>
@@ -55,8 +53,6 @@
             </g:each>
           </tbody>
         </table>
-      </div>
-
 
         <g:if test="${historyLines != null}" >
           <semui:paginate  action="history" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_hl}" />
@@ -68,7 +64,6 @@
       </div>
     </g:else>
 
-</div>
 
 
 </body>

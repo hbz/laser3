@@ -30,19 +30,32 @@
           <g:form class="ui form" action="addEntitlements" params="${params}" method="get">
             <input type="hidden" name="sort" value="${params.sort}">
             <input type="hidden" name="order" value="${params.order}">
-            <label>${message(code:'subscription.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-            <label>${message(code:'subscription.details.from_pkg', default:'From Package')}:</label> <select name="pkgfilter">
-                               <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
-                               <g:each in="${subscriptionInstance.packages}" var="sp">
-                                 <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
-                               </g:each>
-                            </select> &nbsp;
-            &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-            <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
-            &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-            <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 
-            <input type="submit" style="margin-left:10px;" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+              <div class="fields two">
+                  <div class="field">
+                      <label>${message(code:'subscription.compare.filter.title', default:'Filters - Title')}</label>
+                      <input name="filter" value="${params.filter}"/>
+                  </div>
+                  <div class="field">
+                      <label>${message(code:'subscription.details.from_pkg', default:'From Package')}</label>
+                      <select name="pkgfilter">
+                          <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
+                          <g:each in="${subscriptionInstance.packages}" var="sp">
+                              <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
+                          </g:each>
+                    </select>
+                  </div>
+              </div>
+
+              <div class="fields">
+                  <semui:datepicker label="default.startsBefore.label" name="startsBefore" value="${params.startsBefore}" />
+                  <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
+                  <div class="field">
+                      <label>&nbsp;</label>
+                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+                  </div>
+              </div>
+
           </g:form>
       </semui:filter>
 

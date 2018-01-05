@@ -20,27 +20,23 @@
 
     <semui:filter>
           <g:form action="list" method="get" class="ui form">
+
+              <div class="field">
+                  <label>${message(code:'package.search.text')}</label>
+                  <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}" />
+              </div>
+
               <div class="fields">
-                  <div class="field">
-                      <label>${message(code:'package.search.text')}</label>
-                      <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}" />
-                  </div>
-                  <div class="field">
-                      <label>${message(code:'package.search.updated_after')}</label>
-                      <semui:simpleHiddenValue id="updateStartDate" name="updateStartDate" type="date" />
-                  </div>
-                  <div class="field">
-                      <label>${message(code:'package.search.created_after')}</label>
-                      <semui:simpleHiddenValue id="createStartDate" name="createStartDate" type="date" />
-                  </div>
-                  <div class="field">
-                      <label>${message(code:'package.search.updated_before')}</label>
-                      <semui:simpleHiddenValue id="updateEndDate" name="updateEndDate" type="date" />
-                  </div>
-                  <div class="field">
-                      <label>${message(code:'package.search.created_before')}</label>
-                      <semui:simpleHiddenValue id="createEndDate" name="createEndDate" type="date" />
-                  </div>
+                  <semui:datepicker label="package.search.updated_after" name="updateStartDate" value="${params.updateStartDate}" />
+
+                  <semui:datepicker label="package.search.created_after" name="createStartDate" value="${params.createStartDate}" />
+
+                  <semui:datepicker label="package.search.updated_before" name="updateEndDate" value="${params.updateEndDate}" />
+
+                  <semui:datepicker label="package.search.created_before" name="createEndDate" value="${params.createEndDate}" />
+              </div>
+
+              <div class="fields">
                   <div class="field">
                       <label>&nbsp;</label>
                       <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}" />

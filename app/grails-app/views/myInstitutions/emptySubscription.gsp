@@ -22,25 +22,34 @@
     <div>
       <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>
       <g:form action="processEmptySubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="post" class="ui form">
-        <dl>
-          <dt><label>${message(code:'myinst.emptySubscription.name', default:'New Subscription Name')}: </label></dt><dd> <input type="text" name="newEmptySubName" placeholder="New Subscription Name"/>&nbsp;</dd>
-          <dt><label>${message(code:'myinst.emptySubscription.identifier', default:'New Subscription Identifier')}: </label></dt><dd> <input type="text" name="newEmptySubId" value="${defaultSubIdentifier}"/>&nbsp;</dd>
-          <dt><label>${message(code:'myinst.emptySubscription.valid_from', default:'Valid From')}: </label></dt><dd> <semui:simpleHiddenValue id="valid_from" name="valid_from" type="date" value="${defaultStartYear}"/>&nbsp;</dd>
-          <dt><label>${message(code:'myinst.emptySubscription.valid_to', default:'Valid To')}: </label></dt><dd> <semui:simpleHiddenValue id="valid_to" name="valid_to" type="date" value="${defaultEndYear}"/>&nbsp;</dd>
-          <g:if test="${orgType?.value == 'Consortium'}">
-            <dt>
-              ${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}:
-            </dt>
-              <dd>
-              <select id="asOrgType" name="asOrgType" class="input-medium">
-                <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value <> ? and rdv.owner.desc = ?', ['Other', 'OrgType'])}" var="opt">
-                    <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
-                </g:each>
-              </select>
-              <br />
-              <br />
 
-              <div class="cons-options">
+          <div class="field">
+            <label>${message(code:'myinst.emptySubscription.name', default:'New Subscription Name')}</label>
+            <input type="text" name="newEmptySubName" placeholder="New Subscription Name"/>
+          </div>
+
+          <div class="field">
+            <label>${message(code:'myinst.emptySubscription.identifier', default:'New Subscription Identifier')}</label>
+            <input type="text" name="newEmptySubId" value="${defaultSubIdentifier}"/>
+          </div>
+
+          <semui:datepicker label="myinst.emptySubscription.valid_from" name="valid_from" value="${defaultStartYear}" />
+
+          <semui:datepicker label="myinst.emptySubscription.valid_to" name="valid_to" value="${defaultEndYear}" />
+
+          <g:if test="${orgType?.value == 'Consortium'}">
+            <div class="field">
+                <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
+
+                <select id="asOrgType" name="asOrgType" class="input-medium">
+                    <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value <> ? and rdv.owner.desc = ?', ['Other', 'OrgType'])}" var="opt">
+                        <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
+                    </g:each>
+                </select>
+
+                <br />
+
+                <div class="cons-options">
 
                 <g:checkBox type="checkbox"
                   name="generateSlavedSubs"
@@ -74,8 +83,8 @@
                         </g:each>
                     </tbody>
                 </table>
-              </div>
-            </dd>
+                </div>
+            </div>
           </g:if>
           <br/>
           <input type="submit" class="ui button" value="${message(code:'default.button.create.label', default:'Create')}" />

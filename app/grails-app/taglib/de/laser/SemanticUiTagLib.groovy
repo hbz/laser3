@@ -201,7 +201,7 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker class="grid stuff here" label="" text="${text}" message="local.string" bean="${objInstance}" required="true" />
+    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
 
     def datepicker = { attrs, body ->
 
@@ -225,7 +225,7 @@ class SemanticUiTagLib {
         out <<   '<div class="ui calendar datepicker">'
         out <<      '<div class="ui input left icon">'
         out <<          '<i class="calendar icon"></i>'
-        out <<          '<input name="' + name +'" type="text" placeholder="'+ placeholder + '" value="'+  value + '">'
+        out <<          '<input name="' + name +'" type="text" placeholder="' + placeholder + '" value="' +  value + '">'
         out <<      '</div>'
         out <<   '</div>'
         out << '</div>'

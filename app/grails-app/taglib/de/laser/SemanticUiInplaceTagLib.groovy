@@ -27,7 +27,12 @@ class SemanticUiInplaceTagLib {
             def default_empty = message(code:'default.button.edit.label')
             def data_link     = null
 
-            out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class?:''}\""
+            if (attrs.type == "date") {
+               // out << '<div class="ui calendar datepicker">'
+            }
+
+            out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
+
             if (attrs.type == "date") {
                 out << " data-type=\"combodate\""
                 def df = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toUpperCase()}"
@@ -63,6 +68,19 @@ class SemanticUiInplaceTagLib {
 
             out << " data-url=\"${data_link}\""
             out << ">"
+
+
+            if (attrs.type == "date") {
+                //out << '</div>'
+                /*
+                out <<   '<div class="ui calendar datepicker">'
+                out <<      '<div class="ui input left icon">'
+                out <<          '<i class="calendar icon"></i>'
+                out <<          '<input name="' + attrs.name +'" type="text" placeholder="' + attrs.placeholder + '" value="' + attrs.value + '">'
+                out <<      '</div>'
+                out <<   '</div>'
+                */
+            }
 
             if (body) {
                 out << body()
@@ -143,6 +161,10 @@ class SemanticUiInplaceTagLib {
         def default_empty = message(code:'default.button.edit.label')
         def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
+        if (attrs.type == "date") {
+            out << '<div class="ui calendar datepicker">'
+        }
+
         out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\""
 
         if (attrs.type == "date") {
@@ -155,12 +177,16 @@ class SemanticUiInplaceTagLib {
             if (attrs.language) {
                 out << " data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\""
             }
-
         } else {
             out << " data-type=\"${attrs.type?:'textarea'}\" "
         }
 
         out << "data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
+        out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
+
+        if (attrs.type == "date") {
+            out << '</div>'
+        }
         out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
     }
 

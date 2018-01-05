@@ -107,28 +107,27 @@
               </div>
           </div>
 
-          <div class="field">
-            <label>${message(code:'myinst.currentTitles.dupes', default:'Titles we subscribe to through 2 or more packages')}</label>
-              <div class="ui checkbox">
-                <input type="checkbox" class="hidden" name="filterMultiIE" value="${true}"<%=(params.filterMultiIE)?' checked="true"':''%>/>
-              </div>
-          </div>
-
           <div class="fields">
-              <div class="field eight wide">
+
+              <div class="field">
                   <label>${message(code:'default.search.text', default:'Search text')}</label>
                   <input type="hidden" name="sort" value="${params.sort}">
                   <input type="hidden" name="order" value="${params.order}">
                   <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
               </div>
               <div class="field">
-                  <label>${message(code:'myinst.currentTitles.subs_valid_on', default:'Subscriptions Valid on')}</label>
-                  <semui:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
+                  <semui:datepicker label="myinst.currentTitles.subs_valid_on" name="validOn" value="${validOn}" />
               </div>
               <div class="field">
-                  <label>&nbsp;</label>
-                  <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
+                  <label>${message(code:'myinst.currentTitles.dupes', default:'Titles we subscribe to through 2 or more packages')}</label>
+                  <div class="ui checkbox">
+                      <input type="checkbox" class="hidden" name="filterMultiIE" value="${true}"<%=(params.filterMultiIE)?' checked="true"':''%>/>
+                  </div>
               </div>
+          </div>
+
+          <div class="field">
+              <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
           </div>
       </g:form>
     </semui:filter>

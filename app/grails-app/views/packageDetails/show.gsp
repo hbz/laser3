@@ -255,22 +255,35 @@
             <input type="hidden" name="sort" value="${params.sort}">
             <input type="hidden" name="order" value="${params.order}">
             <input type="hidden" name="mode" value="${params.mode}">
-            <div>
-              <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
-              <label>${message(code:'tipp.coverageNote', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
+            <div class="two fields">
+                <div class="field">
+                    <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}</label>
+                    <input name="filter" value="${params.filter}"/>
+                </div>
+                <div class="field">
+                    <label>${message(code:'tipp.coverageNote', default:'Coverage note')}</label>
+                    <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
+                </div>
             </div>
-            <div>
-              <label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
-              <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/> -
-              <label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
-              <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/> -
-              <g:if test="${params.mode!='advanced'}">
-                <label>${message(code:'package.show.atDate', default:'Show package contents on specific date')}:</label>
-                <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
-              </g:if>
 
-              <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+            <div class="fields">
+                <div class="field">
+                    <semui:datepicker label="package.compare.filter.coverage_startsBefore" name="startsBefore" value="${params.startsBefore}" />
+              </div>
+              <div class="field">
+                <semui:datepicker label="package.compare.filter.coverage_endsAfter" name="endsAfter" value="${params.endsAfter}" />
+              </div>
+              <g:if test="${params.mode!='advanced'}">
+                  <div class="field">
+                        <semui:datepicker label="package.show.atDate" name="asAt" value="${params.asAt}" />
+                  </div>
+              </g:if>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+                </div>
             </div>
+
           </g:form>
        </semui:filter>
           <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">

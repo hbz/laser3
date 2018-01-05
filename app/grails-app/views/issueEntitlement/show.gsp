@@ -206,12 +206,23 @@
                     <g:form action="show" params="${params}" method="get" class="ui form">
                       <input type="hidden" name="sort" value="${params.sort}">
                       <input type="hidden" name="order" value="${params.order}">
-                      <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-                      &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-                      <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
-                      &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-                      <semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
-                      <input type="submit" class="ui button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+
+                        <div class="fields three">
+                            <div class="field">
+                                <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}</label>
+                                <input name="filter" value="${params.filter}"/>
+                            </div>
+                            <div class="field">
+                                <semui:datepicker label="default.startsBefore.label" name="startsBefore" value="${params.startsBefore}" />
+                            </div>
+                            <div class="field">
+                                <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+                        </div>
+
                     </g:form>
                 </semui:filter>
 
