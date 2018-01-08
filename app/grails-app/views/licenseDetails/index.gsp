@@ -31,7 +31,7 @@
 
             <div class="twelve wide column">
   
-                <h4 class="ui header">${message(code:'license.details.information', default:'Information')}</h4>
+                <!--<h4 class="ui header">${message(code:'license.details.information', default:'Information')}</h4>-->
 
                 <div class="inline-lists">
 
@@ -149,6 +149,7 @@
                         </dd>
                     </dl>
 
+                    <!--
                     <dl>
                         <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
                         <dd>
@@ -156,6 +157,7 @@
                             <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
                         </dd>
                     </dl>
+                    -->
 
                     <dl>
                         <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
