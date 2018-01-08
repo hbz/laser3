@@ -626,7 +626,7 @@ financialImportTSVLoaderMappings = [
           [
             type : 'hql',
             hql: 'select o from Subscription as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
-            values : [ jcns : [type:'static', value:'JC'], orgId: [type:'column', colname:'SubscriptionId'] ]
+            values : [ jcns : [type:'static', value:'hbz'], orgId: [type:'column', colname:'SubscriptionId'] ]
           ]
         ],
         creation:[
@@ -637,7 +637,7 @@ financialImportTSVLoaderMappings = [
             [ type:'closure', closure : { o, nl, colmap, colname, locatedObjects -> o.setInstitution(locatedObjects['owner']) } ],
             [ type:'val', property:'identifier', colname: 'SubscriptionId'],
             [ type:'val', property:'name', colname: 'ResourceName'],
-            [ type:'closure', closure: { o, nl, colmap, colname, locatedObjects -> o.addNamespacedIdentifier('JC',nl[(int)(colmap.get('SubscriptionId'))]); } ]
+            [ type:'closure', closure: { o, nl, colmap, colname, locatedObjects -> o.addNamespacedIdentifier('jc',nl[(int)(colmap.get('SubscriptionId'))]); } ]
           ]
         ]
       ],
@@ -675,7 +675,7 @@ financialImportTSVLoaderMappings = [
           [
             type : 'hql',
             hql: 'select o from Org as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
-            values : [ jcns : [type:'static', value:'JC'], orgId: [type:'column', colname:'InstitutionId'] ]
+            values : [ jcns : [type:'static', value:'hbz'], orgId: [type:'column', colname:'InstitutionId'] ]
           ]
         ],
         creation:[
