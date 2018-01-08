@@ -90,7 +90,6 @@ class TsvSuperlifterService {
                 case 'reject':
                   break;
                 case 'mustEqual':
-                  // begin inserted by frank 20.12.17
                   // Converting Hibernate proxy to real entity object
                   // (Source: https://stackoverflow.com/questions/2216547/converting-hibernate-proxy-to-real-entity-object)
                   if (located_objects[0] == 0) {
@@ -98,11 +97,9 @@ class TsvSuperlifterService {
                   }
                   Hibernate.initialize(located_objects[0])
                   if (located_objects[0] instanceof  HibernateProxy) {
-                      // located_objects[0] = (T) ((HibernateProxy) located_objects[0]).getHibernateLazyInitializer().getImplementation()
                       located_objects[0] = located_objects[0].getHibernateLazyInitializer().getImplementation()
                   }
-                  // if ( locatedObjects[toih.ref] == located_objects[0] ) {
-                  if ( locatedObjects[toih.ref] == located_objects[0] ) { // end inserted by frank 20.12.17
+                  if ( locatedObjects[toih.ref] == located_objects[0] ) {
                     log.debug("Located object matches existing object for ${toih.ref} - continue")
                   }
                   else {
