@@ -1,5 +1,9 @@
 package com.k_int.kbplus
 
+import org.apache.poi.ss.formula.functions.T
+import org.hibernate.Hibernate
+import org.hibernate.proxy.HibernateProxy
+
 import java.text.SimpleDateFormat
 import org.springframework.transaction.annotation.*
 import au.com.bytecode.opencsv.CSVReader
@@ -86,6 +90,15 @@ class TsvSuperlifterService {
                 case 'reject':
                   break;
                 case 'mustEqual':
+                  // Converting Hibernate proxy to real entity object
+                  // (Source: https://stackoverflow.com/questions/2216547/converting-hibernate-proxy-to-real-entity-object)
+                  if (located_objects[0] == 0) {
+                      throw new NullPointerException("Entity passed for initialization is null")
+                  }
+                  Hibernate.initialize(located_objects[0])
+                  if (located_objects[0] instanceof  HibernateProxy) {
+                      located_objects[0] = located_objects[0].getHibernateLazyInitializer().getImplementation()
+                  }
                   if ( locatedObjects[toih.ref] == located_objects[0] ) {
                     log.debug("Located object matches existing object for ${toih.ref} - continue")
                   }
@@ -257,7 +270,7 @@ class TsvSuperlifterService {
         def base_qry = "select i from ${toih.cls} as i where "
         boolean fc = true
         toih_heuristic.criteria.each { clause ->
-          // iterate through each clause in the conjunction of clauses that might identify a domian object
+          // iterate through each clause in the conjunction of clauses that might identify a domain object
           if ( fc ) { fc = false; } else { base_qry += " and " }
 
           switch ( clause.srcType ) {
