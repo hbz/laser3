@@ -17,20 +17,37 @@
 
         <semui:errors bean="${packageInstance}" />
 
-        <g:form action="reviewPackage" method="post" enctype="multipart/form-data">
-            ${message(code:'package.upload.file', default:'Upload File')}: <input type="file" id="soFile" name="soFile"/><br/>
+        <semui:form>
+          <g:form action="reviewPackage" method="post" enctype="multipart/form-data" class="ui form">
 
-            ${message(code:'package.upload.docStyle', default:'Doc Style')}: <select name="docstyle">
-              <option value="csv" selected>${message(code:'package.upload.docStyle.csv', default:'Comma Separated')}</option>
-              <option value="tsv">${message(code:'package.upload.docStyle.tsv', default:'Tab Separated')}</option>
-            </select></br>
+            <div class="fields">
 
-            ${message(code:'package.upload.override', default:'Override Character Set Test')}: <input style="vertical-align:text-bottom;margin-right:10px;" type="checkbox" name="OverrideCharset" checked="false"/>
+              <div class="field">
+                <label>${message(code:'package.upload.file', default:'Upload File')}</label>
+                <input type="file" id="soFile" name="soFile"/><br/>
+              </div>
 
-            <button type="submit" class="ui button">${message(code:'package.upload.upload', default:'Upload Package')}</button>
-        </g:form>
+              <div class="field">
+                <label>${message(code:'package.upload.docStyle', default:'Doc Style')}</label>
+                <select name="docstyle">
+                  <option value="csv" selected>${message(code:'package.upload.docStyle.csv', default:'Comma Separated')}</option>
+                  <option value="tsv">${message(code:'package.upload.docStyle.tsv', default:'Tab Separated')}</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>${message(code:'package.upload.override', default:'Override Character Set Test')}</label>
+                <input type="checkbox" name="OverrideCharset" checked="false"/>
+              </div>
+
+              <div class="field">
+                <label>&nbsp;</label>
+                <button type="submit" class="ui button">${message(code:'package.upload.upload', default:'Upload Package')}</button>
+              </div>
+            </div>
+          </g:form>
         
-        <br/>
+        </semui:form>
 
         <g:if test="${validationResult}">
           <g:if test="${validationResult.stats != null}">

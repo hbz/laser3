@@ -13,12 +13,23 @@
 
 
                 <semui:filter>
-                  <g:form action="list" method="get">
-                    Name Contains: <input type="text" name="name" value="${params.name}"/>
-                    Role:
-                     <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
-                     <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" value="authority "optionKey="id" optionValue="authority" name="authority" />
-                    <input type="submit" value="Search" class="ui button"/>
+                    <g:form action="list" method="get" class="ui form">
+                        <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
+
+                        <div class="fields">
+                            <div class="field">
+                                <label>Name contains</label>
+                                <input type="text" name="name" value="${params.name}"/>
+                            </div>
+                            <div class="field">
+                                <label>Role</label>
+                                <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" value="authority "optionKey="id" optionValue="authority" name="authority" />
+                            </div>
+                            <div class="field">
+                                <label>&nbsp;</label>
+                                <input type="submit" value="Search" class="ui secondary button"/>
+                            </div>
+                        </div>
                   </g:form>
                 </semui:filter>
 

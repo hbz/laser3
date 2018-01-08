@@ -12,12 +12,21 @@
 
       <semui:messages data="${flash}" />
 
-    <div class="container" style="text-align:center">
+
+    <semui:filter>
       <g:form action="index" method="get" class="ui form">
-        <label>${message(code: 'globalDataSync.search.text')}: </label> <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}" value="${params.q?.encodeAsHTML()}"  />
-        <input type="submit" class="ui button" value="${message(code: 'default.button.search.label')}" />
-      </g:form><br/>
-    </div>
+        <div class="fields">
+          <div class="field">
+            <label>${message(code: 'globalDataSync.search.text')}</label>
+            <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}" value="${params.q?.encodeAsHTML()}"  />
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <input type="submit" class="ui secondary button" value="${message(code: 'default.button.search.label')}" />
+          </div>
+        </div>
+      </g:form>
+  </semui:filter>
 
     <div>
         

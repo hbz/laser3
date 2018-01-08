@@ -15,9 +15,17 @@
 
 			<semui:filter>
 				<g:form action="list" method="get" class="ui form">
-					<label>${message(code:'default.search.text', default:'Search text')} : </label> <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"  /> &nbsp;
-					<input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}" />
-				</g:form><br/>
+                    <div class="fields">
+                        <div class="field">
+                            <label>${message(code:'default.search.text', default:'Search text')}</label>
+                            <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}" />
+                        </div>
+                        <div class="field">
+                            <label>&nbsp;</label>
+                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+                        </div>
+                    </div>
+				</g:form>
 			</semui:filter>
 
 			<table class="ui celled striped table">

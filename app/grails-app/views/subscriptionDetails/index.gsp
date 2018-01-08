@@ -75,8 +75,7 @@
                         </div>
                         <g:if test="${params.mode!='advanced'}">
                             <div class="field">
-                                <label>${message(code:'subscription.details.asAt', default:'Entitlements as at')}</label>
-                                <semui:simpleHiddenValue id="asAt" name="asAt" type="date" value="${params.asAt}"/>
+                                <semui:datepicker label="subscription.details.asAt" name="asAt" value="${params.asAt}" />
                             </div>
                         </g:if>
                         <div class="field">

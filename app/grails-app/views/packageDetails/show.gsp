@@ -287,6 +287,7 @@
           </g:form>
        </semui:filter>
           <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
+
             <g:hiddenField name="filter" value="${params.filter}"/>
             <g:hiddenField name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
             <g:hiddenField name="startsBefore" value="${params.startsBefore}"/>
@@ -312,127 +313,143 @@
                   <br/>
                   <table class="ui celled table">
                     <tr>
-                      <td>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
-                        </div>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          <i style="text-transform:uppercase">${message(code:'default.or', default:'or')}</i> 
-                          <input type="checkbox" name="clear_start_date" />
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                        </div> 
-                      </td>
-                      <td>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.startVolume', default:'Start Volume')}: <semui:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
-                        </div>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                          <input type="checkbox" name="clear_start_volume"/> 
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                        </div>
-                      </td>
-                      <td>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.startIssue', default:'Start Issue')}: <semui:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
-                        </div>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                          <input type="checkbox" name="clear_start_issue"/> 
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                        </div>
-                      </td>
+                        <td>
+                            <semui:datepicker label="subscription.details.coverageStartDate" name="bulk_start_date" value="${params.bulk_start_date}" />
+
+                            <i>${message(code:'default.or', default:'or')}</i>
+                            <input type="checkbox" name="clear_start_date" />
+                            ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>${message(code:'tipp.startVolume', default:'Start Volume')}</label>
+                                <div>
+                                    <semui:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_start_volume"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                             <div class="field">
+                                 <label>${message(code:'tipp.startIssue', default:'Start Issue')}</label>
+                                 <div>
+                                    <semui:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_start_issue"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                 </div>
+                             </div>
+                        </td>
                     </tr>
                     <tr>
-                      <td>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
-                        </div>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                          <input type="checkbox" name="clear_end_date"/>
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                        </div>
-                      </td>
-                      <td>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.endVolume', default:'End Volume')}: <semui:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
-                        </div>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                          <input type="checkbox" name="clear_end_volume"/> 
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                        </div>
-                      </td>
-                      <td>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.endIssue', default:'End Issue')}: <semui:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
-                        </div>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                          <input type="checkbox" name="clear_end_issue"/> 
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                        </div>
-                      </td>
+                        <td>
+                            <semui:datepicker label="subscription.details.coverageEndDate" name="bulk_end_date" value="${params.bulk_end_date}" />
+
+                                <i>${message(code:'default.or', default:'or')}</i>
+                                <input type="checkbox" name="clear_end_date"/>
+                                ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>${message(code:'tipp.endVolume', default:'End Volume')}</label>
+                                <div>
+                                    <semui:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_end_volume"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>${message(code:'tipp.endIssue', default:'End Issue')}</label>
+                                <div>
+                                    <semui:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_end_issue"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     <tr>
-                       <td>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}: <semui:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
-                        </div>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                          <input type="checkbox" name="clear_hostPlatformURL"/>
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                        </div>
-                      </td>
-                      <td>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          ${message(code:'tipp.coverageNote', default:'Coverage Note')}: <semui:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
-                        </div>
-                        <div style="display:inline-block;white-space:nowrap;">
-                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                          <input type="checkbox" name="clear_coverage_note"/> 
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                        </div>
-                      </td>
-                      <td>${message(code:'tipp.embargo', default:'Embargo')}:  <semui:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
-                          <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                          <input type="checkbox" name="clear_embargo"/>
-                          ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                      </td>
+                        <td>
+                            <div class="field">
+                                <label>${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}</label>
+                                <div>
+                                    <semui:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
+
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_hostPlatformURL"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>${message(code:'tipp.coverageNote', default:'Coverage Note')}</label>
+                                <div>
+                                    <semui:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_coverage_note"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>${message(code:'tipp.embargo', default:'Embargo')}</label>
+                                <div>
+                                    <semui:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_embargo"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     <g:if test="${params.mode=='advanced'}">
                       <tr>
                         <td>
-                          <div style="display:inline-block;white-space:nowrap;">
-                            ${message(code:'tipp.delayedOA', default:'Delayed OA')}: <g:simpleHiddenRefdata id="bulk_delayedOA" name="bulk_delayedOA" refdataCategory="TitleInstancePackagePlatform.DelayedOA"/>
-                          </div>
-                          <div style="display:inline-block;white-space:nowrap;">
-                            <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                            <input type="checkbox" name="clear_delayedOA"/> 
-                            ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                          </div>
+                            <div class="field">
+                                <label>${message(code:'tipp.delayedOA', default:'Delayed OA')}</label>
+                                <div>
+                                    <g:simpleHiddenRefdata id="bulk_delayedOA" name="bulk_delayedOA" refdataCategory="TitleInstancePackagePlatform.DelayedOA"/>
+
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_delayedOA"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
                         </td>
                         <td>
-                          <div style="display:inline-block;white-space:nowrap;">
-                            ${message(code:'tipp.hybridOA', default:'Hybrid OA')}: <g:simpleHiddenRefdata id="bulk_hybridOA" name="bulk_hybridOA" refdataCategory="TitleInstancePackagePlatform.HybridOA"/>
-                          </div>
-                          <div style="display:inline-block;white-space:nowrap;">
-                            <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                            <input type="checkbox" name="clear_hybridOA"/> 
-                            ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                          </div>
+                            <div class="field">
+                                <label>${message(code:'tipp.hybridOA', default:'Hybrid OA')}</label>
+                                <div>
+                                    <g:simpleHiddenRefdata id="bulk_hybridOA" name="bulk_hybridOA" refdataCategory="TitleInstancePackagePlatform.HybridOA"/>
+
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_hybridOA"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
                         </td>
                         <td>
-                          <div style="display:inline-block;white-space:nowrap;">
-                            ${message(code:'tipp.paymentType', default:'Payment')}: <g:simpleHiddenRefdata id="bulk_payment" name="bulk_payment" refdataCategory="TitleInstancePackagePlatform.PaymentType"/>
-                          </div>
-                          <div style="display:inline-block;white-space:nowrap;">
-                            <i style="text-transform:uppercase;">${message(code:'default.or', default:'or')}</i>
-                            <input type="checkbox" name="clear_payment"/>
-                            ${message(code:'package.show.checkToClear', default:'Check to clear')}
-                          </div>
+                            <div class="field">
+                                <label>${message(code:'tipp.paymentType', default:'Payment')}</label>
+                                <div>
+                                    <g:simpleHiddenRefdata id="bulk_payment" name="bulk_payment" refdataCategory="TitleInstancePackagePlatform.PaymentType"/>
+
+                                    <i>${message(code:'default.or', default:'or')}</i>
+                                    <input type="checkbox" name="clear_payment"/>
+                                    ${message(code:'package.show.checkToClear', default:'Check to clear')}
+                                </div>
+                            </div>
                         </td>
                       </tr>
                     </g:if>
