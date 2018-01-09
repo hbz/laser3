@@ -35,7 +35,7 @@
     <g:set var="counter" value="${-1}" />
 
     <g:if test="${1==1}">
-      <g:form  action="processSubscriptionImport" method="post" params="${params}" enctype="multipart/form-data" >
+      <g:form class="ui form" action="processSubscriptionImport" method="post" params="${params}" enctype="multipart/form-data" >
         <div>
         <g:if test="${subOrg!=null}">
           ${message(code:'subscription.import.upload.note', default:'Import will create a subscription for')} ${subOrg.name}
