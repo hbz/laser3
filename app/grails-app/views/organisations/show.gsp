@@ -124,10 +124,6 @@
                     <semui:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
                 </dd>
             <g:if test="${editable}">
-                <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
-                <dd>
-                    <g:fieldValue bean="${orgInstance}" field="ipRange"/>
-                </dd>
 
                 <dt><g:message code="org.fteStudents.label" default="Fte Students" /></dt>
                 <dd>

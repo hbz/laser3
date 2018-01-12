@@ -1,5 +1,5 @@
 <head>
-<meta name='layout' content='mmbootstrap' />
+<meta name='layout' content='semanticUI' />
 <title><g:message code="springSecurity.denied.title" /></title>
 </head>
 

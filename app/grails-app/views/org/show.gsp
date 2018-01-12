@@ -55,12 +55,12 @@
                   </dl>
               </g:if>
 
-              <g:if test="${orgInstance?.ipRange}">
+              <!--<g:if test="${orgInstance?.ipRange}">
                   <dl>
                       <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
                       <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
                   </dl>
-              </g:if>
+              </g:if>-->
 
               <dl>
                 <dt><g:message code="org.sector.label" default="Sector" /></dt>

@@ -72,4 +72,27 @@ class PersonRole {
     static getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
+
+    static def lookup(prs, lic, org, cluster, pkg, sub, title, start_date, end_date, functionType) {
+
+        def personRole
+        def p = PersonRole.findAllWhere(
+                prs:        prs,
+                lic:        lic,
+                org:        org,
+                cluster:    cluster,
+                pkg:        pkg,
+                sub:        sub,
+                title:      title,
+                start_date: start_date,
+                end_date:   end_date,
+                functionType:   functionType
+        ).sort({id: 'asc'})
+
+        if ( p.size() > 0 ) {
+            personRole = p[0]
+        }
+
+        personRole
+    }
 }

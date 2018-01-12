@@ -643,11 +643,13 @@ class BootStrap {
 
         RefdataValue.loc('Library Type',   [en: 'Fachhochschule', de: 'Fachhochschule'])
         RefdataValue.loc('Library Type',   [en: 'Forschungseinrichtung', de: 'Forschungseinrichtung'])
+        RefdataValue.loc('Library Type',   [en: 'Institutsbibliothek', de: 'Institutsbibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Kunst- und Musikhochschule', de: 'Kunst- und Musikhochschule'])
         RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'])
         RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes- / Regionalbibliothek', de: 'Staats-/ Landes- / Regionalbibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'])
+        RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'])
 
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Bibliothek'])
         RefdataValue.loc('OrgSector',    [en: 'Publisher', de: 'Verlag'])
