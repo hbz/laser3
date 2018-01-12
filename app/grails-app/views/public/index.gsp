@@ -6,15 +6,16 @@
 </head>
 <body>
 <!-- NAVIGATION FIX -->
-<div class="ui large top fixed hidden menu ">
-    <div class="ui container">
-        <a class="active item">Home</a>
-        <a href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" class="item">LAS:eR wiki</a>
-        <a class="item">Company</a>
-        <a class="item">Careers</a>
-        <div class="right menu">
-            <div class="item">
-
+<div class="ui container ">
+    <div class="ui top fixed hidden menu la-fixed-menu">
+        <div class="ui container">
+            <img src="images/laser.svg"/>
+            <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item">Über LAS:eR</a>
+            <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" class="item">Wiki</a>
+            <div class="right item">
+                <g:link controller="home" action="index" class="ui button blue" >
+                    ${message(code:'template.loginDiv.label', default:'LAS:eR Member Login')}
+                </g:link>
             </div>
         </div>
     </div>
@@ -25,11 +26,10 @@
     <div class="ui inverted menu la-top-menu">
         <div class="ui container">
             <img src="images/laser.svg"/>
-            <a class="item">Work</a>
-            <a class="item">Company</a>
-            <a class="item">Careers</a>
+            <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item">Über LAS:eR</a>
+            <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" class="item">Wiki</a>
             <div class="right item">
-                <g:link controller="home" action="index" class="ui button orange" >
+                <g:link controller="home" action="index" class="ui button blue" >
                     ${message(code:'template.loginDiv.label', default:'LAS:eR Member Login')}
                 </g:link>
             </div>
@@ -40,94 +40,51 @@
         <div class="ui container">
 
             <div class="ui grid ">
-                <div class="eight wide column"    style="min-height: 533px;">
-                    <h3 class="ui inverted header">
-                        Lizenz-Administrationssystem <br>für e-Ressourcen
-                    </h3>
-                    <h4>
-                        Lorem ipsum
-                    </h4>
-                    <div class="ui huge primary button">
-                        Start<i class="right arrow icon"></i>
+                    <div class="seven wide column la-hero" >
+                        <h3 class="ui inverted header">
+                            Lizenz-Administrationssystem <br>für e-Ressourcen
+                        </h3>
+                        <h4>
+                            Lorem ipsum
+                        </h4>
+                        <div class="ui huge orange button">
+                            Start<i class="right arrow icon"></i>
+                        </div>
+                    </div>
+
                     </div>
                 </div>
             </div>
-        </div>
+
     </div>
 
     <!-- SEQUMENT -->
-    <div class="ui vertical stripe segment">
-        <div class="ui middle aligned stackable grid container">
-            <div class="row">
-                <div class="eight wide column">
-                    <h3 class="ui header">
-                        We Help Companies and Companions
-                    </h3>
-                    <p>
-                        We can give your company superpowers to do things that they never thought possible. Let us delight your customers and empower your needs...through pure data analytics.
-                    </p>
-                    <h3 class="ui header">
-                        We Make Bananas That Can Dance
-                    </h3>
-                    <p>
-                        Yes that's right, you thought it was the stuff of dreams, but even bananas can be bioengineered.
+
+        <div class="ui container">
+            <div class="ui grid">
+                <div class="four wide column">
+                    <h3 class="ui header">Optimierte Lizenzverwaltung</h3>
+                    <p><span class="">Endlich alle Informationen an einem Ort</span> LAs:eR ermöglicht die vollumfängliche Verwaltung von eRessourcen in einem System inklusive Konsortial- und Nationallizenzen. Alle benötigten Vertragsinformationen wie Laufzeit, Preis, Zugriffsbeschränkungen und Fernleihinformationen werden vorgehalten und für Konsortial- und Nationallizenzen zentral gepflegt.</p>
+                </div>
+                <div class="four wide column">
+                    <h3 class="ui header">Integrierte Zugriffsstatistiken</h3>
+                    <p><span class="">Behalten Sie den Überblick über die Nutzung Ihrer eRessourcen</span> LAS:eR bietet durch die Integration des Nationalen Statistikservers Zugriff auf die Statistiken der lizenzierten Angebote und ermöglicht weiterführende Auswertungen wie die Cost-per-Download-Analyse.
                     </p>
                 </div>
-                <div class="six wide right floated column">
-                    <img class="ui large bordered rounded image" src="../../static/images/templates/semantic-ui/wireframe/white-image.png" />
+                <div class="four wide column">
+                    <h3 class="ui header">Standardisierte Exportschnittstellen</h3>
+                    <p><span class="">Nutzen Sie LAs:eR als qualitativ hochwertige Quelle für Ihre konsortialen Lizenzteilnahmen</span> Offene Schnittstellen ermöglichen die Übernahme von Daten aus LAS:eR in cloudbasierte Bibliothekssysteme mit ERM-Modul und andere Drittsysteme.</p>
                 </div>
-            </div>
-            <div class="row">
-                <div class="center aligned column">
-                    <a class="ui huge button">Check Them Out</a>
+                <div class="four wide column">
+                    <h3 class="ui header">Effiziente Interaktionsmöglichkeiten</h3>
+                    <p><span class="">Gemeinsam mehr erreichen durch bessere Abstimmung</span> LAS:eR bietet zahlreiche Funktionen für die Kommunikation zwischen Konsortialführer und Teilnehmern: Renewals, Produktumfragen und Testwünsche lassen sich einfach organisieren und können im Anschluss direkt für die Übermittlung an den Anbieter aufbereitet werden.</p>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- SEQUMENT -->
-    <div class="ui vertical stripe quote segment">
-        <div class="ui equal width stackable internally celled grid">
-            <div class="center aligned row">
-                <div class="column">
-                    <h3>
-                        "What a Company"
-                    </h3>
-                    <p>
-                        That is what they all say about us
-                    </p>
-                </div>
-                <div class="column">
-                    <h3>
-                        "I shouldn't have gone with their competitor."
-                    </h3>
-                    <p>
-                        <img class="ui avatar image" src="../../static/images/templates/semantic-ui/avatar/nan.jpg" /><b>Nan</b>Chief Fun Officer Acme Toys
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="ui vertical stripe segment">
-        <div class="ui text container">
-            <h3 class="ui header">
-                Breaking The Grid, Grabs Your Attention
-            </h3>
-            <p><img src="images/laser.svg"/>
-                Instead of focusing on content creation and hard work, we have learned how to master the art of doing nothing by providing massive amounts of whitespace and generic content that can seem massive, monolithic and worth your attention.
-            </p>
-            <a class="ui large button">Read More</a>
-            <h4 class="ui horizontal header divider">
-                <a href="homepage.html#"> Case Studies</a>
-            </h4>
-            <h3 class="ui header">
-                Did We Tell You About Our Bananas?
-            </h3>
-            <p>
-                Yes I know you probably disregarded the earlier boasts as non-sequitur filler content, but its really true. It took years of gene splicing and combinatory DNA research, but our bananas can really dance.
-            </p>
-            <a class="ui large button">I'm Still Quite Interested</a>
-        </div>
-    </div>
+
+
+
+
     <div class="ui inverted vertical footer segment">
         <div class="ui container">
             <div class="ui stackable inverted divided equal height stackable grid">
@@ -161,6 +118,9 @@
 </div>
 
 <style type="text/css">
+    body{
+        background-color: #fae2c1;
+    }
 .hidden.menu {
     display: none;
 }
@@ -176,9 +136,14 @@
     background-position: top center!important;
     border: none!important;
 }
-
+.la-fixed-menu {
+    height: 70px;
+}
+.la-hero {
+    padding-top: 7rem!important;
+}
 .masthead.segment {
-    min-height: 600px;
+    min-height: 480px;
     margin: 0;
     padding: 0;
 }
