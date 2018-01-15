@@ -14,10 +14,12 @@ class Org extends BaseDomainComponent {
 
     String name
     String shortname
+    String shortcode            // Used to generate friendly semantic URLs
     String sortname
     String url
 
-    String shortcode            // Used to generate friendly semantic URLs
+    String importSource         // "nationallizenzen.de", "edb des hbz"
+    Date lastImportDate
 
     String impId
     String comment
@@ -93,6 +95,8 @@ class Org extends BaseDomainComponent {
     libraryNetwork column:'org_library_network_rv_fk'
         funderType column:'org_funder_type_rv_fk'
        libraryType column:'org_library_type_rv_fk'
+      importSource column:'org_import_source'
+    lastImportDate column:'org_last_import_date'
     }
 
     static constraints = {
@@ -118,6 +122,8 @@ class Org extends BaseDomainComponent {
       libraryNetwork(nullable:true, blank:true)
           funderType(nullable:true, blank:true)
          libraryType(nullable:true, blank:true)
+        importSource(nullable:true, blank:true)
+      lastImportDate(nullable:true, blank:true)
     }
 
     @Override
@@ -204,56 +210,62 @@ class Org extends BaseDomainComponent {
     return new Org(name:value)
   }
 
-  static def lookupOrCreate(name, sector, consortium, identifiers, iprange) {
+    static def lookup(name, identifiers) {
 
-    def result = null;
+        def result = null;
 
-    // See if we can uniquely match on any of the identifiers
-    identifiers.each { k,v ->
-      if ( v != null ) {
-        def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?",[k,v])
-        if ( o.size() > 0 ) {
-          result = o[0]
+        // See if we can uniquely match on any of the identifiers
+        identifiers.each { k,v ->
+            if ( v != null ) {
+                def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?",[k,v])
+                if ( o.size() > 0 ) {
+                    result = o[0]
+                }
+            }
         }
-      }
+
+        // No match by identifier, try and match by name
+        if ( result == null ) {
+            // log.debug("Match by name ${name}");
+            def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?",[name.toLowerCase()])
+            if ( o.size() > 0 ) {
+                result = o[0]
+            }
+        }
+        result
     }
 
-    // No match by identifier, try and match by name
-    if ( result == null ) {
-      // log.debug("Match by name ${name}");
-      def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?",[name.toLowerCase()])
-      if ( o.size() > 0 ) {
-        result = o[0]
-      }
-    }
+    static def lookupOrCreate(name, sector, consortium, identifiers, iprange) {
 
-    if ( result == null ) {
-      // log.debug("Create new entry for ${name}");
-      if (sector instanceof String){
-        sector = RefdataCategory.lookupOrCreate('OrgSector', sector)
-      }
+        def result = Org.lookup(name, identifiers)
 
-      result = new Org(
-                       name:name, 
-                       sector:sector,
-                       ipRange:iprange,
-                       impId:java.util.UUID.randomUUID().toString()).save()
+        if ( result == null ) {
+          // log.debug("Create new entry for ${name}");
+          if (sector instanceof String){
+            sector = RefdataCategory.lookupOrCreate('OrgSector', sector)
+          }
 
-      identifiers.each { k,v ->
-          def io = new IdentifierOccurrence(org:result, identifier:Identifier.lookupOrCreateCanonicalIdentifier(k,v)).save()
-      }
+          result = new Org(
+                           name:name,
+                           sector:sector,
+                           ipRange:iprange,
+                           impId:java.util.UUID.randomUUID().toString()).save()
 
-      if ( ( consortium != null ) && ( consortium.length() > 0 ) ) {
-        def db_consortium = Org.lookupOrCreate(consortium, null, null, [:], null)
-        def consLink = new Combo(fromOrg:result,
-                                 toOrg:db_consortium,
-                                 status:null,
-                                 type: RefdataCategory.lookupOrCreate('Combo Type', 'Consortium')).save()
-      }
-    }
+          identifiers.each { k,v ->
+              def io = new IdentifierOccurrence(org:result, identifier:Identifier.lookupOrCreateCanonicalIdentifier(k,v)).save()
+          }
+
+          if ( ( consortium != null ) && ( consortium.length() > 0 ) ) {
+            def db_consortium = Org.lookupOrCreate(consortium, null, null, [:], null)
+            def consLink = new Combo(fromOrg:result,
+                                     toOrg:db_consortium,
+                                     status:null,
+                                     type: RefdataCategory.lookupOrCreate('Combo Type', 'Consortium')).save()
+          }
+        }
  
-    result 
-  }
+        result
+    }
 
   @Transient
   static def oaiConfig = [

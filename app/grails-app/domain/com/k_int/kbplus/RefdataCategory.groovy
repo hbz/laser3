@@ -84,6 +84,16 @@ class RefdataCategory extends I10nTranslatableAbstract {
         result
     }
 
+    static def getByI10nDesc(desc) {
+
+        def i10n = I10nTranslation.findByReferenceClassAndReferenceFieldAndValueDeIlike(
+                RefdataCategory.class.name, 'desc', "${desc}"
+        )
+        def rdc   = RefdataCategory.get(i10n?.referenceId)
+
+        rdc
+    }
+
     static def lookupOrCreate(String category_name, String icon, String value) {
         def result = lookupOrCreate(category_name, value)
         result.icon = icon

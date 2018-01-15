@@ -46,7 +46,7 @@ class ESSearchService{
         log.debug("index:${grailsApplication.config.aggr_es_index} query: ${query_str}");
   
         def search = esclient.search{
-          indices grailsApplication.config.aggr_es_index ?: "kbplus"
+          indices grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX
           source {
             from = params.offset
             size = params.max

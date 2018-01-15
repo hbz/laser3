@@ -71,8 +71,25 @@ class Person extends BaseDomainComponent {
     String toString() {
         last_name + ', ' + first_name + ' ' + middle_name + ' (' + id + ')'
     }
-    
-    // TODO implement existing check (lookup)
+
+    static def lookup(firstName, lastName, tenant, isPublic, org, functionType) {
+
+        // TODO middleName
+        // TODO gender
+
+        def person
+        def p = Person.executeQuery(
+            "select p from Person as p, PersonRole as pr where pr.prs = p and p.first_name = ? and p.last_name = ? and p.tenant = ? and p.isPublic = ? and pr.org = ? and pr.functionType = ? order by p.id asc",
+            [firstName, lastName, tenant, isPublic, org, functionType]
+        )
+
+        if ( p.size() > 0 ) {
+            person = p[0]
+        }
+
+        person
+    }
+
     // TODO implement responsibilityType
     static def lookupOrCreateWithPersonRole(firstName, middleName, lastName, gender, tenant, isPublic, org, functionType) {
         
@@ -84,20 +101,13 @@ class Person extends BaseDomainComponent {
         if (middleName=='')
             middleName = null
             
-        def check = Person.findAllWhere(
-            first_name:  firstName,
-            middle_name: middleName,
-            last_name:   lastName,
-            gender:      gender,
-            tenant:      tenant,
-            isPublic:    isPublic, 
-            ).sort({id: 'asc'})
-            
-        if (check.size()>0) {
-            resultPerson = check.get(0)
+        def check = Person.lookup(firstName, lastName, tenant, isPublic, org, functionType)
+
+        if (check) {
+            resultPerson = check
             info += " > ignored/duplicate"
         }
-        else{
+        else {
             resultPerson = new Person(
                 first_name:  firstName,
                 middle_name: middleName,
@@ -107,7 +117,7 @@ class Person extends BaseDomainComponent {
                 isPublic:    isPublic
                 )
                 
-            if (!resultPerson.save()) {
+            if (! resultPerson.save()) {
                 resultPerson.errors.each{ println it }
             }
             else {
@@ -119,21 +129,10 @@ class Person extends BaseDomainComponent {
         if (resultPerson) {
             info = "saving new personRole: ${resultPerson} - ${functionType} - ${org}"
             
-            check = PersonRole.findAllWhere(
-                functionType:   functionType,
-                prs:        resultPerson,
-                lic:        null,
-                org:        org,
-                cluster:    null,
-                pkg:        null,
-                sub:        null,
-                title:      null,
-                start_date: null,
-                end_date:   null
-                ).sort({id: 'asc'})
+            check = PersonRole.lookup(resultPerson, null,  org, null, null, null, null, null, null, functionType)
                 
-            if (check.size()>0) {
-                resultPersonRole = check.get(0)
+            if (check) {
+                resultPersonRole = check
                 info += " > ignored/duplicate"
             }
             else {
@@ -150,7 +149,7 @@ class Person extends BaseDomainComponent {
                     end_date:   null
                     )
                     
-                if (!resultPersonRole.save()) {
+                if (! resultPersonRole.save()) {
                     resultPersonRole.errors.each{ println it }
                 }
                 else {

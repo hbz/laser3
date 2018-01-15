@@ -43,9 +43,14 @@ class Contact {
     
     // TODO implement existing check (lookup)
     static def lookupOrCreate(content, contentType, type, person, organisation) {
-        
+
         def info   = "saving new contact: ${content} ${contentType} ${type}"
         def result = null
+
+        if (! content) {
+            log.debug( info + " > ignored; empty content")
+            return
+        }
 
         if(person && organisation){
             type = RefdataValue.findByValue("Job-related")
@@ -76,7 +81,7 @@ class Contact {
                 result.errors.each{ println it }
             }
             else {
-                info += " > ok"
+                info += " > OK"
             }
         }
         

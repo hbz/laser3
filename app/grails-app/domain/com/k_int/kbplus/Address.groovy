@@ -62,13 +62,16 @@ class Address {
     // TODO implement existing check (lookup)
     static def lookupOrCreate(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
         
-        def info   = "saving new address: ${type}"
+        def info   = "saving new address: ${type}}"
+
         def result = null
         
-        if(person && organisation){
+        if (person && organisation) {
             type = RefdataValue.findByValue("Job-related")
         }
-
+        if (! postbox) {
+            postbox = null
+        }
         def check = Address.findAllWhere(
             street_1: street1,
             street_2: street2,
@@ -84,7 +87,7 @@ class Address {
             
         if(check.size()>0){
             result = check.get(0)
-            info += " > ignored/duplicate"
+            info += " > ignored; duplicate found"
         }
         else{
             result = new Address(
@@ -104,7 +107,7 @@ class Address {
                 result.errors.each{ println it }
             }
             else {
-                info += " > ok"
+                info += " > OK"
             }
         }
              

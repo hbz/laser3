@@ -38,7 +38,7 @@
     <div id="collapseableSubDetails" class="ui grid">
         <div class="twelve wide column">
 
-            <h4 class="ui header">${message(code:'subscription.information.label', default:'Subscription Information')}</h4>
+            <!--<h4 class="ui header">${message(code:'subscription.information.label', default:'Subscription Information')}</h4>-->
 
             <div class="inline-lists">
 

@@ -1,5 +1,9 @@
 {
   "properties": {
+    "guid": {
+      "type": "string",
+      "analyzer": "snowball"
+    },
     "name": {
       "type": "string",
       "analyzer": "snowball"
