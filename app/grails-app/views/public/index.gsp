@@ -12,12 +12,12 @@
         <div class="ui top fixed hidden inverted  menu la-fixed-menu">
             <div class="ui container">
                 <img class="logo" src="images/laser.svg"/>
-                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">Über LAS:eR</a>
+                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about', default: 'About')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" class="item" target="_blank">Wiki</a>
 
                 <div class="right item">
                     <g:link controller="home" action="index" class="ui button blue">
-                        ${message(code: 'template.loginDiv.label', default: 'Member Login')}
+                        ${message(code: 'landingpage.login', default: 'Login')}
                     </g:link>
                 </div>
             </div>
@@ -29,31 +29,31 @@
         <div class="ui inverted menu la-top-menu">
             <div class="ui container">
                 <img class="logo" src="images/laser.svg"/>
-                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">Über LAS:eR</a>
+                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about', default: 'About')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" class="item" target="_blank">Wiki</a>
 
                 <div class="right item">
                     <g:link controller="home" action="index" class="ui button blue">
-                        ${message(code: 'template.loginDiv.label', default: 'LAS:eR Member Login')}
+                        ${message(code: 'landingpage.login', default: 'Login')}
                     </g:link>
                 </div>
             </div>
         </div>
         <!-- HERO -->
-        <div class="ui  masthead center aligned segment hero-image">
+        <div class="ui  masthead center aligned segment">
             <div class="ui container">
 
                 <div class="ui grid ">
                     <div class="five wide column la-hero left aligned ">
                         <h1 class="ui inverted header ">
-                            Lorem ipsum dolor sit amet, consetetur.
+                            ${message(code: 'landingpage.hero.h1')}
                         </h1>
                         <h2 style="padding-bottom: 1rem;">
-                            Eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua, sadipscing elitr, sed diam nonumy, ut labore et dolore magna aliquyam erat.
+                            ${message(code: 'landingpage.hero.h2')}
                         </h2>
 
                         <div class="ui huge button">
-                            Mehr erfahren<i class="right arrow icon"></i>
+                            ${message(code: 'landingpage.hero.button')}<i class="right arrow icon"></i>
                         </div>
                     </div>
                 </div>
@@ -70,9 +70,7 @@
                     </div>
 
                     <a class="ui basic blue left pointing  label la-eye-catcher-txt">
-
-                            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.
-
+                        ${message(code: 'landingpage.news')}
                     </a>
                 </div>
 
@@ -87,40 +85,40 @@
                     <div class="four wide column">
                         <img src="http://placehold.it/250x150/eeeeee/a1a1a1">
 
-                        <h3 class="ui header">Optimierte Lizenzverwaltung</h3>
+                        <h3 class="ui header">${message(code: 'landingpage.feature.1.head')}</h3>
 
                         <p><span
-                                class="la-lead">Endlich alle Informationen an einem Ort</span> LAs:eR ermöglicht die vollumfängliche Verwaltung von eRessourcen in einem System inklusive Konsortial- und Nationallizenzen. Alle benötigten Vertragsinformationen wie Laufzeit, Preis, Zugriffsbeschränkungen und Fernleihinformationen werden vorgehalten und für Konsortial- und Nationallizenzen zentral gepflegt.
+                                class="la-lead">${message(code: 'landingpage.feature.1.lead')}</span> ${message(code: 'landingpage.feature.1.bodycopy')}
                         </p>
                     </div>
 
                     <div class="four wide column">
                         <img src="http://placehold.it/250x150/eeeeee/a1a1a1">
 
-                        <h3 class="ui header">Integrierte Zugriffsstatistiken</h3>
+                        <h3 class="ui header">${message(code: 'landingpage.feature.2.head')}</h3>
 
                         <p><span
-                                class="la-lead">Behalten Sie den Überblick über die Nutzung Ihrer eRessourcen</span> LAS:eR bietet durch die Integration des Nationalen Statistikservers Zugriff auf die Statistiken der lizenzierten Angebote und ermöglicht weiterführende Auswertungen wie die Cost-per-Download-Analyse.
+                                class="la-lead">${message(code: 'landingpage.feature.2.lead')}</span> ${message(code: 'landingpage.feature.2.bodycopy')}
                         </p>
                     </div>
 
                     <div class="four wide column">
                         <img src="http://placehold.it/250x150/eeeeee/a1a1a1">
 
-                        <h3 class="ui header">Standardisierte Exportschnittstellen</h3>
+                        <h3 class="ui header">${message(code: 'landingpage.feature.3.head')}</h3>
 
                         <p><span
-                                class="la-lead">Nutzen Sie LAs:eR als qualitativ hochwertige Quelle für Ihre konsortialen Lizenzteilnahmen</span> Offene Schnittstellen ermöglichen die Übernahme von Daten aus LAS:eR in cloudbasierte Bibliothekssysteme mit ERM-Modul und andere Drittsysteme.
+                                class="la-lead">${message(code: 'landingpage.feature.3.lead')}</span> ${message(code: 'landingpage.feature.3.bodycopy')}
                         </p>
                     </div>
 
                     <div class="four wide column">
                         <img src="http://placehold.it/250x150/eeeeee/a1a1a1">
 
-                        <h3 class="ui header">Effiziente Interaktionsmöglichkeiten</h3>
+                        <h3 class="ui header">${message(code: 'landingpage.feature.4.head')}</h3>
 
                         <p><span
-                                class="la-lead">Gemeinsam mehr erreichen durch bessere Abstimmung</span> LAS:eR bietet zahlreiche Funktionen für die Kommunikation zwischen Konsortialführer und Teilnehmern: Renewals, Produktumfragen und Testwünsche lassen sich einfach organisieren und können im Anschluss direkt für die Übermittlung an den Anbieter aufbereitet werden.
+                                class="la-lead">${message(code: 'landingpage.feature.4.lead')}</span> ${message(code: 'landingpage.feature.4.bodycopy')}
                         </p>
                     </div>
                 </div>
@@ -128,7 +126,7 @@
                 <div class="ui center aligned segment"
                      style="background: transparent!important; border: none!important;box-shadow: none!important; webkit-box-shadow: none;">
                     <div class="ui huge blue button">
-                        Informationen anfordern<i class="right arrow icon"></i>
+                        ${message(code: 'landingpage.feature.button')}<i class="right arrow icon"></i>
                     </div>
                 </div>
             </div>
@@ -138,65 +136,50 @@
 
         <div class="ui inverted vertical footer segment ">
             <div class="ui container">
-                <div class="ui stackable inverted divided equal height stackable grid">
-                    <div class="three wide column">
-                        <h4 class="ui inverted header">
-                            Kontakt
-                        </h4>
+                <div class="ui stackable inverted divided equal height stackable grid center aligned">
 
-                        <div class="ui inverted link list">
-                            <a class="item" href="homepage.html#">Ansprechpartner</a><a class="item"
-                                                                                        href="homepage.html#">Anfahrt</a><a
-                                class="item" href="homepage.html#">Impressum</a>
-                        </div>
-                    </div>
+                        <div class="three wide column left aligned">
+                            <h4 class="ui inverted header">
+                                ${message(code: 'landingpage.footer.1.head')}
+                            </h4>
 
-                    <div class="three wide column">
-                        <h4 class="ui inverted header">
-                            Lorem Ipsum
-                        </h4>
-
-                        <div class="ui inverted link list">
-                            <a class="item" href="homepage.html#">Lorem Ipsum</a><a class="item"
-                                                                                        href="homepage.html#">Anfahrt</a><a
-                                class="item" href="homepage.html#">Lorem Ipsum/a>
-                        </div>
-                    </div>
-
-
-
-
-
-                    <div class="three wide column">
-                        <h4 class="ui inverted header">Technische Details</h4>
-                        <div class="ui inverted link list">
-                            <a class="item" href="https://github.com/hbz/laser">
-                            Version ${grailsApplication.metadata['app.version']}
-                            <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
-                            // ${grailsApplication.metadata['app.buildDate']}
-                            </a>
-                            <a class="item" href="https://github.com/hbz/laser">GitHub
-
-                            </a>
-                        </div>
-                    </div>
-                    <div class="six wide column">
-                        <h4 class="ui inverted header">Kontakt</h4>
-                        <form clas="ui form">
-                            <div class="ui four wide inverted input">
-                                <input style="background-color: #777777" type="email"  id="exampleInputEmail1" placeholder="Enter email">
+                            <div class="ui inverted link list">
+                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.1.link1')}</a>
+                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.1.link2')}</a>
+                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.1.link3')}</a>
                             </div>
-                            <div class="ui four wide inverted field" style="padding: 1rem 0" >
-                                <textarea style="background-color: #777777" rows="2"   id="exampleMessage" placeholder="Message"></textarea>
+                        </div>
+
+                        <div class="three wide column left aligned">
+                            <h4 class="ui inverted header">
+                            ${message(code: 'landingpage.footer.2.head')}</a>
+                            </h4>
+
+                            <div class="ui inverted link list">
+                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link1')}</a></a>
+                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link2')}</a></a>
+                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link3')}</a></a>
                             </div>
-                            <div class="ui button"  tabindex="0">Abschicken</div>
-                        </form>
-                    </div>
+                        </div>
+
+                        <div class="three wide column left aligned">
+                            <h4 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</a></h4>
+                            <div class="ui inverted link list">
+                                <a class="item" href="https://github.com/hbz/laser">
+                                Version ${grailsApplication.metadata['app.version']}
+                                <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
+                                // ${grailsApplication.metadata['app.buildDate']}
+                                </a>
+                                <a class="item" href="https://github.com/hbz/laser">${message(code: 'landingpage.footer.3.link1')}</a>
+
+                                </a>
+                            </div>
+                        </div>
 
                 </div>
 
-                <div class="ui segment ">
-                    <p >
+                <div class="ui center aligned segment inverted">
+                    <p class="" >
                         © 2017 Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
                     </p>
                 </div>
@@ -220,13 +203,6 @@
         border: none !important;
     }
 
-    .hero-image {
-        background-image: url('images/landingpage/hero.png') !important;
-        background-repeat: no-repeat !important;
-        background-position: top center !important;
-        border: none !important;
-    }
-
     .la-fixed-menu {
         height: 70px;
     }
@@ -236,6 +212,10 @@
     }
 
     .masthead.segment {
+        background-image: url('images/landingpage/hero.png') !important;
+        background-repeat: no-repeat !important;
+        background-position: top center !important;
+        border: none !important;
         min-height: 450px;
         margin: 0;
         padding: 0;
@@ -253,14 +233,6 @@
     h3 {
         color: #2d6697 !important;
     }
-    .segment {
-        padding: 30px 0;
-    }
-
-
-
-
-
 
 
 
