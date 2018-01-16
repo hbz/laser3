@@ -62,10 +62,10 @@
         </div>
 
         <!-- NEWS -->
-        <div class="ui sequment la-eye-catcher">
+        <div class="ui segment la-eye-catcher">
             <div class="ui container">
-                <div class="ui labeled button" tabindex="0" style="width: 1127px!important">
-                    <div class="ui blue button">
+                <div class="ui labeled button" tabindex="0" >
+                    <div class="ui blue button la-eye-catcher-header">
                         <h1>NEWS</h1>
                     </div>
 
@@ -80,8 +80,8 @@
 
         </div>
 
-        <!-- SEQUMENT -->
-        <div class="ui sequment">
+        <!-- segment -->
+        <div class="ui segment">
             <div class="ui container">
                 <div class="ui grid">
                     <div class="four wide column">
@@ -195,25 +195,13 @@
 
                 </div>
 
-                <div class="ui sequment ">
+                <div class="ui segment ">
                     <p >
                         © 2017 Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
                     </p>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="ui segment" >
-
-
-    <div class="ui labeled button" tabindex="0">
-        <div class="ui red button">
-            <h1>NEWS</h1>
-        </div>
-        <a class="ui basic red left pointing label" style="text-align:left">
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.                       Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.                       Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        </a>
     </div>
 </div>
 
@@ -265,7 +253,7 @@
     h3 {
         color: #2d6697 !important;
     }
-    .sequment {
+    .segment {
         padding: 30px 0;
     }
 

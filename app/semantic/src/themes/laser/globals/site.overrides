@@ -31,8 +31,12 @@
         text-align: left;
         line-height: 1.6em!important;
         background-color:#d7c4b2!important;
-                background-color:red!important;
         color:#544e48!important;
         font-weight:400!important;
+
+    }
+    .la-eye-catcher-header {
+          display: flex!important;
+          align-items: center!important;
     }
 }
