@@ -8,7 +8,6 @@
  * http://opensource.org/licenses/MIT
  *
  */
-@import url('https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin');
 /*!
  * # Semantic UI 2.2.13 - Reset
  * http://github.com/semantic-org/semantic-ui/
@@ -656,9 +655,8 @@ a {
 }
 
 a:hover {
-  color: #1e70bf;
-  -webkit-text-decoration: underline solid #4183C4;
-  text-decoration: underline solid #4183C4;
+  color: #39a1f2;
+  text-decoration: none;
 }
 
 /*******************************
@@ -14350,7 +14348,7 @@ ol.ui.list ol li,
 
 .ui.list .list > a.item:hover,
 .ui.list > a.item:hover {
-  color: #1e70bf;
+  color: #39a1f2;
 }
 
 /* Linked Item Icons */
@@ -14370,7 +14368,7 @@ ol.ui.list ol li,
 
 .ui.list .list > .item a.header:hover,
 .ui.list > .item a.header:hover {
-  color: #1e70bf !important;
+  color: #39a1f2 !important;
 }
 
 /* Floated Content */
@@ -14546,7 +14544,7 @@ ol.ui.list ol li,
 
 .ui.inverted.list .list > a.item:hover,
 .ui.inverted.list > a.item:hover {
-  color: #1e70bf;
+  color: #39a1f2;
 }
 
 /* Linking Content */
@@ -14556,7 +14554,7 @@ ol.ui.list ol li,
 }
 
 .ui.inverted.list .item a:not(.ui):hover {
-  color: #1e70bf !important;
+  color: #39a1f2 !important;
 }
 
 /*-------------------
@@ -16957,10 +16955,6 @@ ol.ui.horizontal.list li:before,
 .ui.massive.segment {
   font-size: 1.71428571rem;
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 
 /*******************************
          Site Overrides
