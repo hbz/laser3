@@ -196,3 +196,30 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         Global Overrides
 *******************************/
 
+.landingpage {
+  background-color: #e8dfd5;
+}
+.landingpage .ui.menu .item {
+  font-weight: 900;
+}
+.landingpage .logo {
+  width: 144px;
+  padding-right: 2rem;
+}
+.landingpage .la-lead {
+  font-size: 14px;
+  font-weight: 900;
+  display: block;
+}
+.la-eye-catcher .labeled.button {
+  width: 100%;
+}
+.la-eye-catcher .label.la-eye-catcher-txt {
+  white-space: normal!important;
+  text-align: left;
+  line-height: 1.6em!important;
+  background-color: #d7c4b2!important;
+  background-color: red!important;
+  color: #544e48!important;
+  font-weight: 400!important;
+}

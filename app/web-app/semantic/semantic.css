@@ -755,6 +755,39 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 /*******************************
         Global Overrides
 *******************************/
+
+.landingpage {
+  background-color: #e8dfd5;
+}
+
+.landingpage .ui.menu .item {
+  font-weight: 900;
+}
+
+.landingpage .logo {
+  width: 144px;
+  padding-right: 2rem;
+}
+
+.landingpage .la-lead {
+  font-size: 14px;
+  font-weight: 900;
+  display: block;
+}
+
+.la-eye-catcher .labeled.button {
+  width: 100%;
+}
+
+.la-eye-catcher .label.la-eye-catcher-txt {
+  white-space: normal!important;
+  text-align: left;
+  line-height: 1.6em!important;
+  background-color: #d7c4b2!important;
+  background-color: red!important;
+  color: #544e48!important;
+  font-weight: 400!important;
+}
 /*!
  * # Semantic UI 2.2.13 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -2811,9 +2844,9 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.inverted.blue.buttons .button,
 .ui.inverted.blue.button {
   background-color: transparent;
-  -webkit-box-shadow: 0px 0px 0px 2px #54C8FF inset !important;
-  box-shadow: 0px 0px 0px 2px #54C8FF inset !important;
-  color: #54C8FF;
+  -webkit-box-shadow: 0px 0px 0px 2px #39a1f2 inset !important;
+  box-shadow: 0px 0px 0px 2px #39a1f2 inset !important;
+  color: #39a1f2;
 }
 
 .ui.inverted.blue.buttons .button:hover,
@@ -2831,22 +2864,22 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.inverted.blue.buttons .button:hover,
 .ui.inverted.blue.button:hover {
-  background-color: #3ac0ff;
+  background-color: #1797fb;
 }
 
 .ui.inverted.blue.buttons .button:focus,
 .ui.inverted.blue.button:focus {
-  background-color: #2bbbff;
+  background-color: #0391ff;
 }
 
 .ui.inverted.blue.buttons .active.button,
 .ui.inverted.blue.active.button {
-  background-color: #3ac0ff;
+  background-color: #1397ff;
 }
 
 .ui.inverted.blue.buttons .button:active,
 .ui.inverted.blue.button:active {
-  background-color: #21b8ff;
+  background-color: #0f8ae9;
 }
 
 /* Inverted Basic */
@@ -2863,33 +2896,33 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.inverted.blue.basic.buttons .button:hover,
 .ui.inverted.blue.buttons .basic.button:hover,
 .ui.inverted.blue.basic.button:hover {
-  -webkit-box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
-  box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
-  color: #54C8FF !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #1797fb inset !important;
+  box-shadow: 0px 0px 0px 2px #1797fb inset !important;
+  color: #39a1f2 !important;
 }
 
 .ui.inverted.blue.basic.buttons .button:focus,
 .ui.inverted.blue.basic.buttons .button:focus,
 .ui.inverted.blue.basic.button:focus {
-  -webkit-box-shadow: 0px 0px 0px 2px #2bbbff inset !important;
-  box-shadow: 0px 0px 0px 2px #2bbbff inset !important;
-  color: #54C8FF !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #0391ff inset !important;
+  box-shadow: 0px 0px 0px 2px #0391ff inset !important;
+  color: #39a1f2 !important;
 }
 
 .ui.inverted.blue.basic.buttons .active.button,
 .ui.inverted.blue.buttons .basic.active.button,
 .ui.inverted.blue.basic.active.button {
-  -webkit-box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
-  box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
-  color: #54C8FF !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #1397ff inset !important;
+  box-shadow: 0px 0px 0px 2px #1397ff inset !important;
+  color: #39a1f2 !important;
 }
 
 .ui.inverted.blue.basic.buttons .button:active,
 .ui.inverted.blue.buttons .basic.button:active,
 .ui.inverted.blue.basic.button:active {
-  -webkit-box-shadow: 0px 0px 0px 2px #21b8ff inset !important;
-  box-shadow: 0px 0px 0px 2px #21b8ff inset !important;
-  color: #54C8FF !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #0f8ae9 inset !important;
+  box-shadow: 0px 0px 0px 2px #0f8ae9 inset !important;
+  color: #39a1f2 !important;
 }
 
 /*--- Green ---*/
@@ -7832,7 +7865,7 @@ i.blue.icon {
 }
 
 i.inverted.blue.icon {
-  color: #54C8FF !important;
+  color: #39a1f2 !important;
 }
 
 i.inverted.bordered.blue.icon,
