@@ -19,7 +19,6 @@
         font-weight: 900;
         display: block;
     }
-
 }
 .la-eye-catcher {
     .labeled.button{
@@ -33,7 +32,6 @@
         background-color:#d7c4b2!important;
         color:#544e48!important;
         font-weight:400!important;
-
     }
     .la-eye-catcher-header {
           display: flex!important;

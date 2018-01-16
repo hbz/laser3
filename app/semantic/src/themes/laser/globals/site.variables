@@ -135,11 +135,11 @@
        Links
 --------------------*/
 
-@linkColor           : #4183C4;
+@linkColor           : @blue
 @linkUnderline       : none;
-@linkHoverColor      : darken(saturate(@linkColor, 20), 15, relative);
-@linkHoverUnderline  : underline solid #4183C4;
-@linkHoverUnderline  : underline solid #4183C4;
+@linkHoverColor      : @lightBlue;
+@linkHoverUnderline  : none;
+@linkHoverUnderline  : none;
 
 /*-------------------
     Scroll Bars
