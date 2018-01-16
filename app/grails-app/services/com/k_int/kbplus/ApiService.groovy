@@ -242,6 +242,8 @@ class ApiService {
             def org = Org.lookup(inst.name?.text(), identifiers)
             if (! org) {
                 org = Org.lookupOrCreate(inst.name?.text(), null, null, identifiers, null)
+                org.sector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
+
                 log.debug("#${(count--)} -- creating new org: " + inst.name?.text() + " / " + identifiers)
             }
             else {

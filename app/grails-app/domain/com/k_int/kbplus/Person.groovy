@@ -78,15 +78,14 @@ class Person extends BaseDomainComponent {
         // TODO gender
 
         def person
-        def p = Person.executeQuery(
+        def check = Person.executeQuery(
             "select p from Person as p, PersonRole as pr where pr.prs = p and p.first_name = ? and p.last_name = ? and p.tenant = ? and p.isPublic = ? and pr.org = ? and pr.functionType = ? order by p.id asc",
             [firstName, lastName, tenant, isPublic, org, functionType]
         )
 
-        if ( p.size() > 0 ) {
-            person = p[0]
+        if ( check.size() > 0 ) {
+            person = check.get(0)
         }
-
         person
     }
 
@@ -153,7 +152,7 @@ class Person extends BaseDomainComponent {
                     resultPersonRole.errors.each{ println it }
                 }
                 else {
-                    info += " > ok"
+                    info += " > OK"
                 }
             }
             LogFactory.getLog(this).debug(info)

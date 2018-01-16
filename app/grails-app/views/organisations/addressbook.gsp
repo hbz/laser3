@@ -31,16 +31,15 @@ import="com.k_int.kbplus.RefdataCategory"
 			<g:render template="/person/formModal" model="['org': orgInstance, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
 		</div>
 		
-		
-        <dl>
-			<g:if test="${visiblePersons}">
-				<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+
+		<g:if test="${visiblePersons}">
+			<h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
+			<div class="ui divided list">
 				<g:each in="${visiblePersons}" var="p">
 					<g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
 				</g:each>
-			</g:if>
-				
-		</dl>
+			</div>
+		</g:if>
 
   </body>
 </html>
