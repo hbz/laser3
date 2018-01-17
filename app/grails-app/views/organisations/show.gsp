@@ -32,7 +32,12 @@
             <dd>
                 <semui:xEditable owner="${orgInstance}" field="shortname"/>
             </dd>
-
+            <!--
+            <dt><g:message code="org.shortcode.label" default="Shortcode" /></dt>
+            <dd>
+                <semui:xEditable owner="${orgInstance}" field="shortcode"/>
+            </dd>
+            -->
             <dt><g:message code="org.sortname.label" default="Sortname" /></dt>
             <dd>
                 <semui:xEditable owner="${orgInstance}" field="sortname"/>
@@ -147,6 +152,7 @@
             	<semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
             </dd>
 
+            <!--
             <dt><g:message code="org.membership.label" default="Membership Organisation" /></dt>
             <dd>
                 <g:if test="${editable}">
@@ -156,6 +162,7 @@
                     <g:fieldValue bean="${orgInstance}" field="membership"/>
                 </g:else>
             </dd>
+            -->
 
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
             <dd>

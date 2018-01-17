@@ -459,7 +459,7 @@ class AjaxController {
       def cq = RefdataValue.executeQuery(config.countQry,query_params);
       def rq = RefdataValue.executeQuery(config.rowQry,
                                 query_params,
-                                [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
+                                [max:params.iDisplayLength?:100,offset:params.iDisplayStart?:0]);
 
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)

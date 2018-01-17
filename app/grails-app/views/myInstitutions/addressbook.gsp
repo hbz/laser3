@@ -39,11 +39,18 @@ import="com.k_int.kbplus.RefdataCategory"
 
             <g:if test="${visiblePersons}">
                 <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
+
+                <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
+
+                <% /*
+                <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
                 <div class="ui divided list">
+
                     <g:each in="${visiblePersons}" var="p">
                         <g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
                     </g:each>
                 </div>
+                */ %>
             </g:if>
 
         </div>

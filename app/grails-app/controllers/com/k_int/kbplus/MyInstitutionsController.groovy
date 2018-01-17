@@ -2570,10 +2570,10 @@ AND EXISTS (
         def result = setResultGenerics()
         
         def visiblePersons = []
-        def prs = Person.findAll("from Person as P where P.tenant = ${result.institution.id}")
+        def prs = Person.findAllByTenant(result.institution, [sort: "last_name", order: "asc"])
 
         prs?.each { p ->
-            if(p?.isPublic?.value == 'No'){
+            if (p?.isPublic?.value == 'No') {
                 visiblePersons << p
             }
         }
