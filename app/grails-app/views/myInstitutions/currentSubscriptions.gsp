@@ -122,7 +122,7 @@
                     <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
                         <g:link controller="myInstitutions" action="actionCurrentSubscriptions" class="ui negative button"
                                 params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}"
-                                onclick="return confirm('${message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')])}')">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                                onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(s.name?:'this subscription')])}')">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                     </g:if>
                 </td>
             </tr>

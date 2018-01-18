@@ -1,16 +1,15 @@
 <%@ page import="com.k_int.kbplus.*" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.list.label" args="[entityName]" /></title>
-  </head>
-  <body>
-    <div>
-
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.list.label" args="[entityName]" /></title>
+    </head>
+    <body>
 
         <h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
+
         <semui:messages data="${flash}" />
 
         <semui:filter>
@@ -30,7 +29,7 @@
               <g:sortableColumn property="type" title="${message(code: 'org.type.label', default: 'Type')}" />
               <g:sortableColumn property="sector" title="${message(code: 'org.sector.label', default: 'Sector')}" />
               <g:sortableColumn property="scope" title="${message(code: 'org.scope.label', default: 'Scope')}" />
-              <g:sortableColumn property="membership" title="${message(code: 'org.membership.label', default: 'Membership')}" />
+              <!--<g:sortableColumn property="membership" title="${message(code: 'org.membership.label', default: 'Membership')}" />-->
             </tr>
           </thead>
           <tbody>
@@ -41,14 +40,13 @@
               <td>${orgInstance?.orgType?.getI10n('value')}</td>
               <td>${orgInstance?.sector?.getI10n('value')}</td>
               <td>${fieldValue(bean: orgInstance, field: "scope")}</td>
-              <td>${orgInstance?.membership?.getI10n('value')}</td>
+              <!--<td>${orgInstance?.membership?.getI10n('value')}</td>-->
             </tr>
           </g:each>
           </tbody>
         </table>
 
-          <semui:paginate total="${orgInstanceTotal}" params="${params}" />
+        <semui:paginate total="${orgInstanceTotal}" params="${params}" />
 
-    </div>
-  </body>
+    </body>
 </html>
