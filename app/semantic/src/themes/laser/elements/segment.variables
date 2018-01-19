@@ -11,12 +11,12 @@
 @border: none;
 
 @boxShadow: none;
-@verticalPadding: 1em;
-@horizontalPadding: 1em;
+@verticalPadding: 1rem;
+@horizontalPadding: 1rem;
 @padding: @verticalPadding @horizontalPadding;
 
 @verticalMargin: 1rem;
-@horizontalMargin: 0em;
+@horizontalMargin: 0rem;
 @margin: @verticalMargin @horizontalMargin;
 @borderRadius: none;
 

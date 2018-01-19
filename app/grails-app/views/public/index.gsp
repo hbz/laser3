@@ -129,9 +129,9 @@
 
                 <div class="ui center aligned segment"
                      style="background: transparent!important; border: none!important;box-shadow: none!important; webkit-box-shadow: none;">
-                    <div class="ui huge blue button">
+                    <a href="mailto:laser@hbz-nrw.de" class="ui huge blue button">
                         ${message(code: 'landingpage.feature.button')}<i class="right arrow icon"></i>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -148,9 +148,9 @@
                             </h4>
 
                             <div class="ui inverted link list">
-                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.1.link1')}</a>
-                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.1.link2')}</a>
-                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.1.link3')}</a>
+                                <a class="item" href="mailto:laser@hbz-nrw.de">${message(code: 'landingpage.footer.1.link1')}</a>
+                                <a taget="_blank" class="item" href="https://www.hbz-nrw.de/ueber-uns/kontakt/anreise">${message(code: 'landingpage.footer.1.link2')}</a>
+                                <a taget="_blank" class="item" href="homepage.html#">${message(code: 'landingpage.footer.1.link3')}</a>
                             </div>
                         </div>
 
@@ -160,9 +160,9 @@
                             </h4>
 
                             <div class="ui inverted link list">
-                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link1')}</a></a>
-                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link2')}</a></a>
-                                <a class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link3')}</a></a>
+                                <a taget="_blank" class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund">${message(code: 'landingpage.footer.2.link1')}</a></a>
+                                <a taget="_blank" class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link2')}</a></a>
+                                <a taget="_blank" class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link3')}</a></a>
                             </div>
                         </div>
 
@@ -194,86 +194,7 @@
 
 <style type="text/css">
 
-    .hidden.menu {
-        display: none;
-    }
 
-    .ui.inverted.menu.la-top-menu {
-        height: 70px;
-        margin: 0 !important;
-        border-radius: none !important;
-        border: none !important;
-    }
-
-    .la-fixed-menu {
-        height: 70px;
-    }
-
-    .la-hero {
-        padding-top: 7rem !important;
-    }
-
-    .masthead.segment {
-        background-image: url('images/landingpage/hero.jpg') !important;
-        background-repeat: no-repeat !important;
-        background-position: top center !important;
-        border: none !important;
-        min-height: 450px;
-        margin: 0;
-        padding: 0;
-    }
-    .masthead h1.ui.header{
-        font-size: 28px;
-        font-weight: 900;
-        text-align: left;
-    }
-    .masthead h2{
-        font-size: 1.3rem;
-        font-weight: normal;
-        text-align: left;
-    }
-    h3 {
-        color: #2d6697 !important;
-    }
-    .la-feature {
-        display: flex;
-        justify-content: center;
-    }
-    .la-feature svg {
-        height: 108px;
-    }
-
-
-
-    .footer.segment {
-        padding: 5em 0em;
-    }
-
-    .secondary.pointing.menu .toc.item {
-        display: none;
-    }
-
-    @media only screen and (max-width: 700px) {
-        .ui.fixed.menu {
-            display: none !important;
-        }
-
-
-
-        .masthead.segment {
-            min-height: 350px;
-        }
-
-        .masthead h1.ui.header {
-            font-size: 20px;
-            margin-top: 0;
-        }
-
-        .masthead h2 {
-            margin-top: 0.5em;
-            font-size: 14px;
-        }
-    }
     </style>
     <script>
         $(document)

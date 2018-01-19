@@ -18,8 +18,8 @@
   background: transparent;
   -webkit-box-shadow: none;
           box-shadow: none;
-  margin: 1rem 0em;
-  padding: 1em 1em;
+  margin: 1rem 0rem;
+  padding: 1rem 1rem;
   border-radius: none;
   border: none;
 }
@@ -78,11 +78,11 @@
 .ui.page.grid.segment,
 .ui.grid > .row > .ui.segment.column,
 .ui.grid > .ui.segment.column {
-  padding-top: 2em;
-  padding-bottom: 2em;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 .ui.grid.segment {
-  margin: 1rem 0em;
+  margin: 1rem 0rem;
   border-radius: none;
 }
 
@@ -94,7 +94,7 @@
           box-shadow: none;
 }
 .ui[class*="very basic"].table.segment {
-  padding: 1em 1em;
+  padding: 1rem 1rem;
 }
 
 
@@ -172,7 +172,7 @@
 --------------------*/
 
 .ui.stacked.segment {
-  padding-bottom: 1.4em;
+  padding-bottom: 1.4rem;
 }
 .ui.stacked.segments:before,
 .ui.stacked.segments:after,
@@ -284,7 +284,7 @@
       -ms-flex-direction: column;
           flex-direction: column;
   position: relative;
-  margin: 1rem 0em;
+  margin: 1rem 0rem;
   border: none;
   -webkit-box-shadow: none;
           box-shadow: none;
@@ -360,7 +360,7 @@
   background-color: transparent;
   -webkit-box-shadow: none;
           box-shadow: none;
-  margin: 1rem 0em;
+  margin: 1rem 0rem;
   border-radius: none;
   border: none;
 }
