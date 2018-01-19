@@ -92,7 +92,7 @@
                         <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
                     </g:link>
                     <g:if test="${s.owner}">
-                        <g:link class="icon ico-object-link sub-link-icon handshake" controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link>
+                        <g:link class="icon ico-object-link sub-link-icon law" controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link>
                     </g:if>
                   </td>
                     <td>
