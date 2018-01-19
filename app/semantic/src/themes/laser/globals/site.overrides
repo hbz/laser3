@@ -93,21 +93,29 @@
         }
     }
 }
-.la-eye-catcher {
-    .labeled.button{
-        width: 100%;
-    }
-    .label.la-eye-catcher-txt{
-        white-space: normal!important;
-
-        text-align: left;
-        line-height: 1.6em!important;
-        background-color:#d7c4b2!important;
-        color:#544e48!important;
-        font-weight:400!important;
-    }
-    .la-eye-catcher-header {
-          display: flex!important;
-          align-items: center!important;
+.ui {
+    &.la-eye-catcher {
+        .labeled.button{
+            width: 100%;
+            cursor: default!important;
+        }
+        .label.la-eye-catcher-txt{
+            white-space: normal!important;
+            cursor: default!important;
+            display: inline-block!important;
+            text-align: left;
+            line-height: 1.6em!important;
+            background-color:#d7c4b2!important;
+            color:#544e48!important;
+            font-weight:400!important;
+        }
+        .la-eye-catcher-header {
+            display: flex!important;
+            align-items: center!important;
+            cursor: default!important;
+            &.ui.blue.button:hover {
+                background-color: @blue!important;
+            }
+        }
     }
 }

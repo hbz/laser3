@@ -69,9 +69,13 @@
                         <h1>NEWS</h1>
                     </div>
 
-                    <a class="ui basic blue left pointing  label la-eye-catcher-txt">
-                        ${message(code: 'landingpage.news')}
-                    </a>
+                    <span class="ui basic blue left pointing  label la-eye-catcher-txt">
+                        ${message(code: 'landingpage.news.1')}
+                        <a target="_blank" href="https://terminplaner2.dfn.de/foodle/Webinartermin-Vorstellung-LAS-eR-Pilotversion-5a5c6">
+                        ${message(code: 'landingpage.news.2')}
+                        </a>
+                        ${message(code: 'landingpage.news.3')}
+                    </span>
                 </div>
 
             </div>

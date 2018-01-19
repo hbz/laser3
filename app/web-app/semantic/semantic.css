@@ -863,12 +863,15 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   }
 }
 
-.la-eye-catcher .labeled.button {
+.ui.la-eye-catcher .labeled.button {
   width: 100%;
+  cursor: default!important;
 }
 
-.la-eye-catcher .label.la-eye-catcher-txt {
+.ui.la-eye-catcher .label.la-eye-catcher-txt {
   white-space: normal!important;
+  cursor: default!important;
+  display: inline-block !important;
   text-align: left;
   line-height: 1.6em!important;
   background-color: #d7c4b2!important;
@@ -876,13 +879,18 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   font-weight: 400!important;
 }
 
-.la-eye-catcher .la-eye-catcher-header {
+.ui.la-eye-catcher .la-eye-catcher-header {
   display: -webkit-box!important;
   display: -ms-flexbox!important;
   display: flex!important;
   -webkit-box-align: center!important;
   -ms-flex-align: center!important;
   align-items: center!important;
+  cursor: default!important;
+}
+
+.ui.la-eye-catcher .la-eye-catcher-header.ui.blue.button:hover {
+  background-color: #2d6697 !important;
 }
 /*!
  * # Semantic UI 2.2.13 - Button
