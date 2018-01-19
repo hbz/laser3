@@ -1,0 +1,12 @@
+{
+  "properties": {
+    "guid": {
+      "type": "string",
+      "analyzer": "snowball"
+    },
+    "license": {
+      "type": "string",
+      "store": true
+    }
+  }
+}

@@ -24,9 +24,7 @@
       <semui:xEditable owner="${subscriptionInstance}" field="name" />
   </h1>
 
-  <g:render template="nav" />
-
-
+    <g:render template="nav" />
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
@@ -197,8 +195,12 @@
 
                <semui:xEditableRefData owner="${ie}" field="coreStatus" config='CoreStatus'/>
                 </td>
-                <td>
-                  <g:if test="${editable}"><g:link action="removeEntitlement" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">${message(code:'default.button.delete.label', default:'Delete')}</g:link></g:if>
+                <td class="x">
+                  <g:if test="${editable}">
+                      <g:link action="removeEntitlement" class="ui icon negative button" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">
+                          <i class="trash icon"></i>
+                      </g:link>
+                  </g:if>
 
 <!-- Review for use in LAS:eR
                   <g:if test="${institutional_usage_identifier}">

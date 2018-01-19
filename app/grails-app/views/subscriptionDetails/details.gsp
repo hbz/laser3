@@ -28,17 +28,64 @@
            <semui:xEditable owner="${subscriptionInstance}" field="name" />
        </h1>
 
-       <g:render template="nav" />
+        <g:render template="nav" />
 
-       <semui:messages data="${flash}" />
+        <semui:meta>
+            <div class="inline-lists">
 
-    <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
+                <g:if test="${subscriptionInstance.globalUID}">
+                    <dl>
+                        <dt><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
+                        <dd>
+                            <g:fieldValue bean="${subscriptionInstance}" field="globalUID"/>
+                        </dd>
+                    </dl>
+                </g:if>
+
+                <dl>
+                    <dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
+                    <dd>
+                        <table class="ui celled table">
+                            <thead>
+                            <tr>
+                                <th>${message(code:'default.authority.label', default:'Authority')}</th>
+                                <th>${message(code:'default.identifier.label', default:'Identifier')}</th>
+                                <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
+                            <g:each in="${subscriptionInstance.ids}" var="io">
+                                <tr>
+                                    <td>${io.identifier.ns.ns}</td>
+                                    <td>${io.identifier.value}</td>
+                                    <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${subscriptionInstance.class.name}:${subscriptionInstance.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'default.delete.label', args:["${message(code:'identifier.label')}"])}</g:link></g:if></td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
+                        <g:if test="${editable}">
+
+                            <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
+                                ${message(code:'identifier.select.text', args:['JC:66454'])}
+                            </semui:formAddIdentifier>
+
+                        </g:if>
+                    </dd>
+                </dl>
+
+            </div>
+        </semui:meta>
+
+        <semui:messages data="${flash}" />
+
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
 
     <div id="collapseableSubDetails" class="ui grid">
         <div class="twelve wide column">
 
-            <h4 class="ui header">${message(code:'subscription.information.label', default:'Subscription Information')}</h4>
+            <!--<h4 class="ui header">${message(code:'subscription.information.label', default:'Subscription Information')}</h4>-->
 
             <div class="inline-lists">
 
@@ -72,22 +119,30 @@
                     <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                 </dl>
 
-              <dl>
-                <dt>${message(code:'license')}</dt>
-                <dd>
-                  <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
-                    <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                    <g:if test="${subscriptionInstance.owner != null}">
-                    (
-                      <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> 
-                      <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
-                    )
-                    </g:if>
-                  </g:if>
-                  <g:else>N/A (Subscription offered)</g:else>
-                  </dd>
-              </dl>
+                  <dl>
+                    <dt>${message(code:'license')}</dt>
+                    <dd>
+                      <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
+                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                        <g:if test="${subscriptionInstance.owner != null}">
+                        (
+                          <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link>
+                          <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
+                        )
+                        </g:if>
+                      </g:if>
+                      <g:else>N/A (Subscription offered)</g:else>
+                      </dd>
+                  </dl>
 
+                <g:if test="${subscriptionInstance.instanceOf}">
+                    <dl>
+                        <dt>${message(code:'subscription.isInstanceOf.label')}</dt>
+                        <dd>
+                            <g:link controller="subscriptionDetails" action="details" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
+                        </dd>
+                    </dl>
+                </g:if>
 
                 <dl>
                   <dt>${message(code:'package.show.pkg_name', default:'Package Name')}</dt>
@@ -119,45 +174,6 @@
                   </dd>
               </dl>
 
-                <g:if test="${subscriptionInstance.globalUID}">
-                    <dl>
-                        <dt><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
-                        <dd>
-                            <g:fieldValue bean="${subscriptionInstance}" field="globalUID"/>
-                        </dd>
-                    </dl>
-                </g:if>
-
-               <dl><dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
-                   <dd>
-                     <table class="ui celled table">
-                       <thead>
-                         <tr>
-                           <th>${message(code:'default.authority.label', default:'Authority')}</th>
-                           <th>${message(code:'default.identifier.label', default:'Identifier')}</th>
-                           <th>${message(code:'default.actions.label', default:'Actions')}</th>
-                         </tr>
-                       </thead>
-                       <tbody>
-                         <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
-                         <g:each in="${subscriptionInstance.ids}" var="io">
-                           <tr>
-                             <td>${io.identifier.ns.ns}</td>
-                             <td>${io.identifier.value}</td>
-                             <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${subscriptionInstance.class.name}:${subscriptionInstance.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'default.delete.label', args:["${message(code:'identifier.label')}"])}</g:link></g:if></td>
-                           </tr>
-                         </g:each>
-                       </tbody>
-                     </table>
-                       <g:if test="${editable}">
-
-                           <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
-                              ${message(code:'identifier.select.text', args:['JC:66454'])}
-                           </semui:formAddIdentifier>
-
-                        </g:if>
-                   </dd>
-               </dl>
 
                <dl><dt>${message(code:'financials.label', default:'Financials')}</dt>
                    <dd>
@@ -226,7 +242,7 @@
                 <dl>
                     <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
                     <dd>
-                        <g:render template="/templates/links/prsLinks" />
+                        <g:render template="/templates/links/prsLinks" model="[tmplConfigShowFunction:false]"/>
 
                         <g:render template="/templates/links/prsLinksModal"
                                   model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>

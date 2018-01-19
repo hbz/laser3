@@ -94,7 +94,7 @@
                         <span class="required-indicator">*</span>
                     </label>
                     <g:select id="tenant" name="tenant.id" from="${cService.getMemberships()}"
-                              optionKey="id" value="${cService.getOrg().id}" />
+                              optionKey="id" value="${cService.getOrg()?.id}" />
                 </div>
 
                 <div class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">

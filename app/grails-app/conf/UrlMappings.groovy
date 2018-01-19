@@ -18,6 +18,7 @@ class UrlMappings {
         "/ajax/$action?/$id?"(controller: 'ajax')
 
         // new custom api
+        "/api/importOrgs"       (controller: 'api', action: 'importOrgs')
         "/api/v0/spec"          (uri: '/rest/v0/laser.yaml.gsp')
         "/api/v0/$obj"          (controller: 'api', action: 'v0')
 

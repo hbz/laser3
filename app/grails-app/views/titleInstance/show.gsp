@@ -103,11 +103,11 @@
 
                   <div class="ui segment form-actions">
                       <g:link class="ui button" action="edit" id="${titleInstanceInstance?.id}">
-                          <i class="icon-pencil"></i>
+                          <i class="write icon"></i>
                           <g:message code="default.button.edit.label" default="Edit" />
                       </g:link>
                       <button class="ui negative button" type="submit" name="_action_delete">
-                          <i class="icon-trash icon-white"></i>
+                          <i class="trash icon"></i>
                           <g:message code="default.button.delete.label" default="Delete" />
                       </button>
                   </div>

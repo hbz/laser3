@@ -40,27 +40,41 @@ class Contact {
     String toString() {
         contentType?.value + ', ' + content + ' (' + id + '); ' + type?.value
     }
-    
-    // TODO implement existing check (lookup)
+
+    static def lookup(content, contentType, type, person, organisation) {
+
+        def contact
+        def check = Contact.findAllWhere(
+                content: content ?: null,
+                contentType: contentType,
+                type: type,
+                prs: person,
+                org: organisation
+        ).sort({id: 'asc'})
+
+        if (check.size() > 0) {
+            contact = check.get(0)
+        }
+        contact
+    }
+
     static def lookupOrCreate(content, contentType, type, person, organisation) {
-        
+
         def info   = "saving new contact: ${content} ${contentType} ${type}"
         def result = null
+
+        if (! content) {
+            log.debug( info + " > ignored; empty content")
+            return
+        }
 
         if(person && organisation){
             type = RefdataValue.findByValue("Job-related")
         }
         
-        def check = Contact.findAllWhere(
-            content: content, 
-            contentType: contentType, 
-            type: type, 
-            prs: person, 
-            org: organisation
-            ).sort({id: 'asc'})
-              
-        if(check.size()>0){
-            result = check.get(0)
+        def check = Contact.lookup(content, contentType, type, person, organisation)
+        if (check) {
+            result = check
             info += " > ignored/duplicate"
         }
         else{
@@ -76,7 +90,7 @@ class Contact {
                 result.errors.each{ println it }
             }
             else {
-                info += " > ok"
+                info += " > OK"
             }
         }
         

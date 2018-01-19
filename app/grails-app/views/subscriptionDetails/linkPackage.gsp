@@ -37,21 +37,21 @@
 
 %>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
-  </head>
+    <head>
+        <meta name="layout" content="semanticUI"/>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+    </head>
 
     <body>
 
+        <semui:breadcrumbs>
+            <g:if test="${params.shortcode}">
+                <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
+            </g:if>
+            <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" text="${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.notes.label', default:'Notes')}" />
 
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <g:if test="${params.shortcode}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-        </g:if>
-        <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.notes.label', default:'Notes')}</g:link> </li>
-      </ul>
+            <semui:crumb class="active" text="${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}" />
+        </semui:breadcrumbs>
 
         <g:render template="actions" />
 
@@ -59,66 +59,63 @@
 
         <g:render template="nav" contextPath="." />
 
-
-    <div>
-      <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}">
+      <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
       <input type="hidden" name="offset" value="${params.offset}"/>
       <input type="hidden" name="id" value="${params.id}"/>
-      <div class="row">
-        <div class="span12">
-          <div class="well">
-            ${message(code:'package.show.pkg_name', default:'Package Name')}: <input name="q" style="margin-right:10px;" value="${params.q}"/> <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
-          </div>
+
+        <div class="field">
+            <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
+            <input name="q" value="${params.q}"/>
         </div>
-      </div>
-      <div class="row">
-      <p>
-          <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">
-            <g:each in="${params.list(facet)}" var="fv">
-              <span class="badge alert-info">${facet}:${fv} &nbsp; <g:link controller="${controller}" action="linkPackage" params="${removeFacet(params,facet,fv)}"><i class="icon-remove icon-white"></i></g:link></span>
-            </g:each>
-          </g:each>
-      </p>
+        <div class="field">
+            <button type="submit" name="search" value="yes" class="ui button">${message(code:'default.button.search.label', default:'Search')}</button>
+        </div>
 
-        <div class="facetFilter span2">
+      <div class="ui grid">
+
+          <div class="sixteen wide column">
+              <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">
+                <g:each in="${params.list(facet)}" var="fv">
+                  <span class="badge alert-info">${facet}:${fv} &nbsp; <g:link controller="${controller}" action="linkPackage" params="${removeFacet(params,facet,fv)}"><i class="icon-remove icon-white"></i></g:link></span>
+                </g:each>
+              </g:each>
+          </div>
+
+        <div class="four wide column facetFilter">
           <g:each in="${facets}" var="facet">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h3>
-              </div>
-              <div class="panel-body">
-                <ul>
-                  <g:each in="${facet.value.sort{it.display}}" var="v">
-                    <li>
-                      <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
+            <div class="ui vertical segment">
+                <h4 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h4>
 
-                      <g:if test="${params.list(facet.key).contains(v.term.toString())}">
-                        ${v.display} (${v.count})
+                <div class="ui list">
+                  <g:each in="${facet.value.sort{it.display}}" var="v">
+                      <g:if test="${v.display.toString().length() > 3}">
+                        <div class="item">
+                          <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
+
+                          <g:if test="${params.list(facet.key).contains(v.term.toString())}">
+                            ${v.display} (${v.count})
+                          </g:if>
+                          <g:else>
+                            <g:link controller="${controller}" action="linkPackage" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
+                          </g:else>
+
+                            <!--<div class="ui checkbox">
+                                <g:set var="facetname" value="${facet.key}" />
+                                <g:checkBox class="hidden" name="${facetname}" value="${params[facetname]}" />
+                                <label>${v.display} (${v.count})</label>
+                            </div>-->
+                        </div>
                       </g:if>
-                      <g:else>
-                        <g:link controller="${controller}" action="linkPackage" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
-                      </g:else>
-                    </li>
                   </g:each>
-                </ul>
-              </div>
+                </div>
+
             </div>
           </g:each>
         </div>
-        <div class="span8">
-          <div class="well">
-             <g:if test="${hits}" >
-                <div class="paginateButtons" style="text-align:center">
-                  <g:if test="${params.int('offset')}">
-                    ${message(code:'title.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
-                  </g:if>
-                  <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                    ${message(code:'title.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
-                  </g:elseif>
-                  <g:else>
-                    ${message(code:'title.search.no_pagiantion.text', args:[resultsTotal])}
-                  </g:else>
-                </div>
+
+        <div class="eight wide column">
+          <div>
+             <g:if test="${hits}">
 
                 <div id="resultsarea">
                   <table class="ui celled striped table">
@@ -154,6 +151,17 @@
                   </table>
                 </div>
              </g:if>
+              <div class="paginateButtons" style="text-align:center">
+                  <g:if test="${params.int('offset')}">
+                      ${message(code:'title.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
+                  </g:if>
+                  <g:elseif test="${resultsTotal && resultsTotal > 0}">
+                      ${message(code:'title.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
+                  </g:elseif>
+                  <g:else>
+                      ${message(code:'title.search.no_pagiantion.text', args:[resultsTotal])}
+                  </g:else>
+              </div>
              <div class="paginateButtons" style="text-align:center">
                 <g:if test="${hits}" >
                   <span><g:paginate controller="subscriptionDetails" action="linkPackage" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${resultsTotal}" /></span>
@@ -161,8 +169,8 @@
               </div>
           </div>
         </div>
-        <div class="span2">
-          <div class="well" style="word-break:normal;">
+        <div class="four wide column">
+          <div class="ui segment">
             <h4 class="ui header">${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</h4>
             <hr/>
             <g:each in="${subscriptionInstance.packages}" var="sp">
@@ -172,7 +180,8 @@
         </div>
       </div>
       </g:form>
-    </div>    
+
+
     <!-- ES Query String: ${es_query} -->
   </body>
 </html>

@@ -47,6 +47,60 @@
 
     <g:render template="nav" />
 
+    <semui:meta>
+        <div class="inline-lists">
+
+            <dl>
+                <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
+                <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
+            </dl>
+
+            <dl>
+                <dt>${message(code: 'package.show.persistent_id')}</dt>
+                <dd>uri://laser/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
+            </dl>
+
+            <dl>
+                <dt>${message(code: 'package.show.other_ids')}</dt>
+                <dd>
+                    <table class="ui celled table">
+                        <thead>
+                        <tr>
+                            <th>${message(code: 'component.id.label')}</th>
+                            <th>${message(code: 'identifier.namespace.label')}</th>
+                            <th>${message(code: 'identifier.label')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${packageInstance.ids}" var="io">
+                            <tr>
+                                <td>${io.id}</td>
+                                <td>${io.identifier.ns.ns}</td>
+                                <g:if test="${io.identifier.value =~ /^http/}">
+                                    <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
+                                </g:if>
+                                <g:else>
+                                    <td>${io.identifier.value}</td>
+                                </g:else>
+                            </tr>
+                        </g:each>
+
+                        </tbody>
+                    </table>
+
+                    <g:if test="${editable}">
+
+                        <semui:formAddIdentifier owner="${packageInstance}">
+                        </semui:formAddIdentifier>
+
+                    </g:if>
+
+                </dd>
+            </dl>
+
+  </div>
+    </semui:meta>
+
     <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
         <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
     </sec:ifAnyGranted>
@@ -61,9 +115,6 @@
 
     <div class="ui grid">
         <div class="twelve wide column">
-            <h4 class="ui header">
-              ${message(code: 'package.show.pkg_information')}
-            </h4>
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">
 
@@ -71,55 +122,6 @@
                 <dt>${message(code: 'package.show.pkg_name')}</dt>
                 <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
               </dl>
-              
-              <dl>
-                <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
-              </dl>
-
-
-              <dl>
-                <dt>${message(code: 'package.show.other_ids')}</dt>
-                <dd>
-                  <table class="ui celled table">
-                    <thead>
-                      <tr>
-                        <th>${message(code: 'component.id.label')}</th>
-                        <th>${message(code: 'identifier.namespace.label')}</th>
-                        <th>${message(code: 'identifier.label')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <g:each in="${packageInstance.ids}" var="io">
-                          <tr>
-                            <td>${io.id}</td>
-                            <td>${io.identifier.ns.ns}</td>
-                            <g:if test="${io.identifier.value =~ /^http/}">
-                              <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
-                            </g:if>
-                            <g:else>
-                              <td>${io.identifier.value}</td>
-                            </g:else>
-                          </tr>
-                      </g:each>
-                     
-                    </tbody>
-                  </table>
-
-                  <g:if test="${editable}">
-
-                      <semui:formAddIdentifier owner="${packageInstance}">
-                      </semui:formAddIdentifier>
-
-                  </g:if>
-
-                </dd>
-              </dl>
-
-            <dl>
-                <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
-                <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
-            </dl>
 
               <dl>
                 <dt>${message(code: 'license.is_public')}</dt>

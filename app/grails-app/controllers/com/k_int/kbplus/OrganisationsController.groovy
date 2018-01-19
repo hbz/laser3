@@ -64,33 +64,44 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         params.max = params.max ?: result.user?.getDefaultPageSize()
 
-      def results = null;
-      def count = null;
-      if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) &&
-           ( params.orgRole != null ) && ( params.orgRole.length() > 0 ) ) {
-        def qry = "from Org o where lower(o.name) like ? and exists ( from o.links r where r.roleType.id = ? )"
-        results = Org.findAll(qry, ["%${params.orgNameContains.toLowerCase()}%", Long.parseLong(params.orgRole)],params);
-        count = Org.executeQuery("select count(o) ${qry}",["%${params.orgNameContains.toLowerCase()}%", Long.parseLong(params.orgRole)])[0]
-      }
-      else if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) ) {
-        def qry = "from Org o where lower(o.name) like ?"
-        results = Org.findAll(qry, ["%${params.orgNameContains.toLowerCase()}%"], params);
-        count = Org.executeQuery("select count (o) ${qry}",["%${params.orgNameContains.toLowerCase()}%"])[0]
-      }
-      else if ( ( params.orgRole != null ) && ( params.orgRole.length() > 0 ) ) {
-        def qry = "from Org o where exists ( select r from o.links r where r.roleType.id = ? )"
-        results = Org.findAll(qry, [Long.parseLong(params.orgRole)],params);
-        count = Org.executeQuery("select count(o) ${qry}", [Long.parseLong(params.orgRole)])[0]
-      }
-      else { 
-        results = Org.list(params)
-        count = Org.count()
-      }
+        def query = []
+        def queryParams = []
 
-      result.orgInstanceList = results
-      result.orgInstanceTotal = count
+        if (params.orgNameContains?.length() > 0) {
+            query << "lower(o.name) like ?"
+            queryParams << "%${params.orgNameContains.toLowerCase()}%"
+        }
+        if (params.orgType?.length() > 0) {
+            query << "o.orgType.id = ?"
+            queryParams << Long.parseLong(params.orgType)
+        }
+        if (params.orgSector?.length() > 0) {
+            query << "o.sector.id = ?"
+            queryParams << Long.parseLong(params.orgSector)
+        }
+        if (params.federalState?.length() > 0) {
+            query << "o.federalState.id = ?"
+            queryParams << Long.parseLong(params.federalState)
+        }
+        if (params.libraryNetwork?.length() > 0) {
+            query << "o.libraryNetwork.id = ?"
+            queryParams << Long.parseLong(params.libraryNetwork)
+        }
+        if (params.libraryType?.length() > 0) {
+            query << "o.libraryType.id = ?"
+            queryParams << Long.parseLong(params.libraryType)
+        }
 
-      result
+        if (query.size() > 0) {
+            query = "from Org o where " + query.join(" and ") + " order by o.name"
+        }
+        else {
+            query = "from Org o order by o.name"
+        }
+
+        result.orgInstanceList  = Org.findAll(query, queryParams, params)
+        result.orgInstanceTotal = Org.executeQuery("select count (o) ${query}", queryParams)[0]
+        result
     }
 
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])

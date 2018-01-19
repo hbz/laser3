@@ -93,6 +93,26 @@ class RefdataValue extends I10nTranslatableAbstract {
         return null;
     }
 
+    static def getByValueAndCategory(value, category) {
+
+        RefdataValue.findByValueAndOwner(value, RefdataCategory.findByDesc(category))
+    }
+
+    static def getByCategoryDescAndI10nValueDe(categoryName, value) {
+
+        def data = RefdataValue.executeQuery("select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n "
+                    + " where rdv.owner = rdc and rdc.desc = ? "
+                    + " and i10n.referenceId = rdv.id and i10n.valueDe = ?"
+                    + " and i10n.referenceClass = 'com.k_int.kbplus.RefdataValue' and i10n.referenceField = 'value'"
+                    , ["${categoryName}", "${value}"] )
+
+        if (data.size() > 0) {
+            return data[0]
+        }
+
+        null
+    }
+
     // still provide OLD mapping for string compares and such stuff
     public String toString() {
         value

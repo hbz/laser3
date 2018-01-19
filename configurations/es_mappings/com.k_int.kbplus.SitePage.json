@@ -2,10 +2,13 @@
     "properties" : {
       "alias" : { 
          "type" : "string",
-          "analyzer": "snowball"},
+        "analyzer": "snowball"
+      },
       "action" : { 
-         "type" : "string"},
+         "type" : "string"
+      },
       "controller" : { 
-        "type" : "string"}
+        "type" : "string"
+      }
     }
 }

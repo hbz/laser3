@@ -566,7 +566,7 @@ class MyInstitutionsController {
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
             if(result.orgType?.value == 'Consortium') {
-                result.cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
+                result.cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.type.value = ?", [result.institution, 'Consortium'])
             }
 
             result
@@ -632,10 +632,12 @@ class MyInstitutionsController {
                     cons_members.each { cm ->
 
                     if (params.generateSlavedSubs == "Y") {
-                      log.debug("Generating seperate slaved instances for consortia members")
-                      def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
+                        log.debug("Generating seperate slaved instances for consortia members")
+                        def postfix = cm.get(0).shortname ?: cm.get(0).name
+
+                        def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
                                           status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
-                                          name: params.newEmptySubName,
+                                          name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
@@ -644,17 +646,18 @@ class MyInstitutionsController {
                                           isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
                                           
-                      new OrgRole(org: cm,
-                          sub: cons_sub,
-                          roleType: role_sub).save();
+                        new OrgRole(org: cm,
+                            sub: cons_sub,
+                            roleType: role_sub).save();
 
-                      new OrgRole(org: result.institution,
-                          sub: cons_sub,
-                          roleType: role_cons).save();
-                    }else{
-                      new OrgRole(org: cm,
-                          sub: new_sub,
-                          roleType: role_sub).save();
+                        new OrgRole(org: result.institution,
+                            sub: cons_sub,
+                            roleType: role_cons).save();
+                    }
+                    else {
+                        new OrgRole(org: cm,
+                            sub: new_sub,
+                            roleType: role_sub).save();
                     }
                   }
                 }
@@ -2570,10 +2573,10 @@ AND EXISTS (
         def result = setResultGenerics()
         
         def visiblePersons = []
-        def prs = Person.findAll("from Person as P where P.tenant = ${result.institution.id}")
+        def prs = Person.findAllByTenant(result.institution, [sort: "last_name", order: "asc"])
 
         prs?.each { p ->
-            if(p?.isPublic?.value == 'No'){
+            if (p?.isPublic?.value == 'No') {
                 visiblePersons << p
             }
         }

@@ -12,7 +12,10 @@
   <body>
 
 
-    <h1 class="ui header">${orgInstance.name}</h1>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${orgInstance.name}
+    </h1>
 
     <g:render template="nav" contextPath="." />
 

@@ -92,7 +92,7 @@
                         <g:each in="${personInstance.roleLinks}" var="link">
                             <g:if test="${link.functionType}">
                                 <li>
-                                    ${link.functionType?.value}
+                                    ${link.functionType?.getI10n('value')}
                                     <br/>
 
                                     <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
@@ -108,7 +108,7 @@
                         <g:each in="${personInstance.roleLinks}" var="link">
                             <g:if test="${link.responsibilityType}">
                                 <li>
-                                    ${link.responsibilityType?.value}<br/>
+                                    ${link.responsibilityType?.getI10n('value')}<br/>
 
                                     <g:if test="${link.pkg}">
                                         <g:link controller="packageDetails" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
@@ -144,11 +144,11 @@
 					<g:hiddenField name="id" value="${personInstance?.id}" />
 					<div class="ui segment form-actions">
 						<g:link class="ui button" action="edit" id="${personInstance?.id}">
-							<i class="icon-pencil"></i>
+							<i class="write icon"></i>
 							<g:message code="default.button.edit.label" default="Edit" />
 						</g:link>
 						<button class="ui negative button" type="submit" name="_action_delete">
-							<i class="icon-trash icon-white"></i>
+							<i class="trash icon"></i>
 							<g:message code="default.button.delete.label" default="Delete" />
 						</button>
 					</div>

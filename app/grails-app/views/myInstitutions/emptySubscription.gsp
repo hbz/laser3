@@ -51,11 +51,10 @@
 
                 <div class="cons-options">
 
-                <g:checkBox type="checkbox"
-                  name="generateSlavedSubs"
-                  value="Y" />
-                ${message(code:'myinst.emptySubscription.seperate_subs', default:'Generate seperate Subscriptions for all Consortia Members')}
-
+                    <div class="ui checkbox">
+                        <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
+                        <label>${message(code:'myinst.emptySubscription.seperate_subs', default:'Generate seperate Subscriptions for all Consortia Members')}</label>
+                    </div>
 
                 <table class="ui celled striped table">
                     <thead>
@@ -88,7 +87,7 @@
           </g:if>
           <br/>
           <input type="submit" class="ui button" value="${message(code:'default.button.create.label', default:'Create')}" />
-        </dl>
+
       </g:form>
     </div>       
     <r:script language="JavaScript">

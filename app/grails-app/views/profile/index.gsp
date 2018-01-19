@@ -38,16 +38,16 @@
                             <label>${message(code: 'profile.dash', default:'Default Dashboard')}</label>
 
                             <select name="defaultDash" value="${user.defaultDash?.id}" class="ui fluid dropdown">
+                                <option value=""></option>
                                 <g:each in="${user.authorizedOrgs}" var="o">
                                     <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
                                 </g:each>
                             </select>
                         </div>
 
-                        <div class="alert alert-info" style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
+                        <div class="ui blue message">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
 
                         <div class="field">
-                            <label></label>
                             <button type="submit" class="ui button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
                         </div>
 
