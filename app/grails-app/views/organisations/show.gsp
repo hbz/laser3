@@ -18,6 +18,49 @@
 
     <g:render template="nav" contextPath="." />
 
+    <semui:meta>
+        <div class="inline-lists">
+
+            <g:if test="${orgInstance.globalUID}">
+                <dl>
+                    <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
+                    <dd>
+                        <g:fieldValue bean="${orgInstance}" field="globalUID"/>
+                    </dd>
+                </dl>
+            </g:if>
+
+            <g:if test="${orgInstance.impId}">
+                <dl>
+                    <dt><g:message code="org.impId.label" default="Import ID" /></dt>
+                    <dd>
+                        <g:fieldValue bean="${orgInstance}" field="impId"/>
+                    </dd>
+                </dl>
+            </g:if>
+
+            <dl>
+                <dt><g:message code="org.ids.label" default="Ids" /></dt>
+                <dd>
+                    <g:if test="${orgInstance?.ids}">
+                        <g:each in="${orgInstance.ids}" var="i">
+                            <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link>
+                            <br />
+                        </g:each>
+                    </g:if>
+
+                    <g:if test="${editable}">
+
+                        <semui:formAddIdentifier owner="${orgInstance}">
+                            ${message(code:'identifier.select.text', args:['isil:DE-18'])}
+                        </semui:formAddIdentifier>
+
+                    </g:if>
+                </dd>
+            </dl>
+        </div>
+    </semui:meta>
+
     <semui:messages data="${flash}" />
 
     <div class="inline-lists">
@@ -70,7 +113,7 @@
 
             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
             <dd>
-                <div class="ui divided list">
+                <div class="ui relaxed list">
                     <g:each in="${orgInstance?.addresses}" var="a">
                         <g:if test="${a.org}">
                             <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
@@ -90,7 +133,7 @@
 
             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
             <dd>
-                <div class="ui divided list">
+                <div class="ui relaxed list">
                     <g:each in="${orgInstance?.contacts}" var="c">
                         <g:if test="${c.org}">
                             <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
@@ -110,7 +153,7 @@
 
             <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
             <dd>
-                <div class="ui divided list">
+                <div class="ui relaxed list">
                     <g:each in="${orgInstance?.prsLinks}" var="pl">
                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
                             <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
@@ -163,29 +206,6 @@
                 </g:else>
             </dd>
             -->
-
-            <dt><g:message code="org.ids.label" default="Ids" /></dt>
-            <dd>
-                <g:if test="${orgInstance?.ids}">
-                  <g:each in="${orgInstance.ids}" var="i">
-                    <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link>
-                    <br />
-                  </g:each>
-                </g:if>
-
-                <g:if test="${editable}">
-
-                    <semui:formAddIdentifier owner="${orgInstance}">
-                        ${message(code:'identifier.select.text', args:['isil:DE-18'])}
-                    </semui:formAddIdentifier>
-
-                </g:if>
-            </dd>
-
-            <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
-            <dd>
-                <g:fieldValue bean="${orgInstance}" field="globalUID"/>
-            </dd>
 
             <g:if test="${orgInstance?.outgoingCombos}">
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
@@ -264,11 +284,6 @@
             </dd>
           </g:if>
 
-                <dt><g:message code="org.impId.label" default="Import ID" /></dt>
-                <dd>
-                    <g:fieldValue bean="${orgInstance}" field="impId"/>
-                </dd>
-
             <g:each in="${authorizedOrgs}" var="authOrg">
                 <g:if test="${authOrg.name == contextOrg?.name}">
                     <h6 class="ui header">${message(code:'org.properties')} ( ${authOrg.name} )</h6>
@@ -296,7 +311,7 @@
                 <g:hiddenField name="id" value="${orgInstance?.id}" />
                 <div class="ui segment form-actions">
                     <g:link class="ui button" action="edit" id="${orgInstance?.id}">
-                        <i class="icon-pencil"></i>
+                        <i class="write icon"></i>
                         <g:message code="default.button.edit.label" default="Edit" />
                     </g:link>
                 </div>

@@ -26,6 +26,7 @@
 				<td>
 					<g:each in="${person?.roleLinks}" var="role">
 						<g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
+                        <br />
 					</g:each>
 				</td>
 

@@ -99,16 +99,17 @@
                     <td>
                         ${sub.status.getI10n('value')}
                     </td>
-                    <td>
-                        <g:link controller="subscriptionDetails" action="details" id="${sub.id}" class="ui button">${message(code:'default.button.edit.label')}</g:link>
+                    <td class="x">
+                            <g:link controller="subscriptionDetails" action="details" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
 
-                        <g:if test="${editable}">
-                            <g:link controller="subscriptionDetails" action="deleteMember" class="ui negative button"
-                                    params="${[shortcode:params.shortcode, id:subscriptionInstance.id, basesubscription: sub.id]}"
-                                    onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(sub.name?:'this subscription')])}')">
-                                ${message(code:'default.button.delete.label', default:'Delete')}
-                            </g:link>
-                        </g:if>
+                            <g:if test="${editable}">
+                                <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon negative button"
+                                        params="${[shortcode:params.shortcode, id:subscriptionInstance.id, basesubscription: sub.id]}"
+                                        onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(sub.name?:'this subscription')])}')">
+                                    <i class="trash icon"></i>
+                                </g:link>
+                            </g:if>
+
                     </td>
                 </tr>
             </g:each>

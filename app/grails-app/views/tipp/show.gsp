@@ -17,30 +17,36 @@
       ${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}
     </h1>
 
+    <semui:meta>
+        <div class="inline-lists">
+
+            <dl>
+                <dt><g:message code="titleInstance.globalUID.label" default="Global UID" /></dt>
+                <dd> <g:fieldValue bean="${tipp}" field="globalUID"/> </dd>
+            </dl>
+
+            <g:if test="${titleInstanceInstance?.ids}">
+                <dl>
+                    <dt><g:message code="title.identifiers.label" /></dt>
+
+                    <dd><g:each in="${titleInstanceInstance.ids}" var="i">
+                        <g:if test="${i.identifier.ns.ns != 'originediturl'}">
+                            ${i.identifier.ns.ns}:${i.identifier.value}<br/>
+                        </g:if>
+                        <g:else>
+                            GOKb: <a href="${i.identifier.value}">${message(code:'component.originediturl.label')}</a><br/>
+                        </g:else>
+                    </g:each>
+                    </dd>
+                </dl>
+            </g:if>
+
+        </div>
+    </semui:meta>
+
     <semui:messages data="${flash}" />
 
   <div class="inline-lists">
-        <dl>
-          <g:if test="${titleInstanceInstance?.ids}">
-            <dt><g:message code="title.identifiers.label" /></dt>
-            
-              <dd><g:each in="${titleInstanceInstance.ids}" var="i">
-                <g:if test="${i.identifier.ns.ns != 'originediturl'}">
-                  ${i.identifier.ns.ns}:${i.identifier.value}<br/>
-                </g:if>
-                <g:else>
-                  GOKb: <a href="${i.identifier.value}">${message(code:'component.originediturl.label')}</a><br/>
-                </g:else>
-              </g:each>
-              </dd>
-            
-          </g:if>
-        </dl>
-
-          <dl><!-- TODO: error? -->
-              <dt><g:message code="titleInstance.globalUID.label" default="Global UID" /></dt>
-              <dd> <g:fieldValue bean="${tipp}" field="globalUID"/> </dd>
-          </dl>
 
         <dl>
           <dt>${message(code:'tipp.show.avStatus', default:'Availability Status')}</dt>

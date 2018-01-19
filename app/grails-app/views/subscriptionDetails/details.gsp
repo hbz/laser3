@@ -28,11 +28,58 @@
            <semui:xEditable owner="${subscriptionInstance}" field="name" />
        </h1>
 
-       <g:render template="nav" />
+        <g:render template="nav" />
 
-       <semui:messages data="${flash}" />
+        <semui:meta>
+            <div class="inline-lists">
 
-    <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
+                <g:if test="${subscriptionInstance.globalUID}">
+                    <dl>
+                        <dt><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
+                        <dd>
+                            <g:fieldValue bean="${subscriptionInstance}" field="globalUID"/>
+                        </dd>
+                    </dl>
+                </g:if>
+
+                <dl>
+                    <dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
+                    <dd>
+                        <table class="ui celled table">
+                            <thead>
+                            <tr>
+                                <th>${message(code:'default.authority.label', default:'Authority')}</th>
+                                <th>${message(code:'default.identifier.label', default:'Identifier')}</th>
+                                <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
+                            <g:each in="${subscriptionInstance.ids}" var="io">
+                                <tr>
+                                    <td>${io.identifier.ns.ns}</td>
+                                    <td>${io.identifier.value}</td>
+                                    <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${subscriptionInstance.class.name}:${subscriptionInstance.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'default.delete.label', args:["${message(code:'identifier.label')}"])}</g:link></g:if></td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
+                        <g:if test="${editable}">
+
+                            <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
+                                ${message(code:'identifier.select.text', args:['JC:66454'])}
+                            </semui:formAddIdentifier>
+
+                        </g:if>
+                    </dd>
+                </dl>
+
+            </div>
+        </semui:meta>
+
+        <semui:messages data="${flash}" />
+
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
 
     <div id="collapseableSubDetails" class="ui grid">
@@ -119,45 +166,6 @@
                   </dd>
               </dl>
 
-                <g:if test="${subscriptionInstance.globalUID}">
-                    <dl>
-                        <dt><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
-                        <dd>
-                            <g:fieldValue bean="${subscriptionInstance}" field="globalUID"/>
-                        </dd>
-                    </dl>
-                </g:if>
-
-               <dl><dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
-                   <dd>
-                     <table class="ui celled table">
-                       <thead>
-                         <tr>
-                           <th>${message(code:'default.authority.label', default:'Authority')}</th>
-                           <th>${message(code:'default.identifier.label', default:'Identifier')}</th>
-                           <th>${message(code:'default.actions.label', default:'Actions')}</th>
-                         </tr>
-                       </thead>
-                       <tbody>
-                         <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
-                         <g:each in="${subscriptionInstance.ids}" var="io">
-                           <tr>
-                             <td>${io.identifier.ns.ns}</td>
-                             <td>${io.identifier.value}</td>
-                             <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${subscriptionInstance.class.name}:${subscriptionInstance.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'default.delete.label', args:["${message(code:'identifier.label')}"])}</g:link></g:if></td>
-                           </tr>
-                         </g:each>
-                       </tbody>
-                     </table>
-                       <g:if test="${editable}">
-
-                           <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
-                              ${message(code:'identifier.select.text', args:['JC:66454'])}
-                           </semui:formAddIdentifier>
-
-                        </g:if>
-                   </dd>
-               </dl>
 
                <dl><dt>${message(code:'financials.label', default:'Financials')}</dt>
                    <dd>
@@ -226,7 +234,7 @@
                 <dl>
                     <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
                     <dd>
-                        <g:render template="/templates/links/prsLinks" />
+                        <g:render template="/templates/links/prsLinks" model="[tmplConfigShowFunction:false]"/>
 
                         <g:render template="/templates/links/prsLinksModal"
                                   model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>

@@ -40,7 +40,7 @@ import="com.k_int.kbplus.RefdataCategory"
 
 			<g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
 			<% /*
-			<div class="ui divided list">
+			<div class="ui relaxed list">
 				<g:each in="${visiblePersons}" var="p">
 					<g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
 				</g:each>

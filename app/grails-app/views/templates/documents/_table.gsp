@@ -33,7 +33,7 @@
                     </td>
                     <td>
                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}">${message(code:'template.documents.download', default:'Download Doc')}</g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
                         </g:if>
                     </td>
                     <td>

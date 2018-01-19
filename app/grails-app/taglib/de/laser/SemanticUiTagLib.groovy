@@ -137,6 +137,15 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    //<semui:meta> CONTENT <semui:meta>
+
+    def meta = { attrs, body ->
+
+        out << '<div class="ui blue segment">'
+        out <<   body()
+        out << '</div>'
+    }
+
     //<semui:filter> CONTENT <semui:filter>
 
     def filter = { attrs, body ->
@@ -150,7 +159,7 @@ class SemanticUiTagLib {
 
     def form = { attrs, body ->
 
-        out << '<div class="ui blue segment">'
+        out << '<div class="ui grey segment">'
         out <<   body()
         out << '</div>'
     }

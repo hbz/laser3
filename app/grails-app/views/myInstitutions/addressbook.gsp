@@ -44,7 +44,7 @@ import="com.k_int.kbplus.RefdataCategory"
 
                 <% /*
                 <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
-                <div class="ui divided list">
+                <div class="ui relaxed list">
 
                     <g:each in="${visiblePersons}" var="p">
                         <g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>

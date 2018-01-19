@@ -23,6 +23,54 @@
 
         <g:render template="nav" />
 
+        <semui:meta>
+            <div class="inline-lists">
+
+                <dl>
+                    <dt><g:message code="license.globalUID.label" default="Global UID" /></dt>
+                    <dd>
+                        <g:fieldValue bean="${license}" field="globalUID"/>
+                    </dd>
+                </dl>
+
+                <dl>
+                    <dt><g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel></dt>
+                    <dd>
+                        <table class="ui celled table">
+                            <thead>
+                            <tr>
+                                <th>${message(code:'default.authority.label', default:'Authority')}</th>
+                                <th>${message(code:'default.identifier.label', default:'Identifier')}</th>
+                                <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
+                            <g:each in="${license.ids}" var="io">
+                                <tr>
+                                    <td>${io.identifier.ns.ns}</td>
+                                    <td>${io.identifier.value}</td>
+                                    <td><g:if test="${editable}">
+                                        <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${license.class.name}:${license.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>
+                                            ${message(code:'default.delete.label', args:["${message(code:'identifier.label')}"])}</g:link>
+                                    </g:if></td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
+                        <g:if test="${editable}">
+
+                            <semui:formAddIdentifier owner="${license}" buttonText="${message(code:'license.edit.identifier.select.add')}"
+                                                     uniqueCheck="yes" uniqueWarningText="${message(code:'license.edit.duplicate.warn.list')}">
+                                ${message(code:'identifier.select.text', args:['gasco-lic:0815'])}
+                            </semui:formAddIdentifier>
+
+                        </g:if>
+                    </dd>
+                </dl>
+            </div>
+        </semui:meta>
+
         <semui:messages data="${flash}" />
 
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':license]}"/>
@@ -106,49 +154,6 @@
                         </dl>
                     </sec:ifAnyGranted>
 
-                    <dl>
-                        <dt><g:message code="license.globalUID.label" default="Global UID" /></dt>
-                        <dd>
-                            <g:fieldValue bean="${license}" field="globalUID"/>
-                        </dd>
-                    </dl>
-
-                    <dl>
-                        <dt><g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel></dt>
-                        <dd>
-                            <table class="ui celled table">
-                                <thead>
-                                <tr>
-                                    <th>${message(code:'default.authority.label', default:'Authority')}</th>
-                                    <th>${message(code:'default.identifier.label', default:'Identifier')}</th>
-                                    <th>${message(code:'default.actions.label', default:'Actions')}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
-                                <g:each in="${license.ids}" var="io">
-                                    <tr>
-                                        <td>${io.identifier.ns.ns}</td>
-                                        <td>${io.identifier.value}</td>
-                                        <td><g:if test="${editable}">
-                                            <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${license.class.name}:${license.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>
-                                                ${message(code:'default.delete.label', args:["${message(code:'identifier.label')}"])}</g:link>
-                                        </g:if></td>
-                                    </tr>
-                                </g:each>
-                                </tbody>
-                            </table>
-                            <g:if test="${editable}">
-
-                                <semui:formAddIdentifier owner="${license}" buttonText="${message(code:'license.edit.identifier.select.add')}"
-                                                         uniqueCheck="yes" uniqueWarningText="${message(code:'license.edit.duplicate.warn.list')}">
-                                    ${message(code:'identifier.select.text', args:['gasco-lic:0815'])}
-                                </semui:formAddIdentifier>
-
-                            </g:if>
-                        </dd>
-                    </dl>
-
                     <!--
                     <dl>
                         <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
@@ -191,7 +196,7 @@
                     <dl>
                         <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
                         <dd>
-                            <g:render template="/templates/links/prsLinks" />
+                            <g:render template="/templates/links/prsLinks" model="[tmplConfigShowFunction:false]"/>
 
                             <g:render template="/templates/links/prsLinksModal"
                                       model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>

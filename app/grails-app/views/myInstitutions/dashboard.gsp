@@ -20,7 +20,7 @@
 
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.view', default:'View')}</h5>-->
-                        <div class="ui divided list">
+                        <div class="ui relaxed list">
                             <div class="item"><g:link controller="myInstitutions"
                                         action="currentLicenses"
                                         params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.myLics')}</g:link></div>
@@ -35,7 +35,7 @@
 
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.renewals', default:'Renewals')}</h5>-->
-                        <div class="ui divided list">
+                        <div class="ui relaxed list">
                             <div class="item"><g:link controller="myInstitutions"
                                         action="renewalsSearch"
                                         params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link></div>
@@ -52,7 +52,7 @@
 
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'default.special.label', default:'Special')}</h5>-->
-                        <div class="ui divided list">
+                        <div class="ui relaxed list">
                             <div class="item"><g:link controller="myInstitutions"
                                         action="tasks"
                                         params="${[shortcode:params.shortcode]}">${message(code:'task.plural', default:'Tasks')}</g:link></div>

@@ -68,3 +68,12 @@
     top: 15%;
     z-index: 9999;
 }
+
+/* new buttons */
+.ui table td.x {
+    text-align: right;
+}
+.ui.button > i.icon {
+    margin-right: 0 !important;
+    opacity: 1 !important;
+}
