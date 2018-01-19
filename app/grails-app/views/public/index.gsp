@@ -52,9 +52,9 @@
                             ${message(code: 'landingpage.hero.h2')}
                         </h2>
 
-                        <div class="ui huge button">
+                        <a href="mailto:laser@hbz-nrw.de"  class="ui huge button">
                             ${message(code: 'landingpage.hero.button')}<i class="right arrow icon"></i>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
