@@ -7317,15 +7317,15 @@ a.ui.inverted.teal.header:hover {
 /*--- Blue ---*/
 
 .ui.blue.header {
-  color: #2185D0 !important;
+  color: red !important;
 }
 
 a.ui.blue.header:hover {
-  color: #1678c2 !important;
+  color: #e60000 !important;
 }
 
 .ui.blue.dividing.header {
-  border-bottom: 2px solid #2185D0;
+  border-bottom: 2px solid red;
 }
 
 /* Inverted */
@@ -13406,8 +13406,8 @@ a.ui.basic.red.label:hover {
 
 .ui.orange.labels .label,
 .ui.orange.label {
-  background-color: #F2711C !important;
-  border-color: #F2711C !important;
+  background-color: #fa820a !important;
+  border-color: #fa820a !important;
   color: #FFFFFF !important;
 }
 
@@ -13415,8 +13415,8 @@ a.ui.basic.red.label:hover {
 
 .ui.orange.labels .label:hover,
 a.ui.orange.label:hover {
-  background-color: #f26202 !important;
-  border-color: #f26202 !important;
+  background-color: #eb7500 !important;
+  border-color: #eb7500 !important;
   color: #FFFFFF !important;
 }
 
@@ -13430,22 +13430,22 @@ a.ui.orange.label:hover {
 /* Ribbon */
 
 .ui.orange.ribbon.label {
-  border-color: #cf590c !important;
+  border-color: #cd6804 !important;
 }
 
 /* Basic */
 
 .ui.basic.orange.label {
   background-color: #FFFFFF !important;
-  color: #F2711C !important;
-  border-color: #F2711C !important;
+  color: #fa820a !important;
+  border-color: #fa820a !important;
 }
 
 .ui.basic.orange.labels a.label:hover,
 a.ui.basic.orange.label:hover {
   background-color: #FFFFFF !important;
-  color: #f26202 !important;
-  border-color: #f26202 !important;
+  color: #eb7500 !important;
+  border-color: #eb7500 !important;
 }
 
 /*--- Yellow ---*/
@@ -13636,8 +13636,8 @@ a.ui.basic.teal.label:hover {
 
 .ui.blue.labels .label,
 .ui.blue.label {
-  background-color: #2185D0 !important;
-  border-color: #2185D0 !important;
+  background-color: #2d6697 !important;
+  border-color: #2d6697 !important;
   color: #FFFFFF !important;
 }
 
@@ -13645,8 +13645,8 @@ a.ui.basic.teal.label:hover {
 
 .ui.blue.labels .label:hover,
 a.ui.blue.label:hover {
-  background-color: #1678c2 !important;
-  border-color: #1678c2 !important;
+  background-color: #235988 !important;
+  border-color: #235988 !important;
   color: #FFFFFF !important;
 }
 
@@ -13660,22 +13660,22 @@ a.ui.blue.label:hover {
 /* Ribbon */
 
 .ui.blue.ribbon.label {
-  border-color: #1a69a4 !important;
+  border-color: #214b70 !important;
 }
 
 /* Basic */
 
 .ui.basic.blue.label {
   background-color: #FFFFFF !important;
-  color: #2185D0 !important;
-  border-color: #2185D0 !important;
+  color: #2d6697 !important;
+  border-color: #2d6697 !important;
 }
 
 .ui.basic.blue.labels a.label:hover,
 a.ui.basic.blue.label:hover {
   background-color: #FFFFFF !important;
-  color: #1678c2 !important;
-  border-color: #1678c2 !important;
+  color: #235988 !important;
+  border-color: #235988 !important;
 }
 
 /*--- Violet ---*/
@@ -13971,7 +13971,7 @@ a.ui.basic.black.label:hover {
 a.ui.basic.label:hover {
   text-decoration: none;
   background: none #FFFFFF;
-  color: #1e70bf;
+  color: #39a1f2;
   -webkit-box-shadow: 1px solid rgba(34, 36, 38, 0.15);
   box-shadow: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: none;
@@ -14231,10 +14231,6 @@ a.ui.basic.label:hover {
 .ui.massive.label {
   font-size: 1.71428571rem;
 }
-
-/*******************************
-         Theme Overrides
-*******************************/
 
 /*******************************
          Site Overrides
@@ -20644,7 +20640,7 @@ ol.ui.horizontal.list li:before,
 .ui.grid > .blue.row,
 .ui.grid > .blue.column,
 .ui.grid > .row > .blue.column {
-  background-color: #2185D0 !important;
+  background-color: red !important;
   color: #FFFFFF;
 }
 
@@ -24121,13 +24117,13 @@ Floated Menu / Item
 
 .ui.blue.message {
   background-color: #DFF0FF;
-  color: #2185D0;
-  -webkit-box-shadow: 0px 0px 0px 1px #2185D0 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #2185D0 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: red;
+  -webkit-box-shadow: 0px 0px 0px 1px red inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px red inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.blue.message .header {
-  color: #1e77ba;
+  color: #e60000;
 }
 
 .ui.violet.message {
@@ -24988,11 +24984,11 @@ Floated Menu / Item
 /* Blue */
 
 .ui.blue.table {
-  border-top: 0.2em solid #2185D0;
+  border-top: 0.2em solid red;
 }
 
 .ui.inverted.blue.table {
-  background-color: #2185D0 !important;
+  background-color: red !important;
   color: #FFFFFF !important;
 }
 
@@ -26434,15 +26430,15 @@ a.ui.card:hover,
 .ui.blue.cards > .card,
 .ui.cards > .blue.card,
 .ui.blue.card {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #2185D0, 0px 1px 3px 0px #D4D4D5;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #2185D0, 0px 1px 3px 0px #D4D4D5;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px red, 0px 1px 3px 0px #D4D4D5;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px red, 0px 1px 3px 0px #D4D4D5;
 }
 
 .ui.blue.cards > .card:hover,
 .ui.cards > .blue.card:hover,
 .ui.blue.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #1678c2, 0px 1px 3px 0px #BCBDBD;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #1678c2, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #e60000, 0px 1px 3px 0px #BCBDBD;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #e60000, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Violet */
@@ -28408,7 +28404,7 @@ a.ui.card:hover,
 .ui.blue.statistics .statistic > .value,
 .ui.statistics .blue.statistic > .value,
 .ui.blue.statistic > .value {
-  color: #2185D0;
+  color: red;
 }
 
 .ui.violet.statistics .statistic > .value,
@@ -29670,7 +29666,7 @@ a.ui.card:hover,
 
 .ui.toggle.checkbox input:checked ~ .box:before,
 .ui.toggle.checkbox input:checked ~ label:before {
-  background-color: #2185D0 !important;
+  background-color: red !important;
 }
 
 .ui.toggle.checkbox input:checked ~ .box:after,
@@ -29689,7 +29685,7 @@ a.ui.card:hover,
 
 .ui.toggle.checkbox input:focus:checked ~ .box:before,
 .ui.toggle.checkbox input:focus:checked ~ label:before {
-  background-color: #0d71bb !important;
+  background-color: #d60000 !important;
 }
 
 /*******************************
@@ -33883,7 +33879,7 @@ a.ui.nag {
 /* Blue */
 
 .ui.blue.progress .bar {
-  background-color: #2185D0;
+  background-color: red;
 }
 
 .ui.blue.inverted.progress .bar {
