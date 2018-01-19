@@ -45,7 +45,9 @@
                             <div class="ui field">
                                 <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
                                 <label>Status der neuen Instanzen</label>
-                                <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" optionKey="id" optionValue="${{it.getI10n('value')}}" name="subStatus" />
+                                <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}"
+                                          optionKey="id" optionValue="${{it.getI10n('value')}}" name="subStatus"
+                                          value="${com.k_int.kbplus.RefdataValue.findByValue('Under Consideration')?.id}" />
                             </div>
 
                             <table class="ui celled striped table">

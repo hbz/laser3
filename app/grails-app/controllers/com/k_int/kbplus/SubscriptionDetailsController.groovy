@@ -695,7 +695,7 @@ class SubscriptionDetailsController {
 
         result.institution = result.subscriptionInstance.subscriber
         if(result.institution?.orgType?.value == 'Consortium') {
-            result.cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
+            result.cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.type.value = ?", [result.institution, 'Consortium'])
         }
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
@@ -733,10 +733,12 @@ class SubscriptionDetailsController {
 
                     if (params.generateSlavedSubs == "Y") {
                         log.debug("Generating seperate slaved instances for consortia members")
+
+                        def postfix = cm.get(0).shortname ?: cm.get(0).name
                         def cons_sub = new Subscription(
                                 type: RefdataValue.findByValue("Subscription Taken"),
                                 status: subStatus,
-                                name: result.subscriptionInstance.name,
+                                name: result.subscriptionInstance.name + " (${postfix})",
                                 startDate: result.subscriptionInstance.startDate,
                                 endDate: result.subscriptionInstance.endDate,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,

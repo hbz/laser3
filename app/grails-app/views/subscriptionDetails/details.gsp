@@ -119,22 +119,30 @@
                     <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                 </dl>
 
-              <dl>
-                <dt>${message(code:'license')}</dt>
-                <dd>
-                  <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
-                    <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                    <g:if test="${subscriptionInstance.owner != null}">
-                    (
-                      <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link> 
-                      <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
-                    )
-                    </g:if>
-                  </g:if>
-                  <g:else>N/A (Subscription offered)</g:else>
-                  </dd>
-              </dl>
+                  <dl>
+                    <dt>${message(code:'license')}</dt>
+                    <dd>
+                      <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
+                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                        <g:if test="${subscriptionInstance.owner != null}">
+                        (
+                          <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link>
+                          <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
+                        )
+                        </g:if>
+                      </g:if>
+                      <g:else>N/A (Subscription offered)</g:else>
+                      </dd>
+                  </dl>
 
+                <g:if test="${subscriptionInstance.instanceOf}">
+                    <dl>
+                        <dt>${message(code:'subscription.isInstanceOf.label')}</dt>
+                        <dd>
+                            <g:link controller="subscriptionDetails" action="details" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
+                        </dd>
+                    </dl>
+                </g:if>
 
                 <dl>
                   <dt>${message(code:'package.show.pkg_name', default:'Package Name')}</dt>
