@@ -23,6 +23,10 @@
 
     <g:layoutHead/>
     <r:layoutResources/>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+
    
   </head>
 
@@ -48,28 +52,6 @@
 
       <div class="clearfix"></div>
 
-      <div class="navbar navbar-footer">
-          <div class="navbar-inner">
-              <div>
-                  <div>
-                      <ul class="footer-sublinks nav">
-<!--                          <li><a href="${createLink(uri: '/terms-and-conditions')}">${message(code:'default.termsAndCond.label', default:'Terms & Conditions')}</a></li>
-                          <li><a href="${createLink(uri: '/privacy-policy')}">${message(code:'default.privacy.label', default:'Privacy Policy')}</a></li>
-                          <li><a href="${createLink(uri: '/freedom-of-information-policy')}">${message(code:'default.foi.label', default:'Freedom of Information Policy')}</a></li>-->
-                      </ul>
-                      <ul class="footer-sublinks nav pull-right">
-                          <li>
-                              <a href="https://github.com/hbz/laser">
-                                  Version ${grailsApplication.metadata['app.version']}
-                                  <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
-                                  // ${grailsApplication.metadata['app.buildDate']}
-                              </a>
-                          </li>
-                      </ul>
-                  </div>
-              </div>
-          </div>
-      </div>
 
   </div>
     <r:layoutResources/>

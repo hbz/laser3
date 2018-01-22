@@ -13,7 +13,7 @@
                 <li id="signup" <g:if test="${active.equals("signup")}"> class="active" </g:if>>
                     <a href="${createLink(uri: '/signup')}">${message(code:'public.nav.signUp.label', default:'Sign Up')}</a>
                 </li>
-               
+
             <% /*
             <li class="${active.equals('publicExport')?'active':''}">
                             <a href="${createLink(uri: '/publicExport')}">${message(code:'public.nav.exports.label', default:'Exports')}</a>
