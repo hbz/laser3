@@ -51,7 +51,7 @@ I would like to change the padding between an icon and content in a list
 
     src/themes/default/elements/list.variables
     
-2.) copy the whole list.variables and past it in the laser theme folder
+2.) copy THE WHOLE list.variables and past it in the laser theme folder
 
     src/themes/laser/elements/list.variables
     

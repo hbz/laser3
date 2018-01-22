@@ -20,6 +20,7 @@
 @googleProtocol    : 'https://';
 @googleFontRequest : '@{googleFontName}:@{googleFontSizes}&subset=@{googleSubset}';
 
+
 /*-------------------
       Base Sizes
 --------------------*/
@@ -134,11 +135,11 @@
        Links
 --------------------*/
 
-@linkColor           : #4183C4;
+@linkColor           : @blue
 @linkUnderline       : none;
-@linkHoverColor      : darken(saturate(@linkColor, 20), 15, relative);
-@linkHoverUnderline  : underline solid #4183C4;
-@linkHoverUnderline  : underline solid #4183C4;
+@linkHoverColor      : @lightBlue;
+@linkHoverUnderline  : none;
+@linkHoverUnderline  : none;
 
 /*-------------------
     Scroll Bars
@@ -216,19 +217,20 @@
 --------------------*/
 
 /*---  Colors  ---*/
+/*---  Colors  ---*/
 @red              : #DB2828;
-@orange           : #F2711C;
+@orange           : #fa820a; /*hbz-orange */
 @yellow           : #FBBD08;
 @olive            : #B5CC18;
 @green            : #21BA45;
 @teal             : #00B5AD;
-@blue             : #2185D0;
+@blue             : #2d6697; /*laser-blue, little bit less red than hbz-blue, little lighter to functioning on black */
 @violet           : #6435C9;
 @purple           : #A333C8;
 @pink             : #E03997;
 @brown            : #A5673F;
 @grey             : #767676;
-@black            : #1B1C1D;
+@black            : #1B1C1D; /*laser-black -matching the blue*/
 
 /*---  Light Colors  ---*/
 @lightRed         : #FF695E;
@@ -237,7 +239,7 @@
 @lightOlive       : #D9E778;
 @lightGreen       : #2ECC40;
 @lightTeal        : #6DFFFF;
-@lightBlue        : #54C8FF;
+@lightBlue        : #39a1f2;
 @lightViolet      : #A291FB;
 @lightPurple      : #DC73FF;
 @lightPink        : #FF8EDF;
