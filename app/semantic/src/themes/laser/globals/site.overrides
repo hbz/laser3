@@ -25,6 +25,12 @@
     }
     .ui.segment {
         padding: 2em 1em;
+        background: transparent;
+        border-width: 0px;
+        border: none;
+        box-shadow: none;
+        margin:1rem 0rem;
+        border-radius: none;
 
         &.masthead {
             background-image: url('../images/landingpage/hero.jpg') !important;
