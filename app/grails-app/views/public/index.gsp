@@ -160,25 +160,26 @@
 
                         <div class="three wide column left aligned">
                             <h4 class="ui inverted header">
-                            ${message(code: 'landingpage.footer.2.head')}</a>
+                            ${message(code: 'landingpage.footer.2.head')}
                             </h4>
 
                             <div class="ui inverted link list">
-                                <a taget="_blank" class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund">${message(code: 'landingpage.footer.2.link1')}</a></a>
-                                <a taget="_blank" class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link2')}</a></a>
-                                <a taget="_blank" class="item" href="homepage.html#">${message(code: 'landingpage.footer.2.link3')}</a></a>
+                                <a taget="_blank" class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" target="_blank">${message(code: 'landingpage.footer.2.link1')}</a>
+                                <a taget="_blank" class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank" >${message(code: 'landingpage.footer.2.link2')}</a>
+                                <a taget="_blank" class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Blog" target="_blank" >${message(code: 'landingpage.footer.2.link3')}</a>
                             </div>
                         </div>
 
                         <div class="three wide column left aligned">
-                            <h4 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</a></h4>
+                            <h4 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h4>
                             <div class="ui inverted link list">
-                                <a class="item" href="https://github.com/hbz/laser">
+                                <a target="_blank" class="item" href="https://github.com/hbz/laser">
+                                Version ${grailsApplication.metadata['app.version']}
                                 Version ${grailsApplication.metadata['app.version']}
                                 <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
                                 // ${grailsApplication.metadata['app.buildDate']}
                                 </a>
-                                <a class="item" href="https://github.com/hbz/laser">${message(code: 'landingpage.footer.3.link1')}</a>
+                                <a class="item" href="https://github.com/hbz/laser" target="_blank">${message(code: 'landingpage.footer.3.link1')}</a>
                             </div>
                         </div>
 
@@ -223,5 +224,3 @@
             })
         ;
     </script>
-</body>
-</html>

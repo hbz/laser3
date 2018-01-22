@@ -785,12 +785,11 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .landingpage .ui.segment {
   padding: 2em 1em;
   background: transparent;
-  border-width: 0px;
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
   margin: 1rem 0rem;
-  border-radius: none;
+  border-radius: 0;
 }
 
 .landingpage .ui.segment.masthead {
