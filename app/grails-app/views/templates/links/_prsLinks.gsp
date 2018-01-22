@@ -3,7 +3,7 @@
     <thead>
         <tr>
             <th>Person</th>
-            <g:if test="${tmplConfigShowFunction}">
+            <g:if test="${tmplShowFunction}">
                 <th>Verantwortlichkeit</th>
             </g:if>
             <th>Organisation</th>
@@ -17,7 +17,7 @@
                     <g:if test="${pr.prs.isPublic?.value == "No"}"><i class="address book outline icon"></i> </g:if>
                     <g:link controller="person" action="show" id="${pr.prs.id}">${pr.prs}</g:link>
                 </td>
-                <g:if test="${tmplConfigShowFunction}">
+                <g:if test="${tmplShowFunction}">
                     <td>
                         <g:if test="${pr.functionType}">
                             ${pr.functionType.getI10n("value")}

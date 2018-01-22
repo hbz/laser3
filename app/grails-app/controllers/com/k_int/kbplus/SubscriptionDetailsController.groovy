@@ -31,7 +31,7 @@ class SubscriptionDetailsController {
     def executorWrapperService
     def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
     def permissionHelperService
-
+    def filterService
 
   private static String INVOICES_FOR_SUB_HQL =
      'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -695,8 +695,9 @@ class SubscriptionDetailsController {
 
         result.institution = result.subscriptionInstance.subscriber
         if(result.institution?.orgType?.value == 'Consortium') {
-            result.cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.type.value = ?", [result.institution, 'Consortium'])
-        }
+            def fsq = filterService.getOrgComboQuery(params, result.institution)
+            result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+       }
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
         result
@@ -724,7 +725,7 @@ class SubscriptionDetailsController {
             if (orgType?.value == 'Consortium') {
                 def cons_members = []
 
-                (params.selectedConsortiaMembers).each { it ->
+                (params.selectedOrgs).each { it ->
                     def fo = Org.findById(Long.valueOf(it))
                     cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
                 }

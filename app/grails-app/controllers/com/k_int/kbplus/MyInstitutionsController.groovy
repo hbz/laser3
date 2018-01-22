@@ -30,6 +30,7 @@ class MyInstitutionsController {
     def permissionHelperService
     def contextService
     def taskService
+    def filterService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
@@ -566,7 +567,8 @@ class MyInstitutionsController {
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
             if(result.orgType?.value == 'Consortium') {
-                result.cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.type.value = ?", [result.institution, 'Consortium'])
+                def fsq = filterService.getOrgComboQuery(params, result.institution)
+                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
 
             result
@@ -620,7 +622,7 @@ class MyInstitutionsController {
                     
                     def cons_members = []
 
-                    (params.selectedConsortiaMembers).each{ it ->
+                    (params.selectedOrgs).each{ it ->
                         def fo =  Org.findById(Long.valueOf(it))
                         cons_members << Combo.executeQuery(
                                 "select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?",
@@ -2713,5 +2715,24 @@ AND EXISTS (
         result.institution  = Org.findByShortcode(params.shortcode)
 
         result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def ajaxEmptySubscription() {
+
+        def result = setResultGenerics()
+        result.orgType = result.institution.orgType
+
+        result.editable = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        if (result.editable) {
+
+            if(result.orgType?.value == 'Consortium') {
+                def fsq = filterService.getOrgComboQuery(params, result.institution)
+                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            }
+
+            result
+        }
+        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true])
     }
 }

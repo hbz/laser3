@@ -12,6 +12,7 @@ class OrganisationsController {
     def permissionHelperService
     def contextService
     def addressbookService
+    def filterService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -64,43 +65,11 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         params.max = params.max ?: result.user?.getDefaultPageSize()
 
-        def query = []
-        def queryParams = []
+        def fsq = filterService.getOrgQuery(params)
 
-        if (params.orgNameContains?.length() > 0) {
-            query << "lower(o.name) like ?"
-            queryParams << "%${params.orgNameContains.toLowerCase()}%"
-        }
-        if (params.orgType?.length() > 0) {
-            query << "o.orgType.id = ?"
-            queryParams << Long.parseLong(params.orgType)
-        }
-        if (params.orgSector?.length() > 0) {
-            query << "o.sector.id = ?"
-            queryParams << Long.parseLong(params.orgSector)
-        }
-        if (params.federalState?.length() > 0) {
-            query << "o.federalState.id = ?"
-            queryParams << Long.parseLong(params.federalState)
-        }
-        if (params.libraryNetwork?.length() > 0) {
-            query << "o.libraryNetwork.id = ?"
-            queryParams << Long.parseLong(params.libraryNetwork)
-        }
-        if (params.libraryType?.length() > 0) {
-            query << "o.libraryType.id = ?"
-            queryParams << Long.parseLong(params.libraryType)
-        }
+        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
+        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
 
-        if (query.size() > 0) {
-            query = "from Org o where " + query.join(" and ") + " order by o.name"
-        }
-        else {
-            query = "from Org o order by o.name"
-        }
-
-        result.orgInstanceList  = Org.findAll(query, queryParams, params)
-        result.orgInstanceTotal = Org.executeQuery("select count (o) ${query}", queryParams)[0]
         result
     }
 

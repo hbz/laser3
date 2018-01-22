@@ -196,7 +196,7 @@
                     <dl>
                         <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
                         <dd>
-                            <g:render template="/templates/links/prsLinks" model="[tmplConfigShowFunction:false]"/>
+                            <g:render template="/templates/links/prsLinks" model="[tmplShowFunction:false]"/>
 
                             <g:render template="/templates/links/prsLinksModal"
                                       model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>

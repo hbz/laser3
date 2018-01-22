@@ -121,7 +121,7 @@
                     <!--<td><g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/></td>-->
                     <td class="x">
                         <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
-                            <g:link controller="myInstitutions" action="actionCurrentSubscriptions" class="ui icon negative button"
+                            <g:link controller="myInstitutions" action="actionCurrentSubscriptions" class="ui icon basic negative button"
                                     params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}"
                                     onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(s.name?:'this subscription')])}')">
                                 <i class="trash icon"></i></g:link>

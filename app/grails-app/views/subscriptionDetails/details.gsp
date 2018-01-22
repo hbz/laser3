@@ -137,7 +137,7 @@
 
                 <g:if test="${subscriptionInstance.instanceOf}">
                     <dl>
-                        <dt>${message(code:'subscription.isInstanceOf.label')}</dt>
+                        <dt>${message(code:'subscription.isInstanceOfSub.label')}</dt>
                         <dd>
                             <g:link controller="subscriptionDetails" action="details" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
                         </dd>
@@ -242,7 +242,7 @@
                 <dl>
                     <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
                     <dd>
-                        <g:render template="/templates/links/prsLinks" model="[tmplConfigShowFunction:false]"/>
+                        <g:render template="/templates/links/prsLinks" model="[tmplShowFunction:false]"/>
 
                         <g:render template="/templates/links/prsLinksModal"
                                   model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>

@@ -46,51 +46,15 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label>${orgInstanceTotal} Matches</label>
+                    <label>${orgListTotal} Matches</label>
                     <input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button"/>
                 </div>
             </g:form>
         </semui:filter>
-        
-        <table class="ui celled striped table">
-            <thead>
-                <tr>
-                    <th>${message(code: 'org.name.label', default: 'Name')}</th>
-                    <th>WIB</th>
-                    <th>ISIL</th>
-                    <th>${message(code: 'org.type.label', default: 'Type')}</th>
-                    <th>${message(code: 'org.sector.label', default: 'Sector')}</th>
-                    <th>${message(code: 'org.federalState.label')}</th>
-                    <th>${message(code: 'org.libraryNetwork.label')}</th>
-                    <th>${message(code: 'org.libraryType.label')}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <g:each in="${orgInstanceList}" var="orgInstance">
-                    <tr>
-                        <td>
-                            <g:link action="show" id="${orgInstance.id}">
-                                <g:if test="${orgInstance.shortname}">
-                                    ${fieldValue(bean: orgInstance, field: "shortname")}
-                                </g:if>
-                                <g:else>
-                                    ${fieldValue(bean: orgInstance, field: "name")}
-                                </g:else>
-                            </g:link>
-                        </td>
-                        <td>${orgInstance.getIdentifierByType('wib')?.value}</td>
-                        <td>${orgInstance.getIdentifierByType('isil')?.value}</td>
-                        <td>${orgInstance?.orgType?.getI10n('value')}</td>
-                        <td>${orgInstance?.sector?.getI10n('value')}</td>
-                        <td>${orgInstance?.federalState?.getI10n('value')}</td>
-                        <td>${orgInstance?.libraryNetwork?.getI10n('value')}</td>
-                        <td>${orgInstance?.libraryType?.getI10n('value')}</td>
-                    </tr>
-                </g:each>
-            </tbody>
-        </table>
 
-        <semui:paginate total="${orgInstanceTotal}" params="${params}" />
+        <g:render template="/templates/filter/orgFilterTable" model="[orgList: orgList]" />
+
+        <semui:paginate total="${orgListTotal}" params="${params}" />
 
     </body>
 </html>
