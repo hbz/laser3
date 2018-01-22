@@ -238,9 +238,9 @@
                 <div>
                   <span style="font-weight:bold;">${link_cat.rdv.getI10n('value')} (${link_cat.total})</span>
                 </div>
-                <ul>
+                <div class="ui list">
                   <g:each in="${link_cat.links}" var="i">
-                    <li>
+                    <div class="item">
                       <g:if test="${i.pkg}">
                         <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
                           ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
@@ -261,9 +261,9 @@
                           ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n('value')})
                         </g:link>
                       </g:if> 
-                    </li>
+                    </div>
                   </g:each>
-                </ul>
+                </div>
                 <g:set var="local_offset" value="${params[link_cat.rdvl] ? Long.parseLong(params[link_cat.rdvl]) : null}" />
                 <div>
                   <g:if test="${link_cat.total > 10}">

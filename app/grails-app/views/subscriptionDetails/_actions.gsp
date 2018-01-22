@@ -5,7 +5,7 @@
         <semui:actionsDropdownItem controller="subscriptionDetails" action="linkPackage" params="${[id:params.id, shortcode:(params.shortcode ?: null)]}" message="subscription.details.linkPackage.label" />
         <semui:actionsDropdownItem controller="subscriptionDetails" action="addEntitlements" params="${[id:params.id, shortcode:(params.shortcode ?: null)]}" message="subscription.details.addEntitlements.label" />
 
-        <g:if test="${subscriptionInstance?.getConsortia() && (contextService.getOrg() == subscriptionInstance?.getConsortia())}">
+        <g:if test="${subscriptionInstance?.getConsortia()?.id && contextService.getOrg()?.id}">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="addMembers" params="${[id:params.id, shortcode:(params.shortcode ?: null)]}" message="subscription.details.addMembers.label" />
         </g:if>
 

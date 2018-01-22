@@ -57,44 +57,48 @@
             <input id="submitterFallback" type="submit" class="ui button" value="${message(code:'default.button.create.label', default:'Create')}" />
         </g:form>
 
-        <div class="cons-options">
-            <semui:filter>
-                <g:formRemote name="x" url="[controller:'MyInstitutions', action:'ajaxEmptySubscription', params:[shortcode:params.shortcode]]" update="orgListTable" class="ui form">
-                    <g:render template="/templates/filter/orgFilter" />
-                </g:formRemote>
-            </semui:filter>
+        <g:if test="${orgType?.value == 'Consortium'}">
 
-            <div id="orgListTable">
-                <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true]" />
-            </div>
+            <div class="cons-options">
+                <semui:filter>
+                    <g:formRemote name="x" url="[controller:'MyInstitutions', action:'ajaxEmptySubscription', params:[shortcode:params.shortcode]]" update="orgListTable" class="ui form">
+                        <g:render template="/templates/filter/orgFilter" />
+                    </g:formRemote>
+                </semui:filter>
 
-            <div class="ui checkbox">
-                <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
-                <label>${message(code:'myinst.emptySubscription.seperate_subs', default:'Generate seperate Subscriptions for all Consortia Members')}</label>
-            </div>
+                <div id="orgListTable">
+                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true]" />
+                </div>
 
-        </div><!-- .cons-options -->
+                <div class="ui checkbox">
+                    <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
+                    <label>${message(code:'myinst.emptySubscription.seperate_subs', default:'Generate seperate Subscriptions for all Consortia Members')}</label>
+                </div>
 
-    <r:script language="JavaScript">
-        $('#submitterFallback').click(function(e){
-            e.preventDefault()
-            $('#dynHiddenValues').empty()
-            $('input[name=selectedOrgs]:checked').each(function(index, elem){
-                var newElem = $('<input type="hidden" name="selectedOrgs" value="' + $(elem).attr('value') + '">')
-                $('#dynHiddenValues').append(newElem)
-            })
-            $(this).parents('form').submit()
-        })
+            </div><!-- .cons-options -->
 
-        $('#asOrgType').change(function() {
-            var selVal = $(this).find('option:selected').attr('data-value')
-            if ('Consortium' == selVal) {
-                $('.cons-options').show()
-            }
-            else {
-                $('.cons-options').hide()
-            }
-        })
-    </r:script>
+            <r:script language="JavaScript">
+                $('#submitterFallback').click(function(e){
+                    e.preventDefault()
+                    $('#dynHiddenValues').empty()
+                    $('input[name=selectedOrgs]:checked').each(function(index, elem){
+                        var newElem = $('<input type="hidden" name="selectedOrgs" value="' + $(elem).attr('value') + '">')
+                        $('#dynHiddenValues').append(newElem)
+                    })
+                    $(this).parents('form').submit()
+                })
+
+                $('#asOrgType').change(function() {
+                    var selVal = $(this).find('option:selected').attr('data-value')
+                    if ('Consortium' == selVal) {
+                        $('.cons-options').show()
+                    }
+                    else {
+                        $('.cons-options').hide()
+                    }
+                })
+            </r:script>
+
+        </g:if>
     </body>
 </html>
