@@ -119,6 +119,10 @@ class SemanticUiNavigationTagLib {
 
         def maxsteps = (attrs.int('maxsteps') ?: 10)
 
+        if (total <= max) {
+            return
+        }
+
         def linkParams = [:]
         if (attrs.params) linkParams.putAll(attrs.params)
         linkParams.offset = offset - max
