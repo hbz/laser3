@@ -6,6 +6,8 @@
 
 </head>
 
+<body>
+
 <div class="landingpage">
     <!-- NAVIGATION FIX -->
     <div class="ui container ">
@@ -224,3 +226,5 @@
             })
         ;
     </script>
+
+</body>

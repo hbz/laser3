@@ -12,7 +12,7 @@
     </semui:breadcrumbs>
 
     <div class="home-page">
-        <div class="ui segment">
+        <div class="ui">
             <h1 class="ui header">${institution.name}</h1>
 
             <div class="ui equal width grid">
@@ -20,7 +20,7 @@
 
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.view', default:'View')}</h5>-->
-                        <div class="ui relaxed list">
+                        <div class="ui divided relaxed list">
                             <div class="item"><g:link controller="myInstitutions"
                                         action="currentLicenses"
                                         params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.myLics')}</g:link></div>
@@ -35,7 +35,7 @@
 
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.renewals', default:'Renewals')}</h5>-->
-                        <div class="ui relaxed list">
+                        <div class="ui divided relaxed list">
                             <div class="item"><g:link controller="myInstitutions"
                                         action="renewalsSearch"
                                         params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link></div>
@@ -52,7 +52,7 @@
 
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'default.special.label', default:'Special')}</h5>-->
-                        <div class="ui relaxed list">
+                        <div class="ui divided relaxed list">
                             <div class="item"><g:link controller="myInstitutions"
                                         action="tasks"
                                         params="${[shortcode:params.shortcode]}">${message(code:'task.plural', default:'Tasks')}</g:link></div>
@@ -71,122 +71,111 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="home-page">
-      <div class="ui grid">
-        <div class="five wide column">
-            <table class="ui celled table dashboard-widget">
-              <thead>
-                <th>
-                  <h5 class="pull-left">${message(code:'myinst.todo.label', default:'To Do')}</h5>
-                  <span class="pull-right">
-                    <i class="alarm outline icon large"></i>
-                  </span>
-                </th>
-              </thead>
-              <tbody>
-              <g:each in="${todos}" var="todo">
-                <tr>
-                  <td>
-                    <div class="pull-left icon">
+    <br />
+
+    <div class="ui top attached tabular menu">
+        <a class="active item" data-tab="first">
+            <i class="alarm outline icon large"></i>
+            ${message(code:'myinst.todo.label', default:'To Do')}
+        </a>
+        <a class="item" data-tab="second">
+            <i class="warning circle icon large"></i>
+            ${message(code:'announcement.plural', default:'Announcements')}
+        </a>
+        <a class="item" data-tab="third">
+            <i class="checked calendar icon large"></i>
+            ${message(code:'myinst.dash.task.label')}
+        </a>
+    </div>
+
+    <div class="ui bottom attached active tab segment" data-tab="first">
+        <div class="pull-right">
+            <g:link action="todo" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
+        </div>
+
+        <div class="ui relaxed divided list">
+            <g:each in="${todos}" var="todo">
+                <div class="item">
+                    <div class="icon">
                         <i class="alarm outline icon"></i>
                         <span class="badge badge-warning">${todo.num_changes}</span>
                     </div>
-                    <div class="pull-right message">
-                      <p>
-                        <g:if test="${todo.item_with_changes instanceof com.k_int.kbplus.Subscription}">
-                          <g:link controller="subscriptionDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
-                        </g:if>
-                        <g:else>
-                          <g:link controller="licenseDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
-                        </g:else>
-                      </p>
-                      <p>${message(code:'myinst.change_from', default:'Changes between')} <g:formatDate date="${todo.earliest}" formatName="default.date.format"/></span> ${message(code:'myinst.change_to', default:'and')} <g:formatDate date="${todo.latest}" formatName="default.date.format"/></p>
+                    <div class="message">
+                        <p>
+                            <g:if test="${todo.item_with_changes instanceof com.k_int.kbplus.Subscription}">
+                                <g:link controller="subscriptionDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="licenseDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
+                            </g:else>
+                        </p>
+                        <p>
+                            ${message(code:'myinst.change_from', default:'Changes between')}
+                            <g:formatDate date="${todo.earliest}" formatName="default.date.format"/>
+                            ${message(code:'myinst.change_to', default:'and')}
+                            <g:formatDate date="${todo.latest}" formatName="default.date.format"/>
+                        </p>
                     </div>
-                  </td>
-                </tr>
-              </g:each>
-                <tr>
-                  <td>
-                    <g:link action="todo" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-        </div><!-- .five -->
-        <div class="six wide column">
-            <table class="ui celled table dashboard-widget">
-              <thead>
-                <th>
-                  <h5 class="pull-left">${message(code:'announcement.plural', default:'Announcements')}</h5>
-                    <span class="pull-right">
-                        <i class="warning circle icon large"></i>
-                    </span>
-                </th>
-              </thead>
-              <tbody>
-              <g:each in="${recentAnnouncements}" var="ra">
-                <tr>
-                  <td>
-                    <div class="pull-left icon">
+                </div>
+            </g:each>
+        </div>
+    </div>
+
+    <div class="ui bottom attached tab segment" data-tab="second">
+        <div class="pull-right">
+            <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
+        </div>
+
+        <div class="ui relaxed divided list">
+            <g:each in="${recentAnnouncements}" var="ra">
+                <div class="item announcement">
+                    <div class="icon">
                         <i class="warning circle icon"></i>
                     </div>
-                    <div class="pull-right message">
-                      <g:set var="ann_nws" value="${ra.title.replaceAll(' ','')}" />
-                      <p><strong>${message(code:"announcement.${ann_nws}", default:"${ra.title}")}</strong></p>
-                      <div>
-                        <span class="widget-content">${ra.content}</span>
-                        <div class="see-more"><a href="">[ ${message(code:'default.button.see_more.label', default:'See More')} ]</a></div>
-                      </div> 
-                      <p>${message(code:'myinst.ann.posted_by', default:'Posted by')} <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em><div> ${message(code:'myinst.ann.posted_on', default:'on')} <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/></div></p>
+                    <div class="message">
+                        <g:set var="ann_nws" value="${ra.title.replaceAll(' ','')}" />
+                        <p>
+                            <strong>${message(code:"announcement.${ann_nws}", default:"${ra.title}")}</strong>
+                        </p>
+                        <div class="widget-content">${ra.content}</div>
+                        <p>
+                            ${message(code:'myinst.ann.posted_by', default:'Posted by')}
+                            <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>
+                            <br/>
+                            ${message(code:'myinst.ann.posted_on', default:'on')}
+                            <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/>
+                        </p>
                     </div>
-                  </td>
-                </tr>
-              </g:each>
-                <tr>
-                  <td>
-                     <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-        </div><!-- .six -->
-        <div class="five wide column">
-            <table class="ui table dashboard-widget">
-                <thead>
-                    <th>
-                        <h5 class="pull-left">${message(code:'myinst.dash.task.label')}</h5>
-                        <span class="pull-right">
-                            <i class="checked calendar icon large"></i>
-                        </span>
-                    </th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
-                        </td>
-                    </tr>
-                    <g:each in="${tasks}" var="tsk">
-                        <tr>
-                            <td>
-                                <strong><g:link controller="task" action="show" params="${[id:tsk.id]}">${tsk.title}</g:link></strong> <br />
-                                <g:if test="${tsk.description}">
-                                    <span><em>${tsk.description}</em></span> <br />
-                                </g:if>
-                                <span>
-                                    <strong>${tsk.status?.getI10n('value')}</strong>
-                                    / fällig am
-                                    <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
-                                </span>
-                            </td>
-                        </tr>
-                    </g:each>
-                </tbody>
-            </table>
-
-            <g:render template="/templates/tasks/modal" />
-            <div class="modal hide fade" id="modalTasks"></div>
+                </div>
+            </g:each>
         </div>
+    </div>
+
+    <div class="ui bottom attached tab segment" data-tab="third">
+        <div class="pull-right">
+            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+        </div>
+
+        <div class="ui relaxed divided list">
+            <g:each in="${tasks}" var="tsk">
+                <div class="item">
+                    <strong><g:link controller="task" action="show" params="${[id:tsk.id]}">${tsk.title}</g:link></strong> <br />
+                    <g:if test="${tsk.description}">
+                        <span><em>${tsk.description}</em></span> <br />
+                    </g:if>
+                    <span>
+                        <strong>${tsk.status?.getI10n('value')}</strong>
+                        / fällig am
+                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
+                    </span>
+                </div>
+            </g:each>
+        </div>
+    </div>
+
+  <g:render template="/templates/tasks/modal" />
+
+  <div class="modal hide fade" id="modalTasks"></div>
 
         <% /*
         <g:if test="${grailsApplication.config.ZenDeskBaseURL}">
@@ -245,51 +234,28 @@
         </div><!-- .five -->
         </g:if>
         */ %>
-      </div><!-- .grid -->
-    </div>
 
     <r:script>
-      $(document).ready(function() {
+        $(document).ready( function(){
+            $('.tabular.menu .item').tab()
 
-        $(".widget-content").dotdotdot({
-           height: 50,
-           after: ".see-more",
-           callback: function(isTruncated, orgContent) {
-             if(isTruncated) {
-               $(this).parent().find('.see-more').show();
-             }
-           }
-         });
-
-         $('.see-more').click(function(e) {
-
-           if ($(this).text() == "[ ${message(code:'default.button.see_more.label', default:'See More')} ]") {
-             e.preventDefault();
-             $(this).parent().find('.widget-content').trigger('destroy');
-             $(this).html("<a href=\"\">[ ${message(code:'default.button.see_less.label', default:'See Less')} ]</a>");
-
-           } else {
-             e.preventDefault();
-             $(this).parent().find('.widget-content').dotdotdot({
-               height: 50,
-               after: ".see-more",
-               callback: function(isTruncated, orgContent) {
-                 if(isTruncated) {
-                   $(this).parent().find('.see-more').show();
-                 }
-               }
-             });
-             $(this).html("<a href=\"\">[ ${message(code:'default.button.see_more.label', default:'See More')} ]</a>");
-           }
-
-
-
-           // e.preventDefault();
-           // $(this).parent().find('.widget-content').trigger('destroy');
-           // $(this).hide();
-         });
-      });
+            $('.tabular.menu a[data-tab=second]').click( function(){
+                $('.item.announcement .widget-content').readmore({
+                    speed: 250,
+                    collapsedHeight: 25,
+                    startOpen: false,
+                    moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
+                    lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
+                })
+            })
+        })
     </r:script>
+
+    <style>
+        .item.announcement .widget-content {
+            overflow: hidden;
+        }
+    </style>
 
   </body>
 </html>
