@@ -284,6 +284,21 @@
             </dd>
           </g:if>
 
+            <h6 class="ui header">${message(code:'org.properties')}</h6>
+
+            <div id="custom_props_div_props">
+                <g:render template="/templates/properties/custom" model="${[
+                        prop_desc: PropertyDefinition.ORG_PROP,
+                        ownobj: orgInstance,
+                        custom_props_div: "custom_props_div_props" ]}"/>
+            </div>
+
+            <r:script language="JavaScript">
+                $(document).ready(function(){
+                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                });
+            </r:script>
+
             <g:each in="${authorizedOrgs}" var="authOrg">
                 <g:if test="${authOrg.name == contextOrg?.name}">
                     <h6 class="ui header">${message(code:'org.properties')} ( ${authOrg.name} )</h6>

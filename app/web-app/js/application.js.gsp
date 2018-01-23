@@ -98,7 +98,7 @@ function semanticUiStuff() {
     // checkboxes
     $('.ui.checkbox').checkbox();
 
-    //datepicker
+    // datepicker
     $('.datepicker').calendar({
         type: 'date',
         firstDayOfWeek: 1,

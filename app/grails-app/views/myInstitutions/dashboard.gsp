@@ -74,21 +74,21 @@
     <br />
 
     <div class="ui top attached tabular menu">
-        <a class="active item" data-tab="first">
+        <a class="item" data-tab="first">
             <i class="alarm outline icon large"></i>
             ${message(code:'myinst.todo.label', default:'To Do')}
         </a>
-        <a class="item" data-tab="second">
+        <a class="item" data-tab="second" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
-        <a class="item" data-tab="third">
+        <a class="active item" data-tab="third">
             <i class="checked calendar icon large"></i>
             ${message(code:'myinst.dash.task.label')}
         </a>
     </div>
 
-    <div class="ui bottom attached active tab segment" data-tab="first">
+    <div class="ui bottom attached tab segment" data-tab="first">
         <div class="pull-right">
             <g:link action="todo" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
         </div>
@@ -128,7 +128,7 @@
 
         <div class="ui relaxed divided list">
             <g:each in="${recentAnnouncements}" var="ra">
-                <div class="item announcement">
+                <div class="item">
                     <div class="icon">
                         <i class="warning circle icon"></i>
                     </div>
@@ -151,9 +151,9 @@
         </div>
     </div>
 
-    <div class="ui bottom attached tab segment" data-tab="third">
+    <div class="ui bottom attached active tab segment" data-tab="third">
         <div class="pull-right">
-            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+            <input type="submit" class="ui button" id="jsFallbackTasks" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
         </div>
 
         <div class="ui relaxed divided list">
@@ -175,7 +175,7 @@
 
   <g:render template="/templates/tasks/modal" />
 
-  <div class="modal hide fade" id="modalTasks"></div>
+  <!--div class="modal hide fade" id="modalTasks"></div-->
 
         <% /*
         <g:if test="${grailsApplication.config.ZenDeskBaseURL}">
@@ -239,8 +239,8 @@
         $(document).ready( function(){
             $('.tabular.menu .item').tab()
 
-            $('.tabular.menu a[data-tab=second]').click( function(){
-                $('.item.announcement .widget-content').readmore({
+            $('#jsFallbackAnnouncements').click( function(){
+                $('.item .widget-content').readmore({
                     speed: 250,
                     collapsedHeight: 25,
                     startOpen: false,
@@ -248,11 +248,38 @@
                     lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
                 })
             })
+
+            $('#jsFallbackTasks').click( function(){
+                $('form#create_task .datepicker').calendar({
+                        type: 'date',
+                        firstDayOfWeek: 1,
+                        monthFirst: false,
+                        formatter: {
+                            date: function (date, settings) {
+                                if (!date) return '';
+                                var day = date.getDate();
+                                if (day<10) day="0"+day;
+                                var month = date.getMonth() + 1;
+                                if (month<10) month="0"+month;
+                                var year = date.getFullYear();
+
+                                if ('dd.mm.yyyy' == gspDateFormat) {
+                                    console.log('dd.mm.yyyy');
+                                    return day + '.' + month + '.' + year;
+                                }
+                                else if ('yyyy-mm-dd' == gspDateFormat) {
+                                    console.log('yyyy-mm-dd');
+                                    return year + '-' + month + '-' + day;
+                                }
+                            }
+                        }
+                    });
+            })
         })
     </r:script>
 
     <style>
-        .item.announcement .widget-content {
+        .item .widget-content {
             overflow: hidden;
         }
     </style>
