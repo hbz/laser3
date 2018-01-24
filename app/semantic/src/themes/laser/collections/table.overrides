@@ -1,0 +1,6 @@
+.ui.sortable.table thead th.asc:after {
+  content: @sortableIconAscending;
+}
+.ui.sortable.table thead th.desc:after {
+  content: @sortableIconDescending;
+}
