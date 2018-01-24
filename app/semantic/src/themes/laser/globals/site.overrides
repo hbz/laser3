@@ -1,6 +1,9 @@
 /*******************************
         Global Overrides
 *******************************/
+body {
+    background-color: #f4f8f9 !important;
+}
 .landingpage {
     background-color: #f1ebe5;
     .ui.menu .item {
@@ -122,5 +125,34 @@
                 background-color: @blue!important;
             }
         }
+    }
+    &.table {
+        &.la-table{
+            border-collapse: separate!important;
+            border-spacing: 0 0.5rem!important;
+            tr{
+                border-bottom: none!important;
+            }
+
+            td {
+                background-color: white!important;
+                padding: 20px 0!important;
+            }
+            td, th {
+                padding-left:1rem!important;
+                padding-right:1rem!important;
+                border-bottom: none!important;
+                border-top: none!important;
+            }
+
+            th {
+                a {
+                    color: gray !important;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                }
+            }
+        }
+
     }
 }

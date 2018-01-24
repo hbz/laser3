@@ -70,7 +70,7 @@
 
 
       <div class="subscription-results">
-        <table class="ui celled striped table table-tworow">
+        <table class="ui  sortable very basic table table-tworow la-table">
           <thead>
             <tr>
                 <g:sortableColumn params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
