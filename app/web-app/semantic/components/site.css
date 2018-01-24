@@ -194,6 +194,9 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         Global Overrides
 *******************************/
 
+body {
+  background-color: #f4f8f9 !important;
+}
 .landingpage {
   background-color: #f1ebe5;
 }
@@ -313,4 +316,27 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 .ui.la-eye-catcher .la-eye-catcher-header.ui.blue.button:hover {
   background-color: #2d6697 !important;
+}
+.ui.table.la-table {
+  border-collapse: separate!important;
+  border-spacing: 0 0.5rem!important;
+}
+.ui.table.la-table tr {
+  border-bottom: none!important;
+}
+.ui.table.la-table td {
+  background-color: white!important;
+  padding: 20px 0!important;
+}
+.ui.table.la-table td,
+.ui.table.la-table th {
+  padding-left: 1rem!important;
+  padding-right: 1rem!important;
+  border-bottom: none!important;
+  border-top: none!important;
+}
+.ui.table.la-table th a {
+  color: gray !important;
+  font-size: 0.8rem;
+  text-transform: uppercase;
 }

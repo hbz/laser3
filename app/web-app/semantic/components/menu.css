@@ -2028,6 +2028,9 @@ Floated Menu / Item
 .ui.massive.vertical.menu {
   width: 25rem;
 }
+.ui.menu .item {
+  background-color: red;
+}
 
 
 /*******************************

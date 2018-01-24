@@ -754,6 +754,10 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         Global Overrides
 *******************************/
 
+body {
+  background-color: #f4f8f9 !important;
+}
+
 .landingpage {
   background-color: #f1ebe5;
 }
@@ -897,6 +901,34 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.la-eye-catcher .la-eye-catcher-header.ui.blue.button:hover {
   background-color: #2d6697 !important;
+}
+
+.ui.table.la-table {
+  border-collapse: separate!important;
+  border-spacing: 0 0.5rem!important;
+}
+
+.ui.table.la-table tr {
+  border-bottom: none!important;
+}
+
+.ui.table.la-table td {
+  background-color: white!important;
+  padding: 20px 0!important;
+}
+
+.ui.table.la-table td,
+.ui.table.la-table th {
+  padding-left: 1rem!important;
+  padding-right: 1rem!important;
+  border-bottom: none!important;
+  border-top: none!important;
+}
+
+.ui.table.la-table th a {
+  color: gray !important;
+  font-size: 0.8rem;
+  text-transform: uppercase;
 }
 /*!
  * # Semantic UI 2.2.13 - Button
@@ -23651,6 +23683,10 @@ Floated Menu / Item
   width: 25rem;
 }
 
+.ui.menu .item {
+  background-color: red;
+}
+
 /*******************************
          Site Overrides
 *******************************/
@@ -24940,11 +24976,11 @@ Floated Menu / Item
 /* Orange */
 
 .ui.orange.table {
-  border-top: 0.2em solid #F2711C;
+  border-top: 0.2em solid #fa820a;
 }
 
 .ui.inverted.orange.table {
-  background-color: #F2711C !important;
+  background-color: #fa820a !important;
   color: #FFFFFF !important;
 }
 
@@ -24995,11 +25031,11 @@ Floated Menu / Item
 /* Blue */
 
 .ui.blue.table {
-  border-top: 0.2em solid red;
+  border-top: 0.2em solid #2d6697;
 }
 
 .ui.inverted.blue.table {
-  background-color: red !important;
+  background-color: #2d6697 !important;
   color: #FFFFFF !important;
 }
 
@@ -25508,6 +25544,14 @@ Floated Menu / Item
 
 .ui.large.table {
   font-size: 1.1em;
+}
+
+.ui.sortable.table thead th.asc:after {
+  content: '\f0d8';
+}
+
+.ui.sortable.table thead th.desc:after {
+  content: '\f0d7';
 }
 
 /*******************************
