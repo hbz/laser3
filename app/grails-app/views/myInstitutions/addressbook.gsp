@@ -25,30 +25,28 @@ import="com.k_int.kbplus.RefdataCategory"
 
         <semui:messages data="${flash}" />
 
-        <div class="ui grid">
-            <div class="twelve wide column">
-		        <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')} ..</p>
-		
-                <dl>
-                    <g:if test="${visiblePersons}">
-                        <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
-                        <g:each in="${visiblePersons}" var="p">
-                            <g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
-                        </g:each>
-                    </g:if>
-                </dl>
-            </div>
-            <div class="four wide column">
-                <semui:card message="person.create_new.label" class="card-grey">
+        <div>
+            <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')} ..</p>
 
-                    <input class="ui button"
-                           value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
-                           data-semui="modal"
-                           href="#personFormModal" />
-                    <g:render template="/person/formModal" model="['org': institution, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
-                </semui:card>
+            <div>
+                <input class="ui button"
+                   value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                   data-semui="modal"
+                   href="#personFormModal" />
+
+                <g:render template="/person/formModal" model="['org': institution, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
             </div>
-        </div><!--.grid-->
+
+            <g:if test="${visiblePersons}">
+                <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
+                <div class="ui divided list">
+                    <g:each in="${visiblePersons}" var="p">
+                        <g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
+                    </g:each>
+                </div>
+            </g:if>
+
+        </div>
 
   </body>
 </html>

@@ -58,38 +58,44 @@ class Address {
     String toString() {
         zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type?.value
     }
-    
-    // TODO implement existing check (lookup)
+
+    static def lookup(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
+
+        def address
+        def check = Address.findAllWhere(
+                street_1: street1 ?: null,
+                street_2: street2 ?: null,
+                pob:      postbox ?: null,
+                zipcode:  zipcode ?: null,
+                city:     city ?: null,
+                state:    state ?: null,
+                country:  country ?: null,
+                type:     type ?: null,
+                prs:      person,
+                org:      organisation
+        ).sort({id: 'asc'})
+
+        if (check.size() > 0) {
+            address = check.get(0)
+        }
+        address
+    }
+
     static def lookupOrCreate(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
         
         def info   = "saving new address: ${type}}"
-
         def result = null
         
         if (person && organisation) {
             type = RefdataValue.findByValue("Job-related")
         }
-        if (! postbox) {
-            postbox = null
-        }
-        def check = Address.findAllWhere(
-            street_1: street1,
-            street_2: street2,
-            pob:      postbox,
-            zipcode:  zipcode,
-            city:     city,
-            state:    state,
-            country:  country,
-            type:     type,
-            prs:      person,
-            org:      organisation
-        ).sort({id: 'asc'})
-            
-        if(check.size()>0){
-            result = check.get(0)
+
+        def check = Address.lookup(street1, street2, postbox, zipcode, city, state, country, type, person, organisation)
+        if (check) {
+            result = check
             info += " > ignored; duplicate found"
         }
-        else{
+        else {
             result = new Address(
                 street_1: street1,
                 street_2: street2,

@@ -65,11 +65,13 @@
 
             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
             <dd>
-                <g:each in="${orgInstance?.addresses}" var="a">
-                    <g:if test="${a.org}">
-                        <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
-                    </g:if>
-                </g:each>
+                <div class="ui divided list">
+                    <g:each in="${orgInstance?.addresses}" var="a">
+                        <g:if test="${a.org}">
+                            <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+                        </g:if>
+                    </g:each>
+                </div>
                 <input class="ui button"
                        value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
                        data-semui="modal"
@@ -83,11 +85,13 @@
 
             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
             <dd>
-                <g:each in="${orgInstance?.contacts}" var="c">
-                    <g:if test="${c.org}">
-                        <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
-                    </g:if>
-                </g:each>
+                <div class="ui divided list">
+                    <g:each in="${orgInstance?.contacts}" var="c">
+                        <g:if test="${c.org}">
+                            <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+                        </g:if>
+                    </g:each>
+                </div>
                 <input class="ui button"
                        value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
                        data-semui="modal"
@@ -101,11 +105,13 @@
 
             <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
             <dd>
-                <g:each in="${orgInstance?.prsLinks}" var="pl">
-                    <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
-                        <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
-                    </g:if>
-                </g:each>
+                <div class="ui divided list">
+                    <g:each in="${orgInstance?.prsLinks}" var="pl">
+                        <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
+                            <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+                        </g:if>
+                    </g:each>
+                </div>
                 <% /*
                 <input class="ui button"
                        value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
@@ -114,7 +120,7 @@
                 <g:render template="/person/formModal" model="['orgId': orgInstance?.id]"/>
                 */ %>
                 <g:link controller="person" action="create" class="ui button"
-                        params="['tenant.id': contextOrg.id, 'org.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
+                        params="['tenant.id': contextOrg?.id, 'org.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
                     ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
                 </g:link>
             </dd>
