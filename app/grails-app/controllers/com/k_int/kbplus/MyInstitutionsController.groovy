@@ -2409,7 +2409,7 @@ AND EXISTS (
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def todo() {
+    def changes() {
         def result = setResultGenerics()
 
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {

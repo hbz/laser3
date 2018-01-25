@@ -93,7 +93,7 @@
                                                action="instdash"
                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.dash')} </g:link></li>
                                    <li><g:link controller="myInstitutions"
-                                               action="todo"
+                                               action="changes"
                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.todo')} </g:link></li>
                                    <li><g:link controller="myInstitutions"
                                                action="currentLicenses"

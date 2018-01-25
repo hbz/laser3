@@ -28,8 +28,8 @@
     %{--Custom URL mapping for re-use of index--}%
         <g:link class="item" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id, shortcode: (params.shortcode ?: null)]}">${message(code:'subscription.details.financials.label', default:'Subscription Financials')}</g:link>
     </g:if>
-    <semui:subNavItem controller="subscriptionDetails" action="todoHistory" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="license.nav.todo_history" />
-    <semui:subNavItem controller="subscriptionDetails" action="editHistory" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="license.nav.edit_history" />
+    <semui:subNavItem controller="subscriptionDetails" action="changes" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="license.nav.todo_history" />
+    <semui:subNavItem controller="subscriptionDetails" action="history" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="license.nav.edit_history" />
 
     <semui:subNavItem controller="subscriptionDetails" action="permissionInfo" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="default.permissionInfo.label" />
 </semui:subNav>

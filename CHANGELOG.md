@@ -1,3 +1,13 @@
+0.3
+
+- switched frontend to semantic ui 
+- upgraded to jQuery 3.x
+- removed legacy bootstrap markup
+- removed legacy bootstrap javascript
+- added globalUID support
+- more localization
+- bugfix: added missing elasticsearch mapping file
+
 0.2.1
 
 - bugfix: rest api 

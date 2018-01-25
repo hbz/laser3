@@ -18,8 +18,6 @@
 
     <g:render template="nav" contextPath="." />
 
-      <h3 class="ui header">${message(code:'subscription.details.todo_history.label', default:'ToDo History')}</h3>
-
       <table  class="ui celled striped table">
           <thead>
             <tr>

@@ -90,7 +90,7 @@
 
     <div class="ui bottom attached tab segment" data-tab="first">
         <div class="pull-right">
-            <g:link action="todo" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
+            <g:link action="changes" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
         </div>
 
         <div class="ui relaxed divided list">
