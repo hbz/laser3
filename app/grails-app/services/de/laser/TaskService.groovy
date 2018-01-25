@@ -30,26 +30,30 @@ class TaskService {
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByResponsible(User user) {
+    def getTasksByResponsible(User user, Map queryMap) {
         def tasks = []
         if (user) {
-            tasks = Task.findAllByResponsibleUser(user)
+            def query  = "select t from Task t where t.responsibleUser = ?" + queryMap.query
+            def params = [user] + queryMap.queryParams
+            tasks = Task.executeQuery(query, params)
         }
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByResponsible(Org org) {
+    def getTasksByResponsible(Org org, Map queryMap) {
         def tasks = []
         if (org) {
-            tasks = Task.findAllByResponsibleOrg(org)
+            def query  = "select t from Task t where t.responsibleOrg = ?" + queryMap.query
+            def params = [org] + queryMap.queryParams
+            tasks = Task.executeQuery(query, params)
         }
         tasks.sort{ it.endDate }
     }
 
-    def getTasksByResponsibles(User user, Org org) {
+    def getTasksByResponsibles(User user, Org org, Map queryMap) {
         def tasks = []
-        def a = getTasksByResponsible(user)
-        def b = getTasksByResponsible(org)
+        def a = getTasksByResponsible(user, queryMap)
+        def b = getTasksByResponsible(org, queryMap)
 
         tasks = a.plus(b).unique()
         tasks.sort{ it.endDate }

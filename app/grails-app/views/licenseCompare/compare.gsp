@@ -14,7 +14,7 @@
         <semui:crumb class="active" message="menu.institutions.comp_lic" />
 
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>&nbsp;
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>&nbsp;
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li>
               <g:link action="compare" params="${params+[format:'csv']}">CSV Export</g:link>
@@ -53,7 +53,7 @@
           </g:if>
         </div>
         <g:if test="${['stringValue','intValue','decValue'].contains(point.getValueType())}">
-            <span class="cell-inner">  <b>${point.getValue().encodeAsHTML()}</b></span>
+            <span class="cell-inner">  <strong>${point.getValue().encodeAsHTML()}</strong></span>
         </g:if>
         <g:else>
             <g:set var="val" value="${point.getValue()}"/>
@@ -78,7 +78,7 @@
               </span>
             </g:elseif>
             <g:else>
-               <span class="cell-inner">  <b>${point.getValue().encodeAsHTML()}</b></span>
+               <span class="cell-inner">  <strong>${point.getValue().encodeAsHTML()}</strong></span>
             </g:else>
         </g:else>
         </td>

@@ -70,7 +70,7 @@
           </span>
 
           %{-- List all the extra matrix details. Should create css class to use less space --}%
-          <ul><b>
+          <ul><strong>
           <g:if test="${entry['UsageMethod'] }">
            <li> via ${ OnixPLService.getAllValues(entry, 'UsageMethod',', ') }</li>
           </g:if>
@@ -98,7 +98,7 @@
             <g:set var="hasVal" value="${OnixPLService.getAllValues(rth, 'UsageMethod', ', ', ' or ')}"/>
             <g:if test="${hasVal}">  <li>${hasVal}</li></g:if>
           </g:if>
-        </b></ul>
+        </strong></ul>
         </g:if>
         <g:else>
           <span class="cell-inner-undefined">

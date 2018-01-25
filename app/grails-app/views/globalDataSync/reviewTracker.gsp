@@ -26,7 +26,7 @@
           </dl>
         </g:if>
         <g:else>
-          <p>This tracker will synchronize package "<b><em>${item.name}</em></b>" from "<b><em>${item.source.name}</em></b>" with the existing local package <b><em>${localPkg.name}</em></b> </p>
+          <p>This tracker will synchronize package "<strong><em>${item.name}</em></strong>" from "<strong><em>${item.source.name}</em></strong>" with the existing local package <strong><em>${localPkg.name}</em></strong> </p>
         </g:else>
 
         <dl>
@@ -92,7 +92,7 @@
               </g:if>
               <g:else>
                 <g:if test="${i.action=='-'}">
-                  <b><em>${i.tipp?.title?.name}</em></b> (<g:each in="${i.tipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                  <strong><em>${i.tipp?.title?.name}</em></strong> (<g:each in="${i.tipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
                   <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                     <g:each in="${i.tipp.coverage}" var="c">
@@ -104,7 +104,7 @@
                   </table>
                 </g:if>
                 <g:else>
-                  <b><em>${i.oldtipp?.title?.name}</em></b> (<g:each in="${i.oldtipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                  <strong><em>${i.oldtipp?.title?.name}</em></strong> (<g:each in="${i.oldtipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
                   <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                     <g:each in="${i.oldtipp.coverage}" var="c">
@@ -120,10 +120,10 @@
             <td width="6%">${i.action}</td>
             <td width="47%">
               <g:if test="${i.action=='d'}">
-                <b><em>Removed</em></b>
+                <strong><em>Removed</em></strong>
               </g:if>
               <g:else>
-                <b><em>${i.tipp?.title?.name}</em></b> (<g:each in="${i.tipp.title.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                <strong><em>${i.tipp?.title?.name}</em></strong> (<g:each in="${i.tipp.title.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
                 <table class="ui table">
                   <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                   <g:each in="${i.tipp.coverage}" var="c">

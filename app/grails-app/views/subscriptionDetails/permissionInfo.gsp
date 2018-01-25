@@ -62,7 +62,7 @@
         <g:each in="${user.affiliations}" var="ol">
           <g:if test="${((ol.status==1)||(ol.status==3))}">
             <tr>
-              <td>${message(code:'subscription.details.permissionInfo.aff_to', args:[ol.org?.name])} <b><g:message code="cv.roles.${ol.formalRole?.authority}"/></b> (${message(code:"cv.membership.status.${ol.status}")})</td>
+              <td>${message(code:'subscription.details.permissionInfo.aff_to', args:[ol.org?.name])} <strong><g:message code="cv.roles.${ol.formalRole?.authority}"/></strong> (${message(code:"cv.membership.status.${ol.status}")})</td>
               <td>
                 <ul>
                   <g:each in="${ol.formalRole?.grantedPermissions}" var="gp">

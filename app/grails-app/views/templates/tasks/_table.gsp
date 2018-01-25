@@ -35,15 +35,15 @@
                     </td>
 
                     <td>
-                        <g:if test="${taskInstance.responsibleOrg}">${fieldValue(bean: taskInstance, field: "responsibleOrg")} <br /></g:if>
-                        <g:if test="${taskInstance.responsibleUser}">${fieldValue(bean: taskInstance, field: "responsibleUser")}</g:if>
+                        <g:if test="${taskInstance.responsibleOrg}">${taskInstance.responsibleOrg?.name} <br /></g:if>
+                        <g:if test="${taskInstance.responsibleUser}">${taskInstance.responsibleUser}</g:if>
                     </td>
 
                     <td>${fieldValue(bean: taskInstance, field: "creator")}</td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
 
-                    <td class="link">
+                    <td class="x">
                         <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon basic button">
                             <i class="write icon"></i>
                         </g:link>

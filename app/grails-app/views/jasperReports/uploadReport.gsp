@@ -18,11 +18,11 @@
 
     <g:uploadForm action="uploadReport" controller="jasperReports">
 
-        <b>Select Reports</b>:
+        <strong>Select Reports</strong>:
 
         <input type="file" name="report_files" multiple="multiple"><br/>
 
-        <b>Upload Selected</b>
+        <strong>Upload Selected</strong>
 
         <input type="submit" class="ui button" value="Upload Files"/>
 

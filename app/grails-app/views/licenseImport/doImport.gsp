@@ -41,7 +41,7 @@
             <div class="alert alert-success">
                       <h2 class="ui header">${message(code:'onix.import.success', default:'Upload successful')}</h2>
 
-                      ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</b>
+                      ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</strong>
             <g:if test="${validationResult.license}">
                 ${message(code:'onix.import.assoc', default:'and associated with')}
                 <g:link action="index"
@@ -50,7 +50,7 @@
                         id="${validationResult.license.id}">
                     ${message(code:'license.label')} ${validationResult.license.id}
                 </g:link>
-                <b>${validationResult.license.reference}.</b>
+                <strong>${validationResult.license.reference}.</strong>
             </g:if>
             <g:else>
                 <br/>

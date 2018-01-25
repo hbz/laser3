@@ -8,6 +8,8 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.PropertyDefinition
+import org.springframework.dao.DataIntegrityViolationException
+
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
@@ -2368,8 +2370,12 @@ AND EXISTS (
         //.findAllByOwner(result.user,sort:'ts',order:'asc')
 
         // tasks
+
+        def sdFormat    = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        params.taskStatus = 'not done'
+        def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
-        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg)
+        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
@@ -2591,7 +2597,22 @@ AND EXISTS (
     def tasks() {
         def result = setResultGenerics()
 
-        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution)
+        if (params.deleteId) {
+            def dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    dTask.delete(flush: true)
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+            }
+        }
+
+        def sdFormat = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def query = filterService.getTaskQuery(params, sdFormat)
+        result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, taskService.WITHOUT_TENANT_ONLY)
         result.editable = true // TODO check roles !!!
 

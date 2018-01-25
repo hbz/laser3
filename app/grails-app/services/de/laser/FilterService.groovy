@@ -1,6 +1,10 @@
 package de.laser
 
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import grails.util.Holders
+import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.codehaus.groovy.grails.web.util.WebUtils
 
 class FilterService {
@@ -87,6 +91,46 @@ class FilterService {
             query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? order by o.name"
         } else {
             query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = ? and c.type.value = ? order by o.name"
+        }
+
+        result.query = query
+        result.queryParams = queryParams
+
+        result
+    }
+
+    def getTaskQuery(params, sdFormat) {
+        def result = [:]
+        def query = []
+        def queryParams = []
+
+        if (params.taskName?.length() > 0) {
+            query << "lower(t.title) like ?"
+            queryParams << "%${params.taskName.toLowerCase()}%"
+        }
+        if (params.taskStatus?.length() > 0) {
+            if (params.taskStatus == 'not done') {
+                query << "t.status.id != ?"
+                queryParams << RefdataValue.getByValueAndCategory('Done', 'Task Status')?.id
+            }
+            else {
+                query << "t.status.id = ?"
+                queryParams << Long.parseLong(params.taskStatus)
+            }
+        }
+        if (params.endDateFrom?.length() > 0 && sdFormat) {
+            query << "t.endDate >= ?"
+            queryParams << sdFormat.parse(params.endDateFrom)
+        }
+        if (params.endDateTo?.length() > 0 && sdFormat) {
+            query << "t.endDate <= ?"
+            queryParams << sdFormat.parse(params.endDateTo)
+        }
+
+        if (query.size() > 0) {
+            query = " and " + query.join(" and ") + " order by t.endDate desc"
+        } else {
+            query = " order by t.endDate desc"
         }
 
         result.query = query

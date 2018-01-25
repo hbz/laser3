@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">Meine Aufgaben</h2>
+        <h2 class="ui header">Meine Aufgaben (noch nicht zugewiesen)</h2>
 
         <table class="ui celled striped table">
             <thead>
@@ -46,9 +46,12 @@
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
 
-                    <td class="link">
+                    <td class="x">
                         <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon basic button">
                             <i class="write icon"></i>
+                        </g:link>
+                        <g:link controller="myInstitutions" action="tasks" params="[shortcode:params.shortcode, deleteId:taskInstance.id]" class="ui icon basic negative button">
+                            <i class="trash icon"></i>
                         </g:link>
                     </td>
                 </tr>

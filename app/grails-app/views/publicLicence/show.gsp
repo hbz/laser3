@@ -18,7 +18,7 @@
         <li> <g:link controller="publicLicense" action="show" id="${params.id}"><g:message code="license.details" default="License Details"/></g:link> </li>
     
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>&nbsp;
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>&nbsp;
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li>
               <g:link action="index" params="${params+[format:'json']}">Json Export</g:link>

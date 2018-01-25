@@ -2,9 +2,13 @@
 
 - switched frontend to semantic ui 
 - upgraded to jQuery 3.x
+- upgraded x-editable library
+- overworked legacy javascript
 - removed legacy bootstrap markup
 - removed legacy bootstrap javascript
 - added globalUID support
+- overworked orgs, subscriptions, licenses, persons and contacts
+- added new custom tags
 - more localization
 - bugfix: added missing elasticsearch mapping file
 
