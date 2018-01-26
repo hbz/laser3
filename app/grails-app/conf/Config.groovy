@@ -714,7 +714,6 @@ financialImportTSVLoaderMappings = [
           whenPresent:[ [ type:'ref', refname:'owner'] ],
           properties : [
             [ type:'ref', property:'owner', refname:'owner' ],
-          // uncommented by frank 19.01.18 14:32  [ type:'val', property:'invoiceNumber', colname: 'InvoiceNumber' ],
             [ type:'val', property:'invoiceNumber', colname: 'InvoiceNumber', datatype:'String'], // inserted by frank
             [ type:'val', property:'startDate', colname: 'InvoicePeriodStart', datatype:'date'],
             [ type:'val', property:'endDate', colname: 'InvoicePeriodEnd', datatype:'date'],
@@ -722,7 +721,6 @@ financialImportTSVLoaderMappings = [
             [ type:'val', property:'dateOfPayment', colname: 'DueDate', datatype:'date'],
             [ type:'val', property:'datePassedToFinance', colname: 'IssuedDate', datatype:'date'],
             [ type:'valueClosure', property:'dateDescription', closure: { colmap, values, locatedObjects -> "[Invoice] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ] // added by frank
-            // [ type:'val', property:'id', colname: 'InvoiceId', datatype:'Long']
           ]
         ]
       ],
@@ -813,29 +811,10 @@ financialImportTSVLoaderMappings = [
           ]
         ]
       ],
-      /* [
-        ref:'Invoice',
-        cls:'com.k_int.kbplus.Invoice',
-        whenPresent:[ [ type:'val', colname:'InvoiceNumber'],[ type:'ref', refname:'owner'] ],
-        creation:[
-          properties:[
-            [ type:'ref', property:'owner', refname:'owner'],
-            // [ type:'ref', property:'invoiceNumber', colname:'InvoiceNumber', datatype:'String'],
-            [ type:'ref', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
-            [ type:'ref', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
-            [ type:'val', property:'datePassedToFinance', colname:'IssuedDate', datatype:'date'],
-            [ type:'val', property:'dateOfPayment', colname:'DueDate', datatype:'date'],
-            [ type:'val', property:'dateOfInvoice', colname:'IssuedDate', datatype:'date'],
-            [ type:'valueClosure', property:'invoiceNumber', closure: {colmap, values, locatedObjects -> "${values[colmap['InvoiceNumber']]}"}],
-            [ type:'valueClosure', property:'dateDescription', closure: { colmap, values, locatedObjects -> "[Invoice] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
-          ]
-        ]
-      ] */
     ]
   ],
   cols: [
     [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''],
-    // [colname:'InvoiceId', desc:''],
     [colname:'SubscriptionId', desc:'Used to match to an existing KB+ subscription - must contain the KB+ Subscription Reference to match. Subscriptions are matched using references from JC Namespace'],
     [colname:'JC_OrderNumber', desc:''],
     [colname:'InvoiceNumber', desc:'Used to match this line item to an existing KB+ Invoice. Line must first match an organisation via InstitutionId, then this is matched on Invoice Reference. If none found, a new invoice will be created'],
