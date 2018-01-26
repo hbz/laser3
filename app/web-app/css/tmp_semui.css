@@ -77,3 +77,15 @@
     margin-right: 0 !important;
     opacity: 1 !important;
 }
+
+/* select 2 */
+
+.ui .select2-container {
+    vertical-align: top;
+}
+.ui .select2-container .select2-choice {
+    height: 36px;
+}
+.ui .select2-container .select2-choice > .select2-chosen {
+    line-height: 36px;
+}

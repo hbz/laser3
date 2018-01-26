@@ -624,7 +624,7 @@ class MyInstitutionsController {
                     
                     def cons_members = []
 
-                    (params.selectedOrgs).each{ it ->
+                    params.list('selectedOrgs').each{ it ->
                         def fo =  Org.findById(Long.valueOf(it))
                         cons_members << Combo.executeQuery(
                                 "select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?",

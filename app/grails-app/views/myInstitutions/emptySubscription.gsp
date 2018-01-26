@@ -42,7 +42,7 @@
                 <div class="field">
                     <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
-                    <select id="asOrgType" name="asOrgType" class="input-medium">
+                    <select id="asOrgType" name="asOrgType" class="ui dropdown">
                         <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value <> ? and rdv.owner.desc = ?', ['Other', 'OrgType'])}" var="opt">
                             <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                         </g:each>
@@ -54,6 +54,7 @@
             <br/>
             <div id="dynHiddenValues"></div>
 
+            <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
             <input id="submitterFallback" type="submit" class="ui button" value="${message(code:'default.button.create.label', default:'Create')}" />
         </g:form>
 

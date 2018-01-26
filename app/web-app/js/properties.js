@@ -47,6 +47,7 @@ function searchProp(ajaxurl, contextId, tenantId){
     $(contextId + " .customPropSelect").select2({
         placeholder: "Search for a property...",
         minimumInputLength: 0,
+        width: 300,
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
             url: ajaxurl,
             dataType: 'json',

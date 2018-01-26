@@ -5,7 +5,7 @@
     <semui:subNavItem controller="subscriptionDetails" action="details" params="${[id:params.id, shortcode:(params.shortcode ?: null)]}" message="subscription.details.details.label" />
     <semui:subNavItem controller="subscriptionDetails" action="index" params="${[id:params.id, shortcode:(params.shortcode ?: null)]}" message="subscription.details.current_ent" />
 
-    <g:if test="${subscriptionInstance?.getConsortia()?.id && contextService.getOrg()?.id}">
+    <g:if test="${(subscriptionInstance?.getConsortia()?.id == contextService.getOrg()?.id) && !subscriptionInstance.instanceOf}">
         <semui:subNavItem controller="subscriptionDetails" action="members" params="${[id:params.id, shortcode: (params.shortcode ?: null)]}" message="subscription.details.members.label" />
     </g:if>
 

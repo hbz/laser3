@@ -38,12 +38,16 @@
                     <div class="ui field">
                         <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
                         <label>Status</label>
-                        <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}"
-                                  optionKey="id" optionValue="${{it.getI10n('value')}}" name="subStatus"
+                        <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
+                                  optionKey="id"
+                                  optionValue="${{it.getI10n('value')}}"
+                                  name="subStatus"
                                   value="${com.k_int.kbplus.RefdataValue.findByValue('Under Consideration')?.id}" />
                     </div>
 
-                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true]" />
+                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplDisableOrgs: cons_members_disabled]" />
+
+                    <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
 
                     <div class="ui field">
                         <div class="ui checkbox">

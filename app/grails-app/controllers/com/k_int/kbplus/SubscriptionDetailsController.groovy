@@ -697,6 +697,14 @@ class SubscriptionDetailsController {
         if(result.institution?.orgType?.value == 'Consortium') {
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            result.cons_members_disabled = []
+            result.cons_members.each{ it ->
+                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+                        [result.subscriptionInstance, it.id])
+                ) {
+                    result.cons_members_disabled << it
+                }
+            }
        }
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
@@ -725,7 +733,7 @@ class SubscriptionDetailsController {
             if (orgType?.value == 'Consortium') {
                 def cons_members = []
 
-                (params.selectedOrgs).each { it ->
+                params.list('selectedOrgs').each { it ->
                     def fo = Org.findById(Long.valueOf(it))
                     cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
                 }
