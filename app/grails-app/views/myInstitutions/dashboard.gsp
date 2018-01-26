@@ -242,7 +242,7 @@
             $('#jsFallbackAnnouncements').click( function(){
                 $('.item .widget-content').readmore({
                     speed: 250,
-                    collapsedHeight: 25,
+                    collapsedHeight: 21,
                     startOpen: false,
                     moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
                     lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
@@ -281,6 +281,7 @@
     <style>
         .item .widget-content {
             overflow: hidden;
+            line-height: 20px;
         }
     </style>
 

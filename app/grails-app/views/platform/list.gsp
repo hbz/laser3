@@ -43,15 +43,17 @@
 
 						<td>${fieldValue(bean: platformInstance, field: "name")}</td>
 
-						<td class="link">
-							<g:link action="show" id="${platformInstance.id}" class="ui tiny button">${message(code:'default.button.show.label', default:'Show')}</g:link>
+						<td class="x">
+							<g:link action="show" id="${platformInstance.id}" class="ui basic icon button">
+								<i class="write icon"></i>
+							</g:link>
 						</td>
 					</tr>
 				</g:each>
 				</tbody>
 			</table>
 
-				<semui:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${platformInstanceTotal}" />
+    <semui:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${platformInstanceTotal}" />
 
 
 	</body>
