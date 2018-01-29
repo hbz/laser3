@@ -355,7 +355,7 @@ class BootStrap {
                 [name: [en: "Payment target", de: "Zahlungsziel"],                              descr:allDescr, type:Date.toString()],
                 [name: [en: "Place of jurisdiction", de: "Gerichtsstand"],                      descr:allDescr, type:String.toString()],
                 [name: [en: "Partners Access"],                                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Permitted Uses"],                                                  descr:allDescr, type:String.toString()]
+                [name: [en: "Permitted Uses"],                                                  descr:allDescr, type:String.toString()],
                 [name: [en: "Post Cancellation Access Entitlement"],                            descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Regional Restriction", de: "Regionale Einschränkung"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
@@ -399,9 +399,9 @@ class BootStrap {
                 [name: [en: "Licence to Publish: CC-BY-NC-ND", de: "Publikationslizenz: CC-BY-NC-ND"],                      descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
                 [name: [en: "Offsetting", de: "Offsetting Berechnungsmodell"],                                              descr: allOADescr, type: String.toString()],
                 [name: [en: "Publishing Fee", de: "Publishing Fee"],                                                        descr: allOADescr, type: String.toString()],
-                [name: [en: "Reading Fee", "Reading Fee"],                                                                  descr: allOADescr, type: String.toString()],
+                [name: [en: "Reading Fee", de: "Reading Fee"],                                                                  descr: allOADescr, type: String.toString()],
                 [name: [en: "OA First Date", de: "OA Startdatum"],                                                          descr: allOADescr, type: Date.toString()],
-                [name: [en: "OA Last Date", de: "OA Enddatum"],                                                             descr: allOADescr, type: Date.toString()]
+                [name: [en: "OA Last Date", de: "OA Enddatum"],                                                             descr: allOADescr, type: Date.toString()],
                 [name: [en: "OA Note", de: "OA Bemerkung"],                                                                 descr: allOADescr, type: String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
@@ -783,10 +783,10 @@ class BootStrap {
 		
         RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'Free', de: 'Kostenlos'])
         RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'With Charge', de: 'Gegen Gebühr'])
-        RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'Self-copied', de: 'Kopie elbst anzufertigen'])
+        RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'Self-copied', de: 'Kopie selbst anzufertigen'])
 		
         RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Licence Start Date', de: 'Mit Vertragsbeginn'])
-        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'On Request', de: 'Auf anfrage])
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'On Request', de: 'Auf Anfrage'])
         RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Licence End Date', de: 'Mit Vertragsende'])
         RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Trigger Event', de: 'Mit Trigger Event'])
     }
