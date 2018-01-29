@@ -4,15 +4,19 @@
 - upgraded to jQuery 3.x
 - upgraded x-editable library
 - overworked complete markup and javascript
+- overworked navigation and menus
+- unified modal dialogs
+- introduced filter panels
 - removed legacy bootstrap markup
 - removed legacy bootstrap javascript
-- added globalUID support
 - overworked orgs, subscriptions, licenses and costitems
 - overworked persons, contacts and addresses
+- added globalUID support
 - added more consortial functionality
 - added new custom tags
 - more localization
 - updated database structure
+- modified elastic search config
 - bugfix: added missing elasticsearch mapping
 
 0.2.1

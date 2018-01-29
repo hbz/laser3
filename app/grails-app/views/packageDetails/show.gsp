@@ -57,7 +57,7 @@
 
             <dl>
                 <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
+                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>
             </dl>
 
             <dl>
