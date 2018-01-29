@@ -141,7 +141,9 @@ class SemanticUiTagLib {
 
     def meta = { attrs, body ->
 
-        out << '<div class="ui blue segment">'
+        out << '<div class="metaboxToggle"><button class="ui icon button">Identifikatoren anzeigen</button></div>'
+        out << '<div class="ui blue segment metaboxContent hide">'
+        out <<   '<i class="close icon"></i>'
         out <<   body()
         out << '</div>'
     }

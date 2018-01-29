@@ -84,7 +84,7 @@
 
         <div class="ui grid">
 
-            <div class="eight wide column">
+            <div class="twelve wide column">
 
               <h3 class="ui header">${message(code:'default.status.label')}:
                 <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/>
@@ -92,7 +92,7 @@
 
             </div><!-- .eight -->
 
-            <div class="eight wide column">
+            <div class="twelve wide column">
 
               <g:each in="${duplicates}" var="entry">
                   <bootstrap:alert class="alert-info">

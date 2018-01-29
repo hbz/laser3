@@ -14,4 +14,5 @@ databaseChangeLog = {
 
 	// heave to release branch 0.3
 	include file: 'changelog-110.groovy'
+	include file: 'changelog-120.groovy'
 }

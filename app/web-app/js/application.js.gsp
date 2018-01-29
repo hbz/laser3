@@ -127,6 +127,11 @@ function semanticUiStuff() {
             }
         }
     });
+
+    // metaboxes
+    $('.metaboxToggle').click(function(){
+        $(this).next('.metaboxContent').slideToggle();
+    })
 }
 
 console.log("application.js loaded")

@@ -101,19 +101,22 @@
   </div>
     </semui:meta>
 
-    <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-        <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
-    </sec:ifAnyGranted>
-
-    <g:if test="${forum_url != null}">
-      <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-    </g:if>
-
  <semui:messages data="${flash}" />
 
  <semui:errors bean="${packageInstance}" />
 
     <div class="ui grid">
+
+        <div class="twelve wide column">
+            <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
+            </sec:ifAnyGranted>
+
+            <g:if test="${forum_url != null}">
+                <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
+            </g:if>
+        </div>
+
         <div class="twelve wide column">
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">

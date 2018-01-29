@@ -89,3 +89,12 @@
 .ui .select2-container .select2-choice > .select2-chosen {
     line-height: 36px;
 }
+
+.metaboxToggle {
+    position: relative;
+}
+.metaboxToggle > button {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
