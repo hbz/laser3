@@ -773,7 +773,7 @@ class SubscriptionDetailsController {
                 }
             }
         }
-        redirect controller: 'subscriptionDetails', action: 'details', id: result.subscriptionInstance?.id
+        redirect controller: 'subscriptionDetails', action: 'details', params:[id: result.subscriptionInstance?.id, shortcode: params.shortcode]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

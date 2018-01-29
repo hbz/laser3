@@ -26,7 +26,8 @@
             <g:if test="${institution?.orgType?.value == 'Consortium'}">
 
                 <semui:filter>
-                    <g:form action="addMembers" method="get" params="${[shortcode:params.shortcode, id:params.id]}" class="ui form">
+                    <g:form action="addMembers" method="get" params="[shortcode:params.shortcode, id:params.id]" class="ui form">
+                        <input type="hidden" name="shortcode" value="${params.shortcode}" />
                         <g:render template="/templates/filter/orgFilter" />
                     </g:form>
                 </semui:filter>
