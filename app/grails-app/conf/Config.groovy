@@ -842,7 +842,7 @@ financialImportTSVLoaderMappings = [
     [colname:'InvoiceStatus', desc:''],
     [colname:'Currency', desc:''],
     [colname:'InvoiceTotalExcVat', desc:''],
-    [colname:'InvoiceTransactionCharge', cormMappingPath: 'costItem.costInLocalCurrency', desc:''],
+    [colname:'InvoiceTransactionCharge', gormMappingPath: 'costItem.costInLocalCurrency', desc:''],
     [colname:'InvoiceVat', desc:''],
     [colname:'InvoiceTotal', desc:''],
     [colname:'ItemCount', desc:''],
