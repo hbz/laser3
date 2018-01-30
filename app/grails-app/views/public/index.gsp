@@ -177,7 +177,6 @@
                             <div class="ui inverted link list">
                                 <a target="_blank" class="item" href="https://github.com/hbz/laser">
                                 Version ${grailsApplication.metadata['app.version']}
-                                Version ${grailsApplication.metadata['app.version']}
                                 <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
                                 // ${grailsApplication.metadata['app.buildDate']}
                                 </a>

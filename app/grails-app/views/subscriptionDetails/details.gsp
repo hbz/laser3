@@ -288,7 +288,7 @@
             </div>
         </div>
 
-        <div class="four wide column">
+        <div class="four wide column" style="margin-top: 50px">
             <g:render template="card" contextPath="../templates/tasks" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="card" contextPath="../templates/documents" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="card" contextPath="../templates/notes" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />

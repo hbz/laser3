@@ -18,7 +18,9 @@ pilotDisableFlag = false
 //hbzMaster = true
 
 // ES-CONFIG
-aggr_es_cluster  = 'elasticsearch'
+//aggr_es_cluster	= 'elasticsearch'
+//aggr_es_index		= 'laser'
+//aggr_es_hostname	= 'localhost'
 
 // FEATURE-CONFIG
 localauth = true
