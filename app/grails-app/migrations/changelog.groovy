@@ -9,10 +9,10 @@ databaseChangeLog = {
 
     // << grails prod dbm-changelog-sync
 
-    // heave to release branch 0.2
+    // to release branch 0.2
     include file: 'changelog-100.groovy'
 
-	// heave to release branch 0.3
+	// to release branch 0.3
 	include file: 'changelog-110.groovy'
 	include file: 'changelog-120.groovy'
 }

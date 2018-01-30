@@ -229,95 +229,95 @@ databaseChangeLog = {
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-25") {
-		dropForeignKeyConstraint(baseTableName: "cost_item_group", baseTableSchemaName: "KBPlus", constraintName: "FK1C3AAE05B522EC25")
+		dropForeignKeyConstraint(baseTableName: "cost_item_group", baseTableSchemaName: "laser", constraintName: "FK1C3AAE05B522EC25")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-26") {
-		dropForeignKeyConstraint(baseTableName: "cost_item_group", baseTableSchemaName: "KBPlus", constraintName: "FK1C3AAE051D1B4283")
+		dropForeignKeyConstraint(baseTableName: "cost_item_group", baseTableSchemaName: "laser", constraintName: "FK1C3AAE051D1B4283")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-27") {
-		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "KBPlus", constraintName: "FK2FD66C5CC2FB63")
+		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "laser", constraintName: "FK2FD66C5CC2FB63")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-28") {
-		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "KBPlus", constraintName: "FK2FD66CD2A25EFB")
+		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "laser", constraintName: "FK2FD66CD2A25EFB")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-29") {
-		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "KBPlus", constraintName: "FK2FD66C467CFA43")
+		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "laser", constraintName: "FK2FD66C467CFA43")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-30") {
-		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "KBPlus", constraintName: "FK2FD66C4CB39BA6")
+		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "laser", constraintName: "FK2FD66C4CB39BA6")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-31") {
-		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "KBPlus", constraintName: "FK2FD66C40C7D5B5")
+		dropForeignKeyConstraint(baseTableName: "fact", baseTableSchemaName: "laser", constraintName: "FK2FD66C40C7D5B5")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-32") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_license_text", baseTableSchemaName: "KBPlus", constraintName: "FKF1E88AC0F8B5EA69")
+		dropForeignKeyConstraint(baseTableName: "onixpl_license_text", baseTableSchemaName: "laser", constraintName: "FKF1E88AC0F8B5EA69")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-33") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_license_text", baseTableSchemaName: "KBPlus", constraintName: "FKF1E88AC0EF8C4AB4")
+		dropForeignKeyConstraint(baseTableName: "onixpl_license_text", baseTableSchemaName: "laser", constraintName: "FKF1E88AC0EF8C4AB4")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-34") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term", baseTableSchemaName: "KBPlus", constraintName: "FK11797DDF2F1DD172")
+		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term", baseTableSchemaName: "laser", constraintName: "FK11797DDF2F1DD172")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-35") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term", baseTableSchemaName: "KBPlus", constraintName: "FK11797DDFE9F8A801")
+		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term", baseTableSchemaName: "laser", constraintName: "FK11797DDFE9F8A801")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-36") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term", baseTableSchemaName: "KBPlus", constraintName: "FK11797DDFCF47BC89")
+		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term", baseTableSchemaName: "laser", constraintName: "FK11797DDFCF47BC89")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-37") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_license_text", baseTableSchemaName: "KBPlus", constraintName: "FKC989A8CB55D5F69B")
+		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_license_text", baseTableSchemaName: "laser", constraintName: "FKC989A8CB55D5F69B")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-38") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_license_text", baseTableSchemaName: "KBPlus", constraintName: "FKC989A8CB3313FD03")
+		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_license_text", baseTableSchemaName: "laser", constraintName: "FKC989A8CB3313FD03")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-39") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_refdata_value", baseTableSchemaName: "KBPlus", constraintName: "FKB744770F7B0024B0")
+		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_refdata_value", baseTableSchemaName: "laser", constraintName: "FKB744770F7B0024B0")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-40") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_refdata_value", baseTableSchemaName: "KBPlus", constraintName: "FKB744770FE27A4895")
+		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_refdata_value", baseTableSchemaName: "laser", constraintName: "FKB744770FE27A4895")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-41") {
-		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_refdata_value", baseTableSchemaName: "KBPlus", constraintName: "FKB744770FAAD0839C")
+		dropForeignKeyConstraint(baseTableName: "onixpl_usage_term_refdata_value", baseTableSchemaName: "laser", constraintName: "FKB744770FAAD0839C")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-42") {
-		dropForeignKeyConstraint(baseTableName: "org_cluster", baseTableSchemaName: "KBPlus", constraintName: "FKBFF1439FB7B3B52")
+		dropForeignKeyConstraint(baseTableName: "org_cluster", baseTableSchemaName: "laser", constraintName: "FKBFF1439FB7B3B52")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-43") {
-		dropForeignKeyConstraint(baseTableName: "org_cluster", baseTableSchemaName: "KBPlus", constraintName: "FKBFF1439F39056212")
+		dropForeignKeyConstraint(baseTableName: "org_cluster", baseTableSchemaName: "laser", constraintName: "FKBFF1439F39056212")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-44") {
-		dropForeignKeyConstraint(baseTableName: "org_title_instance", baseTableSchemaName: "KBPlus", constraintName: "FK41AF6157CC172760")
+		dropForeignKeyConstraint(baseTableName: "org_title_instance", baseTableSchemaName: "laser", constraintName: "FK41AF6157CC172760")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-45") {
-		dropForeignKeyConstraint(baseTableName: "org_title_instance", baseTableSchemaName: "KBPlus", constraintName: "FK41AF6157F0E2D5FD")
+		dropForeignKeyConstraint(baseTableName: "org_title_instance", baseTableSchemaName: "laser", constraintName: "FK41AF6157F0E2D5FD")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-46") {
-		dropForeignKeyConstraint(baseTableName: "private_property_rule", baseTableSchemaName: "KBPlus", constraintName: "FK6DAE656AC258E067")
+		dropForeignKeyConstraint(baseTableName: "private_property_rule", baseTableSchemaName: "laser", constraintName: "FK6DAE656AC258E067")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-47") {
-		dropForeignKeyConstraint(baseTableName: "private_property_rule", baseTableSchemaName: "KBPlus", constraintName: "FK6DAE656ACB238934")
+		dropForeignKeyConstraint(baseTableName: "private_property_rule", baseTableSchemaName: "laser", constraintName: "FK6DAE656ACB238934")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1516952536377-73") {

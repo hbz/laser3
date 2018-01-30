@@ -1,18 +1,10 @@
 databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1516956768739-1") {
-		dropForeignKeyConstraint(baseTableName: "cost_item_group", baseTableSchemaName: "KBPlus", constraintName: "FK1C3AAE05B522EC25")
-	}
-
-	changeSet(author: "kloberd (generated)", id: "1516956768739-2") {
-		dropForeignKeyConstraint(baseTableName: "cost_item_group", baseTableSchemaName: "KBPlus", constraintName: "FK1C3AAE051D1B4283")
-	}
-
-	changeSet(author: "kloberd (generated)", id: "1516956768739-4") {
 		dropColumn(columnName: "cig_budgetcode_fk", tableName: "cost_item_group")
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1516956768739-5") {
+	changeSet(author: "kloberd (generated)", id: "1516956768739-2") {
 		dropColumn(columnName: "cig_costItem_fk", tableName: "cost_item_group")
 	}
 
