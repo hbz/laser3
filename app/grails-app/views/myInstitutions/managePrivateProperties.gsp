@@ -24,7 +24,7 @@
             <g:if test="${privatePropertyDefinitions}">
 
                 <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
-                    <table class="ui celled striped table">
+                    <table class="ui extra table">
                         <thead>
                             <tr>
                                 <th>${message(code:'propertyDefinition.descr.label', default:'Description')}</th>

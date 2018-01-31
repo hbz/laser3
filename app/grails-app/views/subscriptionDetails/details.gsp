@@ -177,7 +177,7 @@
 
                <dl><dt>${message(code:'financials.label', default:'Financials')}</dt>
                    <dd>
-                     <table class="ui celled striped table">
+                     <table class="ui extra table">
                        <thead>
                          <tr>
                            <th>${message(code:'financials.costItem', default:'CI')}</th>

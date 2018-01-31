@@ -72,7 +72,7 @@
           <g:if test="${titleInstanceInstance?.tipps}">
               <h6 class="ui header"><g:message code="titleInstance.tipps.label" default="Occurences of this title against Packages / Platforms" /></h6>
 
-              <table class="ui celled striped table">
+              <table class="ui extra table">
                   <thead>
                       <tr>
                           <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>

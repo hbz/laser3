@@ -18,7 +18,7 @@
     <g:render template="nav" contextPath="." />
 
       <h3 class="ui header">${message(code:'subscription.details.edit_history.label', default:'Subscription history')}</h3>
-      <table  class="ui celled striped table">
+      <table  class="ui extra table">
         <thead>
             <tr>
               <th>${message(code:'default.eventID.label', default:'Event ID')}</th>

@@ -10,16 +10,15 @@
 @horizontalMargin: 0em;
 @margin: @verticalMargin @horizontalMargin;
 @borderCollapse: separate;
-@borderSpacing: 0px;
+@borderSpacing: 0 0.5rem;
 @borderRadius: @defaultBorderRadius;
 @transition:
   background @defaultDuration @defaultEasing,
   color @defaultDuration @defaultEasing
 ;
-@background: @white;
+@background: transparent;
 @color: @textColor;
-@borderWidth: 1px;
-@border: @borderWidth solid @borderColor;
+@border: none;
 @boxShadow: none;
 @textAlign: left;
 

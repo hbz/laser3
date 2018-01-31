@@ -31,4 +31,34 @@
   background: @sortableHoverBackground;
 
 }
+.ui .table {
+  background-color: transparent;
+  tr{
+    //border-bottom: none!important;
+    td {
+      background-color: white;
+      padding: 20px 0;
+    }
+    td, th {
+      padding-left:1rem;
+      padding-right:1rem;
+      border-bottom: none;
+      border-top: none;
+      border-left: none;
+
+    }
+    th {
+      color: gray;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      a {
+        display: inline-block;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        color: gray;
+
+      }
+    }
+  }
+}
 

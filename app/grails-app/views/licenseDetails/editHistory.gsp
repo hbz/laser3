@@ -18,7 +18,7 @@
 
     <div>
       <h3 class="ui header">${message(code:'license.nav.edit_history', default:'Edit History')}</h3>
-      <table  class="ui celled striped table">
+      <table  class="ui extra table">
           <thead>
             <tr>
               <th>${message(code:'default.eventID.label', default:'Event ID')}</th>

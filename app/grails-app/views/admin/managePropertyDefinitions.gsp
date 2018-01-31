@@ -23,7 +23,7 @@
             <div class="twelve wide column">
 					<g:each in="${propertyDefinitions}" var="entry">
 						<h6 class="ui header">${entry.key}</h6>
-                        <table class="ui celled striped table">
+                        <table class="ui extra table">
 							<thead>
 							<tr>
 								<th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>

@@ -51,7 +51,7 @@
                 <input type="submit" class="ui negative button" value="Delete Selected Notes"/>
             </div>
 
-            <table class="ui celled striped table license-notes">
+            <table class="ui extra table license-notes">
                 <thead>
                     <tr>
                         <th>Select</th>

@@ -563,7 +563,7 @@ body {
   padding: 0px;
   overflow-x: hidden;
   min-width: 320px;
-  background: #FFFFFF;
+  background: #f4f8f9;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 14px;
   line-height: 1.4285em;
@@ -750,10 +750,6 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         Global Overrides
 *******************************/
 
-body {
-  background-color: #f4f8f9 !important;
-}
-
 .landingpage {
   background-color: #f1ebe5;
 }
@@ -897,42 +893,6 @@ body {
 
 .ui.la-eye-catcher .la-eye-catcher-header.ui.blue.button:hover {
   background-color: #2d6697 !important;
-}
-
-.ui.table.la-table {
-  border-collapse: separate!important;
-  border-spacing: 0 0.5rem!important;
-}
-
-.ui.table.la-table tr {
-  border-bottom: none!important;
-}
-
-.ui.table.la-table td {
-  background-color: white!important;
-  padding: 20px 0!important;
-}
-
-.ui.table.la-table td,
-.ui.table.la-table th {
-  padding-left: 1rem!important;
-  padding-right: 1rem!important;
-  border-bottom: none!important;
-  border-top: none!important;
-  border-left: none!important;
-}
-
-.ui.table.la-table th {
-  color: gray!important;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-}
-
-.ui.table.la-table th a {
-  display: inline-block;
-  padding: 0.5rem 0;
-  cursor: pointer;
-  color: gray !important;
 }
 /*!
  * # Semantic UI 2.2.13 - Button
@@ -24198,16 +24158,16 @@ Floated Menu / Item
 
 .ui.table {
   width: 100%;
-  background: #FFFFFF;
+  background: transparent;
   margin: 1em 0em;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
   border-radius: 0.28571429rem;
   text-align: left;
   color: rgba(0, 0, 0, 0.87);
   border-collapse: separate;
-  border-spacing: 0px;
+  border-spacing: 0 0.5rem;
 }
 
 .ui.table:first-child {
@@ -24239,9 +24199,9 @@ Floated Menu / Item
 
 .ui.table thead th {
   cursor: auto;
-  background: #F9FAFB;
+  background: none;
   text-align: inherit;
-  color: rgba(0, 0, 0, 0.87);
+  color: #767676;
   padding: 0.92857143em 0.78571429em;
   vertical-align: inherit;
   font-style: none;
@@ -25500,6 +25460,37 @@ Floated Menu / Item
 
 .ui.sortable.table thead th.sortable:hover {
   background: rgba(0, 0, 0, 0.05);
+}
+
+.ui .table {
+  background-color: transparent;
+}
+
+.ui .table tr td {
+  background-color: white;
+  padding: 20px 0;
+}
+
+.ui .table tr td,
+.ui .table tr th {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-bottom: none;
+  border-top: none;
+  border-left: none;
+}
+
+.ui .table tr th {
+  color: gray;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.ui .table tr th a {
+  display: inline-block;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  color: gray;
 }
 /*!
  * # Semantic UI 2.2.13 - Ad

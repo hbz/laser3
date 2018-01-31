@@ -42,7 +42,7 @@
             <h6 class="ui header">${message(code:'package.show.byPlatform', default:'Availability of titles in this package by platform')}</h6>
       
           <g:set var="counter" value="${1}" />
-          <table class="ui celled striped table">
+          <table class="ui extra table">
             <thead>
             <tr>
               <th rowspan="2" style="width: 2%;">#</th>

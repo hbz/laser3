@@ -21,7 +21,7 @@
    <div>
 
       <h2 class="ui header">${message(code:'subscription.details.permissionInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
-      <table  class="ui celled striped table">
+      <table  class="ui extra table">
         <thead>
           <tr>
             <th>${message(code:'org.label', default:'Organisation')}</th><th>${message(code:'subscription.details.permissionInfo.roles_and_perm', default:'Roles and Permissions')}</th>
@@ -53,7 +53,7 @@
       </table>
 
       <h2 class="ui header">${message(code:'subscription.details.permissionInfo.user_perms', default:'Logged in user permissions')}</h2>
-      <table  class="ui celled striped table">
+      <table  class="ui extra table">
         <thead>
           <tr>
             <th>${message(code:'subscription.details.permissionInfo.aff_via', default:'Affiliated via Role')}</th><th>${message(code:'default.permissions.label', default:'Permissions')}</th>

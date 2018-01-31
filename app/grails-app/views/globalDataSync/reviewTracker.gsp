@@ -65,7 +65,7 @@
 
     <div class="container well">
       <h1 class="ui header">Package Sync Impact</h1>
-      <table class="ui celled striped table">
+      <table class="ui extra table">
         <tr>
           <th>
             <g:if test="${type=='new'}">

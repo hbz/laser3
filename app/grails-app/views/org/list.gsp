@@ -51,7 +51,7 @@
 
 				<semui:messages data="${flash}" />
 				
-				<table class="ui celled striped table">
+				<table class="ui sortable table">
 					<thead>
 						<tr>
 							<g:sortableColumn property="impId" title="${message(code: 'org.impId.label', default: 'Imp Id')}" />

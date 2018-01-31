@@ -4,7 +4,7 @@
 
         <h2 class="ui header">Meine Aufgaben</h2>
 
-        <table class="ui celled striped table">
+        <table class="ui extra table">
             <thead>
             <tr>
                 <th>${message(code: 'task.title.label', default: 'Title')}</th>

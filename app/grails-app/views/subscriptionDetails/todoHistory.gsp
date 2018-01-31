@@ -20,7 +20,7 @@
 
       <h3 class="ui header">${message(code:'subscription.details.todo_history.label', default:'ToDo History')}</h3>
 
-      <table  class="ui celled striped table">
+      <table  class="ui extra table">
           <thead>
             <tr>
               <th>${message(code:'subscription.details.todo_history.descr', default:'ToDo Description')}</th>
