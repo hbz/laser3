@@ -1,6 +1,34 @@
+.ui.sortable.table thead th.sortable:after {
+  content: @sortableIconSort;
+  color: @grey;
+  display: inline;
+}
 .ui.sortable.table thead th.asc:after {
   content: @sortableIconAscending;
+  color: @black;
 }
 .ui.sortable.table thead th.desc:after {
   content: @sortableIconDescending;
+  color: @black;
 }
+
+/*--------------
+    Sortable
+---------------*/
+
+.ui.sortable.table thead th {
+  cursor: default;
+  border-left: none;
+}
+
+
+/* Hover */
+.ui.sortable.table thead th:hover {
+  background: transparent;
+  color: @sortableHoverColor;
+}
+.ui.sortable.table thead th.sortable:hover {
+  background: @sortableHoverBackground;
+
+}
+

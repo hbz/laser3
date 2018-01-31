@@ -180,6 +180,7 @@
 @sortableIconFont: 'Icons';
 @sortableIconAscending: '\f0d8';
 @sortableIconDescending: '\f0d7';
+@sortableIconSort: '\f0dc';
 @sortableDisabledColor: @disabledTextColor;
 
 @sortableHoverBackground: @transparentBlack;

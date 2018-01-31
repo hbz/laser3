@@ -143,13 +143,20 @@ body {
                 padding-right:1rem!important;
                 border-bottom: none!important;
                 border-top: none!important;
+                border-left: none!important;
+
             }
 
             th {
+                color: gray!important;
+                font-size: 0.8rem;
+                text-transform: uppercase;
                 a {
+                    display: inline-block;
+                    padding: 0.5rem 0;
+                    cursor: pointer;
                     color: gray !important;
-                    font-size: 0.8rem;
-                    text-transform: uppercase;
+
                 }
             }
         }

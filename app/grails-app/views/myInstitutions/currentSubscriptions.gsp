@@ -12,7 +12,7 @@
             <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
-
+        <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
         <g:render template="actions" />
 
         <semui:messages data="${flash}" />
@@ -75,10 +75,11 @@
             <tr>
                 <g:sortableColumn params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
                 <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
+                <th>${message(code:'myinst.currentSubscriptions.subscription_type', default:'Subscription Type')}</th>
                 <th>${message(code:'consortium', default:'Consortia')}</th>
                 <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                 <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
-                <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
+
                 <!--<g:sortableColumn params="${params}" property="s.manualCancellationDate" title="${message(code:'default.cancellationDate.label', default:'Cancellation Date')}" />-->
                 <th></th>
             </tr>
@@ -114,11 +115,14 @@
                         </g:if>
                         <!-- packages -->
                     </td>
+                    <td>
+                        <!-- subscriptions type -->
+                        <!-- subscriptions type -->
+                    </td>
                     <td>${s.consortia?.name}</td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
-                    <td><g:formatDate formatName="default.date.format.notime" date="${s.renewalDate}"/></td>
-                    <!--<td><g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/></td>-->
+
                     <td class="x">
                         <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
                             <g:link controller="myInstitutions" action="actionCurrentSubscriptions" class="ui icon basic negative button"
