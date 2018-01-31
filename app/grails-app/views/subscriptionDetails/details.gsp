@@ -90,15 +90,86 @@
             <div class="inline-lists">
 
                 <dl>
-                    <dt>${message(code:'default.startDate.label', default:'Start Date')}</dt>
+                    <dt>${message(code:'subscription.startDate.label', default:'Start Date')}</dt>
                     <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
                 </dl>
 
                 <dl>
-                    <dt>${message(code:'default.endDate.label', default:'End Date')}</dt>
+                    <dt>${message(code:'subscription.endDate.label', default:'End Date')}</dt>
                     <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
                 </dl>
 
+                <dl>
+                    <dt>${message(code:'subscription.packages.label')}</dt>
+                    <dd>
+                            <g:each in="${subscriptionInstance.packages}" var="sp">
+
+                                <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+
+                                <g:if test="${sp.pkg?.contentProvider}">
+                                    ,
+                                    ${sp.pkg?.contentProvider?.name}
+                                </g:if>
+
+                                <g:if test="${editable}">
+                                    <br />
+                                    <a href="" onclick="unlinkPackage(${sp.pkg.id})">
+                                        ( <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')} )
+                                    </a>
+                                </g:if>
+
+                            </g:each>
+
+                        <% /*
+                        <table class="ui celled table">
+                            <thead>
+                            <th>${message(code:'package.name.label', default:'Name')}</th>
+                            <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
+                            <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                            </thead>
+                            <tbody>
+                            <g:each in="${subscriptionInstance.packages}" var="sp">
+                                <tr>
+                                    <td>
+                                        <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                                    </td>
+                                    <td>
+                                        ${sp.pkg?.contentProvider?.name}
+                                    </td>
+                                    <td>
+                                        <g:if test="${editable}">
+                                            <a href="" onclick="unlinkPackage(${sp.pkg.id})">
+                                                <i class="unlinkify icon red"></i>
+                                                ${message(code:'default.button.unlink.label')}
+                                            </a>
+                                        </g:if>
+                                    </td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
+                        */ %>
+
+                    </dd>
+                </dl>
+
+                <dl>
+                    <dt>${message(code:'license')}</dt>
+                    <dd>
+                        <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
+                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                            <g:if test="${subscriptionInstance.owner != null}">
+                                (
+                                <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.show.label', default:'Show')}</g:link>
+                                <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
+                                )
+                            </g:if>
+                        </g:if>
+                        <g:else>N/A (Subscription offered)</g:else>
+                    </dd>
+                </dl>
+
+                <% /*
                 <dl>
                     <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
                     <dd><semui:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
@@ -108,32 +179,12 @@
                     <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
                     <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                 </dl>
+                */ %>
 
                 <dl>
-                    <dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
-                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
+                    <dt>${message(code:'subscription.details.type', default:'Type')}</dt>
+                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' /></dd>
                 </dl>
-
-                <dl>
-                    <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
-                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
-                </dl>
-
-                  <dl>
-                    <dt>${message(code:'license')}</dt>
-                    <dd>
-                      <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
-                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                        <g:if test="${subscriptionInstance.owner != null}">
-                        (
-                          <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.link.label', default:'Link')}</g:link>
-                          <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
-                        )
-                        </g:if>
-                      </g:if>
-                      <g:else>N/A (Subscription offered)</g:else>
-                      </dd>
-                  </dl>
 
                 <g:if test="${subscriptionInstance.instanceOf}">
                     <dl>
@@ -145,65 +196,16 @@
                 </g:if>
 
                 <dl>
-                  <dt>${message(code:'package.show.pkg_name', default:'Package Name')}</dt>
-                  <dd>
-                  <table class="ui celled table">
-                    <thead>
-                      <th>${message(code:'package.name.label', default:'Name')}</th>
-                      <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
-                      <th>${message(code:'default.actions.label', default:'Actions')}</th>
-                    </thead>
-                    <tbody>
-                      <g:each in="${subscriptionInstance.packages}" var="sp">
-                        <tr>
-                          <td>
-                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
-                          </td>
-                          <td>
-                            ${sp.pkg?.contentProvider?.name}
-                          </td>
-                          <td>
-                            <g:if test="${editable}">
-                              <a onclick="unlinkPackage(${sp.pkg.id})" style="cursor:pointer;">${message(code:'default.button.unlink.label', default:'Unlink')} <i class="fa fa-times"></i></a>
-                            </g:if>
-                          </td>
-                        </tr>
-                      </g:each>
-                    </tbody>
-                  </table>
-                  </dd>
-              </dl>
+                    <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
+                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
+                </dl>
 
-
-               <dl><dt>${message(code:'financials.label', default:'Financials')}</dt>
-                   <dd>
-                     <table class="ui celled striped table">
-                       <thead>
-                         <tr>
-                           <th>${message(code:'financials.costItem', default:'CI')}</th>
-                           <th>${message(code:'financials.order', default:'Order')}</th>
-                           <th>${message(code:'financials.datePaid', default:'Date Paid')}</th>
-                           <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-                           <th>${message(code:'default.endDate.label', default:'End Date')}</th>
-                           <th>${message(code:'financials.amount', default:'Amount')}</th>
-                         </tr>
-                       </thead>
-                       <tbody>
-                         <g:each in="${subscriptionInstance.costItems}" var="ci">
-                           <tr>
-                             <td>${ci.id}</td>
-                             <td>${ci.order?.orderNumber}</td>
-                             <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.datePaid}"/></td>
-                             <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.startDate}"/></td>
-                             <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.endDate}"/></td>
-                             <td>${ci.costInLocalCurrency} / ${ci.costInBillingCurrency}</td>
-                         </tr>
-                         </g:each>
-                       </tbody>
-                     </table>
-                   </dd>
-               </dl>
-
+                <% /*
+                <dl>
+                    <dt>${message(code:'subscription.details.isPublic', default:'Public?')}</dt>
+                    <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
+                </dl>
+                */ %>
                 <% /* <dl>
                    <dt>${message(code:'license.details.incoming.child', default:'Child')} </dt>
                    <dd>${subscriptionInstance.getIsSlavedAsString()}</dd>
@@ -227,10 +229,15 @@
                 </dl> */ %>
 
 
-               <dl><dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
-                       <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:subscriptionInstance?.orgRelations,editmode:editable]}" />
-                     </dd>
+                <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:subscriptionInstance?.orgRelations, editmode:editable]}" />
+
+                <% /*
+               <dl>
+                    <dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
+                        <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:subscriptionInstance?.orgRelations,editmode:editable]}" />
+                    </dd>
                </dl>
+               */ %>
 
                <% /*g:if test="${params.mode=='advanced'}">
                  <dl><dt><label class="control-label" for="licenseeRef">${message(code:'default.status.label', default:'Status')}</label></dt><dd>
@@ -239,6 +246,13 @@
                </dl>
                </g:if */ %>
 
+                <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
+
+                <g:render template="/templates/links/prsLinksModal"
+                          model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
+
+
+                <% /*
                 <dl>
                     <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
                     <dd>
@@ -248,8 +262,67 @@
                                   model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
                     </dd>
                 </dl>
+            */ %>
 
-                <h6 class="ui header">${message(code:'subscription.properties')}</h6>
+                <dl>
+                    <dt>${message(code:'financials.label', default:'Financials')}</dt>
+                    <dd>
+                        <table class="ui celled striped table">
+                            <thead>
+                            <tr>
+                                <th>${message(code:'financials.costItem', default:'CI')}</th>
+                                <th>${message(code:'financials.costItemStatus', default:'Status')}</th>
+                                <th>${message(code:'financials.costInBillingCurrency')}</th>
+                                <!--<th>${message(code:'financials.billingCurrency')}</th>-->
+                                <th>${message(code:'financials.costInLocalCurrency')}</th>
+                                <th>${message(code:'financials.costItemCategory')}</th>
+                                <th>${message(code:'financials.costItemElement')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <g:each in="${subscriptionInstance.costItems}" var="ci">
+                                    <tr>
+                                        <td>${ci.id}</td>
+                                        <td>${ci.costItemStatus?.getI10n('value')}</td>
+                                        <td>${ci.costInBillingCurrency} ${ci.billingCurrency?.getI10n('value')}</td>
+                                        <td>${ci.costInLocalCurrency}</td>
+                                        <td>${ci.costItemCategory?.getI10n('value')}</td>
+                                        <td>${ci.costItemElement?.getI10n('value')}</td>
+                                    </tr>
+                                </g:each>
+                            </tbody>
+                        </table>
+                        <% /*
+                        <table class="ui celled striped table">
+                            <thead>
+                            <tr>
+                                <th>${message(code:'financials.costItem', default:'CI')}</th>
+                                <th>${message(code:'financials.order', default:'Order')}</th>
+                                <th>${message(code:'financials.datePaid', default:'Date Paid')}</th>
+                                <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
+                                <th>${message(code:'default.endDate.label', default:'End Date')}</th>
+                                <th>${message(code:'financials.amount', default:'Amount')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:each in="${subscriptionInstance.costItems}" var="ci">
+                                <tr>
+                                    <td>${ci.id}</td>
+                                    <td>${ci.order?.orderNumber}</td>
+                                    <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.datePaid}"/></td>
+                                    <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.startDate}"/></td>
+                                    <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.endDate}"/></td>
+                                    <td>${ci.costInLocalCurrency} / ${ci.costInBillingCurrency}</td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
+                        */ %>
+                    </dd>
+                </dl>
+
+
+                <h5 class="ui header">${message(code:'subscription.properties')}</h5>
 
                 <div id="custom_props_div_props">
                     <g:render template="/templates/properties/custom" model="${[
@@ -259,14 +332,14 @@
                 </div>
 
                 <r:script language="JavaScript">
-                $(document).ready(function(){
-                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                });
+                    $(document).ready(function(){
+                        initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                    });
                 </r:script>
 
                 <g:each in="${authorizedOrgs}" var="authOrg">
                     <g:if test="${authOrg.name == contextOrg?.name}">
-                        <h6 class="ui header">${message(code:'subscription.properties')} ( ${authOrg.name} )</h6>
+                        <h5 class="ui header">${message(code:'subscription.properties.private')} ${authOrg.name}</h5>
 
                         <div id="custom_props_div_${authOrg.shortcode}">
                             <g:render template="/templates/properties/private" model="${[

@@ -12,34 +12,17 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-<g:if test="${editable}">
-    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
-            name="cust_prop_add_value"
-            class="ui form"
-            update="${custom_props_div}"
-            onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
-
-        <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
-        <input type="hidden" name="ownerId" value="${ownobj.id}"/>
-        <input type="hidden" name="editable" value="${editable}"/>
-        <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-
-        <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
-
-        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="ui button"/>
-    </g:formRemote>
-</g:if>
 
 <table class="ui celled table">
     <thead>
         <tr>
-            <th>${message(code:'license.property.table.property')}</th>
-            <th>${message(code:'license.property.table.value')}</th>
+            <th>${message(code:'property.table.property')}</th>
+            <th>${message(code:'property.table.value')}</th>
             <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
-                <th>${message(code:'license.property.table.paragraph')}</th>
+                <th>${message(code:'property.table.paragraph')}</th>
             </g:if>
-            <th>${message(code:'license.property.table.notes')}</th>
-            <th>${message(code:'license.property.table.delete')}</th>
+            <th>${message(code:'property.table.notes')}</th>
+            <th>${message(code:'property.table.delete')}</th>
         </tr>
     </thead>
     <tbody>
@@ -90,7 +73,39 @@
             </g:if>
         </g:each>
     </tbody>
+
+    <g:if test="${editable}">
+        <tfoot>
+            <tr>
+                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <th colspan="5">
+                </g:if>
+                <g:else>
+                    <th colspan="4">
+                </g:else>
+
+                    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
+                                  name="cust_prop_add_value"
+                                  class="ui form"
+                                  update="${custom_props_div}"
+                                  onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+
+                        <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
+                        <input type="hidden" name="ownerId" value="${ownobj.id}"/>
+                        <input type="hidden" name="editable" value="${editable}"/>
+                        <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
+
+                        <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
+
+                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
+                    </g:formRemote>
+                </th>
+            </tr>
+        </tfoot>
+    </g:if>
+
 </table>
+
 <!--
 <div id="cust_prop_add_modal" class="modal hide">
 

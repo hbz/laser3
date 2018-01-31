@@ -203,7 +203,7 @@
                         </dd>
                     </dl>
 
-                    <h6 class="ui header">${message(code:'license.properties')}</h6>
+                    <h5 class="ui header">${message(code:'license.properties')}</h5>
 
                     <div id="custom_props_div_props">
                         <g:render template="/templates/properties/custom" model="${[
@@ -212,7 +212,7 @@
                                 custom_props_div: "custom_props_div_props" ]}"/>
                     </div>
 
-                    <h6 class="ui header">${message(code:'license.openaccess.properties')}</h6>
+                    <h5 class="ui header">${message(code:'license.openaccess.properties')}</h5>
 
                     <div id="custom_props_div_oa">
                         <g:render template="/templates/properties/custom" model="${[
@@ -221,7 +221,7 @@
                                 custom_props_div: "custom_props_div_oa" ]}"/>
                     </div>
 
-                    <h6 class="ui header">${message(code:'license.archive.properties')}</h6>
+                    <h5 class="ui header">${message(code:'license.archive.properties')}</h5>
 
                     <div id="custom_props_div_archive">
                         <g:render template="/templates/properties/custom" model="${[
@@ -232,7 +232,7 @@
 
                     <g:each in="${authorizedOrgs}" var="authOrg">
                         <g:if test="${authOrg.name == contextOrg?.name}">
-                            <h6 class="ui header">${message(code:'license.properties')} ( ${authOrg.name} )</h6>
+                            <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
 
                             <div id="custom_props_div_${authOrg.shortcode}">
                                 <g:render template="/templates/properties/private" model="${[

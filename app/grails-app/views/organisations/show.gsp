@@ -284,7 +284,7 @@
             </dd>
           </g:if>
 
-            <h6 class="ui header">${message(code:'org.properties')}</h6>
+            <h5 class="ui header">${message(code:'org.properties')}</h5>
 
             <div id="custom_props_div_props">
                 <g:render template="/templates/properties/custom" model="${[
@@ -301,7 +301,7 @@
 
             <g:each in="${authorizedOrgs}" var="authOrg">
                 <g:if test="${authOrg.name == contextOrg?.name}">
-                    <h6 class="ui header">${message(code:'org.properties')} ( ${authOrg.name} )</h6>
+                    <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
 
                     <div id="custom_props_div_${authOrg.shortcode}">
                         <g:render template="/templates/properties/private" model="${[

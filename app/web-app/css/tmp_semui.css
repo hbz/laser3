@@ -90,6 +90,8 @@
     line-height: 36px;
 }
 
+/* identifier meta box */
+
 .metaboxToggle {
     position: relative;
 }
@@ -97,4 +99,10 @@
     position: absolute;
     right: 0;
     top: 0;
+}
+
+/* property forms in tables */
+
+.ui .table tfoot form {
+    margin: 0;
 }

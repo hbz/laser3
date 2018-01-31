@@ -42,7 +42,7 @@
                                     <input type="hidden" name="person" value="${p.class.name}:${p.id}" />
                                     <input type="hidden" name="role" value="${role}"/>
                                     <input type="hidden" name="org" value=""/>
-                                    <input type="submit" class="ui positive button" name="save" value="${message(code:'default.button.create_new.label')}"/>
+                                    <input type="submit" class="ui positive button" name="save" value="${message(code:'default.button.link.label')}"/>
                                 </g:form>
                             </td>
                         </tr>

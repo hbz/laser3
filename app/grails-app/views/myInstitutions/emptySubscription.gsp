@@ -28,15 +28,14 @@
                 <input type="text" name="newEmptySubName" placeholder="New Subscription Name"/>
              </div>
 
-
             <div class="field hidden">
                 <label>${message(code:'myinst.emptySubscription.identifier', default:'New Subscription Identifier')}</label>
                 <input type="text" name="newEmptySubId" value="${defaultSubIdentifier}"/>
             </div>
 
-            <semui:datepicker label="myinst.emptySubscription.valid_from" name="valid_from" value="${defaultStartYear}" />
+            <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" />
 
-            <semui:datepicker label="myinst.emptySubscription.valid_to" name="valid_to" value="${defaultEndYear}" />
+            <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
 
             <g:if test="${orgType?.value == 'Consortium'}">
                 <div class="field">
