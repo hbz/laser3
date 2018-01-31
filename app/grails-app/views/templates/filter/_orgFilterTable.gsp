@@ -19,21 +19,36 @@
     </thead>
     <tbody>
     <g:each in="${orgList}" var="org">
-        <tr>
+        <g:if test="${tmplDisableOrgs && (org in tmplDisableOrgs)}">
+            <tr class="disabled">
+        </g:if>
+        <g:else>
+            <tr>
+        </g:else>
             <g:if test="${tmplShowCheckbox}">
                 <td>
                     <g:checkBox type="text" name="selectedOrgs" value="${org.id}" checked="false" />
                 </td>
             </g:if>
             <td>
-                <g:link action="show" id="${org.id}">
+                <g:if test="${tmplDisableOrgs && (org in tmplDisableOrgs)}">
                     <g:if test="${org.shortname}">
                         ${fieldValue(bean: org, field: "shortname")}
                     </g:if>
                     <g:else>
                         ${fieldValue(bean: org, field: "name")}
                     </g:else>
-                </g:link>
+                </g:if>
+                <g:else>
+                    <g:link action="show" id="${org.id}">
+                        <g:if test="${org.shortname}">
+                            ${fieldValue(bean: org, field: "shortname")}
+                        </g:if>
+                        <g:else>
+                            ${fieldValue(bean: org, field: "name")}
+                        </g:else>
+                    </g:link>
+                </g:else>
             </td>
             <td>${org.getIdentifierByType('wib')?.value}</td>
             <td>${org.getIdentifierByType('isil')?.value}</td>

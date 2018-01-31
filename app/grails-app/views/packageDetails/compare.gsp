@@ -177,9 +177,9 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td><b>${message(code:'package.compare.results.tipps.total', default:'Total Titles (TIPPs) for query')}</b></td>
-			<td><b>${listACount.titles} (${listACount.tipps})</b></td>
-			<td><b>${listBCount.titles} (${listBCount.tipps})</b></td>
+			<td><strong>${message(code:'package.compare.results.tipps.total', default:'Total Titles (TIPPs) for query')}</strong></td>
+			<td><strong>${listACount.titles} (${listACount.tipps})</strong></td>
+			<td><strong>${listBCount.titles} (${listBCount.tipps})</strong></td>
 		<tr>
 		<g:each in="${comparisonMap}" var="entry">
                   <g:set var="pkgATipp" value="${entry.value[0]}"/>
@@ -190,7 +190,7 @@
 		<tr>
 			
 			<td>
-                          <b><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></b>
+                          <strong><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids}" var="id">

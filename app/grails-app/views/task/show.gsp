@@ -13,9 +13,6 @@
             <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
         </g:if>
 
-		<div class="ui grid">
-
-			<div class="twelve wide column">
 
 				<dl>
 					<g:if test="${taskInstance?.license}">
@@ -91,29 +88,5 @@
 						</button>
 					</div>
 				</g:form>
-
-			</div><!-- .twelve -->
-
-            <div class="four wide column">
-                <div class="well">
-                    <ul class="nav nav-list">
-                        <li class="nav-header">${entityName}</li>
-                        <li>
-                            <g:link class="list" action="list">
-                                <i class="icon-list"></i>
-                                <g:message code="default.list.label" args="[entityName]" />
-                            </g:link>
-                        </li>
-                        <li>
-                            <g:link class="create" action="create">
-                                <i class="icon-plus"></i>
-                                <g:message code="default.create.label" args="[entityName]" />
-                            </g:link>
-                        </li>
-                    </ul>
-                </div>
-            </div><!-- .four -->
-
-		</div><!-- .grid -->
 	</body>
 </html>

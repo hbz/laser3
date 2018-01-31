@@ -30,14 +30,14 @@
             <span title='Detailed by license' class="onix-status onix-info" ></span>
           </span>
 
-          <ul><b>
+          <ul><strong>
           <g:if test="${entry['GeneralTermRelatedPlace'] }">
             <g:each var="clause" in="${entry['GeneralTermRelatedPlace']}">
 
              <li> via ${ OnixPLService.getAllValues(clause, 'GeneralTermPlaceRelator',', ') }</li>
             </g:each> 
           </g:if>
-          </b></ul>
+          </strong></ul>
         </g:if>
         <g:else>
           <span class="cell-inner-undefined">

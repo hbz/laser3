@@ -38,7 +38,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
   License owner
   SortedSet issueEntitlements
-  RefdataValue isPublic
+  RefdataValue isPublic     // RefdataCategory 'YN'
   Set ids = []
 
   static transients = [ 'subscriber', 'provider', 'consortia' ]
@@ -84,12 +84,12 @@ class Subscription extends BaseDomainComponent implements Permissions {
         endDate     column:'sub_end_date'
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
-        instanceOf  column:'sub_parent_sub_fk'
+        instanceOf              column:'sub_parent_sub_fk'
         previousSubscription    column:'sub_previous_subscription_fk'
-        isSlaved    column:'sub_is_slaved'
-        noticePeriod            column:'sub_notice_period'
-        isPublic    column:'sub_is_public'
-        pendingChanges          sort: 'ts', order: 'asc'
+        isSlaved        column:'sub_is_slaved'
+        noticePeriod    column:'sub_notice_period'
+        isPublic        column:'sub_is_public'
+        pendingChanges  sort: 'ts', order: 'asc'
     }
 
     static constraints = {

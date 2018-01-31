@@ -98,7 +98,7 @@ function semanticUiStuff() {
     // checkboxes
     $('.ui.checkbox').checkbox();
 
-    //datepicker
+    // datepicker
     $('.datepicker').calendar({
         type: 'date',
         firstDayOfWeek: 1,
@@ -127,6 +127,11 @@ function semanticUiStuff() {
             }
         }
     });
+
+    // metaboxes
+    $('.metaboxToggle').click(function(){
+        $(this).next('.metaboxContent').slideToggle();
+    })
 }
 
 console.log("application.js loaded")

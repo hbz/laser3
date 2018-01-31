@@ -119,6 +119,10 @@ class SemanticUiNavigationTagLib {
 
         def maxsteps = (attrs.int('maxsteps') ?: 10)
 
+        if (total <= max) {
+            return
+        }
+
         def linkParams = [:]
         if (attrs.params) linkParams.putAll(attrs.params)
         linkParams.offset = offset - max
@@ -144,16 +148,16 @@ class SemanticUiNavigationTagLib {
         int firststep = 1
         int laststep = Math.round(Math.ceil(total / max))
 
-        out << '<div class="pagination" style="text-align:center">' // TODO CSS
-        out << '<div class="ui basic buttons">'
+        out << '<div class="ui center aligned basic segment">'
+        out << '<div class="ui pagination menu">'
 
         // display previous link when not on firststep
         if (currentstep > firststep) {
             linkParams.offset = offset - max
             if (currentstep == firststep) {
-                linkTagAttrs.class = "ui button disabled prevLink"
+                linkTagAttrs.class = "item disabled prevLink"
             } else {
-                linkTagAttrs.class = "ui button prevLink"
+                linkTagAttrs.class = "item prevLink"
             }
             def prevLinkAttrs = linkTagAttrs.clone()
             prevLinkAttrs += [title: (attrs.prev ?: messageSource.getMessage('paginate.prev', null, messageSource.getMessage('default.paginate.prev', null, 'Previous', locale), locale))]
@@ -183,9 +187,9 @@ class SemanticUiNavigationTagLib {
             for (int i in beginstep..endstep) {
                 linkParams.offset = (i - 1) * max
                 if (currentstep == i) {
-                    linkTagAttrs.class = "ui button active"
+                    linkTagAttrs.class = "item active"
                 } else {
-                    linkTagAttrs.class = "ui button"
+                    linkTagAttrs.class = "item"
                 }
                 out << link(linkTagAttrs.clone()) {i.toString()}
             }
@@ -195,9 +199,9 @@ class SemanticUiNavigationTagLib {
         if (currentstep < laststep) {
             linkParams.offset = offset + max
             if (currentstep == laststep) {
-                linkTagAttrs.class = "ui button disabled nextLink"
+                linkTagAttrs.class = "item disabled nextLink"
             } else {
-                linkTagAttrs.class = "ui button nextLink"
+                linkTagAttrs.class = "item nextLink"
             }
             def nextLinkAttrs = linkTagAttrs.clone()
 

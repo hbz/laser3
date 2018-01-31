@@ -238,9 +238,9 @@
                 <div>
                   <span style="font-weight:bold;">${link_cat.rdv.getI10n('value')} (${link_cat.total})</span>
                 </div>
-                <ul>
+                <div class="ui list">
                   <g:each in="${link_cat.links}" var="i">
-                    <li>
+                    <div class="item">
                       <g:if test="${i.pkg}">
                         <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
                           ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
@@ -261,9 +261,9 @@
                           ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n('value')})
                         </g:link>
                       </g:if> 
-                    </li>
+                    </div>
                   </g:each>
-                </ul>
+                </div>
                 <g:set var="local_offset" value="${params[link_cat.rdvl] ? Long.parseLong(params[link_cat.rdvl]) : null}" />
                 <div>
                   <g:if test="${link_cat.total > 10}">
@@ -284,9 +284,24 @@
             </dd>
           </g:if>
 
+            <h5 class="ui header">${message(code:'org.properties')}</h5>
+
+            <div id="custom_props_div_props">
+                <g:render template="/templates/properties/custom" model="${[
+                        prop_desc: PropertyDefinition.ORG_PROP,
+                        ownobj: orgInstance,
+                        custom_props_div: "custom_props_div_props" ]}"/>
+            </div>
+
+            <r:script language="JavaScript">
+                $(document).ready(function(){
+                    initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                });
+            </r:script>
+
             <g:each in="${authorizedOrgs}" var="authOrg">
                 <g:if test="${authOrg.name == contextOrg?.name}">
-                    <h6 class="ui header">${message(code:'org.properties')} ( ${authOrg.name} )</h6>
+                    <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
 
                     <div id="custom_props_div_${authOrg.shortcode}">
                         <g:render template="/templates/properties/private" model="${[

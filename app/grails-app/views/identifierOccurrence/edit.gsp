@@ -39,7 +39,7 @@
 
 					<semui:errors bean="${identifierOccurrenceInstance}" />
 
-				<p><b> Action disabled. Please contact system administrator if you require access. </b></p>
+				<p><strong> Action disabled. Please contact system administrator if you require access. </strong></p>
 				%{-- The following code is causing the system to hang and crash, while failing to find the required fields. Something that was tested to work is defining a template within views/identifierOccurance path, like edit/_widget.gsp --}%
 
 %{-- 				<fieldset>

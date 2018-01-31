@@ -14,10 +14,10 @@ class BootStrap {
 
     def init = { servletContext ->
 
-        log.info("SystemId: ${grailsApplication.config.kbplusSystemId}")
+        log.info("SystemId: ${grailsApplication.config.laserSystemId}")
 
-        if (grailsApplication.config.kbplusSystemId != null) {
-            def system_object = SystemObject.findBySysId(grailsApplication.config.kbplusSystemId) ?: new SystemObject(sysId: grailsApplication.config.kbplusSystemId).save(flush: true)
+        if (grailsApplication.config.laserSystemId != null) {
+            def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
         }
 
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
@@ -319,63 +319,132 @@ class BootStrap {
         }
     }
 
+    def createSubscriptionProperties() {
+        
+        def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
+        
+        def requiredProps = [
+                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"],    descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredProps)
+    }
+    
     def createLicenseProperties() {
 
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredProps = [
-                [name: [en: "Agreement Date"],          descr:allDescr, type:Date.toString()],
-                [name: [en: "Allowed Participants"],    descr:allDescr, type:String.toString()],
-                [name: [en: "Alumni Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Cancellation Allowance"],  descr:allDescr, type:String.toString()],
-                [name: [en: "Change to licensed material"], descr:allDescr, type:String.toString()],
-                [name: [en: "Concurrent Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
-                [name: [en: "Concurrent Users"],        descr:allDescr, type:Integer.toString()],
-                [name: [en: "Correction time"],         descr:allDescr, type:String.toString()],
-                [name: [en: "Enterprise Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "ILL - InterLibraryLoans"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Include In Coursepacks"],  descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Include in VLE"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Invoicing"],               descr:allDescr, type:Date.toString()],
-                [name: [en: "Metadata delivery"],       descr:allDescr, type:String.toString()],
-                [name: [en: "Multi Site Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Notice Period"],           descr:allDescr, type:Date.toString()],
-                [name: [en: "New underwriter"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Payment target"],          descr:allDescr, type:Date.toString()],
-                [name: [en: "Place of jurisdiction"],   descr:allDescr, type:String.toString()],
-                [name: [en: "Partners Access"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Post Cancellation Access Entitlement"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Remote Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Regional Restriction"],    descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Service regulations"],     descr:allDescr, type:String.toString()],
-                [name: [en: "Signed"],                  descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Usage Statistics"],        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Walk In Access"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Wifi Access"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO']
+                [name: [en: "Agreement Date", de: "Abschlussdatum"],                            descr:allDescr, type:Date.toString()],
+                [name: [en: "Authorized Users", de: "Autorisierte Nutzer"],                     descr:allDescr, type:String.toString()],
+                [name: [en: "Alumni Access"],                                                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Cancellation Allowance", de: "Außerordentliche Kündigung"],        descr:allDescr, type:String.toString()],
+                [name: [en: "Change to licensed material", de: "Änderung am Vertragsgegenstand"], descr:allDescr, type:String.toString()],
+                [name: [en: "Concurrent Access", de: "Concurrent Access"],                      descr:allDescr, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
+                [name: [en: "Concurrent Users", de: "Concurrent Users"],                        descr:allDescr, type:Integer.toString()],
+                [name: [en: "Correction Time", de: "Korrekturfrist bei Vertragsverletzungen"],  descr:allDescr, type:String.toString()],
+                [name: [en: "Enterprise Access"],                                               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "ILL - InterLibraryLoans", de: "Fernleihe"],                        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Include In Coursepacks", de: "Semesterapparat"],                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Include in VLE"],                                                  descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Invoicing", de: "Rechnungsstellung"],                              descr:allDescr, type:Date.toString()],
+                [name: [en: "Metadata delivery"],                                               descr:allDescr, type:String.toString()],
+                [name: [en: "Method of Authentication", de: "Authentifizierungsverfahren"],     descr:allDescr, type:String.toString()],
+                [name: [en: "Multi Site Access"],                                               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Notice Period"],                                                   descr:allDescr, type:Date.toString()],
+                [name: [en: "New Underwriter", de: "Aufnahme neuer Teilnehmer"],                descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Payment target", de: "Zahlungsziel"],                              descr:allDescr, type:Date.toString()],
+                [name: [en: "Place of jurisdiction", de: "Gerichtsstand"],                      descr:allDescr, type:String.toString()],
+                [name: [en: "Partners Access"],                                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Permitted Uses"],                                                  descr:allDescr, type:String.toString()],
+                [name: [en: "Post Cancellation Access Entitlement"],                            descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Regional Restriction", de: "Regionale Einschränkung"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Service regulations", de: "Servicestandards"],                     descr:allDescr, type:String.toString()],
+                [name: [en: "Signed"],                                                          descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO']
+               
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
         def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
 
         def requiredOAProps = [
-                [name: [en: "Open Access"],     descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
-                [name: [en: "Type"],            descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],
-                [name: [en: "Electronically Archivable Version"], descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.eArcVersion'],
-                [name: [en: "embargo period"],  descr: allOADescr, type: Integer.toString()],
-                [name: [en: "Authority"],       descr: allOADescr, type: RefdataValue.toString(), cat:'Authority'],
-                [name: [en: "APC Discount"],    descr: allOADescr, type: String.toString()],
-                [name: [en: "Vouchers Free OA Articles"],   descr: allOADescr, type: String.toString()],
-                [name: [en: "Branding"],        descr: allOADescr, type: String.toString()],
-                [name: [en: "Funder"],          descr: allOADescr, type: String.toString()],
-                [name: [en: "Offsetting"],      descr: allOADescr, type: String.toString()],
-                [name: [en: "Publishing Fee"],  descr: allOADescr, type: String.toString()],
-                [name: [en: "Reading Fee"],     descr: allOADescr, type: String.toString()],
-                [name: [en: "OA First Date"],   descr: allOADescr, type: Date.toString()],
-                [name: [en: "OA Last Date"],    descr: allOADescr, type: Date.toString()]
+                [name: [en: "Open Access", de: "Open Access"],                                                              descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Type", de: "Variante"],                                                                        descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],
+                [name: [en: "Electronically Archivable Version", de: "Archivierbare Version"],                              descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.eArcVersion'],
+                [name: [en: "Embargo Period", de: "Embargo"],                                                               descr: allOADescr, type: Integer.toString()],
+                [name: [en: "Receiving Modalities: By Author", de: "Bezugsmodalitäten: Über Autor"],                        descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Receiving Modalities: On Demand", de: "Bezugsmodalitäten: Auf Nachfrage"],                     descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Receiving Modalities: From Database", de: "Bezugsmodalitäten: Aus Datenank"],                  descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Receiving Modalities: Automatic Delivery", de: "Bezugsmodalitäten: Automatische Lieferung"],   descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Receiving Modalities: Link by Publisher", de: "Bezugsmodalitäten: Verlinkung durch Verlag"],   descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Authority", de: "Autorität"],                                                                  descr: allOADescr, type: RefdataValue.toString(), cat:'Authority'],
+                [name: [en: "Repository: Own Choice", de: "Repositorium: Nach Wahl"],                                       descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Repository: Publishers", de: "Repositorium: Verlagseigenes"],                                  descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Repository: Subject specific", de: "Repositorium: Fachspezifisches"],                          descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Repository: Website of Author", de: "Repositorium: Website des Autors"],                       descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Repository: Institutional", de: "Repositorium: Institutionelles"],                             descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "APC Discount", de: "Sonderkonditionen für Autoren"],                                           descr: allOADescr, type: String.toString()],
+                [name: [en: "Vouchers Free OA Articles", de: "Vouchers"],                                                   descr: allOADescr, type: String.toString()],
+                [name: [en: "Corresponding Author Identification: IP Range", de: "Autorenindentifikation: Über IP-Bereich"],            descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Corresponding Author Identification: Email Domain", de: "Autorenindentifikation: E-Mail-Domäne"],          descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Corresponding Author Identification: Research Institute", de: "Autorenindentifikation: Über Institut"],    descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Corresponding Author Identification: ORCID", de: "Autorenindentifikation: ORCID"],                         descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Branding", de: "Branding"],                                                                    descr: allOADescr, type: String.toString()],
+                [name: [en: "Funder", de: "Funder"],                                                                        descr: allOADescr, type: String.toString()],
+                [name: [en: "Licence to Publish: CC-BY", de: "Publikationslizenz: CC-BY"],                                  descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Licence to Publish: CC-BY-NC", de: "Publikationslizenz: CC-BY-NC"],                            descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Licence to Publish: CC-BY-NC-ND", de: "Publikationslizenz: CC-BY-NC-ND"],                      descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Offsetting", de: "Offsetting Berechnungsmodell"],                                              descr: allOADescr, type: String.toString()],
+                [name: [en: "Publishing Fee", de: "Publishing Fee"],                                                        descr: allOADescr, type: String.toString()],
+                [name: [en: "Reading Fee", de: "Reading Fee"],                                                                  descr: allOADescr, type: String.toString()],
+                [name: [en: "OA First Date", de: "OA Startdatum"],                                                          descr: allOADescr, type: Date.toString()],
+                [name: [en: "OA Last Date", de: "OA Enddatum"],                                                             descr: allOADescr, type: Date.toString()],
+                [name: [en: "OA Note", de: "OA Bemerkung"],                                                                 descr: allOADescr, type: String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
-        def requiredARCProps = []
+        def allArcDescr = [en: PropertyDefinition.LIC_ARC_PROP, de: PropertyDefinition.LIC_ARC_PROP]
+
+        def requiredARCProps = [
+                [name: [en: "Post Cancellation Online Access", de: "Zugriffsrechte: Dauerhaft"],                            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Continuing Access: Payment Note", de: "Zugriffsrechte: Kosten"],                               descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.PaymentNote'],
+                [name: [en: "Continuing Access: Restrictions", de: "Zugriffsrechte: Einschränkungen"],                      descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Continuing Access: Title Transfer", de: "Zugriffsrechte: Titeltransfer"],                      descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.TitleTransferRegulation'],
+                [name: [en: "Archival Copy: Permission", de: "Archivkopie: Recht"],                                         descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Archival Copy: Type: Data", de: "Archivkopie: Form: Rohdaten"],                                descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Archival Copy: Type: Metadata", de: "Archivkopie: Form: Metadaten"],                           descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Archival Copy: Type: Software", de: "Archivkopie: Form: Software"],                            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Archival Copy: Type: DRM-free", de: "Archivkopie: Form: Ohne DRM"],                            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Archival Copy: Cost", de: "Archivkopie: Kosten"],                                              descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.ArchivalCopyCost'],
+                [name: [en: "Archival Copy: Time", de: "Archivkopie: Zeitpunkt"],                                           descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.ArchivalCopyTime'],
+                [name: [en: "Hosting: Permission", de: "Hostingrecht"],                                                     descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Hosting: Obligation", de: "Hostingpflicht"],                                                   descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Time: Always", de: "Hostingrecht: Zeitpunkt: Immer"],                                 descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Time: Exclusive", de: "Hostingrecht: Zeitpunkt: Ohne Anbieter"],                      descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Time: From Expiration On", de: "Hostingrecht: Zeitpunkt: ab Vertragsende"],           descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Time: Predefined time", de: "Hostingrecht: Zeitpunkt: fester Zeitpunkt"],             descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Time: Trigger Event", de: "Hostingrecht: Zeitpunkt: Mit Trigger-Event"],              descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Additonal Agreement Necessary", de: "Hostingrecht: Zusatzvereinbarung notwendig"],    descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Authorized: Licensee", de: "Hostingrecht: Berechtigte: Lizenznehmer"],                descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Authorized: SSG-Library", de: "Hostingrecht: Berechtigte: SSG-Bibliothek"],           descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Authorized: Contractor", de: "Hostingrecht: Berechtigte: Vertragspartner"],           descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Authorized: Contractor With Publisher's Assent", de: "Hostingrecht: Berechtigte: Vertragspartner nach Genehmigung durch Anbieter"],     descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Restriction: File Format", de: "Hostingrecht: Einschränkung: Dateiformat"],           descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Restriction: Year", de: "Hostingrecht: Einschränkung: Jahrgang"],                     descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Restriction: Access Period", de: "Hostingrecht: Einschränkung: Zugriffsdauer"],       descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Restriction: Use", de: "Hostingrecht: Einschränkung: Nutzung"],                       descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Solution: NatHosting PLN", de: "Hostingrecht: Lösung: NatHosting PLN"],               descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Solution: NatHosting Portico", de: "Hostingrecht: Lösung: NatHosting Portico"],       descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Solution: Publisher", de: "Hostingrecht: Lösung: Verlag"],                            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Solution: Own Host", de: "Hostingrecht: Lösung: Eigener Host"],                       descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Solution: Third Party Systems", de: "Hostingrecht: Lösung: Drittsysteme"],            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Solution: LOCKSS", de: "Hostingrecht: Lösung: LOCKSS"],                               descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Solution: CLOCKSS", de: "Hostingrecht: Lösung: CLOCKSS"],                             descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Solution: Portico", de: "Hostingrecht: Lösung: Portico"],                             descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+        ]
         createPropertyDefinitionsWithI10nTranslations(requiredARCProps)
     }
 
@@ -527,31 +596,35 @@ class BootStrap {
 
         // refdata categories
 
-        RefdataCategory.loc('YN',                   [en: 'Yes/No', de: 'Ja/Nein'])
-        RefdataCategory.loc('YNO',                  [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
-        RefdataCategory.loc('AddressType',          [en: 'Address Type', de: 'Art der Adresse'])
-        RefdataCategory.loc('Cluster Type',         [en: 'Cluster Type', de: 'Cluster Type'])
-        RefdataCategory.loc('Combo Type',           [en: 'Combo Type', de: 'Combo Type'])
-        RefdataCategory.loc('ConcurrentAccess',     [en: 'Concurrent Access', de: 'SimUser'])
-        RefdataCategory.loc('ContactContentType',   [en: 'Type of Contact', de: 'Kontakttyp'])
-        RefdataCategory.loc('ContactType',          [en: 'Contact Type', de: 'Art des Kontaktes'])
-        RefdataCategory.loc('CoreStatus',           [en: 'Core Status', de: 'Kerntitel-Status'])
-        RefdataCategory.loc('Country',              [en: 'Country', de: 'Land'])
-        RefdataCategory.loc('FactType',             [en: 'FactType', de: 'FactType'])
-        RefdataCategory.loc('Federal State',        [en: 'Federal State', de: 'Bundesland'])
-        RefdataCategory.loc('Funder Type',          [en: 'Funder Type', de: 'Trägerschaft'])
-        RefdataCategory.loc('Gender',               [en: 'Gender', de: 'Geschlecht'])
-        RefdataCategory.loc('OrgSector',            [en: 'OrgSector', de: 'Bereich'])
-        RefdataCategory.loc('Library Network',      [en: 'Library Network', de: 'Verbundszugehörigkeit'])
-        RefdataCategory.loc('Library Type',         [en: 'Library Type', de: 'Bibliothekstyp'])
-        RefdataCategory.loc('OrgType',              [en: 'Organisation Type', de: 'Organisationstyp'])
-        RefdataCategory.loc('Person Function',      [en: 'Person Function', de: 'Funktion'])
-        RefdataCategory.loc('Person Contact Type',  [en: 'Person: Contact Type', de: 'Person: Typ des Kontakts'])
-        RefdataCategory.loc('Person Position',      [en: 'Person Position', de: 'Person Position'])
-        RefdataCategory.loc('Person Responsibility',[en: 'Person Responsibility', de: 'Verantwortlich'])
-        RefdataCategory.loc('Subscription Status',  [en: 'Subscription Status', de: 'Subskriptionsstatus'])
-        RefdataCategory.loc('Task Priority',        [en: 'Task Priority', de: 'Aufgabenpriorität'])
-        RefdataCategory.loc('Task Status',          [en: 'Task Status', de: 'Aufgabenstatus'])
+        RefdataCategory.loc('YN',                   	           [en: 'Yes/No', de: 'Ja/Nein'])
+        RefdataCategory.loc('YNO',                  	           [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
+        RefdataCategory.loc('AddressType',          	           [en: 'Address Type', de: 'Art der Adresse'])
+        RefdataCategory.loc('Cluster Type',         	           [en: 'Cluster Type', de: 'Cluster Type'])
+        RefdataCategory.loc('Combo Type',           	           [en: 'Combo Type', de: 'Combo Type'])
+        RefdataCategory.loc('ConcurrentAccess',     	           [en: 'Concurrent Access', de: 'SimUser'])
+        RefdataCategory.loc('ContactContentType',   	           [en: 'Type of Contact', de: 'Kontakttyp'])
+        RefdataCategory.loc('ContactType',          	           [en: 'Contact Type', de: 'Art des Kontaktes'])
+        RefdataCategory.loc('CoreStatus',           	           [en: 'Core Status', de: 'Kerntitel-Status'])
+        RefdataCategory.loc('Country',              	           [en: 'Country', de: 'Land'])
+        RefdataCategory.loc('FactType',             	           [en: 'FactType', de: 'FactType'])
+        RefdataCategory.loc('Federal State',        	           [en: 'Federal State', de: 'Bundesland'])
+        RefdataCategory.loc('Funder Type',          	           [en: 'Funder Type', de: 'Trägerschaft'])
+        RefdataCategory.loc('Gender',               	           [en: 'Gender', de: 'Geschlecht'])
+        RefdataCategory.loc('OrgSector',            	           [en: 'OrgSector', de: 'Bereich'])
+        RefdataCategory.loc('Library Network',      	           [en: 'Library Network', de: 'Verbundszugehörigkeit'])
+        RefdataCategory.loc('Library Type',         	           [en: 'Library Type', de: 'Bibliothekstyp'])
+        RefdataCategory.loc('OrgType',              	           [en: 'Organisation Type', de: 'Organisationstyp'])
+        RefdataCategory.loc('Person Function',      	           [en: 'Person Function', de: 'Funktion'])
+        RefdataCategory.loc('Person Contact Type',  	           [en: 'Person: Contact Type', de: 'Person: Typ des Kontakts'])
+        RefdataCategory.loc('Person Position',      	           [en: 'Person Position', de: 'Person Position'])
+        RefdataCategory.loc('Person Responsibility',	           [en: 'Person Responsibility', de: 'Verantwortlich'])
+        RefdataCategory.loc('Subscription Status',          	   [en: 'Subscription Status', de: 'Subskriptionsstatus'])
+        RefdataCategory.loc('Task Priority',                	   [en: 'Task Priority', de: 'Aufgabenpriorität'])
+        RefdataCategory.loc('Task Status',          	           [en: 'Task Status', de: 'Aufgabenstatus'])
+		RefdataCategory.loc('License.Arc.PaymentNote',             [en: 'Archive Payment Note', de: 'Zugriffsrechte Kosten'])
+		RefdataCategory.loc('License.Arc.TitletransferRegulation', [en: 'Titletransfer Regulation', de: 'Titeltransfer Regeln'])
+		RefdataCategory.loc('License.Arc.ArchivalCopyCost',        [en: 'Archival Copy Cost', de: 'Archivkopie Kosten'])
+		RefdataCategory.loc('License.Arc.ArchivalCopyTime',        [en: 'Archival Copy Time', de: 'Archivkopie Zeitpunkt'])
 
         // refdata values
 
@@ -632,6 +705,7 @@ class BootStrap {
 
         RefdataValue.loc('Gender',   [en: 'Female', de: 'Weiblich'])
         RefdataValue.loc('Gender',   [en: 'Male', de: 'Männlich'])
+		RefdataValue.loc('Gender',   [en: 'diverse', de: 'Divers'])
 
         RefdataValue.loc('Library Network',   [en: 'BVB', de: 'BVB'])
         RefdataValue.loc('Library Network',   [en: 'GBV', de: 'GBV'])
@@ -671,9 +745,9 @@ class BootStrap {
         RefdataValue.loc('Person Position',     [en: 'Technichal Support', de: 'Technischer Support'])
 
         RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Lizenzbearbeiter'])
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor', de: 'Subskriptionskontakt'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'])
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Clusterkontakt'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'])
 
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'])
@@ -682,7 +756,13 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Beendet'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Negotiation',   de: 'In Verhandlung'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'])
-        RefdataValue.loc('Subscription Status',      [en: 'Under Examination',   de: 'Wird konsortial geprüft'])
+        RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'])
+        RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'])
+		
+		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'])
+		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'])
+		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'])
+		RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'])
 
         RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'])
         RefdataValue.loc('Task Priority',   [en: 'Low', de: 'Niedrig'])
@@ -693,6 +773,22 @@ class BootStrap {
         RefdataValue.loc('Task Status',      [en: 'Open', de: 'Offen'])
         RefdataValue.loc('Task Status',      [en: 'Done', de: 'Erledigt'])
         RefdataValue.loc('Task Status',      [en: 'Deferred', de: 'Zurückgestellt'])
+		
+        RefdataValue.loc('License.Arc.PaymentNote',       [en: 'No Hosting fee', de: 'Dauerhaft kostenfrei (keine Hosting Fee)'])
+        RefdataValue.loc('License.Arc.PaymentNote',       [en: 'Hosting fee', de: 'Hosting Fee zu zahlen'])
+		
+        RefdataValue.loc('License.Arc.TitletransferRegulation',  [en: 'Existing Regulation', de: 'Regelung vorhanden'])
+        RefdataValue.loc('License.Arc.TitletransferRegulation',  [en: 'Transfer Code of Practice', de: 'Transfer Code of Practice'])
+        RefdataValue.loc('License.Arc.TitletransferRegulation',  [en: 'No Regulation', de: 'Keine Regelung'])
+		
+        RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'Free', de: 'Kostenlos'])
+        RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'With Charge', de: 'Gegen Gebühr'])
+        RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'Self-copied', de: 'Kopie selbst anzufertigen'])
+		
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Licence Start Date', de: 'Mit Vertragsbeginn'])
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'On Request', de: 'Auf Anfrage'])
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Licence End Date', de: 'Mit Vertragsende'])
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Trigger Event', de: 'Mit Trigger Event'])
     }
 
     def setupOnixPlRefdata = {
@@ -738,11 +834,11 @@ class BootStrap {
         // -------------------------------------------------------------------
 
         RefdataCategory.loc('Authority',
-                [en: 'Authority', de: 'Authority'])
+                [en: 'Authority', de: 'Autorität'])
 
-        RefdataValue.loc('Authority', [en: 'Author'])
-        RefdataValue.loc('Authority', [en: 'Institution'])
-        RefdataValue.loc('Authority', [en: 'Author and Institution'])
+        RefdataValue.loc('Authority', [en: 'Author', de: 'Autor'])
+        RefdataValue.loc('Authority', [en: 'Institution', de: 'Institution'])
+        RefdataValue.loc('Authority', [en: 'Author and Institution', de: 'Autor und Institution'])
 
         RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])

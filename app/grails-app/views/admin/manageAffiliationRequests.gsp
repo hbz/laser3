@@ -42,10 +42,10 @@
                     <td><g:message code="cv.membership.status.${req.status}"/></td>
                     <td><g:formatDate format="dd MMMM yyyy" date="${req.dateRequested}"/></td>
                     <td class="x">
-                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'approve']}" class="ui icon positive button">
+                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'approve']}" class="ui icon basic positive button">
                             <i class="checkmark icon"></i>
                         </g:link>
-                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="ui icon negative button">
+                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="ui icon basic negative button">
                             <i class="minus icon"></i>
                         </g:link>
                     </td>

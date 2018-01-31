@@ -23,7 +23,6 @@
 
         <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline ui form">
             <div class="fields">
-                <!-- SEARCH -->
                 <div class="field">
                     <label>${message(code: 'default.search.text', default: 'Search text')}</label>
                     <div class="ui input">
@@ -32,13 +31,9 @@
                            value="${params.q?.encodeAsHTML()}"/>
                     </div>
                 </div>
-                <!-- SEARCH END -->
 
-                <!-- DATE VALID ON -->
-                <semui:datepicker label ="default.valid_on.label" name="validOn" placeholder ="default.date.label" value ="${validOn}" />
-                <!-- DATE VALID ON END-->
+                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="default.date.label" value="${validOn}" />
 
-                <!-- DROPDOWN DATE -->
                 <div class="field">
                     <label class="control-label">${message(code:'default.filter.label', default:'Filter')}</label>
                     <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
@@ -52,18 +47,13 @@
                               optionKey="key"
                               optionValue="value" />
                 </div>
-                <!-- DROPDOWN DATE END -->
 
-                <!-- dateBeforeVal -->
-                <semui:datepicker label ="myinst.currentSubscriptions.filter.before" name="dateBeforeVal" placeholder ="default.date.label" value ="${dateBeforeVal}" />
-                <!-- dateBeforeVal -->
+                <semui:datepicker label="myinst.currentSubscriptions.filter.before" name="dateBeforeVal" placeholder="default.date.label" value="${dateBeforeVal}" />
 
-               <!-- SEND-BUTTON -->
                 <div class="field">
                     <label>&nbsp;</label>
                     <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
                 </div>
-                <!-- SEND-BUTTON END-->
             </div>
         </g:form>
       </semui:filter>

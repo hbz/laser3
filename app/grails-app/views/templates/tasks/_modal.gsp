@@ -95,7 +95,6 @@
                 </div>
 
                 <semui:datepicker label="task.createDate.label" name="createDate" placeholder="default.date.label" value="${taskInstance?.createDate}" required="true" bean="${taskInstance}"  />
-
             </div>
         </div>
 

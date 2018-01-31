@@ -24,37 +24,27 @@
     <g:layoutHead/>
     <r:layoutResources/>
 
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <tmpl:/layouts/favicon />
 
-   
   </head>
 
-  <body class="public">
+    <body class="public">
 
- <script>
-    dataLayer = [{
-     'Institution': '${params.shortcode}',
-     'UserDefaultOrg': '${user?.defaultDash?.shortcode}',
-     'UserRole': 'ROLE_USER'
-    }];
-  </script>
+    <script>
+        dataLayer = [{
+            'Institution': '${params.shortcode}',
+            'UserDefaultOrg': '${user?.defaultDash?.shortcode}',
+            'UserRole': 'ROLE_USER'
+        }];
+    </script>
 
-    <g:layoutBody/>
+    <g:layoutBody/><!-- body here -->
     
     <div id="Footer">
-      <!--<div class="footer-links container">
-          <div class="row">
-              <div class="pull-right">
-              </div>
-          </div>
-      </div>-->
+         <div class="clearfix"></div>
+    </div>
 
-      <div class="clearfix"></div>
-
-
-  </div>
     <r:layoutResources/>
-  </body>
 
+    </body>
 </html>

@@ -306,8 +306,8 @@ class LicenseDetailsController {
     result
   }
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def editHistory() {
-    log.debug("licenseDetails::editHistory : ${params}");
+  def history() {
+    log.debug("licenseDetails::history : ${params}");
 
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -342,8 +342,8 @@ class LicenseDetailsController {
 
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def todoHistory() {
-    log.debug("licenseDetails::todoHistory : ${params}");
+  def changes() {
+    log.debug("licenseDetails::changes : ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.license = License.get(params.id)

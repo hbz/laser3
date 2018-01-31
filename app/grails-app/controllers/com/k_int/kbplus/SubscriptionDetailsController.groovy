@@ -697,6 +697,14 @@ class SubscriptionDetailsController {
         if(result.institution?.orgType?.value == 'Consortium') {
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            result.cons_members_disabled = []
+            result.cons_members.each{ it ->
+                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+                        [result.subscriptionInstance, it.id])
+                ) {
+                    result.cons_members_disabled << it
+                }
+            }
        }
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
@@ -725,7 +733,7 @@ class SubscriptionDetailsController {
             if (orgType?.value == 'Consortium') {
                 def cons_members = []
 
-                (params.selectedOrgs).each { it ->
+                params.list('selectedOrgs').each { it ->
                     def fo = Org.findById(Long.valueOf(it))
                     cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
                 }
@@ -765,7 +773,7 @@ class SubscriptionDetailsController {
                 }
             }
         }
-        redirect controller: 'subscriptionDetails', action: 'details', id: result.subscriptionInstance?.id
+        redirect controller: 'subscriptionDetails', action: 'details', params:[id: result.subscriptionInstance?.id, shortcode: params.shortcode]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -1207,8 +1215,8 @@ class SubscriptionDetailsController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def editHistory() {
-    log.debug("subscriptionDetails::editHistory ${params}");
+  def history() {
+    log.debug("subscriptionDetails::history ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscription = Subscription.get(params.id)
@@ -1229,8 +1237,8 @@ class SubscriptionDetailsController {
   }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def todoHistory() {
-    log.debug("subscriptionDetails::todoHistory ${params}");
+  def changes() {
+    log.debug("subscriptionDetails::changes ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscription = Subscription.get(params.id)

@@ -7,28 +7,48 @@
         <div class="fields">
             <div class="field">
                 <label>${message(code: 'org.orgType.label')}</label>
-                <g:select name="orgType" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"
-                          from="${RefdataCategory.getAllRefdataValues('OrgType')}" value="${params.orgType}" optionKey="id" optionValue="value"/>
+                <laser:select name="orgType" class="ui dropdown"
+                              from="${RefdataCategory.getAllRefdataValues('OrgType')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.orgType}"
+                              noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
             </div>
             <div class="field">
                 <label>${message(code: 'org.sector.label')}</label>
-                <g:select name="orgSector" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"
-                          from="${RefdataCategory.getAllRefdataValues('OrgSector')}" value="${params.orgSector}" optionKey="id" optionValue="value"/>
+                <laser:select name="orgSector" class="ui dropdown"
+                              from="${RefdataCategory.getAllRefdataValues('OrgSector')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.orgSector}"
+                              noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
             </div>
             <div class="field">
                 <label>${message(code: 'org.federalState.label')}</label>
-                <g:select name="federalState" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"
-                          from="${RefdataCategory.getAllRefdataValues('Federal State')}" value="${params.federalState}" optionKey="id" optionValue="value"/>
+                <laser:select name="federalState" class="ui dropdown"
+                              from="${RefdataCategory.getAllRefdataValues('Federal State')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.federalState}"
+                              noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
             </div>
             <div class="field">
                 <label>${message(code: 'org.libraryNetwork.label')}</label>
-                <g:select name="libraryNetwork" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"
-                          from="${RefdataCategory.getAllRefdataValues('Library Network')}" value="${params.libraryNetwork}" optionKey="id" optionValue="value"/>
+                <laser:select name="libraryNetwork" class="ui dropdown"
+                              from="${RefdataCategory.getAllRefdataValues('Library Network')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.libraryNetwork}"
+                              noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
             </div>
             <div class="field">
                 <label>${message(code: 'org.libraryType.label')}</label>
-                <g:select name="libraryType" noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"
-                          from="${RefdataCategory.getAllRefdataValues('Library Type')}" value="${params.libraryType}" optionKey="id" optionValue="value"/>
+                <laser:select name="libraryType" class="ui dropdown"
+                              from="${RefdataCategory.getAllRefdataValues('Library Type')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.libraryType}"
+                              noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
             </div>
         </div>
         <div class="field">

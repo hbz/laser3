@@ -2,34 +2,32 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.label', default:'License')}</title>
 </head>
+
 <body>
 
-    <g:render template="breadcrumb" model="${[ subscriptionInstance:subscription, params:params ]}"/>
-
-    <g:render template="actions" />
+    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <h1 class="ui header">
         <semui:editableLabel editable="${editable}" />
-        <semui:xEditable owner="${subscription}" field="name" />
+        ${license.licensee?.name} ${license.type?.value} ${message(code:'license.label', default:'License')} : ${license.reference}
     </h1>
 
-    <g:render template="nav" contextPath="." />
+    <g:render template="nav" />
 
-      <h3 class="ui header">${message(code:'subscription.details.edit_history.label', default:'Subscription history')}</h3>
       <table  class="ui extra table">
-        <thead>
+          <thead>
             <tr>
               <th>${message(code:'default.eventID.label', default:'Event ID')}</th>
-              <th>${message(code:'default.person.label', default:'Person')}</th>
+              <th>${message(code:'person.label', default:'Person')}</th>
               <th>${message(code:'default.date.label', default:'Date')}</th>
               <th>${message(code:'default.event.label', default:'Event')}</th>
               <th>${message(code:'default.field.label', default:'Field')}</th>
               <th>${message(code:'default.oldValue.label', default:'Old Value')}</th>
               <th>${message(code:'default.newValue.label', default:'New Value')}</th>
             </tr>
-        </thead>
+          </thead>
         <g:if test="${historyLines}">
           <g:each in="${historyLines}" var="hl">
             <tr>
@@ -45,8 +43,7 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="editHistory" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
-
+        <semui:paginate  action="editHistory" controller="licenseDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
 
 </body>
 </html>

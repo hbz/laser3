@@ -162,9 +162,9 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td><b>${message(code:'subscription.compare.results.ies.total', default:'Total IEs for query')}</b></td>
-							<td><b>${listACount}</b></td>
-							<td><b>${listBCount}</b></td>
+							<td><strong>${message(code:'subscription.compare.results.ies.total', default:'Total IEs for query')}</strong></td>
+							<td><strong>${listACount}</strong></td>
+							<td><strong>${listBCount}</strong></td>
 						<tr>
 						<g:each in="${comparisonMap}" var="entry">
 							<g:set var="subAIE" value="${entry.value[0]}"/>
@@ -174,7 +174,7 @@
 							<tr>
 								
 								<td>
-								<b><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></b> 
+								<strong><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
 								<g:each in="${currentTitle.ids}" var="id">

@@ -57,7 +57,7 @@
 
             <dl>
                 <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
+                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>
             </dl>
 
             <dl>
@@ -101,19 +101,22 @@
   </div>
     </semui:meta>
 
-    <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-        <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
-    </sec:ifAnyGranted>
-
-    <g:if test="${forum_url != null}">
-      <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-    </g:if>
-
  <semui:messages data="${flash}" />
 
  <semui:errors bean="${packageInstance}" />
 
     <div class="ui grid">
+
+        <div class="twelve wide column">
+            <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
+            </sec:ifAnyGranted>
+
+            <g:if test="${forum_url != null}">
+                <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
+            </g:if>
+        </div>
+
         <div class="twelve wide column">
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">
@@ -482,7 +485,7 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td>
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
-                   <b>${t.title.title}</b>
+                   <strong>${t.title.title}</strong>
                    <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <ul>

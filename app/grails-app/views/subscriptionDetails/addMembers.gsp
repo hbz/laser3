@@ -26,7 +26,8 @@
             <g:if test="${institution?.orgType?.value == 'Consortium'}">
 
                 <semui:filter>
-                    <g:form action="addMembers" method="get" params="${[shortcode:params.shortcode, id:params.id]}" class="ui form">
+                    <g:form action="addMembers" method="get" params="[shortcode:params.shortcode, id:params.id]" class="ui form">
+                        <input type="hidden" name="shortcode" value="${params.shortcode}" />
                         <g:render template="/templates/filter/orgFilter" />
                     </g:form>
                 </semui:filter>
@@ -38,12 +39,16 @@
                     <div class="ui field">
                         <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
                         <label>Status</label>
-                        <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}"
-                                  optionKey="id" optionValue="${{it.getI10n('value')}}" name="subStatus"
+                        <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
+                                  optionKey="id"
+                                  optionValue="${{it.getI10n('value')}}"
+                                  name="subStatus"
                                   value="${com.k_int.kbplus.RefdataValue.findByValue('Under Consideration')?.id}" />
                     </div>
 
-                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true]" />
+                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplDisableOrgs: cons_members_disabled]" />
+
+                    <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
 
                     <div class="ui field">
                         <div class="ui checkbox">
