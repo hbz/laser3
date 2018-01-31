@@ -1125,15 +1125,34 @@
 .ui.large.table {
   font-size: 1.1em;
 }
+.ui.sortable.table thead th.sortable:after {
+  content: '\f0dc';
+  color: #767676;
+  display: inline;
+}
 .ui.sortable.table thead th.asc:after {
   content: '\f0d8';
+  color: #1B1C1D;
 }
 .ui.sortable.table thead th.desc:after {
   content: '\f0d7';
+  color: #1B1C1D;
 }
 
+/*--------------
+    Sortable
+---------------*/
 
-/*******************************
-         Site Overrides
-*******************************/
+.ui.sortable.table thead th {
+  cursor: default;
+  border-left: none;
+}
 
+/* Hover */
+.ui.sortable.table thead th:hover {
+  background: transparent;
+  color: rgba(0, 0, 0, 0.8);
+}
+.ui.sortable.table thead th.sortable:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
