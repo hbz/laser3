@@ -8,10 +8,6 @@ import org.apache.log4j.RollingFileAppender
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
-aggr_es_cluster  = 'elasticsearch'
-aggr_es_index    = 'ingrid'
-aggr_es_hostname = '193.30.112.34' // localhost
-
 // pilot version
 // access via grailsApplication.config.pilotDisableFlag
 pilotDisableFlag = false
@@ -21,7 +17,12 @@ pilotDisableFlag = false
 // - enable reminder
 //hbzMaster = true
 
-// FEATURE-CONFIG:
+// ES-CONFIG
+aggr_es_cluster  = 'elasticsearch'
+aggr_es_index    = 'kbplus'
+aggr_es_hostname = 'localhost' // localhost
+
+// FEATURE-CONFIG
 localauth = true
 feature_finance = true
 
@@ -33,309 +34,309 @@ System.out.println("\n~ local config override: ${grails.config.locations}")
 System.out.println("~ database migration plugin updateOnStart: ${grails.plugin.databasemigration.updateOnStart}")
 
 customProperties =[
-        "org":[
-                "journalAccess":[
-                        "name"  : "Public Journal Access",
-                        "class" : String.toString(),
-                        "note"  : "Set the required rights for accessing the public Journals page. For example 'Staff,Student,Public' or leave empty/delete for no public access."
-                ]
+    "org":[
+        "journalAccess":[
+            "name"  : "Public Journal Access",
+            "class" : String.toString(),
+            "note"  : "Set the required rights for accessing the public Journals page. For example 'Staff,Student,Public' or leave empty/delete for no public access."
         ]
+    ]
 ]
 
 onix = [
-        "codelist" : "ONIX_PublicationsLicense_CodeLists.xsd",
-        "comparisonPoints" : [
-                'template' : '$value$',
+  "codelist" : "ONIX_PublicationsLicense_CodeLists.xsd",
+  "comparisonPoints" : [
+    'template' : '$value$',
+    'values' : [
+      '_:PublicationsLicenseExpression' : [
+        'text' : 'All',
+        'children' : [
+          'template' : '_:$value$',
+          'values' : [
+            'Definitions' : [
+              'processor': ({ List<Map> data ->
+
+                def new_data = []
+                data.each { Map item ->
+                  switch (item."_name") {
+                    case "AgentRelatedAgent" :
+                      // Add a new row for each related agent.
+                      (0..(item."RelatedAgent"?.size() - 1)).each { int idx ->
+                        def entry = [:]
+
+                        // Copy the whole of the data.
+                        entry << item
+
+                        // Replace the related agent with a list of just 1.
+                        entry."RelatedAgent" = [item["RelatedAgent"][idx]]
+
+                        new_data += entry
+                      }
+                      break
+
+                    default :
+                      // Just add the item.
+                      new_data += item
+                      break
+                  }
+                }
+                if (new_data.size() > 0) {
+                  // Because we want to edit the referenced data we can not create a new list,
+                  // we must instead empty the old and repopulate with the new.
+                  data.clear()
+                  data.addAll(new_data)
+                }
+
+                // Return the data.
+                data
+              }),
+              'text' : 'Authorised Users',
+              'children': [
+                'template' : "_:AgentDefinition[normalize-space(_:AgentLabel/text())='\$value\$']/_:AgentRelatedAgent",
                 'values' : [
-                        '_:PublicationsLicenseExpression' : [
-                                'text' : 'All',
-                                'children' : [
-                                        'template' : '_:$value$',
-                                        'values' : [
-                                                'Definitions' : [
-                                                        'processor': ({ List<Map> data ->
-
-                                                            def new_data = []
-                                                            data.each { Map item ->
-                                                                switch (item."_name") {
-                                                                    case "AgentRelatedAgent" :
-                                                                        // Add a new row for each related agent.
-                                                                        (0..(item."RelatedAgent"?.size() - 1)).each { int idx ->
-                                                                            def entry = [:]
-
-                                                                            // Copy the whole of the data.
-                                                                            entry << item
-
-                                                                            // Replace the related agent with a list of just 1.
-                                                                            entry."RelatedAgent" = [item["RelatedAgent"][idx]]
-
-                                                                            new_data += entry
-                                                                        }
-                                                                        break
-
-                                                                    default :
-                                                                        // Just add the item.
-                                                                        new_data += item
-                                                                        break
-                                                                }
-                                                            }
-                                                            if (new_data.size() > 0) {
-                                                                // Because we want to edit the referenced data we can not create a new list,
-                                                                // we must instead empty the old and repopulate with the new.
-                                                                data.clear()
-                                                                data.addAll(new_data)
-                                                            }
-
-                                                            // Return the data.
-                                                            data
-                                                        }),
-                                                        'text' : 'Authorised Users',
-                                                        'children': [
-                                                                'template' : "_:AgentDefinition[normalize-space(_:AgentLabel/text())='\$value\$']/_:AgentRelatedAgent",
-                                                                'values' : [
-                                                                        'AuthorizedUser' : ['text': 'Authorized User'],
-                                                                ]
-                                                        ]
-                                                ],
-                                                'LicenseGrant' : [
-                                                        'text' : 'License Grants'
-                                                ],
-                                                'UsageTerms' : [
-                                                        'processor': ({ List<Map> data ->
-                                                            def new_data = []
-                                                            def users = data.getAt(0)['User']
-                                                            def deepcopy = { orig ->
-                                                                def bos;
-                                                                def oos;
-                                                                def bin;
-                                                                def ois;
-                                                                try{
-                                                                    bos = new ByteArrayOutputStream()
-                                                                    oos = new ObjectOutputStream(bos)
-                                                                    oos.writeObject(orig); oos.flush()
-                                                                    bin = new ByteArrayInputStream(bos.toByteArray())
-                                                                    ois = new ObjectInputStream(bin)
-                                                                    return ois.readObject()
-                                                                }finally{
-                                                                    bos?.close()
-                                                                    oos?.close()
-                                                                    bin?.close()
-                                                                    ois?.close()
-                                                                }
-                                                            }
-                                                            def refresh_data = {
-                                                                if (new_data.size() > 0) {
-                                                                    // Because we want to edit the referenced data we can not create a new list,
-                                                                    // we must instead empty the old and repopulate with the new.
-                                                                    data.clear()
-                                                                    data.addAll(new_data)
-                                                                    new_data.clear()
-                                                                }
-                                                            }
-                                                            if(users?.size() > 1){
-                                                                users.each{ item ->
-                                                                    def copy = [:]
-                                                                    //Copy the data
-                                                                    copy << data.getAt(0)
-                                                                    //Grab the single user and add him to an array
-                                                                    def temp = [item]
-                                                                    //Then replace the data User(s) with the single User
-                                                                    copy['User'] = temp
-
-                                                                    new_data += copy
-                                                                }
-                                                            }
-
-                                                            refresh_data();
-                                                            //Create several rows for comparison points that need to be split
-                                                            def replicate_row = {usage,type ->
-                                                                usage?."${type}"?.each{ method ->
-                                                                    def copy = [:]
-                                                                    copy << usage
-                                                                    def temp = [method]
-                                                                    copy[type] = temp
-                                                                    new_data += copy
-                                                                }
-                                                            }
-
-                                                            def replicate_nested_row = {usage,parent,child ->
-                                                                usage."${parent}"?."${child}"?.getAt(0)?.each{ place ->
-                                                                    def copy = [:]
-                                                                    def entry = [:]
-                                                                    copy = deepcopy(usage)
-                                                                    entry = place.clone()
-                                                                    copy."${parent}"[0]."${child}"= [entry]
-                                                                    new_data.addAll(copy)
-                                                                }
-                                                            }
-                                                            //Need to loop we might have multiple data here, genetrated from above
-                                                            data.each{ usage ->
-                                                                def usageType = usage."UsageType"?.getAt(0)?."_content"
-                                                                switch (usageType){
-                                                                    case "onixPL:Access":
-                                                                        replicate_row(usage,'UsageMethod');
-                                                                        break;
-                                                                    case "onixPL:Copy":
-                                                                        replicate_row(usage,'UsagePurpose');
-                                                                        break;
-                                                                    case "onixPL:DepositInPerpetuity":
-                                                                        replicate_nested_row(usage,'UsageRelatedPlace','RelatedPlace');
-                                                                        break;
-                                                                    case "onixPL:Include":
-                                                                        if(usage.'UsageRelatedResource'?.'UsageResourceRelator'?.'_content'?.contains(['onixPL:TargetResource'])){
-                                                                            replicate_nested_row(usage,'UsageRelatedResource','RelatedResource');
-                                                                        }
-                                                                        break;
-                                                                    case "onixPL:MakeAvailable":
-                                                                        if(usage.'UsageRelatedAgent'?.'UsageAgentRelator'?.'_content'?.contains(['onixPL:ReceivingAgent'])){
-                                                                            replicate_nested_row(usage,'UsageRelatedAgent','RelatedAgent');
-                                                                        }
-                                                                        break;
-                                                                    case "onixPL:SupplyCopy":
-                                                                        if(usage.'UsageRelatedAgent'?.'UsageAgentRelator'?.'_content'?.contains(['onixPL:ReceivingAgent'])){
-                                                                            replicate_nested_row(usage,'UsageRelatedAgent','RelatedAgent');
-                                                                        }
-                                                                        break;
-                                                                    case "onixPL:Use":
-                                                                        replicate_row(usage,'UsagePurpose');
-                                                                        break;
-                                                                    case "onixPL:UseForDataMining":
-                                                                        replicate_row(usage,'UsagePurpose');
-                                                                        break;
-                                                                    default:
-                                                                        new_data += usage
-                                                                        break;
-                                                                }
-
-                                                            }
-                                                            refresh_data();
-
-                                                            //Return the data.
-                                                            data
-                                                        }),
-                                                        'text' : 'Usage Terms',
-                                                        'children' : [
-                                                                'template' : "_:Usage[normalize-space(_:UsageType/text())='\$value\$']",
-                                                                'values' : [
-                                                                        'onixPL:Access' : ['text' :  'Access'],
-                                                                        'onixPL:Copy' : ['text' : 'Copy'],
-                                                                        'onixPL:DepositInPerpetuity' : ['text' :  'Deposit In Perpetuity'],
-                                                                        'onixPL:Include': ['text': 'Include'],
-                                                                        'onixPL:MakeAvailable': ['text': 'Make Available'],
-                                                                        'onixPL:MakeDigitalCopy' : ['text' :  'Make Digital Copy'],
-                                                                        'onixPL:Modify' : ['text' :  'Modify'],
-                                                                        'onixPL:PrintCopy' : ['text': 'PrintCopy'],
-                                                                        'onixPL:ProvideIntegratedAccess' : ['text' :  'Provide Integrated Access'],
-                                                                        'onixPL:ProvideIntegratedIndex' : ['text' :  'Provide Integrated Index'],
-                                                                        'onixPL:RemoveObscureOrModify' : ['text' :  'Remove Obscure Or Modify'],
-                                                                        'onixPL:Sell' : ['text' :  'Sell'],
-                                                                        'onixPL:SupplyCopy' : ['text' : 'Supply Copy'],
-                                                                        'onixPL:Use' : ['text': 'Use'],
-                                                                        'onixPL:UseForDataMining' : ['text':'Use For Data Mining'],
-
-
-                                                                ]
-                                                        ]
-                                                ],
-                                                'SupplyTerms' : [
-                                                        'text' : 'Supply Terms',
-                                                        'children' : [
-                                                                'template' : "_:SupplyTerm[normalize-space(_:SupplyTermType/text())='\$value\$']",
-                                                                'values' : [
-                                                                        'onixPL:ChangeOfOwnershipOfLicensedResource' : ['text': 'Change Of Ownership Of Licensed Resource'],
-                                                                        'onixPL:ChangesToLicensedContent' : ['text': 'Changes To Licensed Content'],
-                                                                        'onixPL:CompletenessOfContent' : ['text': 'Completeness Of Content'],
-                                                                        'onixPL:ComplianceWithAccessibilityStandards' : ['text': 'Compliance With Accessibility Standards'],
-                                                                        'onixPL:ComplianceWithONIX' : ['text': 'Compliance With ONIX'],
-                                                                        'onixPL:ComplianceWithOpenURLStandard' : ['text': 'Compliance With OpenURL Standard'],
-                                                                        'onixPL:ComplianceWithProjectTransferCode' : ['text': 'Compliance With Project Transfer Code'],
-                                                                        'onixPL:ComplianceWithStandardsAndBestPractices' : ['text': 'Compliance With Standards And Best Practices'],
-                                                                        'onixPL:ConcurrencyWithPrintVersion' : ['text': 'Concurrency With Print Version'],
-                                                                        'onixPL:ContentDelivery' : ['text': 'Content Delivery'],
-                                                                        'onixPL:ContentWarranty' : ['text': 'Content Warranty'],
-                                                                        'onixPL:LicenseeOpenAccessContent' : ['text': 'Licensee OpenAccess Content'],
-                                                                        'onixPL:MediaWarranty' : ['text': 'Licensee OpenAccess Content'],
-                                                                        'onixPL:MetadataSupply' : ['text': 'Metadata Supply'],
-                                                                        'onixPL:NetworkAccess' : ['text': 'Network Access'],
-                                                                        'onixPL:OpenAccessContent' : ['text': 'OpenAccess Content'],
-                                                                        'onixPL:ProductDocumentation' : ['text': 'Product Documentation'],
-                                                                        'onixPL:PublicationSchedule' : ['text': 'Publication Schedule'],
-                                                                        'onixPL:ServicePerformance' : ['text': 'Service Performance'],
-                                                                        'onixPL:ServicePerformanceGuarantee' : ['text': 'Service Performance Guarantee'],
-                                                                        'onixPL:StartOfService' : ['text': 'Start Of Service'],
-                                                                        'onixPL:UsageStatistics' : ['text': 'Usage Statistics'],
-                                                                        'onixPL:UserRegistration' : ['text': 'User Registration'],
-                                                                        'onixPL:UserSupport' : ['text': 'UserSupport']
-                                                                ]
-                                                        ]
-                                                ],
-                                                'ContinuingAccessTerms' : [
-                                                        'processor': ({ List<Map> data ->
-
-                                                            def new_data = []
-                                                            def deepcopy = { orig ->
-                                                                def bos;
-                                                                def oos;
-                                                                def bin;
-                                                                def ois;
-                                                                try{
-                                                                    bos = new ByteArrayOutputStream()
-                                                                    oos = new ObjectOutputStream(bos)
-                                                                    oos.writeObject(orig); oos.flush()
-                                                                    bin = new ByteArrayInputStream(bos.toByteArray())
-                                                                    ois = new ObjectInputStream(bin)
-                                                                    return ois.readObject()
-                                                                }finally{
-                                                                    bos?.close()
-                                                                    oos?.close()
-                                                                    bin?.close()
-                                                                    ois?.close()
-                                                                }
-                                                            }
-                                                            data.each{access ->
-                                                                access."ContinuingAccessTermRelatedAgent"?."RelatedAgent"?.getAt(0)?.each{ agent ->
-                                                                    def copy = [:]
-                                                                    def entry = [:]
-                                                                    copy = deepcopy(access)
-                                                                    entry = agent.clone()
-                                                                    copy."ContinuingAccessTermRelatedAgent"."RelatedAgent"[0].clear()
-                                                                    copy."ContinuingAccessTermRelatedAgent"."RelatedAgent"[0].addAll(entry)
-                                                                    new_data.addAll(copy)
-                                                                }
-                                                            }
-                                                            if (new_data.size() > 0) {
-                                                                // Because we want to edit the referenced data we can not create a new list,
-                                                                // we must instead empty the old and repopulate with the new.
-                                                                data.clear()
-                                                                data.addAll(new_data)
-                                                            }
-
-                                                            data
-                                                        }),
-                                                        'text' : 'Continuing Access Terms',
-                                                        'children' : [
-                                                                'template' : "_:ContinuingAccessTerm[normalize-space(_:ContinuingAccessTermType/text())='\$value\$']",
-                                                                'values' : [
-                                                                        'onixPL:ContinuingAccess' : ['text' :  'Continuing Access' ],
-                                                                        'onixPL:ArchiveCopy' : ['text' :  'Archive Copy' ],
-                                                                        'onixPL:PostCancellationFileSupply': ['text': 'Post Cancellation File Supply'],
-                                                                        'onixPL:PostCancellationOnlineAccess': ['text': 'Post Cancellation Online Access'],
-                                                                        'onixPL:NotificationOfDarkArchive': ['text': 'Notification Of Dark Archive'],
-                                                                        'onixPL:PreservationInDarkArchive': ['text': 'Preservation In Dark Archive']
-                                                                ]
-                                                        ]
-                                                ],
-                                                'PaymentTerms/_:PaymentTerm' : [
-                                                        'text' : 'Payment Terms'
-                                                ],
-                                                'GeneralTerms/_:GeneralTerm' : [
-                                                        'text' : 'General Terms'
-                                                ]
-                                        ]
-                                ]
-                        ]
+                  'AuthorizedUser' : ['text': 'Authorized User'],
                 ]
+              ]
+            ],
+            'LicenseGrant' : [
+              'text' : 'License Grants'
+            ],
+            'UsageTerms' : [
+              'processor': ({ List<Map> data ->
+                def new_data = []
+                def users = data.getAt(0)['User']
+                def deepcopy = { orig ->
+                  def bos;
+                  def oos;
+                  def bin;
+                  def ois;
+                  try{
+                   bos = new ByteArrayOutputStream()
+                   oos = new ObjectOutputStream(bos)
+                   oos.writeObject(orig); oos.flush()
+                   bin = new ByteArrayInputStream(bos.toByteArray())
+                   ois = new ObjectInputStream(bin)
+                   return ois.readObject()
+                  }finally{
+                    bos?.close()
+                    oos?.close()
+                    bin?.close()
+                    ois?.close()
+                  }
+                }
+                def refresh_data = {
+                  if (new_data.size() > 0) {
+                  // Because we want to edit the referenced data we can not create a new list,
+                  // we must instead empty the old and repopulate with the new.
+                  data.clear()
+                  data.addAll(new_data)
+                  new_data.clear()
+                  }
+                }
+                if(users?.size() > 1){
+                  users.each{ item ->
+                    def copy = [:]
+                    //Copy the data
+                    copy << data.getAt(0)
+                    //Grab the single user and add him to an array
+                    def temp = [item]
+                    //Then replace the data User(s) with the single User
+                    copy['User'] = temp
+
+                    new_data += copy
+                  }
+                }
+
+                 refresh_data();
+                //Create several rows for comparison points that need to be split
+                def replicate_row = {usage,type ->
+                    usage?."${type}"?.each{ method ->
+                      def copy = [:]
+                      copy << usage
+                      def temp = [method]
+                      copy[type] = temp
+                      new_data += copy
+                    }
+                }
+
+                def replicate_nested_row = {usage,parent,child ->
+                    usage."${parent}"?."${child}"?.getAt(0)?.each{ place ->
+                      def copy = [:]
+                      def entry = [:]
+                      copy = deepcopy(usage)
+                      entry = place.clone()
+                      copy."${parent}"[0]."${child}"= [entry]
+                      new_data.addAll(copy)
+                    }
+                }
+                //Need to loop we might have multiple data here, genetrated from above
+                data.each{ usage ->
+                  def usageType = usage."UsageType"?.getAt(0)?."_content"
+                  switch (usageType){
+                    case "onixPL:Access":
+                      replicate_row(usage,'UsageMethod');
+                      break;
+                    case "onixPL:Copy":
+                      replicate_row(usage,'UsagePurpose');
+                      break;
+                    case "onixPL:DepositInPerpetuity":
+                      replicate_nested_row(usage,'UsageRelatedPlace','RelatedPlace');
+                      break;
+                    case "onixPL:Include":
+                      if(usage.'UsageRelatedResource'?.'UsageResourceRelator'?.'_content'?.contains(['onixPL:TargetResource'])){
+                        replicate_nested_row(usage,'UsageRelatedResource','RelatedResource');
+                      }
+                      break;
+                    case "onixPL:MakeAvailable":
+                      if(usage.'UsageRelatedAgent'?.'UsageAgentRelator'?.'_content'?.contains(['onixPL:ReceivingAgent'])){
+                        replicate_nested_row(usage,'UsageRelatedAgent','RelatedAgent');
+                      }
+                      break;
+                    case "onixPL:SupplyCopy":
+                      if(usage.'UsageRelatedAgent'?.'UsageAgentRelator'?.'_content'?.contains(['onixPL:ReceivingAgent'])){
+                        replicate_nested_row(usage,'UsageRelatedAgent','RelatedAgent');
+                      }
+                      break;
+                    case "onixPL:Use":
+                      replicate_row(usage,'UsagePurpose');
+                      break;
+                    case "onixPL:UseForDataMining":
+                      replicate_row(usage,'UsagePurpose');
+                      break;
+                    default:
+                        new_data += usage
+                      break;
+                  }
+
+                }
+                refresh_data();
+
+                //Return the data.
+                data
+              }),
+              'text' : 'Usage Terms',
+              'children' : [
+                'template' : "_:Usage[normalize-space(_:UsageType/text())='\$value\$']",
+                'values' : [
+                  'onixPL:Access' : ['text' :  'Access'],
+                  'onixPL:Copy' : ['text' : 'Copy'],
+                  'onixPL:DepositInPerpetuity' : ['text' :  'Deposit In Perpetuity'],
+                  'onixPL:Include': ['text': 'Include'],
+                  'onixPL:MakeAvailable': ['text': 'Make Available'],
+                  'onixPL:MakeDigitalCopy' : ['text' :  'Make Digital Copy'],
+                  'onixPL:Modify' : ['text' :  'Modify'],
+                  'onixPL:PrintCopy' : ['text': 'PrintCopy'],
+                  'onixPL:ProvideIntegratedAccess' : ['text' :  'Provide Integrated Access'],
+                  'onixPL:ProvideIntegratedIndex' : ['text' :  'Provide Integrated Index'],
+                  'onixPL:RemoveObscureOrModify' : ['text' :  'Remove Obscure Or Modify'],
+                  'onixPL:Sell' : ['text' :  'Sell'],
+                  'onixPL:SupplyCopy' : ['text' : 'Supply Copy'],
+                  'onixPL:Use' : ['text': 'Use'],
+                  'onixPL:UseForDataMining' : ['text':'Use For Data Mining'],
+
+
+                ]
+              ]
+            ],
+            'SupplyTerms' : [
+              'text' : 'Supply Terms',
+              'children' : [
+                'template' : "_:SupplyTerm[normalize-space(_:SupplyTermType/text())='\$value\$']",
+                'values' : [
+                  'onixPL:ChangeOfOwnershipOfLicensedResource' : ['text': 'Change Of Ownership Of Licensed Resource'],
+                  'onixPL:ChangesToLicensedContent' : ['text': 'Changes To Licensed Content'],
+                  'onixPL:CompletenessOfContent' : ['text': 'Completeness Of Content'],
+                  'onixPL:ComplianceWithAccessibilityStandards' : ['text': 'Compliance With Accessibility Standards'],
+                  'onixPL:ComplianceWithONIX' : ['text': 'Compliance With ONIX'],
+                  'onixPL:ComplianceWithOpenURLStandard' : ['text': 'Compliance With OpenURL Standard'],
+                  'onixPL:ComplianceWithProjectTransferCode' : ['text': 'Compliance With Project Transfer Code'],
+                  'onixPL:ComplianceWithStandardsAndBestPractices' : ['text': 'Compliance With Standards And Best Practices'],
+                  'onixPL:ConcurrencyWithPrintVersion' : ['text': 'Concurrency With Print Version'],
+                  'onixPL:ContentDelivery' : ['text': 'Content Delivery'],
+                  'onixPL:ContentWarranty' : ['text': 'Content Warranty'],
+                  'onixPL:LicenseeOpenAccessContent' : ['text': 'Licensee OpenAccess Content'],
+                  'onixPL:MediaWarranty' : ['text': 'Licensee OpenAccess Content'],
+                  'onixPL:MetadataSupply' : ['text': 'Metadata Supply'],
+                  'onixPL:NetworkAccess' : ['text': 'Network Access'],
+                  'onixPL:OpenAccessContent' : ['text': 'OpenAccess Content'],
+                  'onixPL:ProductDocumentation' : ['text': 'Product Documentation'],
+                  'onixPL:PublicationSchedule' : ['text': 'Publication Schedule'],
+                  'onixPL:ServicePerformance' : ['text': 'Service Performance'],
+                  'onixPL:ServicePerformanceGuarantee' : ['text': 'Service Performance Guarantee'],
+                  'onixPL:StartOfService' : ['text': 'Start Of Service'],
+                  'onixPL:UsageStatistics' : ['text': 'Usage Statistics'],
+                  'onixPL:UserRegistration' : ['text': 'User Registration'],
+                  'onixPL:UserSupport' : ['text': 'UserSupport']
+                ]
+              ]
+            ],
+            'ContinuingAccessTerms' : [
+              'processor': ({ List<Map> data ->
+
+                def new_data = []
+                def deepcopy = { orig ->
+                  def bos;
+                  def oos;
+                  def bin;
+                  def ois;
+                  try{
+                   bos = new ByteArrayOutputStream()
+                   oos = new ObjectOutputStream(bos)
+                   oos.writeObject(orig); oos.flush()
+                   bin = new ByteArrayInputStream(bos.toByteArray())
+                   ois = new ObjectInputStream(bin)
+                   return ois.readObject()
+                  }finally{
+                    bos?.close()
+                    oos?.close()
+                    bin?.close()
+                    ois?.close()
+                  }
+                }
+                data.each{access ->
+                  access."ContinuingAccessTermRelatedAgent"?."RelatedAgent"?.getAt(0)?.each{ agent ->
+                    def copy = [:]
+                    def entry = [:]
+                    copy = deepcopy(access)
+                    entry = agent.clone()
+                    copy."ContinuingAccessTermRelatedAgent"."RelatedAgent"[0].clear()
+                    copy."ContinuingAccessTermRelatedAgent"."RelatedAgent"[0].addAll(entry)
+                    new_data.addAll(copy)
+                  }
+                }
+                if (new_data.size() > 0) {
+                  // Because we want to edit the referenced data we can not create a new list,
+                  // we must instead empty the old and repopulate with the new.
+                  data.clear()
+                  data.addAll(new_data)
+                }
+
+                data
+              }),
+              'text' : 'Continuing Access Terms',
+              'children' : [
+                'template' : "_:ContinuingAccessTerm[normalize-space(_:ContinuingAccessTermType/text())='\$value\$']",
+                'values' : [
+                  'onixPL:ContinuingAccess' : ['text' :  'Continuing Access' ],
+                  'onixPL:ArchiveCopy' : ['text' :  'Archive Copy' ],
+                  'onixPL:PostCancellationFileSupply': ['text': 'Post Cancellation File Supply'],
+                  'onixPL:PostCancellationOnlineAccess': ['text': 'Post Cancellation Online Access'],
+                  'onixPL:NotificationOfDarkArchive': ['text': 'Notification Of Dark Archive'],
+                  'onixPL:PreservationInDarkArchive': ['text': 'Preservation In Dark Archive']
+                ]
+              ]
+            ],
+            'PaymentTerms/_:PaymentTerm' : [
+              'text' : 'Payment Terms'
+            ],
+            'GeneralTerms/_:GeneralTerm' : [
+              'text' : 'General Terms'
+            ]
+          ]
         ]
+      ]
+    ]
+  ]
 ]
 
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
@@ -402,33 +403,33 @@ environments {
 grails.hibernate.cache.queries = true
 
 grails.cache.config = {
-    cache {
-        name 'message'
-    }
+  cache {
+    name 'message'
+  }
 }
 
 subscriptionTransforms = [
-        'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-        'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-        'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-        'kbplus':[name:'KBPlus (CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'txt', returnMime:'text/plain'],
+    'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'kbplus':[name:'KBPlus (CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'txt', returnMime:'text/plain'],
 ]
 
 // KBPlus import not available in titlelist because we need sub id and it's possible for multiple IEs to appear
 // per title, which isn't valid inside a KB+ package file
 titlelistTransforms = [
-        'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-        'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-        'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
+    'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
 ]
 
 packageTransforms = [
-        'kbplus':[name:'KBPlus(CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
-        'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
+    'kbplus':[name:'KBPlus(CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
+    'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
 ]
 licenseTransforms = [
-        'sub_ie':[name:'Licensed Issue Entitlements (CSV)', xsl:'licensed_titles.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
-        'sub_pkg':[name:'Licensed Subscriptions/Packages (CSV)', xsl:'licensed_subscriptions_packages.xsl', returnFileExtention:'csv', returnMime:'text/csv']
+    'sub_ie':[name:'Licensed Issue Entitlements (CSV)', xsl:'licensed_titles.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
+    'sub_pkg':[name:'Licensed Subscriptions/Packages (CSV)', xsl:'licensed_subscriptions_packages.xsl', returnFileExtention:'csv', returnMime:'text/csv']
 ]
 
 
@@ -440,10 +441,10 @@ def base = System.getProperty("catalina.base")
 if (base) {
     logWatchFile = new File ("${base}/logs/catalina.out")
 
-    if (!logWatchFile.exists()) {
+   if (!logWatchFile.exists()) {
         // Need to create one in current context.
         base = false;
-    }
+   }
 }
 
 if (!base) {
@@ -468,67 +469,67 @@ grails {
 
 // log4j configuration
 log4j = {
-    // Example of changing the log pattern for the default console
-    // appender:
-    //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
-    //trace 'org.hibernate.type'
-    //debug 'org.hibernate.SQL'
+  // Example of changing the log pattern for the default console
+  // appender:
+  //
+  //appenders {
+  //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+  //}
+  //trace 'org.hibernate.type'
+  //debug 'org.hibernate.SQL'
 
-    appenders {
-        console name: "stdout", threshold: org.apache.log4j.Level.ALL
-        if (!base) {
-            appender new RollingFileAppender(
-                    name: 'dailyAppender',
-                    fileName: (logFile),
-                    layout: pattern(conversionPattern:'%d [%t] %-5p %c{2} %x - %m%n')
-            )
-        }
+  appenders {
+    console name: "stdout", threshold: org.apache.log4j.Level.ALL
+    if (!base) {
+      appender new RollingFileAppender(
+          name: 'dailyAppender',
+          fileName: (logFile),
+          layout: pattern(conversionPattern:'%d [%t] %-5p %c{2} %x - %m%n')
+      )
     }
-    root {
-        if (!base) {
-            error 'stdout', 'dailyAppender'
-        } else {
-            error 'stdout'
-        }
+  }
+  root {
+    if (!base) {
+      error 'stdout', 'dailyAppender'
+    } else {
+      error 'stdout'
     }
-    //    // Enable Hibernate SQL logging with param values
-    //    trace 'org.hibernate.type'
-    // debug 'org.hibernate.SQL'
-    off    'grails.plugin.formfields'
+  }
+  //    // Enable Hibernate SQL logging with param values
+  //    trace 'org.hibernate.type'
+  // debug 'org.hibernate.SQL'
+  off    'grails.plugin.formfields'
 
-    error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-            'org.codehaus.groovy.grails.web.pages', //  GSP
-            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
-            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-            'org.codehaus.groovy.grails.web.mapping', // URL mapping
-            'org.codehaus.groovy.grails.commons', // core / classloading
-            'org.codehaus.groovy.grails.plugins', // plugins
-            'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-            'org.springframework',
-            'org.hibernate',
-            'net.sf.ehcache.hibernate',
-            'formfields',
-            'com.k_int.kbplus.filter',
-            'org.codehaus.groovy.grails.plugins.springsecurity'
+  error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
+      'org.codehaus.groovy.grails.web.pages', //  GSP
+      'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+      'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+      'org.codehaus.groovy.grails.web.mapping', // URL mapping
+      'org.codehaus.groovy.grails.commons', // core / classloading
+      'org.codehaus.groovy.grails.plugins', // plugins
+      'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+      'org.springframework',
+      'org.hibernate',
+      'net.sf.ehcache.hibernate',
+      'formfields',
+      'com.k_int.kbplus.filter',
+      'org.codehaus.groovy.grails.plugins.springsecurity'
 
 
-    debug  'grails.app.controllers',
-            'grails.app.service',
-            'grails.app.services',
-            'grails.app.domain',
-            'grails.app.conf',
-            'grails.app.jobs',
-            'grails.app.conf.BootStrap',
-            'grails.app.controllers.OrganisationsController',
-            //'edu.umn.shibboleth.sp',
-            'com.k_int',
-            // 'org.springframework.security'
-            'grails.app.taglib.InplaceTagLib'
+  debug  'grails.app.controllers',
+      'grails.app.service',
+      'grails.app.services',
+      'grails.app.domain',
+      'grails.app.conf',
+      'grails.app.jobs',
+      'grails.app.conf.BootStrap',
+      'grails.app.controllers.OrganisationsController',
+      //'edu.umn.shibboleth.sp',
+      'com.k_int',
+  // 'org.springframework.security'
+      'grails.app.taglib.InplaceTagLib'
 
-    // info   'com.linkedin.grails'
+  // info   'com.linkedin.grails'
 }
 
 // Added by the Spring Security Core plugin:
@@ -551,22 +552,22 @@ grails.plugins.springsecurity.providerNames = [
 ]*/
 
 auditLog {
-    logFullClassName = true
+  logFullClassName = true
 
-    actorClosure = { request, session ->
+  actorClosure = { request, session ->
 
-        if (request.applicationContext.springSecurityService.principal instanceof java.lang.String) {
-            return request.applicationContext.springSecurityService.principal
-        }
-
-        def username = request.applicationContext.springSecurityService.principal?.username
-
-        if (SpringSecurityUtils.isSwitched()){
-            username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
-        }
-
-        return username
+    if (request.applicationContext.springSecurityService.principal instanceof java.lang.String) {
+      return request.applicationContext.springSecurityService.principal
     }
+
+    def username = request.applicationContext.springSecurityService.principal?.username
+
+    if (SpringSecurityUtils.isSwitched()){
+      username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
+    }
+
+    return username
+  }
 }
 
 
@@ -617,216 +618,216 @@ quartzHeartbeat = 'Never'
 // grails.databinding.dateFormats = ['MMddyyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
 
 financialImportTSVLoaderMappings = [
-        header:[
-                defaultTargetClass:'com.k_int.kbplus.CostItem',
+  header:[
+    defaultTargetClass:'com.k_int.kbplus.CostItem',
 
-                // Identify the different combinations that can be used to identify domain objects for the current row
-                // Names columns in the import sheet - importer will map according to config and do the right thing
-                targetObjectIdentificationHeuristics:[
-                        [
-                                ref:'subscription',
-                                cls:'com.k_int.kbplus.Subscription',
-                                heuristics:[
-                                        [
-                                                type : 'hql',
-                                                hql: 'select o from Subscription as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
-                                                values : [ jcns : [type:'static', value:'JC'], orgId: [type:'column', colname:'SubscriptionId'] ]
-                                        ]
-                                ],
-                                creation:[
-                                        onMissing:true,
-                                        whenPresent:[ [ type:'ref', refname:'owner'] ],
-                                        properties : [
-                                                // [ type:'ref', property:'owner', refname:'owner' ],
-                                                [ type:'closure', closure : { o, nl, colmap, colname, locatedObjects -> o.setInstitution(locatedObjects['owner']) } ],
-                                                [ type:'val', property:'identifier', colname: 'SubscriptionId'],
-                                                [ type:'val', property:'name', colname: 'ResourceName'],
-                                                [ type:'closure', closure: { o, nl, colmap, colname, locatedObjects -> o.addNamespacedIdentifier('JC',nl[(int)(colmap.get('SubscriptionId'))]); } ]
-                                        ]
-                                ]
-                        ],
-                        [
-                                ref:'CICategory',
-                                cls:'com.k_int.kbplus.RefdataValue',
-                                heuristics:[
-                                        [ type : 'hql',
-                                          hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
-                                          values : [ citype : [type:'static', value:'CostItemCategory'], civalue: [type:'column', colname:'InvoiceType']]
-                                        ]
-                                ],
-                                creation:[
-                                        onMissing:false,
-                                ]
-                        ],
-                        [
-                                ref:'CIElement',
-                                cls:'com.k_int.kbplus.RefdataValue',
-                                heuristics:[
-                                        [ type : 'hql',
-                                          hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
-                                          values : [ citype : [type:'static', value:'CostItemElement'], civalue: [type:'static', value:'Content']]
-                                        ]
-                                ],
-                                creation:[
-                                        onMissing:false,
-                                ]
-                        ],
-                        [
-                                ref:'owner',
-                                cls:'com.k_int.kbplus.Org',
-                                onOverride:'mustEqual',
-                                heuristics:[
-                                        [
-                                                type : 'hql',
-                                                hql: 'select o from Org as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
-                                                values : [ jcns : [type:'static', value:'JC'], orgId: [type:'column', colname:'InstitutionId'] ]
-                                        ]
-                                ],
-                                creation:[
-                                        onMissing:false,
-                                ]
-                        ],
-                        [
-                                ref:'invoice',
-                                cls:'com.k_int.kbplus.Invoice',
-                                heuristics:[
-                                        [ type : 'simpleLookup',
-                                          criteria : [ [ srcType:'col', colname:'InvoiceNumber', domainProperty:'invoiceNumber' ],
-                                                       [ srcType:'ref', refname:'owner', domainProperty:'owner'] ]
-                                        ]
-                                ],
-                                creation:[
-                                        onMissing:true,
-                                        whenPresent:[ [ type:'ref', refname:'owner'] ],
-                                        properties : [
-                                                [ type:'ref', property:'owner', refname:'owner' ],
-                                                [ type:'val', property:'invoiceNumber', colname: 'InvoiceNumber' ],
-                                                [ type:'val', property:'startDate', colname: 'InvoicePeriodStart', datatype:'date'],
-                                                [ type:'val', property:'endDate', colname: 'InvoicePeriodEnd', datatype:'date']
-                                        ]
-                                ]
-                        ],
-                        [
-                                ref:'order',
-                                cls:'com.k_int.kbplus.Order',
-                                heuristics:[
-                                        [ type : 'simpleLookup',
-                                          criteria : [ [ srcType:'col', colname:'PoNumber', domainProperty:'orderNumber' ],
-                                                       [ srcType:'ref', refname:'owner', domainProperty:'owner'] ]
-                                        ]
-                                ],
-                                creation:[
-                                        onMissing:true,
-                                        whenPresent:[ [ type:'ref', refname:'owner'], [ type:'val', colname:'PoNumber'] ],
-                                        properties : [
-                                                [ type:'ref', property:'owner', refname:'owner' ],
-                                                [ type:'val', property:'orderNumber', colname: 'PoNumber']
-                                        ]
-                                ]
-                        ]
-                ],
-                creationRules : [
-                        [
-                                whenPresent:[ [ type:'val', colname:'InvoiceTotalExcVat'],
-                                              [ type:'ref', refname:'owner', errorOnMissing:true] ],
-                                ref:'MainCostItem',
-                                cls:'com.k_int.kbplus.CostItem',
-                                creation : [
-                                        properties:[
-                                                [ type:'ref', property:'owner', refname:'owner' ],
-                                                [ type:'ref', property:'invoice', refname:'invoice' ],
-                                                [ type:'ref', property:'order', refname:'order' ],
-                                                [ type:'ref', property:'sub', refname:'subscription' ],
-                                                [ type:'val', property:'costInBillingCurrency', colname:'InvoiceTotalExcVat', datatype:'Double'],
-                                                [ type:'ref', property:'costItemCategory', refname:'CICategory'],
-                                                [ type:'ref', property:'costItemElement', refname:'CIElement'],
-                                                [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
-                                                [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
-                                                [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
-                                                [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Main Cost Item]${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
-                                        ]
-                                ]
-                        ],
-                        [
-                                ref:'TaxCostItem',
-                                cls:'com.k_int.kbplus.CostItem',
-                                whenPresent:[ [ type:'val', colname:'InvoiceVat'],[ type:'ref', refname:'owner'] ],
-                                creation:[
-                                        properties:[
-                                                [ type:'ref', property:'owner', refname:'owner' ],
-                                                [ type:'ref', property:'invoice', refname:'invoice' ],
-                                                [ type:'ref', property:'order', refname:'order' ],
-                                                [ type:'ref', property:'sub', refname:'subscription' ],
-                                                [ type:'val', property:'costInBillingCurrency', colname:'InvoiceVat', datatype:'Double'],
-                                                [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
-                                                [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
-                                                [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
-                                                [ type:'ref', property:'costItemCategory', refname:'CICategory'],
-                                                [ type:'ref', property:'costItemElement', refname:'CIElement'],
-                                                [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Tax] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
-                                        ]
-                                ]
-                        ],
-                        [
-                                ref:'InvoiceTransactionCharge',
-                                cls:'com.k_int.kbplus.CostItem',
-                                whenPresent:[ [ type:'val', colname:'InvoiceTransactionCharge'],[ type:'ref', refname:'owner'] ],
-                                creation:[
-                                        properties:[
-                                                [ type:'ref', property:'owner', refname:'owner' ],
-                                                [ type:'ref', property:'invoice', refname:'invoice' ],
-                                                [ type:'ref', property:'order', refname:'order' ],
-                                                [ type:'ref', property:'sub', refname:'subscription' ],
-                                                [ type:'val', property:'costInBillingCurrency', colname:'InvoiceTransactionCharge', datatype:'Double'],
-                                                [ type:'ref', property:'costItemCategory', refname:'CICategory'],
-                                                [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
-                                                [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
-                                                [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
-                                                [ type:'ref', property:'costItemElement', refname:'CIElement'],
-                                                [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Transaction Charge] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
-                                        ]
-                                ]
-                        ]
-                ]
+    // Identify the different combinations that can be used to identify domain objects for the current row
+    // Names columns in the import sheet - importer will map according to config and do the right thing
+    targetObjectIdentificationHeuristics:[
+      [
+        ref:'subscription',
+        cls:'com.k_int.kbplus.Subscription',
+        heuristics:[
+          [
+            type : 'hql',
+            hql: 'select o from Subscription as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
+            values : [ jcns : [type:'static', value:'hbz'], orgId: [type:'column', colname:'SubscriptionId'] ]
+          ]
         ],
-        cols: [
-                [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''],
-                [colname:'SubscriptionId', desc:'Used to match to an existing KB+ subscription - must contain the KB+ Subscription Reference to match. Subscriptions are matched using references from JC Namespace'],
-                [colname:'JC_OrderNumber', desc:''],
-                [colname:'InvoiceNumber', desc:'Used to match this line item to an existing KB+ Invoice. Line must first match an organisation via InstitutionId, then this is matched on Invoice Reference. If none found, a new invoice will be created'],
-                [colname:'PoNumber', desc:''],
-                [colname:'IssuedDate', desc:''],
-                [colname:'DueDate', desc:''],
-                [colname:'InstitutionName', desc:''],
-                [colname:'InstitutionId', desc:'Used to look up an institution based on the JC Institution ID.'],
-                [colname:'ISNIId', desc:''],
-                [colname:'AccountId', desc:''],
-                [colname:'ResourceName', desc:''],
-                [colname:'ResourceId', desc:''],
-                [colname:'AgreementName', desc:''],
-                [colname:'AgreementId', desc:''],
-                [colname:'PublisherName', desc:''],
-                [colname:'InvoicePeriodStart', desc:''],
-                [colname:'InvoicePeriodEnd', desc:''],
-                [colname:'Price', desc:''],
-                [colname:'AnnualAccessFee', desc:''],
-                [colname:'AdditionalFees', desc:''],
-                [colname:'SubscriptionTransactionCharge', desc:''],
-                [colname:'SubscriptionVAT', desc:''],
-                [colname:'DatePaid', desc:''],
-                [colname:'InvoiceNotes', desc:''],
-                [colname:'InvoiceStatus', desc:''],
-                [colname:'Currency', desc:''],
-                [colname:'InvoiceTotalExcVat', desc:''],
-                [colname:'InvoiceTransactionCharge', desc:''],
-                [colname:'InvoiceVat', desc:''],
-                [colname:'InvoiceTotal', desc:''],
-                [colname:'ItemCount', desc:''],
-                [colname:'TotalSubscriptionValue', desc:''],
-                [colname:'InvoiceType', desc:'', type:'vocab', mapping:[
-                        'SubscriptionInvoice':'Price',
-                ]]
+        creation:[
+          onMissing:true,
+          whenPresent:[ [ type:'ref', refname:'owner'] ],
+          properties : [
+            // [ type:'ref', property:'owner', refname:'owner' ],
+            [ type:'closure', closure : { o, nl, colmap, colname, locatedObjects -> o.setInstitution(locatedObjects['owner']) } ],
+            [ type:'val', property:'identifier', colname: 'SubscriptionId'],
+            [ type:'val', property:'name', colname: 'ResourceName'],
+            [ type:'closure', closure: { o, nl, colmap, colname, locatedObjects -> o.addNamespacedIdentifier('jc',nl[(int)(colmap.get('SubscriptionId'))]); } ]
+          ]
         ]
+      ],
+      [
+        ref:'CICategory',
+        cls:'com.k_int.kbplus.RefdataValue',
+        heuristics:[
+          [ type : 'hql',
+            hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
+            values : [ citype : [type:'static', value:'CostItemCategory'], civalue: [type:'column', colname:'InvoiceType']]
+          ]
+        ],
+        creation:[
+          onMissing:false,
+        ]
+      ],
+      [
+        ref:'CIElement',
+        cls:'com.k_int.kbplus.RefdataValue',
+        heuristics:[
+          [ type : 'hql',
+            hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
+            values : [ citype : [type:'static', value:'CostItemElement'], civalue: [type:'static', value:'Content']]
+          ]
+        ],
+        creation:[
+          onMissing:false,
+        ]
+      ],
+      [
+        ref:'owner',
+        cls:'com.k_int.kbplus.Org',
+        onOverride:'mustEqual',
+        heuristics:[
+          [
+            type : 'hql',
+            hql: 'select o from Org as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
+            values : [ jcns : [type:'static', value:'hbz'], orgId: [type:'column', colname:'InstitutionId'] ]
+          ]
+        ],
+        creation:[
+          onMissing:false,
+        ]
+      ],
+      [
+        ref:'invoice',
+        cls:'com.k_int.kbplus.Invoice',
+        heuristics:[
+          [ type : 'simpleLookup',
+            criteria : [ [ srcType:'col', colname:'InvoiceNumber', domainProperty:'invoiceNumber' ],
+                         [ srcType:'ref', refname:'owner', domainProperty:'owner'] ]
+          ]
+        ],
+        creation:[
+          onMissing:true,
+          whenPresent:[ [ type:'ref', refname:'owner'] ],
+          properties : [
+            [ type:'ref', property:'owner', refname:'owner' ],
+            [ type:'val', property:'invoiceNumber', colname: 'InvoiceNumber' ],
+            [ type:'val', property:'startDate', colname: 'InvoicePeriodStart', datatype:'date'],
+            [ type:'val', property:'endDate', colname: 'InvoicePeriodEnd', datatype:'date']
+          ]
+        ]
+      ],
+      [
+        ref:'order',
+        cls:'com.k_int.kbplus.Order',
+        heuristics:[
+          [ type : 'simpleLookup',
+            criteria : [ [ srcType:'col', colname:'PoNumber', domainProperty:'orderNumber' ],
+                         [ srcType:'ref', refname:'owner', domainProperty:'owner'] ]
+          ]
+        ],
+        creation:[
+          onMissing:true,
+          whenPresent:[ [ type:'ref', refname:'owner'], [ type:'val', colname:'PoNumber'] ],
+          properties : [
+            [ type:'ref', property:'owner', refname:'owner' ],
+            [ type:'val', property:'orderNumber', colname: 'PoNumber']
+          ]
+        ]
+      ]
+    ],
+    creationRules : [
+      [
+        whenPresent:[ [ type:'val', colname:'InvoiceTotalExcVat'],
+                      [ type:'ref', refname:'owner', errorOnMissing:true] ],
+        ref:'MainCostItem',
+        cls:'com.k_int.kbplus.CostItem',
+        creation : [
+          properties:[
+            [ type:'ref', property:'owner', refname:'owner' ],
+            [ type:'ref', property:'invoice', refname:'invoice' ],
+            [ type:'ref', property:'order', refname:'order' ],
+            [ type:'ref', property:'sub', refname:'subscription' ],
+            [ type:'val', property:'costInBillingCurrency', colname:'InvoiceTotalExcVat', datatype:'Double'],
+            [ type:'ref', property:'costItemCategory', refname:'CICategory'],
+            [ type:'ref', property:'costItemElement', refname:'CIElement'],
+            [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
+            [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
+            [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
+            [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Main Cost Item]${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
+          ]
+        ]
+      ],
+      [
+        ref:'TaxCostItem',
+        cls:'com.k_int.kbplus.CostItem',
+        whenPresent:[ [ type:'val', colname:'InvoiceVat'],[ type:'ref', refname:'owner'] ],
+        creation:[
+          properties:[
+            [ type:'ref', property:'owner', refname:'owner' ],
+            [ type:'ref', property:'invoice', refname:'invoice' ],
+            [ type:'ref', property:'order', refname:'order' ],
+            [ type:'ref', property:'sub', refname:'subscription' ],
+            [ type:'val', property:'costInBillingCurrency', colname:'InvoiceVat', datatype:'Double'],
+            [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
+            [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
+            [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
+            [ type:'ref', property:'costItemCategory', refname:'CICategory'],
+            [ type:'ref', property:'costItemElement', refname:'CIElement'],
+            [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Tax] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
+          ]
+        ]
+      ],
+      [
+        ref:'InvoiceTransactionCharge',
+        cls:'com.k_int.kbplus.CostItem',
+        whenPresent:[ [ type:'val', colname:'InvoiceTransactionCharge'],[ type:'ref', refname:'owner'] ],
+        creation:[
+          properties:[
+            [ type:'ref', property:'owner', refname:'owner' ],
+            [ type:'ref', property:'invoice', refname:'invoice' ],
+            [ type:'ref', property:'order', refname:'order' ],
+            [ type:'ref', property:'sub', refname:'subscription' ],
+            [ type:'val', property:'costInBillingCurrency', colname:'InvoiceTransactionCharge', datatype:'Double'],
+            [ type:'ref', property:'costItemCategory', refname:'CICategory'],
+            [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
+            [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
+            [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
+            [ type:'ref', property:'costItemElement', refname:'CIElement'],
+            [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Transaction Charge] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  cols: [
+    [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''],
+    [colname:'SubscriptionId', desc:'Used to match to an existing KB+ subscription - must contain the KB+ Subscription Reference to match. Subscriptions are matched using references from JC Namespace'],
+    [colname:'JC_OrderNumber', desc:''],
+    [colname:'InvoiceNumber', desc:'Used to match this line item to an existing KB+ Invoice. Line must first match an organisation via InstitutionId, then this is matched on Invoice Reference. If none found, a new invoice will be created'],
+    [colname:'PoNumber', desc:''],
+    [colname:'IssuedDate', desc:''],
+    [colname:'DueDate', desc:''],
+    [colname:'InstitutionName', desc:''],
+    [colname:'InstitutionId', desc:'Used to look up an institution based on the JC Institution ID.'],
+    [colname:'ISNIId', desc:''],
+    [colname:'AccountId', desc:''],
+    [colname:'ResourceName', desc:''],
+    [colname:'ResourceId', desc:''],
+    [colname:'AgreementName', desc:''],
+    [colname:'AgreementId', desc:''],
+    [colname:'PublisherName', desc:''],
+    [colname:'InvoicePeriodStart', desc:''],
+    [colname:'InvoicePeriodEnd', desc:''],
+    [colname:'Price', desc:''],
+    [colname:'AnnualAccessFee', desc:''],
+    [colname:'AdditionalFees', desc:''],
+    [colname:'SubscriptionTransactionCharge', desc:''],
+    [colname:'SubscriptionVAT', desc:''],
+    [colname:'DatePaid', desc:''],
+    [colname:'InvoiceNotes', desc:''],
+    [colname:'InvoiceStatus', desc:''],
+    [colname:'Currency', desc:''],
+    [colname:'InvoiceTotalExcVat', desc:''],
+    [colname:'InvoiceTransactionCharge', desc:''],
+    [colname:'InvoiceVat', desc:''],
+    [colname:'InvoiceTotal', desc:''],
+    [colname:'ItemCount', desc:''],
+    [colname:'TotalSubscriptionValue', desc:''],
+    [colname:'InvoiceType', desc:'', type:'vocab', mapping:[
+      'SubscriptionInvoice':'Price',
+    ]]
+  ]
 ];
 
 //grails.mail.default.from = "server@yourhost.com" //override system wide
@@ -842,25 +843,25 @@ grails.plugins.remotepagination.enableBootstrap = true
 financials.currency = "EUR - Euro Member Countries|GBP - United Kingdom Pound|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
 
 defaultOaiConfig = [
-        serverName: 'K-Int generic Grails OAI Module :: KBPlus.ac.uk',
-        lastModified:'lastUpdated',
-        serverEmail:'laser@laser.laser',
-        schemas:[
-                'oai_dc':[
-                        type:'method',
-                        methodName:'toOaiDcXml',
-                        schema:'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',
-                        metadataNamespaces: [
-                                '_default_' : 'http://www.openarchives.org/OAI/2.0/oai_dc/',
-                                'dc'        : "http://purl.org/dc/elements/1.1/"
-                        ]],
-                'kbplus':[
-                        type:'method',
-                        methodName:'toKBPlus',
-                        schema:'http://www.kbplus.ac.uk/schemas/oai_metadata.xsd',
-                        metadataNamespaces: [
-                                '_default_': 'http://www.kbplus.ac.uk/oai_metadata/'
-                        ]],
-        ]
+  serverName: 'K-Int generic Grails OAI Module :: KBPlus.ac.uk',
+  lastModified:'lastUpdated',
+  serverEmail:'laser@laser.laser',
+  schemas:[
+    'oai_dc':[
+      type:'method',
+      methodName:'toOaiDcXml',
+      schema:'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',
+      metadataNamespaces: [
+        '_default_' : 'http://www.openarchives.org/OAI/2.0/oai_dc/',
+        'dc'        : "http://purl.org/dc/elements/1.1/"
+      ]],
+    'kbplus':[
+      type:'method',
+      methodName:'toKBPlus',
+      schema:'http://www.kbplus.ac.uk/schemas/oai_metadata.xsd',
+      metadataNamespaces: [
+        '_default_': 'http://www.kbplus.ac.uk/oai_metadata/'
+      ]],
+  ]
 ]
 
