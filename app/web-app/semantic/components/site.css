@@ -194,6 +194,12 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         Global Overrides
 *******************************/
 
+
+
+/*******************************
+        Landingpage
+*******************************/
+
 .landingpage {
   background-color: #f1ebe5;
 }
