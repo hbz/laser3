@@ -95,7 +95,6 @@ class FilterService {
 
         result.query = query
         result.queryParams = queryParams
-
         result
     }
 

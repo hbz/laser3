@@ -129,7 +129,7 @@ class SemanticUiTagLib {
                 class: "ui mini button ${mode == 'basic' ? 'positive' : ''}"
         )
 
-        out << '<div class="or"></div>'
+        //out << '<div class="or"></div>'
 
         out << g.link( "${message(code:'profile.advancedView', default:'Advanced')}",
                 controller: attrs.controller,

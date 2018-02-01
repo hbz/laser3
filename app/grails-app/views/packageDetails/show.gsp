@@ -163,12 +163,16 @@
 
 
 
-              <dl>
-                <dt>${message(code: 'package.show.orglink')}</dt>
-                <dd><g:render template="orgLinks" 
+                <% /*
+                <dl>
+                    <dt>${message(code: 'package.show.orglink')}</dt>
+                    <dd><g:render template="orgLinks"
                             contextPath="../templates"
                             model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',editmode:editable]}" /></dd>
-              </dl>
+                </dl>
+                */ %>
+
+                <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:packageInstance?.orgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable]}" />
 
              <dl>
                 <dt>${message(code: 'package.list_status')}</dt>

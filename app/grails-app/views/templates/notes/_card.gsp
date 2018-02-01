@@ -8,9 +8,13 @@
                         <div class="content">
                             <div class="summary">
                                 <g:if test="${docctx.owner.title}">
-                                    <a><g:fieldValue bean="${docctx.owner}" field="title"/></a>
-                                    <br/>
+                                    <g:link controller="doc" action="show" id="${docctx.owner.id}">${docctx.owner.title}</g:link>
                                 </g:if>
+                                <g:else>
+                                    <g:link controller="doc" action="show" id="${docctx.owner.id}">Ohne Titel</g:link>
+                                </g:else>
+                                <br/>
+
                                 ${message(code:'template.notes.created')}
                                 <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
 

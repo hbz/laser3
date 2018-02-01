@@ -2,30 +2,31 @@ $(document).ready(function() {
     console.log("locale: ${message(code:'default.locale.label')} > " + gspLocale + " > " + gspDateFormat)
 
     $.fn.editable.defaults.mode = 'inline'
-    $.fn.editable.defaults.emptytext = 'Edit'
+    $.fn.editableform.buttons = '<button type="submit" class="ui tiny button editable-submit">ok</button><button type="button" class="ui tiny button editable-cancel">cancel</button>'
+
     // TODO $.fn.datepicker.defaults.language = gspLocale
 
     $('.xEditable').editable({
         language: gspLocale, /*
-    datepicker: {
-      language: gspLocale
-    }, */
-        format: gspDateFormat,
+        datepicker: {
+            language: gspLocale
+        }, */
+        format: gspDateFormat
     });
 
     $('.xEditableValue').editable({
         language: gspLocale, /*
-    datepicker: {
-      language: gspLocale
-    }, */
-        format: gspDateFormat,
+        datepicker: {
+            language: gspLocale
+        }, */
+        format: gspDateFormat
     });
     $(".xEditableManyToOne").editable();
     $(".simpleHiddenRefdata").editable({
         language: gspLocale, /*
-    datepicker: {
-      language: gspLocale
-    }, */
+        datepicker: {
+            language: gspLocale
+        }, */
         format: gspDateFormat,
         url: function(params) {
             var hidden_field_id = $(this).data('hidden-id');
@@ -80,6 +81,35 @@ function getContent() {
 }
 */
 
+var datepickerConfig = {
+    type: 'date',
+    firstDayOfWeek: 1,
+    monthFirst: false,
+    formatter: {
+        date: function (date, settings) {
+            if (!date) return '';
+            var day = date.getDate();
+            if (day<10) day="0"+day;
+            var month = date.getMonth() + 1;
+            if (month<10) month="0"+month;
+            var year = date.getFullYear();
+
+            if ('dd.mm.yyyy' == gspDateFormat) {
+                console.log('dd.mm.yyyy');
+                return day + '.' + month + '.' + year;
+            }
+            else if ('yyyy-mm-dd' == gspDateFormat) {
+                console.log('yyyy-mm-dd');
+                return year + '-' + month + '-' + day;
+            }
+            else {
+                // TODO
+                alert('Please report this error: ' + gspDateFormat + ' for semui-datepicker unsupported')
+            }
+        }
+    }
+}
+
 function semanticUiStuff() {
 
     // close semui:messages alerts
@@ -89,7 +119,11 @@ function semanticUiStuff() {
 
     // modal opener
     $("*[data-semui=modal]").click(function(){
-        $($(this).attr('href') + '.ui.modal').modal('show')
+        $($(this).attr('href') + '.ui.modal').modal({
+            onVisible: function(){
+                $(this).find('.datepicker').calendar(datepickerConfig);
+            }
+        }).modal('show')
     });
 
     // dropdowns
@@ -99,34 +133,7 @@ function semanticUiStuff() {
     $('.ui.checkbox').checkbox();
 
     // datepicker
-    $('.datepicker').calendar({
-        type: 'date',
-        firstDayOfWeek: 1,
-        monthFirst: false,
-        formatter: {
-            date: function (date, settings) {
-                if (!date) return '';
-                var day = date.getDate();
-                if (day<10) day="0"+day;
-                var month = date.getMonth() + 1;
-                if (month<10) month="0"+month;
-                var year = date.getFullYear();
-
-                if ('dd.mm.yyyy' == gspDateFormat) {
-                    console.log('dd.mm.yyyy');
-                    return day + '.' + month + '.' + year;
-                }
-                else if ('yyyy-mm-dd' == gspDateFormat) {
-                    console.log('yyyy-mm-dd');
-                    return year + '-' + month + '-' + day;
-                }
-                else {
-                    // TODO
-                    alert('Please report this error: ' + gspDateFormat + ' for semui-datepicker unsupported')
-                }
-            }
-        }
-    });
+    $('.datepicker').calendar(datepickerConfig);
 
     // metaboxes
     $('.metaboxToggle').click(function(){
