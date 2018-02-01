@@ -20,7 +20,7 @@
     <g:if test="${pendingChanges?.size() > 0}">
       <div class="container alert-warn">
         <h6 class="ui header">${message(code:'datamanager.pending.label')}</h6>
-        <table class="ui celled table">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'default.info.label', default:'Info')}</th>

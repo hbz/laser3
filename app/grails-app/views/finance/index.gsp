@@ -73,7 +73,7 @@
     </div>
 
     <div id="userError" hidden="">
-        <table class="ui extra table">
+        <table class="ui celled la-table table">
             <thead>
             <tr><th>Problem/Update</th>
                 <th>Info</th></tr>

@@ -1,5 +1,5 @@
 <form class="ui form" id="createCost">
-    <table id="newCosts" class="ui striped celled table table-tworow">
+    <table id="newCosts" class="ui striped celled la-rowspan table table-tworow">
         <thead>
             <tr>
                 <th rowspan="2" style="vertical-align: top;">Cost Item#</th>

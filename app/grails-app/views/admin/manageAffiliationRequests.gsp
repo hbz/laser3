@@ -18,7 +18,7 @@
 
         <h2 class="ui header">Manage Pending Membership Requests</h2>
 
-        <table class="ui extra table">
+        <table class="ui celled la-table table">
             <thead>
                 <tr>
                     <th>User</th>

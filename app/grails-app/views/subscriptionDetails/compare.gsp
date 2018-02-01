@@ -27,7 +27,7 @@
 					<g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 					<g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
 
-					<table class="ui celled table">
+					<table class="ui celled la-table table">
 						<thead>
 							<tr>
 								<th></th>
@@ -94,7 +94,7 @@
                                 <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 				<div class="row">
 				<h3 class="ui header">${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
-				<table class="ui celled table">
+				<table class="ui celled la-table table">
 					<thead>
 						<tr>
 							<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
@@ -138,7 +138,7 @@
 					<input type="hidden" name="nochng" value="${params.nochng}"/>
 					<input type="hidden" name="countA" value="${params.countA}"/>
 					<input type="hidden" name="countB" value="${params.countB}"/>
-					 <table class="ui celled table">
+					 <table class="ui celled la-table table">
 						<tr>
 							<td>
 								${message(code:'subscription.compare.filter.title', default:'Filters - Title')}: <input name="filter" value="${params.filter}">
@@ -152,7 +152,7 @@
 				<div class="span6 offset3">
 				<dt class="center">${message(code:'subscription.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 				</div>
-				<table class="ui celled table">
+				<table class="ui celled la-table table">
 					<thead>
 						<tr>
 							<th> ${message(code:'title.label', default:'Title')} </th>

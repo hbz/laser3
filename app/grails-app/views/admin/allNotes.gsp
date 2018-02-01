@@ -13,7 +13,7 @@
     </semui:breadcrumbs>
 
     <div>
-      <table class="ui celled table">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
             <th colspan="4">Note attached to</th>

@@ -27,7 +27,7 @@
 	    </g:if>
 
 	<g:form action="compare" controller="packageDetails" method="GET" class="ui form">
-		<table class="ui celled table">
+		<table class="ui celled la-table table">
 			<thead>
 				<tr>
 					<th></th>
@@ -92,7 +92,7 @@
 
 	<div class="row">
 	<h3 class="ui header">${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
-	<table class="ui celled table">
+	<table class="ui celled la-table table">
 		<thead>
 			<tr>
 				<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
@@ -137,7 +137,7 @@
 	<input type="hidden" name="countA" value="${params.countA}"/>
 	<input type="hidden" name="countB" value="${params.countB}"/>
 
-	 <table class="ui celled table">
+	 <table class="ui celled la-table table">
 		<tr>
 			<td style="text-align:right;padding-right:10px;">
 				${message(code:'package.compare.filter.title', default:'Filters - Title')}: <input type="text" name="filter" value="${params.filter}"/>
@@ -167,7 +167,7 @@
 <div class="span6 offset3">
 <dt class="center">${message(code:'package.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 </div>
-<table class="ui celled table">
+<table class="ui celled la-table table">
 	<thead>
 		<tr> 
 			<th> ${message(code:'title.label', default:'Title')} </th>

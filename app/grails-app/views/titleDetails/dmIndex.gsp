@@ -47,7 +47,7 @@
                 </div>
 
                 <div id="resultsarea">
-                  <table class="ui extra table">
+                  <table class="ui celled la-table table">
                     <thead>
                       <tr>
                       <th style="white-space:nowrap">${message(code:'title.label', default:'Title')}</th>

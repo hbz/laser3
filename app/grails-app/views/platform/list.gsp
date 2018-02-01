@@ -28,7 +28,7 @@
 				</g:form>
 			</semui:filter>
 
-			<table class="ui sortable table">
+			<table class="ui sortable celled la-table table">
 				<thead>
 					<tr>
 

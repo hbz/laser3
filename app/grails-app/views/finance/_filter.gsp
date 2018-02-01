@@ -31,7 +31,7 @@
 <h1 class="ui header">${institution.name} Cost Items</h1>
 <g:form id="filterView" class="ui form" action="index" method="post" params="${[shortcode:params.shortcode]}">
     <input type="hidden" name="shortcode" value="${params.shortcode}"/>
-        <table id="costTable" class="ui striped celled table table-tworow">
+        <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
             <thead>
                 <tr>
                     <th rowspan="2" style="vertical-align: top; cursor: pointer;"><a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*</th>
