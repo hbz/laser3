@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <table class="ui celled striped table">
+        <table class="ui extra table">
             <thead>
             <tr>
                 <th>${message(code: 'task.title.label', default: 'Title')}</th>

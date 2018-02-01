@@ -17,7 +17,7 @@
 
 			<div class="twelve wide column">
 
-				<table class="ui celled striped table">
+				<table class="ui sortable table">
 					<thead>
 						<tr>
 						

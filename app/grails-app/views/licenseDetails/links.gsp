@@ -16,7 +16,7 @@
 
       <g:render template="nav"/>
 
-      <table class="ui celled striped table">
+      <table class="ui extra table">
         <thead>
           <tr>
             <th>Link Type</th>

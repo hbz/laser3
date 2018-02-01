@@ -18,7 +18,7 @@
 
     <g:render template="nav" contextPath="." />
 
-      <table  class="ui celled striped table">
+    <table  class="ui extra table">
           <thead>
             <tr>
               <th>${message(code:'subscription.details.todo_history.descr', default:'ToDo Description')}</th>

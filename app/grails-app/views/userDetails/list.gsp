@@ -35,7 +35,7 @@
 
         <semui:messages data="${flash}" />
         
-        <table class="ui celled striped table">
+        <table class="ui sortable table">
           <thead>
             <tr>
                 <g:sortableColumn property="username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />

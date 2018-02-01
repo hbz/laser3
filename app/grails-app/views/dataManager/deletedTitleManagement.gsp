@@ -21,7 +21,7 @@
 
     <div>
 
-      <table class="ui celled striped table">
+      <table class="ui sortable table">
         <thead>
           <tr>
             <g:sortableColumn property="title" title="${message(code: 'title.label', default: 'Title')}" />

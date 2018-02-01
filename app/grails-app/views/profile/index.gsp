@@ -146,7 +146,7 @@
                 <h4 class="ui dividing header">
                     ${message(code: 'profile.membership.existing')}
                 </h4>
-                          <table class="ui celled striped table">
+                          <table class="ui extra table">
                                 <thead>
                                       <tr>
                                           <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
@@ -276,7 +276,7 @@
                     <div class="well">
                         <h2 class="ui header">${message(code: 'profile.reminder.active', default:'Active Reminders')}</h2>
 
-                  <table class="ui celled striped table">
+                  <table class="ui extra table">
                       <thead>
                       <tr>
                           <th><g:message code="reminder.trigger" default="Trigger"/></th>

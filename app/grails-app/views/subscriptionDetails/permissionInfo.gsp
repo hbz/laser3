@@ -20,7 +20,7 @@
 
     <h3 class="ui header">${message(code:'subscription.details.permissionInfo.orgs_granted')}</h3>
 
-        <table  class="ui celled striped table">
+        <table  class="ui extra table">
             <thead>
                 <tr>
                     <th>${message(code:'org.label', default:'Organisation')}</th>
@@ -55,7 +55,7 @@
 
       <h3 class="ui header">${message(code:'subscription.details.permissionInfo.user_perms', default:'Logged in user permissions')}</h3>
 
-      <table  class="ui celled striped table">
+      <table  class="ui extra table">
         <thead>
           <tr>
             <th>${message(code:'subscription.details.permissionInfo.aff_via', default:'Affiliated via Role')}</th><th>${message(code:'default.permissions.label', default:'Permissions')}</th>

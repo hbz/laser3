@@ -21,7 +21,7 @@
 
 			<div class="ui grid">
 				<div class="twelve wide column">
-					<table class="ui celled striped table">
+					<table class="ui extra table">
 						<thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>

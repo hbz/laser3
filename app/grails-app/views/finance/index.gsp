@@ -73,7 +73,7 @@
     </div>
 
     <div id="userError" hidden="">
-        <table class="ui celled striped table">
+        <table class="ui extra table">
             <thead>
             <tr><th>Problem/Update</th>
                 <th>Info</th></tr>

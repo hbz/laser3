@@ -16,7 +16,7 @@
 
 			<semui:messages data="${flash}" />
 				
-				<table class="ui celled striped table">
+				<table class="ui sortable table">
 					<thead>
 						<tr>
 						

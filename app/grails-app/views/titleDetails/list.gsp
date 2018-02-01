@@ -50,7 +50,7 @@
                 </div><!-- .paginateButtons -->
 
                 <div id="resultsarea">
-                  <table class="ui celled striped table">
+                  <table class="ui sortable table">
                     <thead>
                       <tr>
                       <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />

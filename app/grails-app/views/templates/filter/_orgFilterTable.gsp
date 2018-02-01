@@ -1,5 +1,5 @@
 
-<table class="ui celled striped table">
+<table class="ui extra table">
     <thead>
     <tr>
         <g:if test="${tmplShowCheckbox}">

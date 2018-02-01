@@ -535,10 +535,6 @@ template {
 [hidden] {
   display: none;
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Site
  * http://github.com/semantic-org/semantic-ui/
@@ -567,7 +563,7 @@ body {
   padding: 0px;
   overflow-x: hidden;
   min-width: 320px;
-  background: #FFFFFF;
+  background: #f4f8f9;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 14px;
   line-height: 1.4285em;
@@ -5113,10 +5109,6 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   backface-visibility: hidden;
   color: #767676;
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Container
  * http://github.com/semantic-org/semantic-ui/
@@ -5273,10 +5265,6 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Divider
@@ -5541,10 +5529,6 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABaAAAAACCAYAAACuTHuKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1OThBRDY4OUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1OThBRDY4QUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjU5OEFENjg3Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU5OEFENjg4Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+VU513gAAADVJREFUeNrs0DENACAQBDBIWLGBJQby/mUcJn5sJXQmOQMAAAAAAJqt+2prAAAAAACg2xdgANk6BEVuJgyMAAAAAElFTkSuQmCC');
   }
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Flag
  * http://github.com/semantic-org/semantic-ui/
@@ -6812,10 +6796,6 @@ i.flag.zw:before,
 i.flag.zimbabwe:before {
   background-position: -108px -390px;
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Header
  * http://github.com/semantic-org/semantic-ui/
@@ -7638,10 +7618,6 @@ a.ui.inverted.grey.header:hover {
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Icon
@@ -11921,10 +11897,6 @@ for instance `lemon icon` not `lemon outline icon` since there is only one lemon
 .icon.times.rectangle.outline:before {
   content: "\f2d4";
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Image
  * http://github.com/semantic-org/semantic-ui/
@@ -12237,10 +12209,6 @@ img.ui.bordered.image {
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Input
@@ -12809,10 +12777,6 @@ img.ui.bordered.image {
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Label
@@ -14237,10 +14201,6 @@ a.ui.basic.label:hover {
 .ui.massive.label {
   font-size: 1.71428571rem;
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - List
  * http://github.com/semantic-org/semantic-ui/
@@ -15314,10 +15274,6 @@ ol.ui.horizontal.list li:before,
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-    User Variable Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Loader
  * http://github.com/semantic-org/semantic-ui/
@@ -15693,10 +15649,6 @@ ol.ui.horizontal.list li:before,
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Rail
  * http://github.com/semantic-org/semantic-ui/
@@ -15854,10 +15806,6 @@ ol.ui.horizontal.list li:before,
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Reveal
@@ -16159,10 +16107,6 @@ ol.ui.horizontal.list li:before,
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Segment
@@ -17060,10 +17004,6 @@ ol.ui.horizontal.list li:before,
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Step
  * http://github.com/semantic-org/semantic-ui/
@@ -17750,10 +17690,6 @@ ol.ui.horizontal.list li:before,
   content: '\e800';
   /* '' */
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Breadcrumb
  * http://github.com/semantic-org/semantic-ui/
@@ -17880,10 +17816,6 @@ ol.ui.horizontal.list li:before,
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Form
@@ -19059,10 +18991,6 @@ ol.ui.horizontal.list li:before,
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Grid
@@ -21369,10 +21297,6 @@ ol.ui.horizontal.list li:before,
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-         Site Overrides
-*******************************/
 /*
  * # Semantic - Menu
  * http://github.com/semantic-org/semantic-ui/
@@ -23650,10 +23574,6 @@ Floated Menu / Item
 .ui.massive.vertical.menu {
   width: 25rem;
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Message
  * http://github.com/semantic-org/semantic-ui/
@@ -24220,10 +24140,6 @@ Floated Menu / Item
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-        Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Table
  * http://github.com/semantic-org/semantic-ui/
@@ -24242,16 +24158,16 @@ Floated Menu / Item
 
 .ui.table {
   width: 100%;
-  background: #FFFFFF;
+  background: transparent;
   margin: 1em 0em;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
   border-radius: 0.28571429rem;
   text-align: left;
   color: rgba(0, 0, 0, 0.87);
   border-collapse: separate;
-  border-spacing: 0px;
+  border-spacing: 0 0.5rem;
 }
 
 .ui.table:first-child {
@@ -24283,9 +24199,9 @@ Floated Menu / Item
 
 .ui.table thead th {
   cursor: auto;
-  background: #F9FAFB;
+  background: none;
   text-align: inherit;
-  color: rgba(0, 0, 0, 0.87);
+  color: #767676;
   padding: 0.92857143em 0.78571429em;
   vertical-align: inherit;
   font-style: none;
@@ -24940,11 +24856,11 @@ Floated Menu / Item
 /* Orange */
 
 .ui.orange.table {
-  border-top: 0.2em solid #F2711C;
+  border-top: 0.2em solid #fa820a;
 }
 
 .ui.inverted.orange.table {
-  background-color: #F2711C !important;
+  background-color: #fa820a !important;
   color: #FFFFFF !important;
 }
 
@@ -24995,11 +24911,11 @@ Floated Menu / Item
 /* Blue */
 
 .ui.blue.table {
-  border-top: 0.2em solid red;
+  border-top: 0.2em solid #2d6697;
 }
 
 .ui.inverted.blue.table {
-  background-color: red !important;
+  background-color: #2d6697 !important;
   color: #FFFFFF !important;
 }
 
@@ -25510,9 +25426,72 @@ Floated Menu / Item
   font-size: 1.1em;
 }
 
-/*******************************
-         Site Overrides
-*******************************/
+.ui.sortable.table thead th.sortable:after {
+  content: '\f0dc';
+  color: #767676;
+  display: inline;
+}
+
+.ui.sortable.table thead th.asc:after {
+  content: '\f0d8';
+  color: #1B1C1D;
+}
+
+.ui.sortable.table thead th.desc:after {
+  content: '\f0d7';
+  color: #1B1C1D;
+}
+
+/*--------------
+    Sortable
+---------------*/
+
+.ui.sortable.table thead th {
+  cursor: default;
+  border-left: none;
+}
+
+/* Hover */
+
+.ui.sortable.table thead th:hover {
+  background: transparent;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.ui.sortable.table thead th.sortable:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ui .table {
+  background-color: transparent;
+}
+
+.ui .table tr td {
+  background-color: white;
+  padding: 20px 0;
+}
+
+.ui .table tr td,
+.ui .table tr th {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-bottom: none;
+  border-top: none;
+  border-left: none;
+}
+
+.ui .table tr th {
+  color: gray;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.ui .table tr th a {
+  display: inline-block;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  color: gray;
+}
 /*!
  * # Semantic UI 2.2.13 - Ad
  * http://github.com/semantic-org/semantic-ui/
@@ -25797,10 +25776,6 @@ Floated Menu / Item
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Item
@@ -26905,10 +26880,6 @@ a.ui.card:hover,
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-    User Variable Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Comment
  * http://github.com/semantic-org/semantic-ui/
@@ -27190,10 +27161,6 @@ a.ui.card:hover,
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Feed
@@ -27503,10 +27470,6 @@ a.ui.card:hover,
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Item
@@ -28024,10 +27987,6 @@ a.ui.card:hover,
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Statistic
@@ -28661,10 +28620,6 @@ a.ui.card:hover,
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-    User Variable Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Accordion
  * http://github.com/semantic-org/semantic-ui/
@@ -28924,10 +28879,6 @@ a.ui.card:hover,
 .ui.accordion .accordion .title .dropdown.icon:before {
   content: '\f0da' ;
 }
-
-/*******************************
-        User Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Calendar
  * http://github.com/semantic-org/semantic-ui/
@@ -29758,10 +29709,6 @@ a.ui.card:hover,
 .dash:before  { content: '\e801'; }
 .plus:before { content: '\e802'; }
 */
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Dimmer
  * http://github.com/semantic-org/semantic-ui/
@@ -29983,10 +29930,6 @@ body.dimmable > .dimmer {
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Dropdown
@@ -31631,10 +31574,6 @@ select.ui.dropdown {
   content: "\f0da";
 }
 */
-
-/*******************************
-        User Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Video
  * http://github.com/semantic-org/semantic-ui/
@@ -31775,10 +31714,6 @@ select.ui.dropdown {
 
 /*******************************
         Video Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 
 /*******************************
@@ -32446,10 +32381,6 @@ select.ui.dropdown {
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Nag
  * http://github.com/semantic-org/semantic-ui/
@@ -32591,10 +32522,6 @@ a.ui.nag {
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Popup
@@ -33422,10 +33349,6 @@ a.ui.nag {
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-        User Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Progress Bar
  * http://github.com/semantic-org/semantic-ui/
@@ -34004,10 +33927,6 @@ a.ui.nag {
 /*******************************
             Progress
 *******************************/
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Rating
  * http://github.com/semantic-org/semantic-ui/
@@ -34281,10 +34200,6 @@ a.ui.nag {
 .ui.heart.rating .active.icon:before {
   content: '\f004';
 }
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Search
  * http://github.com/semantic-org/semantic-ui/
@@ -34722,10 +34637,6 @@ a.ui.nag {
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Shape
  * http://github.com/semantic-org/semantic-ui/
@@ -34881,10 +34792,6 @@ a.ui.nag {
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Sidebar
@@ -35567,10 +35474,6 @@ body.pushable > .pusher {
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-         Site Overrides
-*******************************/
 /*!
  * # Semantic UI 2.2.13 - Sticky
  * http://github.com/semantic-org/semantic-ui/
@@ -35640,10 +35543,6 @@ body.pushable > .pusher {
 
 /*******************************
          Theme Overrides
-*******************************/
-
-/*******************************
-         Site Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Tab
@@ -35728,10 +35627,6 @@ body.pushable > .pusher {
 
 /*******************************
          Tab Overrides
-*******************************/
-
-/*******************************
-        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.13 - Transition
@@ -37966,7 +37861,3 @@ body.pushable > .pusher {
     transform: scale3d(1, 1, 1);
   }
 }
-
-/*******************************
-         Site Overrides
-*******************************/

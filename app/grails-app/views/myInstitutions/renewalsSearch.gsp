@@ -57,7 +57,7 @@
                         <g:if test="${hits}" >
 
                             <div id="resultsarea">
-                              <table class="ui celled striped table">
+                              <table class="ui extra table">
                                 <thead>
                                   <tr>
                                       <th>${message(code:'package.show.pkg_name', default:'Package Name')}</th>

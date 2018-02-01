@@ -145,7 +145,7 @@
 
             <h3 class="ui header">${message(code: 'title.show.history.label')}</h3>
 
-            <table class="ui celled striped table">
+            <table class="ui extra table">
               <thead>
                 <tr>
                   <th>${message(code: 'title.show.history.date')}</th>
@@ -183,7 +183,7 @@
 
             <h3 class="ui header">${message(code:'title.edit.tipp')}</h3>
 
-              <table class="ui celled striped table">
+              <table class="ui extra table">
                   <thead>
                   <tr>
                       <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
@@ -210,7 +210,7 @@
               </table>
 
             <g:form id="${params.id}" controller="titleDetails" action="batchUpdate" class="ui form">
-              <table class="ui celled striped table">
+              <table class="ui extra table">
                   <thead>
                     <tr>
                       <th rowspan="2"></th>
