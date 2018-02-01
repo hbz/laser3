@@ -1,6 +1,7 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory" %>
 <%
   def dateFormater = new SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
 %>
@@ -270,24 +271,19 @@
                         <table class="ui extra table">
                             <thead>
                             <tr>
-                                <th>${message(code:'financials.costItem', default:'CI')}</th>
-                                <th>${message(code:'financials.costItemStatus', default:'Status')}</th>
-                                <th>${message(code:'financials.costInBillingCurrency')}</th>
-                                <!--<th>${message(code:'financials.billingCurrency')}</th>-->
-                                <th>${message(code:'financials.costInLocalCurrency')}</th>
                                 <th>${message(code:'financials.costItemCategory')}</th>
                                 <th>${message(code:'financials.costItemElement')}</th>
+                                <th>${message(code:'financials.costInLocalCurrency')}</th>
+                                <th>${message(code:'financials.costItemStatus', default:'Status')}</th>
                             </tr>
                             </thead>
                             <tbody>
                                 <g:each in="${subscriptionInstance.costItems}" var="ci">
                                     <tr>
-                                        <td>${ci.id}</td>
-                                        <td>${ci.costItemStatus?.getI10n('value')}</td>
-                                        <td>${ci.costInBillingCurrency} ${ci.billingCurrency?.getI10n('value')}</td>
-                                        <td>${ci.costInLocalCurrency}</td>
                                         <td>${ci.costItemCategory?.getI10n('value')}</td>
                                         <td>${ci.costItemElement?.getI10n('value')}</td>
+                                        <td>${ci.costInLocalCurrency} ${RefdataCategory.lookupOrCreate('Currency','EUR - Euro Member Countries').getI10n('value')}</td>
+                                        <td>${ci.costItemStatus?.getI10n('value')}</td>
                                     </tr>
                                 </g:each>
                             </tbody>

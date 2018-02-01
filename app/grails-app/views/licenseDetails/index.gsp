@@ -118,7 +118,7 @@
                         <dd>
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions}" var="sub">
-                                    <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.id} (${sub.name})</g:link><br/>
+                                    <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>
                                 </g:each>
                             </g:if>
                             <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
@@ -130,7 +130,7 @@
                         <dd>
                             <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
                                 <g:each in="${license.pkgs}" var="pkg">
-                                    <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.id} (${pkg.name})</g:link><br/>
+                                    <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
                                 </g:each>
                             </g:if>
                             <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
@@ -144,7 +144,9 @@
                                 <g:if test="${license.onixplLicense}">
                                     <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
                                     <g:if test="${editable}">
-                                        <g:link class="ui negative button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">${message(code:'default.button.unlink.label', default:'Unlink')}</g:link>
+                                        ( <g:link controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
+                                            <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
+                                        </g:link> )
                                     </g:if>
                                 </g:if>
                                 <g:else>
@@ -186,12 +188,15 @@
                         </dd>
                     </dl>
 
-                  <dl>
-                      <dt><label class="control-label" for="orgLinks">${message(code:'license.orgLinks', default:'Org Links')}</label></dt>
-                      <dd>
-                        <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
-                      </dd>
-                  </dl>
+                    <% /*
+                    <dl>
+                        <dt><label class="control-label" for="orgLinks">${message(code:'license.orgLinks', default:'Org Links')}</label></dt>
+                        <dd>
+                            <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
+                        </dd>
+                    </dl>
+                    */ %>
+                    <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
 
                     <dl>
                         <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
@@ -262,39 +267,40 @@
                 </div>
               </div><!-- .twelve -->
 
-              <div class="four wide column">
+            <div class="four wide column">
                 <semui:card message="license.actions" class="card-grey">
 
-                <g:if test="${canCopyOrgs}">
-                 
-                  <label for="orgShortcode">${message(code:'license.copyLicensefor', default:'Copy license for')}:</label>
-             <%-- <label for="orgShortcode">Copy license for:</label> --%>
-                  <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" name="orgShortcode" id="orgShortcode" class="ui fluid dropdown"/>
-                              
-                   <g:link name="copyLicenseBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui fluid positive button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                    <g:if test="${canCopyOrgs}">
 
-               <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
-          <%-- <label for="linkSubscription">Link to Subscription:</label> --%>
+                        <label for="orgShortcode">${message(code:'license.copyLicensefor', default:'Copy license for')}:</label>
 
-               <g:form id="linkSubscription" name="linkSubscription" action="linkToSubscription">
-                <input type="hidden" name="license" value="${license.id}"/>
-                <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
-                <input type="submit" class="ui fluid positive button" style="margin-bottom:10px" value="${message(code:'default.button.link.label', default:'Link')}"/>
-              </g:form>
-%{--            
-          leave this out for now.. it is a bit confusing.
-          <g:link name="deletLicenseBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
-                </g:if>
-                  <g:else>
-                    ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
-                  </g:else>
-                 </semui:card>
+                        <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" name="orgShortcode" id="orgShortcode" class="ui fluid dropdown"/>
 
-                    <g:render template="/templates/tasks/card" model="${[ownobj:license, owntp:'license']}" />
-                    <g:render template="/templates/documents/card" model="${[ownobj:license, owntp:'license']}" />
-                    <g:render template="/templates/notes/card"  model="${[ownobj:license, owntp:'license']}" />
-                </div><!-- .four -->
-            </div><!-- .grid -->
+                        <g:link name="copyLicenseBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui positive button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+
+                        <br />
+                        <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
+
+                        <g:form id="linkSubscription" name="linkSubscription" action="linkToSubscription">
+                            <input type="hidden" name="license" value="${license.id}"/>
+                            <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
+                            <input type="submit" class="ui positive button" value="${message(code:'default.button.link.label', default:'Link')}"/>
+                        </g:form>
+    %{--
+              leave this out for now.. it is a bit confusing.
+              <g:link name="deletLicenseBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
+                    </g:if>
+                    <g:else>
+                        ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
+                </g:else>
+                </semui:card>
+
+                <g:render template="/templates/tasks/card" model="${[ownobj:license, owntp:'license']}" />
+                <g:render template="/templates/documents/card" model="${[ownobj:license, owntp:'license']}" />
+                <g:render template="/templates/notes/card"  model="${[ownobj:license, owntp:'license']}" />
+
+            </div><!-- .four -->
+        </div><!-- .grid -->
 
     <g:render template="orgLinksModal" 
               contextPath="../templates" 

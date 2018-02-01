@@ -78,10 +78,10 @@
         <tfoot>
             <tr>
                 <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
-                    <th colspan="5">
+                    <td colspan="5">
                 </g:if>
                 <g:else>
-                    <th colspan="4">
+                    <td colspan="4">
                 </g:else>
 
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
@@ -99,7 +99,7 @@
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
                     </g:formRemote>
-                </th>
+                </td>
             </tr>
         </tfoot>
     </g:if>

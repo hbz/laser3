@@ -1,7 +1,7 @@
 <g:each in="${roleLinks}" var="role">
     <g:if test="${role.org}">
         <dl>
-            <dt><label class="control-label">${role?.roleType?.getI10n("value")} (*)</label></dt>
+            <dt><label class="control-label">${role?.roleType?.getI10n("value")}</label></dt>
             <dd>
                 <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
 

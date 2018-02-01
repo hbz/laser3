@@ -68,7 +68,7 @@
     <g:if test="${editable}">
         <tfoot>
             <tr>
-                <th colspan="4">
+                <td colspan="4">
 
                     <g:formRemote url="[controller: 'ajax', action: 'addPrivatePropertyValue']" method="post"
                                   name="cust_prop_add_value"
@@ -85,7 +85,7 @@
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
                     </g:formRemote>
 
-                </th>
+                </td>
             </tr>
         </tfoot>
     </g:if>
