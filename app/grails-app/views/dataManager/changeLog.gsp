@@ -82,7 +82,7 @@
             </g:link>
       </p>
 
-        <table class="ui celled table">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th></th>

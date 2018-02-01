@@ -35,7 +35,7 @@
           ${message(code:'globalDataSync.pagination.text', args: [offset,(offset + max),globalItemTotal])}
         </div>
       </g:if>
-      <table class="ui sortable table">
+      <table class="ui sortable celled la-table table">
         <thead>
           <tr>
             <g:sortableColumn property="identifier"      title="${message(code: 'package.identifier.label'     )}" />

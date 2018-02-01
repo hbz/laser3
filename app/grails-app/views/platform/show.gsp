@@ -77,7 +77,7 @@
 
         ${message(code:'platform.show.availability', default:'Availability of titles in this platform by package')}
 
-            <table class="ui celled table">
+            <table class="ui celled la-rowspan table">
                 <thead>
                   <tr>
                     <th rowspan="2" style="width: 25%;">${message(code:'title.label', default:'Title')}</th>

@@ -6,7 +6,7 @@
     </div>
 
     <div class="modal-body">
-    	<table class="ui celled table">
+    	<table class="ui celled la-table table">
 	    	<thead>
 	    		<tr>
 	    			<th>Attribute</th>

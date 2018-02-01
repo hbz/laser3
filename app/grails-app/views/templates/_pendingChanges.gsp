@@ -13,7 +13,7 @@
           </g:link>
         </g:if>
         <br/>&nbsp;<br/>
-        <table class="ui celled table">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'default.info.label', default:'Info')}</th>

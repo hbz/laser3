@@ -64,7 +64,7 @@
             </g:form>
         </semui:filter>
 
-        <table class="ui extra table">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'myinst.tipview.tip_tid', default:'Title in Package; Title Details')}</th>

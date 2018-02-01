@@ -17,7 +17,7 @@
 
     <g:render template="nav" contextPath="." />
 
-      <table  class="ui extra table">
+      <table  class="ui celled la-table table">
         <thead>
             <tr>
               <th>${message(code:'default.eventID.label', default:'Event ID')}</th>

@@ -23,7 +23,7 @@
 
         <div class="ui grid">
             <div class="twelve wide column">
-					<table class="ui extra table">
+					<table class="ui celled la-table table">
 						<thead>
 						<tr>
 							<th>Category (Key)</th>

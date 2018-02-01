@@ -13,7 +13,7 @@
 
       <h3 class="ui header">${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 
-      <table class="ui celled table">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
             <th>${message(code:'user.id', default:'Id')}</th>
@@ -36,7 +36,7 @@
 
       <h3 class="ui header">${message(code:'user.role.plural', default:'Roles')}</h3>
 
-      <table class="ui celled table">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
             <th>${message(code:'user.role', default:'Role')}</th>

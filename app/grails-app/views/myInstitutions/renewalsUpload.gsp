@@ -40,7 +40,7 @@
         <div>
         <hr/>
           ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br/>
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
             <tbody>
             <input type="hidden" name="subscription.start_date" value="${permissionInfo?.sub_startDate}"/>
             <input type="hidden" name="subscription.end_date" value="${permissionInfo?.sub_endDate}"/>
@@ -64,7 +64,7 @@
               </tr>
             </tbody>
           </table>
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
                 <th>${message(code:'title.label', default:'Title')}</th>

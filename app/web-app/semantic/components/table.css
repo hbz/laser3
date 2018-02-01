@@ -25,7 +25,7 @@
   border-radius: 0.28571429rem;
   text-align: left;
   color: rgba(0, 0, 0, 0.87);
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 0 0.5rem;
 }
 .ui.table:first-child {
@@ -63,7 +63,7 @@
   font-style: none;
   font-weight: bold;
   text-transform: none;
-  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+  border-bottom: none;
   border-left: none;
 }
 .ui.table thead tr > th:first-child {
@@ -230,8 +230,8 @@
 }
 .ui.structured.celled.table tr th,
 .ui.structured.celled.table tr td {
-  border-left: 1px solid rgba(34, 36, 38, 0.1);
-  border-right: 1px solid rgba(34, 36, 38, 0.1);
+  border-left: 1px dotted rgba(34, 36, 38, 0.1);
+  border-right: 1px dotted rgba(34, 36, 38, 0.1);
 }
 
 /*--------------
@@ -1056,7 +1056,7 @@
 
 .ui.celled.table tr th,
 .ui.celled.table tr td {
-  border-left: 1px solid rgba(34, 36, 38, 0.1);
+  border-left: 1px dotted rgba(34, 36, 38, 0.1);
 }
 .ui.celled.table tr th:first-child,
 .ui.celled.table tr td:first-child {
@@ -1125,6 +1125,13 @@
 .ui.large.table {
   font-size: 1.1em;
 }
+
+/*--------------
+    Sortable
+---------------*/
+
+
+/* change classnames bec. of existing sort function in LAS:eR */
 .ui.sortable.table thead th.sortable:after {
   content: '\f0dc';
   color: #767676;
@@ -1138,26 +1145,18 @@
   content: '\f0d7';
   color: #1B1C1D;
 }
-
-/*--------------
-    Sortable
----------------*/
-
 .ui.sortable.table thead th {
   cursor: default;
-  border-left: none;
+  color: #767676;
 }
 
 /* Hover */
 .ui.sortable.table thead th:hover {
   background: transparent;
-  color: rgba(0, 0, 0, 0.8);
+  color: #767676;
 }
 .ui.sortable.table thead th.sortable:hover {
   background: rgba(0, 0, 0, 0.05);
-}
-.ui .table {
-  background-color: transparent;
 }
 .ui .table tr td {
   background-color: white;
@@ -1167,9 +1166,6 @@
 .ui .table tr th {
   padding-left: 1rem;
   padding-right: 1rem;
-  border-bottom: none;
-  border-top: none;
-  border-left: none;
 }
 .ui .table tr th {
   color: gray;
@@ -1181,4 +1177,33 @@
   padding: 0.5rem 0;
   cursor: pointer;
   color: gray;
+}
+
+/*--------------
+     la-table
+---------------*/
+
+.ui.la-table.table {
+  border-collapse: separate;
+  background-color: transparent;
+}
+.ui.la-table.table tr th,
+.ui.la-table.table tr td {
+  border-top: none;
+}
+
+/*--------------
+     la-rowspan
+---------------*/
+
+.ui.la-rowspan.table {
+  border-collapse: separate;
+  background-color: transparent;
+}
+.ui.la-rowspan.table tr th {
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
+}
+.ui.la-rowspan.table tr td,
+.ui.la-rowspan.table tr:first-child th {
+  border-top: none;
 }
