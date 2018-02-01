@@ -85,10 +85,13 @@ class SemanticUiTagLib {
         def title  = (text && message) ? text + " - " + message : text + message
 
         out << '<div class="ui card ' + attrs.class + '">'
-        out <<   '<div class="content">'
+
         if (title) {
-            out << '<div class="header">' + title + '</div>'
+            out << '<div class="content">'
+            out <<   '<div class="header">' + title + '</div>'
+            out << '</div>'
         }
+        out <<   '<div class="content">'
         out <<     body()
         out <<   '</div>'
         out << '</div>'
