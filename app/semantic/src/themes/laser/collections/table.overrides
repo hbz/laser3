@@ -20,13 +20,14 @@
 
 .ui.sortable.table thead th {
   cursor: default;
+  color: @grey;
 }
 
 
 /* Hover */
 .ui.sortable.table thead th:hover {
   background: transparent;
-  color: @sortableHoverColor;
+  color: @grey;
 }
 .ui.sortable.table thead th.sortable:hover {
   background: @sortableHoverBackground;
