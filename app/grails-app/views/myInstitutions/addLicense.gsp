@@ -61,7 +61,7 @@
 
       <g:if test="${licenses?.size() > 0}">
         <div class="license-results">
-          <table class="ui sortable table">
+          <table class="ui sortable celled la-table table">
             <thead>
               <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.name')}" />

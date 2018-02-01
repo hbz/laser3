@@ -24,7 +24,7 @@
           </div>
           </g:form>
 
-        <table class="ui sortable table">
+        <table class="ui sortable celled la-table table">
           <thead>
             <tr>
               <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />

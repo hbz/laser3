@@ -140,7 +140,7 @@
         <dl>
           <dt style="margin-top:10px">${message(code:'tipp.additionalPlatforms', default:'Additional Platforms')}</dt>
           <dd>
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
               <thead>
                 <tr><th>${message(code:'default.relation.label', default:'Relation')}</th><th>${message(code:'tipp.show.platformName', default:'Platform Name')}</th><th>${message(code:'platform.primaryURL', default:'Primary URL')}</th></tr>
               </thead>
@@ -187,7 +187,7 @@
                     </g:form>
                 </semui:filter>
 
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
               <thead>
               <tr>
                 <th>${message(code:'tipp.coverage_start')}</th>

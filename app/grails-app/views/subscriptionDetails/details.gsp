@@ -46,7 +46,7 @@
                 <dl>
                     <dt><g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel></dt>
                     <dd>
-                        <table class="ui celled table">
+                        <table class="ui celled la-table table">
                             <thead>
                             <tr>
                                 <th>${message(code:'default.authority.label', default:'Authority')}</th>
@@ -122,7 +122,7 @@
                             </g:each>
 
                         <% /*
-                        <table class="ui celled table">
+                        <table class="ui celled la-table table">
                             <thead>
                             <th>${message(code:'package.name.label', default:'Name')}</th>
                             <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
@@ -268,7 +268,7 @@
                 <dl>
                     <dt>${message(code:'financials.label', default:'Financials')}</dt>
                     <dd>
-                        <table class="ui extra table">
+                        <table class="ui celled la-table table">
                             <thead>
                             <tr>
                                 <th>${message(code:'financials.costItemCategory')}</th>

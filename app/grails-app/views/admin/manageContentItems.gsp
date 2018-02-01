@@ -17,7 +17,7 @@
 
     <div class="ui grid">
       <div class="twelve wide column">
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
                 <thead>
                     <tr>
                         <th>Key</th>

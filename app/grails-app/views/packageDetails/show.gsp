@@ -63,7 +63,7 @@
             <dl>
                 <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
-                    <table class="ui celled table">
+                    <table class="ui celled la-table table">
                         <thead>
                         <tr>
                             <th>${message(code: 'component.id.label')}</th>
@@ -301,7 +301,7 @@
             <g:hiddenField name="order" value="${params.order}"/>
             <g:hiddenField name="offset" value="${params.offset}"/>
             <g:hiddenField name="max" value="${params.max}"/>
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
             <thead>
             <tr class="no-background">
 
@@ -316,7 +316,7 @@
                     <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
                   </select>
                   <br/>
-                  <table class="ui celled table">
+                  <table class="ui celled la-table table">
                     <tr>
                         <td>
                             <semui:datepicker label="subscription.details.coverageStartDate" name="bulk_start_date" value="${params.bulk_start_date}" />

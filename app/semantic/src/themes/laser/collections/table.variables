@@ -9,7 +9,7 @@
 @verticalMargin: 1em;
 @horizontalMargin: 0em;
 @margin: @verticalMargin @horizontalMargin;
-@borderCollapse: separate;
+@borderCollapse: collapse;
 @borderSpacing: 0 0.5rem;
 @borderRadius: @defaultBorderRadius;
 @transition:
@@ -27,17 +27,17 @@
 ---------------*/
 
 /* Table Row */
-@rowBorder: 1px solid @internalBorderColor;
+/* @rowBorder: 1px solid @internalBorderColor; */
 
 /* Table Cell */
 @cellVerticalPadding: @relativeMini;
 @cellHorizontalPadding: @relativeMini;
 @cellVerticalAlign: inherit;
 @cellTextAlign: inherit;
-@cellBorder: 1px solid @internalBorderColor;
+@cellBorder: 1px dotted @internalBorderColor;
 
 /* Table Header */
-@headerBorder: 1px solid @internalBorderColor;
+@headerBorder: none;
 @headerDivider: none;
 @headerBackground: @offWhite;
 @headerAlign: inherit;
@@ -238,6 +238,9 @@
 @compactHorizontalPadding: 0.7em;
 @veryCompactVerticalPadding: 0.4em;
 @veryCompactHorizontalPadding: 0.6em;
+
+/* la-table */
+
 
 
 /* Sizes */

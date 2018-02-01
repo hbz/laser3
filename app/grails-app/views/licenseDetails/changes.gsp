@@ -16,7 +16,7 @@
 
     <div>
       <h3 class="ui header">${message(code:'license.nav.todo_history', default:'ToDo History')}</h3>
-      <table  class="ui extra table">
+      <table  class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>

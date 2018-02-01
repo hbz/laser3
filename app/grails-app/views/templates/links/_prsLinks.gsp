@@ -1,5 +1,5 @@
 
-<table class="ui extra table">
+<table class="ui celled la-table table">
     <thead>
         <tr>
             <th>Person</th>

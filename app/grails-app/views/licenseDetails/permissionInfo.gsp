@@ -18,11 +18,11 @@
 
     <div>
       <h2 class="ui header">${message(code:'license.permissionInfo.perms', default:'Permissions for user')}</h2>
-      <table  class="ui extra table">
+      <table  class="ui celled la-table table">
       </table>
 
       <h2 class="ui header">${message(code:'subscription.details.permissionInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
-      <table class="ui extra table">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
             <th>Organisation</th>
@@ -53,7 +53,7 @@
       </table>
 
       <h2 class="ui header">${message(code:'subscription.details.user.permissions', default:'Logged in user permissions')}</h2>
-      <table class="ui extra table">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
           <th>${message(code:'subscription.details.permissionInfo.aff_via', default:'Affiliated via Role')}</th>

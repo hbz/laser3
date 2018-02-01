@@ -46,7 +46,7 @@
                 </div><!-- .paginateButtons -->
 
                 <div id="resultsarea">
-                  <table class="ui sortable table">
+                  <table class="ui sortable celled la-table table">
                     <thead>
                       <tr>
                       <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />

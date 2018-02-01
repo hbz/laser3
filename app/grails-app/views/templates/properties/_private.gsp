@@ -12,7 +12,7 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-<table class="ui celled table">
+<table class="ui celled la-table table">
     <thead>
 	    <tr>
             <th>${message(code:'property.table.property')}</th>

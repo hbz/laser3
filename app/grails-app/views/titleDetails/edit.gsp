@@ -44,7 +44,7 @@
                  </ul>
                  </bootstrap:alert>
               </g:each>
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
               <thead>
                 <tr>
                   <th>${message(code:'title.edit.component_id.label')}</th>
@@ -81,7 +81,7 @@
           <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:ti?.orgs,editmode:editable]}" />
 
             <h3 class="ui header">${message(code:'title.edit.tipp')}</h3>
-            <table class="ui extra table">
+            <table class="ui celled la-table table">
                 <thead>
                     <tr>
                         <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>

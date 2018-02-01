@@ -35,7 +35,7 @@
 
           <h3 class="ui header">${message(code:'myinst.tip.usageRecords', default:'Usage Records')}</h3>
 
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'default.start.label', default:'Start')}</th>

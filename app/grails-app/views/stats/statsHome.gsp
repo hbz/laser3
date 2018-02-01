@@ -24,7 +24,7 @@
 
         <h1 class="ui header">Org Info</h1>
 
-        <table class="ui celled table">
+        <table class="ui celled la-table table">
             <thead>
                 <tr>
                     <th>Institution</th>

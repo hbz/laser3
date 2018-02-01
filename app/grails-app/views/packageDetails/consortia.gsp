@@ -27,7 +27,7 @@
     select the desired checkboxes and click 'Create child subscriptions'</p><br>
 <g:form action="generateSlaveSubscriptions" controller="packageDetails" method="POST">
 <input type="hidden" name="id" value="${id}">
-<table class="ui celled table">
+<table class="ui celled la-table table">
 <thead>
     <tr>
         <th>Organisation</th>

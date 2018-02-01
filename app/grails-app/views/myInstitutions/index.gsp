@@ -9,7 +9,7 @@
     <div>
 
       <g:if test="${staticAlerts.size() > 0}">
-        <table class="ui celled table">
+        <table class="ui celled la-table table">
           <tr><th>System Alert</th></tr>
 
           <g:each in="${staticAlerts}" var="sa">
@@ -27,7 +27,7 @@
         </table>
       </g:if>
 
-      <table class="ui celled table">
+      <table class="ui celled la-table table">
         <tr>
           <th colspan="3">Note attached to</th>
         </tr>

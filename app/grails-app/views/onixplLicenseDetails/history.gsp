@@ -23,7 +23,7 @@
 
     <div>
 License history
-      <table  class="ui extra table">
+      <table  class="ui celled la-table table">
         <tr>
           <th>Event ID</th>
           <th>Person</th>

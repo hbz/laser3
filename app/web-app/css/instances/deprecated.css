@@ -4590,36 +4590,12 @@ a.btn:hover {
         </tbody>
     </table>
 */
-th,
-thead > tr > td,
-.table-striped tbody > tr:first-child > th {
-  background-color: #fff5f5;
-  background-image: none;
-  filter: none;
-  color: #bb5679;
-}
-th,
-tr:first-child > th > a,
-.table-striped tbody > tr:first-child > th > a {
-  color: #bb5679;
-}
-tr.no-background > th {
-  background-color: transparent;
-}
+
 dl {
   word-wrap: break-word;
 }
 dl > dt {
   font-weight: bold;
-}
-.dashboard-widget {
-	border-radius: 0;
-}
-.dashboard-widget th {
-  background-color: #f5f5f5;
-}
-.dashboard-widget h5 {
-  color: #bb5679;
 }
 /* Inline Definition Lists
 
