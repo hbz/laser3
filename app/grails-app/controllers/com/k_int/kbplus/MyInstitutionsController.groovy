@@ -443,13 +443,25 @@ class MyInstitutionsController {
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':result.institution]
 
-        // find: Subscriber
+        def base_qry
+        def qry_params
 
-        def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
-        def qry_params = ['roleType':role_sub, 'activeInst':result.institution]
+        if (! params.orgRole) {
+            if (result.institution?.orgType?.value == 'Consortium') {
+                params.orgRole = 'Subscription Consortia'
+            }
+            else {
+                params.orgRole = 'Subscriber'
+            }
+        }
 
-        if(params.orgRole == 'Subscription Consortia') {
-            // find: Subscription Consortia
+        if (params.orgRole == 'Subscriber') {
+
+            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
+            qry_params = ['roleType':role_sub, 'activeInst':result.institution]
+        }
+
+        if (params.orgRole == 'Subscription Consortia') {
 
             base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
             qry_params = ['roleType':role_sub_consortia, 'activeInst':result.institution]
@@ -476,8 +488,7 @@ class MyInstitutionsController {
             base_qry += " order by s.name asc"
         }
 
-
-        log.debug("current subs base query: ${base_qry} params: ${qry_params}")
+        //log.debug("current subs base query: ${base_qry} params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);

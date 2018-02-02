@@ -59,7 +59,7 @@
                 <label>Filter by Role:</label>
                 <div class="field">
                     <div class="ui radio checkbox">
-                        <input name="orgRole" <g:if test="${params.orgRole != 'Subscription Consortia'}">checked=""</g:if> class="hidden" type="radio" value="Subscriber">
+                        <input name="orgRole" <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if> class="hidden" type="radio" value="Subscriber">
                         <label>${message(code:'consortium.subscriber', default:'Subscriber')}</label>
                     </div>
                 </div>
@@ -81,12 +81,14 @@
                 <g:sortableColumn params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
                 <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
                 <th>${message(code:'myinst.currentSubscriptions.subscription_type', default:'Subscription Type')}</th>
-                <g:if test="${params.orgRole != 'Subscription Consortia'}">
+
+                <g:if test="${params.orgRole == 'Subscriber'}">
                     <th>${message(code:'consortium', default:'Consortia')}</th>
                 </g:if>
-                <g:else>
+                <g:if test="${params.orgRole == 'Subscription Consortia'}">
                     <th>${message(code:'consortium.subscriber', default:'Subscriber')}</th>
-                </g:else>
+                </g:if>
+
                 <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
                 <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
 
@@ -129,16 +131,16 @@
                         <!-- subscriptions type -->
                         <!-- subscriptions type -->
                     </td>
-                    <g:if test="${params.orgRole != 'Subscription Consortia'}">
+                    <g:if test="${params.orgRole == 'Subscriber'}">
                         <td>${s.consortia?.name}</td>
                     </g:if>
-                    <g:else>
+                    <g:if test="${params.orgRole == 'Subscription Consortia'}">
                         <td>
                             <g:each in="${s.allSubscribers}" var="subscriber">
                                 <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link>
                             </g:each>
                         </td>
-                    </g:else>
+                    </g:if>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 

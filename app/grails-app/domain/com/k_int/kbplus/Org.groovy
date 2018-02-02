@@ -32,7 +32,7 @@ class Org extends BaseDomainComponent {
     int fteStudents
     int fteStaff
 
-    RefdataValue orgType
+    RefdataValue orgType        // RefdataCategory 'OrgType'
     RefdataValue sector
     RefdataValue status
     RefdataValue membership
