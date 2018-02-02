@@ -383,19 +383,22 @@ class MyInstitutionsController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def currentSubscriptions() {
         def result = setResultGenerics()
-        
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
-        
+
         def viableOrgs = []
-        
+
         if ( result.availableConsortia ){
           result.availableConsortia.each {
             viableOrgs.add(it)
           }
         }
-        
+
         viableOrgs.add(result.institution)
-        
+
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
@@ -403,7 +406,7 @@ class MyInstitutionsController {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
         } else if (params.validOn.trim() == '') {
-            result.validOn = "" 
+            result.validOn = ""
         } else {
             result.validOn = params.validOn
             date_restriction = sdf.parse(params.validOn)
@@ -422,7 +425,7 @@ class MyInstitutionsController {
               result.remove('dateBeforeFilterVal')
               result.remove('dateBeforeFilter')
             }
-            
+
         }
 
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
@@ -435,18 +438,22 @@ class MyInstitutionsController {
 
         def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
         def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
-        def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
         def roleTypes = [role_sub, role_sub_consortia]
-        def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
+        // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':result.institution]
 
-        // def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org = ? ) ) OR ( s.isPublic=? ) ) AND ( s.status.value != 'Deleted' ) "
-        // def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) OR ( o.roleType = :roleCons AND o.org IN (:allInst) ) ) ) ) AND (
-        def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
-        // def qry_params = [result.institution, public_flag]
-        def qry_params = ['roleTypes':roleTypes,'activeInst':result.institution]
+        // find: Subscriber
+
+        def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
+        def qry_params = ['roleType':role_sub, 'activeInst':result.institution]
+
+        if(params.orgRole == 'Subscription Consortia') {
+            // find: Subscription Consortia
+
+            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
+            qry_params = ['roleType':role_sub_consortia, 'activeInst':result.institution]
+        }
 
         if (params.q?.length() > 0) {
             base_qry += " and ( lower(s.name) like :name_filter or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) ) "
@@ -470,7 +477,7 @@ class MyInstitutionsController {
         }
 
 
-//         log.debug("current subs base query: ${base_qry} params: ${qry_params} max:${result.max} offset:${result.offset}");
+        log.debug("current subs base query: ${base_qry} params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
