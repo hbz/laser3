@@ -249,6 +249,9 @@ class BootStrap {
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
 
+        log.debug("createSubscriptionProperties ..")
+        createSubscriptionProperties()
+
         log.debug("createLicenseProperties ..")
         createLicenseProperties()
 
@@ -324,7 +327,8 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
         
         def requiredProps = [
-                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"],    descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"], descr:allDescr, type:RefdataValue.toString(), cat:'YN']
+
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -483,7 +487,11 @@ class BootStrap {
                 }
             }
 
-            prop.type = default_prop.type
+            if (default_prop.multiple) {
+                prop.multipleOccurrence = default_prop.multiple
+            }
+
+            prop.type  = default_prop.type
             prop.descr = default_prop.descr['en']
             prop.softData = false
             prop.save(failOnError: true)
