@@ -75,24 +75,30 @@ class OrganisationsController {
 
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-    switch (request.method) {
-    case 'GET':
-        if (!params.name && !params.sector) {
-            params.sector = RefdataValue.findByValue('Higher Education')
-        }
-          [orgInstance: new Org(params)]
-      break
-    case 'POST':
-          def orgInstance = new Org(params)
-          if (!orgInstance.save(flush: true)) {
-              render view: 'create', model: [orgInstance: orgInstance]
-              return
-          }
+        switch (request.method) {
+            case 'GET':
+                if (!params.name && !params.sector) {
+                    params.sector = RefdataValue.findByValue('Higher Education')
+                }
+                if (!params.name && !params.orgType) {
+                    params.orgType = RefdataValue.findByValue('Institution')
+                }
+                [orgInstance: new Org(params)]
+                break
+            case 'POST':
+                def orgInstance = new Org(params)
 
-      flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
-          redirect action: 'show', id: orgInstance.id
-      break
-    }
+                if (params.name) {
+                    if (orgInstance.save(flush: true)) {
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+                        redirect action: 'show', id: orgInstance.id
+                        return
+                    }
+                }
+
+                render view: 'create', model: [orgInstance: orgInstance]
+                break
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
