@@ -1,38 +1,27 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Spotlight</title>
   </head>
 
   <body>
 
+    <semui:breadcrumbs>
+        <semui:crumb  message="spotlight.addSpotlightPage" class="active"/>
+    </semui:breadcrumbs>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="spotlight" action="addPage">Add Spotlight Page</g:link></li>
-      </ul>
-    </div>
 
-   <div class="container">
+   <div>
 
     <g:if test="${flash.error}">
         <bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert>
     </g:if>
-        
-    <g:hasErrors bean="${newPage}">
-        <bootstrap:alert class="alert-error">
-        <ul>
-            <g:eachError bean="${newPage}" var="error">
-                <li> <g:message error="${error}"/></li>
-            </g:eachError>
-        </ul>
-        </bootstrap:alert>
-    </g:hasErrors>
+
+    <semui:errors bean="${newPage}" />
 
       <div class="span6"> 
-          <table class="table table-striped table-bordered table-condensed">
+          <table class="ui celled la-table table">
               <thead>
                 <tr>
                   <th>Controller</th>
@@ -47,13 +36,13 @@
               <g:each in="${pages}" var="page">
                 <tr>
                   <td>
-                    <g:xEditable owner="${page}" type="text" field="controller"/>
+                    <semui:xEditable owner="${page}" type="text" field="controller"/>
                   </td>
                   <td>
-                    <g:xEditable owner="${page}" type="text" field="action"/>
+                    <semui:xEditable owner="${page}" type="text" field="action"/>
                   </td>
                   <td>
-                    <g:xEditable owner="${page}" type="text" field="alias"/>
+                    <semui:xEditable owner="${page}" type="text" field="alias"/>
                   </td>
                   <td><a href="${page.getLink().url}">${page.getLink().linktext}</a></td>
                   <td>
@@ -69,7 +58,7 @@
         <label>Controller: </label><input type="text" name="newCtrl"/>
         <label>Action: </label><input type="text" name="newAction"/>
         <label>Alias: </label><input type="text" name="newAlias"/>
-        <label></label><input type="submit" value="Add New Page" class="btn-primary"/>
+        <label></label><input type="submit" value="Add New Page" class="ui button"/>
       </g:form>
       </div>
     </div>

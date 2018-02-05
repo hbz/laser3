@@ -11,7 +11,6 @@ class UrlMappings {
 
         "/myInstitutions/$shortcode/$action"(controller: 'myInstitutions')
         "/myInstitutions/$shortcode/$action/$id"(controller: 'myInstitutions')
-        "/myInstitutions/$shortcode/dashboard"(controller: 'myInstitutions', action: 'instdash')
         "/myInstitutions/$shortcode/finance"(controller: 'finance', action: 'index')
         name subfinance: "/subscriptionDetails/$sub/finance/"(controller: 'finance', action: 'index')
         "/myInstitutions/$shortcode/tipview/$id"(controller: 'myInstitutions', action: 'tip')
@@ -19,9 +18,10 @@ class UrlMappings {
         "/ajax/$action?/$id?"(controller: 'ajax')
 
         // new custom api
-        "/api/v0/$obj"     (controller: 'api', action: 'v0')
-        "/api/spec"        (uri: '/rest/v0/laser.yaml')
-        
+        "/api/importOrgs"       (controller: 'api', action: 'importOrgs')
+        "/api/v0/spec"          (uri: '/rest/v0/laser.yaml.gsp')
+        "/api/v0/$obj"          (controller: 'api', action: 'v0')
+
         "/"                     (view: "public/index")
 
         "/about"                (view: "public/about")

@@ -1,35 +1,40 @@
 <%@ page import="com.k_int.kbplus.*" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="mmbootstrap">
-    <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
-  </head>
-  <body>
-    <div class="container">
-      
-        
-        <div class="page-header">
-          <h1>New User</h1>
-        </div>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
+        <title><g:message code="default.list.label" args="[entityName]" /></title>
+    </head>
+    <body>
+        <div>
+            <h1 class="ui header">New User</h1>
+            <semui:messages data="${flash}" />
 
-        <g:if test="${flash.message}">
-          <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
-        
-        <div class="well">
-          <g:form id="createUserForm" action="create" method="post">
-             <div class="inline-lists">
-               <dl><dt>Username</dt><dd><input type="text" name="username" value="${params.username}"/></dd></dl>
-               <dl><dt>Dispay Name</dt><dd><input type="text" name="display" value="${params.display}"/></dd></dl>
-               <dl><dt>Password</dt><dd><input type="password" name="password" value="${params.password}"/></dd></dl>
-               <dl><dt>eMail</dt><dd><input type="text" name="email" value="${params.email}"/></dd></dl>
-               <dl><dt></td><dd><input type="submit" value="GO ->" class="btn btn-primary"/></dd></dl>
-            </div>
-          </g:form>
-        </div>
+                <g:form class="ui form" id="createUserForm" action="create" method="post">
+                    <fieldset>
+                        <div class="field">
+                            <label>Username</label>
+                            <input type="text" name="username" value="${params.username}"/>
+                        </div>
+                        <div class="field">
+                            <label>Dispay Name</label>
+                            <input type="text" name="display" value="${params.display}"/>
+                        </div>
+                        <div class="field">
+                            <label>Password</label>
+                            <input type="password" name="password" value="${params.password}"/>
+                        </div>
+                        <div class="field">
+                            <label>eMail</label>
+                            <input type="text" name="email" value="${params.email}"/>
+                        </div>
+                        <div class="field">
+                            <input type="submit" value="Create &amp; Don't forget to set ENABLED flag in database" class="ui button"/>
+                        </div>
+                    </fieldset>
+                </g:form>
 
-    </div>
-  </body>
+        </div>
+    </body>
 </html>

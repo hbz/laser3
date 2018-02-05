@@ -1,24 +1,24 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Manage Affiliation Requests</title>
   </head>
 
   <body>
 
-      <laser:breadcrumbs>
-          <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-          <laser:crumb text="Manage Affiliation Requests" class="active"/>
-      </laser:breadcrumbs>
+      <semui:breadcrumbs>
+          <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+          <semui:crumb text="Manage Affiliation Requests" class="active"/>
+      </semui:breadcrumbs>
 
-      <laser:flash data="${flash}" />
+      <semui:messages data="${flash}" />
 
-    <div class="container">
-      
-        <h2>Manage Pending Membership Requests</h2>
+    <div>
 
-        <table class="table table-striped table-bordered table-condensed">
+        <h2 class="ui header">Manage Pending Membership Requests</h2>
+
+        <table class="ui celled la-table table">
             <thead>
                 <tr>
                     <th>User</th>
@@ -41,9 +41,13 @@
                     <td><g:message code="cv.roles.${req.formalRole?.authority}"/></td>
                     <td><g:message code="cv.membership.status.${req.status}"/></td>
                     <td><g:formatDate format="dd MMMM yyyy" date="${req.dateRequested}"/></td>
-                    <td>
-                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'approve']}" class="btn">Approve</g:link>
-                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="btn">Deny</g:link>
+                    <td class="x">
+                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'approve']}" class="ui icon basic positive button">
+                            <i class="checkmark icon"></i>
+                        </g:link>
+                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="ui icon basic negative button">
+                            <i class="minus icon"></i>
+                        </g:link>
                     </td>
                 </tr>
             </g:each>

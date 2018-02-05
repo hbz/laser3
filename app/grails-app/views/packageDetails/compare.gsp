@@ -1,41 +1,33 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
     <title><g:message code="package.compare" default="Package Comparison" /></title>
   </head>
  <body>
 
-<div class="container">
-<div class="row">
-	<h2>${message(code:'package.compare', default:'Package Comparison')}</h2>
-	<br/>
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="compare">${message(code:'package.compare.compare', default:'Compare')}</g:link></li>
+	<semui:breadcrumbs>
+		<semui:crumb controller="packageDetails" action="index" message="package.show.all" />
+		<semui:crumb class="active" message="package.compare.compare" />
 
-        <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
+	</semui:breadcrumbs>
 
-          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
-            
-          </ul>
-        </li>
+	<h2 class="ui header">${message(code:'package.compare', default:'Package Comparison')}</h2>
 
-      </ul>
-      
-	    <g:if test="${flash.message}">
-		    <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-	    </g:if>
+	<semui:messages data="${flash}" />
+
         <g:if test="${request.message}">
 		    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
 	    </g:if>
 
-	<g:form action="compare" controller="packageDetails" method="GET">
-		<table class="table table-bordered">
+	<g:form action="compare" controller="packageDetails" method="GET" class="ui form">
+		<table class="ui celled la-table table">
 			<thead>
 				<tr>
 					<th></th>
@@ -46,14 +38,14 @@
 			<tbody>
 				<tr>
 					<td>${message(code:'package.show.pkg_name', default:'Package Name')}</td>
-					<td>${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <g:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/>
+					<td>${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/>
                                               ${message(code:'package.compare.select.first', default:'Now select first package to compare (Filtered by dates above). Use \'%\' as wildcard.')}<br/>
                                               <input type="hidden" name="pkgA" id="packageSelectA" value="${pkgA}"/> 
 					</td>
 					<td> 
-					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
+					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')} <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+							${message(code:'package.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
                                               ${message(code:'package.compare.select.second', default:'Select second package to compare (Filtered by dates above). Use \'%\' as wildcard.')}<br/>
                                               <input type="hidden" name="pkgB" id="packageSelectB" value="${pkgB}" />
 					</td>
@@ -61,42 +53,46 @@
 				<tr>
 					<td>${message(code:'package.compare.snapshot', default:'Package On date')}</td>
 					<td>
-						<div class="input-append date" id="dateA">
-							<input class="span2" size="16" type="text" 
-							name="dateA" value="${params.dateA}">
-							<span class="add-on"><i class="icon-th"></i></span> 
-						</div>
+						<semui:datepicker name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
+						</semui:datepicker>
 					</td>
-					<td> 
-						<div class="input-append date" id="dateB">
-							<input class="span2" size="16" type="text" 
-							name="dateB" value="${params.dateB}">
-							<span class="add-on"><i class="icon-th"></i></span> 
-						</div>
+					<td>
+						<semui:datepicker name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
+						</semui:datepicker>
 					</td>
 				</tr>
 				<tr>
 					<td>${message(code:'package.compare.filter.add', default:'Add Filter')}</td>
 					<td colspan="2">
-        <input type="checkbox" name="insrt" style="vertical-align:top" value="Y" ${params.insrt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.insert', default:'Insert')}&nbsp;
-        <input type="checkbox" name="dlt" style="vertical-align:top" value="Y" ${params.dlt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.delete', default:'Delete')}&nbsp;
-        <input type="checkbox" name="updt" style="vertical-align:top" value="Y" ${params.updt=='Y'?'checked':''}/> ${message(code:'package.compare.filter.update', default:'Update')}&nbsp;
-        <input type="checkbox" name="nochng" style="vertical-align:top" value="Y" ${params.nochng=='Y'?'checked':''}/> ${message(code:'package.compare.filter.no_change', default:'No Change')}&nbsp;
+						<div class="ui checkbox">
+        					<input type="checkbox" class="hidden" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
+							<label>${message(code:'package.compare.filter.insert', default:'Insert')}</label>
+						</div>
+                        <div class="ui checkbox">
+                            <input type="checkbox" class="hidden" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/>
+                            <label>${message(code:'package.compare.filter.delete', default:'Delete')}</label>
+                        </div>
+                        <div class="ui checkbox">
+                            <input type="checkbox" class="hidden" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/>
+                            <label>${message(code:'package.compare.filter.update', default:'Update')}</label>
+                        </div>
+                        <div class="ui checkbox">
+                            <input type="checkbox" class="hidden" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/>
+                            <label>${message(code:'package.compare.filter.no_change', default:'No Change')}</label>
+                        </div>
 					</td>		
 				</tr>
 			</tbody>
 		</table>
 
-		<input type="submit" class="btn btn-primary" value="${message(code:'default.button.compare.label', default:'Compare')}">
+		<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}">
 	</g:form>
-</div>
-
 
 <g:if test="${pkgInsts?.get(0) && pkgInsts?.get(1)}">
 
 	<div class="row">
-	<h3>${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
-	<table class="table table-bordered">
+	<h3 class="ui header">${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
+	<table class="ui celled la-table table">
 		<thead>
 			<tr>
 				<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
@@ -127,9 +123,9 @@
 			</tr>
 		</tbody>
 	</table>
-	</div>
+
 <div class="row">
-<g:form action="compare" method="get" class="form-inline">
+<g:form action="compare" method="get" class="ui form">
 	<input type="hidden" name="pkgA" value="${params.pkgA}"/>
 	<input type="hidden" name="pkgB" value="${params.pkgB}"/>
 	<input type="hidden" name="dateA" value="${params.dateA}"/>
@@ -141,16 +137,16 @@
 	<input type="hidden" name="countA" value="${params.countA}"/>
 	<input type="hidden" name="countB" value="${params.countB}"/>
 
-	<table>
+	 <table class="ui celled la-table table">
 		<tr>
 			<td style="text-align:right;padding-right:10px;">
 				${message(code:'package.compare.filter.title', default:'Filters - Title')}: <input type="text" name="filter" value="${params.filter}"/>
 			</td>
 			<td>
 				${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:
-                                <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                                <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
 			</td>
-			<td style="padding-left:10px;"> <input type='button' class="btn btn-primary" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
+			<td style="padding-left:10px;"> <input type='button' class="ui button" id="resetFilters" value="${message(code:'default.button.clear.label', default:'Clear')}"/></td>
 		</tr>
 		<tr>
 		<td style="text-align:right;padding-right:10px;">
@@ -158,10 +154,10 @@
 		</td>
 		<td>
 			${message(code:'package.compare.filter.coverage_endsAfter', default:'Coverage Ends After')}:
-			<g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+			<semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 		</td>
 
-			<td  style="padding-left:10px;"> <input type="submit" class="btn btn-primary" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>
+			<td  style="padding-left:10px;"> <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>
 		</tr>
 	</table>
 
@@ -171,19 +167,19 @@
 <div class="span6 offset3">
 <dt class="center">${message(code:'package.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 </div>
-<table class="table table-bordered">
+<table class="ui celled la-table table">
 	<thead>
 		<tr> 
-			<td> ${message(code:'title.label', default:'Title')} </td>
-			<td> ${pkgInsts.get(0).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(0)} </td>
-			<td> ${pkgInsts.get(1).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(1)} </td>
+			<th> ${message(code:'title.label', default:'Title')} </th>
+			<th> ${pkgInsts.get(0).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(0)} </th>
+			<th> ${pkgInsts.get(1).name} ${message(code:'default.on', default:'on')} ${pkgDates.get(1)} </th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td><b>${message(code:'package.compare.results.tipps.total', default:'Total Titles (TIPPs) for query')}</b></td>
-			<td><b>${listACount.titles} (${listACount.tipps})</b></td>
-			<td><b>${listBCount.titles} (${listBCount.tipps})</b></td>
+			<td><strong>${message(code:'package.compare.results.tipps.total', default:'Total Titles (TIPPs) for query')}</strong></td>
+			<td><strong>${listACount.titles} (${listACount.tipps})</strong></td>
+			<td><strong>${listBCount.titles} (${listBCount.tipps})</strong></td>
 		<tr>
 		<g:each in="${comparisonMap}" var="entry">
                   <g:set var="pkgATipp" value="${entry.value[0]}"/>
@@ -194,7 +190,7 @@
 		<tr>
 			
 			<td>
-                          <b><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></b>
+                          <strong><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids}" var="id">
@@ -229,10 +225,8 @@
 		</g:each>
 	</tbody>
 </table>
-<div class="pagination" style="text-align:center">
 
- <bootstrap:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" maxsteps="${max}" total="${unionListSize}" />
-</div>
+ <semui:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" maxsteps="${max}" total="${unionListSize}" />
 
 </g:if>
 </div>
@@ -310,16 +304,6 @@
      	applySelect2("B")
     });
 
-    $('#dateA').datepicker({
-      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-      language:"${message(code:'default.locale.label', default:'en')}",
-      autoclose:true
-    });
-    $('#dateB').datepicker({
-      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-      language:"${message(code:'default.locale.label', default:'en')}",
-      autoclose:true
-    });
 
 </r:script>
 

@@ -1,27 +1,20 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ioannis
-  Date: 30/06/2014
-  Time: 16:22
---%>
-
 <%@ page import="com.k_int.kbplus.JasperReportsController; org.jasper.JasperExportFormat" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'jasper.reports.label', default:'Jasper Reports')}</title>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
 </head>
 
 <body>
 
-<div class="container">
+<div>
 
-    <laser:breadcrumbs>
-        <laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
-        <laser:crumb message="jasper.reports.label" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
+        <semui:crumb message="jasper.reports.label" class="active"/>
+    </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+    <semui:messages data="${flash}" />
 
         <div class="inline-lists">
             <dl>
@@ -73,7 +66,6 @@
     });
     function runJasperJS(){
         copyReportVals();
-        activateDatepicker();
     }
     function copyReportVals() {
         $("#hiddenReportName").val($("#available_reports").val())
@@ -103,14 +95,7 @@
             });
 
     }
-    function activateDatepicker(){
 
-        $("div.date").children('input').datepicker({
-          format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-          language:"${message(code:'default.locale.label', default:'en')}",
-          autoclose:true
-        })
-    }
     document.onload = runJasperJS();
 </r:script>
 </html>

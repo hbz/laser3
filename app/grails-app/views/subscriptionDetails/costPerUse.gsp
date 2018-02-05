@@ -4,38 +4,30 @@
 <!doctype html>
 <html>
   <head>
-      <meta name="layout" content="mmbootstrap"/>
+      <meta name="layout" content="semanticUI"/>
       <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
   <body>
 
-    <div class="container">
-        <ul class="breadcrumb">
-            <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-            <g:if test="${params.shortcode}">
-                <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-            </g:if>
-            <li> <g:link controller="subscriptionDetails" action="index" id="${subscription.id}">${message(code:'subscription.label', default:'Subscription')} ${subscription.id} - ${message(code:'default.details.label', default:'Details')}</g:link> <span class="divider">/</span> </li>
-            <li> <g:link controller="subscriptionDetails" action="costPerUse" id="${subscription.id}">${message(code:'subscription.label', default:'Subscription')} ${subscription.id} - ${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')}</g:link> </li>
-        </ul>
-    </div>
+  <semui:breadcrumbs>
+      <g:if test="${params.shortcode}">
+          <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
+      </g:if>
+      <semui:crumb controller="subscriptionDetails" action="index" id="${subscription.id}"  text="${subscription.name}" />
+      <semui:crumb class="active" text="${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')}" />
+  </semui:breadcrumbs>
 
-    <g:if test="${flash.message}">
-        <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-    </g:if>
 
-    <g:if test="${flash.error}">
-        <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-    </g:if>
+  <semui:messages data="${flash}" />
 
-    <div class="container">
-        <h1>${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')} :: ${subscription.name}</h1>
+    <div>
+        <h1 class="ui header">${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')} :: ${subscription.name}</h1>
         <g:render template="nav"  />
     </div>
 
-    <div class="container">
+    <div>
       <g:if test="${costItems && costItems.size() > 0}">
-        <table class="table table-bordered">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'financials.invoice_number', default:'Invoice Number')}</th>

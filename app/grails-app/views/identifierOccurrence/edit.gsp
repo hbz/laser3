@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'identifierOccurrence.label', default: 'IdentifierOccurrence')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
@@ -31,38 +31,29 @@
 			
 			<div class="span9">
 
-				<div class="page-header">
-					<h1><g:message code="default.edit.label" args="[entityName]" /></h1>
-				</div>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+					<h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
 
-				<g:hasErrors bean="${identifierOccurrenceInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${identifierOccurrenceInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
-				<p><b> Action disabled. Please contact system administrator if you require access. </b></p>
+
+					<semui:messages data="${flash}" />
+
+					<semui:errors bean="${identifierOccurrenceInstance}" />
+
+				<p><strong> Action disabled. Please contact system administrator if you require access. </strong></p>
 				%{-- The following code is causing the system to hang and crash, while failing to find the required fields. Something that was tested to work is defining a template within views/identifierOccurance path, like edit/_widget.gsp --}%
 
 %{-- 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${identifierOccurrenceInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${identifierOccurrenceInstance?.id}" >
 						<g:hiddenField name="version" value="${identifierOccurrenceInstance?.version}" />
 						<fieldset>
 							<f:all bean="identifierOccurrenceInstance"/>
-							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">
-									<i class="icon-ok icon-white"></i>
+							<div class="ui form-actions">
+								<button type="submit" class="ui button">
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.update.label" default="Update" />
 								</button>
-								<button type="submit" class="btn btn-danger" name="_action_delete" formnovalidate>
-									<i class="icon-trash icon-white"></i>
+								<button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
+									<i class="trash icon"></i>
 									<g:message code="default.button.delete.label" default="Delete" />
 								</button>
 							</div>

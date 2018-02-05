@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code: 'laser', default: 'LAS:eR')} Data import explorer</title>
 </head>
 
@@ -15,13 +15,13 @@
         Currently, you can review:
 
     <ul class="nav">
-        <li><g:link controller="package">Packages</g:link></li>
+        <li><g:link controller="packageDetails">Packages</g:link></li>
         <li><g:link controller="org">Organisations</g:link></li>
         <li><g:link controller="platform">Platforms</g:link></li>
-        <li><g:link controller="titleInstance">Title Instances</g:link></li>
+        <li><g:link controller="titleDetails">Title Instances</g:link></li>
         <li><g:link controller="titleInstancePackagePlatform">Title Instance Package Platform Links</g:link></li>
-        <li><g:link controller="subscription">Subscriptions</g:link></li>
-        <li><g:link controller="license"><g:message code="license" default="License"/>s</g:link></li>
+        <li><g:link controller="subscriptionDetails">Subscriptions</g:link></li>
+        <li><g:link controller="licenseDetails"><g:message code="license" default="License"/>s</g:link></li>
     </ul>
 </p>
 </div>

@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
     <title><g:message code="default.show.label" args="[entityName]" /></title>
     <r:require module="annotations" />
@@ -11,20 +11,16 @@
   </head>
   <body>
 
-    <div class="container">
-      <h1>${orgInstance.name}</h1>
-      <g:render template="nav" contextPath="." />
-    </div>
+      <h1 class="ui header">${orgInstance.name}</h1>
 
-    <div class="container">
-		<g:if test="${flash.message}">
-			<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-		</g:if>
+      <g:render template="nav" contextPath="." />
+
+        <semui:messages data="${flash}" />
 
         <g:each in="${authorizedOrgs}" var="authOrg">
-            <h6>@ ${authOrg.name}</h6>
+            <h6 class="ui header">@ ${authOrg.name}</h6>
 
-            <div id="custom_props_div_${authOrg.shortcode}" class="span12">
+            <div id="custom_props_div_${authOrg.shortcode}">
                 <g:render template="/templates/properties/private" model="${[
                         prop_desc: PropertyDefinition.ORG_PROP,
                         ownobj: orgInstance,
@@ -33,12 +29,12 @@
 
                 <r:script language="JavaScript">
                     $(document).ready(function(){
-                        initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                        mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
                     });
                 </r:script>
             </div>
 		</g:each>
-    </div>
+
 
   </body>
 </html>

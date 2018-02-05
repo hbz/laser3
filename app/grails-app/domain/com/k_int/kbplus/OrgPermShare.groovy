@@ -9,7 +9,13 @@ class OrgPermShare {
 
   static mapping = {
     cache true
+    perm  column: 'perm_id'
+    rdv   column: 'rdv_id'
   }
+
+  static mappedBy = [
+    rdv: 'sharedPermissions'
+  ]
 
   static constraints = {
     perm blank: false, nullable:false

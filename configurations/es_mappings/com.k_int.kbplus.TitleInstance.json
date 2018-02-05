@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "guid": {
+      "type": "string",
+      "analyzer": "snowball"
+    },
+    "title": {
+      "type": "string",
+      "analyzer": "snowball"
+    },
+    "sortTitle": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "publisher": {
+      "type": "string",
+      "index": "not_analyzed"
+    }
+  }
+}

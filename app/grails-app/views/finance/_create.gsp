@@ -1,20 +1,20 @@
-<form id="createCost">
-    <table id="newCosts" class="table table-striped table-bordered table-condensed table-tworow">
+<form class="ui form" id="createCost">
+    <table id="newCosts" class="ui striped celled la-rowspan table table-tworow">
         <thead>
-        <tr>
-            <th rowspan="2" style="vertical-align: top;">Cost Item#</th>
-            <th>Invoice#</th>
-            <th>Order#</th>
-            <th>Subscription</th>
-            <th>Package</th>
-            <th colspan="2" style="vertical-align: top;">Issue Entitlement</th>
-        </tr>
-        <tr>
-            <th>Date</th>
-            <th>Amount [billing] * [Exchange] = [local]</th>
-            <th>Reference</th>
-            <th colspan="3">Description</th>
-        </tr>
+            <tr>
+                <th rowspan="2" style="vertical-align: top;">Cost Item#</th>
+                <th>Invoice#</th>
+                <th>Order#</th>
+                <th>Subscription</th>
+                <th>Package</th>
+                <th colspan="2" style="vertical-align: top;">Issue Entitlement</th>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <th>Amount [billing] * [Exchange] = [local]</th>
+                <th>Reference</th>
+                <th colspan="3">Description</th>
+            </tr>
         </thead>
 
         <tbody>
@@ -53,15 +53,18 @@
                 <g:submitToRemote data-action="create" onSuccess="Finance.updateResults('create');Finance.clearCreate()"
                                   onFailure="errorHandling(textStatus,'create',errorThrown)"
                                   url="[controller:'finance', action: 'newCostItem']" type="submit"
-                                  name="Add" value="add">
+                                  name="Add" value="add"
+                                  class="ui button">
                 </g:submitToRemote> </br></br>
             </td>
         </tr>
         <tr>
             <td>
-                <h3>Cost date</h3>
-                <input class="datepicker-class" type="date" placeholder="Date Paid" name="newDate" id="newDatePaid" value="${params.newDate}"/><br/>
-                <h3>Statuses</h3>
+                <div class="fields">
+                    <semui:datepicker label="financials.datePaid" name="newDate" placeholder ="financials.datePaid" value="${params.newDate}" >
+                    </semui:datepicker>
+                </div>
+                <h4 class="ui header">Statuses</h4>
                 <g:select name="newCostItemStatus"
                           id="newCostItemStatus"
                           from="${costItemStatus}"
@@ -88,29 +91,34 @@
                           noSelection="${['':'No Tax Type']}"/> <br/>
             </td>
             <td>
-                <h3>Cost values and Currency</h3>
-                <input type="number" name="newCostInBillingCurrency" class="calc" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" step="0.01"/> <br/>
-                <input title="${g.message(code: 'financials.addNew.exchangeRate')}" type="number" class="calc" step="0.01" name="newCostExchangeRate" placeholder="Exchange Rate" id="newCostExchangeRate" value="1" /> <br/>
-                <input type="number" class="calc" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" step="0.01"/> <br/>
+                <h4 class="ui header">Cost values and Currency</h4>
+                <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" name="newCostInBillingCurrency" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" value="1" step="0.01"/> <br/>
 
                 <g:select name="newCostCurrency"
                           from="${currency}"
                           optionKey="id"
                           title="${g.message(code: 'financials.addNew.currencyType')}"
                           optionValue="text"/>
+
+                <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc" name="newCostCurrencyRate" placeholder="Exchange Rate" id="newCostCurrencyRate" value="1" step="0.01" /> <br/>
+                <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" value="1" step="0.01"/> <br/>
             </td>
             <td>
-                <h3>Reference/Codes</h3>
+                <h4 class="ui header">Reference/Codes</h4>
                 <input type="text" name="newReference" placeholder="New Item Reference" id="newCostItemReference" value="${params.newReference}"/><br/>
                 <input type="text" class="select2" style="width: 220px; border-radius: 4px;" placeholder="New code or lookup code" name="newBudgetCode" id="newBudgetCode" ><br/><br/><br/>
-                <h3>Validity Period (Dates)</h3>
-                From: <input class="datepicker-class" placeholder="Start Date" type="date" id="newStartDate" name="newStartDate"/> </br>
-                To: &nbsp;&nbsp;&nbsp;&nbsp;<input class="datepicker-class" placeholder="End Date" type="date" id="newEndDate" name="newEndDate"/>
+                <h4 class="ui header">Validity Period (Dates)</h4>
+                <div class="fields">
+                    <semui:datepicker label ="datamanager.changeLog.from_date" name="newStartDate" placeholder ="default.date.label" >
+                    </semui:datepicker>
+                    <semui:datepicker label ="datamanager.changeLog.to_date" name="newEndDate" placeholder ="default.date.label" value ="${params.endDate}">
+                    </semui:datepicker>
+                </div>
             </td>
             <td colspan="2">
-                <h3>Description</h3>
-                <textarea name="newDescription"
-                          placeholder="New Item Description" id="newCostItemDescription"/></textarea>
+                <h4 class="ui header">Description</h4>
+                <textarea name="newDescription" placeholder="New Item Description" id="newCostItemDescription"/></textarea>
+            </td>
         </tr>
         <g:hiddenField name="shortcode" value="${params.shortcode}"></g:hiddenField>
         </tbody>

@@ -4,8 +4,8 @@ class PublicLicenseController {
 	def index(){
 		def result = [:]
 
-        result.max = params.max ? Integer.parseInt(params.max) : 40;
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max = params.max ? Integer.parseInt(params.max) : 40
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 

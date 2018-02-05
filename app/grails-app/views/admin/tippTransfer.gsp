@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Admin::TIPP Transfer</title>
   </head>
   <body>
-    <div class="container">
-    <h1>TIPP Transfer</h1>
+    <div>
+    <h1 class="ui header">TIPP Transfer</h1>
 
         <g:each in="${error}" var="err">
           <bootstrap:alert class="alert-danger">${err}</bootstrap:alert>
@@ -34,7 +34,7 @@
               </dd>
             </div>
     
-              <button onclick="return confirm('Any existing TIs on TIPP will be replaced. Continue?')" class="btn-success" type="submit">Transfer</button>
+              <button onclick="return confirm('Any existing TIs on TIPP will be replaced. Continue?')" class="ui positive button" type="submit">Transfer</button>
           </dl>
         </g:form>
       </div>

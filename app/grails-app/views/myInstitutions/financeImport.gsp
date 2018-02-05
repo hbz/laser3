@@ -1,41 +1,25 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Admin::Identifier Same-As Upload</title>
   </head>
 
   <body>
 
-    <div class="container-fluid">
+
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="myInstitutions" action="financeImport" params="${[shortcode:params.shortcode]}">${institution.name} Finance Import</g:link> </li>
       </ul>
-    </div>
 
-   <g:if test="${flash.message}">
-      <div class="container-fluid">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
+    <semui:messages data="${flash}" />
 
-    <g:if test="${flash.error}">
-      <div class="container-fluid">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+    <h1 class="ui header">${institution?.name} - Finance Import</h1>
 
-    <div class="container-fluid">
-      <h1>${institution?.name} - Finance Import</h1>
-    </div>
-
-
-    <div class="container-fluid">
-      <div class="span12">
         <g:if test="${loaderResult==null}">
           <p>This service allows institutonal admins to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
-          <table class="table table-striped table-bordered">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
                 <th>tsv column name</th>
@@ -80,15 +64,15 @@
             </dl>
           </g:form>
         </g:if>
-      </div>
+
 
       <g:if test="${loaderResult}">
-        <table class="table table-striped table-bordered">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
-              <td></td>
+              <th></th>
               <g:each in="${loaderResult.columns}" var="c">
-                <td>${c}</td>
+                <th>${c}</th>
               </g:each>
             </tr>
           </thead>
@@ -114,6 +98,6 @@
           </tbody>
         </table>
       </g:if>
-    </div>
+
   </body>
 </html>

@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import org.apache.poi.hslf.model.*
@@ -10,11 +8,12 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.PropertyDefinition
+import org.springframework.dao.DataIntegrityViolationException
+
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
-import de.laser.domain.I10nTranslation
 
 class MyInstitutionsController {
     def dataSource
@@ -30,7 +29,15 @@ class MyInstitutionsController {
     def institutionsService
     def docstoreService
     def tsvSuperlifterService
-    static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
+    def permissionHelperService
+    def contextService
+    def taskService
+    def filterService
+
+    // copied from
+    static String INSTITUTIONAL_LICENSES_QUERY      = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
+    // copied from
+    static String INSTITUTIONAL_SUBSCRIPTION_QUERY  = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
 
     // Map the parameter names we use in the webapp with the ES fields
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
@@ -83,7 +90,7 @@ class MyInstitutionsController {
         def (tip_property, property_field) = (params.sort ?: 'title-title').split("-")
         def list_order = params.order ?: 'asc'
 
-        if (current_inst && !checkUserIsMember(result.user, current_inst)) {
+        if (current_inst && ! permissionHelperService.checkUserIsMember(result.user, current_inst)) {
             flash.error = message(code:'myinst.error.noMember', args:[current_inst.name]);
             response.sendError(401)
             return;
@@ -123,12 +130,13 @@ class MyInstitutionsController {
 
         result.tips = results
         result.institution = current_inst
-        result.editable = current_inst?.hasUserWithRole(result.user,'INST_ADM')
+        result.editable = permissionHelperService.hasUserWithRole(result.user, current_inst, 'INST_ADM')
         result
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def dashboard() {
+    @Deprecated
+    def dashboard_OLD() {
         // Work out what orgs this user has admin level access to
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -155,22 +163,16 @@ class MyInstitutionsController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def currentLicenses() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
         result.transforms = grailsApplication.config.licenseTransforms
 
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
 
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
-            result.is_admin = true
-        } else {
-            result.is_admin = false;
-        }
+        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
 
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -324,24 +326,18 @@ class MyInstitutionsController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addLicense() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
 
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
-            result.is_admin = true
-        } else {
-            result.is_admin = false;
-        }
+        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
 
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def qparams = [template_license_type]
@@ -386,22 +382,23 @@ class MyInstitutionsController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def currentSubscriptions() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
-        
+        def result = setResultGenerics()
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
-        
+
         def viableOrgs = []
-        
+
         if ( result.availableConsortia ){
           result.availableConsortia.each {
             viableOrgs.add(it)
           }
         }
-        
+
         viableOrgs.add(result.institution)
-        
+
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
@@ -409,7 +406,7 @@ class MyInstitutionsController {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
         } else if (params.validOn.trim() == '') {
-            result.validOn = "" 
+            result.validOn = ""
         } else {
             result.validOn = params.validOn
             date_restriction = sdf.parse(params.validOn)
@@ -418,39 +415,57 @@ class MyInstitutionsController {
         def dateBeforeFilter = null;
         def dateBeforeFilterVal = null;
         if(params.dateBeforeFilter && params.dateBeforeVal){
-            if(params.dateBeforeFilter == message(code:'default.renewalDate.label', default:'Renewal Date')){
+            if(params.dateBeforeFilter == "renewalDate"){
                 dateBeforeFilter = " and s.manualRenewalDate < :date_before"
-            }else if (params.dateBeforeFilter == message(code:'default.endDate.label', default:'End Date')){
+                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
+            }else if (params.dateBeforeFilter == "endDate"){
                 dateBeforeFilter = " and s.endDate < :date_before"
+                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
+            }else{
+              result.remove('dateBeforeFilterVal')
+              result.remove('dateBeforeFilter')
             }
-            dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
+
         }
 
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
 
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
-            result.editable = true
-        } else {
-            result.editable = false;
-        }
+        result.editable = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+
         def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
         def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
-        def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
         def roleTypes = [role_sub, role_sub_consortia]
-        def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
+        // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':result.institution]
 
-        // def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org = ? ) ) OR ( s.isPublic=? ) ) AND ( s.status.value != 'Deleted' ) "
-        // def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) OR ( o.roleType = :roleCons AND o.org IN (:allInst) ) ) ) ) AND (
-        def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
-        // def qry_params = [result.institution, public_flag]
-        def qry_params = ['roleTypes':roleTypes,'activeInst':result.institution]
+        def base_qry
+        def qry_params
+
+        if (! params.orgRole) {
+            if (result.institution?.orgType?.value == 'Consortium') {
+                params.orgRole = 'Subscription Consortia'
+            }
+            else {
+                params.orgRole = 'Subscriber'
+            }
+        }
+
+        if (params.orgRole == 'Subscriber') {
+
+            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
+            qry_params = ['roleType':role_sub, 'activeInst':result.institution]
+        }
+
+        if (params.orgRole == 'Subscription Consortia') {
+
+            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
+            qry_params = ['roleType':role_sub_consortia, 'activeInst':result.institution]
+        }
 
         if (params.q?.length() > 0) {
             base_qry += " and ( lower(s.name) like :name_filter or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) ) "
@@ -473,8 +488,7 @@ class MyInstitutionsController {
             base_qry += " order by s.name asc"
         }
 
-
-        log.debug("current subs base query: ${base_qry} params: ${qry_params} max:${result.max} offset:${result.offset}");
+        //log.debug("current subs base query: ${base_qry} params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
@@ -487,9 +501,7 @@ class MyInstitutionsController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addSubscription() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
 
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -504,20 +516,16 @@ class MyInstitutionsController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        // if ( !checkUserHasRole(result.user, result.institution, 'INST_ADM') ) {
-        if (!checkUserIsMember(result.user, result.institution)) {
+        // if ( ! permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM') ) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
             response.sendError(401)
-            result.is_admin = false;
+            result.is_inst_admin = false;
             // render(status: '401', text:"You do not have permission to add subscriptions to ${result.institution.name}. Please request editor access on the profile page");
             return;
         }
 
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
-            result.is_admin = true
-        } else {
-            result.is_admin = false;
-        }
+        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
 
         def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 
@@ -560,16 +568,10 @@ class MyInstitutionsController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def emptySubscription() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
         result.orgType = result.institution.orgType
         
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
-            result.editable = true
-        } else {
-            result.editable = false;
-        }
+        result.editable = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
@@ -583,6 +585,12 @@ class MyInstitutionsController {
             cal.set(Calendar.DAY_OF_MONTH, 31)
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
+
+            if(result.orgType?.value == 'Consortium') {
+                def fsq = filterService.getOrgComboQuery(params, result.institution)
+                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            }
+
             result
         } else {
             redirect action: 'currentSubscriptions', params: [shortcode: params.shortcode]
@@ -592,9 +600,7 @@ class MyInstitutionsController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def processEmptySubscription() {
         log.debug(params)
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
         result.orgType = RefdataValue.get(params.asOrgType)
         def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
@@ -609,7 +615,7 @@ class MyInstitutionsController {
           orgRole = role_sub
         }
 
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
+        if (permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')) {
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
             def startDate = sdf.parse(params.valid_from)
@@ -630,16 +636,30 @@ class MyInstitutionsController {
                         sub: new_sub,
                         roleType: orgRole).save();
                         
-                if(result.orgType?.value == 'Consortium' && params.linkToAll == "Y"){
-                  def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?",[result.institution])
-                  
-                  cons_members.each { cm ->
-              
-                    if(params.generateSlavedSubs == "Y"){
-                      log.debug("Generating seperate slaved instances for consortia members")
-                      def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
+                // if(result.orgType?.value == 'Consortium' && params.linkToAll == "Y"){ // old code
+
+                if(result.orgType?.value == 'Consortium') {
+                    
+                    def cons_members = []
+
+                    params.list('selectedOrgs').each{ it ->
+                        def fo =  Org.findById(Long.valueOf(it))
+                        cons_members << Combo.executeQuery(
+                                "select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?",
+                                [result.institution, fo] )
+                    }
+
+                    //def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
+
+                    cons_members.each { cm ->
+
+                    if (params.generateSlavedSubs == "Y") {
+                        log.debug("Generating seperate slaved instances for consortia members")
+                        def postfix = cm.get(0).shortname ?: cm.get(0).name
+
+                        def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
                                           status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
-                                          name: params.newEmptySubName,
+                                          name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
@@ -648,22 +668,23 @@ class MyInstitutionsController {
                                           isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
                                           
-                      new OrgRole(org: cm,
-                          sub: cons_sub,
-                          roleType: role_sub).save();
+                        new OrgRole(org: cm,
+                            sub: cons_sub,
+                            roleType: role_sub).save();
 
-                      new OrgRole(org: result.institution,
-                          sub: cons_sub,
-                          roleType: role_cons).save();
-                    }else{
-                      new OrgRole(org: cm,
-                          sub: new_sub,
-                          roleType: role_sub).save();
+                        new OrgRole(org: result.institution,
+                            sub: cons_sub,
+                            roleType: role_cons).save();
+                    }
+                    else {
+                        new OrgRole(org: cm,
+                            sub: new_sub,
+                            roleType: role_sub).save();
                     }
                   }
                 }
 
-                if ( params.newEmptySubId ) {
+                if (params.newEmptySubId) {
                   def sub_id_components = params.newEmptySubId.split(':');
                   if ( sub_id_components.length == 2 ) {
                     def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
@@ -733,7 +754,7 @@ class MyInstitutionsController {
         def user = User.get(springSecurityService.principal.id)
         def org = Org.findByShortcode(params.shortcode)
 
-        if (!checkUserHasRole(user, org, 'INST_ADM')) {
+        if (! permissionHelperService.hasUserWithRole(user, org, 'INST_ADM')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -758,11 +779,12 @@ class MyInstitutionsController {
         }
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def newLicense(params) {
         def user = User.get(springSecurityService.principal.id)
         def org = Org.findByShortcode(params.shortcode)
 
-        if (!checkUserHasRole(user, org, 'INST_ADM')) {
+        if (! permissionHelperService.hasUserWithRole(user, org, 'INST_ADM')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -788,13 +810,12 @@ class MyInstitutionsController {
         }
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def deleteLicense(params) {
         log.debug("deleteLicense ${params}");
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
 
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
@@ -852,7 +873,7 @@ class MyInstitutionsController {
         def user = User.get(springSecurityService.principal.id)
         def institution = Org.findByShortcode(params.shortcode)
 
-        if (!checkUserIsMember(user, institution)) {
+        if (! permissionHelperService.checkUserIsMember(user, institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
@@ -893,9 +914,7 @@ class MyInstitutionsController {
         // define if we're dealing with a HTML request or an Export (i.e. XML or HTML)
         boolean isHtmlOutput = !params.format || params.format.equals("html")
 
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
         result.transforms = grailsApplication.config.titlelistTransforms
         
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
@@ -912,7 +931,7 @@ class MyInstitutionsController {
         
         log.debug("Viable Org-IDs are: ${viableOrgs}, active Inst is: ${result.institution.id}")
 
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
@@ -934,10 +953,8 @@ class MyInstitutionsController {
             log.debug("Getting titles as of ${date_restriction} (given)")
         }
         
-        // Set is_admin
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) result.is_admin = true
-        else result.is_admin = false;
-
+        // Set is_inst_admin
+        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
 
         // Set offset and max
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
@@ -1249,6 +1266,7 @@ AND EXISTS (
         return qry_map
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def availableLicenses() {
         // def sub = resolveOID(params.elementid);
         // OrgRole.findAllByOrgAndRoleType(result.institution, licensee_role).collect { it.lic }
@@ -1257,7 +1275,7 @@ AND EXISTS (
         def user = User.get(springSecurityService.principal.id)
         def institution = Org.findByShortcode(params.shortcode)
 
-        if (!checkUserIsMember(user, institution)) {
+        if (! permissionHelperService.checkUserIsMember(user, institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
@@ -1287,6 +1305,7 @@ AND EXISTS (
         result
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def actionCurrentSubscriptions() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -1332,7 +1351,7 @@ AND EXISTS (
 
         result.user = springSecurityService.getCurrentUser()
 
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[(result?.institution?.name?: message(code:'myinst.error.noMember.ph', default:'the selected institution'))]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
@@ -2010,16 +2029,13 @@ AND EXISTS (
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def renewalsUpload() {
-        def result = [:]
+        def result = setResultGenerics()
 
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
-
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
-        } else if (!result.institution.hasUserWithRole(result.user, "INST_ADM")) {
+        } else if (! permissionHelperService.hasUserWithRole(result.user, result.institution, "INST_ADM")) {
             flash.error = message(code:'myinst.renewalUpload.error.noAdmin', default:'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2081,7 +2097,7 @@ AND EXISTS (
                     flash.error = message(code:'myinst.processRenewalUpload.error.access')
                 }
             }
-            result.additionalInfo = [sub_startDate:sub_startDate,sub_endDate:sub_endDate,sub_name:original_sub?.name?:'',sub_id:original_sub?.id?:'']
+            result.permissionInfo = [sub_startDate:sub_startDate,sub_endDate:sub_endDate,sub_name:original_sub?.name?:'',sub_id:original_sub?.id?:'']
 
             log.debug("Worksheet upload on behalf of ${org_name}, ${org_id}, ${org_shortcode}");
 
@@ -2171,12 +2187,9 @@ AND EXISTS (
 
     def processRenewal() {
         log.debug("-> renewalsUpload params: ${params}");
-        def result = [:]
+        def result = setResultGenerics()
 
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
-
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
@@ -2343,43 +2356,6 @@ AND EXISTS (
         cell.setCellComment(comment);
     }
 
-    def checkUserIsMember(user, org) {
-        def result = false;
-        // def uo = UserOrg.findByUserAndOrg(user,org)
-        def uoq = UserOrg.where {
-            (user == user && org == org && (status == 1 || status == 3))
-        }
-
-        if (uoq.count() > 0)
-            result = true;
-
-        result
-    }
-
-    def checkUserHasRole(user, org, role) {
-        def uoq = UserOrg.createCriteria()
-
-        def grants = uoq.list {
-          and {
-            eq('user', user)
-            eq('org', org)
-            formalRole {
-                eq('authority', role)
-            }
-            or {
-                eq('status', 1);
-                eq('status', 3);
-            }
-          }
-        }
-
-        if (grants && grants.size() > 0)
-            return true
-
-        return false
-
-    }
-
     def parseDate(datestr, possible_formats) {
         def parsed_date = null;
         if (datestr && (datestr.toString().trim().length() > 0)) {
@@ -2395,28 +2371,32 @@ AND EXISTS (
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def instdash() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+    def dashboard() {
+        def result = setResultGenerics()
 
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(401)
             return;
         }
 
-        if (checkUserHasRole(result.user, result.institution, 'INST_ADM')) {
-            result.is_admin = true
-        } else {
-            result.is_admin = false;
-        }
+        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
 
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
         getTodoForInst(result)
 
         //.findAllByOwner(result.user,sort:'ts',order:'asc')
 
+        // tasks
+
+        def sdFormat    = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        params.taskStatus = 'not done'
+        def query       = filterService.getTaskQuery(params, sdFormat)
+        def contextOrg  = contextService.getOrg()
+        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
+        def preCon      = taskService.getPreconditions(contextOrg)
+        result.enableMyInstFormFields = true // enable special form fields
+        result << preCon
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
@@ -2453,12 +2433,10 @@ AND EXISTS (
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def todo() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+    def changes() {
+        def result = setResultGenerics()
 
-        if (!checkUserIsMember(result.user, result.institution)) {
+        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
             response.sendError(401)
             return;
@@ -2473,13 +2451,10 @@ AND EXISTS (
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def announcements() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max, sort: 'dateCreated', order: 'desc'])
@@ -2494,12 +2469,9 @@ AND EXISTS (
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def changeLog() {
-        def result = [:]
+        def result = setResultGenerics()
 
         def exporting = ( params.format == 'csv' ? true : false )
-
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
 
         result.institutional_objects = []
 
@@ -2567,12 +2539,9 @@ AND EXISTS (
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def financeImport() {
-      def result = [:];
+      def result = setResultGenerics()
 
-      result.user        = User.get(springSecurityService.principal.id)
-      result.institution = Org.findByShortcode(params.shortcode)
-
-      if (!checkUserIsMember(result.user, result.institution)) {
+      if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
           flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
           response.sendError(401)
           return;
@@ -2592,10 +2561,9 @@ AND EXISTS (
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def tip() {
-      def result = [:];
+      def result = setResultGenerics()
+
       log.debug("tip :: ${params}")
-      result.user        = User.get(springSecurityService.principal.id)
-      result.institution = Org.findByShortcode(params.shortcode)
       result.tip = TitleInstitutionProvider.get(params.id)
 
       if (request.method == 'POST' && result.tip ){
@@ -2628,15 +2596,13 @@ AND EXISTS (
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])  
     def addressbook() {
-        def result          = [:]
-        result.user         = User.get(springSecurityService.principal.id)
-        result.institution  = Org.findByShortcode(params.shortcode)
+        def result = setResultGenerics()
         
         def visiblePersons = []
-        def prs = Person.findAll("from Person as P where P.tenant = ${result.institution.id}")
+        def prs = Person.findAllByTenant(result.institution, [sort: "last_name", order: "asc"])
 
         prs?.each { p ->
-            if(p?.isPublic?.value == 'No'){
+            if (p?.isPublic?.value == 'No') {
                 visiblePersons << p
             }
         }
@@ -2645,6 +2611,33 @@ AND EXISTS (
         result
       }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def tasks() {
+        def result = setResultGenerics()
+
+        if (params.deleteId) {
+            def dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    dTask.delete(flush: true)
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+            }
+        }
+
+        def sdFormat = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def query = filterService.getTaskQuery(params, sdFormat)
+        result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        result.myTaskInstanceList = taskService.getTasksByCreator(result.user, taskService.WITHOUT_TENANT_ONLY)
+        result.editable = true // TODO check roles !!!
+
+        log.debug(result.taskInstanceList)
+        result
+    }
+
     /**
      * Display and manage PrivateProperties for this institution
      *
@@ -2652,10 +2645,9 @@ AND EXISTS (
      */
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def managePrivateProperties() {
-        def result          = [:]
-        result.user         = User.get(springSecurityService.principal.id)
-        result.institution  = Org.findByShortcode(params.shortcode)
-        result.shortcode    = params.shortcode
+        def result = setResultGenerics()
+
+        result.shortcode = params.shortcode
 
         result.editable = true // TODO check roles !!!
 
@@ -2669,6 +2661,19 @@ AND EXISTS (
         result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
 
         result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def switchContext() {
+        def user = User.get(springSecurityService.principal.id)
+        def org  = Org.findByShortcode(params.shortcode)
+
+        if (user && org && org.id in user.getAuthorizedOrgsIds()) {
+            log.debug('switched context to: ' + org)
+            contextService.setOrg(org)
+        }
+
+        redirect action:'dashboard', params:params
     }
 
     /**
@@ -2740,5 +2745,33 @@ AND EXISTS (
             }
         }
         messages
+    }
+
+    private setResultGenerics() {
+
+        def result          = [:]
+        result.user         = User.get(springSecurityService.principal.id)
+        result.institution  = Org.findByShortcode(params.shortcode)
+
+        result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def ajaxEmptySubscription() {
+
+        def result = setResultGenerics()
+        result.orgType = result.institution.orgType
+
+        result.editable = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        if (result.editable) {
+
+            if(result.orgType?.value == 'Consortium') {
+                def fsq = filterService.getOrgComboQuery(params, result.institution)
+                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            }
+
+            result
+        }
+        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true])
     }
 }

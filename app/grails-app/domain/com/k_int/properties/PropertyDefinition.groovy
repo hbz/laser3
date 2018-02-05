@@ -33,6 +33,8 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     @Transient
     final static String ORG_CONF    = 'Organisation Config'
     @Transient
+    final static String SUB_PROP    = 'Subscription Property'
+    @Transient
     final static String SYS_CONF    = 'System Config'
     @Transient
     final static String PRS_PROP    = 'Person Property'
@@ -45,6 +47,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             LIC_OA_PROP,
             LIC_ARC_PROP,
             ORG_CONF,
+            SUB_PROP,
             SYS_CONF,
             PRS_PROP,
             ORG_PROP
@@ -52,8 +55,9 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
             LIC_PROP,
-            PRS_PROP,
-            ORG_PROP
+            SUB_PROP,
+            ORG_PROP,
+            PRS_PROP
     ]
 
     String name
@@ -172,7 +176,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                     // refdataCategory:    rdc,
                     multipleOccurrence: (multipleOccurence ? true : false),
                     mandatory:          (mandatory ? true : false),
-                    // TODO softData: true,
+                    // TODO softData is set to FALSE,
                     tenant: tenant
             )
             type.save(flush:true)
@@ -208,16 +212,15 @@ class PropertyDefinition extends I10nTranslatableAbstract {
 
     def countUsages() {
         def table
-        // TODO : refactoring
 
-        if (this.descr == "License Property") {
-            table = "LicensePrivateProperty"
-        }
-        else if (this.descr == "Person Property") {
-            table = "PersonPrivateProperty"
-        }
-        else if (this.descr == "Org Property") {
-            table = "OrgPrivateProperty"
+        def parts = this.descr.split(" ")
+        if (parts.size() == 2) {
+            table = parts[0] + "PrivateProperty"
+
+            // TODO: change table names from Org<x>Property to Organisation<x>Property
+            if (parts[0] == "Organisation"){
+                table = "OrgPrivateProperty"
+            }
         }
 
         if (table) {

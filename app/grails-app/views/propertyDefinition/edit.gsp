@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'propertyDefinition.label', default: 'PropertyDefinition')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
 </head>
@@ -32,30 +32,19 @@
         </div>
     </div>
 
-    <div class="container">
-        <div class="page-header">
-            <h1><g:message code="default.edit.label" args="[entityName]"/></h1>
-        </div>
+    <div>
 
-        <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+            <h1 class="ui header"><g:message code="default.edit.label" args="[entityName]"/></h1>
 
-        <g:hasErrors bean="${propDefInstance}">
-            <bootstrap:alert class="alert-error">
-                <ul>
-                    <g:eachError bean="${propDefInstance}" var="error">
-                        <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message
-                                error="${error}"/></li>
-                    </g:eachError>
-                </ul>
-            </bootstrap:alert>
-        </g:hasErrors>
+
+        <semui:messages data="${flash}" />
+
+            <semui:errors bean="${propDefInstance}" />
 
         <fieldset>
               <g:set var="usages" value="${propDefInstance.countOccurrences('com.k_int.kbplus.LicenseCustomProperty','com.k_int.kbplus.SystemAdminCustomProperty','com.k_int.kbplus.OrgCustomProperty')}" />
               <g:set var="usageOwner" value="${propDefInstance.getOccurrencesOwner('com.k_int.kbplus.LicenseCustomProperty','com.k_int.kbplus.SystemAdminCustomProperty','com.k_int.kbplus.OrgCustomProperty')}" />
-            <g:form class="form-horizontal" action="edit" id="${propDefInstance?.id}">
+            <g:form class="ui form" action="edit" id="${propDefInstance?.id}">
                 <g:hiddenField name="version" value="${propDefInstance?.version}"/>
                 <fieldset>
                     <div class="control-group ">
@@ -106,10 +95,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-actions">
+                    <div class="ui form-actions">
                         <g:if test="${editable}">
-                          <button type="submit" <%= ( ( usages == 0  ) ) ? '' : 'disabled' %> class="btn btn-danger" name="_action_delete" formnovalidate>
-                              <i class="icon-trash icon-white"></i>
+                          <button type="submit" <%= ( ( usages == 0  ) ) ? '' : 'disabled' %> class="ui negative button" name="_action_delete" formnovalidate>
+                              <i class="trash icon"></i>
                               <g:message code="default.button.delete.label" default="Delete"/>
                           </button>
                         </g:if>

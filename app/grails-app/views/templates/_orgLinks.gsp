@@ -1,4 +1,4 @@
-  <table class="table table-bordered table-condensed table-striped">
+  <table class="ui celled la-table table">
     <thead>
       <tr>
         <th>${message(code:'license.organisationName')}</th>
@@ -9,11 +9,13 @@
     <g:each in="${roleLinks}" var="role">
       <tr>
         <g:if test="${role.org}">
-          <td><g:link controller="Organisations" action="info" id="${role.org.id}">${role?.org?.name}</g:link></td>
+          <td><g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link></td>
           <td>${role?.roleType?.getI10n("value")}</td>
           <td>
             <g:if test="${editmode}">
-              <g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">${message(code:'default.button.delete.label')}</g:link>
+              <g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
+                ${message(code:'default.button.delete.label')}
+              </g:link>
             </g:if>
           </td>
         </g:if>
@@ -24,6 +26,5 @@
     </g:each>
   </table>
   <g:if test="${editmode}">
-    <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >${message(code:'license.addOrgLink')}</a>
-<%-- <a class="btn btn-primary" data-toggle="modal" href="#osel_add_modal" >Add Org Link</a> --%>
+    <a class="ui button" data-semui="modal" href="#osel_add_modal" >${message(code:'license.addOrgLink')}</a>
   </g:if>

@@ -3,147 +3,184 @@
 
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+    <meta name="layout" content="semanticUI"/>
+    <title>${message(code:'laser', default:'LAS:eR')} - ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
   </head>
-  <body>
+    <body>
 
-  <laser:breadcrumbs>
-    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
-    <laser:crumb message="myinst.currentSubscriptions.label" class="active" />
-    <g:if test="${editable}">
-      <laser:crumbAsBadge message="default.editable" class="badge-warning" />
-    </g:if>
-  </laser:breadcrumbs>
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.getDesignation()}" />
+            <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
+        </semui:breadcrumbs>
+        <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
+        <g:render template="actions" />
 
-   <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
+        <semui:messages data="${flash}" />
 
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
-    <div class="container">
+      <semui:filter>
 
-      <h1>${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
+        <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline ui form">
+            <div class="fields">
+                <div class="field">
+                    <label>${message(code: 'default.search.text', default: 'Search text')}</label>
+                    <div class="ui input">
+                    <input type="text" name="q"
+                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           value="${params.q?.encodeAsHTML()}"/>
+                    </div>
+                </div>
 
-      <g:render template="subsNav" contextPath="." />
-    </div>
+                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="default.date.label" value="${validOn}" />
 
-    <div class="container">
-      <div class="well">
-      <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
+                <div class="field">
+                    <label class="control-label">${message(code:'default.filter.label', default:'Filter')}</label>
+                    <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
+                    <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
+                    <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
+                    <g:select class="ui dropdown"
+                              name="dateBeforeFilter"
+                              value="${params.dateBeforeFilter}"
+                              from="${['renewalDate' : renewalDate, 'endDate' : endDate]}"
+                              noSelection="${['null' : noDate]}"
+                              optionKey="key"
+                              optionValue="value" />
+                </div>
+
+                <semui:datepicker label="myinst.currentSubscriptions.filter.before" name="dateBeforeVal" placeholder="default.date.label" value="${dateBeforeVal}" />
+
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+                </div>
+            </div>
+            <div class="inline fields">
+                <label>Filter by Role:</label>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input name="orgRole" <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if> class="hidden" type="radio" value="Subscriber">
+                        <label>${message(code:'consortium.subscriber', default:'Subscriber')}</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input name="orgRole" <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if> class="hidden" type="radio" value="Subscription Consortia">
+                        <label>${message(code:'consortium', default:'Consortia')}</label>
+                    </div>
+                </div>
+            </div>
+        </g:form>
+      </semui:filter>
 
 
+      <div class="subscription-results">
+        <table class="ui celled sortable table table-tworow la-table">
+          <thead>
+            <tr>
+                <g:sortableColumn params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
+                <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
+                <th>${message(code:'myinst.currentSubscriptions.subscription_type', default:'Subscription Type')}</th>
 
-        <label class="control-label">${message(code:'default.search.text', default:'Search text')}: </label>
-        <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}"/>
-            
-        <label class="control-label">${message(code:'default.valid_on.label', default:'Valid On')}: </label>
-        <div class="input-append date">
-          <input class="span2 datepicker-class" size="16" type="text" name="validOn" value="${validOn}">
-        </div>
+                <g:if test="${params.orgRole == 'Subscriber'}">
+                    <th>${message(code:'consortium', default:'Consortia')}</th>
+                </g:if>
+                <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                    <th>${message(code:'consortium.subscriber', default:'Subscriber')}</th>
+                </g:if>
 
-        <label class="control-label">${message(code:'default.date.label', default:'Date')}: </label>
-        <g:set var="noDate" value="${message(code:'default.filter.date.none', default:'-None-')}" />
-        <g:set var="renewalDate" value="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
-        <g:set var="endDate" value="${message(code:'default.endDate.label', default:'End Date')}" />
-        <g:select name="dateBeforeFilter" value="${params.dateBeforeFilter}" from="${[noDate,renewalDate,endDate]}" />
-         ${message(code:'myinst.currentSubscriptions.filter.before', default:'before')}
-           <div class="input-append date">
-              <input class="span2 datepicker-class" size="16" type="text" name="dateBeforeVal" value="${params.dateBeforeVal}">
-          </div>
-        <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
-      </g:form>
-      </div>
-    </div>
+                <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
 
-
-      <div class="container subscription-results">
-        <table class="table table-striped table-bordered table-condensed table-tworow">
-          <tr>
-            <g:sortableColumn colspan="7" params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
-            <th rowspan="2">${message(code:'default.action.label', default:'Action')}</th>
-          </tr>
-
-          <tr>
-            <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
-            <th>${message(code:'consortium.plural', default:'Consortia')}</th>
-            <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-            <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
-            <g:sortableColumn params="${params}" property="s.manualRenewalDate" title="${message(code:'default.renewalDate.label', default:'Renewal Date')}" />
-            <th>${message(code:'tipp.platform', default:'Platform')}</th>
-          </tr>
+                <!--<g:sortableColumn params="${params}" property="s.manualCancellationDate" title="${message(code:'default.cancellationDate.label', default:'Cancellation Date')}" />-->
+                <th></th>
+            </tr>
+          </thead>
           <g:each in="${subscriptions}" var="s">
-            <tr>
-              <td colspan="7">
-                <g:link controller="subscriptionDetails" action="index" params="${[shortcode:institution.shortcode]}" id="${s.id}">
-                  <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
-                  <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
-                </g:link>
-                <g:if test="${s.owner}"> 
-                  <span class="pull-right">${message(code:'license')} : <g:link controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link></span>
-                </g:if>
-              </td>
-              <td rowspan="2">
-                <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
-                    <g:link controller="myInstitutions" action="actionCurrentSubscriptions" params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}" onclick="return confirm($message(code:'licence.details.delete.confirm', args:[(s.name?:'this subscription')})" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
-                </g:if>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <ul>
-                  <g:each in="${s.packages}" var="sp" status="ind">
-                    <g:if test="${ind < 10}">
-                      <li>
-                        <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">${sp.pkg.name}</g:link>
-                      </li>
+              <g:if test="${true || ! s.instanceOf}">
+                <tr>
+                  <td>
+                    <g:link controller="subscriptionDetails" action="details" params="${[shortcode:institution.shortcode]}" id="${s.id}">
+                        <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
+                        <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
+                    </g:link>
+                    <g:if test="${s.owner}">
+                        <g:link class="icon ico-object-link sub-link-icon law" controller="licenseDetails" action="index" id="${s.owner.id}">${s.owner?.reference}</g:link>
                     </g:if>
-                  </g:each>
-                  <g:if test="${s.packages.size() > 10}">
-                    <div>${message(code:'myinst.currentSubscriptions.etc.label', args:[s.packages.size() - 10])}</div>
-                  </g:if>
-                </ul>
-                <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
-                  <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')} <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link></i>
-                </g:if>
-                &nbsp;<br/>
-                &nbsp;<br/>
-              </td>
-              <td>${s.consortia?.name}</td>
-              <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
-              <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
-              <td><g:formatDate formatName="default.date.format.notime" date="${s.renewalDate}"/></td>
-              <td>
-                <g:each in="${s.instanceOf?.packages}" var="sp">
-                  ${sp.pkg?.nominalPlatform?.name}<br/>
-                </g:each>
-              </td>
-            </tr>
+                  </td>
+                    <td>
+                        <!-- packages -->
+                        <g:each in="${s.packages}" var="sp" status="ind">
+                            <g:if test="${ind < 10}">
+                                <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}" title="${sp.pkg?.contentProvider?.name}">
+                                    ${sp.pkg.name}
+                                </g:link>
+                            </g:if>
+                        </g:each>
+                        <g:if test="${s.packages.size() > 10}">
+                            <div>${message(code:'myinst.currentSubscriptions.etc.label', args:[s.packages.size() - 10])}</div>
+                        </g:if>
+                        <g:if test="${editable && (s.packages==null || s.packages.size()==0)}">
+                            <i>${message(code:'myinst.currentSubscriptions.no_links', default:'None currently, Add packages via')}
+                                <g:link controller="subscriptionDetails" action="linkPackage" id="${s.id}">${message(code:'subscription.details.linkPackage.label', default:'Link Package')}</g:link>
+                            </i>
+                        </g:if>
+                        <!-- packages -->
+                    </td>
+                    <td>
+                        <!-- subscriptions type -->
+                        <!-- subscriptions type -->
+                    </td>
+                    <g:if test="${params.orgRole == 'Subscriber'}">
+                        <td>${s.consortia?.name}</td>
+                    </g:if>
+                    <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                        <td>
+                            <g:each in="${s.allSubscribers}" var="subscriber">
+                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link>
+                            </g:each>
+                        </td>
+                    </g:if>
+                    <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
+                    <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
+
+                    <td class="x">
+                        <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
+                            <g:link controller="myInstitutions" action="actionCurrentSubscriptions" class="ui icon basic negative button"
+                                    params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}"
+                                    onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(s.name?:'this subscription')])}')">
+                                <i class="trash icon"></i></g:link>
+                        </g:if>
+                    </td>
+                </tr>
+              </g:if>
           </g:each>
         </table>
       </div>
 
-  
-      <div class="pagination" style="text-align:center">
         <g:if test="${subscriptions}" >
-          <bootstrap:paginate  action="currentSubscriptions" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
+          <semui:paginate  action="currentSubscriptions" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
         </g:if>
-      </div>
 
     <r:script type="text/javascript">
-
-        $(".datepicker-class").datepicker({
-            format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-            language:"${message(code:'default.locale.label', default:'en')}",
-            autoclose:true
+        $(document).ready(function(){
+            var val = "${params.dateBeforeFilter}";
+            if(val == "null"){
+                $(".dateBefore").addClass("hidden");
+            }else{
+                $(".dateBefore").removeClass("hidden");
+            }
         });
+
+        $("[name='dateBeforeFilter']").change(function(){
+            var val = $(this)['context']['selectedOptions'][0]['label'];
+
+            if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
+                $(".dateBefore").removeClass("hidden");
+            }else{
+                $(".dateBefore").addClass("hidden");
+            }
+        })
     </r:script>
 
   </body>

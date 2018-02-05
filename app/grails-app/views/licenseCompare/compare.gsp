@@ -1,41 +1,31 @@
 <!doctype html>
 <html>
 <head>
-<meta name="layout" content="mmbootstrap" />
+<meta name="layout" content="semanticUI" />
 <title>${message(code:'laser', default:'LAS:eR')} License Compare</title>
 </head>
 <body>
 
 <r:require modules="onixMatrix" />
 
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.getDesignation()}" />
 
-  <div class="container">
-    <ul class="breadcrumb">
-      <li><g:link controller="home" action="index">Home</g:link> <span
-        class="divider">/</span></li>
-           <li><g:link controller="myInstitutions"
-                       action="instdash"
-                       params="${[shortcode:institution.shortcode]}">${institution.name} ${message(code:'menu.institutions.dash')} </g:link><span
-        class="divider">/</span></li>
+        <semui:crumb class="active" message="menu.institutions.comp_lic" />
 
-      <li>${message(code:'menu.institutions.comp_lic')}</li>
-     <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>&nbsp;
+        <li class="dropdown pull-right">
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>&nbsp;
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li>
               <g:link action="compare" params="${params+[format:'csv']}">CSV Export</g:link>
             </li>
           </ul>
         </li>
-    </ul>
+    </semui:breadcrumbs>
 
-  </div>
+    <h2 class="ui header">${message(code:'menu.institutions.comp_lic')}</h2>
 
-  <div class="container">
-    <h1>${message(code:'menu.institutions.comp_lic')}</h1>
-  </div>
-
-  <div class="container">
+  <div>
 
   <div class="onix-matrix-wrapper">
 
@@ -63,7 +53,7 @@
           </g:if>
         </div>
         <g:if test="${['stringValue','intValue','decValue'].contains(point.getValueType())}">
-            <span class="cell-inner">  <b>${point.getValue().encodeAsHTML()}</b></span>
+            <span class="cell-inner">  <strong>${point.getValue().encodeAsHTML()}</strong></span>
         </g:if>
         <g:else>
             <g:set var="val" value="${point.getValue()}"/>
@@ -88,7 +78,7 @@
               </span>
             </g:elseif>
             <g:else>
-               <span class="cell-inner">  <b>${point.getValue().encodeAsHTML()}</b></span>
+               <span class="cell-inner">  <strong>${point.getValue().encodeAsHTML()}</strong></span>
             </g:else>
         </g:else>
         </td>
@@ -118,7 +108,7 @@
       </div>
       <div class="modal-body"></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="ui button" data-dismiss="modal">Close</button>
       </div>
   </div>
   </div>
@@ -132,12 +122,13 @@
             $(this).replaceWith("<span title='"+title+"' style='height:1em' class='onix-status fa-stack fa-4x'> <i class='fa fa-info-circle fa-stack-1x' style='color:#166fe7;' ></i> <i class='fa fa-ban fa-stack-1x' style='color:#FF0000'></i> </span>")
           })
             // Tooltips.
+            /* TODO js removed
           $('.onix-code, .onix-status').tooltip(
               {placement: 'bottom', trigger:'hover', html: true, container: 'body'}
           );
           $('.onix-icons span i').popover(
             {placement: 'left', trigger:'hover', html: true, container: 'body'}
-          );
+          ); */
         });
 
     </r:script>

@@ -2,13 +2,14 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import de.laser.domain.BaseDomainComponent
+import de.laser.domain.Permissions
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends BaseDomainComponent implements Comparable<License>{
+class License extends BaseDomainComponent implements Permissions, Comparable<License> {
 
   @Transient
   def grailsApplication
@@ -33,12 +34,12 @@ class License extends BaseDomainComponent implements Comparable<License>{
 
   String noticePeriod
   String licenseUrl
-  String licensorRef
-  String licenseeRef
+  //String licensorRef // - removed
+  //String licenseeRef // - removed
   String licenseType
   String licenseStatus
   String impId
-  String contact
+  //String contact // - removed
 
   long lastmod
   Date startDate
@@ -75,6 +76,8 @@ class License extends BaseDomainComponent implements Comparable<License>{
           outgoinglinks: 'fromLic',
           incomingLinks: 'toLic',
           pendingChanges:'license',
+          customProperties:  'owner',
+          privateProperties: 'owner'
   ]
 
   static mapping = {
@@ -83,14 +86,14 @@ class License extends BaseDomainComponent implements Comparable<License>{
               globalUID column:'lic_guid'
                  status column:'lic_status_rv_fk'
                    type column:'lic_type_rv_fk'
-                contact column:'lic_contact'          
+    // removed - contact column:'lic_contact'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
                isPublic column:'lic_is_public_rdv_fk'
            noticePeriod column:'lic_notice_period'
              licenseUrl column:'lic_license_url'
-            licensorRef column:'lic_licensor_ref'
-            licenseeRef column:'lic_licensee_ref'
+    // removed - licensorRef column:'lic_licensor_ref'
+    // removed - licenseeRef column:'lic_licensee_ref'
             licenseType column:'lic_license_type_str'
           licenseStatus column:'lic_license_status_str'
                 lastmod column:'lic_lastmod'
@@ -114,8 +117,8 @@ class License extends BaseDomainComponent implements Comparable<License>{
         isPublic(nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
-        licensorRef(nullable:true, blank:true)
-        licenseeRef(nullable:true, blank:true)
+      // removed - licensorRef(nullable:true, blank:true)
+      // removed - licenseeRef(nullable:true, blank:true)
         licenseType(nullable:true, blank:true)
         licenseStatus(nullable:true, blank:true)
         lastmod(nullable:true, blank:true)
@@ -124,7 +127,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
         startDate(nullable: true, blank: true)
         endDate(nullable: true, blank: true)
         lastUpdated(nullable: true, blank: true)
-        contact(nullable:true,blank:true)
+      // removed - contact(nullable:true,blank:true)
     }
 
   def getLicensor() {
@@ -183,33 +186,22 @@ class License extends BaseDomainComponent implements Comparable<License>{
     return reference
   }
 
-  // determin if a user can edit this subscription
-  def isEditableBy(user, request) {
-    hasPerm("edit", user);
-  }
-
-  def hasPerm(perm, user) {
-    def result = false
-
-    if ( perm=='view' && this.isPublic?.value=='Yes' ) {
-      result = true;
+    def isEditableBy(user) {
+        hasPerm("edit", user)
     }
 
-    if (!result) {
-      // If user is a member of admin role, they can do anything.
-      def admin_role = Role.findByAuthority('ROLE_ADMIN');
-      if ( admin_role ) {
-        if ( user.getAuthorities().contains(admin_role) ) {
-          result = true;
+    def hasPerm(perm, user) {
+        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+            return true
         }
-      }
-    }
 
-    if ( !result ) {
-      result = checkPermissions(perm,user);
-    }
+        // If user is a member of admin role, they can do anything.
+        def admin_role = Role.findByAuthority('ROLE_ADMIN')
+        if (admin_role && user.getAuthorities().contains(admin_role)) {
+            return true
+        }
 
-    result;
+      return checkPermissions(perm, user)
   }
 
   def checkPermissions(perm, user) {
@@ -313,7 +305,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
       result = reference
     }
     else {
-      result = super.toString();
+      result = "- no name -"
     }
     return result;
   }
@@ -549,7 +541,7 @@ class License extends BaseDomainComponent implements Comparable<License>{
   def setReferencePropertyAsCustProp(custPropName, newVal) {
     def custProp = getCustomPropByName(custPropName)
     if(custProp == null){
-      def type = PropertyDefinition.findByName(custPropName,)
+      def type = PropertyDefinition.findByName(custPropName)
       custProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, this, type)
     }
 

@@ -1,7 +1,7 @@
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: Financial Information</title>
 </head>
 <body>
@@ -16,10 +16,7 @@
 <g:set var="currency"         scope="page" value="${com.k_int.kbplus.CostItem.orderedCurrency()}"/>
 
 
-<div class="container">
-
-    <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+    <semui:breadcrumbs>
         <li>
             <g:if test="${inSubMode}">
                 <li> <g:link controller="subscriptionDetails" action="index" params="${[shortcode: params.shortcode, sub:fixedSubscription?.id]}" id="${fixedSubscription?.id}">${fixedSubscription?.name}</g:link> <span class="divider">/</span> </li>
@@ -30,49 +27,53 @@
             </g:else>
         </li>
         <g:if test="${editable}">
-            <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
-            <li class="pull-right"><span style="font-weight: 400;" class="badge"><a href="${createLink(controller: 'myInstitutions', action: 'financeImport', params: [shortcode:params.shortcode])}">Finance Import</a></span> </li>
+            <semui:crumbAsBadge message="default.editable" class="orange" />
+
+            <li class="pull-right"><a href="${createLink(controller: 'myInstitutions', action: 'financeImport', params: [shortcode:params.shortcode])}" class="ui button">Finance Import</a></li>
         </g:if>
         <li class="pull-left"><a class="badge badge-info" onclick="quickHelpInfo()">?</a>&nbsp;</li>
 
-        <li class="dropdown pull-right">
-            <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>
-
-            <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-                <li><a data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a></li>
-                 <li><a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a></li>
-                 <li><a data-mode="code" class="disabled export" style="cursor: pointer">CSV Costs by Code</a></li>
-            </ul>
-        </li>
-    </ul>
-</div>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <a data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
+            </semui:exportDropdownItem>
+            <!--
+            <semui:exportDropdownItem>
+                <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <a data-mode="code" class="disabled export" style="cursor: pointer">CSV Costs by Code</a>
+            </semui:exportDropdownItem>
+            -->
+        </semui:exportDropdown>
+    </semui:breadcrumbs>
 
 <br/>
 <br/>
 
-<div style="padding-left: 2%" hidden="hidden" class="loadingData">
-    <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
-</div>
+    <div style="padding-left: 2%" hidden="hidden" class="loadingData">
+        <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
+    </div>
 
-<div id="recentModalWrapper" class="wrapper">
-    <div class="modal hide" id="recentDialog">
-        <div class="modal-header">
-            <button class="close" data-dismiss="modal">×</button>
-            <h3>Recently Updated Cost Items</h3>
-        </div>
-        <div class="modal-body">
-            <div id="recent">
-                <g:render template="recentlyAdded"></g:render>
+    <div class="ui grid">
+        <div class="sixteen wide column">
+
+    <div id="recentModalWrapper" class="wrapper">
+        <div class="modal hide" id="recentDialog">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3 class="ui header">Recently Updated Cost Items</h3>
+            </div>
+            <div class="modal-body">
+                <div id="recent">
+                    <g:render template="recentlyAdded"></g:render>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-
-<div class="container-fluid">
 
     <div id="userError" hidden="">
-        <table class="table table-striped table-bordered ">
+        <table class="ui celled la-table table">
             <thead>
             <tr><th>Problem/Update</th>
                 <th>Info</th></tr>
@@ -97,11 +98,11 @@
             <g:render template="create"></g:render>
         </div>
     </g:if>
-    <button class="btn btn-primary pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
-</div>
 
-</body>
+    <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
 
+    </div><!-- .sixteen -->
+</div><!-- .grid -->
 <r:script type="text/javascript">
 
      //todo use AJAX promises
@@ -131,7 +132,6 @@
             },
             ct: { //create template
                 resetBtn:'#resetCreate',
-                datePickers:'.datepicker-class',
                 newBudgetCode:"#newBudgetCode",
                 newIE:'#newIE',
                 newSubPkg:'#newPackage',
@@ -349,7 +349,6 @@
         var _bindBehavior = function() {
             if($(s.ft.searchBtn).val() !== 'reset')
                 $(s.ft.searchBtn).prop('disabled',${filterMode=='OFF'}); //greys out search button if inactive
-            $(s.ct.datePickers).datepicker({format: s.options.dateFormat}); //datepicker
             setupModSelect2s();
             $(s.ft.editableBind).editable(); //technically being performed twice on first run
         };
@@ -1154,15 +1153,25 @@
             //calculation for billed amount
             s.mybody.on('change','input.calc', function() {
                 var billed   = $('#newCostInBillingCurrency');
-                var exchange = $('#newCostExchangeRate');
+                var exchange = $('#newCostCurrencyRate');
                 var local    = $('#newCostInLocalCurrency');
                 
-                var billedAmount = billed.val().length > 0? (parseFloat(billed.val()).toFixed(2)) : 0.00;
-                var exchangeAmount = exchange.val().length > 0? parseFloat(exchange.val()) : 1;
-                var localAmount = local.val().length > 0? parseFloat(local.val()) : 0.00;
+                var billedAmount   = billed.val().length > 0? (parseFloat(billed.val()).toFixed(2)) : 0.00;
+                var exchangeAmount = exchange.val().length > 0? (parseFloat(exchange.val()).toFixed(2)) : 1.00;
+                var localAmount    = local.val().length > 0? (parseFloat(local.val()).toFixed(2)) : 0.00;
 
-                billed.val(billedAmount);
-                local.val((billedAmount * exchangeAmount).toFixed(2));
+                var check = (localAmount == (billedAmount * exchangeAmount).toFixed(2))
+
+                if (! check) {
+                    $(billed).addClass('invalidCostCalc')
+                    $(exchange).addClass('invalidCostCalc')
+                    $(local).addClass('invalidCostCalc')
+
+                } else {
+                    $(billed).removeClass('invalidCostCalc')
+                    $(exchange).removeClass('invalidCostCalc')
+                    $(local).removeClass('invalidCostCalc')
+                }
             });
 
             //export
@@ -1174,14 +1183,14 @@
                 var data  = {
                     shortcode: "${params.shortcode}",
                     filterMode: paginateData.filtermode,
-                    wildcard:paginateData.wildcard,
-                    opSort:false,
-                    sort:paginateData.sort,
+                    wildcard: paginateData.wildcard,
+                    opSort: false,
+                    sort: paginateData.sort,
                     order: paginateData.order,
-                    offset:0,
-                    estTotal:totalResults,
-                    format:'csv',
-                    csvMode:exportMode
+                    offset: 0,
+                    estTotal: totalResults,
+                    format: 'csv',
+                    csvMode: exportMode
                 };
                 
                 if(paginateData.filtermode == "ON")
@@ -1284,11 +1293,11 @@
         }
 
         function quickHelpInfo() {
-            userInfo("Help","<b>Sorting</b> via clickable title links of the following : Cost Item#, Invoice#, Order#, Subscription, Package, date, IE ,,, " +
-             "<b>Filter Search</b> via the 4 input fields : Invoice#, Order#, Subscription, and Package, selecting filter mode as ON and submitting the search. On finishing with your results reset via the 'reset' button,,," +
-              "<b>Pagination</b> (<i>Results Navigation</i>) via the clickable links, below the results table,,," +
-               "<b>Deleting Costs</b> via checking the boxes attached to each cost item row individually or all and submitting by clicking 'remove selected,,," +
-                "<b>Add New Costs</b> via creation screen, after results, shortcut button select 'Add New Cost'",20000)
+            userInfo("Help","<strong>Sorting</strong> via clickable title links of the following : Cost Item#, Invoice#, Order#, Subscription, Package, date, IE ,,, " +
+             "<strong>Filter Search</strong> via the 4 input fields : Invoice#, Order#, Subscription, and Package, selecting filter mode as ON and submitting the search. On finishing with your results reset via the 'reset' button,,," +
+              "<strong>Pagination</strong> (<i>Results Navigation</i>) via the clickable links, below the results table,,," +
+               "<strong>Deleting Costs</strong> via checking the boxes attached to each cost item row individually or all and submitting by clicking 'remove selected,,," +
+                "<strong>Add New Costs</strong> via creation screen, after results, shortcut button select 'Add New Cost'",20000)
         }
 
 
@@ -1325,4 +1334,5 @@
     //////////////////////////////////////////////LEAVE FOR NOW//////////////////////////////////////////////
 
 </r:script>
+</body>
 </html>

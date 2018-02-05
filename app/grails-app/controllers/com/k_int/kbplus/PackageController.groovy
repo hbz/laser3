@@ -8,32 +8,41 @@ import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 
 
-
+@Deprecated
 class PackageController {
 
     def springSecurityService
-
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
+        redirect controller: 'packageDetails', action: 'index', params: params
+        return // ----- deprecated
+
         redirect action: 'list', params: params
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      params.max = Math.min(params.max ? params.int('max') : 5, 100)
-	  result.max = params.max
-      result.packageInstanceList=Package.list(params)
-      result.packageInstanceTotal=Package.count()
-      result
+        redirect controller: 'packageDetails', action: 'list', params: params
+        return // ----- deprecated
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        params.max = params.max ?: result.user?.getDefaultPageSize()
+
+        result.max = params.max
+        result.packageInstanceList = Package.list(params)
+        result.packageInstanceTotal = Package.count()
+        result
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
+        redirect controller: 'packageDetails', action: 'create', params: params
+        return // ----- deprecated
+
       def user = User.get(springSecurityService.principal.id)
 
       switch (request.method) {
@@ -77,9 +86,12 @@ class PackageController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
+        redirect controller: 'packageDetails', action: 'show', params: params
+        return // ----- deprecated
+
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
             redirect action: 'list'
             return
         }
@@ -129,66 +141,72 @@ class PackageController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
-    switch (request.method) {
-    case 'GET':
-          def packageInstance = Package.get(params.id)
-          if (!packageInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
-              redirect action: 'list'
-              return
-          }
+        redirect controller: 'packageDetails', action: 'edit', params: params
+        return // ----- deprecated
 
-          [packageInstance: packageInstance]
-      break
-    case 'POST':
-          def packageInstance = Package.get(params.id)
-          if (!packageInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
-              redirect action: 'list'
-              return
-          }
+        switch (request.method) {
+        case 'GET':
+              def packageInstance = Package.get(params.id)
+              if (!packageInstance) {
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+                  redirect action: 'list'
+                  return
+              }
 
-          if (params.version) {
-              def version = params.version.toLong()
-              if (packageInstance.version > version) {
-                  packageInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'package.label', default: 'Package')] as Object[],
-                            "Another user has updated this Package while you were editing")
+              [packageInstance: packageInstance]
+          break
+        case 'POST':
+              def packageInstance = Package.get(params.id)
+              if (!packageInstance) {
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+                  redirect action: 'list'
+                  return
+              }
+
+              if (params.version) {
+                  def version = params.version.toLong()
+                  if (packageInstance.version > version) {
+                      packageInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                                [message(code: 'package.label', default: 'Package')] as Object[],
+                                "Another user has updated this Package while you were editing")
+                      render view: 'edit', model: [packageInstance: packageInstance]
+                      return
+                  }
+              }
+
+              packageInstance.properties = params
+
+              if (!packageInstance.save(flush: true)) {
                   render view: 'edit', model: [packageInstance: packageInstance]
                   return
               }
-          }
 
-          packageInstance.properties = params
-
-          if (!packageInstance.save(flush: true)) {
-              render view: 'edit', model: [packageInstance: packageInstance]
-              return
-          }
-
-      flash.message = message(code: 'default.updated.message', args: [message(code: 'package.label', default: 'Package'), packageInstance.id])
-          redirect action: 'show', id: packageInstance.id
-      break
-    }
+          flash.message = message(code: 'default.updated.message', args: [message(code: 'package.label', default: 'Package'), packageInstance.id])
+              redirect action: 'show', id: packageInstance.id
+          break
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
+        redirect controller: 'packageDetails', action: 'delete', params: params
+        return // ----- deprecated
+
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
-            redirect action: 'list'
-            return
-        }
+          flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+                redirect action: 'list'
+                return
+            }
 
-        try {
-            packageInstance.delete(flush: true)
-      flash.message = message(code: 'default.deleted.message', args: [message(code: 'package.label', default: 'Package'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'package.label', default: 'Package'), params.id])
-            redirect action: 'show', id: params.id
-        }
+            try {
+                packageInstance.delete(flush: true)
+          flash.message = message(code: 'default.deleted.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+                redirect action: 'list'
+            }
+            catch (DataIntegrityViolationException e) {
+          flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'package.label', default: 'Package'), params.id])
+                redirect action: 'show', id: params.id
+            }
     }
 }

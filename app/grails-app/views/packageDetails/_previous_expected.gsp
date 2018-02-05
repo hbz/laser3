@@ -2,69 +2,46 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
   <body>
 
+      <semui:breadcrumbs>
+          <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+          <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+      </semui:breadcrumbs>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
-
-        <li class="pull-right">
-          View:
-          <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="packageDetails" action="${params.action}" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
-            <g:link controller="packageDetails" action="${params.action}" params="${params+['mode':'advanced']}" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
-          </div>
-          &nbsp;
-        </li>
-      </ul>
-    </div>
+      <semui:modeSwitch controller="packageDetails" action="${params.action}" params="${params}" />
 
 
-      <div class="container">
-
-        <div class="page-header">
-          <div>
-          <h1><g:if test="${editable}"><span id="packageNameEdit"
+          <h1 class="ui header">
+              <semui:editableLabel editable="${editable}" />
+              <g:if test="${editable}"><span id="packageNameEdit"
                         class="xEditableValue"
                         data-type="textarea"
                         data-pk="${packageInstance.class.name}:${packageInstance.id}"
                         data-name="name"
-                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if><g:else>${packageInstance.name}</g:else></h1>
+                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
+              <g:else>${packageInstance.name}</g:else>
+          </h1>
+
             <g:render template="nav" contextPath="." />
+
             <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+
             <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
             </sec:ifAnyGranted>
             <g:if test="${forum_url != null}">
               <a href="${forum_url}">| Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
             </g:if>
 
-          </div>
+  <semui:messages data="${flash}" />
 
-        </div>
-    </div>
+  <semui:errors bean="${packageInstance}" />
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
-
-        <g:hasErrors bean="${packageInstance}">
-        <bootstrap:alert class="alert-error">
-        <ul>
-          <g:eachError bean="${packageInstance}" var="error">
-          <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-          </g:eachError>
-        </ul>
-        </bootstrap:alert>
-        </g:hasErrors>
-
-    <div class="container">
+    <div>
 
         <dl>
           <dt>${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])}
@@ -72,7 +49,7 @@
           </dt>
           <dd>
 
-          <table class="table table-bordered">
+          <table class="ui celled la-table table">
             <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <thead>
             <tr>
@@ -99,19 +76,19 @@
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
                    <g:if test="${params.action == 'previous'}">
-                    <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                    <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                    <g:else>
-                   <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
+                   <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
                    </g:else>
                     <g:if test="${params.mode=='advanced'}">
                      <g:if test="${params.action == 'previous'}">
-                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
+                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
                      </g:if>
                      <g:else>
-                      <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                      <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                      </g:else>
-                       <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
+                       <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config='TIPP Status'/>
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
@@ -129,18 +106,18 @@
                 </td>
 
                 <td style="white-space: nowrap">
-                  ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="startDate" /><br/>
-                  ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="startVolume" /><br/>
-                  ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="startIssue" />
+                  ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                  ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="startVolume" /><br/>
+                  ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="startIssue" />
                 </td>
 
                 <td style="white-space: nowrap"> 
-                   ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="endDate" /><br/>
-                   ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="endVolume" /><br/>
-                   ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="endIssue" />
+                   ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                   ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="endVolume" /><br/>
+                   ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="endIssue" />
                 </td>
                 <td>
-                  <g:xEditable owner="${t}" field="coverageDepth" />
+                  <semui:xEditable owner="${t}" field="coverageDepth" />
                 </td>
               </tr>
 
@@ -157,19 +134,15 @@
           </dd>
         </dl>
 
-        <div class="pagination" style="text-align:center">
           <g:if test="${titlesList}" >
-            <bootstrap:paginate  action="${params.action}" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate  action="${params.action}" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
-        </div>
-
-
 
         <g:if test="${editable}">
         
         <g:form controller="ajax" action="addToCollection">
           <fieldset>
-            <legend><h3>${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
+            <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
             <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
             <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
             <input type="hidden" name="__recip" value="pkg"/>
@@ -183,7 +156,7 @@
             <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
             <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
             <span class="help-block"></span>
-            <button type="submit" class="btn">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
+            <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
           </fieldset>
         </g:form>
 

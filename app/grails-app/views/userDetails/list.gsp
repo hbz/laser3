@@ -2,40 +2,46 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
-  <body>
-    <div class="container">
-      
+    <body>
+        <div>
+
+            <h1 class="ui header">Users</h1>
+
+
+                <semui:filter>
+                    <g:form action="list" method="get" class="ui form">
+                        <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
+
+                        <div class="fields">
+                            <div class="field">
+                                <label>Name contains</label>
+                                <input type="text" name="name" value="${params.name}"/>
+                            </div>
+                            <div class="field">
+                                <label>Role</label>
+                                <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" value="authority "optionKey="id" optionValue="authority" name="authority" />
+                            </div>
+                            <div class="field">
+                                <label>&nbsp;</label>
+                                <input type="submit" value="Search" class="ui secondary button"/>
+                            </div>
+                        </div>
+                  </g:form>
+                </semui:filter>
+
+        <semui:messages data="${flash}" />
         
-        <div class="page-header">
-          <h1>Users</h1>
-        </div>
-
-          <div class="well form-horizontal">
-
-          <g:form action="list" method="get">
-            Name Contains: <input type="text" name="name" value="${params.name}"/>
-            Role:    
-             <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
-             <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" value="authority "optionKey="id" optionValue="authority" name="authority" />
-            <input type="submit" value="Search" class="btn btn-primary btn-small"/>
-          </g:form>
-        </div>
-
-        <g:if test="${flash.message}">
-          <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
-        
-        <table class="table table-striped table-bordered">
+        <table class="ui sortable celled la-table table">
           <thead>
             <tr>
                 <g:sortableColumn property="username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
                 <g:sortableColumn property="display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
                 <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
-                <td>Enabled</td>
+                <th>Enabled</th>
             </tr>
           </thead>
           <tbody>
@@ -50,9 +56,8 @@
           </tbody>
         </table>
 
-        <div class="pagination">
-          <bootstrap:paginate total="${total}" params="${params}" />
-        </div>
+          <semui:paginate total="${total}" params="${params}" />
+
 
     </div>
   </body>

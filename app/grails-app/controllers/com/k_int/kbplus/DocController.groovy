@@ -13,23 +13,24 @@ class DocController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         redirect action: 'list', params: params
     }
 
+	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
       	def result = [:]
       	result.user = User.get(springSecurityService.principal.id)
 
-		if (! params.max) {
-			params.max = result.user?.getDefaultPageSize()
-		}
+		params.max = params.max ?: result.user?.getDefaultPageSize()
 
-      result.docInstanceList = Doc.list(params)
-      result.docInstanceTotal = Doc.count()
-      result
+      	result.docInstanceList = Doc.list(params)
+      	result.docInstanceTotal = Doc.count()
+      	result
     }
 
+	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -48,6 +49,7 @@ class DocController {
 		}
     }
 
+	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
         def docInstance = Doc.get(params.id)
         if (!docInstance) {
@@ -59,6 +61,7 @@ class DocController {
         [docInstance: docInstance]
     }
 
+	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
 		switch (request.method) {
 		case 'GET':
@@ -103,6 +106,7 @@ class DocController {
 		}
     }
 
+	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
         def docInstance = Doc.get(params.id)
         if (!docInstance) {

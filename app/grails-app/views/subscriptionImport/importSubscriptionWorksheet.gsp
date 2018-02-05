@@ -1,20 +1,26 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.renewalUpload.label', default:'Renewals Upload')}</title>
+    <meta name="layout" content="semanticUI"/>
+    <title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'menu.institutions.imp_sub_work')}</title>
   </head>
 
   <body>
-    <div class="container">
-      <g:form action="importSubscriptionWorksheet" method="post" enctype="multipart/form-data" params="${params}">
+
+  <semui:breadcrumbs>
+    <semui:crumb message="menu.institutions.imp_sub_work" class="active" />
+  </semui:breadcrumbs>
+
+    <semui:form>
+      <g:form class="ui form" action="importSubscriptionWorksheet" method="post" enctype="multipart/form-data" params="${params}">
         <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/>
-        <button type="submit" class="btn btn-primary"><g:message code="subscription.upload.worksheet" default="Upload New Subscription Taken Worksheet"/></button>
+          <br /><br />
+        <button type="submit" class="ui button"><g:message code="subscription.upload.worksheet" default="Upload New Subscription Taken Worksheet"/></button>
       </g:form>
-    </div>
+    </semui:form>
 
     <g:if test="${(errors && (errors.size() > 0))}">
-      <div class="container">
+      <div>
         <ul>
           <g:each in="${errors}" var="e">
             <li>${e}</li>
@@ -23,43 +29,33 @@
       </div>
     </g:if>
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+  <semui:messages data="${flash}" />
 
 
     <g:set var="counter" value="${-1}" />
 
     <g:if test="${1==1}">
-      <g:form  action="processSubscriptionImport" method="post" params="${params}" enctype="multipart/form-data" >
-        <div class="container"> 
+      <g:form class="ui form" action="processSubscriptionImport" method="post" params="${params}" enctype="multipart/form-data" >
+        <div>
         <g:if test="${subOrg!=null}">
           ${message(code:'subscription.import.upload.note', default:'Import will create a subscription for')} ${subOrg.name}
           <input type="hidden" name="orgId" value="${subOrg.id}"/>
         </g:if>
         <hr/>
-          <table class="table table-bordered">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
-                <td>${message(code:'title.label', default:'Title')}</td>
-                <td>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</td>
-                <td>ISSN</td>
-                <td>eISSN</td>
-                <td>${message(code:'default.startDate.label', default:'Start Date')}</td>
-                <td>${message(code:'tipp.startVolume', default:'Start Volume')}</td>
-                <td>${message(code:'tipp.startIssue', default:'Start Issue')}</td>
-                <td>${message(code:'default.endDate.label', default:'End Date')}</td>
-                <td>${message(code:'tipp.endVolume', default:'End Volume')}</td>
-                <td>${message(code:'tipp.endIssue', default:'End Issue')}</td>
-                <td>${message(code:'subscription.details.core_medium', default:'Core Medium')}</td>
+                <th>${message(code:'title.label', default:'Title')}</th>
+                <th>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</th>
+                <th>ISSN</th>
+                <th>eISSN</th>
+                <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
+                <th>${message(code:'tipp.startVolume', default:'Start Volume')}</th>
+                <th>${message(code:'tipp.startIssue', default:'Start Issue')}</th>
+                <th>${message(code:'default.endDate.label', default:'End Date')}</th>
+                <th>${message(code:'tipp.endVolume', default:'End Volume')}</th>
+                <th>${message(code:'tipp.endIssue', default:'End Issue')}</th>
+                <th>${message(code:'subscription.details.core_medium', default:'Core Medium')}</th>
               </tr>
             </thead>
             <tbody>
@@ -91,7 +87,7 @@
           <input type="hidden" name="ecount" value="${counter}"/>
 
           <div class="pull-right">
-            <button type="submit" class="btn btn-primary">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
+            <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
           </div>
         </div>
       </g:form>

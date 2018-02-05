@@ -46,45 +46,23 @@ class RefdataCategory extends I10nTranslatableAbstract {
     }
 
     /**
-     * Create RefdataCategory and matching I10nTranslation
+     * Create RefdataCategory and matching I10nTranslation.
+     * Softdata flag will be removed, if RefdataValue is found.
      *
      * @param category_name
-     * @param rdcValues
+     * @param i10n
      * @return
      */
-    static def locCategory(String category_name, Map rdcValues) {
+    static def loc(String category_name, Map i10n) {
 
-        def cat = RefdataCategory.findByDescIlike(category_name)
-        if (! cat) {
-            cat = new RefdataCategory(desc:category_name).save(flush: true)
-        }
-
-        I10nTranslation.createOrUpdateI10n(cat, 'desc', rdcValues)
-
-        cat
-    }
-
-    /**
-     * Create RefdataValue and matching I10nTranslation.
-     * Create needed RefdataCategory without I10nTranslation, if not found
-     *
-     * @param category_name
-     * @param rdvValues
-     * @return
-     */
-    static def locRefdataValue(String category_name, Map rdvValues) {
-
-        def cat = RefdataCategory.findByDescIlike(category_name)
-        if (! cat) {
-            cat = new RefdataCategory(desc:category_name).save(flush: true)
-        }
-
-        def result = RefdataValue.findByOwnerAndValueIlike(cat, rdvValues['en'])
+        def result = RefdataCategory.findByDescIlike(category_name)
         if (! result) {
-            result = new RefdataValue(owner: cat, value: rdvValues['en']).save(flush: true)
+            result = new RefdataCategory(desc:category_name)
         }
+        result.softData = false
+        result.save(flush: true)
 
-        I10nTranslation.createOrUpdateI10n(result, 'value', rdvValues)
+        I10nTranslation.createOrUpdateI10n(result, 'desc', i10n)
 
         result
     }
@@ -104,6 +82,16 @@ class RefdataCategory extends I10nTranslatableAbstract {
         }
 
         result
+    }
+
+    static def getByI10nDesc(desc) {
+
+        def i10n = I10nTranslation.findByReferenceClassAndReferenceFieldAndValueDeIlike(
+                RefdataCategory.class.name, 'desc', "${desc}"
+        )
+        def rdc   = RefdataCategory.get(i10n?.referenceId)
+
+        rdc
     }
 
     static def lookupOrCreate(String category_name, String icon, String value) {

@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import grails.converters.JSON;
 import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 //todo Refactor aspects into service
@@ -14,6 +13,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 class FinanceController {
 
     def springSecurityService
+    def permissionHelperService
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
@@ -33,23 +33,8 @@ class FinanceController {
     }
 
     boolean isFinanceAuthorised(Org org, User user) {
-        def retval = false
-        if (org && org.hasUserWithRole(user,admin_role)) //ROLE_ADMIN
-            retval = true
-        return retval
-    }
 
-    def checkUserIsMember(user, org) {
-        def result = false;
-        // def uo = UserOrg.findByUserAndOrg(user,org)
-        def uoq = UserOrg.where {
-            (user == user && org == org && (status == 1 || status == 3))
-        }
-
-        if (uoq.count() > 0)
-            result = true;
-
-        result
+        permissionHelperService.hasUserWithRole(user, org, admin_role)
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -120,7 +105,7 @@ class FinanceController {
      */
     private def setupQueryData(result, params, user) {
         //Setup params
-        result.editable    =  result.institution.hasUserWithRole(user,admin_role)
+        result.editable    =  permissionHelperService.hasUserWithRole(user, result.institution, admin_role)
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.filterMode  =  params.filterMode?: "OFF"
         result.info        =  [] as List
@@ -254,25 +239,25 @@ class FinanceController {
                     }
                 }
 
-                result.cost_items.each { c ->
+                result.cost_items.each { c -> // TODO: CostItemGroup -> BudgetCode
                     if (!c.budgetcodes.isEmpty())
                     {
                         log.debug("${c.budgetcodes.size()} codes for Cost Item: ${c.id}")
 
                         def status = c?.costItemStatus?.value? c.costItemStatus.value.toString() : "Unknown"
 
-                        c.budgetcodes.each {code ->
-                            if (!codeResult.containsKey(code.value))
-                                codeResult[code.value] //sets up with default values
+                        c.budgetcodes.each {bc ->
+                            if (! codeResult.containsKey(bc.value))
+                                codeResult[bc.value] //sets up with default values
 
-                            if (!codeResult.get(code.value).containsKey(status))
+                            if (! codeResult.get(bc.value).containsKey(status))
                             {
-                                log.warn("Status should exist in list already, unless additions have been made? Code:${code} Status:${status}")
-                                codeResult.get(code.value).put(status, c?.costInLocalCurrency? c.costInLocalCurrency : 0.0)
+                                log.warn("Status should exist in list already, unless additions have been made? Code:${bc} Status:${status}")
+                                codeResult.get(bc.value).put(status, c?.costInLocalCurrency? c.costInLocalCurrency : 0.0)
                             }
                             else
                             {
-                                codeResult[code.value][status] += c?.costInLocalCurrency?: 0.0
+                                codeResult[bc.value][status] += c?.costInLocalCurrency?: 0.0
                             }
                         }
                     }
@@ -386,7 +371,8 @@ class FinanceController {
 
                     result.cost_items.each { ci ->
 
-                        def codes = CostItemGroup.findAllByCostItem(ci).collect { it?.budgetcode?.value+'\t' }
+                        def codes = CostItemGroup.findAllByCostItem(ci).collect { it?.budgetCode?.value+'\t' }
+                        // TODO budgetcodes
 
                         def start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
                         def end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
@@ -690,17 +676,18 @@ class FinanceController {
         if (params.long('newCostCurrency')) //GBP,etc
         {
             billing_currency = RefdataValue.get(params.newCostCurrency)
-            if (!billing_currency)
+            if (! billing_currency)
                 billing_currency = defaultCurrency
         }
 
-        def tempCurrencyVal       = params.newCostExchangeRate? params.double('newCostExchangeRate',1.00) : 1.00
-        def cost_item_status      = params.newCostItemStatus ? (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
-        def cost_item_element     = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
-        def cost_tax_type         = params.newCostTaxType ? (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
-        def cost_item_category    = params.newCostItemCategory ? (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
+        //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
+        def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', 0.00) : 0.00
+        def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
+        def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
+        def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
+        def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
         def cost_billing_currency = params.newCostInBillingCurrency? params.double('newCostInBillingCurrency',0.00) : 0.00
-        def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency',cost_billing_currency * tempCurrencyVal) : 0.00
+        def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
 
         //def inclSub = params.includeInSubscription? (RefdataValue.get(params.long('includeInSubscription'))): defaultInclSub //todo Speak with Owen, unknown behaviour
 
@@ -719,6 +706,7 @@ class FinanceController {
                 costDescription: params.newDescription? params.newDescription.trim()?.toLowerCase():null,
                 costInBillingCurrency: cost_billing_currency as Double,
                 costInLocalCurrency: cost_local_currency as Double,
+                currencyRate: cost_currency_rate as Double,
                 datePaid: datePaid,
                 startDate: startDate,
                 endDate: endDate,
@@ -739,7 +727,7 @@ class FinanceController {
             if (newCostItem.save(flush: true))
             {
                 if (params.newBudgetCode)
-                    createBudgetCodes(newCostItem, params.newBudgetCode?.trim()?.toLowerCase(), result.institution.shortcode)
+                    createBudgetCodes(newCostItem, params.newBudgetCode?.trim()?.toLowerCase(), result.institution)
             } else {
                 result.error = "Unable to save!"
             }
@@ -753,21 +741,24 @@ class FinanceController {
       render ([newCostItem:newCostItem.id, error:result.error]) as JSON
     }
 
-    private def createBudgetCodes(CostItem costItem, String budgetcodes, String owner)
+    private def createBudgetCodes(CostItem costItem, String budgetcodes, Org budgetOwner)
     {
         def result = []
-        if(budgetcodes && owner && costItem)
-        {
-            def budgetOwner = RefdataCategory.findByDesc("budgetcode_"+owner)?:new RefdataCategory(desc: "budgetcode_"+owner).save(flush: true)
+        if(budgetcodes && budgetOwner && costItem) {
             budgetcodes.split(",").each { c ->
-                def rdv = null
-                if (c.startsWith("-1")) //New code option from select2 UI
-                    rdv = new RefdataValue(owner: budgetOwner, value: c.substring(2).toLowerCase()).save(flush: true)
-                else
-                    rdv = RefdataValue.get(c)
+                def bc = null
+                if (c.startsWith("-1")) { //New code option from select2 UI
+                    bc = new BudgetCode(owner: budgetOwner, value: c.substring(2).toLowerCase()).save(flush: true)
+                }
+                else {
+                    bc = BudgetCode.get(c)
+                }
 
-                if (rdv != null)
-                    result.add(new CostItemGroup(costItem: costItem, budgetcode: rdv).save(flush: true))
+                if (bc != null) {
+                    if (! CostItemGroup.findByCostItemAndBudgetCode(costItem, bc)) {
+                        result.add(new CostItemGroup(costItem: costItem, budgetCode: bc).save(flush: true))
+                    }
+                }
             }
         }
 
@@ -836,6 +827,7 @@ class FinanceController {
                     try {
                         _props = _costItem.properties
                         CostItemGroup.deleteAll(CostItemGroup.findAllByCostItem(_costItem))
+                        // TODO delete BudgetCode
                         _costItem.delete(flush: true)
                         results.successful.add(id)
                         log.debug("User: ${user.username} deleted cost item with properties ${_props}")
@@ -991,14 +983,19 @@ class FinanceController {
         def ids = params.bcci ? params.bcci.split("_")[1..2] : null
         if (ids && ids.size()==2)
         {
-            def cig = CostItemGroup.get(ids[0])
+            def bc  = BudgetCode.get(ids[0])
             def ci  = CostItem.get(ids[1])
-            if (cig && ci)
+            def cig = CostItemGroup.findByBudgetCodeAndCostItem(bc, ci)
+
+            if (bc && ci && cig)
             {
-                if (cig.costItem == ci)
+                if (cig.costItem == ci) {
                     cig.delete(flush: true)
-                else
+                    // TODO delete budgetcode
+                }
+                else {
                     result.error = [status: "FAILED: Deleting budget code", msg: "Budget code is not linked with the cost item"]
+                }
             }
         } else
             result.error = [status: "FAILED: Deleting budget code", msg: "Incorrect parameter information sent"]
@@ -1012,7 +1009,7 @@ class FinanceController {
         def user        = springSecurityService.currentUser
         def institution = Org.findByShortcode(params.shortcode)
 
-        if (!userCertified(user,institution))
+        if (! userCertified(user, institution))
         {
             response.sendError(403)
             return
@@ -1022,14 +1019,14 @@ class FinanceController {
 
         if (code && ci)
         {
-            def cig_codes = createBudgetCodes(ci,code,institution.shortcode)
+            def cig_codes = createBudgetCodes(ci, code, institution)
             if (cig_codes.isEmpty())
                 result.error = "Unable to create budget code(s): ${code}"
             else
             {
                 result.success = "${cig_codes.size()} new code(s) added to cost item"
                 result.codes   = cig_codes.collect {
-                    "<span class='budgetCode'>${it.budgetcode.value}</span><a id='bcci_${it.id}_${it.costItem.id}' class='badge budgetCode'>x</a>"
+                    "<span class='budgetCode'>${it.budgetCode.value}</span><a id='bcci_${it.id}_${it.costItem.id}' class='badge budgetCode'>x</a>"
                 }
             }
         } else

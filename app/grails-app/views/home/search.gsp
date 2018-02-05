@@ -39,14 +39,14 @@
 
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
 
   <body>
     <div class="content"><div class="row-fluid">
       <div class="row well text-center">
-        <g:form role="form" action="search" controller="home" method="get" class="form-inline">
+        <g:form role="form" action="search" controller="home" method="get" class="ui form">
           <fieldset>
 
             <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">
@@ -59,7 +59,7 @@
             <label>Keywords : </label>
             <input id="kwin" type="text" class="form-control" placeholder="Keyword" name="q" value="${params.q}"/>
             -->
-            <button name="search" type="submit" value="true" class="btn btn-default">Search</button>
+            <button name="search" type="submit" value="true" class="ui button">Search</button>
           </fieldset>
         </g:form>
         <p>
@@ -82,7 +82,7 @@
           <g:each in="${facets}" var="facet">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h5><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
+                <h5 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
               </div>
               <div class="panel-body">
                 <ul>
@@ -137,7 +137,7 @@
                             <td><g:link controller="org" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.TitleInstance'}">
-                          <td><g:link controller="titleInstance" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></td>
+                          <td><g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></td>
                           <td>
                             <g:each in="${hit.getSource().identifiers}" var="id">
                               ${id.type}:${id.value} &nbsp;
@@ -145,17 +145,17 @@
                           </td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.Package'}">
-                          <td><g:link controller="package" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                          <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.Platform'}">
                           <td><g:link controller="platform" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.Subscription'}">
-                          <td><g:link controller="subscription" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} (${hit.getSource().type})</g:link></td>
+                          <td><g:link controller="subscriptionDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} (${hit.getSource().type})</g:link></td>
                           <td>${hit.getSource().identifier}</td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.License'}">
-                          <td><g:link controller="license" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                          <td><g:link controller="licenseDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if>
                       </tr>
                     </g:each>

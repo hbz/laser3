@@ -2,44 +2,32 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
 </head>
 
 <body>
 
-<div class="container">
-    <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">All Packages</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="show"
-                    id="${packageInstance.id}">${packageInstance.name}</g:link></li>
+    <semui:breadcrumbs>
+        <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+        <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+    </semui:breadcrumbs>
 
-        
+<semui:messages data="${flash}" />
 
-    </ul>
-</div>
-<g:if test="${flash.message}">
-    <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-</g:if>
-
-<g:if test="${flash.error}">
-    <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-</g:if>
-
-<div class="container">
-    <h1>${packageInstance?.name}</h1>
+<div>
+    <h1 class="ui header">${packageInstance?.name}</h1>
     <g:render template="nav"/>
 </div>
 
-<div class="container">
-<h3> Institutions for ${consortia.name} consortia </h3>
+<div>
+<h3 class="ui header"> Institutions for ${consortia.name} consortia </h3>
 <br><p> The following list displays all members of ${consortia.name} consortia. To create child subscriptions
     select the desired checkboxes and click 'Create child subscriptions'</p><br>
 <g:form action="generateSlaveSubscriptions" controller="packageDetails" method="POST">
 <input type="hidden" name="id" value="${id}">
-<table class="table table-bordered"> 
+<table class="ui celled la-table table">
 <thead>
     <tr>
         <th>Organisation</th>
@@ -62,7 +50,7 @@
  <dl>
 <dt>Subscription name: <input type="text" name="genSubName" 
     value="Child subscription for ${packageInstance?.name}"/></dt>
-<dd><input type="submit" class="btn btn-primary" value="Create child subscriptions"/></dd>
+<dd><input type="submit" class="ui button" value="Create child subscriptions"/></dd>
 </dl>
 
 

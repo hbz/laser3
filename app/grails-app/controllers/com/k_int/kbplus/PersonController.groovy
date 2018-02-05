@@ -18,10 +18,7 @@ class PersonController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-        if (! params.max) {
-            User user   = springSecurityService.getCurrentUser()
-            params.max = user?.getDefaultPageSize()
-        }
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
@@ -66,7 +63,7 @@ class PersonController {
             return
         }
 
-        [personInstance: personInstance]
+        [personInstance: personInstance, editable: true] // TODO
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -162,13 +159,7 @@ class PersonController {
         }
         
         def user = User.get(springSecurityService.principal.id)
-        def editable
-        if(SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')) {
-          editable = true
-        }
-        else {
-          editable = true // TODO editable = true 
-        }
+        def editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
         // create mandatory PersonPrivateProperties if not existing
 
@@ -307,68 +298,76 @@ class PersonController {
             def roleRdv = RefdataValue.get(params.functionType[key])
             def org     = Org.get(params.org[key])
 
-            result = new PersonRole(prs:prs, functionType:roleRdv, org:org)
-            
-            if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${roleRdv.id}")) {
-                log.debug("ignore adding PersonRole because of existing duplicate")
-            } else if(result){
-                if(result.save(flush:true)) {
-                    log.debug("adding PersonRole ${result}")
-                } else {
-                    log.error("problem saving new PersonRole ${result}")
+            if (roleRdv && org) {
+                result = new PersonRole(prs: prs, functionType: roleRdv, org: org)
+
+                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${roleRdv.id}")) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
+                }
+                else if (result) {
+                    if (result.save(flush:true)) {
+                        log.debug("adding PersonRole ${result}")
+                    }
+                    else {
+                        log.error("problem saving new PersonRole ${result}")
+                    }
                 }
             }
        }
         
        params?.responsibilityType?.each{ key, value ->     
            def result
-           
+
            def roleRdv      = RefdataValue.get(params.responsibilityType[key])
            def org          = Org.get(params.org[key])
-           def subject      // dynamic
-           def subjectType  = params.subjectType[key]
-           
-           switch(subjectType) {
-               case "cluster":
-                   if(params.cluster){
-                       subject = Cluster.get(params.cluster[key])
-                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, cluster:subject)
-                   }
-               break;
-               case"license":
-                   if(params.license){
-                       subject = License.get(params.license[key])
-                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, lic:subject)
-                   }
-               break;
-               case "package":
-                   if(params.package){
-                       subject = Package.get(params.package[key])
-                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, pkg:subject)
-                   }
-               break;
-               case "subscription":
-                   if(params.subscription){
-                       subject = Subscription.get(params.subscription[key])
-                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, sub:subject)
-                   }
-               break;
-               case "titleInstance":
-                   if(params.titleInstance){
-                       subject = TitleInstance.get(params.titleInstance[key])
-                       result = new PersonRole(prs:prs, responsibilityType:roleRdv, org:org, title:subject)
-                   }
-               break;
+
+           if (roleRdv && org) {
+               def subject      // dynamic
+               def subjectType = params.subjectType[key]
+
+               switch (subjectType) {
+                   case "cluster":
+                       if (params.cluster) {
+                           subject = Cluster.get(params.cluster[key])
+                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, cluster: subject)
+                       }
+                       break;
+                   case "license":
+                       if (params.license) {
+                           subject = License.get(params.license[key])
+                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, lic: subject)
+                       }
+                       break;
+                   case "package":
+                       if (params.package) {
+                           subject = Package.get(params.package[key])
+                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, pkg: subject)
+                       }
+                       break;
+                   case "subscription":
+                       if (params.subscription) {
+                           subject = Subscription.get(params.subscription[key])
+                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, sub: subject)
+                       }
+                       break;
+                   case "titleInstance":
+                       if (params.titleInstance) {
+                           subject = TitleInstance.get(params.titleInstance[key])
+                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, title: subject)
+                       }
+                       break;
+               }
            }
-           
+
            // TODO duplicate check
            /* if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.responsibilityType = ${roleRdv.id} and PR.${typeTODOHERE} = ${subject.id}")) {
                log.debug("ignore adding PersonRole because of existing duplicate")
            }
-           else */ if(result){
-               if(result.save(flush:true)) {
+           else */ if (result) {
+               if (result.save(flush:true)) {
                    log.debug("adding PersonRole ${result}")
-               } else {
+               }
+               else {
                    log.error("problem saving new PersonRole ${result}")
                }
            }

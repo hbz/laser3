@@ -4,21 +4,21 @@
 
 <html>
   <head>
-    <meta name="layout" content="pubbootstrap"/>
+    <meta name="layout" content="public"/>
     <title>${message(code:'laser', default:'LAS:eR')} <g:message code="public.license" default=" PublicLicense"/></title>
   </head>
 
   <body>
   <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicExport']"/>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="publicLicense" action="index">All Licenses</g:link> <span class="divider">/</span> </li>
 
         <li> <g:link controller="publicLicense" action="show" id="${params.id}"><g:message code="license.details" default="License Details"/></g:link> </li>
     
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>&nbsp;
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>&nbsp;
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li>
               <g:link action="index" params="${params+[format:'json']}">Json Export</g:link>
@@ -32,14 +32,14 @@
       </ul>
     </div>
 
-    <div class="container">
-      <h1>${license.licensee?.name} ${license.type?.value} License : <g:xEditable owner="${license}" field="reference" id="reference"/></h1>
+    <div>
+      <h1 class="ui header">${license.licensee?.name} ${license.type?.value} License : <semui:xEditable owner="${license}" field="reference" id="reference"/></h1>
     </div>
 
 
-    <div class="container">
+    <div>
             <div class="row">
-                <h6>${message(code:'license.properties')}</h6>
+                <h6 class="ui header">${message(code:'license.properties')}</h6>
 
                 <div id="custom_props_div_props">
                     <g:render template="/templates/properties/custom" model="${[
@@ -48,7 +48,7 @@
                             custom_props_div: "custom_props_div_props" ]}"/>
                 </div>
 
-                <h6>${message(code:'license.openaccess.properties')}</h6>
+                <h6 class="ui header">${message(code:'license.openaccess.properties')}</h6>
 
                 <div id="custom_props_div_oa">
                     <g:render template="/templates/properties/custom" model="${[
@@ -57,7 +57,7 @@
                             custom_props_div: "custom_props_div_oa" ]}"/>
                 </div>
 
-                <h6>${message(code:'license.archive.properties')}</h6>
+                <h6 class="ui header">${message(code:'license.archive.properties')}</h6>
 
                 <div id="custom_props_div_archive">
                     <g:render template="/templates/properties/custom" model="${[
@@ -68,9 +68,9 @@
 
                 <r:script language="JavaScript">
                         $(document).ready(function(){
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
                         });
                 </r:script>
 
@@ -79,23 +79,13 @@
         <div class="row">
               <div class="span8">
   
-                <h6>Information</h6>
+                <h6 class="ui header">Information</h6>
 
                 <div class="inline-lists">
 
-                <g:if test="${flash.message}">
-                  <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-                </g:if>
-  
-                <g:hasErrors bean="${titleInstanceInstance}">
-                  <bootstrap:alert class="alert-error">
-                  <ul>
-                    <g:eachError bean="${titleInstanceInstance}" var="error">
-                      <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-                    </g:eachError>
-                  </ul>
-                  </bootstrap:alert>
-                </g:hasErrors>
+                    <semui:messages data="${flash}" />
+
+                    <semui:errors bean="${titleInstanceInstance}" />
   
   
                   <dl>
@@ -126,14 +116,14 @@
                   <dl>
                       <dt><label class="control-label" for="reference">Reference</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="reference" id="reference"/>
+                        <semui:xEditable owner="${license}" field="reference" id="reference"/>
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="reference">Status</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="status" config='License Status'/>
+                        <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                       </dd>
                   </dl>
       
@@ -141,7 +131,7 @@
                   <dl>
                       <dt><label class="control-label" for="noticePeriod">Notice Period</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="noticePeriod" id="noticePeriod"/>
+                        <semui:xEditable owner="${license}" field="noticePeriod" id="noticePeriod"/>
                      </dd>
                   </dl>
 
@@ -160,49 +150,49 @@
                   <dl>
                       <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> Url</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
+                        <semui:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
                       </dd>
                   </dl>
       
                   <dl>
                       <dt><label class="control-label" for="licensorRef">Licensor Ref</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
+                        <semui:xEditable owner="${license}" field="licensorRef" id="licensorRef"/>
                       </dd>
                   </dl>
       
                   <dl>
                       <dt><label class="control-label" for="licenseeRef">Licensee Ref</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
+                        <semui:xEditable owner="${license}" field="licenseeRef" id="licenseeRef"/>
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="isPublic">Public?</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
+                        <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="isPublic">Start Date</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" type="date" field="startDate" />
+                        <semui:xEditable owner="${license}" type="date" field="startDate" />
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="isPublic">End Date</label></dt>
                       <dd>
-                        <g:xEditable owner="${license}" type="date" field="endDate" />
+                        <semui:xEditable owner="${license}" type="date" field="endDate" />
                       </dd>
                   </dl>
 
                   <dl>
                       <dt><label class="control-label" for="licenseCategory">License Category</label></dt>
                       <dd>
-                        <g:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
+                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
                       </dd>
                   </dl>
 
@@ -219,7 +209,7 @@
                         <ul>
                           <g:each in="${license?.incomingLinks}" var="il">
                             <li>${il.fromLic.reference} (${il.type?.value}) - 
-                            Child: <g:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+                            Child: <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
 
                             </li>
                           </g:each>

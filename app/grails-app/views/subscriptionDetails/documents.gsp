@@ -1,49 +1,28 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
 
   <body>
 
-  <g:render template="/templates/addDocument" model="${[doclist:subscriptionInstance.documents, ownobj:subscriptionInstance, owntp:'subscription']}" />
+    <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <g:if test="${params.shortcode}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-        </g:if>
-        <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.details.label', default:'Details')}</g:link> </li>
-        <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
-        </g:if>
-      </ul>
-    </div>
+    <g:render template="actions" />
 
-    <g:if test="${flash.message}">
-      <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-    </g:if>
+    <semui:messages data="${flash}" />
 
-    <g:if test="${flash.error}">
-      <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-    </g:if>
+      <h1 class="ui header">
+          <semui:editableLabel editable="${editable}" />
+          <semui:xEditable owner="${subscriptionInstance}" field="name" />
+      </h1>
 
-    <div class="container">
+    <g:render template="nav" />
 
-       <h1>${subscriptionInstance?.name}</h1>
+    <g:render template="/templates/documents/table" model="${[instance:subscriptionInstance, context:'documents', redirect:'documents']}"/>
 
-       <g:render template="nav" />
-
-    </div>
-
-
-    <div class="container">
-
-        <g:render template="/templates/documents_table"
-                  model="${[instance:subscriptionInstance,context:'documents',redirect:'documents']}" />
-    </div>
+    <g:render template="/templates/documents/modal" model="${[doclist:subscriptionInstance.documents, ownobj:subscriptionInstance, owntp:'subscription']}"/>
 
   </body>
 </html>

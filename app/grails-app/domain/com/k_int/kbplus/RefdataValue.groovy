@@ -3,6 +3,7 @@ import com.k_int.ClassUtils
 import de.laser.domain.I10nTranslatableAbstract
 import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
+import javax.persistence.Transient
 
 class RefdataValue extends I10nTranslatableAbstract {
 
@@ -28,11 +29,8 @@ class RefdataValue extends I10nTranslatableAbstract {
     // permissions of "EDIT" and "VIEW" indicating that anyone who has the corresponding rights via their
     // connection to that org can perform the indicated action.
     // Object Side = Share Permission, User side == grant permission
-    Set sharedPermissions = []
-
-    static hasMany = [
-        sharedPermissions:OrgPermShare
-    ]
+    @Transient
+    Set<OrgPermShare> sharedPermissions = []
 
     static mapping = {
                     id column: 'rdv_id'
@@ -48,6 +46,32 @@ class RefdataValue extends I10nTranslatableAbstract {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
         softData (nullable:false, blank:false, default:false)
+    }
+
+
+    /**
+     * Create RefdataValue and matching I10nTranslation.
+     * Create RefdataCategory, if needed.
+     * Softdata flag will be removed, if RefdataValue is found.
+     *
+     * @param category_name
+     * @param i10n
+     * @return
+     */
+    static def loc(String category_name, Map i10n) {
+
+        def cat = RefdataCategory.loc(category_name, [:])
+
+        def result = findByOwnerAndValueIlike(cat, i10n['en'])
+        if (! result) {
+            result = new RefdataValue(owner: cat, value: i10n['en'])
+        }
+        result.softData = false
+        result.save(flush: true)
+
+        I10nTranslation.createOrUpdateI10n(result, 'value', i10n)
+
+        result
     }
 
     static def refdataFind(params) {
@@ -67,6 +91,26 @@ class RefdataValue extends I10nTranslatableAbstract {
     static def refdataCreate(value) {
         // return new RefdataValue(value:value);
         return null;
+    }
+
+    static def getByValueAndCategory(value, category) {
+
+        RefdataValue.findByValueAndOwner(value, RefdataCategory.findByDesc(category))
+    }
+
+    static def getByCategoryDescAndI10nValueDe(categoryName, value) {
+
+        def data = RefdataValue.executeQuery("select rdv from RefdataValue as rdv, RefdataCategory as rdc, I10nTranslation as i10n "
+                    + " where rdv.owner = rdc and rdc.desc = ? "
+                    + " and i10n.referenceId = rdv.id and i10n.valueDe = ?"
+                    + " and i10n.referenceClass = 'com.k_int.kbplus.RefdataValue' and i10n.referenceField = 'value'"
+                    , ["${categoryName}", "${value}"] )
+
+        if (data.size() > 0) {
+            return data[0]
+        }
+
+        null
     }
 
     // still provide OLD mapping for string compares and such stuff
@@ -97,5 +141,15 @@ class RefdataValue extends I10nTranslatableAbstract {
         def rc = this.getClass().getName()
         def id = this.getId()
         I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
+    }
+
+    /*
+    * Error 500: Internal Server Error
+    * URI /laser/licenseDetails/index/12
+    * Class org.hibernate.AssertionFailure
+    * Message collection [com.k_int.kbplus.RefdataValue.sharedPermissions] was not processed by flush()
+     */
+    def getSharedPermissions() {
+        sharedPermissions
     }
 }

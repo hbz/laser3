@@ -1,4 +1,4 @@
-<div class="fieldcontain ${hasErrors(bean: clusterInstance, field: 'orgs', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: clusterInstance, field: 'orgs', 'error')} ">
 	<label for="orgs">
 		<g:message code="cluster.orgs.label" default="Orgs" />
 	</label>
@@ -9,8 +9,8 @@
 		<g:each in="${clusterInstance?.orgs?}" var="o">
 		    <li class="ui-delete">
 		    	${o.roleType?.value} - <g:link controller="org" action="show" id="${o.org?.id}">${o.org?.name}</g:link>
-		    	<!-- <button type="button" name="delete" value="${o.encodeAsHTML()}">Delete</button>-->
-		    	<button type="button" name="delete" value="${o.id}">Delete</button>
+		    	<!-- <button type="button" name="delete" value="${o.encodeAsHTML()}">${message('code':'default.button.delete.label')}</button>-->
+		    	<button type="button" name="delete" value="${o.id}">${message('code':'default.button.delete.label')}</button>
 		    </li>
 		</g:each>
 	</ul>
@@ -26,7 +26,7 @@
 			    optionKey="id" 
 			    optionValue="name"/>
 			  
-			<button type="button" name="add">Add</button>
+			<button type="button" name="add">${message('code':'default.button.add.label')}</button>
 		</li>
 	</ul>
 

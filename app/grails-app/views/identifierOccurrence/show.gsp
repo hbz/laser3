@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'identifierOccurrence.label', default: 'IdentifierOccurrence')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
@@ -32,14 +32,10 @@
 			
 			<div class="span9">
 
-				<div class="page-header">
-					<h1><g:message code="default.show.label" args="[entityName]" /></h1>
-				</div>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+				<h1 class="ui header"><g:message code="default.show.label" args="[entityName]" /></h1>
 
+				<semui:messages data="${flash}" />
 				<dl>
 				
 					<g:if test="${identifierOccurrenceInstance?.org}">
@@ -52,7 +48,7 @@
 					<g:if test="${identifierOccurrenceInstance?.ti}">
 						<dt><g:message code="identifierOccurrence.ti.label" default="Ti" /></dt>
 						
-							<dd><g:link controller="titleInstance" action="show" id="${identifierOccurrenceInstance?.ti?.id}">${identifierOccurrenceInstance?.ti?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="titleDetails" action="show" id="${identifierOccurrenceInstance?.ti?.id}">${identifierOccurrenceInstance?.ti?.encodeAsHTML()}</g:link></dd>
 						
 					</g:if>
 				
@@ -75,13 +71,13 @@
 				<g:form>
                                     <sec:ifAnyGranted roles="ROLE_ADMIN">
 					<g:hiddenField name="id" value="${identifierOccurrenceInstance?.id}" />
-					<div class="form-actions">
-						<g:link class="btn" action="edit" id="${identifierOccurrenceInstance?.id}">
-							<i class="icon-pencil"></i>
+					<div class="ui form-actions">
+						<g:link class="ui button" action="edit" id="${identifierOccurrenceInstance?.id}">
+							<i class="write icon"></i>
 							<g:message code="default.button.edit.label" default="Edit" />
 						</g:link>
-						<button class="btn btn-danger" type="submit" name="_action_delete">
-							<i class="icon-trash icon-white"></i>
+						<button class="ui negative button" type="submit" name="_action_delete">
+							<i class="trash icon"></i>
 							<g:message code="default.button.delete.label" default="Delete" />
 						</button>
 					</div>

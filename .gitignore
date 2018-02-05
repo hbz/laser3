@@ -12,3 +12,4 @@ RemoteSystemTempFiles
 .project
 *.war
 out/
+/app/node_modules/

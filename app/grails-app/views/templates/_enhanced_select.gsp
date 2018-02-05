@@ -2,11 +2,11 @@
 
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">×</button>
-    <h3>Select X</h3>
+    <h3 class="ui header">Select X</h3>
   </div>
   
   <div>
-    <table id="escr_tab" class="table table-bordered">
+    <table id="escr_tab" class="ui celled la-table table">
       <thead>
 	<tr id="escr_head_row">
         </tr>
@@ -15,7 +15,7 @@
   </div>
   
   <div class="modal-footer">
-    <a href="#" class="btn" data-dismiss="modal">Close</a>
+    <a href="#" class="ui button" data-dismiss="modal">Close</a>
   </div>
   
 </div>

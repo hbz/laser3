@@ -1,7 +1,7 @@
 %{--AJAX rendered messages--}%
 <g:if test="${info}">
     <div id="info" >
-        <table id="financeErrors" class="table table-striped table-bordered table-condensed">
+        <table id="financeErrors" class="ui striped celled table">
             <thead>
             <tr>
                 <th>Problem/Update</th>
@@ -23,29 +23,29 @@
 %{--Basic static help text--}%
 <g:render template="help" />
 
-<button style="margin-left: 10px" class="btn btn-primary pull-right" type="submit" data-toggle="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
+<button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
 <g:if test="${editable}">
-    <button class="btn btn-primary pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
-    <button style="margin-right: 10px" class="btn btn-primary pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
+    <button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
+    <button class="ui button pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
 </g:if>
-<h1>${institution.name} Cost Items</h1>
-<g:form id="filterView" action="index" method="post" params="${[shortcode:params.shortcode]}">
+<h1 class="ui header">${institution.name} Cost Items</h1>
+<g:form id="filterView" class="ui form" action="index" method="post" params="${[shortcode:params.shortcode]}">
     <input type="hidden" name="shortcode" value="${params.shortcode}"/>
-        <table id="costTable" class="table table-striped table-bordered table-condensed table-tworow">
+        <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
             <thead>
-                <tr style="width: 100%;">
-                    <th rowspan="2" style="width: 10%; vertical-align: top; cursor: pointer;"><a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*</th>
-                    <th style="width: 10%;"><a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>* <br/>
+                <tr>
+                    <th rowspan="2" style="vertical-align: top; cursor: pointer;"><a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*</th>
+                    <th><a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>* <br/>
                         <input autofocus="true" type="text" name="invoiceNumberFilter"
                                class="input-medium required-indicator filterUpdated"
                                id="filterInvoiceNumber" value="${params.invoiceNumberFilter}"/>
                     </th>
-                    <th style="width: 10%;"><a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
+                    <th><a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
                         <input type="text" name="orderNumberFilter"
                                class="input-medium required-indicator filterUpdated"
                                id="filterOrderNumber"  value="${params.orderNumberFilter}" data-type="select"/>
                     </th>
-                    <th style="width: 20%;"><a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*<br/>
+                    <th><a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*<br/>
                         <g:if test="${inSubMode == true}">
                             <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
                                    data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}" class="input-medium required-indicator" style="width:250px;"  /> <br/>
@@ -55,22 +55,24 @@
                         </g:else>
                         <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
                     </th>
-                    <th style="width: 10%;"> <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>* <br/>
+                    <th> <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>* <br/>
                         <input class="input-medium required-indicator filterUpdated" style="width:250px;" name="packageFilter" id="packageFilter" value="${params.packageFilter}"/> <br/>
                     </th>
-                    <th style="vertical-align: top; width: 10%;">IE</th>
-                    <th rowspan="2" style="vertical-align: top; text-align: center; width: 5%">Filter
+                    <th style="vertical-align: top">IE</th>
+                    <th rowspan="2" style="vertical-align: top; text-align: center">Filter
                         <span ${wildcard && filterMode=='ON'? hidden="hidden" : ''}>
                             (${g.message(code: 'financials.help.wildcard')} : <g:checkBox name="wildcard" title="${g.message(code: 'financials.wildcard.title')}" type="checkbox" value="${wildcard}"></g:checkBox> )
-                        </span><br/>
+                        </span>
+                        <br/>
                         <div id="filtering" class="btn-group" data-toggle="buttons-radio">
                             <g:if test="${filterMode=='OFF'}">
-                                <g:select name="filterMode" from="['OFF','ON']" type="button" class="btn btn-primary btn-mini"></g:select><br/><br/>
+                                <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui button"></g:select><br/><br/>
                             </g:if>
                             <g:hiddenField type="hidden" name="resetMode" value="${params.resetMode}"></g:hiddenField>
-                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="btn-block"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
+                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
 
                         </div>
+                        <br />
                         %{-- Advanced search options, todo complete... --}%
                         <a style="cursor: pointer;" ${filterMode=="ON"?"hidden='hidden'":''} id="advancedFilter" data-toggle="#">More filter options</a>
                     </th>
@@ -121,10 +123,12 @@
                                 <input id="adv_codes" name="adv_codes" class="input-medium"/>
                             </li>
                             <li>
-                                <span for="adv_start">Valid Period</span>
-                                <label for="adv_start">From </label>
-                                <input class="datepicker-class input-medium" type="date" placeholder="start date" id="adv_start" name="adv_start" /> </br>
-                                <label for="adv_end">To</label><input type="date" class="datepicker-class input-medium" placeholder="end date" id="adv_end" name="adv_end" />
+                                <div class="fields">
+                                    <semui:datepicker label ="datamanager.changeLog.from_date" name="newStartDate" placeholder ="default.date.label" >
+                                    </semui:datepicker>
+                                    <semui:datepicker label ="datamanager.changeLog.to_date" name="newEndDate" placeholder ="default.date.label" value ="${params.endDate}">
+                                    </semui:datepicker>
+                                </div>
                             </li>
                             <li>
                                 <label for="adv_costItemStatus">Cost Status</label>
@@ -160,7 +164,9 @@
                                     <option value="gt">&gt;</option>
                                     <option value="gt">&lt;</option>
                                 </select>
-                                <input  id="adv_datePaid" name="adv_datePaid" class="datepicker-class input-medium" type="date" class="input-small"  /> </br>
+
+                                <semui:datepicker label="financials.datePaid" name="newDate" placeholder ="financials.datePaid" value="${params.newDate}" >
+                                </semui:datepicker>
                             </li>
                             <li>
                                 <label for="adv_ie">Issue Entitlement</label>

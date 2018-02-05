@@ -8,7 +8,7 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		DEPRECATED
+		<h2 class="ui header">DEPRECATED</h2>
 		<a href="#list-org" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
@@ -17,11 +17,9 @@
 			</ul>
 		</div>
 		<div id="list-org" class="content scaffold-list" role="main">
-			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
-			<g:if test="${flash.message}">
-				<div class="message" role="status">${flash.message}</div>
-			</g:if>
-			<table>
+			<h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
+			<semui:messages data="${flash}" />
+			 <table class="ui celled la-table table">
 			<thead>
 					<tr>
 					
@@ -59,9 +57,9 @@
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
-				<g:paginate total="${orgInstanceCount ?: 0}" />
-			</div>
+
+				<semui:paginate total="${orgInstanceCount ?: 0}" />
+
 		</div>
 	</body>
 </html>

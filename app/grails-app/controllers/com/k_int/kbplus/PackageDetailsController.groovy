@@ -1,41 +1,61 @@
 package com.k_int.kbplus
 
-import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
-import groovy.xml.StreamingMarkupBuilder
 import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.hssf.usermodel.*
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import java.text.SimpleDateFormat
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 
 class PackageDetailsController {
 
-  def springSecurityService
-  def transformerService
-  def genericOIDService
-  def ESSearchService
-  def exportService
-  def institutionsService
-  def executorWrapperService
+    def springSecurityService
+    def transformerService
+    def genericOIDService
+    def ESSearchService
+    def exportService
+    def institutionsService
+    def executorWrapperService
+    def permissionHelperService
+    def contextService
+    def taskService
   
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def index() {
+        redirect controller: 'packageDetails', action: 'list', params: params
+        return // ----- deprecated
+
+        def result = [:]
+        result.user = springSecurityService.getCurrentUser()
+        params.max = result.user.defaultPageSize
+
+        if (springSecurityService.isLoggedIn()) {
+            params.rectype = "Package" // Tells ESSearchService what to look for
+            if(params.q == "")  params.remove('q');
+
+            if(params.search.equals("yes")){
+                //when searching make sure results start from first page
+                params.offset = 0
+                params.remove("search")
+            }
+
+            result =  ESSearchService.search(params)
+        }
+        result
+    }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
-
       result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
 
       result.editable = true
 
-      def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
+      def paginate_after = params.paginate_after ?: ((2 * result.max)-1)
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
       def deleted_package_status =  RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
@@ -105,7 +125,6 @@ class PackageDetailsController {
            out.close()
         }
       }
-
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -121,9 +140,9 @@ class PackageDetailsController {
       def isAdmin
       if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
           isAdmin = true;
-      }else{
-        hasAccess = result.packageInstance.orgLinks.find{it.roleType?.value == 'Package Consortia' &&
-        it.org.hasUserWithRole(result.user,'INST_ADM') }
+      }
+      else {
+        hasAccess = result.packageInstance.orgs.find{it.roleType?.value == 'Package Consortia' && permissionHelperService.hasUserWithRole(result.user, it.org, 'INST_ADM') }
       }
 
       if( !isAdmin &&  hasAccess == null ) {
@@ -175,6 +194,7 @@ class PackageDetailsController {
       redirect controller:'packageDetails', action:'consortia', params: [id:params.id]
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def createNewSubscription(org,packageId,genSubName){
       //Initialize default subscription values
       log.debug("Create slave with org ${org} and packageID ${packageId}")
@@ -394,7 +414,7 @@ class PackageDetailsController {
 
       result.user = User.get(springSecurityService.principal.id)
       def packageInstance = Package.get(params.id)
-      if (!packageInstance) {
+      if (! packageInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Package'), params.id])
         redirect action: 'list'
         return
@@ -406,11 +426,18 @@ class PackageDetailsController {
 
       log.debug("Package has ${result.pendingChanges?.size()} pending changes");
 
-      result.pkg_link_str="${grailsApplication.config.SystemBaseURL}/packageDetails/show/${params.id}"
+      result.pkg_link_str="${grailsApplication.config.grails.serverURL}/packageDetails/show/${params.id}"
 
       if ( packageInstance.forumId != null && grailsApplication.config.ZenDeskBaseURL ) {
         result.forum_url = "${grailsApplication.config.ZenDeskBaseURL}/forums/${packageInstance.forumId}"
       }
+
+        // tasks
+        def contextOrg  = contextService.getOrg()
+        result.tasks    = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
+        def preCon      = taskService.getPreconditions(contextOrg)
+        result << preCon
+
 
       result.subscriptionList=[]
       // We need to cycle through all the users institutions, and their respective subscripions, and add to this list
@@ -824,27 +851,6 @@ class PackageDetailsController {
     }
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def index() {
-    def result = [:]
-    result.user = springSecurityService.getCurrentUser()
-    params.max = result.user.defaultPageSize
-
-    if (springSecurityService.isLoggedIn()) {
-      params.rectype = "Package" // Tells ESSearchService what to look for
-      if(params.q == "")  params.remove('q');
-     
-      if(params.search.equals("yes")){
-        //when searching make sure results start from first page
-        params.offset = 0
-        params.remove("search")
-      }
-
-      result =  ESSearchService.search(params)   
-    }
-    result  
-  }
-
   def isEditable(){
       if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
           return true
@@ -867,15 +873,27 @@ class PackageDetailsController {
   }
 
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def notes() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.packageInstance = Package.get(params.id)
-    result.editable=isEditable()
-    result
-  }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def notes() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.packageInstance = Package.get(params.id)
+        result.editable=isEditable()
+        result
+    }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def tasks() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.packageInstance = Package.get(params.id)
+        result.editable=isEditable()
+
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance)
+        log.debug(result.taskInstanceList)
+
+        result
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def packageBatchUpdate() {

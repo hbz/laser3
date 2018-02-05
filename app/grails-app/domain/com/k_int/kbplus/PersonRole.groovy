@@ -51,15 +51,48 @@ class PersonRole {
      * Generic setter
      */
     def setReference(def owner) {
-        lic     = owner instanceof License ? owner : lic
         org     = owner instanceof Org ? owner : org
+
+        lic     = owner instanceof License ? owner : lic
         cluster = owner instanceof Cluster ? owner : cluster
         pkg     = owner instanceof Package ? owner : pkg
         sub     = owner instanceof Subscription ? owner : sub
         title   = owner instanceof TitleInstance ? owner : title
     }
 
+    def getReference() {
+
+        if (lic)        return 'lic:' + lic.id
+        if (cluster)    return 'cluster:' + cluster.id
+        if (pkg)        return 'pkg:' + pkg.id
+        if (sub)        return 'sub:' + sub.id
+        if (title)      return 'title:' + title.id
+    }
+
     static getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
+    }
+
+    static def lookup(prs, lic, org, cluster, pkg, sub, title, start_date, end_date, functionType) {
+
+        def personRole
+        def p = PersonRole.findAllWhere(
+                prs:        prs,
+                lic:        lic,
+                org:        org,
+                cluster:    cluster,
+                pkg:        pkg,
+                sub:        sub,
+                title:      title,
+                start_date: start_date,
+                end_date:   end_date,
+                functionType:   functionType
+        ).sort({id: 'asc'})
+
+        if ( p.size() > 0 ) {
+            personRole = p[0]
+        }
+
+        personRole
     }
 }

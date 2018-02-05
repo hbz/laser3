@@ -4,12 +4,12 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
 </head>
 <body>
 
-<div class="container">
+<div>
     <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <g:if test="${params.shortcode}">
@@ -18,20 +18,13 @@
         <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.details.label', default:'Details')}</g:link> </li>
 </div>
 
-<g:if test="${flash.message}">
-    <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-</g:if>
-
-<g:if test="${flash.error}">
-    <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-</g:if>
-
-<div class="container">
-    <h1>${subscriptionInstance.name}</h1>
+<semui:messages data="${flash}" />
+<div>
+    <h1 class="ui header">${subscriptionInstance.name}</h1>
     <g:render template="nav"  />
 </div>
 
-<div class="container">
+<div>
 
     <dl>
         <g:if test="${num_ie_rows > max}">
@@ -41,7 +34,7 @@
 
         <dd>
 
-            <table  class="table table-striped table-bordered">
+            <table  class="ui sortable celled la-rowspan table">
                 <thead>
 
                 <tr>
@@ -119,11 +112,10 @@
         </dd>
     </dl>
 
-    <div class="pagination" style="text-align:center">
+
         <g:if test="${titlesList}" >
-            <bootstrap:paginate  action="${screen}" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_ie_rows}" />
+            <semui:paginate  action="${screen}" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_ie_rows}" />
         </g:if>
-    </div>
 
 </div>
 </body>

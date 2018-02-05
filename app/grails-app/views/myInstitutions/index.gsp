@@ -1,15 +1,15 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
 
   <body>
-    <div class="container">
+    <div>
 
       <g:if test="${staticAlerts.size() > 0}">
-        <table class="table table-bordered">
+        <table class="ui celled la-table table">
           <tr><th>System Alert</th></tr>
 
           <g:each in="${staticAlerts}" var="sa">
@@ -27,7 +27,7 @@
         </table>
       </g:if>
 
-      <table class="table table-bordered">
+      <table class="ui celled la-table table">
         <tr>
           <th colspan="3">Note attached to</th>
         </tr>

@@ -49,14 +49,14 @@ class ExportService {
 				writer.write("${val(result.institution?.name)},${val(result.validOn)},${val(result.keyWord)},${val(result.propertyFilterType)},${val(result.propertyFilter)}\n" )
 				writer.write("\n")	
 			}
-			writer.write("KB+ Licence ID,LicenceReference,NoticePeriod,LicenceURL,LicensorRef,LicenceeRef,StartDate,EndDate,Licence Category,Licence Status")
+			writer.write("KB+ Licence ID,LicenceReference,NoticePeriod,LicenceURL,StartDate,EndDate,Licence Category,Licence Status")
 			propertiesSet.each{
 				writer.write(",${val(it)}")
 				writer.write(",\"${it} Notes\"")
 			}
 			writer.write("\n")
 			licenses.each{ lic ->
-				writer.write("${lic.id},${val(lic.reference)},${val(lic.noticePeriod)},${val(lic.licenseUrl)},${val(lic.licensorRef)},${val(lic.licenseeRef)},${val(lic.startDate)},${val(lic.endDate)},${val(lic.licenseCategory?.value)},${val(lic.status?.value)}")
+				writer.write("${lic.id},${val(lic.reference)},${val(lic.noticePeriod)},${val(lic.licenseUrl)},${val(lic.startDate)},${val(lic.endDate)},${val(lic.licenseCategory?.value)},${val(lic.status?.value)}")
  
 				propertiesSet.each{ prop_name ->
 					def prop_match = lic.customProperties.find{it.type.name == prop_name}
@@ -762,8 +762,8 @@ class ExportService {
 			lic."LicenceReference" = license.reference
 			lic."NoticePeriod" = license.noticePeriod
 			lic."LicenceURL" = license.licenseUrl
-			lic."LicensorRef" = license.licensorRef
-			lic."LicenseeRef" = license.licenseeRef
+			// removed - lic."LicensorRef" = license.licensorRef
+			// removed - lic."LicenseeRef" = license.licenseeRef
 				
 			lic."RelatedOrgs" = []
 			addOrgMap(lic, license.orgLinks)

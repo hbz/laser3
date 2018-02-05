@@ -1,0 +1,14 @@
+{
+    "properties" : {
+      "alias" : { 
+         "type" : "string",
+        "analyzer": "snowball"
+      },
+      "action" : { 
+         "type" : "string"
+      },
+      "controller" : { 
+        "type" : "string"
+      }
+    }
+}

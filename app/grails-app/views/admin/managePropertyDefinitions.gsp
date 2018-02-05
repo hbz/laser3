@@ -2,38 +2,28 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<title>${message(code: 'menu.admin.managePropertyDefinitions')}</title>
 	</head>
 
-		<laser:breadcrumbs>
-			<laser:crumb message="menu.admin.dash" controller="admin" action="index" />
-			<laser:crumb message="menu.admin.manageI10n" class="active"/>
-		</laser:breadcrumbs>
+		<semui:breadcrumbs>
+			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+			<semui:crumb message="menu.admin.manageI10n" class="active"/>
+		</semui:breadcrumbs>
 
-		<div class="container">
-			<h1><g:message code="menu.admin.managePropertyDefinitions"/></h1>
-		</div>
+		<h1 class="ui header"><g:message code="menu.admin.managePropertyDefinitions"/></h1>
 
-		<div class="container">
-			<div class="row">
-				<div class="span12">
-					<laser:card class="card-grey">
-						<input class="btn btn-primary" value="${message(code:'propertyDefinition.create_new.label')}"
-							   data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
-					</laser:card>
-				</div>
-			</div>
-		</div>
+		<semui:messages data="${flash}" />
 
-		<laser:flash data="${flash}" />
+		<semui:card class="card-grey">
+			<input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}" href="#addPropertyDefinitionModal"  data-semui="modal"/>
+		</semui:card>
 
-		<div class="container">
-			<div class="row">
-				<div class="span12">
+        <div class="ui grid">
+            <div class="twelve wide column">
 					<g:each in="${propertyDefinitions}" var="entry">
-						<h3>${entry.key}</h3>
-                        <table class="table table-striped table-hover table-bordered">
+						<h6 class="ui header">${entry.key}</h6>
+                        <table class="ui celled la-table table">
 							<thead>
 							<tr>
 								<th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
@@ -57,68 +47,61 @@
 												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
 											</g:if>
 										</td>
-										<td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-										<!--<td><g:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
-										<td><g:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
+										<td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+										<td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+										<!--<td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
+										<td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
 									</tr>
 								</g:each>
 
 							</tbody>
 						</table>
 					</g:each>
-				</div><!--.span12-->
-			</div><!--.row-->
-		</div>
+            </div><!-- .twelve -->
+        </div><!-- .grid -->
 
-		<div id="addPropertyDefinitionModal" class="modal hide">
+        <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
-			<g:form id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
-				<input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
-				<input type="hidden" name="ownerClass" value="${this.class}"/>
+            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
+                <input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
+                <input type="hidden" name="ownerClass" value="${this.class}"/>
 
-				<div class="modal-body">
-					<dl>
-						<dt>
-							<label class="control-label">${message(code:'propertyDefinition.create_new.label')}</label>
-						</dt>
-						<dd>
-							<label class="property-label">Name:</label> <input type="text" name="cust_prop_name"/>
-						</dd>
+				<div class="field">
+                	<label class="property-label">Name</label>
+                	<input type="text" name="cust_prop_name"/>
+                </div>
 
-						<dd>
-							<label class="property-label">Type:</label> <g:select
-								from="${PropertyDefinition.validTypes.entrySet()}"
-								optionKey="value" optionValue="key"
-								name="cust_prop_type"
-								id="cust_prop_modal_select" />
-						</dd>
+                <div class="fields">
+                    <div class="field five wide">
+                        <label class="property-label">Context:</label>
+                        <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
+                    </div>
 
-						<div class="hide" id="cust_prop_ref_data_name">
-							<dd>
-								<label class="property-label">Refdata Category:</label>
-								<input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-							</dd>
-						</div>
+                    <div class="field five wide">
+                        <label class="property-label">Type</label>
+                        <g:select
+                            from="${PropertyDefinition.validTypes.entrySet()}"
+                            optionKey="value" optionValue="key"
+                            name="cust_prop_type"
+                            id="cust_prop_modal_select" />
+                    </div>
 
-						<dd>
-							<label class="property-label">Context:</label>
-							<g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
-						</dd>
+                    <div class="field six wide hide" id="cust_prop_ref_data_name">
+                        <label class="property-label">Kategorie</label>
+                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                    </div>
+                </div>
 
-						<dd>
-							<label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
-                            <g:checkBox type="text" name="cust_prop_multiple_occurence" />
-						</dd>
-					</dl>
-				</div>
+                <div class="fields">
+                    <div class="field five wide">
+                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}</label>
+                        <g:checkBox type="text" name="cust_prop_multiple_occurence" />
+                    </div>
+                </div>
 
-				<div class="modal-footer">
-					<a href="#" class="btn" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-					<input class="btn btn-success" name="SavePropertyDefinition" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
-				</div>
-			</g:form>
-		</div>
+            </g:form>
+
+        </semui:modal>
 
 		<g:javascript>
 

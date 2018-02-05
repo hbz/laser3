@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
-    <r:require modules="kbplus" />
+    <r:require modules="kbplus" /><!-- DEPRECATED; legacy menu structure backup -->
     
     <script type="text/javascript">
      var gspLocale = "${message(code:'default.locale.label', default:'en')}";
@@ -45,22 +45,22 @@
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container">
+        <div>
             <g:link controller="home" action="index" class="brand">LAS:eR</g:link>
             <sec:ifLoggedIn>
                 <ul class="nav">
                 <g:if test="${false}">
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle explorer-link" data-toggle="dropdown"> Data Explorer <b class="caret"></b> </a>
+                    <a href="#" class="dropdown-toggle explorer-link" data-toggle="dropdown"> Data Explorer <strong class="caret"></strong> </a>
                     <ul class="dropdown-menu" style="max-width:none;">
                       <li<%= request.forwardURI == "${createLink(uri: '/home/search')}" ? ' class="active"' : '' %>><a href="${createLink(uri: '/home/search')}">Search</a></li>
-                      <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="package">Package</g:link></li>
+                      <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="packageDetails">Package</g:link></li>
                       <li <%='org'== controllerName ? ' class="active"' : '' %>><g:link controller="org">Organisations</g:link></li>
                       <li <%='platform'== controllerName ? ' class="active"' : '' %>><g:link controller="platform">Platform</g:link></li>
-                      <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstance">Title Instance</g:link></li>
+                      <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleDetails">Title Instance</g:link></li>
                       <li <%='titleInstancePackagePlatform'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link></li>
-                      <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscription">Subscriptions</g:link></li>
-                      <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="license">Licenses</g:link></li>
+                      <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails">Subscriptions</g:link></li>
+                      <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="licenseDetails">Licenses</g:link></li>
                       <li <%='onixplLicenseDetails'== controllerName ? ' class="active"' : '' %>><g:link controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link></li>
                     </ul>
                   </li>
@@ -68,7 +68,7 @@
                 </ul>
                 <ul class="nav">
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> ${message(code:'menu.institutions')} <b class="caret"></b> </a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> ${message(code:'menu.institutions')} <strong class="caret"></strong> </a>
                     <ul class="dropdown-menu" style="max-width:none;">
 
 
@@ -93,7 +93,7 @@
                                                action="instdash"
                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.dash')} </g:link></li>
                                    <li><g:link controller="myInstitutions"
-                                               action="todo"
+                                               action="changes"
                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.todo')} </g:link></li>
                                    <li><g:link controller="myInstitutions"
                                                action="currentLicenses"
@@ -167,7 +167,7 @@
                 <ul class="nav">
                 <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
                    <li class="dropdown">
-                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">${message(code:'menu.datamanager')}<b class="caret"></b> </a>
+                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">${message(code:'menu.datamanager')}<strong class="caret"></strong> </a>
                      <ul class="dropdown-menu">
                        <li <%= ( ( 'dataManager'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link></li>
@@ -217,7 +217,7 @@
                 <ul class="nav">
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Admin Actions <b class="caret"></b> </a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Admin Actions <strong class="caret"></strong> </a>
                     <ul class="dropdown-menu">
                       <li <%= ( ( 'admin'== controllerName ) && ( 'manageAffiliationRequests'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="admin" action="manageAffiliationRequests">Manage Affiliation Requests</g:link></li>
@@ -366,7 +366,7 @@
                     <g:if env="development">
                         <ul class="nav"><!-- demo -->
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Demo <b class="caret"></b> </a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Demo <strong class="caret"></strong> </a>
                                 <ul class="dropdown-menu">
                                     <li><g:link controller="address" action="index">Address Controller</g:link></li>
                                     <li><g:link controller="cluster" action="index">Cluster Controller</g:link></li>
@@ -376,10 +376,10 @@
 
                                     <li><g:link controller="identifier" action="index">Identifier Controller</g:link></li>
                                     <li><g:link controller="organisations" action="index">Organisations Controller</g:link></li>
-                                    <li><g:link controller="license" action="index">License Controller</g:link></li>
-                                    <li><g:link controller="package" action="index">Package Controller</g:link></li>
-                                    <li><g:link controller="subscription" action="index">Subscription Controller</g:link></li>
-                                    <li><g:link controller="titleInstance" action="index">Title Controller</g:link></li>
+                                    <li><g:link controller="licenseDetails" action="index">License Controller</g:link></li>
+                                    <li><g:link controller="packageDetails" action="index">Package Controller</g:link></li>
+                                    <li><g:link controller="subscriptionDetails" action="index">Subscription Controller</g:link></li>
+                                    <li><g:link controller="titleDetails" action="index">Title Controller</g:link></li>
                                 </ul>
                             </li>
                         </ul><!-- demo -->
@@ -399,7 +399,7 @@
               <sec:ifLoggedIn>
                 <g:if test="${user}">
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">${user.displayName} <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">${user.displayName} <strong class="caret"></strong></a>
                     <ul class="dropdown-menu">
                       <li <%= ( ( 'profile'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="profile" action="index">${message(code:'menu.user.profile')}</g:link></li>
@@ -420,7 +420,7 @@
    <div class="navbar-push"></div>
    <sec:ifLoggedIn>
      <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
-       <div class="container">
+       <div>
          <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
             Your display name</g:link> as soon as possible.
          </bootstrap:alert>
@@ -443,6 +443,24 @@
   </div>
 
   <r:layoutResources/>
+
+    <!-- todo: remove -->
+    <g:if test="${editable}">
+      <div class="debug-editable-flag">Editierbar</div>
+        <style>
+            .debug-editable-flag {
+                position: absolute;
+                top: 50px; left: 0;
+                padding: 0.3em 1em;
+                background-color: orange;
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+                text-shadow: 3px 3px 3px rgba(0,0,0, 0.15);
+                z-index: 5000;
+            }
+        </style>
+    </g:if>
 
   </body>
 </html>

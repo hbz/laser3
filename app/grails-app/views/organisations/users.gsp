@@ -2,34 +2,32 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
     <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
 
-    <div class="container">
-      <h1>${orgInstance.name}</h1>
+      <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${orgInstance.name}
+      </h1>
+
       <g:render template="nav" contextPath="." />
-    </div>
 
-    <div class="container">
-      
+      <semui:messages data="${flash}" />
 
-      <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-
-
-      <table  class="table table-striped table-bordered">
-        <tr>
-          <th>${message(code:'user.label', default:'User')}</th>
-          <th>${message(code:'user.email', default:'Email')}</th>
-          <th>${message(code:'user.sys_role', default:'System Role')}</th>
-          <th>${message(code:'user.inst_role', default:'Institutional Role')}</th>
-          <th>${message(code:'user.status', default:'Status')}</th>
-          <th>${message(code:'user.actions', default:'Actions')}</th>
-        </tr>
+      <table  class="ui celled la-table table">
+        <thead>
+          <tr>
+            <th>${message(code:'user.label', default:'User')}</th>
+            <th>${message(code:'user.email', default:'Email')}</th>
+            <th>${message(code:'user.sys_role', default:'System Role')}</th>
+            <th>${message(code:'user.inst_role', default:'Institutional Role')}</th>
+            <th>${message(code:'user.status', default:'Status')}</th>
+            <th>${message(code:'user.actions', default:'Actions')}</th>
+          </tr>
+        </thead>
 
         <g:each in="${users}" var="userOrg">
           <tr>
@@ -53,17 +51,23 @@
             <td>
               <g:if test="${editable}">
               <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
-                <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
+                <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui basic icon negative button">
+                  <i class="minus icon"></i>
+                </g:link>
               </g:if>
               <g:else>
-                <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">${message(code:'default.button.allow.label', default:'Allow')}</g:link>
+                <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui basic icon positive button">
+                  <i class="checkmark icon"></i>
+                </g:link>
               </g:else>
-              <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="btn">${message(code:'default.button.delete_link.label', default:'Delete Link')}</g:link>
+              <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui basic icon negative button">
+                <i class="trash icon"></i>
+              </g:link>
             </g:if>
             </td>
           </tr>
         </g:each>
       </table>
-    </div>
+
   </body>
 </html>

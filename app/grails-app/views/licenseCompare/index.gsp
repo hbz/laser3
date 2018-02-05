@@ -3,25 +3,24 @@
 <!doctype html>
 <html>
 <head>
-<meta name="layout" content="mmbootstrap" />
-<title>${message(code:'laser', default:'LAS:eR')}</title>
+<meta name="layout" content="semanticUI" />
+<title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'menu.institutions.comp_lic')}</title>
 
 </head>
 
 <body>
-	<div class="container">
-		<ul class="breadcrumb">
-			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
-				class="divider">/</span></li>
-			<li>${message(code:'menu.institutions.comp_lic')}</li>
-		</ul>
-	</div>
 
-	<div class="container">
-		<h1>${message(code:'menu.institutions.comp_lic')}</h1>
-	</div>
+	<semui:breadcrumbs>
+		<g:if test="${institution}">
+			<semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution?.name}" />
+			<semui:crumb text="${message(code:'license.current')}" controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" />
+		</g:if>
+		<semui:crumb class="active" message="menu.institutions.comp_lic" />
+	</semui:breadcrumbs>
 
-	<div class="container">
+	<h1 class="ui header">${message(code:'menu.institutions.comp_lic')}</h1>
+
+	<div>
 		<div class="row">
 			<div class="span8">
 				<g:form id="compare" name="compare" action="compare" method="get">
@@ -30,7 +29,7 @@
                                                 <label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
 
                                                 <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
-                                                <button type="button" style="margin-top:10px" class="btn btn-success" id="addToList" >${message(code:'default.button.add.label', default:'Add')}</button>
+                                                <button type="button" style="margin-top:10px" class="ui positive button" id="addToList" >${message(code:'default.button.add.label', default:'Add')}</button>
 					</div>
 					
 					<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>
@@ -38,7 +37,7 @@
 					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicenses" name="selectedLicenses" class="compare-license" from="${[]}" multiple="true" />
 			
 					<div>
-					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="btn btn-primary" />
+					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
 					</div>
 				</g:form>
 			</div>

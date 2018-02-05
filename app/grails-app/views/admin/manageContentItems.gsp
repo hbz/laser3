@@ -1,56 +1,45 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Manage Content Items</title>
   </head>
 
   <body>
 
-      <laser:breadcrumbs>
-          <laser:crumb message="menu.admin.dash" controller="admin" action="index" />
-          <laser:crumb text="Content Items" class="active"/>
-      </laser:breadcrumbs>
+      <semui:breadcrumbs>
+          <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+          <semui:crumb text="Content Items" class="active"/>
+      </semui:breadcrumbs>
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+      <semui:messages data="${flash}" />
 
 
-    <div class="container">
-      <div class="row">
-        <div class="span8">
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <td>Key</td>
-                <td>Locale</td>
-                <td>Content</td>
-                 <td></td>
-              </tr>
-            </thead>
+    <div class="ui grid">
+      <div class="twelve wide column">
+          <table class="ui celled la-table table">
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Locale</th>
+                        <th>Content</th>
+                        <th></th>
+                    </tr>
+                </thead>
             <tbody>
               <g:each in="${items}" var="item">
                 <tr>
                   <td>${item.key}</td>
                   <td>${item.locale}</td>
                   <td>${item.content}</td>
-                  <td><g:link action="editContentItem" id="${item.key}:${item.locale?:''}">Edit</g:link></td>
+                  <td><g:link action="editContentItem" id="${item.key}:${item.locale?:''}">${message('code':'default.button.edit.label')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>
           </table>
-        </div>
-        <div class="span4">
-            <laser:card class="card-grey">
+        </div><!-- .twelve -->
+        <div class="four wide column">
+            <semui:card class="card-grey">
           <g:form action="newContentItem">
             <dl>
               <dt>New Content Item Key</dt>
@@ -71,11 +60,11 @@
               <dt>New Content (Markdown)</dt>
               <dd><textarea name="content" rows="5"></textarea></dd>
             </dl>
-            <input type="submit" value="Create" class="btn btn-primary"/>
+            <input type="submit" value="Create" class="ui button"/>
           </g:form>
-            </laser:card>
-        </div>
-      </div>
-    </div>
+            </semui:card>
+        </div><!-- .four -->
+      </div><!-- .grid -->
+
   </body>
 </html>

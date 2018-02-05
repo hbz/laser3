@@ -1,10 +1,12 @@
 package com.k_int.kbplus.auth
 
+import de.laser.domain.Permissions
+
 import javax.persistence.Transient
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 
-class User {
+class User implements Permissions {
 
   transient springSecurityService
 
@@ -94,6 +96,12 @@ class User {
     def o = Org.executeQuery(qry, [this]);
     o
   }
+  @Transient def getAuthorizedOrgsIds() {
+    // def result = Org.find(
+    def qry = "select o.id from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+    def o = Org.executeQuery(qry, [this]);
+    o
+  }
 
   /**
    * This method lists all the principals that convey a particular permission on a user. For example
@@ -156,7 +164,25 @@ class User {
     userPrefs
   }
 
-  def hasPerm(perm,user) {
-    false
-  }
+    def isEditableBy(user) {
+        hasPerm("edit", user)
+    }
+
+    def hasPerm(perm, user) {
+        false
+    }
+
+    def hasRole(roleName) {
+        def result = false
+        def role = Role.findByAuthority(roleName)
+        if (role) {
+            result = (null != roles.contains(UserRole.findByUserAndRole(this, role)))
+        }
+        result
+    }
+
+    @Override
+    String toString() {
+        display + ' (' + id + ')'
+    }
 }

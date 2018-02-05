@@ -3,13 +3,13 @@
 <!doctype html>
 <html>
 <head>
-<meta name="layout" content="mmbootstrap" />
+<meta name="layout" content="semanticUI" />
 <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicense.compare.label', default:'ONIX-PL License Comparison')}</title>
 
 </head>
 
 <body>
-	<div class="container">
+	<div>
 		<ul class="breadcrumb">
 			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
 				class="divider">/</span></li>
@@ -17,11 +17,11 @@
 		</ul>
 	</div>
 
-	<div class="container">
-		<h1>${message(code:'menu.institutions.comp_onix')}</h1>
+	<div>
+		<h1 class="ui header">${message(code:'menu.institutions.comp_onix')}</h1>
 	</div>
 
-	<div class="container">
+	<div>
 		<div class="row">
 			<div class="span8">
 				<g:form id="compare" name="compare" action="matrix" method="post">
@@ -29,7 +29,7 @@
 						<label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
 
 		                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
-		                <button type="button" class="btn btn-success" id="addToList" style="margin-top:10px">${message(code:'default.button.add.label', default:'Add')}</button>
+		                <button type="button" class="ui positive button" id="addToList" style="margin-top:10px">${message(code:'default.button.add.label', default:'Add')}</button>
 					</div>
 					
 					<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>
@@ -43,7 +43,7 @@
 					</div>
 
 					<div>
-					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="btn btn-primary" />
+					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
 					</div>
 				</g:form>
 			</div>

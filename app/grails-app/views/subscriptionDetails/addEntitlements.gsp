@@ -2,57 +2,66 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
-  <body>
+    <body>
+        <semui:breadcrumbs>
+            <g:if test="${params.shortcode}">
+                <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
+            </g:if>
+            <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
+            <semui:crumb class="active" text="${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}" />
+        </semui:breadcrumbs>
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
-        <g:if test="${params.shortcode}">
-          <li> <g:link controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}"> ${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-        </g:if>
-        <li> <g:link controller="subscriptionDetails" action="addEntitlements" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}</g:link> </li>
-        <g:if test="${editable}">
-          <li class="pull-right"><span class="badge badge-warning">${message(code:'default.editable', default:'Editable')}</span>&nbsp;</li>
-        </g:if>
-      </ul>
-    </div>
+        <g:render template="actions" />
 
-    <div class="container">
-      <h1><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
-      <g:render template="nav" contextPath="." />
-    </div>
+        <h1 class="ui header">
+            <semui:editableLabel editable="${editable}" />
+            <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+        </h1>
 
-    <g:set var="counter" value="${offset+1}" />
+        <g:render template="nav" contextPath="." />
 
-    <div class="container">
+        <g:set var="counter" value="${offset+1}" />
 
-      <dl>
-        <dt>${message(code:'subscription.details.availableTitles', default:'Available Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(tipps?.size())),num_tipp_rows])} )
-          <g:form action="addEntitlements" params="${params}" method="get" class="form-inline">
+      <semui:filter>
+        ${message(code:'subscription.details.availableTitles', default:'Available Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(tipps?.size())),num_tipp_rows])} )
+          <g:form class="ui form" action="addEntitlements" params="${params}" method="get">
             <input type="hidden" name="sort" value="${params.sort}">
             <input type="hidden" name="order" value="${params.order}">
-            <label>${message(code:'subscription.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-            <label>${message(code:'subscription.details.from_pkg', default:'From Package')}:</label> <select name="pkgfilter">
-                               <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
-                               <g:each in="${subscriptionInstance.packages}" var="sp">
-                                 <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
-                               </g:each>
-                            </select> &nbsp;
-            &nbsp; <label>${message(code:'default.startsBefore.label', default:'Starts Before')}: </label>
-            <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
-            &nbsp; <label>${message(code:'default.endsAfter.label', default:'Ends After')}: </label>
-            <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 
-            <input type="submit" style="margin-left:10px;" class="btn btn-primary" value="${message(code:'default.button.submit.label', default:'Submit')}">
+              <div class="fields two">
+                  <div class="field">
+                      <label>${message(code:'subscription.compare.filter.title', default:'Filters - Title')}</label>
+                      <input name="filter" value="${params.filter}"/>
+                  </div>
+                  <div class="field">
+                      <label>${message(code:'subscription.details.from_pkg', default:'From Package')}</label>
+                      <select name="pkgfilter">
+                          <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
+                          <g:each in="${subscriptionInstance.packages}" var="sp">
+                              <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
+                          </g:each>
+                    </select>
+                  </div>
+              </div>
+
+              <div class="fields">
+                  <semui:datepicker label="default.startsBefore.label" name="startsBefore" value="${params.startsBefore}" />
+                  <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
+                  <div class="field">
+                      <label>&nbsp;</label>
+                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+                  </div>
+              </div>
+
           </g:form>
-        </dt>
-        <dd>
+      </semui:filter>
+
           <g:form action="processAddEntitlements">
             <input type="hidden" name="siid" value="${subscriptionInstance.id}"/>
-            <table  class="table table-striped table-bordered columns10">
+            <table class="ui celled stripped table">
               <thead>
                 <tr>
                   <th style="vertical-align:middle;">
@@ -98,23 +107,19 @@
             </table>
 
             <div class="paginateButtons" style="text-align:center">
-              <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="btn btn-primary"/>
+              <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="ui button"/>
             </div>
 
 
-            <div class="pagination" style="text-align:center">
               <g:if test="${tipps}" >
-                <bootstrap:paginate controller="subscriptionDetails" 
+                <semui:paginate controller="subscriptionDetails"
                                   action="addEntitlements" 
                                   params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}"
                                   max="${max}" 
                                   total="${num_tipp_rows}" />
               </g:if>
-            </div>
+
           </g:form>
-        </dd>
-      </dl>
-    </div>
 
     <r:script language="JavaScript">
       $(document).ready(function() {

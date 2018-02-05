@@ -12,22 +12,22 @@ import com.k_int.kbplus.auth.*
 
 class DocstoreController {
 
-  def docstoreService
+    def docstoreService
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def index() { 
-    def doc = Doc.findByUuid(params.id);
-    if ( doc ) {
-      switch ( doc.contentType ) {
-        case 0:
-          break;
-        case 1:
-          docstoreService.retrieve(params.id, response, doc.mimeType, doc.filename);
-          break;
-        case 3:
-          doc.render(response)
-          break;
-      }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def index() {
+        def doc = Doc.findByUuid(params.id)
+        if (doc) {
+            switch (doc.contentType) {
+                case Doc.CONTENT_TYPE_STRING:
+                    break
+                case Doc.CONTENT_TYPE_DOCSTORE:
+                    docstoreService.retrieve(params.id, response, doc.mimeType, doc.filename)
+                    break
+                case Doc.CONTENT_TYPE_BLOB:
+                    doc.render(response)
+                    break
+            }
+        }
     }
-  }
 }

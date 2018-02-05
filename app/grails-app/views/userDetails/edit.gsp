@@ -2,39 +2,33 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <title>${ui.display}</title>
   </head>
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="span12">
 
-          <div class="page-header">
-             <h1><span id="displayEdit" 
-                       class="xEditableValue"
-                       data-type="textarea" 
-                       data-pk="${ui.class.name}:${ui.id}"
-                       data-name="display" 
-                       data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                       data-original-title="${ui.display}">${ui.display}</span></h1>
-          </div>
+     <h1 class="ui header">
+         <semui:editableLabel editable="${editable}" />
+         <span id="displayEdit"
+               class="xEditableValue"
+               data-type="textarea"
+               data-pk="${ui.class.name}:${ui.id}"
+               data-name="display"
+               data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
+               data-original-title="${ui.display}">${ui.display}</span></h1>
 
-          <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-          </g:if>
 
-          <g:if test="${flash.error}">
-            <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-          </g:if>
+            <semui:messages data="${flash}" />
 
-          <h3>${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
+          <h3 class="ui header">
+            ${message(code:'user.affiliation.plural', default:'Affiliations')}
+          </h3>
 
-          <table class="table table-bordered">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
-                <th>${message(code:'user.id', default:'Id')}</td>
-                <th>${message(code:'user.org', default:'Org')}</td>
+                <th>${message(code:'user.id', default:'Id')}</th>
+                <th>${message(code:'user.org', default:'Org')}</th>
                 <th>${message(code:'user.role', default:'Role')}</th>
                 <th>${message(code:'user.status', default:'Status')}</th>
                 <th>${message(code:'user.actions', default:'Actions')}</th>
@@ -53,12 +47,12 @@
             </tbody>
           </table>
 
-          <h3>${message(code:'user.role.plural', default:'Roles')}</h3>
+          <h3 class="ui header">${message(code:'user.role.plural', default:'Roles')}</h3>
 
-          <table class="table table-bordered">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
-                <th>${message(code:'user.role', default:'Role')}</td>
+                <th>${message(code:'user.role', default:'Role')}</th>
                 <th>${message(code:'user.actions', default:'Actions')}</th>
               </tr>
             </thead>
@@ -72,31 +66,26 @@
             </tbody>
           </table>
 
-           <g:form controller="ajax" action="addToCollection">
+           <g:form class="ui form" controller="ajax" action="addToCollection">
               <input type="hidden" name="__context" value="${ui.class.name}:${ui.id}"/>
               <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.auth.UserRole"/>
               <input type="hidden" name="__recip" value="user"/>
               <input type="hidden" name="role" id="userRoleSelect"/>
-              <input type="submit" value="${message(code:'user.role.add', default:'Add Role...')}"/>
+              <input type="submit" class="ui button" value="${message(code:'user.role.add', default:'Add Role...')}"/>
             </g:form>
+
+
+        <div class="ui form">
+            <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+                <h3 class="ui header">${message(code: 'api.label', default:'API')}</h3>
+
+                <p>${message(code: 'api.apikey.label', default:'API-Key')}</p>
+                <input type="text" readonly="readonly" value="${ui.apikey}">
+
+                <p>${message(code: 'api.apisecret.label', default:'API-Secret')}</p>
+                <input type="text" readonly="readonly" value="${ui.apisecret}">
+            </g:if>
         </div>
-      </div>
-
-        <div class="row">
-            <div class="span12">
-                <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-                    <h3>${message(code: 'api.label', default:'API')}</h3>
-
-                    <p>${message(code: 'api.apikey.label', default:'API-Key')}</p>
-                    <input type="text" readonly="readonly" value="${ui.apikey}">
-
-                    <p>${message(code: 'api.apisecret.label', default:'API-Secret')}</p>
-                    <input type="text" readonly="readonly" value="${ui.apisecret}">
-                </g:if>
-            </div>
-        </div>
-    </div>
-
 
   <r:script language="JavaScript">
 

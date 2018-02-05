@@ -4,9 +4,9 @@ import javax.persistence.Transient
 
 class TitleHistoryEventParticipant {
 
-  def TitleHistoryEvent event
-  def TitleInstance participant
-  def String participantRole // in/out
+    TitleHistoryEvent event
+    TitleInstance participant
+    String participantRole // in/out
 
-  static belongsTo = [ event:TitleHistoryEvent ]
+    static belongsTo = [event: TitleHistoryEvent]
 }

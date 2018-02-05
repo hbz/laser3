@@ -2,63 +2,31 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="container">
-		<div class="row-fluid">
-			
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li class="active">
-							<g:link class="create" action="create">
-								<i class="icon-plus icon-white"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span9">
 
-				<div class="page-header">
-					<h1><g:message code="default.create.label" args="[entityName]" /></h1>
-				</div>
+		<h1 class="ui header"><g:message code="default.create.label" args="[entityName]" /></h1>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+		<semui:messages data="${flash}" />
 
-				<g:hasErrors bean="${personInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${personInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+		<semui:errors bean="${personInstance}" />
+
+		<div class="ui grid">
+
+			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="create" >
+					<g:form class="ui form" action="create" >
 						<fieldset>
                             <% // <f:all bean="personInstance" /> %>
 							<g:render template="form"/>
 							
-							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">
-									<i class="icon-ok icon-white"></i>
+							<div class="ui form-actions">
+								<button type="submit" class="ui button">
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.create.label" default="Create" />
 								</button>
 							</div>
@@ -66,9 +34,13 @@
 					</g:form>
 				</fieldset>
 				
-			</div>
+			</div><!-- .twelve -->
 
-		</div>
-		</div>
+			<div class="four wide column">
+                <g:render template="../templates/sideMenu" />
+			</div><!-- .four -->
+
+		</div><!-- .grid -->
+
 	</body>
 </html>

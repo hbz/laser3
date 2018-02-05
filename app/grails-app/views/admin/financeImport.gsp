@@ -1,17 +1,16 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Admin::Identifier Same-As Upload</title>
   </head>
 
   <body>
-    <div class="container-fluid">
-      <div class="span12">
-        <h1>Import Financials Data</h1>
+        <h1 class="ui header">Import Financials Data</h1>
+
         <g:if test="${loaderResult==null}">
           <p>This service allows administrators to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
-          <table class="table table-striped table-bordered">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
                 <th>tsv column name</th>
@@ -56,15 +55,15 @@
             </dl>
           </g:form>
         </g:if>
-      </div>
+
 
       <g:if test="${loaderResult}">
-        <table class="table table-striped table-bordered">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
-              <td></td>
+              <th></th>
               <g:each in="${loaderResult.columns}" var="c">
-                <td>${c}</td>
+                <th>${c}</th>
               </g:each>
             </tr>
           </thead>
@@ -90,6 +89,6 @@
           </tbody>
         </table>
       </g:if>
-    </div>
+
   </body>
 </html>

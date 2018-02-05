@@ -459,7 +459,7 @@ class AjaxController {
       def cq = RefdataValue.executeQuery(config.countQry,query_params);
       def rq = RefdataValue.executeQuery(config.rowQry,
                                 query_params,
-                                [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
+                                [max:params.iDisplayLength?:100,offset:params.iDisplayStart?:0]);
 
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
@@ -483,28 +483,78 @@ class AjaxController {
       }
     }
   }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addOrgRole() {
+        // log.debug("addOrgRole ${params}");
+        def org_to_link = resolveOID(params.orm_orgoid?.split(":"))
+        def owner = resolveOID(params.parent?.split(":"))
+        def rel = RefdataValue.get(params.orm_orgRole);
 
-  def addOrgRole() {
-    // log.debug("addOrgRole ${params}");
-    def org_to_link = resolveOID(params.orm_orgoid?.split(":"))
-    def owner = resolveOID(params.parent?.split(":"))
-    def rel = RefdataValue.get(params.orm_orgRole);
+        // log.debug("Add link to ${org_to_link} from ${owner} rel is ${rel} recip_prop is ${params.recip_prop}");
+        def new_link = new OrgRole(org:org_to_link,roleType:rel)
+        new_link[params.recip_prop] = owner
+        if ( new_link.save(flush:true) ) {
+            // log.debug("Org link added");
+        }
+        else {
+            log.error("Problem saving new org link ..");
+            new_link.errors.each { e ->
+                log.error(e);
+            }
+            //flash.error = message(code: 'default.error')
+        }
 
-    // log.debug("Add link to ${org_to_link} from ${owner} rel is ${rel} recip_prop is ${params.recip_prop}");
-    def new_link = new OrgRole(org:org_to_link,roleType:rel)
-    new_link[params.recip_prop] = owner
-    if ( new_link.save(flush:true) ) {
-      // log.debug("Org link added");
+        redirect(url: request.getHeader('referer'))
     }
-    else {
-      log.error("Problem saving new org link...");
-      new_link.errors.each { e ->
-        log.error(e);
-      }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addPrsRole() {
+        def org     = resolveOID(params.org?.split(":"))
+        def parent  = resolveOID(params.parent?.split(":"))
+        def person  = resolveOID(params.person?.split(":"))
+        def role    = resolveOID(params.role?.split(":"))
+
+        def newPrsRole
+        def existingPrsRole
+
+        if (org && person && role) {
+            newPrsRole = new PersonRole(prs: person, org: org)
+            if (parent) {
+                newPrsRole.responsibilityType = role
+                newPrsRole.setReference(parent)
+
+                def ref = newPrsRole.getReference().split(":")
+                existingPrsRole = PersonRole.findWhere(prs:person, org: org, responsibilityType: role, "${ref[0]}": parent)
+            }
+            else {
+                newPrsRole.functionType = role
+                existingPrsRole = PersonRole.findWhere(prs:person, org: org, functionType: role)
+            }
+        }
+
+        if (! existingPrsRole && newPrsRole && newPrsRole.save(flush:true)) {
+            //flash.message = message(code: 'default.success')
+        }
+        else {
+            log.error("Problem saving new person role ..")
+            //flash.error = message(code: 'default.error')
+        }
+
+        redirect(url: request.getHeader('referer'))
     }
 
-    redirect(url: request.getHeader('referer'))
-  }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def delPrsRole() {
+        def prsRole = PersonRole.get(params.id)
+
+        if (prsRole && prsRole.delete(flush: true)) {
+        }
+        else {
+            log.error("Problem deleting person role ..")
+            //flash.error = message(code: 'default.error')
+        }
+        redirect(url: request.getHeader('referer'))
+    }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addRefdataValue() {
@@ -727,13 +777,14 @@ class AjaxController {
         ])
     }
 
-  def delOrgRole() {
-    // log.debug("delOrgRole ${params}");
-    def or = OrgRole.get(params.id)
-    or.delete(flush:true);
-    // log.debug("Delete link: ${or}");
-    redirect(url: request.getHeader('referer'))
-  }
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def delOrgRole() {
+        // log.debug("delOrgRole ${params}");
+        def or = OrgRole.get(params.id)
+        or.delete(flush:true);
+        // log.debug("Delete link: ${or}");
+        redirect(url: request.getHeader('referer'))
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def deleteCustomProperty(){
@@ -745,9 +796,10 @@ class AjaxController {
     owner.customProperties.remove(property)
     property.delete(flush:true)
 
-    if(property.hasErrors()){
+    if(property.hasErrors()) {
         log.error(property.errors)
-    } else{
+    }
+    else {
         log.debug("Deleted custom property: " + property.type.name)
     }
     request.setAttribute("editable", params.editable == "true")
@@ -1046,14 +1098,15 @@ class AjaxController {
     outs.close()
   }
 
-  def removeUserRole() {
-    def user = resolveOID2(params.user);
-    def role = resolveOID2(params.role);
-    if ( user && role ) {
-      com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def removeUserRole() {
+        def user = resolveOID2(params.user);
+        def role = resolveOID2(params.role);
+        if (user && role) {
+            com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+        }
+        redirect(url: request.getHeader('referer'))
     }
-    redirect(url: request.getHeader('referer'))    
-  }
 
   /**
    * ToDo: This function is a duplicate of the one found in InplaceTagLib, both should be moved to a shared static utility

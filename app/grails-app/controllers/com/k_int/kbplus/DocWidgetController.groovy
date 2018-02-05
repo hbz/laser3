@@ -19,7 +19,7 @@ class DocWidgetController {
   def createNote() { 
     log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}");
     def user = User.get(springSecurityService.principal.id)
-    def domain_class=grailsApplication.getArtefact('Domain',params.ownerclass)
+    def domain_class = grailsApplication.getArtefact('Domain', params.ownerclass)
 
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(params.ownerid)
@@ -27,9 +27,10 @@ class DocWidgetController {
         log.debug("Got owner instance ${instance}");
 
         def doc_content = new Doc(contentType:Doc.CONTENT_TYPE_STRING,
-                                  content: params.licenseNote,
-                                  type:RefdataCategory.lookupOrCreate('Document Type','Note'),
-                                  user:user).save()
+                                  title:    params.licenseNoteTitle,
+                                  content:  params.licenseNote,
+                                  type:     RefdataCategory.lookupOrCreate('Document Type','Note'),
+                                  user:     user).save()
 
         def alert = null;
         if ( params.licenseNoteShared ) {

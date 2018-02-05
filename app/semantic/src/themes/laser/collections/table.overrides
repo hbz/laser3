@@ -1,0 +1,90 @@
+
+/*--------------
+    Sortable
+---------------*/
+/* change classnames bec. of existing sort function in LAS:eR */
+.ui.sortable.table thead th.sortable:after {
+  content: @sortableIconSort;
+  color: @grey;
+  display: inline;
+}
+.ui.sortable.table thead th.asc:after {
+  content: @sortableIconAscending;
+  color: @black;
+}
+.ui.sortable.table thead th.desc:after {
+  content: @sortableIconDescending;
+  color: @black;
+}
+
+
+.ui.sortable.table thead th {
+  cursor: default;
+  color: @grey;
+}
+
+
+/* Hover */
+.ui.sortable.table thead th:hover {
+  background: transparent;
+  color: @grey;
+}
+.ui.sortable.table thead th.sortable:hover {
+  background: @sortableHoverBackground;
+
+}
+
+.ui .table {
+
+  tr{
+    td {
+      background-color: white;
+      padding: 20px 0;
+    }
+    td, th {
+      padding-left:1rem;
+      padding-right:1rem;
+    }
+    th {
+      color: gray;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      a {
+        display: inline-block;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        color: gray;
+
+      }
+    }
+  }
+}
+/*--------------
+     la-table
+---------------*/
+.ui.la-table.table{
+  border-collapse: separate;
+  background-color: transparent;
+}
+
+.ui.la-table.table tr th,
+.ui.la-table.table tr td {
+  border-top:none;
+}
+/*--------------
+     la-rowspan
+---------------*/
+.ui.la-rowspan.table{
+  border-collapse: separate;
+  background-color: transparent;
+}
+
+.ui.la-rowspan.table tr th {
+  border-top:1px solid @internalBorderColor;
+}
+.ui.la-rowspan.table tr td,
+.ui.la-rowspan.table tr:first-child th {
+  border-top:none;
+}
+
+

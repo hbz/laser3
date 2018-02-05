@@ -5,7 +5,7 @@
 <html>
 
   <head>
-    <meta name="layout" content="pubbootstrap"/>
+    <meta name="layout" content="public"/>
     <title>${message(code:'laser', default:'LAS:eR')} Public Licenses</title>
     <r:require module='annotations' />
   </head>
@@ -16,16 +16,16 @@
   <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicLicense']"/>
 
 
-  <div class="container">
-      <h1>Public Licenses</h1>
+  <div>
+      <h1 class="ui header">Public Licenses</h1>
   </div>
 
 
-  <div class="container">
+  <div>
 
 
     <div id="resultsarea">
-      <table class="table table-bordered table-striped">
+      <table class="ui sortable celled la-table table">
         <thead>
           <tr style="white-space: nowrap">
           <g:sortableColumn property="reference" title="Reference" />

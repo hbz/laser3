@@ -1,17 +1,17 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.selectPackages.label', default:'Package Planning - Select Candidate Packages')}</title>
   </head>
 
   <body>
-    <div class="container">
+    <div>
       ${message(code:'myinst.selectPackages.note', args:[subscriptionInstance,titles_in_this_sub])}
       <ul><g:each in="${subscriptionInstance.packages}" var="p">
         <li>${p?.pkg?.name}</li>
       </g:each></ul>
-      <table>
+       <table class="ui celled la-table table">
         <tr>
           <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
           <th>${message(code:'myinst.selectPackages.candidates', default:'Candidate Packages')}</th>

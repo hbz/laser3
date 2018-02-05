@@ -27,7 +27,7 @@ class ${className}Controller {
 			break
 		case 'POST':
 	        def ${propertyName} = new ${className}(params)
-	        if (!${propertyName}.save(flush: true)) {
+	        if (! ${propertyName}.save(flush: true)) {
 	            render view: 'create', model: [${propertyName}: ${propertyName}]
 	            return
 	        }
@@ -40,7 +40,7 @@ class ${className}Controller {
 
     def show() {
         def ${propertyName} = ${className}.get(params.id)
-        if (!${propertyName}) {
+        if (! ${propertyName}) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
             redirect action: 'list'
             return
@@ -53,7 +53,7 @@ class ${className}Controller {
 		switch (request.method) {
 		case 'GET':
 	        def ${propertyName} = ${className}.get(params.id)
-	        if (!${propertyName}) {
+	        if (! ${propertyName}) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
 	            redirect action: 'list'
 	            return
@@ -63,7 +63,7 @@ class ${className}Controller {
 			break
 		case 'POST':
 	        def ${propertyName} = ${className}.get(params.id)
-	        if (!${propertyName}) {
+	        if (! ${propertyName}) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
 	            redirect action: 'list'
 	            return
@@ -82,7 +82,7 @@ class ${className}Controller {
 
 	        ${propertyName}.properties = params
 
-	        if (!${propertyName}.save(flush: true)) {
+	        if (! ${propertyName}.save(flush: true)) {
 	            render view: 'edit', model: [${propertyName}: ${propertyName}]
 	            return
 	        }
@@ -95,7 +95,7 @@ class ${className}Controller {
 
     def delete() {
         def ${propertyName} = ${className}.get(params.id)
-        if (!${propertyName}) {
+        if (! ${propertyName}) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
             redirect action: 'list'
             return

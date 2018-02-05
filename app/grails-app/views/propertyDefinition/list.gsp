@@ -1,23 +1,21 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'propertyDefinition.label', default: 'PropertyDefinition')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 </head>
 
 <body>
-<div class="container">
+<div>
 
-        <div class="page-header">
-            <h1><g:message code="default.list.label" args="[entityName]"/></h1>
-        </div>
 
-        <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+            <h1 class="ui header"><g:message code="default.list.label" args="[entityName]"/></h1>
 
-        <table class="table table-striped table-bordered">
+
+    <semui:messages data="${flash}" />
+
+        <table class="ui sortable celled la-table table">
             <thead>
             <tr>
 
@@ -42,16 +40,14 @@
                     <td> ${num_lcp} </td>
                     <td class="link">
                         <g:link action="edit" id="${propDefInstance.id}"
-                                class="btn btn-small">Edit &raquo;</g:link>
+                                class="ui tiny button">${message('code':'default.button.edit.label')}</g:link>
                     </td>
                 </tr>
             </g:each>
             </tbody>
         </table>
 
-        <div class="pagination">
-            <bootstrap:paginate total="${propertyDefinitionTotal}"/>
-        </div>
+        <semui:paginate total="${propertyDefinitionTotal}"/>
 
 </div>
 </body>

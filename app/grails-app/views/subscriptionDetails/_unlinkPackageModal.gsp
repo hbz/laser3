@@ -1,11 +1,11 @@
 <div id="unlinkPackageModal" class="modal hide">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">×</button>
-    <h6>${message(code:'default.button.unlink.label', default:'Unlink')}: ${pkg}</h6>
+    <h6 class="ui header">${message(code:'default.button.unlink.label', default:'Unlink')}: ${pkg}</h6>
   </div>
   <div class="modal-body">
     <p> ${message(code:'subscription.details.unlink.note', default:'No user actions required for this process.')}</p>
-    <table class="table table-bordered">
+    <table class="ui celled la-table table">
       <thead>
         <th>${message(code:'default.item.label', default:'Item')}</th>
         <th>${message(code:'default.details.label', default:'Details')}</th>
@@ -55,7 +55,7 @@
       <input type="hidden" name="package" value="${pkg.id}"/>
       <input type="hidden" name="subscription" value="${subscription.id}"/>
       <input type="hidden" name="confirmed" value="Y"/>
-      <button type="submit" class="btn btn-danger btn-small">${message(code:'default.button.confirm_delete.label', default:'Confirm Delete')}</button>
+      <button type="submit" class="ui negative button">${message(code:'default.button.confirm_delete.label', default:'Confirm Delete')}</button>
     </g:form>
   </div>
 </div>  

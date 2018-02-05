@@ -11,7 +11,7 @@ public class PendingChangeMixin {
   def processAcceptChange(params, targetObject, genericOIDService) {
     def user = User.get(springSecurityService.principal.id)
 
-    if ( ! targetObject.hasPerm("edit",user) ) {
+    if ( ! targetObject.isEditableBy(user) ) {
       render status: 401
       return
     }
@@ -37,7 +37,7 @@ public class PendingChangeMixin {
   def processRejectChange(params, targetObject) {
     def user = User.get(springSecurityService.principal.id)
 
-    if ( ! targetObject.hasPerm("edit",user) ) {
+    if ( ! targetObject.isEditableBy(user) ) {
       render status: 401
       return
     }

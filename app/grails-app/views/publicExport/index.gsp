@@ -43,7 +43,7 @@
 <html>
 
   <head>
-    <meta name="layout" content="pubbootstrap"/>
+    <meta name="layout" content="public"/>
     <title>${message(code:'public.nav.exports.label', default:'Exports')} | ${message(code:'laser', default:'LAS:eR')}</title>
         <r:require module='annotations' />
 
@@ -52,33 +52,22 @@
 
   <body class="public">
 
-  <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicExport']"/>
+    <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicExport']"/>
+
+    <h1 class="ui header">${message(code:'public.nav.exports.label', default:'Exports')}</h1>
 
 
-  <div class="container">
-      <h1>${message(code:'public.nav.exports.label', default:'Exports')}</h1>
-    </div>
+    <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
+     <a rel="license"
+        href="http://creativecommons.org/publicdomain/zero/1.0/">
+       <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+     </a>
+    </p>
 
-    <div class="container">
-      <div class="row">
-        <div class="span12">
 
-<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
- <a rel="license"
-    href="http://creativecommons.org/publicdomain/zero/1.0/">
-   <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
- </a>
-</p>
 
-        </div>
-      </div>
-    </div>
-
-    <div class="container">
-      <div class="row">
-        <div class="span12">
           <div class="well">
-            <h4>Cufts style index of subscriptions offered</h4>
+            <h4 class="ui header">Cufts style index of subscriptions offered</h4>
             <p>
               Use the contents of this URI to drive a full crawl of the ${message(code:'laser', default:'LAS:eR')} subscriptions offered data. Each row gives an identifier that can be used to
               construct individual subscription requests.
@@ -87,14 +76,9 @@
             <g:link action="idx" params="${[format:'xml']}">XML</g:link><br/>
             <g:link action="idx" params="${[format:'json']}">JSON</g:link><br/>
           </div>
-        </div>
-      </div>
-    </div>
 
 
-
-
-    <div class="container">
+    <div>
       <g:form action="index" method="get" params="${params}">
       <input type="hidden" name="offset" value="${params.offset}"/>
       <g:if test="${params.startYear && params.endYear}">
@@ -126,7 +110,7 @@
                     <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
                     <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
                   </select>
-            ${message(code:'default.search.modified_after', default:'Modified After')}: <g:simpleHiddenValue  id="lastUpdated" value="${params.lastUpdated}" name="lastUpdated" type="date"/>
+            ${message(code:'default.search.modified_after', default:'Modified After')}: <semui:simpleHiddenValue  id="lastUpdated" value="${params.lastUpdated}" name="lastUpdated" type="date"/>
  
             <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
           </div>
@@ -150,7 +134,7 @@
             <g:if test="${facet.key != 'type'}">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h5><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
+                <h5 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
               </div>
               <div class="panel-body">
                 <ul>
@@ -190,7 +174,7 @@
                 </div>
 
                 <div id="resultsarea">
-                  <table class="table table-bordered table-striped">
+                  <table class="ui sortable celled la-table table">
                     <thead>
                       <tr style="white-space: nowrap">
                       <g:sortableColumn property="sortname" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />

@@ -1,20 +1,15 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
   <body>
 
-    <div class="container">
-      <div class="page-header">
-        <h1>Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
-      </div>
-      <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-    </div>
+
+        <h1 class="ui header">Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
+        <semui:messages data="${flash}" />
 
     <g:form action="createTracker" controller="globalDataSync" id="${params.id}">
 
@@ -22,7 +17,7 @@
       <input type="hidden" name="synctype" value="${type}"/>
 
       <div class="container well">
-        <h1>Review Tracker</h1>
+        <h1 class="ui header">Review Tracker</h1>
         <g:if test="${type=='new'}">
           <p>This tracker will create a new local package for "${item.name}" from "${item.source.name}". Set the new package name below.</p>
           <dl>
@@ -31,13 +26,13 @@
           </dl>
         </g:if>
         <g:else>
-          <p>This tracker will synchronize package "<b><em>${item.name}</em></b>" from "<b><em>${item.source.name}</em></b>" with the existing local package <b><em>${localPkg.name}</em></b> </p>
+          <p>This tracker will synchronize package "<strong><em>${item.name}</em></strong>" from "<strong><em>${item.source.name}</em></strong>" with the existing local package <strong><em>${localPkg.name}</em></strong> </p>
         </g:else>
 
         <dl>
           <td>Auto accept the following changes</dt>
           <dd>
-          <table class="table">
+          <table class="ui table">
             <tr>
               <td><input type="Checkbox" name="autoAcceptTippAddition"/>TIPP Addition</td>
               <td><input type="Checkbox" name="autoAcceptTippUpdate"/>TIPP Update</td>
@@ -47,13 +42,30 @@
           </table>
           </dd>
         </dl>
-        <input type="submit"/>
+          <input type="submit" onclick="toggleAlert()"/>
       </div>
-    </g:form>
+</g:form>
+
+    <div class="ui icon message" id="durationAlert" style="display: none">
+        <i class="notched circle loading icon"></i>
+        <div class="content">
+            <div class="header">
+                Ihre Anfrage ist in Bearbeitung.
+            </div>
+            <p>Bitte haben sie einen Moment Geduld</p>
+            <p>Die Verarbeitung kann einige Minuten dauern</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleAlert() {
+            $('#durationAlert').toggle();
+        }
+    </script>
 
     <div class="container well">
-      <h1>Package Sync Impact</h1>
-      <table class="table table-striped table-bordered">
+      <h1 class="ui header">Package Sync Impact</h1>
+      <table class="ui celled la-table table">
         <tr>
           <th>
             <g:if test="${type=='new'}">
@@ -80,8 +92,8 @@
               </g:if>
               <g:else>
                 <g:if test="${i.action=='-'}">
-                  <b><em>${i.tipp?.title?.name}</em></b> (<g:each in="${i.tipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
-                  <table class="table">
+                  <strong><em>${i.tipp?.title?.name}</em></strong> (<g:each in="${i.tipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                  <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                     <g:each in="${i.tipp.coverage}" var="c">
                       <tr><th>Start</th> <td>${c.startVolume}</td><td>${c.startIssue}</td>
@@ -92,8 +104,8 @@
                   </table>
                 </g:if>
                 <g:else>
-                  <b><em>${i.oldtipp?.title?.name}</em></b> (<g:each in="${i.oldtipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
-                  <table class="table">
+                  <strong><em>${i.oldtipp?.title?.name}</em></strong> (<g:each in="${i.oldtipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                  <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                     <g:each in="${i.oldtipp.coverage}" var="c">
                       <tr><th>Start</th> <td>${c.startVolume}</td><td>${c.startIssue}</td>
@@ -108,11 +120,11 @@
             <td width="6%">${i.action}</td>
             <td width="47%">
               <g:if test="${i.action=='d'}">
-                <b><em>Removed</em></b>
+                <strong><em>Removed</em></strong>
               </g:if>
               <g:else>
-                <b><em>${i.tipp?.title?.name}</em></b> (<g:each in="${i.tipp.title.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
-                <table class="table">
+                <strong><em>${i.tipp?.title?.name}</em></strong> (<g:each in="${i.tipp.title.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                <table class="ui table">
                   <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                   <g:each in="${i.tipp.coverage}" var="c">
                     <tr><th>Start</th> <td>${c.startVolume}</td><td>${c.startIssue}</td><td>${c.startDate}</td></tr>

@@ -1,14 +1,13 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: ${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}</title>
   </head>
 
   <body>
-    <div class="container">
 
-    <div class="container">
+
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link>
           <span class="divider">/</span> </li>
@@ -20,23 +19,11 @@
            </li>
 
       </ul>
-    </div>
 
-    </div>
-      <div class="container">
+        <semui:messages data="${flash}" />
 
+          <h3 class="ui header">${message(code:'myinst.tip.coreDates', default:'Core dates')}</h3>
 
-      <g:if test="${flash.message}">
-      <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-
-        <g:if test="${flash.error}">
-        <bootstrap:alert class="alert alert-error">${flash.error}</bootstrap:alert>
-      </g:if>
-
-      <div class="row">
-        <div class="span12">
-          <h3>${message(code:'myinst.tip.coreDates', default:'Core dates')}</h3>
           <ul>
             <g:each in="${tip.coreDates}" var="cd">
               <li>${cd}</li>
@@ -46,8 +33,9 @@
             ${message(code:'myinst.tip.no_coreDates', default:'No Core Dates Currently')}
           </g:if>
 
-          <h3>${message(code:'myinst.tip.usageRecords', default:'Usage Records')}</h3>
-          <table class="table table-bordered">
+          <h3 class="ui header">${message(code:'myinst.tip.usageRecords', default:'Usage Records')}</h3>
+
+          <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'default.start.label', default:'Start')}</th>
@@ -77,20 +65,17 @@
             </tbody>
           </table>
 
-          <h4>${message(code:'myinst.tip.addUsage', default:'Add usage information')}</h4>
+          <h4 class="ui header">${message(code:'myinst.tip.addUsage', default:'Add usage information')}</h4>
           <g:form action="tip" params="${[shortcode:params.shortcode]}" id="${params.id}">
             ${message(code:'myinst.tip.usageDate', default:'Usage Date')} : <input type="date" name="usageDate"/><br/>
             ${message(code:'myinst.tip.usageRecord', default:'Usage Record')} : <input type="text" name="usageValue"/><br/>
             ${message(code:'myinst.tip.usageType', default:'Usage Type')} :
             <g:select name='factType'
     from='${com.k_int.kbplus.RefdataValue.executeQuery('select o from RefdataValue as o where o.owner.desc=?',['FactType'])}'
-    optionKey="id" optionValue="value"></g:select><br/>
+    optionKey="id" optionValue="${{it.getI10n('value')}}"></g:select><br/>
 
             <button type="submit">${message(code:'default.add.label', args:[message(code:'default.usage.label', default:'Usage')], default:'Add Usage')}</button>
           </g:form>
-        </div>
-      </div>
-
 
   </body>
 </html>

@@ -1,30 +1,26 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} License</title>
   </head>
 
   <body>
 
-    <div class="container">
       <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    </div>
 
-    <div class="container">
-      <h1>${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span></h1>
+      <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span>
+      </h1>
 
       <g:render template="nav"/>
 
-    </div>
-
-    <div class="container">
-
-      <table class="table table-striped table-bordered table-condensed">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
-            <td>Link Type</td>
-            <td>Linked Object</td>
+            <th>Link Type</th>
+            <th>Linked Object</th>
           </tr>
         </thead>
         <tbody>
@@ -42,7 +38,6 @@
           </g:each>
         </tbody>
       </table>
-    </div>
     
   </body>
 </html>

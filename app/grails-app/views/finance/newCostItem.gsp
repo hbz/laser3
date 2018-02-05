@@ -1,24 +1,25 @@
 <!doctype html>
 <html>
+<!-- deprecated -->
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: Financial Information</title>
   </head>
 
   <body>
 
-    <div class="container">
+    <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="myInstitutions" action="finance" params="${[shortcode:params.shortcode]}">${institution.name} Finance</g:link> </li>
       </ul>
     </div>
 
-    <div class="container">
-      <h1>${institution.name} Cost Items</h1>
-      <g:form action="index" method="post" params="${[shortcode:params.shortcode]}">
+    <div>
+      <h1 class="ui header">${institution.name} Cost Items</h1>
+      <g:form action="index" class="ui form" method="post" params="${[shortcode:params.shortcode]}">
         <input type="hidden" name="shortcode" value="${params.shortcode}"/>
-        <table class="table table-striped table-bordered table-condensed table-tworow">
+        <table class="ui celled la-table table table table-tworow">
           <thead>
           <tr><td colspan="9">&nbsp;</td></tr>
           <tr>
@@ -43,11 +44,11 @@
               <td>
                   <input name="newIe" class="input-medium" id="newIE" value="${params.newIe}">
               </td>
-              <td rowspan="2"><button type="submit" name="Add" value="add">Add</button></td>
+              <td rowspan="2"><button class="ui button" type="submit" name="Add" value="add">${message('code':'default.button.add.label')}</button></td>
           </tr>
           <tr>
               <td>
-                  <h3>Cost date and status</h3>
+                  <h3 class="ui header">Cost date and status</h3>
                   <input type="date" name="newDate" value="${params.newDate}"/><br/>
 
                   <g:select name="newCostItemStatus"
@@ -76,21 +77,22 @@
                             noSelection="${['':'No Tax Type']}"/>
               </td>
               <td>
-                  <h3>Cost values and tax</h3>
+                  <h3 class="ui header">Cost values and tax</h3>
                   <input type="number" name="newCostInBillingCurrency" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" step="0.01"/> <br/>
-                  <input type="number" name="newCostExchangeRate" placeholder="Exchange Rate" id="newCostExchangeRate" step="0.01"/> <br/>
+                  <input type="number" name="newCostCurrencyRate" placeholder="Exchange Rate" id="newCostCurrencyRate" step="0.01"/> <br/>
                   <input type="number" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" step="0.01"/>
-                  <input type="number" name="newCostTaxRate" placeholder="New Cost Tax Rate" id="newCostInLocalCurrency" step="0.01"/>
-                  <input type="number" name="newCostTaxAmount" placeholder="New Cost Tax Amount" id="newCostInLocalCurrency" step="0.01"/>
+                  <input type="number" name="newCostTaxRate" placeholder="New Cost Tax Rate" id="newCostTaxRate" step="0.01"/>
+                  <input type="number" name="newCostTaxAmount" placeholder="New Cost Tax Amount" id="newCostTaxAmount" step="0.01"/>
               </td>
               <td>
-                  <h3>Reference</h3>
+                  <h3 class="ui header">Reference</h3>
                   <input type="text" name="newReference" placeholder="New Item Reference" id="newCostItemReference" value="${params.newReference}"/><br/>
                   <input type="text" name="newBudgetCode" placeholder="New Item Budget Code" id="newBudgetCode" ></td>
               <td colspan="2">
-                  <h3>Description</h3>
+                  <h3 class="ui header">Description</h3>
                   <textarea name="newDescription"
                             placeholder="New Item Description" id="newCostItemDescription"/></textarea>
+              </td>
           </tr>
 
           </thead>

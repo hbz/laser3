@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Admin::IE Transfer</title>
   </head>
   <body>
-  	<div class="container">
-  	<h1>IE Transfer</h1>
+  	<div>
+  	<h1 class="ui header">IE Transfer</h1>
 
         <g:form action="ieTransfer" method="get">
           <p>Add the appropriate ID's below. All IssueEntitlements of source will be removed and transfered to target. Detailed information and confirmation will be presented before proceeding</p>
@@ -26,9 +26,9 @@
               </dd>
             </div>
  			<g:if test="${sourceTIPPObj && targetTIPPObj}">
- 			<div class="container">
+ 			<div>
 
-				  <table class="table table-bordered">
+				  <table class="ui celled la-table table">
 			      <thead>
 			        <th></th>
 			        <th>(${params.sourceTIPP}) ${sourceTIPPObj.title.title}</th>
@@ -62,10 +62,10 @@
 			      </table>
  			</div>
 
-              <button onclick="return confirm('All source IEs will be moved to target. Continue?')" class="btn-success" name="transfer" type="submit" value="Go">Transfer</button>
+              <button onclick="return confirm('All source IEs will be moved to target. Continue?')" class="ui positive button" name="transfer" type="submit" value="Go">Transfer</button>
   			</g:if>
 
-            <button class="btn-primary" type="submit" value="Go">Look Up TIPP Info...</button>
+            <button class="ui button" type="submit" value="Go">Look Up TIPP Info...</button>
           </dl>
         </g:form>
       </div>

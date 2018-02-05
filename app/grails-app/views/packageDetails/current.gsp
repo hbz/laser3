@@ -1,72 +1,46 @@
 <%@ page import="com.k_int.kbplus.Package" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="mmbootstrap">
-    <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
-    <title><g:message code="default.edit.label" args="[entityName]" /></title>
-  </head>
-  <body>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
+        <title><g:message code="default.edit.label" args="[entityName]" /></title>
+    </head>
+    <body>
+        <semui:breadcrumbs>
+            <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+            <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+        </semui:breadcrumbs>
 
+        <semui:modeSwitch controller="packageDetails" action="show" params="${params}" />
 
-    <div class="container">
-      <ul class="breadcrumb">
-        <li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="index">${message(code:'package.show.all', default:'All Packages')}</g:link><span class="divider">/</span></li>
-        <li><g:link controller="packageDetails" action="show" id="${packageInstance.id}">${packageInstance.name}</g:link></li>
-
-        <li class="pull-right">
-          View:
-          <div class="btn-group" data-toggle="buttons-radio">
-            <g:link controller="packageDetails" action="current" params="${params+['mode':'basic']}" class="btn btn-primary btn-mini ${((params.mode=='basic')||(params.mode==null))?'active':''}">${message(code:'default.basic', default:'Basic')}</g:link>
-            <g:link controller="packageDetails" action="current" params="${params+['mode':'advanced']}" button type="button" class="btn btn-primary btn-mini ${params.mode=='advanced'?'active':''}">${message(code:'default.advanced', default:'Advanced')}</g:link>
-          </div>
-          &nbsp;
-        </li>
-        
-      </ul>
-    </div>
-
-
-      <div class="container">
-
-        <div class="page-header">
-          <div>
-          <h1><g:if test="${editable}"><span id="packageNameEdit"
+        <h1 class="ui header">
+            <semui:editableLabel editable="${editable}" />
+            <g:if test="${editable}"><span id="packageNameEdit"
                         class="xEditableValue"
                         data-type="textarea"
                         data-pk="${packageInstance.class.name}:${packageInstance.id}"
                         data-name="name"
-                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if><g:else>${packageInstance.name}</g:else></h1>
-            <g:render template="nav" contextPath="." />
+                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
+            <g:else>${packageInstance.name}</g:else>
+        </h1>
+
+        <g:render template="nav" contextPath="." />
 
             <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-            <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
+            <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
             </sec:ifAnyGranted>
+
             <g:if test="${forum_url != null}">
               &nbsp;<a href="${forum_url}">Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
             </g:if>
 
-          </div>
 
-        </div>
-    </div>
+  <semui:messages data="${flash}" />
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+  <semui:errors bean="${packageInstance}" />
 
-        <g:hasErrors bean="${packageInstance}">
-        <bootstrap:alert class="alert-error">
-        <ul>
-          <g:eachError bean="${packageInstance}" var="error">
-          <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-          </g:eachError>
-        </ul>
-        </bootstrap:alert>
-        </g:hasErrors>
-
-    <div class="container">
+    <div>
 
         <dl>
           <dt>${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])} -
@@ -75,20 +49,38 @@
           </dt>
           <dd>
 
-        <g:form action="show" params="${params}" method="get" class="form-inline">
-           <input type="hidden" name="sort" value="${params.sort}">
-           <input type="hidden" name="order" value="${params.order}">
-           <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}:</label> <input name="filter" value="${params.filter}"/>
-           <label>${message(code:'tipp.coverageNote', default:'Coverage note')}:</label> <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
-            &nbsp;<label>${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:</label>
-            <g:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
-            &nbsp;<label>${message(code:'package.compare.filter.coverage_endsAfter', default:'Ends After')}:</label>
-            <g:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+        <semui:filter>
+            <g:form action="current" params="${params}" method="get" class="ui form">
+                <input type="hidden" name="sort" value="${params.sort}">
+                <input type="hidden" name="order" value="${params.order}">
+                <div class="fields two">
+                    <div class="field">
+                        <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}</label>
+                        <input name="filter" value="${params.filter}"/>
+                    </div>
+                    <div class="field">
+                        <label>${message(code:'tipp.coverageNote', default:'Coverage note')}</label>
+                        <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="field">
+                        <semui:datepicker label="package.compare.filter.coverage_startsBefore" name="startsBefore" value="${params.startsBefore}" />
+                    </div>
+                    <div class="field">
+                        <semui:datepicker label="package.compare.filter.coverage_endsAfter" name="endsAfter" value="${params.endsAfter}" />
+                    </div>
+                    <div class="field">
+                        <label>&nbsp;</label>
+                        <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
+                    </div>
+                </div>
 
-           <input type="submit" class="btn btn-primary" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
-        </g:form>
 
-          <table class="table table-bordered">
+            </g:form>
+        </semui:filter>
+
+          <table class="ui celled la-table table">
             <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <thead>
             <tr class="no-background">
@@ -104,34 +96,34 @@
                     <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
                   </select>
                   <br/>
-                  <table class="table table-bordered">
+                  <table class="ui celled la-table table">
                     <tr>
-                      <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <g:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
+                      <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
                           <input type="checkbox" name="clear_start_date"/> (${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.startVolume', default:'Start Volume')}: <g:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
+                      <td>${message(code:'tipp.startVolume', default:'Start Volume')}: <semui:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume" />
                           <input type="checkbox" name="clear_start_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.startIssue', default:'Start Issue')}: <g:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
+                      <td>${message(code:'tipp.startIssue', default:'Start Issue')}: <semui:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
                           <input type="checkbox" name="clear_start_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <tr>
-                      <td>${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <g:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
+                      <td>${message(code:'subscription.details.coverageEndDate', default:'Coverage End Date')}:  <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
                           <input type="checkbox" name="clear_end_date"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.endVolume', default:'End Volume')}: <g:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
+                      <td>${message(code:'tipp.endVolume', default:'End Volume')}: <semui:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
                           <input type="checkbox" name="clear_end_volume"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.endIssue', default:'End Issue')}: <g:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
+                      <td>${message(code:'tipp.endIssue', default:'End Issue')}: <semui:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
                           <input type="checkbox" name="clear_end_issue"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                     <tr>
-                      <td>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}: <g:simpleHiddenValue id="bulk_coverage_depth" name="bulk_coverage_depth"/>
+                      <td>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}: <semui:simpleHiddenValue id="bulk_coverage_depth" name="bulk_coverage_depth"/>
                           <input type="checkbox" name="clear_coverage_depth"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.coverageNote', default:'Coverage Note')}: <g:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
+                      <td>${message(code:'tipp.coverageNote', default:'Coverage Note')}: <semui:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
                           <input type="checkbox" name="clear_coverage_note"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
-                      <td>${message(code:'tipp.embargo', default:'Embargo')}:  <g:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
+                      <td>${message(code:'tipp.embargo', default:'Embargo')}:  <semui:simpleHiddenValue id="bulk_embargo" name="bulk_embargo"/>
                           <input type="checkbox" name="clear_embargo"/>(${message(code:'package.show.checkToClear', default:'Check to clear')})</td>
                     </tr>
                   </table>
-                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
-                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="btn btn-primary">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
+                  <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
+                  <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
                 </g:if>
               </th>
             </tr>
@@ -161,9 +153,9 @@
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
                    <g:if test="${params.mode=='advanced'}">
-                     <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <g:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
-                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <g:xEditable owner="${t}" type="date" field="accessStartDate" />
-                     <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <g:xEditable owner="${t}" type="date" field="accessEndDate" />
+                     <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
+                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
+                     <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
@@ -187,18 +179,18 @@
                 </td>
 
                 <td style="white-space: nowrap">
-                  ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="startDate" /><br/>
-                  ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="startVolume" /><br/>
-                  ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="startIssue" />
+                  ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                  ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="startVolume" /><br/>
+                  ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="startIssue" />
                 </td>
 
                 <td style="white-space: nowrap"> 
-                   ${message(code:'default.date.label', default:'Date')}: <g:xEditable owner="${t}" type="date" field="endDate" /><br/>
-                   ${message(code:'tipp.volume', default:'Volume')}: <g:xEditable owner="${t}" field="endVolume" /><br/>
-                   ${message(code:'tipp.issue', default:'Issue')}: <g:xEditable owner="${t}" field="endIssue" />
+                   ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                   ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="endVolume" /><br/>
+                   ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="endIssue" />
                 </td>
                 <td>
-                  <g:xEditable owner="${t}" field="coverageDepth" />
+                  <semui:xEditable owner="${t}" field="coverageDepth" />
                 </td>
               </tr>
 
@@ -215,35 +207,34 @@
           </dd>
         </dl>
 
-        <div class="pagination" style="text-align:center">
+
           <g:if test="${titlesList}" >
-            <bootstrap:paginate  action="show" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate  action="show" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
-        </div>
-
-
 
         <g:if test="${editable}">
-        
-        <g:form controller="ajax" action="addToCollection">
-          <fieldset>
-            <legend><h3>${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
-            <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
-            <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
-            <input type="hidden" name="__recip" value="pkg"/>
 
-            <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
-            <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
+            <semui:form>
+                <g:form class="ui form" controller="ajax" action="addToCollection">
+                  <fieldset>
+                    <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
+                    <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
+                    <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
+                    <input type="hidden" name="__recip" value="pkg"/>
 
-            <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-            <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
-            <span class="help-block"></span>
-            <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-            <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
-            <span class="help-block"></span>
-            <button type="submit" class="btn">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
-          </fieldset>
-        </g:form>
+                    <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
+                    <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
+
+                    <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
+                    <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
+                    <span class="help-block"></span>
+                    <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
+                    <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
+                    <span class="help-block"></span>
+                    <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
+                  </fieldset>
+                </g:form>
+            </semui:form>
 
 
         </g:if>

@@ -2,45 +2,18 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
     <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
-    <div class="row-fluid">
-      
-      <div class="span2">
-        <div class="well">
-          <ul class="nav nav-list">
-            <li class="nav-header">${entityName}</li>
-            <li>
-              <g:link class="list" action="list">
-                <i class="icon-list"></i>
-                <g:message code="default.list.label" args="[entityName]" />
-              </g:link>
-            </li>
-            <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <li>
-              <g:link class="create" action="create">
-                <i class="icon-plus"></i>
-                <g:message code="default.create.label" args="[entityName]" />
-              </g:link>
-            </li>
-            </sec:ifAnyGranted>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="span10">
+    <h1 class="ui header">${message(code:'package.label', default:'Package')} : ${packageInstance?.name} (${packageInstance?.contentProvider?.name})</h1>
 
-        <div class="page-header">
-          <h1>${message(code:'package.label', default:'Package')} : ${packageInstance?.name} (${packageInstance?.contentProvider?.name})</h1>
-        </div>
+    <semui:messages data="${flash}" />
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+    <div class="ui grid">
 
+      <div class="twelve wide column">
           <div class="inline-lists">
         
           <g:if test="${packageInstance?.identifier}">
@@ -66,10 +39,11 @@
               
           </div>
         
-            <h6>${message(code:'package.show.byPlatform', default:'Availability of titles in this package by platform')}</h6>
+            <h6 class="ui header">${message(code:'package.show.byPlatform', default:'Availability of titles in this package by platform')}</h6>
       
           <g:set var="counter" value="${1}" />
-          <table class="table table-bordered table-striped">
+          <table class="ui celled la-rowspan table">
+            <thead>
             <tr>
               <th rowspan="2" style="width: 2%;">#</th>
               <th rowspan="2" style="width: 20%;">${message(code:'title.label', default:'Title')}</th>
@@ -82,10 +56,11 @@
                 <th><g:link controller="platform" action="show" id="${p.id}">${p.name}</g:link></th>
               </g:each>
             </tr>
+            </thead>
             <g:each in="${titles}" var="t">
               <tr>
                 <td>${counter++}</td>
-                <td style="text-align:left;"><g:link controller="titleInstance" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
+                <td style="text-align:left;"><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
                 <td style="white-space:nowrap;">${t?.title?.getIdentifierValue('ISSN')}</td>
                 <td style="white-space:nowrap;">${t?.title?.getIdentifierValue('eISSN')}</td>
                 <g:each in="${crosstab[t.position]}" var="tipp">
@@ -113,21 +88,43 @@
         <g:form>
           <sec:ifAnyGranted roles="ROLE_ADMIN">
           <g:hiddenField name="id" value="${packageInstance?.id}" />
-          <div class="form-actions">
-            <g:link class="btn" action="edit" id="${packageInstance?.id}">
-              <i class="icon-pencil"></i>
+          <div class="ui form-actions">
+            <g:link class="ui button" action="edit" id="${packageInstance?.id}">
+              <i class="write icon"></i>
               <g:message code="default.button.edit.label" default="Edit" />
             </g:link>
-            <button class="btn btn-danger" type="submit" name="_action_delete">
-              <i class="icon-trash icon-white"></i>
+            <button class="ui negative button" type="submit" name="_action_delete">
+              <i class="trash icon"></i>
               <g:message code="default.button.delete.label" default="Delete" />
             </button>
           </div>
           </sec:ifAnyGranted>
         </g:form>
 
-      </div>
+      </div><!-- .twelve -->
 
-    </div>
+      <div class="four wide column">
+          <div class="well">
+              <ul class="nav nav-list">
+                  <li class="nav-header">${entityName}</li>
+                  <li>
+                      <g:link class="list" action="list">
+                          <i class="icon-list"></i>
+                          <g:message code="default.list.label" args="[entityName]" />
+                      </g:link>
+                  </li>
+                  <sec:ifAnyGranted roles="ROLE_ADMIN">
+                      <li>
+                          <g:link class="create" action="create">
+                              <i class="icon-plus"></i>
+                              <g:message code="default.create.label" args="[entityName]" />
+                          </g:link>
+                      </li>
+                  </sec:ifAnyGranted>
+              </ul>
+          </div>
+      </div><!-- .four -->
+
+    </div><!-- .grid -->
   </body>
 </html>

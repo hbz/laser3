@@ -2,19 +2,19 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
   </head>
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb message="subscription.details.label" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb message="subscription.details.label" class="active"/>
+    </semui:breadcrumbs>
 
-    <div class="container">
+    <div>
 
     ${institution?.name} Subscription Taken
-       <h1><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
+       <h1 class="ui header"><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
 
       <ul class="nav nav-pills">
         <li class="active"><g:link controller="myInstitutions" 
@@ -29,7 +29,7 @@
 
     <div class="tabbable"> <!-- Only required for left/right tabs -->
       <dl>
-        <dt>License</td>
+        <dt>License</dt>
         <dd><g:relation domain='Subscription' 
                         pk='${subscriptionInstance.id}' 
                         field='owner' 
@@ -65,10 +65,10 @@
                 </tr>  
                 <tr>  
                   <th><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></th>
-                  <th colspan="4"><input type="Submit" value="Apply Batch Changes" class="btn btn-success"/></th>
+                  <th colspan="4"><input type="Submit" value="Apply Batch Changes" class="ui positive button"/></th>
                   <th><span id="entitlementBatchEdit" class="entitlementBatchEdit"></span><input type="hidden" name="bulk_core" id="bulk_core"/></th>
-                  <th><span>edit</span> <input name="bulk_start_date" type="hidden" class="hdp" /></th>
-                  <th><span>edit</span> <input name="bulk_end_date" type="hidden" class="hdp" /></th>
+                  <th><span>${message('code':'default.button.edit.label')}</span> <input name="bulk_start_date" type="hidden" class="hdp" /></th>
+                  <th><span>${message('code':'default.button.edit.label')}</span> <input name="bulk_end_date" type="hidden" class="hdp" /></th>
                   <th><span id="embargoBatchEdit" class="embargoBatchEdit"></span><input type="hidden" name="bulk_embargo" id="bulk_embargo"></th>
                   <th></th>
                   <th><span id="coverageBatchEdit" class="coverageBatchEdit"></span><input type="hidden" name="bulk_coverage" id="bulk_coverage"></th>
@@ -78,7 +78,7 @@
                   <tr>
                     <td><input type="checkbox" name="_bulkflag.${ie.id}" class="bulkcheck"/></td>
                     <td>${counter++}</td>
-                    <td><g:link controller="titleInstance" action="show" id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></td>
+                    <td><g:link controller="titleDetails" action="show" id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></td>
                     <td>${ie?.tipp?.title?.getIdentifierValue('ISSN')}</td>
                     <td>${ie?.tipp?.title?.getIdentifierValue('eISSN')}</td>
                     <td>${ie.coreStatus?.value}</td>
@@ -111,15 +111,13 @@
       </dl>
     </div>
 
-    <div class="pagination" style="text-align:center">
       <g:if test="${entitlements}" >
-        <ul><g:paginate controller="myInstitutions" 
+        <semui:paginate controller="myInstitutions"
                           action="subscriptionDetails" 
                           params="${params}" next="Next" prev="Prev" 
                           max="15" 
-                          total="${num_sub_rows}" /></ul>
+                          total="${num_sub_rows}" />
       </g:if>
-    </div>
 
     </div>
     <r:script language="JavaScript">
@@ -140,19 +138,6 @@
           }
         };
 
-        $("div dl dd table tr td input.dp1").datepicker(datepicker_config);
-        $("div dl dd table tr td input.dp2").datepicker(datepicker_config);
-
-        $("input.hdp").datepicker({
-          buttonImage: '../../../images/calendar.gif',
-          buttonImageOnly: true,
-          changeMonth: true,
-          changeYear: true,
-          showOn: 'both',
-          onSelect: function(dateText, inst) {
-            inst.input.parent().find('span').html(dateText)
-          }
-        });
 
         $('span.newipe').editable('<g:createLink controller="ajax" action="genericSetValue" />', {
           type      : 'textarea',

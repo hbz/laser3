@@ -3,7 +3,7 @@
 
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Manage Custom Properties</title>
   </head>
      <g:set var="entityName" value="${message(code: 'propertyDefinition.label', default: 'PropertyDefinition')}"/>
@@ -32,31 +32,10 @@
 
     <div class="span9">
 
-        <div class="page-header">
-            <h1><g:message code="default.create.label" args="[entityName]"/></h1>
-        </div>
+            <h1 class="ui header"><g:message code="default.create.label" args="[entityName]"/></h1>
+        <semui:messages data="${flash}" />
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:hasErrors bean="${newProp}">
-        <bootstrap:alert class="alert-error">
-        <ul>
-            <g:eachError bean="${newProp}" var="error">
-                <li> <g:message error="${error}"/></li>
-            </g:eachError>
-        </ul>
-        </bootstrap:alert>
-    </g:hasErrors>
+        <semui:errors bean="${newProp}" />
    
 
       <p>Use the following form to create additional property definitions. Property definition names are unique.</p>
@@ -89,8 +68,8 @@
                          <g:select name="cust_prop_desc"  from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
 
                   </dd>
-                  <button type="submit" class="btn btn-success">
-                    <i class="icon-ok icon-white"></i>
+                  <button type="submit" class="ui positive button">
+                    <i class="checkmark icon"></i>
                     Create Property
                 </button>
               </dl>

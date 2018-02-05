@@ -2,39 +2,27 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <title><g:message code="default.edit.label" args="[entityName ?: message(code:'title.label')]" /></title>
   </head>
   <body>
-      <div class="container">
-        <div class="row">
-          <div class="span12">
 
-            <div class="page-header">
-              <h1>${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
-            </div>
+    <h1 class="ui header">${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
 
-            <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-            </g:if>
+    <semui:messages data="${flash}" />
 
-            <g:if test="${flash.error}">
-            <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-            </g:if>
+    <p>${message(code:'title.findTitleMatches.note')}</p>
 
-            <p>${message(code:'title.findTitleMatches.note')}</p>
-
-            <g:form controller="titleDetails" action="findTitleMatches" method="GET" class="form-inline">
-                <label>${message(code:'title.findTitleMatches.proposed', default:'Proposed Title')}:</label>
-                <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
-                <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="btn btn-primary">
-            </g:form>
+            <semui:simpleForm controller="titleDetails" action="findTitleMatches" method="get" message="title.findTitleMatches.proposed">
+              <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
+              <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui button">
+            </semui:simpleForm>
 
             <br/>
 
             <g:if test="${titleMatches != null}">
               <g:if test="${titleMatches.size()>0}">
-                <table class="table table-bordered">
+                <table class="ui celled la-table table">
                   <thead>
                     <tr>
                       <th>${message(code:'title.label', default:'Title')}</th>
@@ -46,7 +34,7 @@
                   <tbody>
                     <g:each in="${titleMatches}" var="titleInstance">
                       <tr>
-                        <td>${titleInstance.title} <g:link controller="titleDetails" action="edit" id="${titleInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
+                        <td>${titleInstance.title} <g:link controller="titleDetails" action="show" id="${titleInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
                         <td><ul><g:each in="${titleInstance.ids}" var="id"><li>${id.identifier.ns.ns}:${id.identifier.value}</li></g:each></ul></td>
                         <td>
                           <ul>
@@ -63,21 +51,17 @@
                 <bootstrap:alert class="alert-info">
                   ${message(code:'title.findTitleMatches.match', args:[params.proposedTitle])}
                 </bootstrap:alert>
-                <g:link controller="titleDetails" action="createTitle" class="btn btn-warning" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui negative button" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
               </g:if>
               <g:else>
                 <bootstrap:alert class="alert-info">${message(code:'title.findTitleMatches.no_match', args:[params.proposedTitle])}</bootstrap:alert>
-                <g:link controller="titleDetails" action="createTitle" class="btn btn-success" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui positive button" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
               </g:else>
 
 
             </g:if>
             <g:else>
             </g:else>
-
-          </div>
-        </div>
-      </div>
 
   </body>
 </html>

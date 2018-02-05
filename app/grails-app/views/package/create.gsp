@@ -2,19 +2,19 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
     <title><g:message code="default.create.label" args="[entityName]" /></title>
     <r:require modules="bootstrap-typeahead"/>
   </head>
   <body>
-    <div class="container">
+    <div>
       <p>
         Use this form to create a new package header record. Each package must have a globally unique identifier. Traditionally, ${message(code:'laser', default:'LAS:eR')} has formed this identifier
         from the content provider and the package name. Identifier will be defaulted from this values, but must be checked and be unique within the database before
         the create button will activate.
       </p>
-      <g:form class="form-horizontal" action="create" >
+      <g:form class="ui form" action="create" >
         <dl>
           <dt>Content Provider*</dt>
           <dd>
@@ -33,7 +33,7 @@
              <input class="input-xxlarge" type="text" name="identifier" id="packageIdentifier" onKeyUp="validateIdentifier()"/>
           </dd>     
         </dl>   
-        <button id="addbtn" class="btn btn-primary disabled">Create Package</button>
+        <button id="addbtn" class="ui button disabled">Create Package</button>
       </g:form>
     </div>
     <r:script language="JavaScript">

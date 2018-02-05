@@ -3,22 +3,18 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
   <body>
-    <div class="container">
-        
-        <div class="page-header">
-          <h1><g:message code="default.list.label" args="[entityName]" /> (Showing ${titleInstancePackagePlatformInstanceTotal})...</h1>
-        </div>
+    <div>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+          <h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /> (Showing ${titleInstancePackagePlatformInstanceTotal})...</h1>
+
+        <semui:messages data="${flash}" />
         
-        <table class="table table-bordered table-striped">
+        <table class="ui sortable celled la-table table">
           <thead>
               <g:sortableColumn property="title.title" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Title')}" />
               <g:sortableColumn property="platform.name" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Platform')}" />
@@ -35,9 +31,9 @@
           <tbody>
           <g:each in="${titleInstancePackagePlatformInstanceList}" var="tipp">
             <tr>
-              <td><g:link controller="titleInstance" action="show" id="${tipp.title.id}">${fieldValue(bean: tipp, field: "title.title")}</g:link></td>
+              <td><g:link controller="titleDetails" action="show" id="${tipp.title.id}">${fieldValue(bean: tipp, field: "title.title")}</g:link></td>
               <td><g:link controller="platform" action="show" id="${tipp.platform.id}">${fieldValue(bean: tipp, field: "platform.name")}</g:link></td>
-              <td><g:link controller="package" action="show" id="${tipp.pkg.id}">${fieldValue(bean: tipp, field: "pkg.name")}</g:link></td>
+              <td><g:link controller="packageDetails" action="show" id="${tipp.pkg.id}">${fieldValue(bean: tipp, field: "pkg.name")}</g:link></td>
               <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tipp.startDate}" /></td>
               <td>${fieldValue(bean: tipp, field: "startVolume")}</td>
               <td>${fieldValue(bean: tipp, field: "startIssue")}</td>
@@ -45,15 +41,15 @@
               <td>${fieldValue(bean: tipp, field: "endVolume")}</td>
               <td>${fieldValue(bean: tipp, field: "endIssue")}</td>
               <td class="link">
-                <g:link action="show" id="${tipp.id}" class="btn btn-small">Show &raquo;</g:link>
+                <g:link action="show" id="${tipp.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
               </td>
             </tr>
           </g:each>
           </tbody>
         </table>
-        <div class="pagination">
-          <bootstrap:paginate total="${titleInstancePackagePlatformInstanceTotal}" />
-        </div>
+
+          <semui:paginate total="${titleInstancePackagePlatformInstanceTotal}" />
+
 
     </div>
   </body>

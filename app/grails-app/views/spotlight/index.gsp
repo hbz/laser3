@@ -11,7 +11,7 @@
 	<div class="modal hide" id="spotlight_help">
 	<div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3>Spotlight help</h3>
+        <h3 class="ui header">Spotlight help</h3>
     </div>
 
     <div class="modal-body">
@@ -42,7 +42,7 @@
     	if (timeoutReference) clearTimeout(timeoutReference);
 
         if(event.keyCode == 27){ //esc
-        	$('.dlpopover').popover('toggle')
+        	$('.dlpopover').popover('toggle') // TODO: removed
         }else{
 	        timeoutReference = setTimeout(function() {
 	            reloadSpotlightSearchResults();

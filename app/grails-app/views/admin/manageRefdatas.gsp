@@ -2,39 +2,28 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<title>${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
 
-		<laser:breadcrumbs>
-			<laser:crumb message="menu.admin.dash" controller="admin" action="index" />
-			<laser:crumb message="menu.admin.manageI10n" class="active"/>
-		</laser:breadcrumbs>
+		<semui:breadcrumbs>
+			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+			<semui:crumb message="menu.admin.manageI10n" class="active"/>
+		</semui:breadcrumbs>
 
-		<div class="container">
-			<h1><g:message code="menu.admin.manageRefdatas"/></h1>
-		</div>
+		<h1 class="ui header"><g:message code="menu.admin.manageRefdatas"/></h1>
 
-        <div class="container">
-            <div class="row">
-                <div class="span12">
-                    <laser:card class="card-grey">
-                        <input class="btn btn-primary" value="${message(code:'refdataValue.create_new.label')}"
-                               data-toggle="modal" href="#addRefdataValueModal" type="submit">
-                        &nbsp;
-                        <input class="btn btn-primary" value="${message(code:'refdataCategory.create_new.label')}"
-                               data-toggle="modal" href="#addRefdataCategoryModal" type="submit">
-                    </laser:card>
-                </div>
-            </div>
-        </div>
+        <semui:messages data="${flash}" />
 
-        <laser:flash data="${flash}" />
+        <semui:card class="card-grey">
+            <input class="ui button" value="${message(code:'refdataValue.create_new.label')}" href="#addRefdataValueModal" data-semui="modal">
+            &nbsp;
+            <input class="ui button" value="${message(code:'refdataCategory.create_new.label')}" href="#addRefdataCategoryModal" data-semui="modal">
+        </semui:card>
 
-		<div class="container">
-			<div class="row">
-				<div class="span12">
-					<table class="table table-bordered table-hover">
+        <div class="ui grid">
+            <div class="twelve wide column">
+					<table class="ui celled la-table table">
 						<thead>
 						<tr>
 							<th>Category (Key)</th>
@@ -55,10 +44,10 @@
                                     </td>
                                     <td></td>
                                     <td>
-                                        <strong><g:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
                                     </td>
                                     <td>
-                                        <strong><g:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
                                     </td>
                                 </tr>
 
@@ -72,10 +61,10 @@
                                                 </g:if>
                                             </td>
                                             <td>
-                                                <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
+                                                <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
                                             </td>
                                             <td>
-                                                <g:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
+                                                <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
                                             </td>
                                         </tr>
                                     </g:each>
@@ -83,65 +72,42 @@
                             </g:each>
 						</tbody>
 					</table>
-				</div><!--.span12-->
-			</div><!--.row-->
-		</div>
+				</div><!--.twelve-->
+        </div><!--.grid-->
 
-        <div id="addRefdataValueModal" class="modal hide">
+        <semui:modal id="addRefdataValueModal" message="refdataValue.create_new.label">
 
-            <g:form id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataValue']" >
+            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataValue']" >
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
 
-                <div class="modal-body">
-                    <dl>
-                        <dt>
-                            <label class="control-label">${message(code:'refdataValue.create_new.label')}</label>
-                        </dt>
-                        <dd>
-                            <label class="property-label">Wert:</label> <input type="text" name="refdata_value"/>
-                        </dd>
-
-                        <dd>
-                            <label class="property-label">Category:</label> <g:select
-                                from="${rdCategories}"
-                                optionKey="id" optionValue="desc"
-                                name="refdata_category_id"
-                                id="refdata_modal_select" />
-                        </dd>
-
-                    </dl>
+                <div class="field">
+                    <label class="property-label">Wert</label>
+                    <input type="text" name="refdata_value"/>
+                </div>
+                <div class="field">
+                    <label class="property-label">Kategorie</label>
+                    <g:select
+                        from="${rdCategories}"
+                        optionKey="id" optionValue="desc"
+                        name="refdata_category_id"
+                        id="refdata_modal_select" />
                 </div>
 
-                <div class="modal-footer">
-                    <a href="#" class="btn" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-                    <input class="btn btn-success" name="SaveRefdataValue" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
-                </div>
             </g:form>
-        </div>
+        </semui:modal>
 
-        <div id="addRefdataCategoryModal" class="modal hide">
+        <semui:modal id="addRefdataCategoryModal" message="refdataCategory.create_new.label">
 
-            <g:form id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataCategory']" >
+            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataCategory']" >
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
 
-                <div class="modal-body">
-                    <dl>
-                        <dt>
-                            <label class="control-label">${message(code:'refdataCategory.create_new.label')}</label>
-                        </dt>
-                        <dd>
-                            <label class="property-label">Beschreibung:</label> <input type="text" name="refdata_category"/>
-                        </dd>
-
-                    </dl>
+                <div class="field">
+                    <label class="property-label">Beschreibung</label>
+                    <input type="text" name="refdata_category"/>
                 </div>
 
-                <div class="modal-footer">
-                    <a href="#" class="btn" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-                    <input class="btn btn-success" name="SaveRefdataCategory" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
-                </div>
             </g:form>
-        </div>
+        </semui:modal>
 
 	</body>
 </html>

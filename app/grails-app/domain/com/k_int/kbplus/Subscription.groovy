@@ -2,9 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import de.laser.domain.BaseDomainComponent
+import de.laser.domain.Permissions
+
 import javax.persistence.Transient
 
-class Subscription extends BaseDomainComponent {
+class Subscription extends BaseDomainComponent implements Permissions {
 
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
@@ -20,12 +22,14 @@ class Subscription extends BaseDomainComponent {
   Date startDate
   Date endDate
   Date manualRenewalDate
+  Date manualCancellationDate
   String cancellationAllowances
 
   Subscription instanceOf
+  Subscription previousSubscription
 
   // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
-  RefdataValue isSlaved
+  RefdataValue isSlaved // RefdataCategory 'YN'
 
   String noticePeriod
   Date dateCreated
@@ -34,7 +38,7 @@ class Subscription extends BaseDomainComponent {
 
   License owner
   SortedSet issueEntitlements
-  RefdataValue isPublic
+  RefdataValue isPublic     // RefdataCategory 'YN'
   Set ids = []
 
   static transients = [ 'subscriber', 'provider', 'consortia' ]
@@ -50,6 +54,7 @@ class Subscription extends BaseDomainComponent {
                      derivedSubscriptions: Subscription,
                      pendingChanges: PendingChange,
                      customProperties: SubscriptionCustomProperty,
+                     privateProperties: SubscriptionPrivateProperty,
                      costItems: CostItem]
 
   static mappedBy = [
@@ -61,54 +66,74 @@ class Subscription extends BaseDomainComponent {
                       prsLinks: 'sub',
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
-                      costItems: 'sub'
+                      costItems: 'sub',
+                      privateProperties: 'owner'
                       ]
 
-  static mapping = {
-                  id column:'sub_id'
-             version column:'sub_version'
-           globalUID column:'sub_guid'
-              status column:'sub_status_rv_fk'
-                type column:'sub_type_rv_fk'
-               owner column:'sub_owner_license_fk'
-                name column:'sub_name'
-          identifier column:'sub_identifier'
-               impId column:'sub_imp_id', index:'sub_imp_id_idx'
-           startDate column:'sub_start_date'
-             endDate column:'sub_end_date'
-   manualRenewalDate column:'sub_manual_renewal_date'
-          instanceOf column:'sub_parent_sub_fk'
-            isSlaved column:'sub_is_slaved'
-        noticePeriod column:'sub_notice_period'
-            isPublic column:'sub_is_public'
-        pendingChanges sort: 'ts', order: 'asc'
-  }
+    static mapping = {
+        id          column:'sub_id'
+        version     column:'sub_version'
+        globalUID   column:'sub_guid'
+        status      column:'sub_status_rv_fk'
+        type        column:'sub_type_rv_fk'
+        owner       column:'sub_owner_license_fk'
+        name        column:'sub_name'
+        identifier  column:'sub_identifier'
+        impId       column:'sub_imp_id', index:'sub_imp_id_idx'
+        startDate   column:'sub_start_date'
+        endDate     column:'sub_end_date'
+        manualRenewalDate       column:'sub_manual_renewal_date'
+        manualCancellationDate  column:'sub_manual_cancellation_date'
+        instanceOf              column:'sub_parent_sub_fk'
+        previousSubscription    column:'sub_previous_subscription_fk'
+        isSlaved        column:'sub_is_slaved'
+        noticePeriod    column:'sub_notice_period'
+        isPublic        column:'sub_is_public'
+        pendingChanges  sort: 'ts', order: 'asc'
+    }
 
-  static constraints = {
-    globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-    status(nullable:true, blank:false)
-    type(nullable:true, blank:false)
-    owner(nullable:true, blank:false)
-    impId(nullable:true, blank:false)
-    startDate(nullable:true, blank:false)
-    endDate(nullable:true, blank:false)
-    manualRenewalDate(nullable:true, blank:false)
-    instanceOf(nullable:true, blank:false)
-    isSlaved(nullable:true, blank:false)
-    noticePeriod(nullable:true, blank:true)
-    isPublic(nullable:true, blank:true)
-    customProperties(nullable:true)
-    cancellationAllowances(nullable:true, blank:true)
-    lastUpdated(nullable: true, blank: true)
-    // vendor(nullable:true, blank:false)
+    static constraints = {
+        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        status(nullable:true, blank:false)
+        type(nullable:true, blank:false)
+        owner(nullable:true, blank:false)
+        impId(nullable:true, blank:false)
+        startDate(nullable:true, blank:false)
+        endDate(nullable:true, blank:false)
+        manualRenewalDate(nullable:true, blank:false)
+        manualCancellationDate(nullable:true, blank:false)
+        instanceOf(nullable:true, blank:false)
+        previousSubscription(nullable:true, blank:false)
+        isSlaved(nullable:true, blank:false)
+        noticePeriod(nullable:true, blank:true)
+        isPublic(nullable:true, blank:true)
+        customProperties(nullable:true)
+        privateProperties(nullable:true)
+        cancellationAllowances(nullable:true, blank:true)
+        lastUpdated(nullable: true, blank: true)
+        // vendor(nullable:true, blank:false)
+    }
+
+  def getIsSlavedAsString() {
+    isSlaved?.value == "Yes" ? "Yes" : "No"
   }
 
   def getSubscriber() {
     def result = null;
+    def cons = null;
+    
     orgRelations.each { or ->
       if ( or?.roleType?.value=='Subscriber' )
         result = or.org;
+        
+      if ( or?.roleType?.value=='Subscription Consortia' )
+        cons = or.org;
     }
+    
+    if ( !result && cons ) {
+      result = cons
+    }
+    
     result
   }
 
@@ -139,34 +164,23 @@ class Subscription extends BaseDomainComponent {
     result
   }
 
-  // determin if a user can edit this subscription
-  def isEditableBy(user) {
-    hasPerm("edit",user);
-  }
-
-  def hasPerm(perm, user) {
-    def result = false
-
-    if ( perm=='view' && this.isPublic?.value=='Yes' ) {
-      result = true;
+    def isEditableBy(user) {
+        hasPerm("edit", user)
     }
 
-    if (!result) {
-      // If user is a member of admin role, they can do anything.
-      def admin_role = Role.findByAuthority('ROLE_ADMIN');
-      if ( admin_role ) {
-        if ( user.getAuthorities().contains(admin_role) ) {
-          result = true;
+    def hasPerm(perm, user) {
+        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+            return true
         }
-      }
-    }
 
-    if ( !result ) {
-      result = checkPermissions(perm,user);
-    }
+        // If user is a member of admin role, they can do anything.
+        def admin_role = Role.findByAuthority('ROLE_ADMIN')
+        if (admin_role && user.getAuthorities().contains(admin_role)) {
+            return true
+        }
 
-    result;
-  }
+        return checkPermissions(perm, user)
+    }
 
   def checkPermissions(perm, user) {
     def result = false

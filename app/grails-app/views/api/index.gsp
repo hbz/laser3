@@ -88,7 +88,7 @@
     <script>
         window.onload = function() {
             const ui = SwaggerUIBundle({
-                url: "${grailsApplication.config.grails.serverURL}/api/spec",
+                url: "${grailsApplication.config.grails.serverURL}/api/v0/spec",
                 dom_id: '#swagger-ui',
                 presets: [
                     SwaggerUIBundle.presets.apis,
@@ -109,7 +109,6 @@
                 jQuery('.opblock').delegate('input, textarea', 'change', function() {
                     genDigist(jQuery(this).parents('.parameters').first())
                 })
-
             }, 1200)
 
             // todo: change full path dynamically
@@ -122,7 +121,7 @@
                 var path    = "/api/v0" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
                 var timestamp = ""
                 var nounce    = ""
-                var context = jQuery(div).find('input[placeholder="context - Optional information if user has multiple memberships"]').val().trim()
+                var context = jQuery(div).find('input[placeholder="context - Optional information if user has memberships in multiple organisations"]').val().trim()
                 var query     = ""
                 var body      = ""
 

@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} - ${message(code:'title.plural', default:'Titles')}</title>
+    <meta name="layout" content="semanticUI"/>
+    <title>${message(code:'laser', default:'LAS:eR')} - ${institution.name} - ${message(code:'myinst.currentTitles.label')}</title>
     
     <style>
       .filtering-dropdown-menu {max-height: 400px; overflow: hidden; overflow-y: auto;}
@@ -11,136 +11,148 @@
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <laser:crumb message="myinst.currentTitles.label" class="active" />
-        <li class="dropdown pull-right">
-            <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">
-                ${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
-            <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-                <li>
-                    <g:link action="currentTitles" params="${params+[format:'csv']}">CSV</g:link>
-                </li>
-                <li>
-                    <g:link action="currentTitles" params="${params+[format:'json']}">JSON</g:link>
-                </li>
-                <li>
-                    <g:link action="currentTitles" params="${params+[format:'xml',shortcode:params.shortcode]}">XML</g:link>
-                </li>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+        <semui:crumb message="myinst.currentTitles.label" class="active" />
 
-                <g:each in="${transforms}" var="transkey,transval">
-                    <li><g:link action="currentTitles" id="${params.id}" params="${params+[format:'xml',transformId:transkey]}"> ${transval.name}</g:link></li>
-                </g:each>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link action="currentTitles" params="${params + [format:'csv']}">CSV Export</g:link>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link action="currentTitles" params="${params + [format:'xml', shortcode:params.shortcode]}">XML Export</g:link>
+            </semui:exportDropdownItem>
+            <g:each in="${transforms}" var="transkey,transval">
+                <semui:exportDropdownItem>
+                    <g:link action="currentTitles" id="${params.id}" params="${params + [format:'xml', transformId:transkey]}"> ${transval.name}</g:link>
+                </semui:exportDropdownItem>
+            </g:each>
+        </semui:exportDropdown>
 
-            </ul>
-        </li>
-    </laser:breadcrumbs>
+    </semui:breadcrumbs>
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
+    <semui:messages data="${flash}" />
 
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
-    <div class="container">
-      <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
-        <h1>${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
+    <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
+
+    <semui:filter>
+      <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="ui form">
+
         <g:set var="filterSub" value="${params.filterSub?params.list('filterSub'):"all"}" />
         <g:set var="filterPvd" value="${params.filterPvd?params.list('filterPvd'):"all"}" />
         <g:set var="filterHostPlat" value="${params.filterHostPlat?params.list('filterHostPlat'):"all"}" />
         <g:set var="filterOtherPlat" value="${params.filterOtherPlat?params.list('filterOtherPlat'):"all"}" />
-  
-        <select size="5" name="filterSub" class="span3" multiple="multiple"> <!-- onchange="this.form.submit()" -->
-          <option<%= (filterSub.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_subs', default:'All Subscriptions')}</option>
-          <g:each in="${subscriptions}" var="s">
-            <option<%= (filterSub.contains(s.id.toString())) ? ' selected="selected"' : '' %> value="${s.id}" title="${s.name}${s.consortia?' ('+s.consortia.name+')':''}">
-              ${s.name} <g:if test="${s.consortia}">( ${s.consortia.name} )</g:if>
-            </option>
-          </g:each>
-        </select>
-        <select size="5" name="filterPvd" class="span3" multiple="multiple">
-          <option<%= (filterPvd.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_providers', default:'All Content Providers')}</option>
-          <g:each in="${providers}" var="p">
-            <% 
-            def pvdId = p.id.toString()
-            def pvdName = p.name 
-            %>
-            <option<%= (filterPvd.contains(pvdId)) ? ' selected="selected"' : '' %> value="${pvdId}" title="${pvdName}">
-              ${pvdName}
-            </option>
-          </g:each>
-        </select>
-        <select size="5" name="filterHostPlat" class="span3" multiple="multiple">
-          <option<%= (filterHostPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_host_platforms', default:'All Host Platforms')}</option>
-          <g:each in="${hostplatforms}" var="hp">
-            <% 
-            def hostId = hp.id.toString()
-            def hostName = hp.name 
-            %>
-            <option<%= (filterHostPlat.contains(hostId)) ? ' selected="selected"' : '' %> value="${hostId}" title="${hostName}">
-              ${hostName}
-            </option>
-          </g:each>
-        </select>
-        <select size="5" name="filterOtherPlat" class="span3" multiple="multiple">
-          <option<%= (filterOtherPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_other_platforms', default:'All Additional Platforms')}</option>
-          <g:each in="${otherplatforms}" var="op">
-            <% 
-            def platId = op.id.toString()
-            def platName = op.name 
-            %>
-            <option<%= (filterOtherPlat.contains(platId)) ? ' selected="selected"' : '' %> value="${platId}" title="${platName}">
-              ${platName}
-            </option>
-          </g:each>
-        </select>
-        <br/>
-        <div style="text-align:center">
-          <div class="pull-left">
-            <label class="checkbox">
-              <input type="checkbox" name="filterMultiIE" value="${true}"<%=(params.filterMultiIE)?' checked="true"':''%>/> ${message(code:'myinst.currentTitles.dupes', default:'Titles we subscribe to through 2 or more packages')}
-            </label>
-          </div>
-          <div class="pull-right">
-            <input type="hidden" name="sort" value="${params.sort}">
-            <input type="hidden" name="order" value="${params.order}">
-            <label>${message(code:'default.search.text', default:'Search text')}:</label>
-            <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
-            <label>${message(code:'myinst.currentTitles.subs_valid_on', default:'Subscriptions Valid on')}</label>
-            <g:simpleHiddenValue id="validOn" name="validOn" type="date" value="${validOn}"/>
-            &nbsp;<input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}"/>
-          </div>
-        </div>
-      </g:form>
-      <br/>
-    </div>
 
-    <div class="container">
+          <div class="fields">
+              <div class="field eight wide">
+
+                <select name="filterSub" multiple="multiple" class="ui fluid dropdown">
+                  <option<%= (filterSub.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_subs', default:'All Subscriptions')}</option>
+                  <g:each in="${subscriptions}" var="s">
+                    <option<%= (filterSub.contains(s.id.toString())) ? ' selected="selected"' : '' %> value="${s.id}" title="${s.name}${s.consortia?' ('+s.consortia.name+')':''}">
+                      ${s.name} <g:if test="${s.consortia}">( ${s.consortia.name} )</g:if>
+                    </option>
+                  </g:each>
+                </select>
+              </div>
+              <div class="field eight wide">
+
+                <select name="filterPvd" multiple="multiple" class="ui fluid dropdown">
+                  <option<%= (filterPvd.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_providers', default:'All Content Providers')}</option>
+                  <g:each in="${providers}" var="p">
+                    <%
+                    def pvdId = p.id.toString()
+                    def pvdName = p.name
+                    %>
+                    <option<%= (filterPvd.contains(pvdId)) ? ' selected="selected"' : '' %> value="${pvdId}" title="${pvdName}">
+                      ${pvdName}
+                    </option>
+                  </g:each>
+                </select>
+              </div>
+          </div>
+          <div class="fields">
+              <div class="field eight wide">
+
+                <select name="filterHostPlat" multiple="multiple" class="ui fluid dropdown">
+                  <option<%= (filterHostPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_host_platforms', default:'All Host Platforms')}</option>
+                  <g:each in="${hostplatforms}" var="hp">
+                    <%
+                    def hostId = hp.id.toString()
+                    def hostName = hp.name
+                    %>
+                    <option<%= (filterHostPlat.contains(hostId)) ? ' selected="selected"' : '' %> value="${hostId}" title="${hostName}">
+                      ${hostName}
+                    </option>
+                  </g:each>
+                </select>
+              </div>
+              <div class="field eight wide">
+
+                <select name="filterOtherPlat" multiple="multiple" class="ui fluid dropdown">
+                  <option<%= (filterOtherPlat.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_other_platforms', default:'All Additional Platforms')}</option>
+                  <g:each in="${otherplatforms}" var="op">
+                    <%
+                    def platId = op.id.toString()
+                    def platName = op.name
+                    %>
+                    <option<%= (filterOtherPlat.contains(platId)) ? ' selected="selected"' : '' %> value="${platId}" title="${platName}">
+                      ${platName}
+                    </option>
+                  </g:each>
+                </select>
+              </div>
+          </div>
+
+          <div class="fields">
+
+              <div class="field">
+                  <label>${message(code:'default.search.text', default:'Search text')}</label>
+                  <input type="hidden" name="sort" value="${params.sort}">
+                  <input type="hidden" name="order" value="${params.order}">
+                  <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
+              </div>
+              <div class="field">
+                  <semui:datepicker label="myinst.currentTitles.subs_valid_on" name="validOn" value="${validOn}" />
+              </div>
+              <div class="field">
+                  <label>${message(code:'myinst.currentTitles.dupes', default:'Titles we subscribe to through 2 or more packages')}</label>
+                  <div class="ui checkbox">
+                      <input type="checkbox" class="hidden" name="filterMultiIE" value="${true}"<%=(params.filterMultiIE)?' checked="true"':''%>/>
+                  </div>
+              </div>
+          </div>
+
+          <div class="field">
+              <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
+          </div>
+      </g:form>
+    </semui:filter>
+
+    <div>
       <div>
         <span>${message(code:'title.plural', default:'Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(titles.size())),num_ti_rows])} )</span>
         <div>
-          <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="form-inline">
+          <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="ui form">
           <g:set var="counter" value="${offset+1}" />
-          <table  class="table table-striped table-bordered">
-
-            <tr>
-              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-              <th>ISSN</th>
-              <th>eISSN</th>
-              <th>${message(code:'subscription.details.startDate', default:'Earliest Date')}</th>
-              <th>${message(code:'subscription.details.endDate', default:'Latest Date')}</th>
-              <th>${message(code:'myinst.currentTitles.sub_content', default:'Subscribed Content')}</th>
-            </tr>  
-            
+          <table  class="ui sortable celled la-table table">
+            <thead>
+                <tr>
+                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                  <th>ISSN</th>
+                  <th>eISSN</th>
+                  <th>${message(code:'subscription.details.startDate', default:'Earliest Date')}</th>
+                  <th>${message(code:'subscription.details.endDate', default:'Latest Date')}</th>
+                  <th>${message(code:'myinst.currentTitles.sub_content', default:'Subscribed Content')}</th>
+                </tr>
+            </thead>
             <g:each in="${titles}" var="ti">
               <tr>
                 <td>
-                  <g:link controller="titleDetails" action="show" id="${ti.id}"><b>${ti.title}</b></g:link>
+                  <g:link controller="titleDetails" action="show" id="${ti.id}"><strong>${ti.title}</strong></g:link>
                   <br/> 
                   <g:link controller="public" action="journalLicenses" params="${['journal':'kb:'+ti.id,'org':institution.id]}">${message(code:'myinst.currentTitles.check_license_terms', default:'Check current license terms')}</g:link>
                 </td>
@@ -162,7 +174,8 @@
                         <g:if test="${ie.endVolume}">${message(code:'tipp.volume.short', default:'Vol.')} ${ie.endVolume}</g:if>
                         <g:if test="${ie.endIssue}">${message(code:'tipp.issue.short', default:'Iss.')} ${ie.endIssue}</g:if>
                         <g:formatDate format="yyyy" date="${ie.endDate}"/>
-                        (<g:link controller="issueEntitlement" action="show" id="${ie.id}">${message(code:'myinst.currentTitles.full_ie', default:'Full Issue Entitlement Details')}</g:link>)
+                        <br />
+                        <g:link controller="issueEntitlement" action="show" id="${ie.id}">${message(code:'myinst.currentTitles.full_ie', default:'Full Issue Entitlement Details')}</g:link>
                       </p>
                   </g:each>
                 </td>
@@ -174,12 +187,11 @@
         </div>
       </div>
 
-      <div class="pagination" style="text-align:center">
+
         <g:if test="${titles}" >
-          <bootstrap:paginate  action="currentTitles" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_ti_rows}" />
+          <semui:paginate  action="currentTitles" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_ti_rows}" />
         </g:if>
-      </div>
-      
+
       <g:if env="development">
       <!-- For Test Only -->
 	      <div class="accordion" id="accordions">
@@ -191,7 +203,7 @@
 	          </div>
 	          <div id="collapse-full-table" class="accordion-body collapse out">
 	            <div class="accordion-inner">
-	              <table  class="table table-striped table-bordered">
+	              <table  class="ui sortable celled la-table table">
 	                <tr>
 	                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
 	                  <th>ISSN</th>

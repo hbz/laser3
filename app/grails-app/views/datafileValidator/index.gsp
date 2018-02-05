@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
 
@@ -17,7 +17,7 @@
             </select>
           </g:form>
 
-          <table>
+           <table class="ui celled la-table table">
             <g:each in="results" var="r">
               <tr>
                 <td>Result</td>

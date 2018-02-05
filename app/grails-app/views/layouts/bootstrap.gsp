@@ -26,29 +26,29 @@
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container">
+        <div>
           <sec:ifLoggedIn>
             <a class="brand" href="${createLink(uri: '/')}">${message(code:'laser', default:'LAS:eR')}</a>
           </sec:ifLoggedIn>
           <div class="nav-collapse">
             <ul class="nav">
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Data Explorer <b class="caret"></b> </a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Data Explorer <strong class="caret"></strong> </a>
                 <ul class="dropdown-menu" style="max-width:none;">
                   <li<%= request.forwardURI == "${createLink(uri: '/')}" ? ' class="active"' : '' %>><a href="${createLink(uri: '/')}">Home</a></li>
-                  <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="package">Package</g:link></li>
+                  <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="packageDetails">Package</g:link></li>
                   <li <%='org'== controllerName ? ' class="active"' : '' %>><g:link controller="org">Organisations</g:link></li>
                   <li <%='platform'== controllerName ? ' class="active"' : '' %>><g:link controller="platform">Platform</g:link></li>
-                  <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstance">Title Instance</g:link></li>
+                  <li <%='titleInstance'== controllerName ? ' class="active"' : '' %>><g:link controller="titleDetails">Title Instance</g:link></li>
                   <li <%='titleInstancePackagePlatform'== controllerName ? ' class="active"' : '' %>><g:link controller="titleInstancePackagePlatform">Title Instance Package Platform</g:link></li>
-                  <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscription">Subscriptions</g:link></li>
-                  <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="license">Licenses</g:link></li>
+                  <li <%='subscription'== controllerName ? ' class="active"' : '' %>><g:link controller="subscriptionDetails">Subscriptions</g:link></li>
+                  <li <%='license'== controllerName ? ' class="active"' : '' %>><g:link controller="licenseDetails">Licenses</g:link></li>
                 </ul>
               </li>
 
               <g:if test="${user}">
                 <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Forms and Actions <b class="caret"></b> </a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Forms and Actions <strong class="caret"></strong> </a>
                   <ul class="dropdown-menu" style="max-width:none;">
 
                     <li <%= ( ( 'myInstitutions'== controllerName ) && ( 'manageAffiliations'==actionName ) ) ? ' class="active"' : '' %>>
@@ -84,7 +84,7 @@
 
               <sec:ifAnyGranted roles="ROLE_ADMIN">
                  <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Admin Actions <b class="caret"></b> </a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Admin Actions <strong class="caret"></strong> </a>
                   <ul class="dropdown-menu">
                     <li <%= ( ( 'admin'== controllerName ) && ( 'manageAffiliationRequests'==actionName ) ) ? ' class="active"' : '' %>>
                        <g:link controller="admin" action="manageAffiliationRequests">Manage Affiliation Requests</g:link></li>
@@ -111,7 +111,7 @@
     </div>
 
     <div id="Footer">
-        <div class="container">
+        <div>
             <div class="row">
                 <div class="pull-right">
                     <a href="http://www.kbplus.ac.uk"><div class="sprite sprite-kbplus_logo">Knowledge Base Plus</div></a>

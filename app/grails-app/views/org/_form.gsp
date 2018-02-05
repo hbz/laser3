@@ -1,20 +1,74 @@
 <%@ page import="com.k_int.kbplus.Org" %>
 
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'globalUID', 'error')} ">
+	<label for="globalUID">
+		<g:message code="org.globalUID.label" default="Global UID" />
+		
+	</label>
+	<g:textArea name="globalUID" cols="40" rows="5" maxlength="255" value="${orgInstance?.globalUID}"/>
+
+</div>
+
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} ">
 	<label for="name">
 		<g:message code="org.name.label" default="Name" />
-
+		
 	</label>
-	<g:textArea name="name" cols="40" rows="1" maxlength="256" value="${orgInstance?.name}"/>
+	<g:textArea name="name" cols="40" rows="5" maxlength="255" value="${orgInstance?.name}"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'shortname', 'error')} ">
+	<label for="shortname">
+		<g:message code="org.shortname.label" default="Shortname" />
+		
+	</label>
+	<g:textArea name="shortname" cols="40" rows="5" maxlength="255" value="${orgInstance?.shortname}"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'sortname', 'error')} ">
+	<label for="sortname">
+		<g:message code="org.sortname.label" default="Sortname" />
+		
+	</label>
+	<g:textArea name="sortname" cols="40" rows="5" maxlength="255" value="${orgInstance?.sortname}"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'url', 'error')} ">
+	<label for="url">
+		<g:message code="org.url.label" default="Url" />
+		
+	</label>
+	<g:textArea name="url" cols="40" rows="5" maxlength="512" value="${orgInstance?.url}"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'fteStudents', 'error')} required">
+	<label for="fteStudents">
+		<g:message code="org.fteStudents.label" default="Fte Students" />
+		<span class="required-indicator">*</span>
+	</label>
+	<g:field name="fteStudents" type="number" value="${orgInstance.fteStudents}" required=""/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'fteStaff', 'error')} required">
+	<label for="fteStaff">
+		<g:message code="org.fteStaff.label" default="Fte Staff" />
+		<span class="required-indicator">*</span>
+	</label>
+	<g:field name="fteStaff" type="number" value="${orgInstance.fteStaff}" required=""/>
 
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">
 	<label for="impId">
 		<g:message code="org.impId.label" default="Imp Id" />
-
+		
 	</label>
-	<g:textArea name="impId" cols="40" rows="1" maxlength="256" value="${orgInstance?.impId}"/>
+	<g:textArea name="impId" cols="40" rows="5" maxlength="255" value="${orgInstance?.impId}"/>
 
 </div>
 
@@ -23,7 +77,7 @@
 		<g:message code="org.comment.label" default="Comment" />
 		
 	</label>
-	<g:textArea name="comment" cols="40" rows="5" maxlength="256" value="${orgInstance?.comment}"/>
+	<g:textArea name="comment" cols="40" rows="5" maxlength="2048" value="${orgInstance?.comment}"/>
 
 </div>
 
@@ -41,12 +95,7 @@
 		<g:message code="org.sector.label" default="Sector" />
 		
 	</label>
-	<laser:select id="sector" name="sector.id"
-		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector')}" 
-		optionKey="id" 
-		optionValue="value" 
-		value="${orgInstance?.sector?.id}" 
-		class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="sector" name="sector.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.sector?.id}" class="many-to-one" noSelection="['null': '']"/>
 
 </div>
 
@@ -82,45 +131,113 @@
 		<g:message code="org.orgType.label" default="Org Type" />
 		
 	</label>
-	<laser:select id="orgType" name="orgType.id"
-		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
-		optionKey="id"
-		optionValue="value" 
-		value="${orgInstance?.orgType?.id}" 
-		class="many-to-one" noSelection="['null': '']"/>
-	
+	<g:select id="orgType" name="orgType.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.orgType?.id}" class="many-to-one" noSelection="['null': '']"/>
+
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="org.status.label" default="Status" />
+		
 	</label>
-	<laser:select id="status" name="status.id"
-		from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('PendingChangeStatus')}"
-		optionKey="id" 
-		optionValue="value" 
-		value="${orgInstance?.status?.id}" 
-		class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
 
 </div>
+
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
 		
 	</label>
-	<laser:select id="membership" name="membership.id"
-                from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN')}"
-                optionKey="id"
-                value="${orgInstance?.membership?.id}"
-                class="many-to-one"
-                noSelection="['null': '']"/>
+	<g:select id="membership" name="membership.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'country', 'error')} ">
+	<label for="country">
+		<g:message code="org.country.label" default="Country" />
+		
+	</label>
+	<g:select id="country" name="country.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.country?.id}" class="many-to-one" noSelection="['null': '']"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'federalState', 'error')} ">
+	<label for="federalState">
+		<g:message code="org.federalState.label" default="Federal State" />
+		
+	</label>
+	<g:select id="federalState" name="federalState.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.federalState?.id}" class="many-to-one" noSelection="['null': '']"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryNetwork', 'error')} ">
+	<label for="libraryNetwork">
+		<g:message code="org.libraryNetwork.label" default="Library Network" />
+		
+	</label>
+	<g:select id="libraryNetwork" name="libraryNetwork.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.libraryNetwork?.id}" class="many-to-one" noSelection="['null': '']"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'funderType', 'error')} ">
+	<label for="funderType">
+		<g:message code="org.funderType.label" default="Funder Type" />
+		
+	</label>
+	<g:select id="funderType" name="funderType.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.funderType?.id}" class="many-to-one" noSelection="['null': '']"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryType', 'error')} ">
+	<label for="libraryType">
+		<g:message code="org.libraryType.label" default="Library Type" />
+		
+	</label>
+	<g:select id="libraryType" name="libraryType.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.libraryType?.id}" class="many-to-one" noSelection="['null': '']"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'importSource', 'error')} ">
+	<label for="importSource">
+		<g:message code="org.importSource.label" default="Import Source" />
+		
+	</label>
+	<g:textField name="importSource" value="${orgInstance?.importSource}"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'lastImportDate', 'error')} ">
+	<label for="lastImportDate">
+		<g:message code="org.lastImportDate.label" default="Last Import Date" />
+		
+	</label>
+	<g:datePicker name="lastImportDate" precision="day"  value="${orgInstance?.lastImportDate}" default="none" noSelection="['': '']" />
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'addresses', 'error')} ">
+	<label for="addresses">
+		<g:message code="org.addresses.label" default="Addresses" />
+		
+	</label>
+	
+<ul class="one-to-many">
+<g:each in="${orgInstance?.addresses?}" var="a">
+    <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+</g:each>
+<li class="add">
+<g:link controller="address" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}</g:link>
+</li>
+</ul>
+
 
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'affiliations', 'error')} ">
 	<label for="affiliations">
 		<g:message code="org.affiliations.label" default="Affiliations" />
-
+		
 	</label>
 	
 <ul class="one-to-many">
@@ -129,6 +246,24 @@
 </g:each>
 <li class="add">
 <g:link controller="userOrg" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'userOrg.label', default: 'UserOrg')])}</g:link>
+</li>
+</ul>
+
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'contacts', 'error')} ">
+	<label for="contacts">
+		<g:message code="org.contacts.label" default="Contacts" />
+		
+	</label>
+	
+<ul class="one-to-many">
+<g:each in="${orgInstance?.contacts?}" var="c">
+    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+</g:each>
+<li class="add">
+<g:link controller="contact" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}</g:link>
 </li>
 </ul>
 
@@ -177,16 +312,35 @@
 		
 	</label>
 	
-  <ul class="one-to-many">
-  <g:each in="${orgInstance?.incomingCombos?}" var="i">
-      <li><g:link controller="combo" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
-  </g:each>
-  <li class="add">
-  <g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
-  </li>
-  </ul>
+<ul class="one-to-many">
+<g:each in="${orgInstance?.incomingCombos?}" var="i">
+    <li><g:link controller="combo" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
+</g:each>
+<li class="add">
+<g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
+</li>
+</ul>
+
+
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
+	<label for="links">
+		<g:message code="org.links.label" default="Links" />
+		
+	</label>
+	
+<ul class="one-to-many">
+<g:each in="${orgInstance?.links?}" var="l">
+    <li><g:link controller="orgRole" action="show" id="${l.id}">${l?.encodeAsHTML()}</g:link></li>
+</g:each>
+<li class="add">
+<g:link controller="orgRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgRole.label', default: 'OrgRole')])}</g:link>
+</li>
+</ul>
+
+
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'outgoingCombos', 'error')} ">
 	<label for="outgoingCombos">
@@ -206,44 +360,27 @@
 
 </div>
 
-
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
-	<label for="contacts">
-		<g:message code="person.contacts.label" default="Contacts" />
-		
-	</label>
-	<ul class="one-to-many">
-	<g:each in="${orgInstance?.contacts?}" var="o">
-	    <li><g:link controller="contact" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></li>
-	</g:each>
-	<li class="add">
-	<g:link controller="contact" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}</g:link>
-	</li>
-	</ul>
-</div>
-
-<!-- 
-<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
-	<label for="links">
-		<g:message code="org.links.other.label" default="Links" />
+<div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'privateProperties', 'error')} ">
+	<label for="privateProperties">
+		<g:message code="org.privateProperties.label" default="Private Properties" />
 		
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${orgInstance?.links?}" var="l">
-    <li><g:link controller="orgRole" action="show" id="${l.id}">${l?.encodeAsHTML()}</g:link></li>
+<g:each in="${orgInstance?.privateProperties?}" var="p">
+    <li><g:link controller="orgPrivateProperty" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">
-<g:link controller="orgRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgRole.label', default: 'OrgRole')])}</g:link>
+<g:link controller="orgPrivateProperty" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgPrivateProperty.label', default: 'OrgPrivateProperty')])}</g:link>
 </li>
 </ul>
 
+
 </div>
--->
-<!-- 
+
 <div class="fieldcontain ${hasErrors(bean: orgInstance, field: 'prsLinks', 'error')} ">
 	<label for="prsLinks">
-		<g:message code="org.prsLinks.label" default="prsLinks" />
+		<g:message code="org.prsLinks.label" default="Prs Links" />
 		
 	</label>
 	
@@ -256,63 +393,6 @@
 </li>
 </ul>
 
+
 </div>
--->
 
-<h3>Org-to-X-with-PersonRole (Demo only)</h3>
-<p>TODO</p>
-
-<g:if test="${orgInstance?.prsLinks}">
-				<dl>
-					<dt><g:message code="org.prsLinks.label" default="Person Roles" /></dt>
-					<dd><ul>
-						<g:each in="${orgInstance.prsLinks}" var="p">
-							<li>
-								${p.roleType?.value} - 
-                                
-                                <g:if test="${p.cluster}">
-                                	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
-                                </g:if>
-                                <g:if test="${p.pkg}">
-                                	<g:link controller="package" action="show" id="${p.pkg.id}">Package: ${p.pkg.name}</g:link>
-                                </g:if>
-                                <g:if test="${p.sub}">
-                                	<g:link controller="subscription" action="show" id="${p.sub.id}">Subscription: ${p.sub.name}</g:link>
-                                </g:if>
-                                <g:if test="${p.lic}">License: ${p.lic.id}</g:if>
-                                <g:if test="${p.title}">
-                                	<g:link controller="titleInstance" action="show" id="${p.title.id}">Title: ${p.title.title}</g:link>
-                                </g:if> 
-						 	</li>
-						</g:each>
-					</ul></dd>
-				</dl>
-			</g:if>
-			
-<h3>Org-to-X-with-Role (Demo only)</h3>
-
-<div id="ui-placeholder-cluster" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-lic" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-pkg" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-sub" class="ui-ajax"></div><hr/>
-<div id="ui-placeholder-title" class="ui-ajax"></div>
-
-<g:if test="${orgInstance?.id != null}">
-	<script>
-		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=cluster").done(function(data){
-			$("#ui-placeholder-cluster").append(data);
-		});
-		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=lic").done(function(data){
-			$("#ui-placeholder-lic").append(data);
-		});
-		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=pkg").done(function(data){
-			$("#ui-placeholder-pkg").append(data);
-		});
-		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=sub").done(function(data){
-			$("#ui-placeholder-sub").append(data);
-		});
-		$.get("${webRequest.baseUrl}/org/ajax/${orgInstance.id}?type=title").done(function(data){
-			$("#ui-placeholder-title").append(data);
-		});
-	</script>
-</g:if>

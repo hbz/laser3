@@ -16,10 +16,7 @@ class TippController {
     def result = [:]
 
     result.user = User.get(springSecurityService.principal.id)
-    if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') )
-      result.editable=true
-    else
-      result.editable=false
+    result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
     result.tipp = TitleInstancePackagePlatform.get(params.id)
     result.titleInstanceInstance = result.tipp.title

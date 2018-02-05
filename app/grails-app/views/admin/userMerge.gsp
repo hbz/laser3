@@ -1,27 +1,22 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Admin::User Merge</title>
   </head>
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="admin" action="userMerge" text="User Merge" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="admin" action="userMerge" text="User Merge" />
+    </semui:breadcrumbs>
 
 
-  <div class="container">
+  <div>
    <div class="span8">
 
 
-    <g:if test="${flash.message}">
-      <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </g:if>
-    <g:if test="${flash.error}">
-      <bootstrap:alert class="alert alert-error">${flash.error}</bootstrap:alert>
-    </g:if>
+       <semui:messages data="${flash}" />
     
      <p>Select the user to keep, and the user whose rights will be transferred. When 'merge' is clicked,
       a confirmation screen with 'user to merge' current rights will be displayed.</p>
@@ -41,7 +36,7 @@
     optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to merge-']}"/>
     </dd>
      </dl>
-     <input type="submit" value="Merge" class="btn btn-primary"/>
+     <input type="submit" value="Merge" class="ui button"/>
   </g:form>
   </div>
   </div>
@@ -51,7 +46,7 @@
      
      <div class="modal-header">
        <button type="button" class="close" data-dismiss="modal">×</button>
-       <h3>Merge ${userMerge?.displayName} (${userMerge?.id}) into ${userKeep?.displayName} (${userKeep?.id}) </h3>
+       <h3 class="ui header">Merge ${userMerge?.displayName} (${userMerge?.id}) into ${userKeep?.displayName} (${userKeep?.id}) </h3>
      </div>
       <g:form action="userMerge" method="POST">
       
@@ -61,13 +56,13 @@
 
           <p>Current Roles and Affiliations that will be copied to ${userKeep?.displayName}</p>
 
-          <b> User Roles </b>
+          <strong> User Roles </strong>
           <ul>
             <g:each in="${userRoles}" var="userRole">
               <li> ${userRole.authority}</li>
             </g:each>
           </ul>
-          <b> Affiliations </b>
+          <strong> Affiliations </strong>
 
           <div style="height:300px;line-height:3em;overflow:auto;padding:5px;">
            <ul>
@@ -79,7 +74,7 @@
         </div>
         
         <div class="modal-footer">
-        <input type="submit" id="mergeUsersBtn" value="Apply" class="btn btn-primary btn-small"/>
+        <input type="submit" id="mergeUsersBtn" value="Apply" class="ui button"/>
      </div>
         </g:form>
   </div>

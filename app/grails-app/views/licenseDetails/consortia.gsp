@@ -2,39 +2,31 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'license', default: 'License')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
 </head>
 
 <body>
 
-    <div class="container">
-      <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    </div>
-    
-<g:if test="${flash.message}">
-    <div class="container"><bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert></div>
-</g:if>
+    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-<g:if test="${flash.error}">
-    <div class="container"><bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert></div>
-</g:if>
+    <semui:messages data="${flash}" />
 
-<div class="container">
-    <h1>${license?.reference}</h1>
+    <h1 class="ui header">${license?.reference}</h1>
+
     <g:render template="nav"/>
-</div>
 
-<div class="container">
+
+<div>
 <g:if test="${consortia}">
-<h3> Institutions for ${consortia.name} consortia </h3>
+<h3 class="ui header"> Institutions for ${consortia.name} consortia </h3>
 <br><p> The following list displays all members of ${consortia.name} consortia. To create child licenses
     select the desired checkboxes and click 'Create child licenses'</p><br>
 <g:form action="generateSlaveLicenses" controller="licenseDetails" method="POST">
 <input type="hidden" name="baselicense" value="${license.id}"/>
 <input type="hidden" name="id" value="${id}"/>
-<table class="table table-bordered"> 
+<table class="ui celled la-table table">
 <thead>
     <tr>
         <th>Organisation</th>
@@ -56,7 +48,7 @@
 <dl>
 <dt>License name: <input type="text" name="lic_name"
     value="Child license for ${license?.reference}"/></dt>
-<dd><input type="submit" class="btn btn-primary" value="Create child licenses"/></dd>
+<dd><input type="submit" class="ui button" value="Create child licenses"/></dd>
 </dl>
 </g:form>
 </g:if>

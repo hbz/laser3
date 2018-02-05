@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.domain.Permissions
+
 import javax.persistence.Transient
 
 import com.k_int.kbplus.auth.Role
@@ -16,7 +18,7 @@ import groovy.util.logging.Log4j
  */
 
 @Log4j
-class OnixplLicense {
+class OnixplLicense implements Permissions {
 
   Date lastmod;
   String title;
@@ -74,15 +76,24 @@ class OnixplLicense {
     title(nullable: false, blank: false)
   }
 
-  // Only admin has permission to change ONIX-PL licenses;
-  // anyone can view them.
-  def hasPerm(perm, user) {
-    if (perm == 'view') return true;
-    // If user is a member of admin role, they can do anything.
-    def admin_role = Role.findByAuthority('ROLE_ADMIN');
-    if (admin_role) return user.getAuthorities().contains(admin_role);
-    false;
-  }
+    def isEditableBy(user) {
+        hasPerm("edit", user)
+    }
+
+    // Only admin has permission to change ONIX-PL licenses; anyone can view them.
+    def hasPerm(perm, user) {
+        if (perm == 'view') {
+            return true
+        }
+
+        // If user is a member of admin role, they can do anything.
+        def admin_role = Role.findByAuthority('ROLE_ADMIN')
+        if (admin_role && user.getAuthorities().contains(admin_role)) {
+            return true
+        }
+
+        false
+    }
 
 
   @Override

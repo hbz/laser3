@@ -28,8 +28,8 @@ def dataSource
 		def result=[:]
 		flash.error = ""
  		flash.message = ""
-		result.available_reports= availableReportNames()
-		def reportName= params.report_name?:result.available_reports[0]
+		result.available_reports = availableReportNames()
+		def reportName = params.report_name?:result.available_reports[0]
 
 		if(reportName != null){
 			def available_formats = availableReportFormats()
@@ -61,7 +61,7 @@ def dataSource
 	@Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
 	def uploadReport(){
 		def result = [:]
-		flash.error = params.errorMsg?:""
+		flash.error = params.errorMsg ?: ""
  		flash.message = ""
 
  		if(request  instanceof MultipartHttpServletRequest){
@@ -109,13 +109,13 @@ def dataSource
 			chain action: 'index', model: [errorMsg:message(code:'jasper.generate.noSelection')]
 		}
 	 
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
-		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf2 = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
 
 		def filteredDateParams =params.findAll {it.key.toString().contains("date") }
 		filteredDateParams.each { key, value ->
 			def stringVal = value
-			def newVal = sdf2.format(sdf.parse(stringVal))+" 00:00:00"
+			def newVal = sdf.format(sdf2.parse(stringVal))+" 00:00:00"
 			params.putAt(key,newVal) 
 		}
 		

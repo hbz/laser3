@@ -2,53 +2,56 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
   <body>
-      <div class="container">
+      <div>
 
-        <div class="page-header">
-          <h1>${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
-        </div>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+          <h1 class="ui header">${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
 
-        <g:if test="${flash.error}">
-        <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-        </g:if>
 
-        <g:hasErrors bean="${packageInstance}">
-        <bootstrap:alert class="alert-error">
-        <ul>
-          <g:eachError bean="${packageInstance}" var="error">
-          <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-          </g:eachError>
-        </ul>
-        </bootstrap:alert>
-        </g:hasErrors>
+        <semui:messages data="${flash}" />
 
-        <g:form action="reviewPackage" method="post" enctype="multipart/form-data">
-            ${message(code:'package.upload.file', default:'Upload File')}: <input type="file" id="soFile" name="soFile"/><br/>
+        <semui:errors bean="${packageInstance}" />
 
-            ${message(code:'package.upload.docStyle', default:'Doc Style')}: <select name="docstyle">
-              <option value="csv" selected>${message(code:'package.upload.docStyle.csv', default:'Comma Separated')}</option>
-              <option value="tsv">${message(code:'package.upload.docStyle.tsv', default:'Tab Separated')}</option>
-            </select></br>
+        <semui:form>
+          <g:form action="reviewPackage" method="post" enctype="multipart/form-data" class="ui form">
 
-            ${message(code:'package.upload.override', default:'Override Character Set Test')}: <input style="vertical-align:text-bottom;margin-right:10px;" type="checkbox" name="OverrideCharset" checked="false"/>
+            <div class="fields">
 
-            <button type="submit" class="btn btn-primary">${message(code:'package.upload.upload', default:'Upload Package')}</button>
-        </g:form>
+              <div class="field">
+                <label>${message(code:'package.upload.file', default:'Upload File')}</label>
+                <input type="file" id="soFile" name="soFile"/><br/>
+              </div>
+
+              <div class="field">
+                <label>${message(code:'package.upload.docStyle', default:'Doc Style')}</label>
+                <select name="docstyle">
+                  <option value="csv" selected>${message(code:'package.upload.docStyle.csv', default:'Comma Separated')}</option>
+                  <option value="tsv">${message(code:'package.upload.docStyle.tsv', default:'Tab Separated')}</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>${message(code:'package.upload.override', default:'Override Character Set Test')}</label>
+                <input type="checkbox" name="OverrideCharset" checked="false"/>
+              </div>
+
+              <div class="field">
+                <label>&nbsp;</label>
+                <button type="submit" class="ui button">${message(code:'package.upload.upload', default:'Upload Package')}</button>
+              </div>
+            </div>
+          </g:form>
         
-        <br/>
+        </semui:form>
 
         <g:if test="${validationResult}">
           <g:if test="${validationResult.stats != null}">
-            <h3>${message(code:'default.stats.label', default:'Stats')}</h3>
+            <h3 class="ui header">${message(code:'default.stats.label', default:'Stats')}</h3>
             <ul>
               <g:each in="${validationResult?.stats}" var="msg">
                 <li>${msg.key} = ${msg.value}</li>
@@ -70,7 +73,7 @@
           <g:else>
             <div class="alert alert-error">${message(code:'package.upload.failed', default:'File failed validation checks, details follow')}</div>
           </g:else>
-          <table class="table">
+          <table class="ui table">
             <tbody>
               <g:each in="${['soName', 'soIdentifier', 'soProvider', 'soPackageIdentifier', 'soPackageName', 'aggreementTermStartYear', 'aggreementTermEndYear', 'consortium', 'numPlatformsListed']}" var="fld">
                 <tr>
@@ -88,7 +91,7 @@
             </tbody>
           </table>
 
-          <table class="table">
+          <table class="ui table">
             <thead>
               <tr>
                 <g:each in="${validationResult.soHeaderLine}" var="c">

@@ -274,7 +274,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   @Transient
   public String getURL() {
-    "${grailsApplication.config.SystemBaseURL}/packageDetails/show/${id}".toString();
+    "${grailsApplication.config.grails.serverURL}/packageDetails/show/${id}".toString();
   }
 
   // @Transient
@@ -419,6 +419,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         if ( name != null ) {
             sortName = generateSortName(name)
         }
+        
+        if (impId == null) {
+          impId = java.util.UUID.randomUUID().toString();
+        }
+        
         super.beforeInsert()
     }
 

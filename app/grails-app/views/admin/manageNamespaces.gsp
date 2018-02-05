@@ -2,42 +2,26 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<title>${message(code: 'menu.admin.manageIdentifierNamespaces')}</title>
 	</head>
 
-		<laser:breadcrumbs>
-			<laser:crumb message="menu.admin.dash" controller="admin" action="index" />
-			<laser:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
-		</laser:breadcrumbs>
+		<semui:breadcrumbs>
+			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+			<semui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
+		</semui:breadcrumbs>
 
-		<div class="container">
-			<div class="page-header">
-				<h1><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
-			</div>
+		<h1 class="ui header"><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
 
-			<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-			</g:if>
-			<g:if test="${flash.error}">
-				<bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-			</g:if>
+		<semui:messages data="${flash}" />
 
-			<g:hasErrors bean="${identifierNamespaceInstance}">
-				<bootstrap:alert class="alert-error">
-					<ul>
-						<g:eachError bean="${identifierNamespaceInstance}" var="error">
-							<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-						</g:eachError>
-					</ul>
-				</bootstrap:alert>
-			</g:hasErrors>
-		</div>
+			<semui:errors bean="${identifierNamespaceInstance}" />
 
-		<div class="container">
-			<div class="row">
-				<div class="span8">
-					<table class="table table-bordered table-striped">
+
+
+			<div class="ui grid">
+				<div class="twelve wide column">
+					<table class="ui celled la-table table">
 						<thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>
@@ -63,14 +47,14 @@
 						</g:each>
 						</tbody>
 					</table>
-				</div><!--.span8-->
+				</div><!--.twelve-->
 
-				<div class="span4">
-					<laser:card title="identifier.namespace.add.label" class="card-grey">
+				<div class="four wide column">
+					<semui:card message="identifier.namespace.add.label" class="card-grey">
 						<fieldset>
-							<g:form class="form-horizontal" action="manageNamespaces">
+							<g:form class="ui form" action="manageNamespaces">
 
-								<div class="fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'ns', 'error')} required">
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'ns', 'error')} required">
 									<label for="ns">
 										<g:message code="identifierNamespace.ns.label" />
 										<span class="required-indicator">*</span>
@@ -78,21 +62,21 @@
 									<g:textField name="ns" value="${identifierNamespaceInstance?.ns}" required=""/>
 								</div>
 
-								<div class="fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'family', 'error')} ">
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'family', 'error')} ">
 									<label for="family">
 										<g:message code="identifierNamespace.family.label" />
 									</label>
 									<g:textField name="family" value="${identifierNamespaceInstance?.family}"/>
 								</div>
 
-								<div class="fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'validationRegex', 'error')} ">
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'validationRegex', 'error')} ">
 									<label for="validationRegex">
 										<g:message code="identifierNamespace.validationRegex.label" />
 									</label>
 									<g:textField name="validationRegex" value="${identifierNamespaceInstance?.validationRegex}"/>
 								</div>
 
-								<div class="fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nstype', 'error')} ">
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nstype', 'error')} ">
 									<label for="nstype">
 										<g:message code="identifierNamespace.nstype.label" /> TODO !!!
 									</label>
@@ -104,14 +88,14 @@
 											  class="many-to-one" noSelection="['null': '']"/>
 								</div>
 
-								<div class="fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'hide', 'error')} ">
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'hide', 'error')} ">
 									<label for="hide">
 										<g:message code="identifierNamespace.hide.label" />
 									</label>
 									<g:checkBox name="hide" value="${identifierNamespaceInstance?.hide}" checked="${identifierNamespaceInstance?.hide}" />
 								</div>
 
-								<div class="fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nonUnique', 'error')} ">
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nonUnique', 'error')} ">
 									<label for="nonUnique">
 										<g:message code="identifierNamespace.nonUnique.label" />
 									</label>
@@ -120,18 +104,18 @@
 
 								<br />
 
-								<button type="submit" class="btn btn-primary">
-									<i class="icon-ok icon-white"></i>
+								<button type="submit" class="ui button">
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.create.label" default="Create" />
 								</button>
 
 							</g:form>
 						</fieldset>
 
-					</laser:card>
-				</div><!--.span4-->
-			</div><!--.row-->
-		</div>
+					</semui:card>
+				</div><!--.four-->
+			</div><!--.grid-->
+
 
 	</body>
 </html>

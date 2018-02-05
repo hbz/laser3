@@ -21,16 +21,16 @@ class PlatformController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.max = params.max ?: result.user.defaultPageSize
 
-      result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.offset = params.offset ?: 0
 
         def deleted_platform_status =  RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' );
         def qry_params = [deleted_platform_status]
 
-      def base_qry = " from Platform as p where ( (p.status is null ) OR ( p.status = ? ) )"
+        def base_qry = " from Platform as p where ( (p.status is null ) OR ( p.status = ? ) )"
 
         if ( params.q?.length() > 0 ) {
             base_qry += "and p.normname like ?"
@@ -80,12 +80,7 @@ class PlatformController {
         return
       }
 
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
-          editable = true
-      }
-      else {
-          editable = false
-      }
+      editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
      // Build up a crosstab array of title-platforms under this package
       def packages = [:]

@@ -3,12 +3,12 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
     <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
-	DEPRECATED
+    <h2 class="ui header">DEPRECATED</h2>
     <div class="row-fluid">
       
       <div class="span2">
@@ -35,13 +35,9 @@
       
       <div class="span10">
 
-        <div class="page-header">
-          <h1>${orgInstance.name}</h1>
-        </div>
+          <h1 class="ui header">${orgInstance.name}</h1>
 
-        <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </g:if>
+          <semui:messages data="${flash}" />
 
           <div class="inline-lists">
 
@@ -59,12 +55,12 @@
                   </dl>
               </g:if>
 
-              <g:if test="${orgInstance?.ipRange}">
+              <!--<g:if test="${orgInstance?.ipRange}">
                   <dl>
                       <dt><g:message code="org.ipRange.label" default="Ip Range" /></dt>
                       <dd><g:fieldValue bean="${orgInstance}" field="ipRange"/></dd>
                   </dl>
-              </g:if>
+              </g:if>-->
 
               <dl>
                 <dt><g:message code="org.sector.label" default="Sector" /></dt>
@@ -79,6 +75,13 @@
                     <g:fieldValue bean="${orgInstance}" field="sector"/></dd>
                   </g:else>
               </dl>
+
+              <g:if test="${orgInstance?.orgType}">
+                  <dl>
+                      <dt><g:message code="org.orgType.label" default="Org Type" /></dt>
+                      <dd><g:fieldValue bean="${orgInstance}" field="orgType"/></dd>
+                  </dl>
+              </g:if>
 
               <g:if test="${orgInstance?.ids}">
                   <dl>
@@ -144,20 +147,20 @@
 					<dd><ul>
 						<g:each in="${orgInstance.prsLinks}" var="p">
 							<li>
-								${p.roleType?.value} - 
+								${p.functionType?.value}${p.responsibilityType?.value}  -
                                 
                                 <g:if test="${p.cluster}">
                                 	<g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
                                 </g:if>
                                 <g:if test="${p.pkg}">
-                                	<g:link controller="package" action="show" id="${p.pkg.id}">${message(code:'package.label', default:'Package')}: ${p.pkg.name}</g:link>
+                                	<g:link controller="packageDetails" action="show" id="${p.pkg.id}">${message(code:'package.label', default:'Package')}: ${p.pkg.name}</g:link>
                                 </g:if>
                                 <g:if test="${p.sub}">
-                                	<g:link controller="subscription" action="show" id="${p.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${p.sub.name}</g:link>
+                                	<g:link controller="subscriptionDetails" action="show" id="${p.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${p.sub.name}</g:link>
                                 </g:if>
                                 <g:if test="${p.lic}">${message(code:'license.label', default:'License')}: ${p.lic.id}</g:if>
                                 <g:if test="${p.title}">
-                                	<g:link controller="titleInstance" action="show" id="${p.title.id}">${message(code:'title.label', default:'Title')}: ${p.title.title}</g:link>
+                                	<g:link controller="titleDetails" action="show" id="${p.title.id}">${message(code:'title.label', default:'Title')}: ${p.title.title}</g:link>
                                 </g:if> 
 						 	</li>
 						</g:each>
@@ -173,11 +176,11 @@
                               <li>
                               	${i.roleType?.value} - 
                               
-                                  <g:if test="${i.pkg}">    <g:link controller="package" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name}</g:link></g:if>
+                                  <g:if test="${i.pkg}">    <g:link controller="packageDetails" action="show" id="${i.pkg.id}">${message(code:'package.label', default:'Package')}: ${i.pkg.name}</g:link></g:if>
                                   <g:if test="${i.cluster}"><g:link controller="cluster" action="show" id="${i.cluster.id}">Cluster: ${i.cluster.name}</g:link></g:if>
-                                  <g:if test="${i.sub}">    <g:link controller="subscription" action="show" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}</g:link></g:if>
+                                  <g:if test="${i.sub}">    <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}</g:link></g:if>
                                   <g:if test="${i.lic}">${message(code:'license.label', default:'License')}: ${i.lic.id}</g:if>
-                                  <g:if test="${i.title}">  <g:link controller="titleInstance" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title}</g:link></g:if>
+                                  <g:if test="${i.title}">  <g:link controller="titleDetails" action="show" id="${i.title.id}">${message(code:'title.label', default:'Title')}: ${i.title.title}</g:link></g:if>
                               </li>
                           </g:each>
                       </ul></dd>
@@ -198,13 +201,13 @@
         <g:form>
                                     <sec:ifAnyGranted roles="ROLE_ADMIN">
           <g:hiddenField name="id" value="${orgInstance?.id}" />
-          <div class="form-actions">
-            <g:link class="btn" action="edit" id="${orgInstance?.id}">
-              <i class="icon-pencil"></i>
+          <div class="ui form-actions">
+            <g:link class="ui button" action="edit" id="${orgInstance?.id}">
+              <i class="write icon"></i>
               <g:message code="default.button.edit.label" default="Edit" />
             </g:link>
-            <button class="btn btn-danger" type="submit" name="_action_delete">
-              <i class="icon-trash icon-white"></i>
+            <button class="ui negative button" type="submit" name="_action_delete">
+              <i class="trash icon"></i>
               <g:message code="default.button.delete.label" default="Delete" />
             </button>
           </div>

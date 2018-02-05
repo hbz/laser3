@@ -1,36 +1,41 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
   <body>
 
-    <div class="container">
-      <div class="page-header">
-        <h1><g:message code="globalDataSync.label" /></h1>
-      </div>
-      <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </g:if>
-    </div>
 
-    <div class="container" style="text-align:center">
-      <g:form action="index" method="get" class="form-inline">
-        <label>${message(code: 'globalDataSync.search.text')}: </label> <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}" value="${params.q?.encodeAsHTML()}"  />
-        <input type="submit" class="btn btn-primary" value="${message(code: 'default.button.search.label')}" />
-      </g:form><br/>
-    </div>
+        <h1 class="ui header"><g:message code="globalDataSync.label" /></h1>
 
-    <div class="container">
+      <semui:messages data="${flash}" />
+
+
+    <semui:filter>
+      <g:form action="index" method="get" class="ui form">
+        <div class="fields">
+          <div class="field">
+            <label>${message(code: 'globalDataSync.search.text')}</label>
+            <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}" value="${params.q?.encodeAsHTML()}"  />
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <input type="submit" class="ui secondary button" value="${message(code: 'default.button.search.label')}" />
+          </div>
+        </div>
+      </g:form>
+  </semui:filter>
+
+    <div>
         
       <g:if test="${items != null}">
         <div class="container" style="text-align:center">
-          ${message(code:'globalDataSync.pagination.text', args: [offset+1,(offset + items.size()),globalItemTotal])}
+          ${message(code:'globalDataSync.pagination.text', args: [offset,(offset + max),globalItemTotal])}
         </div>
       </g:if>
-      <table class="table table-bordered table-striped">
+      <table class="ui sortable celled la-table table">
         <thead>
           <tr>
             <g:sortableColumn property="identifier"      title="${message(code: 'package.identifier.label'     )}" />
@@ -53,8 +58,8 @@
                      ${item.source.name}</a></td>
               <td> <a href="${item.source.baseUrl}search/index?qbe=g:1packages">${item.displayRectype}</a></td>
               <td>${item.kbplusCompliant?.value}</td>
-              <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}" class="btn btn-success">${message(code: 'globalDataSync.track_new')}</g:link>
-                  <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}" class="btn btn-success">${message(code: 'globalDataSync.track_merge')}</g:link>
+              <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}" class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link>
+                  <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}" class="ui positive button">${message(code: 'globalDataSync.track_merge')}</g:link>
               </td>
             </tr>
             <g:each in="${item.trackers}" var="tracker">
@@ -71,7 +76,7 @@
                       <g:else>
                         <g:set var="confirm" value="${message(code: 'globalDataSync.cancel.confirm', args: [tracker.name])}" />
                       </g:else>
-                      <g:link controller="globalDataSync" action="cancelTracking" class="btn btn-danger"
+                      <g:link controller="globalDataSync" action="cancelTracking" class="ui negative button"
                               params="[trackerId: tracker.id, itemName: fieldValue(bean: item, field: 'name')]"
                               onclick="return confirm('${confirm}')">
                         <g:message code="globalDataSync.cancel" />
@@ -85,9 +90,9 @@
           </g:each>
         </tbody>
       </table>
-      <div class="pagination">
-        <bootstrap:paginate  action="index" controller="globalDataSync" params="${params}" next="Next" prev="Prev" max="${max}" total="${globalItemTotal}" />
-      </div>
+
+        <semui:paginate  action="index" controller="globalDataSync" params="${params}" next="Next" prev="Prev" max="${max}" total="${globalItemTotal}" />
+
     </div>
   </body>
 </html>

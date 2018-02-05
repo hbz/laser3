@@ -1,19 +1,17 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Admin::Orgs Import</title>
   </head>
 
   <body>
-    <div class="container">
-      <div class="span12">
-        <h1>Orgs Import</h1>
+        <h1 class="ui header">Orgs Import</h1>
         <g:form action="orgsImport" method="post" enctype="multipart/form-data">
           <p>
             Upload a .csv file formatted as<br/>
             org_name, sector, id.type...,affiliation.role...,role,</br>
-            <table class="table">
+            <table class="ui celled la-table table">
               <tr>
                 <td>Example Header Row:</td>
                 <td>name,</td>
@@ -50,7 +48,6 @@
             <button name="load" type="submit" value="Go">Load...</button>
           </dl>
         </g:form>
-      </div>
-    </div>
+
   </body>
 </html>

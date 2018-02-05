@@ -1,23 +1,23 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Admin Settings</title>
   </head>
 
   <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-      <laser:crumb text="System Settings" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+      <semui:crumb text="System Settings" class="active"/>
+    </semui:breadcrumbs>
 
-    <div class="container">
-      <table class="table table-bordered">
+    <div>
+      <table class="ui celled la-table table">
         <thead>
           <tr>
-            <td>Setting</td>
-            <td>Value</td>
+            <th>Setting</th>
+            <th>Value</th>
           </tr>
         </thead>
         <tbody>

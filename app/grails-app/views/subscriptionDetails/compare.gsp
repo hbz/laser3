@@ -2,47 +2,32 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'subscription.label', default: 'Subscription')}"/>
 		<title><g:message code="default.edit.label" args="[entityName]"/></title>
 	</head>
 
-	<body>
-		<div class="container">
-			<div class="row">
-				<g:if test="${institutionName}">
-				<h2> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
-				</g:if>
-				<g:else>
-					<h2> ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
-				</g:else>
+    <body>
+        <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-				<br/>
-			      <ul class="breadcrumb">
-			        <li><g:link controller="home" action="index">${message(code:'default.home.label',default:'Home')}</g:link> <span class="divider">/</span>
-			        <li><g:link controller="subscriptionDetails" action="compare">${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</g:link></li>
+        <g:if test="${institutionName}">
+            <h2 class="ui header"> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
+        </g:if>
+        <g:else>
+            <h2 class="ui header"> ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
+        </g:else>
 
-			        <li class="dropdown pull-right">
-			          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>
+        <semui:messages data="${flash}" />
 
-			          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-			            <li><g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link></li>
-			            
-			          </ul>
-			        </li>
+		<g:if test="${request.message}">
+			<bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
+		</g:if>
 
-			      </ul>
-				<g:if test="${flash.message}">
-					<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
-		        <g:if test="${request.message}">
-				    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
-			    </g:if>
+				<g:form action="compare" controller="subscriptionDetails" method="GET" class="ui form">
+					<g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
+					<g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
 
-				<g:form action="compare" controller="subscriptionDetails" method="GET">
-                                        <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
-                                        <g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
-					<table class="table table-bordered">
+					<table class="ui celled la-table table">
 						<thead>
 							<tr>
 								<th></th>
@@ -54,52 +39,62 @@
 							<tr>
 								<td> ${message(code:'subscription.compare.name', default:'Subscription name')} </td>
 					<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
-					<g:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-					${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> ${message(code:'default.compare.select.first', args:[sub_message] )}<br/>
+					<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+					${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> ${message(code:'default.compare.select.first', args:[sub_message] )}<br/>
                       <input type="hidden" name="subA" id="subSelectA" value="${subA}"/> 
 					</td>
 					<td> 
 					    ${message(code:'default.compare.restrict.after', args:[subs_message] )}
-					    <g:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-				${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <g:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/> ${message(code:'default.compare.select.second', args:[sub_message] )}<br/>
+					    <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+				${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/> ${message(code:'default.compare.select.second', args:[sub_message] )}<br/>
 	                      <input type="hidden" name="subB" id="subSelectB" value="${subB}" />
 					</td>
 							</tr>
 							<tr>
 								<td> ${message(code:'subscription.compare.snapshot', default:'Subscriptions on Date')}</td>
 								<td>
-									<div class="input-append date" id="dateA">
-										<input class="span2" size="16" type="text" name="dateA" id="dateA" value="${params.dateA}"/>
-										<span class="add-on"><i class="icon-th"></i></span>
-									</div>
+									<semui:datepicker name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
+									</semui:datepicker>
 								</td>
 								<td>
-									<div class="input-append date" id="dateB">
-										<input class="spann2" size="16" type="text" name="dateB" value="${params.dateB}"/>
-										<span class="add-on"><i class="icon-th"></i></span>
-									</div>
+									<semui:datepicker name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
+									</semui:datepicker>
 								</td>
 						<tr>
 							<td> ${message(code:'default.compare.filter.add', default:'Add Filter')}</td>
 							<td colspan="2">
-		        <input type="checkbox" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>  ${message(code:'default.compare.filter.insert', default:'Insert')}&nbsp;
-		        <input type="checkbox" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/> ${message(code:'default.compare.filter.delete', default:'Delete')} &nbsp;
-		        <input type="checkbox" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/> ${message(code:'default.compare.filter.update', default:'Update')} &nbsp;
-		        <input type="checkbox" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/> ${message(code:'default.compare.filter.no_change', default:'No Change')} &nbsp;
+
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="hidden" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
+                                    <label>${message(code:'default.compare.filter.insert', default:'Insert')}</label>
+                                </div>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="hidden" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/>
+                                    <label>${message(code:'default.compare.filter.delete', default:'Delete')}</label>
+                                </div>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="hidden" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/>
+                                    <label>${message(code:'default.compare.filter.update', default:'Update')}</label>
+                                </div>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="hidden" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/>
+                                    <label>${message(code:'default.compare.filter.no_change', default:'No Change')}</label>
+                                </div>
+
 							</td>		
 						</tr>
 							</tr>
 						</tbody>
 					</table>	
-					<input type="submit" class="btn btn-primary" value="${message(code:'default.button.compare.label', default:'Compare')}" />
+					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
 				</g:form>
-			</div>
+
 
 			<g:if test="${subInsts?.get(0) && subInsts?.get(1)}">
                                 <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 				<div class="row">
-				<h3>${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
-				<table class="table table-bordered">
+				<h3 class="ui header">${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
+				<table class="ui celled la-table table">
 					<thead>
 						<tr>
 							<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
@@ -132,7 +127,7 @@
 				</table>
 				</div>
 				<div class="row">
-				<g:form action="compare" method="GET" class="form-inline">
+				<g:form action="compare" method="GET" class="ui form">
 					<input type="hidden" name="subA" value="${params.subA}"/>
 					<input type="hidden" name="subB" value="${params.subB}"/>
 					<input type="hidden" name="dateA" value="${params.dateA}"/>
@@ -143,13 +138,13 @@
 					<input type="hidden" name="nochng" value="${params.nochng}"/>
 					<input type="hidden" name="countA" value="${params.countA}"/>
 					<input type="hidden" name="countB" value="${params.countB}"/>
-					<table>
+					 <table class="ui celled la-table table">
 						<tr>
 							<td>
 								${message(code:'subscription.compare.filter.title', default:'Filters - Title')}: <input name="filter" value="${params.filter}">
 							</td>
-							<td> <input type="submit" class="btn btn-primary" value="Filter Results" /> </td>
-							<td> <input id="resetFilters" type="submit" class="btn btn-primary" value="${message(code:'default.button.clear.label', default:'Clear')}" /> </td>
+							<td> <input type="submit" class="ui button" value="Filter Results" /> </td>
+							<td> <input id="resetFilters" type="submit" class="ui button" value="${message(code:'default.button.clear.label', default:'Clear')}" /> </td>
 						</tr>
 					</table>
 				</g:form>
@@ -157,7 +152,7 @@
 				<div class="span6 offset3">
 				<dt class="center">${message(code:'subscription.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 				</div>
-				<table class="table table-bordered">
+				<table class="ui celled la-table table">
 					<thead>
 						<tr>
 							<th> ${message(code:'title.label', default:'Title')} </th>
@@ -167,9 +162,9 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td><b>${message(code:'subscription.compare.results.ies.total', default:'Total IEs for query')}</b></td>
-							<td><b>${listACount}</b></td>
-							<td><b>${listBCount}</b></td>
+							<td><strong>${message(code:'subscription.compare.results.ies.total', default:'Total IEs for query')}</strong></td>
+							<td><strong>${listACount}</strong></td>
+							<td><strong>${listBCount}</strong></td>
 						<tr>
 						<g:each in="${comparisonMap}" var="entry">
 							<g:set var="subAIE" value="${entry.value[0]}"/>
@@ -179,7 +174,7 @@
 							<tr>
 								
 								<td>
-								<b><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></b> 
+								<strong><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
 								<g:each in="${currentTitle.ids}" var="id">
@@ -200,12 +195,12 @@
 						</g:each>						
 					</tbody>
 				</table>
-				<div class="pagination" style="text-align:center">
-		 <bootstrap:paginate  action="compare" controller="subscriptionDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
-				</div>	
+
+		        <semui:paginate  action="compare" controller="subscriptionDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
+
 				</div>
 			</g:if>
-		</div>
+
 		%{-- Hiding the tables from compare_details inside the main table, breaks the modal hide.
  --}%
 
@@ -282,16 +277,6 @@
      	applySelect2("B")
     });
 
-    $('#dateA').datepicker({
-      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-      language:"${message(code:'default.locale.label', default:'en')}",
-      autoclose:true
-    });
-    $('#dateB').datepicker({
-      format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-      language:"${message(code:'default.locale.label', default:'en')}",
-      autoclose:true
-    });
 
 </r:script>
 	</body>

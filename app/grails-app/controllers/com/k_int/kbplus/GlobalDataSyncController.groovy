@@ -18,11 +18,11 @@ class GlobalDataSyncController {
   def index() { 
     def result = [:]
 
-    result.user = request.user
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+    result.user = User.get(springSecurityService.principal.id)
+    result.max = params.max ? Integer.parseInt(params.max): result.user?.defaultPageSize
 
-    def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
-    result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+    def paginate_after = params.paginate_after ?: ( (2*result.max)-1)
+    result.offset = params.offset ?: 0
 
     def base_qry = " from GlobalRecordInfo as r where lower(r.name) like ? and r.source.rectype = 0 "
 

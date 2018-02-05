@@ -10,9 +10,93 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class TitleDetailsController {
 
-  def springSecurityService
-  def ESSearchService
+    def springSecurityService
+    def ESSearchService
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def index() {
+        redirect controller: 'titleDetails', action: 'list', params: params
+        return // ----- deprecated
+
+        log.debug("titleSearch : ${params}");
+
+        def result=[:]
+
+        if (springSecurityService.isLoggedIn()) {
+            params.rectype = "Title" // Tells ESSearchService what to look for
+            result.user = springSecurityService.getCurrentUser()
+            params.max = result.user.defaultPageSize
+
+
+            if(params.search.equals("yes")){
+                //when searching make sure results start from first page
+                params.offset = 0
+                params.remove("search")
+            }
+
+            def old_q = params.q
+            if(!params.q ){
+                params.remove('q');
+                if(!params.sort){
+                    params.sort = "sortTitle"
+                }
+            }
+
+            if(params.filter) params.q ="${params.filter}:${params.q}";
+
+            result =  ESSearchService.search(params)
+            //Double-Quoted search strings wont display without this
+            params.q = old_q?.replace("\"","&quot;")
+        }
+
+        result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        log.debug(result);
+
+        result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def list() {
+        log.debug("titleSearch : ${params}");
+
+        // TODO: copied from index() because no list() given | DB_QUERY
+
+        def result=[:]
+
+        if (springSecurityService.isLoggedIn()) {
+            params.rectype = "Title" // Tells ESSearchService what to look for
+            result.user = springSecurityService.getCurrentUser()
+            params.max = result.user.defaultPageSize
+
+
+            if(params.search.equals("yes")){
+                //when searching make sure results start from first page
+                params.offset = 0
+                params.remove("search")
+            }
+
+            def old_q = params.q
+            if(!params.q ){
+                params.remove('q');
+                if(!params.sort){
+                    params.sort = "sortTitle"
+                }
+            }
+
+            if(params.filter) params.q ="${params.filter}:${params.q}";
+
+            result =  ESSearchService.search(params)
+            //Double-Quoted search strings wont display without this
+            params.q = old_q?.replace("\"","&quot;")
+        }
+
+        result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        log.debug(result);
+
+        result
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def findTitleMatches() { 
@@ -31,7 +115,7 @@ class TitleDetailsController {
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString())
-    
+
     if ( new_title.save(flush:true) ) {
       log.debug("New title id is ${new_title.id}");
       redirect ( action:'edit', id:new_title.id);
@@ -43,33 +127,29 @@ class TitleDetailsController {
     }
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def edit() {
-    def result = [:]
+    @Deprecated
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    def edit() {
+        redirect controller: 'titleDetails', action: 'show', params: params
+        return // ----- deprecated
 
-    if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') )
-      result.editable=true
-    else
-      result.editable=false
+        def result = [:]
 
-    result.ti = TitleInstance.get(params.id)
-    result.duplicates = reusedIdentifiers(result.ti);
-    result
-  }
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.ti = TitleInstance.get(params.id)
+        result.duplicates = reusedIdentifiers(result.ti);
+        result
+    }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def show() {
     def result = [:]
 
-    if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') )
-      result.editable=true
-    else
-      result.editable=false
+    result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
     result.ti = TitleInstance.get(params.id)
-    
     result.duplicates = reusedIdentifiers(result.ti);
-
     result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = ?",[result.ti]);
 
     result
@@ -146,51 +226,7 @@ class TitleDetailsController {
     redirect(controller:'titleDetails', action:'show', id:params.id);
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def index() {
 
-    log.debug("titleSearch : ${params}");
-
-    def result=[:]
-
-    if (springSecurityService.isLoggedIn()) {
-      params.rectype = "Title" // Tells ESSearchService what to look for
-      result.user = springSecurityService.getCurrentUser()
-      params.max = result.user.defaultPageSize
-
-
-      if(params.search.equals("yes")){
-        //when searching make sure results start from first page
-        params.offset = 0
-        params.remove("search")
-      }
-
-      def old_q = params.q
-      if(!params.q ){
-         params.remove('q');
-         if(!params.sort){
-            params.sort = "sortTitle"
-         }
-      }
-      
-      if(params.filter) params.q ="${params.filter}:${params.q}";
-
-      result =  ESSearchService.search(params)  
-      //Double-Quoted search strings wont display without this
-      params.q = old_q?.replace("\"","&quot;") 
-    }
-
-    if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') )
-      result.editable=true;
-    else
-      result.editable=false;
-
-
-    log.debug(result);
-
-    result  
-   
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def history() {
@@ -290,12 +326,11 @@ class TitleDetailsController {
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     
     def ti_cat = RefdataCategory.findByDesc(RefdataCategory.TI_STATUS)
-    result.availableStatuses = RefdataValue.findAllByOwner(ti_cat).collect{ message(code:"refdata.${it}", default:"${it.toString()}") }
+    result.availableStatuses = RefdataValue.findAllByOwner(ti_cat)
     def ti_status = null
+    
     if(params.status){
-      if(result.availableStatuses.contains(params.status)){
-        ti_status = RefdataCategory.lookupOrCreate( RefdataCategory.TI_STATUS, params.status )
-      }
+      ti_status = result.availableStatuses.find { it.value == params.status }
     }
     
     def criteria = TitleInstance.createCriteria()

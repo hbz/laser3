@@ -1,75 +1,60 @@
-<div id="osel_add_modal" class="modal hide">
+<semui:modal id="osel_add_modal" message="template.orgLinksModal">
 
-    <g:form id="create_org_role_link" url="[controller:'ajax',action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            <h3>${message(code:'template.orgLinksModal')}</h3>
-        </div>
-
+    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}"/>
         <input type="hidden" name="property" value="${property}"/>
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
-        <div class="modal-body">
-            <dl>
-                <dt><label class="control-label">${message(code:'template.orgLinksModal.label')}</label></dt>
-                <dd>
-                    <table id="org_role_tab" class="table table-bordered">
-                        <thead>
-                            <tr id="add_org_head_row">
-                            </tr>
-                        </thead>
-                    </table>
-                </dd>
-            </dl>
 
-            <dl>         
-                <dt><label class="control-label">${message(code:'template.orgLinksModal.role')}</label></dt>
-                <dd>    
-                <g:if test="${linkType}">
-                    <g:select name="orm_orgRole"
-                          noSelection="${['':'Select One...']}" 
-                          from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'),linkType)}" 
-                          optionKey="id" 
-                          optionValue="value"/>
-                </g:if>
-                <g:else>
-                    <g:select name="orm_orgRole" 
-                          noSelection="${['':'Select One...']}" 
-                          from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}" 
-                          optionKey="id" 
-                          optionValue="value"/>
-                </g:else>
-                </dd>
-            </dl>
-
+        <div class="field">
+            <table id="org_role_tab" class="ui celled la-table table">
+                <thead>
+                    <tr>
+                        <th>${message(code:'template.orgLinksModal.name.label')}</th>
+                        <th>${message(code:'template.orgLinksModal.select')}</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
 
-        <div class="modal-footer">
-            <input id="org_role_add_btn" type="submit" class="btn btn-primary" value="${message(code:'default.button.add.label')}" />
-            <a href="#" data-dismiss="modal" class="btn btn-primary">${message(code:'default.button.close.label')}</a>
+        <div class="field">
+            <label class="control-label">${message(code:'template.orgLinksModal.role')}</label>
+
+            <g:if test="${linkType}">
+                <g:select name="orm_orgRole"
+                      noSelection="${['':'Select One...']}"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'),linkType)}"
+                      optionKey="id"
+                      optionValue="${{it.getI10n('value')}}"/>
+            </g:if>
+            <g:else>
+                <g:select name="orm_orgRole"
+                      noSelection="${['':'Select One...']}"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}"
+                      optionKey="id"
+                      optionValue="${{it.getI10n('value')}}"/>
+            </g:else>
         </div>
     </g:form>
 
-</div>
+</semui:modal>
 
 <g:javascript>
     var oOrTable;
 
     $(document).ready(function(){
 
-        $('#add_org_head_row').empty();
-        $('#add_org_head_row').append("<td>${message(code:'template.orgLinksModal.name.label')}</td>");
-        $('#add_org_head_row').append("<td>${message(code:'template.orgLinksModal.select')}</td>");
+        $('#add_org_head_row').empty()
 
         oOrTable = $('#org_role_tab').dataTable( {
-            'bAutoWidth': true,
-            "sScrollY": "200px",
+            'bAutoWidth':  true,
+            "sScrollY":    "240px",
             "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="ContentProvider" params="${[format:'json']}"/>",
             "bServerSide": true,
             "bProcessing": true,
-            "bDestroy":true,
-            "bSort":false,
-            "sDom": "frtiS",
+            "bDestroy":    true,
+            "bSort":       false,
+            "sDom":        "frtiS",
             "oScroller": {
                 "loadingIndicator": false
             },
@@ -77,7 +62,7 @@
                     "aTargets": [ 1 ],
                     "mData": "DT_RowId",
                     "mRender": function ( data, type, full ) {
-                        return '<input type="checkbox" name="orm_orgoid" value="'+data+'"/>';
+                        return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
                     }
                 } ]
         } );
@@ -88,12 +73,9 @@
 
     function validateAddOrgRole() {
       if ( $('#orm_orgRole').val() == '' ) {
-        // alert('hello "'+ $('#orm_orgRole').val()+'"'); 
         return confirm("${message(code:'template.orgLinksModal.warn')}");
       }
-
       return true;
     }
-
 
 </g:javascript>

@@ -1,11 +1,4 @@
 <%@ page import="com.k_int.kbplus.JasperReportsController" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: ioannis
-  Date: 02/07/2014
-  Time: 14:33
---%>
-
 <div class="well">
     ${message(code:'jasper.reports.desc', default:'Report Description')}: ${reportdesc}
 
@@ -14,7 +7,7 @@
 <g:form controller="jasperReports" action="generateReport">
     <input type="hidden" id="hiddenReportName" name="_file">
     <input type="hidden" id="hiddenReportFormat" name="_format">
-    <table class="table table-striped table-bordered table-condensed">
+    <table class="ui celled la-table table">
         <thead>
         <tr>
             <th class="text-center" colspan="2">
@@ -33,9 +26,8 @@
             <td>${rparam.getDescription()}</td>
             <td>
                 <g:if test="${rparam.getValueClass().equals(java.sql.Timestamp) || rparam.getValueClass().equals(java.sql.Date) }">
-                    <div class="input-append date">
-                        <input class="span2" size="16" type="text" name="${rparam.getName()}">
-                    </div>
+                    <semui:datepicker name="${rparam.getName()}" placeholder ="default.date.label"  >
+                    </semui:datepicker>
                 </g:if>
                 <g:elseif test="${rparam.getName().contains("select")}">
                     <g:select name="${rparam.getName()}" 
@@ -58,5 +50,5 @@
         </tr>
         </tbody>
     </table>
-    <g:submitButton name="submit" class="btn-primary" value="${message(code:'jasper.generate.label', default:'Generate Report')}"/>
+    <g:submitButton name="submit" class="ui button" value="${message(code:'jasper.generate.label', default:'Generate Report')}"/>
 </g:form>

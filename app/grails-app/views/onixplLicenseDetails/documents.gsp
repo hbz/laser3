@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')}</title>
 </head>
 
 <body>
 
-<div class="container">
+<div>
     <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
         <g:if test="${onixplLicense.license.licensee}">
@@ -19,28 +19,24 @@
                     id="${params.id}">ONIX-PL License Details</g:link> <span class="divider">/</span></li>
         <li><g:link controller="onixplLicenseDetails" action="documents"
                     id="${params.id}">License Documents</g:link></li>
-
-        <g:if test="${editable}">
-            <li class="pull-right"><span class="badge badge-warning">Editable</span>&nbsp;</li>
-        </g:if>
-
     </ul>
 </div>
 
-<div class="container">
-    <h1>${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
+    <g:if test="${editable}">
+        <semui:crumbAsBadge message="default.editable" class="orange" />
+    </g:if>
+
+    <h1 class="ui header">${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
                                                                                                      style="padding-top: 5px;">${onixplLicense.license.reference}</span>
     </h1>
 
     <g:render template="nav" contextPath="."/>
 
-</div>
-
-<div class="container">
+<div>
     <g:form id="delete_doc_form" url="[controller: 'licenseDetails', action: 'deleteDocuments']" method="post">
         <div class="well hide license-documents-options">
-            <button class="btn btn-danger" id="delete-doc">Delete Selected Documents</button>&nbsp;
-            <input type="submit" class="btn btn-primary" value="Add new document" data-toggle="modal"
+            <button class="ui negative button" id="delete-doc">Delete Selected Documents</button>&nbsp;
+            <input type="submit" class="ui button" value="Add new document" data-semui="modal"
                    href="#modalCreateDocument"/>
 
             <input type="hidden" name="licid" value="${params.id}"/>
@@ -49,7 +45,7 @@
         <div class="row">
         <div class="span8">
         <g:if test="${onixplLicense.doc}">
-            <h6>Document Details</h6>
+            <h6 class="ui header">Document Details</h6>
 
             <div class="inline-lists">
                 <dl>
@@ -99,12 +95,11 @@
 </div>
 </div>
 
-<!-- Lightbox modal for creating a document taken from licenseDocuments.html -->
-<div class="modal hide" id="modalCreateDocument">
+<div class="ui modal" id="modalCreateDocument">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
+        <button type="button" class="close" onclick="$('#modalCreateDocument').modal('hide')">×</button>
 
-        <h3>Create New Document</h3>
+        <h3 class="ui header">Create New Document</h3>
     </div>
     <g:form id="upload_new_doc_form" url="[controller: 'licenseDetails', action: 'uploadDocument']" method="post"
             enctype="multipart/form-data">
@@ -144,8 +139,8 @@
         </div>
 
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">Close</a>
-            <input type="submit" class="btn btn-primary" value="Save Changes">
+            <a href="#" class="ui button" onclick="$('#modalCreateDocument').modal('hide')">Close</a>
+            <input type="submit" class="ui button" value="Save Changes">
         </div>
     </g:form>
 </div>

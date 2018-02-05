@@ -2,18 +2,17 @@ package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugins.springsecurity.Secured
-import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
-import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
-import org.apache.log4j.*
 
 class OrganisationsController {
 
     def springSecurityService
+    def permissionHelperService
+    def contextService
+    def addressbookService
+    def filterService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -31,7 +30,7 @@ class OrganisationsController {
         result.editable = true
       }
       else {
-        result.editable = orgInstance.hasUserWithRole(result.user,'INST_ADM');
+        result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
       }
       if(! orgInstance.customProperties){
         grails.util.Holders.config.customProperties.org.each{ 
@@ -56,7 +55,7 @@ class OrganisationsController {
         return
       }
 
-      result.orgInstance=orgInstance
+      result.orgInstance = orgInstance
       result
     }
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
@@ -64,60 +63,42 @@ class OrganisationsController {
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
+        params.max = params.max ?: result.user?.getDefaultPageSize()
 
-        if (! params.max) {
-            params.max = result.user?.getDefaultPageSize()
-        }
+        def fsq = filterService.getOrgQuery(params)
 
-      def results = null;
-      def count = null;
-      if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) &&
-           ( params.orgRole != null ) && ( params.orgRole.length() > 0 ) ) {
-        def qry = "from Org o where lower(o.name) like ? and exists ( from o.links r where r.roleType.id = ? )"
-        results = Org.findAll(qry, ["%${params.orgNameContains.toLowerCase()}%", Long.parseLong(params.orgRole)],params);
-        count = Org.executeQuery("select count(o) ${qry}",["%${params.orgNameContains.toLowerCase()}%", Long.parseLong(params.orgRole)])[0]
-      }
-      else if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) ) {
-        def qry = "from Org o where lower(o.name) like ?"
-        results = Org.findAll(qry, ["%${params.orgNameContains.toLowerCase()}%"], params);
-        count = Org.executeQuery("select count (o) ${qry}",["%${params.orgNameContains.toLowerCase()}%"])[0]
-      }
-      else if ( ( params.orgRole != null ) && ( params.orgRole.length() > 0 ) ) {
-        def qry = "from Org o where exists ( select r from o.links r where r.roleType.id = ? )"
-        results = Org.findAll(qry, [Long.parseLong(params.orgRole)],params);
-        count = Org.executeQuery("select count(o) ${qry}", [Long.parseLong(params.orgRole)])[0]
-      }
-      else { 
-        results = Org.list(params)
-        count = Org.count()
-      }
+        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
+        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
 
-      result.orgInstanceList = results;
-      result.orgInstanceTotal=count
-
-      result
+        result
     }
 
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-    switch (request.method) {
-    case 'GET':
-        if (!params.name && !params.sector) {
-            params.sector = RefdataValue.findByValue('Higher Education')
-        }
-          [orgInstance: new Org(params)]
-      break
-    case 'POST':
-          def orgInstance = new Org(params)
-          if (!orgInstance.save(flush: true)) {
-              render view: 'create', model: [orgInstance: orgInstance]
-              return
-          }
+        switch (request.method) {
+            case 'GET':
+                if (!params.name && !params.sector) {
+                    params.sector = RefdataValue.findByValue('Higher Education')
+                }
+                if (!params.name && !params.orgType) {
+                    params.orgType = RefdataValue.findByValue('Institution')
+                }
+                [orgInstance: new Org(params)]
+                break
+            case 'POST':
+                def orgInstance = new Org(params)
 
-      flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
-          redirect action: 'show', id: orgInstance.id
-      break
-    }
+                if (params.name) {
+                    if (orgInstance.save(flush: true)) {
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+                        redirect action: 'show', id: orgInstance.id
+                        return
+                    }
+                }
+
+                render view: 'create', model: [orgInstance: orgInstance]
+                break
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -130,7 +111,7 @@ class OrganisationsController {
         result.editable = true
       }
       else {
-        result.editable = orgInstance.hasUserWithRole(result.user,'INST_ADM');
+        result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
       }
 
 
@@ -153,7 +134,6 @@ class OrganisationsController {
           def cur_param = "rdvl_${String.valueOf(lv.id)}"
           
           if(params[cur_param]){ 
-            log.debug("Got offset for ${lv.id}: ${params[cur_param]}")
             param_offset = params[cur_param]
             result[cur_param] = param_offset
           }
@@ -170,6 +150,35 @@ class OrganisationsController {
       }
       
       result.sorted_links = sorted_links
+
+
+        // -- private properties
+
+        result.authorizedOrgs = result.user?.authorizedOrgs
+        result.contextOrg     = contextService.getOrg()
+
+        // create mandatory OrgPrivateProperties if not existing
+
+        def mandatories = []
+        result.user?.authorizedOrgs?.each{ org ->
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Org Property", true, org)
+            if(ppd){
+                mandatories << ppd
+            }
+        }
+        mandatories.flatten().each{ pd ->
+            if (! OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
+
+                if (newProp.hasErrors()) {
+                    log.error(newProp.errors)
+                } else {
+                    log.debug("New org private property created via mandatory: " + newProp.type.name)
+                }
+            }
+        }
+
+        // -- private properties
       
       result
     }
@@ -185,7 +194,7 @@ class OrganisationsController {
             result.editable = true
         }
         else {
-            result.editable = orgInstance.hasUserWithRole((User)result.user, 'INST_ADM');
+            result.editable = permissionHelperService.hasUserWithRole((User)result.user, orgInstance, 'INST_ADM')
         }
 
         if (!orgInstance) {
@@ -227,7 +236,7 @@ class OrganisationsController {
       def orgInstance = Org.get(params.id)
 	  
       
-      if ( orgInstance.hasUserWithRole(result.user,'INST_ADM') ) {
+      if ( permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM') ) {
         result.editable = true
       }
       def tracked_roles = ["KBPLUS_EDITOR":"KB+ Editor","ROLE_ADMIN":"KB+ Administrator"]
@@ -251,13 +260,15 @@ class OrganisationsController {
 
       }
       // log.debug(result.users)
-      result.orgInstance=orgInstance
+      result.orgInstance = orgInstance
       result
     }
 
 
+    /* TODO remove, because redirected to show
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def info() {
+
       def result = [:]
 
       result.user = User.get(springSecurityService.principal.id)
@@ -282,7 +293,6 @@ class OrganisationsController {
           def cur_param = "rdvl_${String.valueOf(lv.id)}"
           
           if(params[cur_param]){ 
-            log.debug("Got offset for ${lv.id}: ${params[cur_param]}")
             param_offset = params[cur_param]
             result[cur_param] = param_offset
           }
@@ -291,7 +301,7 @@ class OrganisationsController {
           def link_type_results = OrgRole.executeQuery("select orgr from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id],[offset:param_offset,max:10])
           
           if(link_type_results){
-            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv.value, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
+            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
           }
         }else{
           log.debug("Could not read Refdata: ${lv}")
@@ -302,6 +312,7 @@ class OrganisationsController {
       
       result
     }
+    */
 
 
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
@@ -337,7 +348,7 @@ class OrganisationsController {
           }
           
           if (params.fromOrg){
-            addOrgCombo()
+            addOrgCombo(Org.get(params.fromOrg), Org.get(params.toOrg))
             render view: 'edit', model: [orgInstance: orgInstance]
             return
           }
@@ -380,9 +391,9 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( uo.org.hasUserWithRole(result.user,'INST_ADM') ) {
+      if (permissionHelperService.hasUserWithRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_REJECTED
-        uo.save();
+        uo.save()
       }
       redirect action: 'users', id: params.id
     }
@@ -392,7 +403,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( uo.org.hasUserWithRole(result.user,'INST_ADM') ) {
+      if ( permissionHelperService.hasUserWithRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_APPROVED
         uo.save();
       }
@@ -400,11 +411,10 @@ class OrganisationsController {
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def addOrgCombo() {
-      def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
-      def fromOrg = Org.get(params.fromOrg)
-      def toOrg = Org.get(params.toOrg)
-      log.debug("Processing combo creation between ${fromOrg} AND ${toOrg}")
+    def addOrgCombo(Org fromOrg, Org toOrg) {
+      //def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
+      def comboType = RefdataValue.get(params.comboTypeTo)
+      log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = ? and c.toOrg = ?", [fromOrg, toOrg])
       
       if (! dupe) {
@@ -425,7 +435,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( uo.org.hasUserWithRole(result.user,'INST_ADM') ) {
+      if ( permissionHelperService.hasUserWithRole(result.user, uo.org, 'INST_ADM') ) {
         uo.delete();
       }
       redirect action: 'users', id: params.id
@@ -433,34 +443,19 @@ class OrganisationsController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addressbook() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
       
-      def orgInstance = Org.get(params.id)
-      if (!orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-        redirect action: 'list'
-        return
-      }    
-      
-      def membershipOrgIds = []
-      result.user?.authorizedOrgs?.each{ org ->
-          membershipOrgIds << org.id
-      }
-      
-      def visiblePersons = []
-      orgInstance?.prsLinks.each { pl ->
-          if(pl.prs?.isPublic?.value == 'No'){
-              if(pl.prs?.tenant?.id && membershipOrgIds.contains(pl.prs?.tenant?.id)){
-                  if(!visiblePersons.contains(pl.prs)){
-                      visiblePersons << pl.prs
-                  }
-              }
-          }
-      }
-      result.visiblePersons = visiblePersons
-      
-      result.orgInstance = orgInstance
-      result
+        def orgInstance = Org.get(params.id)
+        if (! orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        result.orgInstance = orgInstance
+        result.visiblePersons = addressbookService.getVisiblePersons(result.user, orgInstance)
+
+        result
     }
 }

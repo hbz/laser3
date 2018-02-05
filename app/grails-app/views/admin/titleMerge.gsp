@@ -1,14 +1,13 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Admin::Title Merge</title>
   </head>
 
   <body>
-    <div class="container">
-      <div class="span12">
-        <h1>Title Merge</h1>
+
+        <h1 class="ui header">Title Merge</h1>
         <g:form action="titleMerge" method="get">
           <p>Add the appropriate ID's below. Detailed information and confirmation will be presented before proceeding</p>
           <dl>
@@ -17,9 +16,9 @@
               <dd>
                 <input type="text" name="titleIdToDeprecate" value="${params.titleIdToDeprecate}" />
                 <g:if test="${title_to_deprecate != null}">
-                   <h3>Title To Deprecate: <strong>${title_to_deprecate.title}</strong></h3>
+                   <h3 class="ui header">Title To Deprecate: <strong>${title_to_deprecate.title}</strong></h3>
                    <p>The following TIPPs will be updated to point at the authorized title</p>
-                   <table class="table table-striped table-bordered">
+                   <table class="ui celled la-table table">
                      <thead>
                        <th>Internal Id</th>
                        <th>Package</th>
@@ -71,7 +70,6 @@
             <button name="LookupButton" type="submit" value="Go">Look Up Title Info...</button>
           </dl>
         </g:form>
-      </div>
-    </div>
+
   </body>
 </html>

@@ -3,43 +3,18 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="mmbootstrap">
+        <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'license', default: 'License')}" />
     <title><g:message code="default.show.label" args="[entityName]" /></title>
 </head>
 <body>
-    <div class="row-fluid">
 
-        <div class="span3">
-            <div class="well">
-                <ul class="nav nav-list">
-                    <li class="nav-header">${entityName}</li>
-                    <li>
-                    <g:link class="list" action="list">
-                        <i class="icon-list"></i>
-                        <g:message code="default.list.label" args="[entityName]" />
-                    </g:link>
-                    </li>
-                    <li>
-                    <g:link class="create" action="create">
-                        <i class="icon-plus"></i>
-                        <g:message code="default.create.label" args="[entityName]" />
-                    </g:link>
-                    </li>
-                </ul>
-            </div>
-        </div>
+    <h1 class="ui header"><g:message code="default.show.label" args="[entityName]" /></h1>
+    <semui:messages data="${flash}" />
 
-        <div class="span9">
+    <div class="ui grid">
 
-            <div class="page-header">
-                <h1><g:message code="default.show.label" args="[entityName]" /></h1>
-            </div>
-
-            <g:if test="${flash.message}">
-                <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-            </g:if>
-
+        <div class="twelve wide column">
             <div class="inline-lists">
 
                 <g:if test="${licenseInstance?.status}">
@@ -240,7 +215,7 @@
                         <dd>
                             <ul>
                                 <g:each in="${licenseInstance.subscriptions}" var="s">
-                                    <li><g:link controller="subscription" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
+                                    <li><g:link controller="subscriptionDetails" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
                                 </g:each>
                             </ul>
                         </dd>
@@ -251,20 +226,24 @@
 
             <g:form>
                 <g:hiddenField name="id" value="${licenseInstance?.id}" />
-                <div class="form-actions">
-                    <g:link class="btn" action="edit" id="${licenseInstance?.id}">
-                        <i class="icon-pencil"></i>
+                <div class="ui form-actions">
+                    <g:link class="ui button" action="edit" id="${licenseInstance?.id}">
+                        <i class="write icon"></i>
                         <g:message code="default.button.edit.label" default="Edit" />
                     </g:link>
-                    <button class="btn btn-danger" type="submit" name="_action_delete">
-                        <i class="icon-trash icon-white"></i>
+                    <button class="ui negative button" type="submit" name="_action_delete">
+                        <i class="trash icon"></i>
                         <g:message code="default.button.delete.label" default="Delete" />
                     </button>
                 </div>
             </g:form>
 
-        </div>
+        </div><!-- .twelve -->
 
-    </div>
+        <div class="four wide column">
+            <g:render template="../templates/sideMenu" />
+        </div><!-- .four -->
+
+    </div><!-- .grid -->
 </body>
 </html>

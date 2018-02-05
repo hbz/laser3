@@ -18,28 +18,34 @@ class AddressController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
-		if (! params.max) {
-			User user   = springSecurityService.getCurrentUser()
-			params.max = user?.getDefaultPageSize()
-		}
+		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
 		switch (request.method) {
-		case 'GET':
-        	[addressInstance: new Address(params)]
-			break
-		case 'POST':
-	        def addressInstance = new Address(params)
-	        if (!addressInstance.save(flush: true)) {
-	            render view: 'create', model: [addressInstance: addressInstance]
-	            return
-	        }
+			case 'GET':
+				[addressInstance: new Address(params)]
+				break
+			case 'POST':
+				def addressInstance = new Address(params)
+				if (! addressInstance.save(flush: true)) {
+					if (params.redirect) {
+						redirect(url: request.getHeader('referer'), params: params)
+					} else {
+						render view: 'create', model: [addressInstance: addressInstance]
+					}
+					return
+	        	}
 
 			flash.message = message(code: 'default.created.message', args: [message(code: 'address.label', default: 'Address'), addressInstance.id])
-	        redirect action: 'show', id: addressInstance.id
+			if (params.redirect) {
+				redirect(url: request.getHeader('referer'), params: params)
+			}
+			else {
+				redirect action: 'show', id: addressInstance.id
+			}
 			break
 		}
     }
@@ -53,7 +59,7 @@ class AddressController {
             return
         }
 
-        [addressInstance: addressInstance]
+        [addressInstance: addressInstance, editable: true] // TODO
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

@@ -1,9 +1,8 @@
 hasManyThrough template
 
-<div class="container">
-  <div class="row">
-    <div class="span12">
-      <table class="table table-bordered">
+<div>
+
+      <table class="ui celled la-table table">
         <thead>
           <tr>
             <th>ID</td>
@@ -23,11 +22,11 @@ hasManyThrough template
         Add
       </a>
       <div id="hmtControls" class="collapse in hmtControlsBlock">
-        <div class="container">
+        <div>
           <div class="row">
             <div class="span6">
               SearchProp : <input type="text" name="sp1"/>
-              <table class="table table-bordered">
+              <table class="ui celled la-table table">
                 <thead>
                   <tr>
                     <th>ID</td>
@@ -50,6 +49,5 @@ hasManyThrough template
           </div>
         </div>
       </div>
-    </div>
-  </div>
+
 </div>

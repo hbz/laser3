@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'doc.label', default: 'Doc')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
@@ -31,36 +31,24 @@
 			
 			<div class="span9">
 
-				<div class="page-header">
-					<h1><g:message code="default.edit.label" args="[entityName]" /></h1>
-				</div>
+				<h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+				<semui:messages data="${flash}" />
 
-				<g:hasErrors bean="${docInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${docInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+				<semui:errors bean="${docInstance}" />
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${docInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${docInstance?.id}" >
 						<g:hiddenField name="version" value="${docInstance?.version}" />
 						<fieldset>
 							<f:all bean="docInstance"/>
-							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">
-									<i class="icon-ok icon-white"></i>
+							<div class="ui form-actions">
+								<button type="submit" class="ui button">
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.update.label" default="Update" />
 								</button>
-								<button type="submit" class="btn btn-danger" name="_action_delete" formnovalidate>
-									<i class="icon-trash icon-white"></i>
+								<button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
+									<i class="trash icon"></i>
 									<g:message code="default.button.delete.label" default="Delete" />
 								</button>
 							</div>

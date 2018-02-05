@@ -1,4 +1,4 @@
-<table id="help" hidden="hidden">
+<table id="help" class="ui table" hidden="hidden">
     <thead>
         <tr>
             <th><g:message code="financials.help.status" default="Problem/Update"/></th>
@@ -8,27 +8,27 @@
     <tbody>
     <tr>
         <td><g:message code="financials.help" default="Help"/></td>
-        <td><b><g:message code="financials.help.sorting" default="Sorting"/></b><span><g:message code="financials.help.sorting.info"/></span></td>
+        <td><strong><g:message code="financials.help.sorting" default="Sorting"/></strong><span><g:message code="financials.help.sorting.info"/></span></td>
     </tr>
     <tr>
         <td><g:message code="financials.help" default="Help"/></td>
-        <td><b><g:message code="financials.help.filterSearch" default="Filter Search"/></b><span><g:message code="financials.help.filterSearch.info"/></span></td>
+        <td><strong><g:message code="financials.help.filterSearch" default="Filter Search"/></strong><span><g:message code="financials.help.filterSearch.info"/></span></td>
     </tr>
     <tr>
         <td><g:message code="financials.help" default="Help"/></td>
-        <td><b><g:message code="financials.help.pagination" default="Pagination"/></b><span><g:message code="financials.help.pagination.info"/></span></td>
+        <td><strong><g:message code="financials.help.pagination" default="Pagination"/></strong><span><g:message code="financials.help.pagination.info"/></span></td>
     </tr>
     <tr>
         <td><g:message code="financials.help" default="Help"/></td>
-        <td><b><g:message code="financials.help.deleteCosts" default="Deleting Costs"/></b><span><g:message code="financials.help.sorting.info"/></span></td>
+        <td><strong><g:message code="financials.help.deleteCosts" default="Deleting Costs"/></strong><span><g:message code="financials.help.sorting.info"/></span></td>
     </tr>
     <tr>
         <td><g:message code="financials.help" default="Help"/></td>
-        <td><b><g:message code="financials.help.addNewCosts" default="Add New Costs"/></b><span><g:message code="financials.help.addNewCosts.info"/></span></td>
+        <td><strong><g:message code="financials.help.addNewCosts" default="Add New Costs"/></strong><span><g:message code="financials.help.addNewCosts.info"/></span></td>
     </tr>
     <tr>
         <td><g:message code="financials.help" default="Help"/></td>
-        <td><b><g:message code="financials.help.wildcard" default="Wildcard Search"/></b><span><g:message code="financials.help.wildcard.info"/></span></td>
+        <td><strong><g:message code="financials.help.wildcard" default="Wildcard Search"/></strong><span><g:message code="financials.help.wildcard.info"/></span></td>
     </tr>
     </tbody>
 </table>

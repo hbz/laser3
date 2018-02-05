@@ -1,41 +1,36 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
+    <meta name="layout" content="semanticUI"/>
+    <title>${message(code:'laser', default:'LAS:eR')} - ${message(code:'license.copy')}</title>
   </head>
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <laser:crumb message="license.copy" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+        <semui:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
+        <semui:crumb message="license.copy" class="active" />
+    </semui:breadcrumbs>
 
-    <div class="container">
-      <h1>${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
-      <ul class="nav nav-pills">
-       <li><g:link controller="myInstitutions" 
-                   action="currentLicenses" 
-                   params="${[shortcode:params.shortcode]}">${message(code:'license.current')}</g:link></li>
+    <g:render template="actions" />
 
-       <li class="active"><g:link controller="myInstitutions" 
-                                  action="addLicense" 
-                                  params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
+    <h1 class="ui header">${institution?.name} - ${message(code:'license.copy')}</h1>
 
-        <g:if test="${is_admin}">
-          <li><g:link controller="myInstitutions" 
-                                     action="cleanLicense" 
-                                     params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>
-        </g:if>
-      </ul>
-    </div>
+  <!--
+    <semui:subNav actionName="${actionName}">
+      <semui:subNavItem controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
+      <semui:subNavItem controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}" message="license.copy" />
+      <g:if test="${is_inst_admin}">
+        <semui:subNavItem controller="myInstitutions" action="cleanLicense" params="${[shortcode:params.shortcode]}" message="license.add.blank" />
+      </g:if>
+    </semui:subNav>-->
 
-    <div class="container license-searches">
-        <div class="row">
+    <div class="license-searches">
+        <div>
             <div class="span6">&nbsp;
                 <!--
                 <input type="text" name="keyword-search" placeholder="enter search term..." />
-                <input type="submit" class="btn btn-primary" value="Search" />
+                <input type="submit" class="ui button" value="Search" />
                 -->
             </div>
             <div class="span6">
@@ -43,40 +38,30 @@
         </div>
     </div>
 
-      <div class="container">
-        <g:form action="addLicense" params="${params}" method="get" class="form-inline">
+      <semui:filter>
+        <g:form action="addLicense" params="${params}" method="get" class="ui form">
           <input type="hidden" name="sort" value="${params.sort}">
           <input type="hidden" name="order" value="${params.order}">
           <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'license.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-          <input type="submit" class="btn btn-primary" value="${message(code:'default.button.submit.label')}" />
+          <input type="submit" class="ui button" value="${message(code:'default.button.submit.label')}" />
         </g:form>
-      </div>
+      </semui:filter>
 
-      <div class="container">
+  <!--
+      <div>
           <div class="well license-options">
-            <g:if test="${is_admin}">
-              <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="btn btn-warning" />
+            <g:if test="${is_inst_admin}">
+              <input type="submit" name="copy-license" value="${message(code:'default.button.copySelected.label', default:'Copy Selected')}" class="ui negative button" />
             </g:if>
             <g:else>${message(code:'myinst.addLicense.no_permission', default:'Sorry, you must have editor role to be able to add licenses')}</g:else>
           </div>
       </div>
-
-      <g:if test="${flash.message}">
-        <div class="container">
-          <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-        </div>
-      </g:if>
-
-      <g:if test="${flash.error}">
-        <div class="container">
-          <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-        </div>
-      </g:if>
-
+-->
+      <semui:messages data="${flash}" />
 
       <g:if test="${licenses?.size() > 0}">
-        <div class="container license-results">
-          <table class="table table-bordered table-striped">
+        <div class="license-results">
+          <table class="ui sortable celled la-table table">
             <thead>
               <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.name')}" />
@@ -110,17 +95,17 @@
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.startDate}"/></td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
-                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
+                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui positive button">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>
           </table>
 
-          <div class="pagination" style="text-align:center">
+
             <g:if test="${licenses}" >
-              <bootstrap:paginate  action="addLicense" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${numLicenses}" />
+              <semui:paginate  action="addLicense" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${numLicenses}" />
             </g:if>
-          </div>
+
         </div>
 
       </g:if>

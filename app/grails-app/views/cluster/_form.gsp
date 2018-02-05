@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: clusterInstance, field: 'definition', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: clusterInstance, field: 'definition', 'error')} required">
 	<label for="definition">
 		<g:message code="cluster.definition.label" default="Definition" />
 		<span class="required-indicator">*</span>
@@ -11,7 +11,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: clusterInstance, field: 'name', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: clusterInstance, field: 'name', 'error')} required">
 	<label for="name">
 		<g:message code="cluster.name.label" default="Name" />
 		<span class="required-indicator">*</span>
@@ -20,7 +20,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: clusterInstance, field: 'type', 'error')} required">
+<div class="field fieldcontain ${hasErrors(bean: clusterInstance, field: 'type', 'error')} required">
 	<label for="type">
 		<g:message code="cluster.type.label" default="Type" />
 		<span class="required-indicator">*</span>
@@ -35,7 +35,7 @@
 </div>
 
 <!--
-<div class="fieldcontain ${hasErrors(bean: clusterInstance, field: 'orgs', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: clusterInstance, field: 'orgs', 'error')} ">
 	<label for="orgs">
 		<g:message code="cluster.orgs.label" default="Orgs" />
 		

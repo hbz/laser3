@@ -4,19 +4,19 @@
 <!doctype html>
 <html>
 <head>
-<meta name="layout" content="mmbootstrap" />
+<meta name="layout" content="semanticUI" />
 <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'onixplLicense.compare.label', default:'ONIX-PL License Compare')} </title>
 </head>
 <body>
 
-	<laser:breadcrumbs>
-		<laser:crumb message="menu.institutions.comp_onix" class="active"/>
-	</laser:breadcrumbs>
+	<semui:breadcrumbs>
+		<semui:crumb message="menu.institutions.comp_onix" class="active"/>
+	</semui:breadcrumbs>
 
-	<div class="container">
-		<h1>${message(code:'menu.institutions.comp_onix')}</h1>
+	<div>
+		<h1 class="ui header">${message(code:'menu.institutions.comp_onix')}</h1>
 	</div>
-	<div class="container">
+	<div>
 		<g:if test="${flash.message}">
 			<bootstrap:alert class="alert-info">
 				${flash.message}
@@ -29,12 +29,13 @@
 	  	    $(function(){
 	  	    	$(".onix-pl-undefined").replaceWith("<span title='Not defined by the license' style='height:1em' class='onix-status fa-stack fa-4x'> <i class='fa fa-info-circle fa-stack-1x' style='color:#166fe7;' ></i> <i class='fa fa-ban fa-stack-1x' style='color:#FF0000'></i> </span>")
 	  	    	  // Tooltips.
+                /* TODO js removed
   $('.onix-code, .onix-status').tooltip(
       {placement: 'bottom', trigger:'hover', html: true, container: 'body'}
   );
   $('.onix-icons span i').popover(
     {placement: 'left', trigger:'hover', html: true, container: 'body'}
-  );
+  ); */
 	  	    });
 
 	  </r:script>

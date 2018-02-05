@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'issueEntitlement.label', default: 'IssueEntitlement')}" />
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
@@ -31,31 +31,19 @@
 			
 			<div class="span9">
 
-				<div class="page-header">
-					<h1><g:message code="default.create.label" args="[entityName]" /></h1>
-				</div>
+					<h1 class="ui header"><g:message code="default.create.label" args="[entityName]" /></h1>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+				<semui:messages data="${flash}" />
 
-				<g:hasErrors bean="${issueEntitlementInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${issueEntitlementInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+				<semui:errors bean="${issueEntitlementInstance}" />
 
 				<fieldset>
-					<g:form class="form-horizontal" action="create" >
+					<g:form class="ui form" action="create" >
 						<fieldset>
 							<f:all bean="issueEntitlementInstance"/>
-							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">
-									<i class="icon-ok icon-white"></i>
+							<div class="ui form-actions">
+								<button type="submit" class="ui button">
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.create.label" default="Create" />
 								</button>
 							</div>

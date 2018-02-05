@@ -1,25 +1,27 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Show Affiliations</title>
   </head>
 
   <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-      <laser:crumb text="Show Affiliations" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+      <semui:crumb text="Show Affiliations" class="active"/>
+    </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+    <semui:messages data="${flash}" />
 
-    <div class="container">
-        <h2>Affiliations</h2>
-        <table class="table table-bordered table-striped">
-          <tr>
-            <th>Username</th><th>Affiliations</th>
-          </tr>
+    <div>
+        <h2 class="ui header">Affiliations</h2>
+        <table class="ui celled la-table table">
+          <thead>
+            <tr>
+              <th>Username</th><th>Affiliations</th>
+            </tr>
+          </thead>
           <g:each in="${users}" var="u">
             <tr>
               <td>${u.displayName} / ${u.username}</td>

@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
     <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
     <r:require module="annotations" />
@@ -11,16 +11,16 @@
   </head>
   <body>
 
-    <div class="container">
-      <h1>${orgInstance.name}</h1>
-      <g:render template="nav" contextPath="." />
-    </div>
 
-    <div class="container">
-      
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${orgInstance.name}
+    </h1>
 
-     <h6>${message(code:'org.properties')}</h6>
-        <div id="custom_props_div_1" class="span12">
+    <g:render template="nav" contextPath="." />
+
+     <h6 class="ui header">${message(code:'org.properties')}</h6>
+        <div id="custom_props_div_1">
             <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.ORG_CONF,
                     ownobj: orgInstance,
@@ -28,10 +28,9 @@
         </div>
         <r:script language="JavaScript">
         $(document).ready(function(){
-            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
         });
         </r:script>
-    </div>
 
 
   </body>

@@ -3,22 +3,18 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'titleInstance.label', default: 'TitleInstance')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="container">
-				
-				<div class="page-header">
-					<h1><g:message code="default.list.label" args="[entityName]" /></h1>
-				</div>
+		<div>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+					<h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
+
+			<semui:messages data="${flash}" />
 				
-				<table class="table table-bordered table-striped">
+				<table class="ui sortable celled la-table table">
 					<thead>
 						<tr>
 						
@@ -38,15 +34,15 @@
 							<td>${fieldValue(bean: titleInstanceInstance, field: "title")}</td>
 						
 							<td class="link">
-								<g:link action="show" id="${titleInstanceInstance.id}" class="btn btn-small">Show &raquo;</g:link>
+								<g:link action="show" id="${titleInstanceInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
 							</td>
 						</tr>
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${titleInstanceInstanceTotal}" />
-				</div>
+
+					<semui:paginate total="${titleInstanceInstanceTotal}" />
+
 
 		</div>
 	</body>

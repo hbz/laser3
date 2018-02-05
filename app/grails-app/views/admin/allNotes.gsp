@@ -1,28 +1,30 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
 
   <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb message="menu.admin.dash" controller="admin" action="index"/>
-        <laser:crumb text="All Notes" class="active"/>
-    </laser:breadcrumbs>
-  
-    <div class="container">
-      <table class="table table-bordered">
-        <tr>
-          <th colspan="4">Note attached to</th>
-        </tr>
-        <tr>
-          <th>Date</th>
-          <th>Sharing</th>
-          <th>Note</th>
-          <th>By</th>
-        </tr>
+    <semui:breadcrumbs>
+        <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <semui:crumb text="All Notes" class="active"/>
+    </semui:breadcrumbs>
+
+    <div>
+      <table class="ui celled la-table table">
+        <thead>
+          <tr>
+            <th colspan="4">Note attached to</th>
+          </tr>
+          <tr>
+            <th>Date</th>
+            <th>Sharing</th>
+            <th>Note</th>
+            <th>By</th>
+          </tr>
+        </thead>
         <g:each in="${alerts}" var="ua">
           <tr>
             <td colspan="4">

@@ -1,10 +1,10 @@
 <div class="control-group">
-  <label class="control-label" for="orgType">${message(code:'org.incomingCombos.label', default:'Incoming Combos')}</label>
+  <label class="control-label" for="incomingCombos">${message(code:'org.incomingCombos.label', default:'Incoming Combos')}</label>
   <div class="controls">
     <g:if test="${orgInstance.incomingCombos && orgInstance.incomingCombos.size() > 0}">
       <ul>
         <g:each in="${orgInstance.incomingCombos}" var="ic">
-          <li><g:link controller="organisations" action="show" id="${ic.fromOrg.id}" >${ic.fromOrg.name}</g:link></li>
+          <li><g:link controller="organisations" action="show" id="${ic.fromOrg.id}">${ic.fromOrg.name}</g:link></li>
         </g:each>
       </ul>
     </g:if>
@@ -16,10 +16,15 @@
                     optionKey="id"
                     optionValue="name"
                     class="input-medium"/>
+          <g:select name="comboTypeTo"
+                    from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Combo Type')}"
+                    optionKey="id"
+                    optionValue="${{it.getI10n('value')}}"
+                    class="input-medium"/>
           <button id="submitAICForm"
                   data-complete-text="Add Org Combo"
                   type="submit"
-                  class="btn btn-primary btn-small">
+                  class="ui button">
             ${message(code: 'default.add.label', args:[message(code:'combo.label', default:'Combo')],default:'Add Combo')}
           </button>
         </g:form>

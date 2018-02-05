@@ -9,7 +9,7 @@ class SysAdminController {
     def dataloadService
     def globalSourceSyncService
 
-    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def appConfig() {
         def result = [:]
         //SystemAdmin should only be created once in BootStrap
@@ -27,27 +27,28 @@ class SysAdminController {
 
         def result = [:]
 
-        result.juspSyncService=[:]
-        result.dataloadService=[:]
-        result.globalSourceSyncService=[:]
-        result.globalSourceSyncService.running=globalSourceSyncService.running
-        result.juspSyncService.running=juspSyncService.running
-        result.juspSyncService.submitCount=juspSyncService.submitCount
-        result.juspSyncService.completedCount=juspSyncService.completedCount
-        result.juspSyncService.newFactCount=juspSyncService.newFactCount
-        result.juspSyncService.totalTime=juspSyncService.totalTime
-        result.juspSyncService.threads=juspSyncService.FIXED_THREAD_POOL_SIZE
-        result.juspSyncService.queryTime=juspSyncService.queryTime
-        result.juspSyncService.activityHistogram=juspSyncService.activityHistogram
-        result.juspSyncService.syncStartTime=juspSyncService.syncStartTime
-        result.juspSyncService.syncElapsed=juspSyncService.syncElapsed
-        result.dataloadService.update_running=dataloadService.update_running
+        result.juspSyncService = [:]
+        result.dataloadService = [:]
+        result.globalSourceSyncService = [:]
+        result.globalSourceSyncService.running = globalSourceSyncService.running
+        result.juspSyncService.running = juspSyncService.running
+        result.juspSyncService.submitCount = juspSyncService.submitCount
+        result.juspSyncService.completedCount = juspSyncService.completedCount
+        result.juspSyncService.newFactCount = juspSyncService.newFactCount
+        result.juspSyncService.totalTime = juspSyncService.totalTime
+        result.juspSyncService.threads = juspSyncService.FIXED_THREAD_POOL_SIZE
+        result.juspSyncService.queryTime = juspSyncService.queryTime
+        result.juspSyncService.activityHistogram = juspSyncService.activityHistogram
+        result.juspSyncService.syncStartTime = juspSyncService.syncStartTime
+        result.juspSyncService.syncElapsed = juspSyncService.syncElapsed
+        result.dataloadService.update_running = dataloadService.update_running
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
         result;
     }
-    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
-    def logViewer(){
-        def f = new File ("${Holders.config.log_location}")
+
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    def logViewer() {
+        def f = new File("${Holders.config.log_location}")
 
         return [file: "${f.canonicalPath}"]
     }

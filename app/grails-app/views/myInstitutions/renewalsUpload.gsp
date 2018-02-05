@@ -1,26 +1,27 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.renewalUpload.label', default:'Renewals Upload')}</title>
   </head>
 
   <body>
 
-  <laser:breadcrumbs>
-    <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-    <laser:crumb message="menu.institutions.imp_renew" class="active" />
-  </laser:breadcrumbs>
+  <semui:breadcrumbs>
+    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+    <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" message="myinst.currentSubscriptions.label" />
+    <semui:crumb message="menu.institutions.imp_renew" class="active" />
+  </semui:breadcrumbs>
 
-    <div class="container">
-      <g:form action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
-        <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/>
-        <button type="submit" class="btn btn-primary">${message(code:'myinst.renewalUpload.upload', default:'Upload Renewals Worksheet')}</button>
+    <semui:form>
+      <g:form class="ui form" action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
+        <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/><br /><br />
+        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload', default:'Upload Renewals Worksheet')}</button>
       </g:form>
-    </div>
+    </semui:form>
 
     <g:if test="${(errors && (errors.size() > 0))}">
-      <div class="container">
+      <div>
         <ul>
           <g:each in="${errors}" var="e">
             <li>${e}</li>
@@ -29,64 +30,54 @@
       </div>
     </g:if>
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
-
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+   <semui:messages data="${flash}" />
 
     <g:set var="counter" value="${-1}" />
 
       <g:form action="processRenewal" method="post" enctype="multipart/form-data" params="${params}">
 
 
-        <div class="container">
+        <div>
         <hr/>
           ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br/>
-          <table class="table table-bordered">
+          <table class="ui celled la-table table">
             <tbody>
-            <input type="hidden" name="subscription.start_date" value="${additionalInfo?.sub_startDate}"/>
-            <input type="hidden" name="subscription.end_date" value="${additionalInfo?.sub_endDate}"/>
-            <input type="hidden" name="subscription.copy_docs" value="${additionalInfo?.sub_id}"/>
+            <input type="hidden" name="subscription.start_date" value="${permissionInfo?.sub_startDate}"/>
+            <input type="hidden" name="subscription.end_date" value="${permissionInfo?.sub_endDate}"/>
+            <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
 
               <tr><th>${message(code:'default.select.label', default:'Select')}</th><th >${message(code:'myinst.renewalUpload.props', default:'Subscription Properties')}</th><th>${message(code:'default.value.label', default:'Value')}</th></tr>
               <tr>
                 <th><g:checkBox name="subscription.copyStart" value="${true}" /></th>
                 <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-                <td>${additionalInfo?.sub_startDate}</td>
+                <td>${permissionInfo?.sub_startDate}</td>
               </tr>
               <tr>
                 <th><g:checkBox name="subscription.copyEnd" value="${true}" /></th>
                 <th>${message(code:'default.endDate.label', default:'End Date')}</th>
-                <td>${additionalInfo?.sub_endDate}</td>
+                <td>${permissionInfo?.sub_endDate}</td>
               </tr>
               <tr>
                 <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
                 <th>${message(code:'myinst.renewalUpload.copy', default:'Copy Documents and Notes from Subscription')}</th>
-                <td>${additionalInfo?.sub_name}</td>
+                <td>${permissionInfo?.sub_name}</td>
               </tr>
             </tbody>
           </table>
-          <table class="table table-bordered">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
-                <td>${message(code:'title.label', default:'Title')}</td>
-                <td>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</td>
-                <td>ISSN</td>
-                <td>eISSN</td>
-                <td>${message(code:'default.startDate.label', default:'Start Date')}</td>
-                <td>${message(code:'tipp.startVolume', default:'Start Volume')}</td>
-                <td>${message(code:'tipp.startIssue', default:'Start Issue')}</td>
-                <td>${message(code:'default.endDate.label', default:'End Date')}</td>
-                <td>${message(code:'tipp.endVolume', default:'End Volume')}</td>
-                <td>${message(code:'tipp.endIssue', default:'End Issue')}</td>
-                <td>${message(code:'subscription.details.core_medium', default:'Core Medium')}</td>
+                <th>${message(code:'title.label', default:'Title')}</th>
+                <th>${message(code:'subscription.details.from_pkg', default:'From Pkg')}</th>
+                <th>ISSN</th>
+                <th>eISSN</th>
+                <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
+                <th>${message(code:'tipp.startVolume', default:'Start Volume')}</th>
+                <th>${message(code:'tipp.startIssue', default:'Start Issue')}</th>
+                <th>${message(code:'default.endDate.label', default:'End Date')}</th>
+                <th>${message(code:'tipp.endVolume', default:'End Volume')}</th>
+                <th>${message(code:'tipp.endIssue', default:'End Issue')}</th>
+                <th>${message(code:'subscription.details.core_medium', default:'Core Medium')}</th>
               </tr>
             </thead>
             <tbody>
@@ -115,7 +106,7 @@
           </table>
 
           <div class="pull-right">
-            <button type="submit" class="btn btn-primary">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
+            <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
           </div>
         </div>
         <input type="hidden" name="ecount" value="${counter}"/>

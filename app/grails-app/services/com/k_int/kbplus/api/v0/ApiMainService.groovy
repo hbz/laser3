@@ -48,7 +48,7 @@ class ApiMainService {
                 if (subPkg && ! (subPkg in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]) ) {
                     result = ApiIssueEntitlement.getIssueEntitlements(subPkg, user, contextOrg)
 
-                    if (format == Constants.MIME_TEXT_PLAIN) {
+                    if (result && format == Constants.MIME_TEXT_PLAIN) {
                         def kbart = apiKbartService.convertIssueEntitlements(result)
                         result = apiKbartService.getAsDocument(kbart)
                     }

@@ -1,14 +1,18 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="mmbootstrap"/>
+        <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser', default:'LAS:eR')} - Forbidden</title>
     </head>
     <body>
-        <laser:flash data="${flash}" />
+        <semui:messages data="${flash}" />
 
-        <div class="container">
-            <p>${message(code:'serverCode.forbidden.message')}</p>
-        </div>
+        <div class="ui grid">
+            <div class="twelve wide column">
+
+                <p>${message(code:'serverCode.forbidden.message')}</p>
+
+            </div><!-- .twelve -->
+        </div><!-- .grid -->
     </body>
 </html>

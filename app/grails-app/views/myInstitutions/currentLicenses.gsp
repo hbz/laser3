@@ -1,109 +1,80 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.current', default:'Current Licenses')}</title>
   </head>
   <body>
 
-  <laser:breadcrumbs>
-      <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-      <laser:crumb message="license.current" class="active" />
-      <g:if test="${is_admin}">
-          <laser:crumbAsBadge message="default.editable" class="badge-warning" />
-      </g:if>
-      <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label', default:'Exports')}<b class="caret"></b></a>&nbsp;
-          <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-              <li>
-                  <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-              </li>
-              <g:each in="${transforms}" var="transkey,transval">
-                  <li><g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link></li>
-              </g:each>
-          </ul>
-      </li>
-  </laser:breadcrumbs>
+  <semui:breadcrumbs>
+      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+      <semui:crumb message="license.current" class="active" />
 
+      <semui:exportDropdown>
+          <semui:exportDropdownItem>
+              <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+          </semui:exportDropdownItem>
+          <g:each in="${transforms}" var="transkey,transval">
+              <semui:exportDropdownItem>
+                  <g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+              </semui:exportDropdownItem>
+          </g:each>
+      </semui:exportDropdown>
 
-    <g:if test="${flash.message}">
-      <div class="container">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-      </div>
-    </g:if>
+  </semui:breadcrumbs>
 
-    <g:if test="${flash.error}">
-      <div class="container">
-        <bootstrap:alert class="error-info">${flash.error}</bootstrap:alert>
-      </div>
-    </g:if>
+  <g:render template="actions" />
 
-    <div class="container">
-      <h1>${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
+  <semui:messages data="${flash}" />
 
-     <ul class="nav nav-pills">
-       <li class="active"><g:link controller="myInstitutions" 
-                            action="currentLicenses" 
-                            params="${[shortcode:params.shortcode]}">${message(code:'license.current')}
-                          </g:link></li>
+  <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
-          <li><g:link controller="myInstitutions" 
-                                  action="addLicense" 
-                                  params="${[shortcode:params.shortcode]}">${message(code:'license.copy', default:'Copy from Template')}</g:link></li>
-        <g:if test="${is_admin}">
-          <li><g:link controller="myInstitutions" 
-                                     action="cleanLicense" 
-                                     params="${[shortcode:params.shortcode]}">${message(code:'license.add.blank')}</g:link></li>
+    <!--<semui:subNav actionName="${actionName}">
+        <semui:subNavItem controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
+        <semui:subNavItem controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}" message="license.copy" />
+        <g:if test="${is_inst_admin}">
+            <semui:subNavItem controller="myInstitutions" action="cleanLicense" params="${[shortcode:params.shortcode]}" message="license.add.blank" />
         </g:if>
+    </semui:subNav>-->
 
-      </ul>
-    </div>
-
-    <div class="container license-searches">
-        <div class="row">
-            <div class="span8">
-              <div class="well">
-
-                <form class="form-inline">
-                  <div>
-                    <label>${message(code:'license.valid_on', default:'Valid On')}:</label>
-                    <input size="10" type="text"  id="datepicker-validOn" name="validOn" value="${validOn}">
-                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}:</label>
+    <semui:filter class="license-searches">
+        <form class="ui form">
+            <div class="fields">
+                <div class="field">
+                  <semui:datepicker label="license.valid_on" name="validOn" placeholder="default.date.label" value="${validOn}" />
+                </div>
+                <div class="field">
+                    <label>${message(code:'license.search.by_ref', default:'Search by Reference')}</label>
                     <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
-                  </div>
-                  <div style="margin-top:10px;">
-                    <label>${message(code:'license.property.search')}:</label>
-                    <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
-                    <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
-                    <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
-                    <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
-                  </div>
-                </form>
-              </div>
-            </div>
-        </div>
-    </div>
+                </div>
+                <div class="field">
+                    <label>${message(code:'license.property.search')}</label>
+                    <div class="two fields">
+                        <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
+                        <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
+                        <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+                </div>
+            </div><!--.fields-->
+        </form>
+    </semui:filter>
 
-      <div class="container">
-          <div class="well license-options">
-              <input type="submit" name="delete-license" value="${message(code:'license.delete_selected.label', default:'Delete Selected')}" class="btn btn-danger delete-license" />
-          </div>
-      </div>
-
-
-
-        <div class="container license-results">
+        <div class="license-results">
         <g:if test="${licenseCount && licenseCount>0}">
           <span>${message(code:'license.current.showing', args:[licenseCount])}</span>
         </g:if>
-          <table class="table table-bordered table-striped">
+          <table class="ui sortable celled la-table table">
             <thead>
               <tr>
-                <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.name')}" />
+                <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                 <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
                 <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
-                <th>${message(code:'default.actions.label', default:'Action')}</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -129,9 +100,12 @@
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
-                  <td>
-                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="btn btn-success">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
-                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="btn btn-danger">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                  <td class="x">
+                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui icon basic positive button">
+                        <i class="copy icon"></i></g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
+                            params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="ui icon basic negative button">
+                        <i class="trash icon"></i></g:link>
                   </td>
                 </tr>
               </g:each>
@@ -139,17 +113,11 @@
           </table>
         </div>
        
-        <div class="pagination" style="text-align:center">
-          <bootstrap:paginate action="currentLicenses" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
-        </div>
+
+          <semui:paginate action="currentLicenses" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
+
 
     <r:script type="text/javascript">
-
-        $("#datepicker-validOn").datepicker({
-            format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-            language:"${message(code:'default.locale.label', default:'en')}",
-            autoclose:true
-        });
 
         $('.license-results input[type="radio"]').click(function () {
             $('.license-options').slideDown('fast');

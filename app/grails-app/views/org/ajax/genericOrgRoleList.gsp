@@ -1,3 +1,4 @@
+<h2 class="ui header">DEPRECATED</h2>
 <div>
 	<label for="orgs"><strong>${type}</strong></label>
 	
@@ -9,23 +10,23 @@
 				${link.roleType} - 
 				<g:if test="${link.cluster}">
 					<g:link controller="${linkController}" action="show" id="${link.id}">${link.cluster.name}</g:link>
-			    	<button type="button" name="delete" value="${link.id}">Delete</button>
+			    	<button type="button" name="delete" value="${link.id}">${message('code':'default.button.delete.label')}</button>
 				</g:if>
 				<g:if test="${link.lic}">
 					<g:link controller="${linkController}" action="show" id="${link.id}">${link.lic.reference}</g:link>
-			    	<button type="button" name="delete" value="${link.id}">Delete</button>
+			    	<button type="button" name="delete" value="${link.id}">${message('code':'default.button.delete.label')}</button>
 				</g:if>
 				<g:if test="${link.pkg}">
 					<g:link controller="${linkController}" action="show" id="${link.id}">${link.pkg.name}</g:link>
-			    	<button type="button" name="delete" value="${link.id}">Delete</button>
+			    	<button type="button" name="delete" value="${link.id}">${message('code':'default.button.delete.label')}</button>
 				</g:if>
 				<g:if test="${link.sub}">
 					<g:link controller="${linkController}" action="show" id="${link.id}">${link.sub.name}</g:link>
-			    	<button type="button" name="delete" value="${link.id}">Delete</button>
+			    	<button type="button" name="delete" value="${link.id}">${message('code':'default.button.delete.label')}</button>
 				</g:if>
 				<g:if test="${link.title}">
 			    	<g:link controller="${linkController}" action="show" id="${link.id}">${link.title.normTitle}</g:link>
-			    	<button type="button" name="delete" value="${link.id}">Delete</button>
+			    	<button type="button" name="delete" value="${link.id}">${message('code':'default.button.delete.label')}</button>
 			    </g:if>
 			</li>
 		</g:each>
@@ -41,9 +42,9 @@
 			<g:select name="orgRole_role"
 			    from="${roles}" 
 			    optionKey="id" 
-			    optionValue="value"/> 
+			    optionValue="${{it.getI10n('value')}}"/> 
 			  
-			<button type="button" name="add">Add</button>
+			<button type="button" name="add">${message('code':'default.button.add.label')}</button>
 		</li>
 	</ul>
 

@@ -6,7 +6,7 @@ import com.k_int.kbplus.abstract_domain.CustomProperty
 class SubscriptionCustomProperty extends CustomProperty {
 
     static belongsTo = [
-            type:  PropertyDefinition,
-            owner: Subscription
+        type:  PropertyDefinition,
+        owner: Subscription
     ]
 }

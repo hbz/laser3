@@ -1,49 +1,47 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</title>
   </head>
   <body>
 
-  <laser:breadcrumbs>
-      <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-      <laser:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.name}" message="myinst.addSubscription.label" />
-  </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+      <semui:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" message="myinst.addSubscription.label" />
+    </semui:breadcrumbs>
 
-    <div class="container">
-      <h1>${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
-      <g:render template="subsNav" contextPath="." />
-    </div>
+    <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
 
-        
-      <div class="container">
+    <g:render template="subsNav" contextPath="." />
+
+      <div>
           <div class="pull-right">
-              <g:form action="addSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="form-inline">
+              <g:form action="addSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="ui form">
                   <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"  value="${params.q?.encodeAsHTML()}"  />
                   <label>${message(code:'default.valid_on.label', default:'Valid On')}</label>: <input name="validOn" type="text" value="${validOn}"/>
-                  <input type="submit" class="btn btn-primary" value="${message(code:'default.button.search.label', default:'Search')}" />
+                  <input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}" />
               </g:form>
           </div>
       </div>
 
-    <div class="container">
+    <div>
         <g:if test="${packages}" >
           <g:form action="processAddSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="post">
  
             <div class="pull-left subscription-create">
-            <g:if test="${is_admin}"> 
+            <g:if test="${is_inst_admin}">
               <select name="createSubAction"> 
                 <option value="copy">${message(code:'myinst.addSubscription.copy_with_ent', default:'Copy With Entitlements')}</option>
                 <option value="nocopy">${message(code:'myinst.addSubscription.copy_wo_ent', default:'Copy Without Entitlements')}</option>
-                <input type="submit" class="btn disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
+                <input type="submit" class="ui button disabled" value="${message(code:'myinst.addSubscription.button.create', default:'Create Subscription')}" />
             </g:if>
             <g:else>${message(code:'myinst.addLicense.no_permission')}</g:else>
             </div>
               
               <div class="clearfix"></div>
               
-            <table class="table table-striped table-bordered subscriptions-list">
+            <table class="ui sortable celled la-table table subscriptions-list">
                 <tr>
                   <th>${message(code:'default.select.label', default:'Select')}</th>
                   <g:sortableColumn params="${params}" property="p.name" title="${message(code:'default.name.label', default:'Name')}" />
@@ -67,23 +65,23 @@
                     </td>
                     <td><g:if test="${p.license!=null}"><g:link controller="licenseDetails" action="index" id="${p.license.id}">${p.license.reference}</g:link></g:if></td>
                   </tr>
-                  
+
                 </g:each>
              </table>
           </g:form>
         </g:if>
   
-        <div class="pagination" style="text-align:center">
+
           <g:if test="${packages}" >
-            <bootstrap:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
+            <semui:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
           </g:if>
-        </div>
+
     </div>
     <r:script type="text/javascript">
         $(document).ready(function() {
             var activateButton = function() {
                 $('.subscription-create input').removeClass('disabled');
-                $('.subscription-create input').addClass('btn-primary');
+                $('.subscription-create input').addClass('ui button');
             }
             
             // Disables radio selection when using back button.

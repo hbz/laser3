@@ -4,45 +4,44 @@ import javax.persistence.Transient
 
 /**
  * This M to N domain is being used to represent the different budget codes
- * Cost item has many budget codes and budget codes have many cost items ... simples
- * Lookup for GSP is used RefDataCategory, i.e. budgetcode_JISC_COLLECTIONS and then searching RefDataValue for the code
- * Creation of CostItemGroup is dealt with inside FinanceController - createBudgetCodes()
+ * Cost item has many budget codes and budget codes have many cost items
  */
 class CostItemGroup {
 
-  RefdataValue      budgetcode
-  CostItem          costItem
+    BudgetCode budgetCode
+    CostItem   costItem
 
-  static mapping = {
+    static mapping = {
                 id column:'cig_id'
            version column:'cig_version'
-       budgetcode  column:'cig_budgetcode_fk'
-          costItem column:'cig_costItem_fk'
-  }
+        budgetCode column:'cig_budget_code_fk'
+          costItem column:'cig_cost_item_fk'
+    }
 
-  static constraints = {
-      budgetcode  nullable: true, blank: false
+    static constraints = {
+      budgetCode  nullable: true, blank: false
       costItem    nullable: true, blank: false
-  }
+    }
 
     @Transient
     static def refdataFind(params) {
         def result     = [];
         def qryResults = null
         def searchTerm = (params.q ? params.q.toLowerCase() : '' ) + "%"
-        def owner      = RefdataCategory.findByDesc("budgetcode_${params.shortcode}")
+        def orgOwner   = Org.findByShortcode(params.shortcode)
+        def owner      = BudgetCode.findByOwner(orgOwner)
 
-        if (!owner) //First run ever...
-            new RefdataCategory(desc: "budgetcode_${params.shortcode}").save()
+        if (! owner) { //First run ever...
+            //new RefdataCategory(desc: "budgetcode_${params.shortcode}").save()
+        }
+        if (owner) {
+            //qryResults = RefdataValue.findAllByOwnerAndValueIlike(owner,searchTerm)
+            qryResults = BudgetCode.findAllByOwnerAndValueIlike(orgOwner, searchTerm)
+        }
 
-        if (owner)
-            qryResults = RefdataValue.findAllByOwnerAndValueIlike(owner,searchTerm)
-
-        qryResults?.each { rdv ->
-            result.add([id:rdv.id, text:rdv.value])
+        qryResults?.each { bc ->
+            result.add([id:bc.id, text:bc.value])
         }
         result
     }
-
-
 }

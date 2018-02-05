@@ -1,40 +1,26 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'onixplLicense.license.label',
             default: 'ONIX-PL License')}" />
     <title><g:message code="default.import.label" args="[entityName]" /></title>
 </head>
 <body>
-<div class="container">
+<div>
 
-    <div class="page-header">
+
         <g:unless test="${validationResult?.success}">
-            <h1>${message(code:'onix.import.license', default:'Import ONIX-PL License')}
+            <h1 class="ui header">${message(code:'onix.import.license', default:'Import ONIX-PL License')}
             <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
             <g:else> ${message(code:'onix.import.unspec', default:'for unspecified license')}</g:else>
             </h1>
         </g:unless>
-    </div>
 
-    <g:if test="${flash.message}">
-        <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-    </g:if>
 
-    <g:if test="${flash.error}">
-        <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
-    </g:if>
+    <semui:messages data="${flash}" />
 
-    <g:hasErrors bean="${packageInstance}">
-        <bootstrap:alert class="alert-error">
-            <ul>
-                <g:eachError bean="${packageInstance}" var="error">
-                    <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-                </g:eachError>
-            </ul>
-        </bootstrap:alert>
-    </g:hasErrors>
+    <semui:errors bean="${packageInstance}" />
 
     <%-- Show summary --%>
     <g:if test="${validationResult}">
@@ -53,18 +39,18 @@
 
         <g:if test="${validationResult.success==true}">
             <div class="alert alert-success">
-                      <h2>${message(code:'onix.import.success', default:'Upload successful')}</h2>
+                      <h2 class="ui header">${message(code:'onix.import.success', default:'Upload successful')}</h2>
 
-                      ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</b>
+                      ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</strong>
             <g:if test="${validationResult.license}">
                 ${message(code:'onix.import.assoc', default:'and associated with')}
                 <g:link action="index"
                         controller="licenseDetails"
-                        class="btn btn-info"
+                        class="ui button"
                         id="${validationResult.license.id}">
                     ${message(code:'license.label')} ${validationResult.license.id}
                 </g:link>
-                <b>${validationResult.license.reference}.</b>
+                <strong>${validationResult.license.reference}.</strong>
             </g:if>
             <g:else>
                 <br/>
@@ -89,9 +75,9 @@
                     <br/>
                     <br/>
                     <button name="replace_opl" id="replace_opl" value="replace"
-                            type="submit" class="btn btn-danger">${message(code:'default.button.replace.label', default:'Replace')}</button>
+                            type="submit" class="ui negative button">${message(code:'default.button.replace.label', default:'Replace')}</button>
                     <button name="replace_opl" id="replace_opl" value="create"
-                            type="submit" class="btn btn-primary">${message(code:'default.button.create_new.label', default:'Create New')}</button>
+                            type="submit" class="ui button">${message(code:'default.button.create_new.label', default:'Create New')}</button>
 
                     <g:hiddenField name="upload_title" value="${upload_title}" />
                     <g:hiddenField name="uploaded_file" value="${uploaded_file}" />
@@ -109,14 +95,14 @@
                     <input type="file" id="import_file" name="import_file" value="${import_file}"/>
                     <br/>
                     <br/>
-                    <button type="submit" class="btn btn-primary">${message(code:'onix.import.import', default:'Import license')}</button>
+                    <button type="submit" class="ui button">${message(code:'onix.import.import', default:'Import license')}</button>
                 </g:else>
             </g:form>
         </g:else>
 
 
         <g:if test="${validationResult.termStatuses}">
-            <h2>Usage terms summary</h2>
+            <h2 class="ui header">Usage terms summary</h2>
             <ul>
                 <g:each in="${validationResult.termStatuses}" var="ts">
                     <li>${ts.value} &times ${ts.key}</li>
@@ -131,7 +117,7 @@
                 <g:link action="index"
                         style="margin-top:10px;"
                         controller="onixplLicenseDetails"
-                        class="btn btn-info"
+                        class="ui button"
                         id="${validationResult.onixpl_license.id}">
                     ${message(code:'onix.import.view', args:[(validationResult.replace ? message(code:'onix.import.view.updated', default:'updated') : message(code:'onix.import.view.new', default:'new'))])}</g:link>
         </g:if>

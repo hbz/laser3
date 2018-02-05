@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: packageInstance, field: 'identifier', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: packageInstance, field: 'identifier', 'error')} ">
 	<label for="identifier">
 		<g:message code="package.identifier.label" default="Identifier" />
 		
@@ -10,7 +10,7 @@
 	<g:textField name="identifier" value="${packageInstance?.identifier}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: packageInstance, field: 'name', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: packageInstance, field: 'name', 'error')} ">
 	<label for="name">
 		<g:message code="package.name.label" default="Name" />
 		
@@ -18,7 +18,7 @@
 	<g:textField name="name" value="${packageInstance?.name}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: packageInstance, field: 'tipps', 'error')} ">
+<div class="field fieldcontain ${hasErrors(bean: packageInstance, field: 'tipps', 'error')} ">
 	<label for="tipps">
 		<g:message code="package.tipps.label" default="Tipps" />
 		

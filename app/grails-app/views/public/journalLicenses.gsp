@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-      <meta name="layout" content="pubbootstrap"/>
+      <meta name="layout" content="public"/>
       <title>Journals | ${message(code:'laser', default:'LAS:eR')}</title>
           <r:require modules="onixMatrix" />
   </head>
@@ -10,12 +10,11 @@
 
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'journals']"/>
 
-    <div class="container">
-      <h1>${message(code:'menu.public.journalLicense')}</h1>
-
+    <div class="ui container">
+      <h1 class="ui header">${message(code:'menu.public.journalLicense')}</h1>
 
       <g:if test="${flash.error}">
-        <div class="container">
+        <div>
           <bootstrap:alert class="alert-error">${flash.error}</bootstrap:alert>
         </div>
       </g:if>
@@ -31,10 +30,8 @@
           <button type="submit">${message(code:'default.button.search.label', default:'Search')}</button>
         </div>
       </g:form>
-    </div>
 
     <g:if test="${comparisonMap}">
-      <div class="container">
         <div class="onix-matrix-wrapper">
 
           <table class="onix-matrix">
@@ -123,7 +120,7 @@
               </tbody>
             </table>
           </div>
-        </div>
+
         <div id="onix-modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -133,7 +130,7 @@
               </div>
               <div class="modal-body"></div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="ui button" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -142,15 +139,17 @@
           $(function(){
             $(".onix-pl-undefined").replaceWith("<span title='Not defined by the license' style='height:1em' class='onix-status fa-stack fa-4x'> <i class='fa fa-info-circle fa-stack-1x' style='color:#166fe7;' ></i> <i class='fa fa-ban fa-stack-1x' style='color:#FF0000'></i> </span>")
               // Tooltips.
+            /* TODO js removed
             $('.onix-code, .onix-status').tooltip(
                 {placement: 'bottom', trigger:'hover', html: true, container: 'body'}
             );
             $('.onix-icons span i').popover(
               {placement: 'left', trigger:'hover', html: true, container: 'body'}
-            );
+            ); */
           });
         </r:script>
-      </div>
+
     </g:if>
+  </div>
   </body>
 </html>

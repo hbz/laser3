@@ -224,14 +224,16 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     }
 
     @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
-    def orgsImport() {
-        log.info("SIMPLE orgsImport() .. ROLE_API_WRITER required")
+    def importOrgs() {
+        log.info("simple org import via xml .. ROLE_API_WRITER required")
 
-        def xml = new XmlSlurper().parseText(request.reader.text)
-        assert xml instanceof groovy.util.slurpersupport.GPathResult
+        def xml = "Errare humanum est .."
 
         if (request.method == 'POST') {
-            apiService.importOrg(xml)
+            xml = new XmlSlurper().parseText(request.reader.text)
+            assert xml instanceof groovy.util.slurpersupport.GPathResult
+            // apiService.importOrg(xml)
+            apiService.newOrgImport(xml)
         }
         render xml
     }
@@ -242,7 +244,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
      * @return
      */
     def v0() {
-        log.debug("api call v0 : " + params)
+        log.debug("API Call: " + params)
 
         def result
         def hasAccess = false

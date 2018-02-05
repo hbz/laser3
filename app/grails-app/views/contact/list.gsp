@@ -3,22 +3,20 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'contact.label', default: 'Contact')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="container">
+		<div>
 				
-				<div class="page-header">
-					<h1><g:message code="default.list.label" args="[entityName]" /></h1>
-				</div>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+					<h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
+
+
+			<semui:messages data="${flash}" />
 				
-				<table class="table table-bordered table-striped">
+				<table class="ui sortable celled la-table table">
 					<thead>
 						<tr>
 						
@@ -54,16 +52,16 @@
 							<td>${contactInstance?.prs?.isPublic?.encodeAsHTML()}</td>
 							
 							<td class="link">
-								<g:link action="show" id="${contactInstance.id}" class="btn btn-small">Show &raquo;</g:link>
-								<g:link action="edit" id="${contactInstance.id}" class="btn btn-small">Edit</g:link>
+								<g:link action="show" id="${contactInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
+								<g:link action="edit" id="${contactInstance.id}" class="ui tiny button">${message('code':'default.button.edit.label')}</g:link>
 							</td>
 						</tr>
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<bootstrap:paginate total="${contactInstanceTotal}" />
-				</div>
+
+					<semui:paginate total="${contactInstanceTotal}" />
+
 
 		</div>
 	</body>

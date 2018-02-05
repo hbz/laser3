@@ -3,145 +3,129 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="mmbootstrap">
+        <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
         <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
-
     </head>
     <body>
 
-    <laser:breadcrumbs>
-        <laser:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-        <laser:crumb message="menu.institutions.manage_private_properties" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+        <semui:crumb message="menu.institutions.manage_props" class="active" />
+    </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+    <h1 class="ui header">${institution?.name} - ${message(code: 'menu.institutions.manage_props')}</h1>
 
-    <div class="container">
-        <h1>${institution?.name} - ${message(code: 'menu.institutions.manage_private_properties')}</h1>
-    </div>
+    <semui:messages data="${flash}" />
 
-    <div class="container">
-        <div class="row">
-            <div class="span12">
-                <laser:card class="card-grey">
-                    <input class="btn btn-primary" value="${message(code:'propertyDefinition.create_new.label')}"
-                           data-toggle="modal" href="#addPropertyDefinitionModal" type="submit">
-                </laser:card>
-            </div>
+    <div class="ui grid">
+        <div class="twelve wide column">
+
+            <g:if test="${privatePropertyDefinitions}">
+
+                <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
+                    <table class="ui celled la-table table">
+                        <thead>
+                            <tr>
+                                <th>${message(code:'propertyDefinition.descr.label', default:'Description')}</th>
+                                <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
+                                <th>Name (DE)</th>
+                                <th>Name (EN)</th>
+                                <th>Count</th>
+                                <th>${message(code:'default.button.delete.label', default:'Delete')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${privatePropertyDefinitions}" var="ppd">
+                                <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(ppd, 'name')}" />
+                                <tr>
+                                    <td>${ppd.getI10n('descr')}</td>
+                                    <td>
+                                        ${ppd.getI10n('name')}
+                                        <g:if test="${ppd.softData}">
+                                            <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                        </g:if>
+                                        <g:if test="${ppd.mandatory}">
+                                            <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                                        </g:if>
+                                        <g:if test="${ppd.multipleOccurrence}">
+                                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                        </g:if>
+                                    </td>
+                                    <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+                                    <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+                                    <td>${ppd.countUsages()}</td>
+                                    <td>
+                                        <g:if test="${ppd.countUsages()==0}">
+                                            <g:checkBox name="deleteIds" value="${ppd?.id}" checked="false" />
+                                        </g:if>
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </tbody>
+                    </table>
+
+                    <p>${message(code:'propertyDefinition.private.info')}</p>
+
+                    <g:field type="hidden" name="cmd" value="delete" />
+                    <button type="submit" class="ui button">${message(code:'default.button.delete.label', default:'Delete')}</button>
+                </g:form>
+            </g:if>
         </div>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="span12">
-
-                <p>${message(code:'propertyDefinition.private.info')}</p>
-
-                <g:if test="${privatePropertyDefinitions}">
-                    <fieldset>
-                        <g:form class="form-horizontal" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>${message(code:'propertyDefinition.descr.label', default:'Description')}</th>
-                                        <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
-                                        <th>Name (DE)</th>
-                                        <th>Name (EN)</th>
-                                        <th>Count</th>
-                                        <th>${message(code:'default.button.delete.label', default:'Delete')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <g:each in="${privatePropertyDefinitions}" var="ppd">
-                                        <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(ppd, 'name')}" />
-                                        <tr>
-                                            <td>${ppd.getI10n('descr')}</td>
-                                            <td>
-                                                ${ppd.getI10n('name')}
-                                                <g:if test="${ppd.softData}">
-                                                    <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
-                                                </g:if>
-                                                <g:if test="${ppd.mandatory}">
-                                                    <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
-                                                </g:if>
-                                                <g:if test="${ppd.multipleOccurrence}">
-                                                    <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
-                                                </g:if>
-                                            </td>
-                                            <td><g:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-                                            <td><g:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-                                            <td>${ppd.countUsages()}</td>
-                                            <td>
-                                                <g:if test="${ppd.countUsages()==0}">
-                                                    <g:checkBox name="deleteIds" value="${ppd?.id}" checked="false" />
-                                                </g:if>
-                                            </td>
-                                        </tr>
-                                    </g:each>
-                                </tbody>
-                            </table>
-
-                            <g:field type="hidden" name="cmd" value="delete" />
-                            <button type="submit" class="btn btn-primary">${message(code:'default.button.delete.label', default:'Delete')}</button>
-                        </g:form>
-                    </fieldset>
-                </g:if>
-            </div>
+        <div class="four wide column">
+            <semui:card class="card-grey">
+                <input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}"
+                       data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
+            </semui:card>
         </div>
-    </div>
+    </div><!-- .grid -->
 
-    <div id="addPropertyDefinitionModal" class="modal hide">
 
-        <g:form params="${['shortcode':params.shortcode]}" action="managePrivateProperties" >
+    <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
+
+        <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" >
             <g:field type="hidden" name="cmd" value="add" />
-            <div class="modal-body">
-                <dl>
-                    <dt>
-                        <label class="control-label">${message(code:'propertyDefinition.create_new.label', default:'Create new property definition')}</label>
-                    </dt>
-                    <dd>
-                        <label class="property-label">Name:</label> <input type="text" name="pd_name"/>
-                    </dd>
 
-                    <dd>
-                        <label class="property-label">${message(code:'propertyDefinition.descr.label', default:'Description')}</label>
-                        <g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>
-                    </dd>
+            <div class="field">
+                <label class="property-label">Name</label>
+                <input type="text" name="pd_name"/>
+            </div>
 
-                    <dd>
-                        <label class="property-label">Type:</label> <g:select
-                            from="${PropertyDefinition.validTypes.entrySet()}"
-                            optionKey="value" optionValue="key"
-                            name="pd_type"
-                            id="cust_prop_modal_select" />
-                    </dd>
+            <div class="fields">
 
-                    <div class="hide" id="cust_prop_ref_data_name">
-                        <dd>
-                            <label class="property-label">Refdata Kategory:</label>
-                            <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                        </dd>
-                    </div>
+                <div class="field five wide">
+                    <label class="property-label">${message(code:'propertyDefinition.descr.label', default:'Description')}</label>
+                    <g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>
+                </div>
 
-                    <dd>
-                        <label class="property-label">${message(code:'default.mandatory.tooltip')}:</label>
+                <div class="field five wide">
+                    <label class="property-label">Type</label>
+                    <g:select
+                        from="${PropertyDefinition.validTypes.entrySet()}"
+                        optionKey="value" optionValue="key"
+                        name="pd_type"
+                        id="cust_prop_modal_select" />
+                </div>
+
+                <div class="field six wide hide" id="cust_prop_ref_data_name">
+                    <label class="property-label">Kategorie</label>
+                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                </div>
+            </div>
+
+            <div class="fields">
+                <div class="field five wide">
+                    <label class="property-label">${message(code:'default.mandatory.tooltip')}</label>
                         <g:checkBox type="text" name="pd_mandatory" />
-                    </dd>
-                    <dd>
-                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}:</label>
-                        <g:checkBox type="text" name="pd_multiple_occurrence" />
-                    </dd>
-
-                </dl>
+                </div>
+                <div class="field five wide">
+                    <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}</label>
+                    <g:checkBox type="text" name="pd_multiple_occurrence" />
+                </div>
             </div>
 
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">${message(code:'default.button.close.label', default:'Close')}</a>
-                <input class="btn btn-success" name="SavePropertyDefinition" value="${message(code:'default.button.create_new.label', default:'Create New')}" type="submit">
-            </div>
         </g:form>
-    </div>
+    </semui:modal>
 
     <g:javascript>
 

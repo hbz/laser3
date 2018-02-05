@@ -8,26 +8,29 @@ import org.apache.log4j.RollingFileAppender
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
-System.out.println("\n~ local config override: ${grails.config.locations}")
+// pilot version
+// access via grailsApplication.config.pilotDisableFlag
+pilotDisableFlag = false
 
 // @NotificationsJob
 // - enable notification
 // - enable reminder
 //hbzMaster = true
 
-// @ApplicationResources
-defaultCssSkin = "hbz.css"
+// ES-CONFIG
+//aggr_es_cluster	= 'elasticsearch'
+//aggr_es_index		= 'laser'
+//aggr_es_hostname	= 'localhost'
 
-// FEATURE-CONFIG:
-
+// FEATURE-CONFIG
 localauth = true
 feature_finance = true
 
 // Database Migration Plugin
-
 grails.plugin.databasemigration.updateOnStart = false
 grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
 
+System.out.println("\n~ local config override: ${grails.config.locations}")
 System.out.println("~ database migration plugin updateOnStart: ${grails.plugin.databasemigration.updateOnStart}")
 
 customProperties =[
@@ -358,7 +361,7 @@ grails.mime.types = [
 
 // What URL patterns should be processed by the resources plugin
 grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
-grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**']
+grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**']
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "none" // none, html, base64
@@ -377,12 +380,12 @@ grails.enable.native2ascii = true
 // packages to include in Spring bean scanning
 grails.spring.bean.packages = []
 // whether to disable processing of multi part requests
-grails.web.disable.multipart=false
+grails.web.disable.multipart = false
 
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
-grails.project.dependency.resolver="maven"
+grails.project.dependency.resolver = "maven"
 
 // set per-environment serverURL stem for creating absolute links
 environments {
@@ -553,7 +556,7 @@ auditLog {
 
   actorClosure = { request, session ->
 
-    if (request.applicationContext.springSecurityService.principal instanceof java.lang.String){
+    if (request.applicationContext.springSecurityService.principal instanceof java.lang.String) {
       return request.applicationContext.springSecurityService.principal
     }
 
@@ -586,32 +589,6 @@ appDefaultPrefs {
 //    '/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
 //    '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
 // ]
-
-// Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
-// add them to the DB if they don't already exist.
-refdatavalues = [
-        "User" : [ "Authorized User", "ExternalAcademic", "ExternalLibrarian", "ExternalStudent",
-            "ExternalTeacher", "ExternalTeacherInCountryOfLicensee", "LibraryUserUnaffiliated", "Licensee",
-            "LicenseeAlumnus", "LicenseeAuxiliary", "LicenseeContractor", "LicenseeContractorOrganization",
-            "LicenseeContractorStaff", "LicenseeDistanceLearningStudent", "LicenseeExternalStudent", "LicenseeFaculty",
-            "LicenseeInternalStudent", "LicenseeLibrary", "LicenseeLibraryStaff", "LicenseeNonFacultyStaff",
-            "LicenseeResearcher", "LicenseeRetiredStaff", "LicenseeStaff", "LicenseeStudent", "LoansomeDocUser",
-            "OtherTeacherOfAuthorizedUsers", "RegulatoryAuthority", "ResearchSponsor", "ThirdParty", "ThirdPartyLibrary",
-            "ThirdPartyNonCommercialLibrary", "ThirdPartyOrganization", "ThirdPartyPerson", "WalkInUser" ],
-        "UsedResource" : ["AcademicPaper", "AcademicWork", "AcademicWorkIncludingLicensedContent",
-            "AcknowledgmentOfSource", "AuthoredContent", "AuthoredContentPeerReviewedCopy", "AuthorizedUserOwnWork",
-            "CatalogOrInformationSystem", "CombinedWorkIncludingLicensedContent", "CompleteArticle", "CompleteBook",
-            "CompleteChapter", "CompleteIssue", "CopyrightNotice", "CopyrightNoticesOrDisclaimers",
-            "CoursePackElectronic", "CoursePackPrinted", "CourseReserveElectronic", "CourseReservePrinted",
-            "DataFromLicensedContent", "DerivedWork", "DigitalInstructionalMaterial",
-            "DigitalInstructionalMaterialIncludingLicensedContent",
-            "DigitalInstructionalMaterialWithLinkToLicensedContent", "DownloadedLicensedContent",
-            "ImagesInLicensedContent", "LicensedContent", "LicensedContentBriefExcerpt", "LicensedContentMetadata",
-            "LicensedContentPart", "LicensedContentPartDigital", "LicensedContentPartPrinted", "LicenseeContent",
-            "LicenseeWebsite", "LinkToLicensedContent", "MaterialForPresentation", "PersonalPresentationMaterial",
-            "PrintedInstructionalMaterial", "SpecialNeedsInstructionalMaterial", "ThirdPartyWebsite",
-            "TrainingMaterial", "UserContent", "UserWebsite"]
-    ]
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 
@@ -654,7 +631,7 @@ financialImportTSVLoaderMappings = [
           [
             type : 'hql',
             hql: 'select o from Subscription as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
-            values : [ jcns : [type:'static', value:'JC'], orgId: [type:'column', colname:'SubscriptionId'] ]
+            values : [ jcns : [type:'static', value:'hbz'], orgId: [type:'column', colname:'SubscriptionId'] ]
           ]
         ],
         creation:[
@@ -665,7 +642,7 @@ financialImportTSVLoaderMappings = [
             [ type:'closure', closure : { o, nl, colmap, colname, locatedObjects -> o.setInstitution(locatedObjects['owner']) } ],
             [ type:'val', property:'identifier', colname: 'SubscriptionId'],
             [ type:'val', property:'name', colname: 'ResourceName'],
-            [ type:'closure', closure: { o, nl, colmap, colname, locatedObjects -> o.addNamespacedIdentifier('JC',nl[(int)(colmap.get('SubscriptionId'))]); } ]
+            [ type:'closure', closure: { o, nl, colmap, colname, locatedObjects -> o.addNamespacedIdentifier('jc',nl[(int)(colmap.get('SubscriptionId'))]); } ]
           ]
         ]
       ],
@@ -703,7 +680,7 @@ financialImportTSVLoaderMappings = [
           [
             type : 'hql',
             hql: 'select o from Org as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
-            values : [ jcns : [type:'static', value:'JC'], orgId: [type:'column', colname:'InstitutionId'] ]
+            values : [ jcns : [type:'static', value:'hbz'], orgId: [type:'column', colname:'InstitutionId'] ]
           ]
         ],
         creation:[
@@ -863,7 +840,7 @@ notifications.email.genericTemplate = true //If enabled, no customisation in ema
 
 //Finance
 grails.plugins.remotepagination.enableBootstrap = true
-financials.currency = "GBP - United Kingdom Pound|EUR - Euro Member Countries|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
+financials.currency = "EUR - Euro Member Countries|GBP - United Kingdom Pound|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
 
 defaultOaiConfig = [
   serverName: 'K-Int generic Grails OAI Module :: KBPlus.ac.uk',

@@ -2,10 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.StreamingMarkupBuilder
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.springframework.security.access.annotation.Secured
@@ -13,80 +9,144 @@ import org.springframework.security.access.annotation.Secured
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 class LicenseDetailsController {
 
-  def springSecurityService
-  def docstoreService
-  def gazetteerService
-  def alertsService
-  def genericOIDService
-  def transformerService
-  def exportService
-  def institutionsService
-  def pendingChangeService
-  def executorWrapperService
+    def springSecurityService
+    def taskService
+    def docstoreService
+    def gazetteerService
+    def alertsService
+    def genericOIDService
+    def transformerService
+    def exportService
+    def institutionsService
+    def pendingChangeService
+    def executorWrapperService
+    def permissionHelperService
+    def contextService
+    def addressbookService
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() {
-    log.debug("licenseDetails: ${params}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.license = License.get(params.id)
-    result.transforms = grailsApplication.config.licenseTransforms
+      log.debug("licenseDetails: ${params}");
+      def result = [:]
+      result.user = User.get(springSecurityService.principal.id)
+      // result.institution = Org.findByShortcode(params.shortcode)
+      result.license = License.get(params.id)
+      result.transforms = grailsApplication.config.licenseTransforms
 
-    userAccessCheck(result.license,result.user,'view')
+      userAccessCheck(result.license, result.user, 'view')
 
-    //used for showing/hiding the License Actions menus
-    def admin_role = Role.findAllByAuthority("INST_ADM")
-    result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)",[user:result.user,role:admin_role,status:[1,3]])
+      //used for showing/hiding the License Actions menus
+      def admin_role = Role.findAllByAuthority("INST_ADM")
+      result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)", [user: result.user, role: admin_role, status: [1, 3]])
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-  
-    def license_reference_str = result.license.reference?:'NO_LIC_REF_FOR_ID_'+params.id
+      result.editable = result.license.isEditableBy(result.user)
 
-    def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
-    result.onixplLicense = result.license.onixplLicense;
+      def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-    if(executorWrapperService.hasRunningProcess(result.license)){
-      log.debug("PEndingChange processing in progress")
-      result.processingpc = true
-    }else{
+      def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
+      result.onixplLicense = result.license.onixplLicense;
 
-      def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-      def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+      if (executorWrapperService.hasRunningProcess(result.license)) {
+          log.debug("PEndingChange processing in progress")
+          result.processingpc = true
+      } else {
 
-        //Filter any deleted subscriptions out of displayed links
-        Iterator<Subscription> it = result.license.subscriptions.iterator()
-        while(it.hasNext()){
-            def sub = it.next();
-            if(sub.status == RefdataCategory.lookupOrCreate('Subscription Status','Deleted')){
-                it.remove();
-            }
-        }
+          def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+          def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
-      log.debug("pc result is ${result.pendingChanges}");
-      if(result.license.incomingLinks.find{it?.isSlaved?.value == "Yes"} && pendingChanges){
-        log.debug("Slaved lincence, auto-accept pending changes")
-        def changesDesc = []
-        pendingChanges.each{change ->
-          if(!pendingChangeService.performAccept(change,request)){
-            log.debug("Auto-accepting pending change has failed.")
-          }else{
-            changesDesc.add(PendingChange.get(change).desc)
+          //Filter any deleted subscriptions out of displayed links
+          Iterator<Subscription> it = result.license.subscriptions.iterator()
+          while (it.hasNext()) {
+              def sub = it.next();
+              if (sub.status == RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')) {
+                  it.remove();
+              }
           }
-        }
-        flash.message = changesDesc
-      }else{
-        result.pendingChanges = pendingChanges.collect{PendingChange.get(it)}
-      }
-    }
-    result.availableSubs = getAvailableSubscriptions(result.license,result.user)
 
-    withFormat {
+          log.debug("pc result is ${result.pendingChanges}");
+          if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
+              log.debug("Slaved lincence, auto-accept pending changes")
+              def changesDesc = []
+              pendingChanges.each { change ->
+                  if (!pendingChangeService.performAccept(change, request)) {
+                      log.debug("Auto-accepting pending change has failed.")
+                  } else {
+                      changesDesc.add(PendingChange.get(change).desc)
+                  }
+              }
+              flash.message = changesDesc
+          } else {
+              result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+          }
+      }
+      result.availableSubs = getAvailableSubscriptions(result.license, result.user)
+
+      // tasks
+      def contextOrg = contextService.getOrg()
+      result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
+      def preCon = taskService.getPreconditions(contextOrg)
+      result << preCon
+
+      // -- private properties
+
+      result.authorizedOrgs = result.user?.authorizedOrgs
+      result.contextOrg = contextService.getOrg()
+
+      // create mandatory LicensePrivateProperties if not existing
+
+      def mandatories = []
+      result.user?.authorizedOrgs?.each { org ->
+          def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
+          if (ppd) {
+              mandatories << ppd
+          }
+      }
+      mandatories.flatten().each { pd ->
+          if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
+              def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
+
+              if (newProp.hasErrors()) {
+                  log.error(newProp.errors)
+              } else {
+                  log.debug("New license private property created via mandatory: " + newProp.type.name)
+              }
+          }
+      }
+
+      // -- private properties
+
+      result.modalPrsLinkRole    = RefdataValue.findByValue('Specific license editor')
+      result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, result.license.orgLinks)
+
+      result.license.orgLinks.each { or ->
+          or.org.prsLinks.each { pl ->
+              if (pl.prs?.isPublic?.value != 'No') {
+                  if (! result.modalVisiblePersons.contains(pl.prs)) {
+                      result.modalVisiblePersons << pl.prs
+                  }
+              }
+          }
+      }
+
+      result.visiblePrsLinks = []
+
+      result.license.prsLinks.each { pl ->
+          if (! result.visiblePrsLinks.contains(pl.prs)) {
+              if (pl.prs.isPublic?.value != 'No') {
+                  result.visiblePrsLinks << pl
+              }
+              else {
+                  // nasty lazy loading fix
+                  result.user.authorizedOrgs.each{ ao ->
+                      if (ao.getId() == pl.prs.tenant.getId()) {
+                          result.visiblePrsLinks << pl
+                      }
+                  }
+              }
+          }
+      }
+
+      withFormat {
       html result
       json {
         def map = exportService.addLicensesToMap([:], [result.license])
@@ -133,7 +193,7 @@ class LicenseDetailsController {
   def getAvailableSubscriptions(license,user){
     def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
       orgRole.roleType?.value == "Licensee"
-    }?.collect{  it.org?.hasUserWithRole(user,'INST_ADM')?it.org:null  }
+    }?.collect{  permissionHelperService.hasUserWithRole(user, it.org, 'INST_ADM') ? it.org : null  }
 
     def subscriptions = null
     if(licenseInstitutions){
@@ -173,20 +233,15 @@ class LicenseDetailsController {
     if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
         isAdmin = true;
     }else{
-       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' &&
-      it.org.hasUserWithRole(result.user,'INST_ADM') }
+       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && permissionHelperService.hasUserWithRole(result.user, it.org, 'INST_ADM') }
     }
     if( !isAdmin && (result.license.licenseType != "Template" || hasAccess == null)) {
       flash.error = message(code:'license.consortia.access.error')
       response.sendError(401) 
       return
     }
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+
+    result.editable = result.license.isEditableBy(result.user)
 
     log.debug("consortia(${params.id}) - ${result.license}")
     def consortia = result.license?.orgLinks?.find{
@@ -241,13 +296,7 @@ class LicenseDetailsController {
     // result.institution = Org.findByShortcode(params.shortcode)
     result.license = License.get(params.id)
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
-
+    result.editable = result.license.isEditableBy(result.user)
 
     if ( ! result.license.hasPerm("view",result.user) ) {
       response.sendError(401);
@@ -257,8 +306,8 @@ class LicenseDetailsController {
     result
   }
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def edit_history() {
-    log.debug("licenseDetails::edit_history : ${params}");
+  def history() {
+    log.debug("licenseDetails::history : ${params}");
 
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -266,12 +315,7 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
 
     result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -298,20 +342,16 @@ class LicenseDetailsController {
 
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def todo_history() {
-    log.debug("licenseDetails::todo_history : ${params}");
+  def changes() {
+    log.debug("licenseDetails::changes : ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.license = License.get(params.id)
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
 
@@ -331,14 +371,27 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result
   }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def tasks() {
+        log.debug("licenseDetails id:${params.id}")
+
+        def result = [:]
+        result.user     = User.get(springSecurityService.principal.id)
+        result.license  = License.get(params.id)
+
+        userAccessCheck(result.license,result.user,'view') // TODO
+        result.editable = result.license.isEditableBy(result.user) // TODO
+
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
+        log.debug(result.taskInstanceList)
+
+        result
+    }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def properties() {
@@ -353,12 +406,7 @@ class LicenseDetailsController {
         def licenseInstance = License.get(params.id)
         result.license      = licenseInstance
 
-        if (result.license.hasPerm("edit", result.user)) {
-            result.editable = true
-        }
-        else {
-            result.editable = false
-        }
+        result.editable = result.license.isEditableBy(result.user)
 
         // create mandatory LicensePrivateProperties if not existing
 
@@ -392,16 +440,10 @@ class LicenseDetailsController {
 
     userAccessCheck(result.license,result.user,'view')
 
-    if ( result.license.hasPerm("edit",result.user) ) {
-      result.editable = true
-    }
-    else {
-      result.editable = false
-    }
+    result.editable = result.license.isEditableBy(result.user)
+
     result
   }
-
-
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def deleteDocuments() {
@@ -427,17 +469,17 @@ class LicenseDetailsController {
     redirect controller: 'licenseDetails', action:params.redirectAction, params:[shortcode:params.shortcode], id:params.instanceId, fragment:'docstab'
   }
 
-  def userAccessCheck(license,user,role_str){
-    if ( (license==null || user==null ) || (! license?.hasPerm(role_str,user) )) {
-      log.debug("return 401....");
-      def this_license = message(code:'license.details.flash.this_license')
-      def this_inst = message(code:'license.details.flash.this_inst')
-      flash.error = message(code:'license.details.flash.error', args:[role_str,(license?.reference?:this_license),(license?.licensee?.name?:this_inst)])
-      response.sendError(401);
-      return false
+    def userAccessCheck(license, user, role_str) {
+        if ((license == null || user == null ) || (! license?.hasPerm(role_str, user))) {
+            log.debug("return 401....");
+            def this_license = message(code:'license.details.flash.this_license')
+            def this_inst = message(code:'license.details.flash.this_inst')
+            flash.error = message(code:'license.details.flash.error', args:[role_str,(license?.reference?:this_license),(license?.licensee?.name?:this_inst)])
+            response.sendError(401);
+            return false
+        }
+        return true
     }
-    return true
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def acceptChange() {
@@ -452,7 +494,7 @@ class LicenseDetailsController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def additionalInfo() {
+  def permissionInfo() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.license = License.get(params.id)

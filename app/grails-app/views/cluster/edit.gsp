@@ -2,68 +2,36 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="mmbootstrap">
+		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'cluster.label', default: 'Cluster')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="container">
-		<div class="row-fluid">
 
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li>
-							<g:link class="create" action="create">
-								<i class="icon-plus"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
+		<h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
+
+		<semui:messages data="${flash}" />
+
+		<semui:errors bean="${clusterInstance}" />
+
+		<div class="ui grid">
 			
-			<div class="span9">
-
-				<div class="page-header">
-					<h1><g:message code="default.edit.label" args="[entityName]" /></h1>
-				</div>
-
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
-
-				<g:hasErrors bean="${clusterInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${clusterInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+			<div class="twelve wide column">
 
 				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${clusterInstance?.id}" >
+					<g:form class="ui form" action="edit" id="${clusterInstance?.id}" >
 						<g:hiddenField name="version" value="${clusterInstance?.version}" />
 						<fieldset>
 							<% // <f:all bean="clusterInstance"/> %>
 							<g:render template="form"/>
 							
-							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">
-									<i class="icon-ok icon-white"></i>
+							<div class="ui form-actions">
+								<button type="submit" class="ui button">
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.update.label" default="Update" />
 								</button>
-								<button type="submit" class="btn btn-danger" name="_action_delete" formnovalidate>
-									<i class="icon-trash icon-white"></i>
+								<button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
+									<i class="trash icon"></i>
 									<g:message code="default.button.delete.label" default="Delete" />
 								</button>
 							</div>
@@ -71,9 +39,13 @@
 					</g:form>
 				</fieldset>
 
-			</div>
+			</div><!-- .twelve -->
 
-		</div>
-		</div>
+			<div class="four wide column">
+				<g:render template="../templates/sideMenu" />
+			</div><!-- .four -->
+
+		</div><!-- .grid -->
+
 	</body>
 </html>

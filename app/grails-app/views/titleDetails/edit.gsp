@@ -3,51 +3,35 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap">
+    <meta name="layout" content="semanticUI">
     <title>${ti.title}</title>
   </head>
   <body>
-      <div class="container">
-        <div class="row">
-          <div class="span12">
-
-            <div class="page-header">
-              <h1><g:if test="${editable}"><span id="titleEdit" 
-                        class="xEditableValue"
-                        data-type="textarea" 
-                        data-pk="${ti.class.name}:${ti.id}"
-                        data-name="title" 
-                        data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                        data-original-title="${ti.title}">${ti.title}</span></g:if>
-                  <g:else>${ti.title}</g:else>
-              </h1>
-            </div>
-
-            <g:if test="${flash.message}">
-            <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-            </g:if>
 
 
+          <h1 class="ui header">
+              <semui:editableLabel editable="${editable}" />
+              <g:if test="${editable}"><span id="titleEdit"
+                    class="xEditableValue"
+                    data-type="textarea"
+                    data-pk="${ti.class.name}:${ti.id}"
+                    data-name="title"
+                    data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
+                    data-original-title="${ti.title}">${ti.title}</span></g:if>
+              <g:else>${ti.title}</g:else>
+          </h1>
 
-             <g:hasErrors bean="${flash.domainError}">
-                    <bootstrap:alert class="alert-error">
-                    <ul>
-                        <g:eachError bean="${flash.domainError}" var="error">
-                            <li> <g:message error="${error}"/></li>
-                        </g:eachError>
-                    </ul>
-                    </bootstrap:alert>
-              </g:hasErrors>
+          <semui:messages data="${flash}" />
 
-
+             <semui:errors bean="${flash.domainError}" />
 
             <g:if test="${flash.error}">
-            <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
+                <bootstrap:alert class="alert-info">${flash.error}</bootstrap:alert>
             </g:if>
             
-            <h3>${message(code:'default.status.label')}:<span style="color:initial;cursor:pointer;"> <g:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></span></h3>
+            <h3 class="ui header">${message(code:'default.status.label')}:<span style="color:initial;cursor:pointer;"> <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></span></h3>
 
-            <h3>${message(code:'identifier.plural', default:'Identifiers')}</h3>
+            <h3 class="ui header">${message(code:'identifier.plural', default:'Identifiers')}</h3>
 
               <g:each in="${duplicates}" var="entry">
 
@@ -60,10 +44,10 @@
                  </ul>
                  </bootstrap:alert>
               </g:each>
-            <table class="table table-bordered">
+            <table class="ui celled la-table table">
               <thead>
                 <tr>
-                  <th>${message(code:'title.edit.component_id.label')}</td>
+                  <th>${message(code:'title.edit.component_id.label')}</th>
                   <th>${message(code:'title.edit.namespace.label')}</th>
                   <th>${message(code:'identifier.label')}</th>
                   <th>${message(code:'default.actions.label')}</th>
@@ -84,32 +68,28 @@
            
             <g:if test="${editable}">
 
-                <laser:formAddIdentifier owner="${ti}" buttonText="${message(code:'title.edit.identifier.select.add')}"
+                <semui:formAddIdentifier owner="${ti}" buttonText="${message(code:'title.edit.identifier.select.add')}"
                                          uniqueCheck="yes" uniqueWarningText="${message(code:'title.edit.duplicate.warn.list')}">
                     ${message(code:'identifier.select.text', args:['eISSN:2190-9180'])}
-                </laser:formAddIdentifier>
+                </semui:formAddIdentifier>
 
             </g:if>
 
 
-            <h3>${message(code:'title.edit.orglink')}</h3>
+            <h3 class="ui header">${message(code:'title.edit.orglink')}</h3>
 
           <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:ti?.orgs,editmode:editable]}" />
 
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="span12">
-
-
-            <h3>${message(code:'title.edit.tipp')}</h3>
-            <table class="table table-bordered table-striped">
+            <h3 class="ui header">${message(code:'title.edit.tipp')}</h3>
+            <table class="ui celled la-table table">
+                <thead>
                     <tr>
                         <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
                         <th>${message(code:'tipp.endDate')}</th><th>${message(code:'tipp.endVolume')}</th><th>${message(code:'tipp.endIssue')}</th><th>${message(code:'tipp.coverageDepth')}</th>
                         <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'title.edit.actions.label')}</th>
                     </tr>
+                </thead>
+                <tbody>
                     <g:each in="${ti.tipps}" var="t">
                         <tr>
                             <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/></td>
@@ -124,14 +104,8 @@
                         <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'title.edit.tipp.show', default:'Full TIPP record')}</g:link></td>
                         </tr>
                     </g:each>
+                </tbody>
             </table>
-
-          </div>
-        </div>
-
-
-
-      </div>
 
     <g:render template="orgLinksModal" 
               contextPath="../templates" 

@@ -1,19 +1,18 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="mmbootstrap"/>
+    <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} ${message(code: 'title.plural')} - ${message(code: 'default.button.search.label')}</title>
   </head>
 
   <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb message="menu.institutions.all_titles" class="active" />
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+      <semui:crumb message="menu.institutions.all_titles" class="active" />
+    </semui:breadcrumbs>
 
-    <div class="container">
-      <div class="well">
-      <g:form action="index" role="form" class="form-inline" method="get" params="${params}">
+    <semui:filter>
+      <g:form action="index" role="form" class="ui form" method="get" params="${params}">
 
         <input type="hidden" name="offset" value="${params.offset}"/>
 
@@ -25,14 +24,11 @@
        
         <button type="submit" name="search" value="yes">${message(code: 'default.button.search.label')}</button>
       </g:form>
-      </div>
-    </div>
-    
-    <div class="container">
-      <div class="row">
+    </semui:filter>
 
-        <div class="span12">
-          <div class="well">
+    <div class="ui grid">
+        <div class="sixteen wide column">
+
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
                   <g:if test="${params.int('offset')}">
@@ -47,10 +43,10 @@
                   <g:else>
                     ${message(code: 'title.search.no_pagination.text', args: [resultsTotal])}
                   </g:else>
-                </div>
+                </div><!-- .paginateButtons -->
 
                 <div id="resultsarea">
-                  <table class="table table-bordered table-striped">
+                  <table class="ui sortable celled la-table table">
                     <thead>
                       <tr>
                       <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />
@@ -64,7 +60,7 @@
                           <td>
                             <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link>
                             <g:if test="${editable}">
-                              <g:link controller="titleDetails" action="edit" id="${hit.getSource().dbId}">(${message(code: 'default.button.edit.label')})</g:link>
+                              <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">(${message(code: 'default.button.edit.label')})</g:link>
                             </g:if>
                           </td>
                           <td>
@@ -81,16 +77,14 @@
                       </g:each>
                     </tbody>
                   </table>
-                </div>
+                </div><!-- #resultsarea -->
              </g:if>
-             <div class="paginateButtons" style="text-align:center">
+
                 <g:if test="${hits}" >
-                  <span><g:paginate controller="titleDetails" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" /></span>
+                  <semui:paginate controller="titleDetails" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" />
                 </g:if>
-              </div>
-          </div>
-        </div>
-      </div>
-    </div>
+
+        </div><!-- .sixteen -->
+      </div><!-- .grid -->
   </body>
 </html>

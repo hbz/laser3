@@ -1,61 +1,79 @@
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
-  </head>
+    <head>
+        <meta name="layout" content="semanticUI"/>
+        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.addLicense.label', default:'Data import explorer')}</title>
+    </head>
 
-  <body>
+    <body>
 
-    <laser:breadcrumbs>
-      <laser:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
-      <laser:crumb message="menu.datamanager.ann" class="active"/>
-    </laser:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
+        <semui:crumb message="menu.datamanager.ann" class="active"/>
+    </semui:breadcrumbs>
 
-    <laser:flash data="${flash}" />
+    <semui:messages data="${flash}" />
 
-    <div class="container">
-      <h2>${message(code:'announcement.create.label', default:'Create announcement')}</h2>
-      <g:form action="createAnnouncement">
-        ${message(code:'announcement.subject.label', default:'Subject')}: <input type="text" name="subjectTxt" class="span12" value="${params.as}"/><br/>
-        <textarea name="annTxt" class="span12">${params.at}</textarea><br/>
-        <input type="submit" class="btn btn-primary" value="${message(code:'announcement.create.button.label', default:'Create Announcement...')}"/>
-      </g:form>
-    </div>
+    <h2 class="ui header">${message(code:'announcement.create.label', default:'Create announcement')}</h2>
 
-    <div class="container">
-      <h2>${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
-      <table class="table">
+    <semui:form>
+        <g:form action="createAnnouncement" class="ui form">
+            <div class="field">
+                <label>${message(code:'announcement.subject.label', default:'Subject')}</label>
+                <input type="text" name="subjectTxt" value="${params.as}" />
+            </div>
+            <div class="field">
+                <label></label>
+                <textarea name="annTxt">${params.at}</textarea>
+            </div>
+            <div class="field">
+                <label>&nbsp;</label>
+                <input type="submit" class="ui button" value="${message(code:'announcement.create.button.label', default:'Create Announcement...')}" />
+            </div>
+        </g:form>
+    </semui:form>
+
+
+      <h2 class="ui header">${message(code:'announcement.previous.label', default:'previous announcements')}</h2>
+
+      <div class="ui divided relaxed list">
         <g:each in="${recentAnnouncements}" var="ra">
-          <tr>
-            <td><strong>${ra.title}</strong> <br/>
+          <div class="item">
+            <strong>${ra.title}</strong> <br/>
             <div class="ann-content">
               ${ra.content}
             </div>
+              <br />
             <g:if test="${ra.user != null}">
-              <span class="pull-right">${message(code:'announcement.posted_by.label', default:'posted by')} <em><g:link controller="userDetails" action="pub" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em> ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/></span>
+              ${message(code:'announcement.posted_by.label', default:'posted by')}
+                <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em>
+                <br />
+                ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:if>
             <g:else>
-              <span class="pull-right">${message(code:'announcement.posted_auto.label', default:'posted automatically on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/></span>
+                ${message(code:'announcement.posted_auto.label', default:'posted automatically on')}
+                <br />
+                <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:else>
-          </tr>
+          </div>
         </g:each>
-      </table>
-    </div>
+      </div>
+
     <r:script language="JavaScript">
-      $(document).ready(function() {
-        $(".ann-content ul").wrap("<div class='collapse'/>");
-        $(".collapse").before("<div class='btn btn-primary toggle' style='margin-bottom:5px;' type='button'>${message(code:'default.button.show.label')}</div>");
-        $('.toggle').click(function(){
-          console.log("Toggled!");
-          if ( $(this).next().hasClass('in') ){
-            $(this).text("${message(code:'default.button.show.label')}")
-          }else{
-            $(this).text("${message(code:'default.button.hide.label')}")
-          }
-          $(this).next().collapse('toggle');
-        });
-      });
+        $('.ann-content').readmore({
+            speed: 250,
+            collapsedHeight: 21,
+            startOpen: false,
+            moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
+            lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
+        })
     </r:script>
+
+    <style>
+        .ann-content {
+            overflow: hidden;
+            line-height: 20px;
+        }
+    </style>
   </body>
 </html>

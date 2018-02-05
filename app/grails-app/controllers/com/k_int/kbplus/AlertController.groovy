@@ -9,28 +9,29 @@ import com.k_int.kbplus.auth.*;
 
 class AlertController {
 
-  def springSecurityService
+    def springSecurityService
 
-  def commentsFragment() { 
-    def result = [:]
-    if ( params.id ) {
-      result.alert = Alert.get(params.id)
-    }
-    result
-  }
-
-  def addComment() {
-    log.debug("Adding comment ${params.newcomment} on alert ${params.alertid}");
-    def user = User.get(springSecurityService.principal.id)
-    if ( params.alertid ) {
-      def alert = Alert.get(params.alertid)
-      Comment c = new Comment(commentDate:new Date(), comment:params.newcomment, by:user, alert: alert)
-      if ( ! c.save(flush:true) ) {
-        c.errors.each { ce ->
-          log.error("Problem saving commentk ${ce}");
+    def commentsFragment() {
+        def result = [:]
+        if (params.id) {
+            result.alert = Alert.get(params.id)
         }
-      }
+        result
     }
-    redirect(url: request.getHeader('referer'))
-  }
+
+    def addComment() {
+        log.debug("Adding comment ${params.newcomment} on alert ${params.alertid}")
+
+        def user = User.get(springSecurityService.principal.id)
+        if (params.alertid) {
+            def alert = Alert.get(params.alertid)
+            Comment c = new Comment(commentDate: new Date(), comment: params.newcomment, by: user, alert: alert)
+            if (! c.save(flush: true)) {
+                c.errors.each { ce ->
+                    log.error("Problem saving commentk ${ce}")
+                }
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
 }

@@ -12,301 +12,308 @@ import org.elasticsearch.action.admin.indices.create.*
 
 class DataloadService {
 
-  def stats = [:]
+    def stats = [:]
 
-  def update_stages = [
-    'Organisations Data',
-    'Subscriptions Offered Data',
-    'Subscriptions Taken Data',
-    'License Data'
-  ]
+    def update_stages = [
+        'Organisations Data',
+        'Subscriptions Offered Data',
+        'Subscriptions Taken Data',
+        'License Data'
+    ]
 
-  def executorService
-  def ESWrapperService
-  def sessionFactory
-  def edinaPublicationsAPIService
-  def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-  def grailsApplication
+    def executorService
+    def ESWrapperService
+    def sessionFactory
+    def edinaPublicationsAPIService
+    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def grailsApplication
 
-  def es_index
-  def dataload_running=false
-  def dataload_stage=-1
-  def dataload_message=''
-  def update_running = false
-  def lastIndexUpdate = null
+    def es_index
+    def dataload_running=false
+    def dataload_stage=-1
+    def dataload_message=''
+    def update_running = false
+    def lastIndexUpdate = null
 
-  @javax.annotation.PostConstruct
-  def init () {
-    es_index= grailsApplication.config.aggr_es_index ?: "kbplus"
-  }
-
-  def updateFTIndexes() {
-    log.debug("updateFTIndexes ${this.hashCode()}");
-    new EventLog(event:'kbplus.updateFTIndexes',message:'Update FT indexes',tstp:new Date(System.currentTimeMillis())).save(flush:true)
-    def future = executorService.submit({
-      doFTUpdate()
-    } as java.util.concurrent.Callable)
-    log.debug("updateFTIndexes returning");
-  }
-
-  def doFTUpdate() {
-
-    synchronized(this) {
-      if ( update_running == true ) {
-        return
-      }
-      else {
-        log.debug("Exiting FT update - one already running");
-        update_running = true;
-      }
+    @javax.annotation.PostConstruct
+    def init () {
+        es_index = grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX
     }
 
-    log.debug("doFTUpdate");
-    
-    log.debug("Execute IndexUpdateJob starting at ${new Date()}");
-    updateSiteMapping()
-    
-    def start_time = System.currentTimeMillis();
+    def updateFTIndexes() {
+        log.debug("updateFTIndexes ${this.hashCode()}")
+        new EventLog(event:'kbplus.updateFTIndexes', message:'Update FT indexes', tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
-    def esclient = ESWrapperService.getClient()
-
-    updateES(esclient, com.k_int.kbplus.Org.class) { org ->
-      def result = [:]
-      result.status = org.status?.value
-      result._id = org.impId
-      result.name = org.name
-      result.sector = org.sector?.value
-      result.dbId = org.id
-      result.visible = ['Public']
-      result.rectype = 'Organisation'
-      result
+        def future = executorService.submit({
+            doFTUpdate()
+        } as java.util.concurrent.Callable)
+        log.debug("updateFTIndexes returning")
     }
 
-    updateES(esclient, com.k_int.kbplus.TitleInstance.class) { ti ->
-      def result = [:]
-        if ( ti.title != null ) {
-          def new_key_title =  com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
-          if ( ti.keyTitle != new_key_title ) {
-            ti.normTitle = com.k_int.kbplus.TitleInstance.generateNormTitle(ti.title)
-            ti.keyTitle = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
-            //
-            // This alone should trigger before update to do the necessary...
-            //
-            ti.save()
-          }
-          else {
-          }
-          result.status = ti.status?.value
-          result._id = ti.impId
-          result.title = ti.title
-          result.sortTitle = ti.sortTitle
-          result.normTitle = ti.normTitle
-          result.keyTitle = ti.keyTitle
-          result.publisher = ti.getPublisher()?.name ?:''
-          result.dbId = ti.id
-          result.visible = ['Public']
-          result.rectype = 'Title'
-          result.identifiers = []
-          ti.ids?.each { id ->
-            try{
-              result.identifiers.add([type:id.identifier.ns.ns, value:id.identifier.value])
-            }catch(Exception e){
-              log.error(e)
+    def doFTUpdate() {
+
+        synchronized(this) {
+            if ( update_running == true ) {
+                return
             }
-          }
+            else {
+                log.debug("Exiting FT update - one already running");
+                update_running = true;
+            }
         }
-        else {
-          log.warn("Title with no title string - ${ti.id}");
+
+        log.debug("doFTUpdate");
+
+        log.debug("Execute IndexUpdateJob starting at ${new Date()}");
+        updateSiteMapping()
+
+        def start_time = System.currentTimeMillis();
+
+        def esclient = ESWrapperService.getClient()
+
+        updateES(esclient, com.k_int.kbplus.Org.class) { org ->
+            def result = [:]
+            result._id = org.impId
+            result.dbId = org.id
+            result.guid = org.globalUID ?:''
+
+            result.name = org.name
+            result.rectype = 'Organisation'
+            result.sector = org.sector?.value
+            result.status = org.status?.value
+            result.visible = ['Public']
+            result
         }
-      result
-    }
-    
-    updateES(esclient, com.k_int.kbplus.Package.class) { pkg ->
-      def result = [:]
-      result.status = pkg.packageStatus?.value
-      result._id = pkg.impId
-      result.name = "${pkg.name}"
-      result.sortname = pkg.sortName
-      result.tokname = result.name.replaceAll(':',' ')
-      result.dbId = pkg.id
-      result.visible = ['Public']
-      result.rectype = 'Package'
-      result.isPublic = pkg?.isPublic?.value?:'No'
-      result.consortiaId = pkg.getConsortia()?.id
-      result.consortiaName = pkg.getConsortia()?.name
-      result.cpname = pkg.contentProvider?.name
-      result.cpid = pkg.contentProvider?.id
-      result.titleCount = pkg.tipps.size()
-      result.startDate = pkg.startDate
-      result.endDate = pkg.endDate
-      result.pkg_scope = pkg.packageScope?.value ?: 'Scope Undefined'
-      result.identifiers = pkg.ids.collect{"${it?.identifier?.ns?.ns} : ${it?.identifier?.value}"}
-      def lastmod = pkg.lastUpdated ?: pkg.dateCreated
-      if ( lastmod != null ) {
-        result.lastModified = lastmod
-      }
 
-      if ( pkg.startDate ) {
-        GregorianCalendar c = new GregorianCalendar()
-        c.setTime(pkg.startDate) 
-        result.startYear = "${c.get(Calendar.YEAR)}"
-        result.startYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH))+1}"
-      }
+        updateES(esclient, com.k_int.kbplus.TitleInstance.class) { ti ->
+            def result = [:]
+            if (ti.title != null) {
+                def new_key_title =  com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
+                if (ti.keyTitle != new_key_title) {
+                    ti.normTitle = com.k_int.kbplus.TitleInstance.generateNormTitle(ti.title)
+                    ti.keyTitle = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
+                    //
+                    // This alone should trigger before update to do the necessary...
+                    //
+                    ti.save()
+                }
+                else {
+                }
 
-      if ( pkg.endDate ) {
-        GregorianCalendar c = new GregorianCalendar()
-        c.setTime(pkg.endDate) 
-        result.endYear = "${c.get(Calendar.YEAR)}"
-        result.endYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH))+1}"
-      }
+                result._id = ti.impId
+                result.dbId = ti.id
+                result.guid = ti.globalUID ?:''
 
-      result
-    }
-
-    updateES(esclient, com.k_int.kbplus.License.class) { lic ->
-      def result = [:]
-      result.name = lic.reference
-      result.status = lic.status?.value
-      result._id = lic.impId
-      result.dbId = lic.id
-      result.visible = ['Public']
-      result.rectype = 'License'
-      result.availableToOrgs = lic.orgLinks.find{it.roleType?.value == "Licensee"}?.org?.id
-      result
-    }
-
-    updateES(esclient, com.k_int.kbplus.Platform.class) { plat ->
-      def result = [:]
-      result._id = plat.impId
-      result.status = plat.status?.value
-      result.name = plat.name
-      result.dbId = plat.id
-      result.visible = ['Public']
-      result.rectype = 'Platform'
-      result
-    }
-
-    updateES(esclient, com.k_int.kbplus.Subscription.class) { sub ->
-      
-      def result = [:]
-      result._id = sub.impId
-      result.name = sub.name
-
-      // There really should only be one here? So think od this as SubscriptionOrg, but easier
-      // to leave it as availableToOrgs I guess.
-      result.status = sub.status?.value
-
-      result.availableToOrgs = sub.orgRelations.find{it.roleType?.value == "Subscriber" }?.org?.id
-      result.identifier = sub.identifier
-      result.dbId = sub.id
-      result.visible = ['Public']
-      result.consortiaId = sub.getConsortia()?.id
-      result.consortiaName = sub.getConsortia()?.name
-      result.packages = []
-
-      if ( sub.startDate ) {
-        GregorianCalendar c = new GregorianCalendar()
-        c.setTime(sub.startDate) 
-        result.startYear = "${c.get(Calendar.YEAR)}"
-        result.startYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH))+1}"
-      }
-
-      sub.packages.each { sp ->
-        def pgkinfo = [:]
-        if ( sp.pkg != null ) {
-          // Defensive - it appears that there can be a SP without a package. 
-          pgkinfo.pkgname = sp.pkg.name
-          pgkinfo.pkgidstr= sp.pkg.identifier
-          pgkinfo.pkgid= sp.pkg.id
-          pgkinfo.cpname = sp.pkg.contentProvider?.name
-          pgkinfo.cpid = sp.pkg.contentProvider?.id
-          result.packages.add(pgkinfo);
+                result.identifiers = []
+                ti.ids?.each { id ->
+                    try{
+                        result.identifiers.add([type:id.identifier.ns.ns, value:id.identifier.value])
+                    } catch(Exception e) {
+                        log.error(e)
+                    }
+                }
+                result.keyTitle = ti.keyTitle
+                result.normTitle = ti.normTitle
+                result.publisher = ti.getPublisher()?.name ?:''
+                result.rectype = 'Title'
+                result.sortTitle = ti.sortTitle
+                result.status = ti.status?.value
+                result.title = ti.title
+                result.visible = ['Public']
+            }
+            else {
+                log.warn("Title with no title string - ${ti.id}")
+            }
+            result
         }
-      }
 
-      if ( sub.subscriber ) {
-        result.visible.add(sub.subscriber.shortcode)
-      }
+        updateES(esclient, com.k_int.kbplus.Package.class) { pkg ->
+            def result = [:]
+            result._id = pkg.impId
+            result.dbId = pkg.id
+            result.guid = pkg.globalUID ?:''
 
-      result.subtype = sub.type?.value
-      result.rectype = 'Subscription'
-      result
+            result.consortiaId = pkg.getConsortia()?.id
+            result.consortiaName = pkg.getConsortia()?.name
+            result.cpid = pkg.getContentProvider()?.id
+            result.cpname = pkg.getContentProvider()?.name
+            result.identifiers = pkg.ids.collect{"${it?.identifier?.ns?.ns} : ${it?.identifier?.value}"}
+            result.isPublic = pkg?.isPublic?.value?:'No'
+            result.endDate = pkg.endDate
+            def lastmod = pkg.lastUpdated ?: pkg.dateCreated
+            if (lastmod != null) {
+                result.lastModified = lastmod
+            }
+            result.name = "${pkg.name}"
+            result.pkg_scope = pkg.packageScope?.value ?: 'Scope Undefined'
+            result.rectype = 'Package'
+            result.sortname = pkg.sortName
+            result.startDate = pkg.startDate
+            result.status = pkg.packageStatus?.value
+            result.titleCount = pkg.tipps.size()
+            result.tokname = result.name.replaceAll(':',' ')
+            result.visible = ['Public']
+
+            if (pkg.startDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(pkg.startDate)
+                result.startYear = "${c.get(Calendar.YEAR)}"
+                result.startYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH))+1}"
+            }
+
+            if (pkg.endDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(pkg.endDate)
+                result.endYear = "${c.get(Calendar.YEAR)}"
+                result.endYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH))+1}"
+            }
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.License.class) { lic ->
+            def result = [:]
+            result._id = lic.impId
+            result.dbId = lic.id
+            result.guid = lic.globalUID ?:''
+
+            result.availableToOrgs = lic.orgLinks.find{it.roleType?.value == "Licensee"}?.org?.id
+            result.name = lic.reference
+            result.rectype = 'License'
+            result.status = lic.status?.value
+            result.visible = ['Public']
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.Platform.class) { plat ->
+            def result = [:]
+            result._id = plat.impId
+            result.dbId = plat.id
+            result.guid = plat.globalUID ?:''
+
+            result.name = plat.name
+            result.rectype = 'Platform'
+            result.status = plat.status?.value
+            result.visible = ['Public']
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.Subscription.class) { sub ->
+            def result = [:]
+            result._id = sub.impId
+            result.dbId = sub.id
+            result.guid = sub.globalUID ?:''
+
+            result.availableToOrgs = sub.orgRelations.find{it.roleType?.value == "Subscriber" }?.org?.id
+            result.consortiaId = sub.getConsortia()?.id
+            result.consortiaName = sub.getConsortia()?.name
+            result.name = sub.name
+            result.identifier = sub.identifier
+            result.packages = []
+            // There really should only be one here? So think od this as SubscriptionOrg, but easier
+            // to leave it as availableToOrgs I guess.
+            result.rectype = 'Subscription'
+            result.status = sub.status?.value
+            result.subtype = sub.type?.value
+            result.visible = ['Public']
+
+            if (sub.startDate) {
+                GregorianCalendar c = new GregorianCalendar()
+                c.setTime(sub.startDate)
+                result.startYear = "${c.get(Calendar.YEAR)}"
+                result.startYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH))+1}"
+            }
+
+            sub.packages.each { sp ->
+                def pgkinfo = [:]
+                if ( sp.pkg != null ) {
+                    // Defensive - it appears that there can be a SP without a package.
+                    pgkinfo.pkgname = sp.pkg.name
+                    pgkinfo.pkgidstr= sp.pkg.identifier
+                    pgkinfo.pkgid= sp.pkg.id
+                    pgkinfo.cpname = sp.pkg.contentProvider?.name
+                    pgkinfo.cpid = sp.pkg.contentProvider?.id
+                    result.packages.add(pgkinfo);
+                }
+            }
+
+            if (sub.subscriber) {
+                result.visible.add(sub.subscriber.shortcode)
+            }
+
+            result
+        }
+
+        update_running = false;
+        def elapsed = System.currentTimeMillis() - start_time;
+        lastIndexUpdate = new Date(System.currentTimeMillis())
+        esclient.admin().indices().flush(new FlushRequest(es_index)).actionGet()
+
+        log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
     }
 
-    update_running = false;
-    def elapsed = System.currentTimeMillis() - start_time;
-    lastIndexUpdate = new Date(System.currentTimeMillis())
-    esclient.admin().indices().flush(new FlushRequest(es_index)).actionGet()
-    log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ");
+    def updateSiteMapping() {
+        log.debug("Updating ES site mapping ..")
+        def esclient = ESWrapperService.getClient()
 
-  }
+        SitePage.findAll().each{ site ->
+            def result = [:]
+            result._id = site.id.toString()
+            result.alias = site.alias
+            result.action = site.action
+            result.controller = site.controller
+            result.rectype = site.rectype
 
-
-  def updateSiteMapping() {
-
-    log.debug("Updating ES site mapping...")
-    def esclient = ESWrapperService.getClient()
-    SitePage.findAll().each{ site ->
-        def result = [:]
-        result._id = site.id.toString()
-        result.alias = site.alias
-        result.action = site.action
-        result.controller = site.controller
-        result.rectype = site.rectype
-    
-      def future = esclient.index {
-          index es_index
-          type site.class.name
-          id result._id
-          source result
-      }
+            def future = esclient.index {
+                index es_index
+                type site.class.name
+                id result._id
+                source result
+            }
+        }
     }
-  }
 
-
-
-  def updateES(esclient, domain, recgen_closure) {
+    def updateES(esclient, domain, recgen_closure) {
 
     def count = 0;
     try {
-      log.debug("updateES - ${domain.name}");
+        log.debug("updateES - ${domain.name}")
 
-      def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name,'ESIndex')
+        def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name,'ESIndex')
 
-      log.debug("result of findByDomain: ${latest_ft_record}");
-      if ( !latest_ft_record) {
-        latest_ft_record=new FTControl(domainClassName:domain.name,activity:'ESIndex',lastTimestamp:0)
-      }
+        log.debug("result of findByDomain: ${latest_ft_record}")
+        if (! latest_ft_record) {
+            latest_ft_record=new FTControl(domainClassName:domain.name,activity:'ESIndex', lastTimestamp:0)
+        }
 
-      log.debug("updateES ${domain.name} since ${latest_ft_record.lastTimestamp}");
-      def total = 0;
-      Date from = new Date(latest_ft_record.lastTimestamp);
-      // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated']);
+        log.debug("updateES ${domain.name} since ${latest_ft_record.lastTimestamp}")
+        def total = 0;
+        Date from = new Date(latest_ft_record.lastTimestamp)
+        // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
-      def c = domain.createCriteria()
-      c.setReadOnly(true)
-      c.setCacheable(false)
-      c.setFetchSize(Integer.MIN_VALUE);
+        def c = domain.createCriteria()
+        c.setReadOnly(true)
+        c.setCacheable(false)
+        c.setFetchSize(Integer.MIN_VALUE)
 
-      c.buildCriteria{
-          or {
-            gt('lastUpdated', from)
-            and {
-              gt('dateCreated', from)
-              isNull('lastUpdated')
+        c.buildCriteria{
+            or {
+                gt('lastUpdated', from)
+                and {
+                    gt('dateCreated', from)
+                    isNull('lastUpdated')
+                }
             }
-          }
-          order("lastUpdated", "asc")
-      }    
+            order("lastUpdated", "asc")
+        }
 
-      def results = c.scroll(ScrollMode.FORWARD_ONLY)
+        def results = c.scroll(ScrollMode.FORWARD_ONLY)
     
-      log.debug("Query completed.. processing rows...");
+        log.debug("Query completed .. processing rows ..")
 
       while (results.next()) {
         Object r = results.get(0);
         def idx_record = recgen_closure(r)
-        def future;
+        def future
         if(idx_record['_id'] == null) {
           log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
           continue
@@ -333,36 +340,35 @@ class DataloadService {
         total++
         if ( count > 100 ) {
           count = 0;
-          log.debug("processed ${++total} records (${domain.name})");
+          log.debug("processed ${++total} records (${domain.name})")
           latest_ft_record.save(flush:true);
           cleanUpGorm();
         }
       }
       results.close();
 
-      log.debug("Processed ${total} records for ${domain.name}");
+      log.debug("Processed ${total} records for ${domain.name}")
 
       // update timestamp
       latest_ft_record.save(flush:true);
     }
     catch ( Exception e ) {
-      log.error("Problem with FT index",e);
+      log.error("Problem with FT index", e)
     }
     finally {
-      log.debug("Completed processing on ${domain.name} - saved ${count} records");
+      log.debug("Completed processing on ${domain.name} - saved ${count} records")
     }
   }
 
-  def getReconStatus() {
+    def getReconStatus() {
     
-    def result = [
-      active:dataload_running,
-      stage:dataload_stage,
-      stats:stats
-    ]
-
-    result
-  }
+        def result = [
+          active:   dataload_running,
+          stage:    dataload_stage,
+          stats:    stats
+        ]
+        result
+    }
 
 
 
@@ -579,40 +585,38 @@ class DataloadService {
     }
   }
 
-  def cleanUpGorm() {
-    log.debug("Clean up GORM");
-    def session = sessionFactory.currentSession
-    session.flush()
-    session.clear()
-    propertyInstanceMap.get().clear()
-  }
+    def cleanUpGorm() {
+        log.debug("Clean up GORM")
 
-  def clearDownAndInitES() {
-    log.debug("Clear down and init ES");
-    Client client = ESWrapperService.getClient()
-
-
-    try {
-      // Drop any existing kbplus index
-      log.debug("Dropping old ES index....");
-      DeleteIndexResponse delete = client.admin().indices().delete(new DeleteIndexRequest(es_index)).actionGet()
-      if (delete.acknowledged) {
-        log.debug("Drop old ES index completed OK");
-      }else{
-        log.error("Index wasn't deleted")
-      }
-    }
-    catch ( Exception e ) {
-      log.warn("Problem deleting index...",e);
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+        propertyInstanceMap.get().clear()
     }
 
-    log.debug("Create new ES index....");
+    def clearDownAndInitES() {
+        log.debug("Clear down and init ES");
+        Client client = ESWrapperService.getClient()
 
-    CreateIndexResponse createResponse = client.admin().indices().create(new CreateIndexRequest(es_index)).actionGet();
+        try {
+            // Drop any existing kbplus index
+            log.debug("Dropping old ES index ..")
+            DeleteIndexResponse delete = client.admin().indices().delete(new DeleteIndexRequest(es_index)).actionGet()
+            if (delete.acknowledged) {
+                log.debug("Drop old ES index completed OK")
+            }
+            else {
+                log.error("Index wasn't deleted")
+            }
+        }
+        catch ( Exception e ) {
+            log.warn("Problem deleting index ..", e)
+        }
 
-    log.debug("Clear down and init ES completed... AS OF 4.1 MAPPINGS -MUST- Be installed in ESHOME/mappings/kbplus");
-    
-  }
+        log.debug("Create new ES index ..")
 
+        CreateIndexResponse createResponse = client.admin().indices().create(new CreateIndexRequest(es_index)).actionGet()
 
+        log.debug("Clear down and init ES completed... AS OF 4.1 MAPPINGS -MUST- Be installed in ESHOME/mappings/kbplus")
+    }
 }

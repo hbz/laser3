@@ -1,29 +1,22 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="mmbootstrap"/>
+        <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser', default:'LAS:eR')} License</title>
 </head>
-
 <body>
+    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <div class="container">
-      <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    </div>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span>
+    </h1>
 
-    <div class="container">
-        <h1>${license.licensee?.name} ${license.type?.value} License : <span id="reference" style="padding-top: 5px;">${license.reference}</span></h1>
+    <g:render template="nav" />
 
-<g:render template="nav" />
+    <g:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>
 
-    </div>
-
-    <div class="container">
-        <g:render template="/templates/notes_table" model="${[instance: license, redirect: 'notes']}"/>
-
-    </div>
-<g:render template="/templates/addNote"
-          model="${[doclist: license.documents, ownobj: license, owntp: 'license']}"/>
+    <g:render template="/templates/notes/modal" model="${[doclist: license.documents, ownobj: license, owntp: 'license']}"/>
 
 </body>
 </html>
