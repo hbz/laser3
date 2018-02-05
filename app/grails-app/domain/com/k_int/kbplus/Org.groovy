@@ -311,7 +311,12 @@ class Org extends BaseDomainComponent {
     }
 
   }
-  
+
+    def getDesignation() {
+        return (shortname?:(sortname?:(name?:(globalUID?:id))))
+    }
+
+
     @Override
     String toString() {
         name + ', ' + sector + ' (' + id + ')'

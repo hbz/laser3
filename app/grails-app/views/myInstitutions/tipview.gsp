@@ -8,7 +8,7 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
             <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
         </semui:breadcrumbs>
 

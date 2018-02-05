@@ -9,7 +9,7 @@
 <r:require modules="onixMatrix" />
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.getDesignation()}" />
 
         <semui:crumb class="active" message="menu.institutions.comp_lic" />
 
