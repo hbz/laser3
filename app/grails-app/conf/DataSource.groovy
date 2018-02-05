@@ -18,7 +18,7 @@ environments {
             driverClassName = "com.mysql.jdbc.Driver"
             dialect = org.hibernate.dialect.MySQL5Dialect
             username = "k-int"
-            password = "K-int_2017"
+            password = "k-int"
             url = "jdbc:mysql://localhost/KBPlus?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
             // logSql = true
