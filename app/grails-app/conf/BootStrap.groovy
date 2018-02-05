@@ -424,18 +424,14 @@ class BootStrap {
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
         def requiredOrgProps = [
-                [name: [en: "Org Property 1"], descr: allOrgDescr, type: String.toString()],
-                [name: [en: "Org Property 2"], descr: allOrgDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Org Property 3"], descr: allOrgDescr, type: RefdataValue.toString(), cat: 'OrgSector']
+                [name: [en: "Note", de: "Anmerkung"], descr: allOrgDescr, type: String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
 
         def allPrsDescr = [en: PropertyDefinition.PRS_PROP, de: PropertyDefinition.PRS_PROP]
 
         def requiredPrsProps = [
-                [name: [en: "Person Property 1"], descr: allPrsDescr, type: String.toString()],
-                [name: [en: "Person Property 2"], descr: allPrsDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Person Property 3"], descr: allPrsDescr, type: RefdataValue.toString(), cat: 'Person Role']
+                [name: [en: "Note", de: "Anmerkung"], descr: allPrsDescr, type: String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredPrsProps)
     }
@@ -625,9 +621,7 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
 
-        RefdataValue.loc('ClusterType', [en: 'ClusterType 1'])
-        RefdataValue.loc('ClusterType', [en: 'ClusterType 1'])
-        RefdataValue.loc('ClusterType', [en: 'ClusterType 2'])
+        RefdataValue.loc('ClusterType', [en: 'Undefined'])
 
         RefdataValue.loc('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
         RefdataValue.loc('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
@@ -689,7 +683,7 @@ class BootStrap {
 
         RefdataValue.loc('Gender',   [en: 'Female', de: 'Weiblich'])
         RefdataValue.loc('Gender',   [en: 'Male', de: 'Männlich'])
-		RefdataValue.loc('Gender',   [en: 'diverse', de: 'Divers'])
+		RefdataValue.loc('Gender',   [en: 'Third Gender', de: 'Third Gender'])
 
         RefdataValue.loc('Library Network',   [en: 'BVB', de: 'BVB'])
         RefdataValue.loc('Library Network',   [en: 'GBV', de: 'GBV'])
@@ -1308,11 +1302,4 @@ No Host Platform URL Content
 
     }
 
-    def setupRefdataFromCode = {
-
-        // TODO refactoring .. found in domain classes, controller and services
-
-        RefdataCategory.lookupOrCreate('Document Context Status','Deleted')
-        RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' )
-    }
 }
