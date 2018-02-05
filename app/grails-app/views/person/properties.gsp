@@ -31,7 +31,7 @@
 
             <r:script language="JavaScript">
                     $(document).ready(function(){
-                        initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                        mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
                     });
             </r:script>
         </div>
