@@ -1,29 +1,28 @@
 
 <g:each in="${existingPrsLinks}" var="link">
-	<div class="ui vertical segment ui-delete">
+	<div class="ui vertical ui-delete">
 
 		<div class="field">
-        	<label>${link.functionType?.value}${link.responsibilityType?.value}</label>
+        	<label>${link.functionType?.getI10n('value')}${link.responsibilityType?.getI10n('value')}</label>
 
             <div class="two fields">
                 <div class="field wide twelve">
                     <g:if test="${link.cluster}">
-                        <g:link controller="${linkController}" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
+                        <g:link controller="${linkController}" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>  <br />
                     </g:if>
                     <g:if test="${link.lic}">
-                        <g:link controller="${linkController}" action="show" id="${link.lic.id}">${link.lic.reference}</g:link>
+                        <g:link controller="${linkController}" action="show" id="${link.lic.id}">${link.lic.reference}</g:link>  <br />
                     </g:if>
                     <g:if test="${link.pkg}">
-                        <g:link controller="${linkController}" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
+                        <g:link controller="${linkController}" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>  <br />
                     </g:if>
                     <g:if test="${link.sub}">
-                        <g:link controller="${linkController}" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
+                        <g:link controller="${linkController}" action="show" id="${link.sub.id}">${link.sub.name}</g:link>  <br />
                     </g:if>
                     <g:if test="${link.title}">
-                        <g:link controller="${linkController}" action="show" id="${link.title.id}">${link.title.normTitle}</g:link>
+                        <g:link controller="${linkController}" action="show" id="${link.title.id}">${link.title.normTitle}</g:link>  <br />
                     </g:if>
 
-                    <br />
                     <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
                 </div>
                 <div class="field wide four">

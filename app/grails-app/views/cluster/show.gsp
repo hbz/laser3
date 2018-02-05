@@ -56,7 +56,7 @@
 				</div>
 				<g:form>
 					<g:hiddenField name="id" value="${clusterInstance?.id}" />
-					<div class="ui segment form-actions">
+					<div class="ui form-actions">
 						<g:link class="ui button" action="edit" id="${clusterInstance?.id}">
 							<i class="write icon"></i>
 							<g:message code="default.button.edit.label" default="Edit" />

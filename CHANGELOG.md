@@ -3,12 +3,12 @@
 - switched frontend to semantic ui 
 - upgraded to jQuery 3.x
 - upgraded x-editable library
-- overworked complete markup and javascript
+- removed legacy bootstrap
+- overworked complete markup
+- overworked javascript
 - overworked navigation and menus
 - unified modal dialogs
 - introduced filter panels
-- removed legacy bootstrap markup
-- removed legacy bootstrap javascript
 - overworked orgs, subscriptions, licenses and costitems
 - overworked persons, contacts and addresses
 - added globalUID support

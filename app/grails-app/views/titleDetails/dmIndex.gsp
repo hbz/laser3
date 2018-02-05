@@ -14,25 +14,26 @@
       <g:form action="dmIndex" method="get" params="${params}" role="form" class="ui form">
 
         <input type="hidden" name="offset" value="${params.offset}"/>
-            <div class="field">
-                <label>${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})</label>
-                <input name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/>
-            </div>
-            <div class="field">
-                <label>${message(code:'default.status.label', default:'Status')}</label>
-                <g:select name="status"
-                      from="${availableStatuses}"
-                      optionKey="${{it.value}}"
-                      optionValue="${{it.getI10n('value')}}"
-                      noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}"
-                      />
-            </div>
-            <div class="field">
-                <label>&nbsp;</label>
-                <button class="ui secondary button" type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
-            </div>
+        <div class="field">
+            <label>${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})</label>
+            <input name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/>
+        </div>
+        <div class="field">
+            <label>${message(code:'default.status.label', default:'Status')}</label>
+            <g:select name="status"
+                  from="${availableStatuses}"
+                  optionKey="${{it.value}}"
+                  optionValue="${{it.getI10n('value')}}"
+                  noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}"
+                  />
+        </div>
+        <div class="field">
+            <label>&nbsp;</label>
+            <button class="ui secondary button" type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
+        </div>
+      </g:form>
+    </semui:filter>
 
-          <div class="well">
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
                   <g:if test="${params.int('offset')}">
@@ -89,14 +90,8 @@
                   </table>
                 </div>
              </g:if>
-             <div class="paginateButtons" style="text-align:center">
-                <g:if test="${hits}" >
-                  <span><g:paginate controller="titleDetails" action="dmIndex" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${totalHits}" /></span>
-                </g:if>
-              </div>
-          </div>
-      </g:form>
-    </semui:filter>
+
+            <semui:paginate total="${totalHits}" />
 
     <!-- ES Query: ${es_query} -->
   </body>
