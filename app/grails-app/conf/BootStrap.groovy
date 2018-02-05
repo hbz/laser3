@@ -797,7 +797,7 @@ class BootStrap {
         
         RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'Data', de: 'Rohdaten'])
         RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'With Metadata', de: 'Inkl. Metadaten'])
-        RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'With Software', de: 'Inkl. Software])
+        RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'With Software', de: 'Inkl. Software'])
         RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'DRM-free', de: 'Ohne DRM'])
         
         RefdataValue.loc('License.Arc.HostingTime',      [en: 'Always', de: 'Immer'])
