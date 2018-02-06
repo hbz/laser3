@@ -19,7 +19,7 @@
 
         <g:if test="${loaderResult==null}">
           <p>This service allows institutonal admins to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
-          <table class="ui celled striped table">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
                 <th>tsv column name</th>
@@ -67,7 +67,7 @@
 
 
       <g:if test="${loaderResult}">
-        <table class="ui celled striped table">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th></th>

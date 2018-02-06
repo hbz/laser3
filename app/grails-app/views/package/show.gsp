@@ -42,7 +42,7 @@
             <h6 class="ui header">${message(code:'package.show.byPlatform', default:'Availability of titles in this package by platform')}</h6>
       
           <g:set var="counter" value="${1}" />
-          <table class="ui celled striped table">
+          <table class="ui celled la-rowspan table">
             <thead>
             <tr>
               <th rowspan="2" style="width: 2%;">#</th>
@@ -88,13 +88,13 @@
         <g:form>
           <sec:ifAnyGranted roles="ROLE_ADMIN">
           <g:hiddenField name="id" value="${packageInstance?.id}" />
-          <div class="ui segment form-actions">
+          <div class="ui form-actions">
             <g:link class="ui button" action="edit" id="${packageInstance?.id}">
-              <i class="icon-pencil"></i>
+              <i class="write icon"></i>
               <g:message code="default.button.edit.label" default="Edit" />
             </g:link>
             <button class="ui negative button" type="submit" name="_action_delete">
-              <i class="icon-trash icon-white"></i>
+              <i class="trash icon"></i>
               <g:message code="default.button.delete.label" default="Delete" />
             </button>
           </div>

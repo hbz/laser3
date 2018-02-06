@@ -21,7 +21,7 @@
 
 			<div class="ui grid">
 				<div class="twelve wide column">
-					<table class="ui celled striped table">
+					<table class="ui celled la-table table">
 						<thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>
@@ -105,7 +105,7 @@
 								<br />
 
 								<button type="submit" class="ui button">
-									<i class="icon-ok icon-white"></i>
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.create.label" default="Create" />
 								</button>
 

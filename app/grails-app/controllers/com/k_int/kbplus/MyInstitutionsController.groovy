@@ -8,6 +8,8 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.PropertyDefinition
+import org.springframework.dao.DataIntegrityViolationException
+
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
@@ -30,6 +32,7 @@ class MyInstitutionsController {
     def permissionHelperService
     def contextService
     def taskService
+    def filterService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
@@ -380,19 +383,22 @@ class MyInstitutionsController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def currentSubscriptions() {
         def result = setResultGenerics()
-        
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
-        
+
         def viableOrgs = []
-        
+
         if ( result.availableConsortia ){
           result.availableConsortia.each {
             viableOrgs.add(it)
           }
         }
-        
+
         viableOrgs.add(result.institution)
-        
+
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
@@ -400,7 +406,7 @@ class MyInstitutionsController {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
         } else if (params.validOn.trim() == '') {
-            result.validOn = "" 
+            result.validOn = ""
         } else {
             result.validOn = params.validOn
             date_restriction = sdf.parse(params.validOn)
@@ -419,7 +425,7 @@ class MyInstitutionsController {
               result.remove('dateBeforeFilterVal')
               result.remove('dateBeforeFilter')
             }
-            
+
         }
 
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
@@ -432,18 +438,34 @@ class MyInstitutionsController {
 
         def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
         def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
-        def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
         def roleTypes = [role_sub, role_sub_consortia]
-        def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
+        // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':result.institution]
 
-        // def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org = ? ) ) OR ( s.isPublic=? ) ) AND ( s.status.value != 'Deleted' ) "
-        // def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) OR ( o.roleType = :roleCons AND o.org IN (:allInst) ) ) ) ) AND (
-        def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
-        // def qry_params = [result.institution, public_flag]
-        def qry_params = ['roleTypes':roleTypes,'activeInst':result.institution]
+        def base_qry
+        def qry_params
+
+        if (! params.orgRole) {
+            if (result.institution?.orgType?.value == 'Consortium') {
+                params.orgRole = 'Subscription Consortia'
+            }
+            else {
+                params.orgRole = 'Subscriber'
+            }
+        }
+
+        if (params.orgRole == 'Subscriber') {
+
+            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
+            qry_params = ['roleType':role_sub, 'activeInst':result.institution]
+        }
+
+        if (params.orgRole == 'Subscription Consortia') {
+
+            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
+            qry_params = ['roleType':role_sub_consortia, 'activeInst':result.institution]
+        }
 
         if (params.q?.length() > 0) {
             base_qry += " and ( lower(s.name) like :name_filter or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) ) "
@@ -466,8 +488,7 @@ class MyInstitutionsController {
             base_qry += " order by s.name asc"
         }
 
-
-//         log.debug("current subs base query: ${base_qry} params: ${qry_params} max:${result.max} offset:${result.offset}");
+        //log.debug("current subs base query: ${base_qry} params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
@@ -566,7 +587,8 @@ class MyInstitutionsController {
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
             if(result.orgType?.value == 'Consortium') {
-                result.cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
+                def fsq = filterService.getOrgComboQuery(params, result.institution)
+                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
 
             result
@@ -620,7 +642,7 @@ class MyInstitutionsController {
                     
                     def cons_members = []
 
-                    (params.selectedConsortiaMembers).each{ it ->
+                    params.list('selectedOrgs').each{ it ->
                         def fo =  Org.findById(Long.valueOf(it))
                         cons_members << Combo.executeQuery(
                                 "select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?",
@@ -632,10 +654,12 @@ class MyInstitutionsController {
                     cons_members.each { cm ->
 
                     if (params.generateSlavedSubs == "Y") {
-                      log.debug("Generating seperate slaved instances for consortia members")
-                      def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
+                        log.debug("Generating seperate slaved instances for consortia members")
+                        def postfix = cm.get(0).shortname ?: cm.get(0).name
+
+                        def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
                                           status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
-                                          name: params.newEmptySubName,
+                                          name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
@@ -644,17 +668,18 @@ class MyInstitutionsController {
                                           isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
                                           
-                      new OrgRole(org: cm,
-                          sub: cons_sub,
-                          roleType: role_sub).save();
+                        new OrgRole(org: cm,
+                            sub: cons_sub,
+                            roleType: role_sub).save();
 
-                      new OrgRole(org: result.institution,
-                          sub: cons_sub,
-                          roleType: role_cons).save();
-                    }else{
-                      new OrgRole(org: cm,
-                          sub: new_sub,
-                          roleType: role_sub).save();
+                        new OrgRole(org: result.institution,
+                            sub: cons_sub,
+                            roleType: role_cons).save();
+                    }
+                    else {
+                        new OrgRole(org: cm,
+                            sub: new_sub,
+                            roleType: role_sub).save();
                     }
                   }
                 }
@@ -2363,8 +2388,12 @@ AND EXISTS (
         //.findAllByOwner(result.user,sort:'ts',order:'asc')
 
         // tasks
+
+        def sdFormat    = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        params.taskStatus = 'not done'
+        def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
-        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg)
+        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
@@ -2404,7 +2433,7 @@ AND EXISTS (
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def todo() {
+    def changes() {
         def result = setResultGenerics()
 
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
@@ -2570,10 +2599,10 @@ AND EXISTS (
         def result = setResultGenerics()
         
         def visiblePersons = []
-        def prs = Person.findAll("from Person as P where P.tenant = ${result.institution.id}")
+        def prs = Person.findAllByTenant(result.institution, [sort: "last_name", order: "asc"])
 
         prs?.each { p ->
-            if(p?.isPublic?.value == 'No'){
+            if (p?.isPublic?.value == 'No') {
                 visiblePersons << p
             }
         }
@@ -2586,7 +2615,22 @@ AND EXISTS (
     def tasks() {
         def result = setResultGenerics()
 
-        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution)
+        if (params.deleteId) {
+            def dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    dTask.delete(flush: true)
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+            }
+        }
+
+        def sdFormat = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def query = filterService.getTaskQuery(params, sdFormat)
+        result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, taskService.WITHOUT_TENANT_ONLY)
         result.editable = true // TODO check roles !!!
 
@@ -2710,5 +2754,24 @@ AND EXISTS (
         result.institution  = Org.findByShortcode(params.shortcode)
 
         result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def ajaxEmptySubscription() {
+
+        def result = setResultGenerics()
+        result.orgType = result.institution.orgType
+
+        result.editable = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        if (result.editable) {
+
+            if(result.orgType?.value == 'Consortium') {
+                def fsq = filterService.getOrgComboQuery(params, result.institution)
+                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            }
+
+            result
+        }
+        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true])
     }
 }

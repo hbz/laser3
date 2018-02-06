@@ -51,7 +51,7 @@
                 <ul class="nav">
                 <g:if test="${false}">
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle explorer-link" data-toggle="dropdown"> Data Explorer <b class="caret"></b> </a>
+                    <a href="#" class="dropdown-toggle explorer-link" data-toggle="dropdown"> Data Explorer <strong class="caret"></strong> </a>
                     <ul class="dropdown-menu" style="max-width:none;">
                       <li<%= request.forwardURI == "${createLink(uri: '/home/search')}" ? ' class="active"' : '' %>><a href="${createLink(uri: '/home/search')}">Search</a></li>
                       <li <%='package'== controllerName ? ' class="active"' : '' %>><g:link controller="packageDetails">Package</g:link></li>
@@ -68,7 +68,7 @@
                 </ul>
                 <ul class="nav">
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> ${message(code:'menu.institutions')} <b class="caret"></b> </a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> ${message(code:'menu.institutions')} <strong class="caret"></strong> </a>
                     <ul class="dropdown-menu" style="max-width:none;">
 
 
@@ -93,7 +93,7 @@
                                                action="instdash"
                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.dash')} </g:link></li>
                                    <li><g:link controller="myInstitutions"
-                                               action="todo"
+                                               action="changes"
                                                params="${[shortcode:org.shortcode]}">${message(code:'menu.institutions.todo')} </g:link></li>
                                    <li><g:link controller="myInstitutions"
                                                action="currentLicenses"
@@ -167,7 +167,7 @@
                 <ul class="nav">
                 <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
                    <li class="dropdown">
-                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">${message(code:'menu.datamanager')}<b class="caret"></b> </a>
+                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">${message(code:'menu.datamanager')}<strong class="caret"></strong> </a>
                      <ul class="dropdown-menu">
                        <li <%= ( ( 'dataManager'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link></li>
@@ -217,7 +217,7 @@
                 <ul class="nav">
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Admin Actions <b class="caret"></b> </a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Admin Actions <strong class="caret"></strong> </a>
                     <ul class="dropdown-menu">
                       <li <%= ( ( 'admin'== controllerName ) && ( 'manageAffiliationRequests'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="admin" action="manageAffiliationRequests">Manage Affiliation Requests</g:link></li>
@@ -366,7 +366,7 @@
                     <g:if env="development">
                         <ul class="nav"><!-- demo -->
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Demo <b class="caret"></b> </a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Demo <strong class="caret"></strong> </a>
                                 <ul class="dropdown-menu">
                                     <li><g:link controller="address" action="index">Address Controller</g:link></li>
                                     <li><g:link controller="cluster" action="index">Cluster Controller</g:link></li>
@@ -399,7 +399,7 @@
               <sec:ifLoggedIn>
                 <g:if test="${user}">
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">${user.displayName} <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">${user.displayName} <strong class="caret"></strong></a>
                     <ul class="dropdown-menu">
                       <li <%= ( ( 'profile'== controllerName ) && ( 'index'==actionName ) ) ? ' class="active"' : '' %>>
                          <g:link controller="profile" action="index">${message(code:'menu.user.profile')}</g:link></li>

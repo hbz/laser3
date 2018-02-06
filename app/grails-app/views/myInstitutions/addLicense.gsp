@@ -7,7 +7,7 @@
   <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
         <semui:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
         <semui:crumb message="license.copy" class="active" />
     </semui:breadcrumbs>
@@ -61,7 +61,7 @@
 
       <g:if test="${licenses?.size() > 0}">
         <div class="license-results">
-          <table class="ui celled striped table">
+          <table class="ui sortable celled la-table table">
             <thead>
               <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.name')}" />

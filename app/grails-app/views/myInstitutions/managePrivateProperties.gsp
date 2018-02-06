@@ -10,7 +10,7 @@
     <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
         <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
 
@@ -24,7 +24,7 @@
             <g:if test="${privatePropertyDefinitions}">
 
                 <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
-                    <table class="ui celled striped table">
+                    <table class="ui celled la-table table">
                         <thead>
                             <tr>
                                 <th>${message(code:'propertyDefinition.descr.label', default:'Description')}</th>

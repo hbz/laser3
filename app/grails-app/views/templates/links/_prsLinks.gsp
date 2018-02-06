@@ -1,9 +1,11 @@
 
-<table class="ui celled striped table">
+<table class="ui celled la-table table">
     <thead>
         <tr>
             <th>Person</th>
-            <th>Verantwortlichkeit</th>
+            <g:if test="${tmplShowFunction}">
+                <th>Verantwortlichkeit</th>
+            </g:if>
             <th>Organisation</th>
             <th>${message(code:'title.edit.actions.label')}</th>
         </tr>
@@ -15,14 +17,16 @@
                     <g:if test="${pr.prs.isPublic?.value == "No"}"><i class="address book outline icon"></i> </g:if>
                     <g:link controller="person" action="show" id="${pr.prs.id}">${pr.prs}</g:link>
                 </td>
-                <td>
-                    <g:if test="${pr.functionType}">
-                        ${pr.functionType.getI10n("value")}
-                    </g:if>
-                    <g:if test="${pr.responsibilityType}">
-                        ${pr.responsibilityType.getI10n("value")}
-                    </g:if>
-                </td>
+                <g:if test="${tmplShowFunction}">
+                    <td>
+                        <g:if test="${pr.functionType}">
+                            ${pr.functionType.getI10n("value")}
+                        </g:if>
+                        <g:if test="${pr.responsibilityType}">
+                            ${pr.responsibilityType.getI10n("value")}
+                        </g:if>
+                    </td>
+                </g:if>
                 <td>
                     <g:link controller="Organisations" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
                 </td>

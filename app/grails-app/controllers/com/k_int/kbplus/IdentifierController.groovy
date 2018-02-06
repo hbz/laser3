@@ -52,8 +52,6 @@ class IdentifierController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
-        redirect controller: 'home', action: 'index'
-        return // ----- deprecated
 
         def identifierInstance = Identifier.get(params.id)
         if (!identifierInstance) {

@@ -73,7 +73,7 @@
     </div>
 
     <div id="userError" hidden="">
-        <table class="ui celled striped table">
+        <table class="ui celled la-table table">
             <thead>
             <tr><th>Problem/Update</th>
                 <th>Info</th></tr>
@@ -1293,11 +1293,11 @@
         }
 
         function quickHelpInfo() {
-            userInfo("Help","<b>Sorting</b> via clickable title links of the following : Cost Item#, Invoice#, Order#, Subscription, Package, date, IE ,,, " +
-             "<b>Filter Search</b> via the 4 input fields : Invoice#, Order#, Subscription, and Package, selecting filter mode as ON and submitting the search. On finishing with your results reset via the 'reset' button,,," +
-              "<b>Pagination</b> (<i>Results Navigation</i>) via the clickable links, below the results table,,," +
-               "<b>Deleting Costs</b> via checking the boxes attached to each cost item row individually or all and submitting by clicking 'remove selected,,," +
-                "<b>Add New Costs</b> via creation screen, after results, shortcut button select 'Add New Cost'",20000)
+            userInfo("Help","<strong>Sorting</strong> via clickable title links of the following : Cost Item#, Invoice#, Order#, Subscription, Package, date, IE ,,, " +
+             "<strong>Filter Search</strong> via the 4 input fields : Invoice#, Order#, Subscription, and Package, selecting filter mode as ON and submitting the search. On finishing with your results reset via the 'reset' button,,," +
+              "<strong>Pagination</strong> (<i>Results Navigation</i>) via the clickable links, below the results table,,," +
+               "<strong>Deleting Costs</strong> via checking the boxes attached to each cost item row individually or all and submitting by clicking 'remove selected,,," +
+                "<strong>Add New Costs</strong> via creation screen, after results, shortcut button select 'Add New Cost'",20000)
         }
 
 

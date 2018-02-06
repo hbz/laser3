@@ -17,7 +17,7 @@ import="com.k_int.kbplus.RefdataCategory"
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
             <semui:crumb message="menu.institutions.addressbook" class="active"/>
         </semui:breadcrumbs>
 
@@ -39,11 +39,18 @@ import="com.k_int.kbplus.RefdataCategory"
 
             <g:if test="${visiblePersons}">
                 <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
-                <div class="ui divided list">
+
+                <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
+
+                <% /*
+                <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
+                <div class="ui relaxed list">
+
                     <g:each in="${visiblePersons}" var="p">
                         <g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
                     </g:each>
                 </div>
+                */ %>
             </g:if>
 
         </div>

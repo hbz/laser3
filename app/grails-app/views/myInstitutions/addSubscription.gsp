@@ -7,8 +7,8 @@
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-      <semui:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.name}" message="myinst.addSubscription.label" />
+      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+      <semui:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" message="myinst.addSubscription.label" />
     </semui:breadcrumbs>
 
     <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
@@ -41,7 +41,7 @@
               
               <div class="clearfix"></div>
               
-            <table class="ui celled striped table subscriptions-list">
+            <table class="ui sortable celled la-table table subscriptions-list">
                 <tr>
                   <th>${message(code:'default.select.label', default:'Select')}</th>
                   <g:sortableColumn params="${params}" property="p.name" title="${message(code:'default.name.label', default:'Name')}" />

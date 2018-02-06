@@ -45,13 +45,13 @@
 
 				<g:form class="ui form">
 					<g:hiddenField name="id" value="\${${propertyName}?.id}" />
-					<div class="ui segment form-actions">
+					<div class="ui form-actions">
 						<g:link class="ui button" action="edit" id="\${${propertyName}?.id}">
-							<i class="icon-pencil"></i>
+							<i class="write icon"></i>
 							<g:message code="default.button.edit.label" default="Edit" />
 						</g:link>
 						<button class="ui button negative" type="submit" name="_action_delete">
-							<i class="icon-trash icon-white"></i>
+							<i class="trash icon"></i>
 							<g:message code="default.button.delete.label" default="Delete" />
 						</button>
 					</div>

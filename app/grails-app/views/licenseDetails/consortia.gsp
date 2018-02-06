@@ -26,7 +26,7 @@
 <g:form action="generateSlaveLicenses" controller="licenseDetails" method="POST">
 <input type="hidden" name="baselicense" value="${license.id}"/>
 <input type="hidden" name="id" value="${id}"/>
-<table class="ui celled table">
+<table class="ui celled la-table table">
 <thead>
     <tr>
         <th>Organisation</th>

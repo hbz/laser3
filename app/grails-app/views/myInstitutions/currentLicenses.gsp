@@ -7,7 +7,7 @@
   <body>
 
   <semui:breadcrumbs>
-      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
       <semui:crumb message="license.current" class="active" />
 
       <semui:exportDropdown>
@@ -67,7 +67,7 @@
         <g:if test="${licenseCount && licenseCount>0}">
           <span>${message(code:'license.current.showing', args:[licenseCount])}</span>
         </g:if>
-          <table class="ui celled striped table">
+          <table class="ui sortable celled la-table table">
             <thead>
               <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
@@ -100,9 +100,12 @@
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
-                  <td>
-                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui positive button">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
-                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')" params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                  <td class="x">
+                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui icon basic positive button">
+                        <i class="copy icon"></i></g:link>
+                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
+                            params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="ui icon basic negative button">
+                        <i class="trash icon"></i></g:link>
                   </td>
                 </tr>
               </g:each>

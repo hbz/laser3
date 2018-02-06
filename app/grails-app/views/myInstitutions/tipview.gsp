@@ -8,7 +8,7 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
             <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
         </semui:breadcrumbs>
 
@@ -64,7 +64,7 @@
             </g:form>
         </semui:filter>
 
-        <table class="ui celled striped table">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'myinst.tipview.tip_tid', default:'Title in Package; Title Details')}</th>

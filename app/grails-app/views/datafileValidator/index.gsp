@@ -17,7 +17,7 @@
             </select>
           </g:form>
 
-           <table class="ui celled table">
+           <table class="ui celled la-table table">
             <g:each in="results" var="r">
               <tr>
                 <td>Result</td>

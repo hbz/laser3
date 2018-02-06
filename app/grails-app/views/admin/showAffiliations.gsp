@@ -16,7 +16,7 @@
 
     <div>
         <h2 class="ui header">Affiliations</h2>
-        <table class="ui celled striped table">
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>Username</th><th>Affiliations</th>

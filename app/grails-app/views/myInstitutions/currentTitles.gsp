@@ -12,7 +12,7 @@
   <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
         <semui:crumb message="myinst.currentTitles.label" class="active" />
 
         <semui:exportDropdown>
@@ -49,7 +49,7 @@
           <div class="fields">
               <div class="field eight wide">
 
-                <select name="filterSub" multiple="multiple" class="ui fluid dropdown"> <!-- onchange="this.form.submit()" -->
+                <select name="filterSub" multiple="multiple" class="ui fluid dropdown">
                   <option<%= (filterSub.contains("all")) ? ' selected="selected"' : '' %> value="all">${message(code:'myinst.currentTitles.all_subs', default:'All Subscriptions')}</option>
                   <g:each in="${subscriptions}" var="s">
                     <option<%= (filterSub.contains(s.id.toString())) ? ' selected="selected"' : '' %> value="${s.id}" title="${s.name}${s.consortia?' ('+s.consortia.name+')':''}">
@@ -138,7 +138,7 @@
         <div>
           <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="ui form">
           <g:set var="counter" value="${offset+1}" />
-          <table  class="ui celled striped table">
+          <table  class="ui sortable celled la-table table">
             <thead>
                 <tr>
                   <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
@@ -152,7 +152,7 @@
             <g:each in="${titles}" var="ti">
               <tr>
                 <td>
-                  <g:link controller="titleDetails" action="show" id="${ti.id}"><b>${ti.title}</b></g:link>
+                  <g:link controller="titleDetails" action="show" id="${ti.id}"><strong>${ti.title}</strong></g:link>
                   <br/> 
                   <g:link controller="public" action="journalLicenses" params="${['journal':'kb:'+ti.id,'org':institution.id]}">${message(code:'myinst.currentTitles.check_license_terms', default:'Check current license terms')}</g:link>
                 </td>
@@ -203,7 +203,7 @@
 	          </div>
 	          <div id="collapse-full-table" class="accordion-body collapse out">
 	            <div class="accordion-inner">
-	              <table  class="ui celled striped table">
+	              <table  class="ui sortable celled la-table table">
 	                <tr>
 	                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
 	                  <th>ISSN</th>

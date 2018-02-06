@@ -19,7 +19,7 @@
       <h1 class="ui header">${institution.name} Cost Items</h1>
       <g:form action="index" class="ui form" method="post" params="${[shortcode:params.shortcode]}">
         <input type="hidden" name="shortcode" value="${params.shortcode}"/>
-        <table class="ui celled striped table table table-tworow">
+        <table class="ui celled la-table table table table-tworow">
           <thead>
           <tr><td colspan="9">&nbsp;</td></tr>
           <tr>

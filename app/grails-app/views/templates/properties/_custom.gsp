@@ -1,6 +1,6 @@
 %{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
 %{-- on head of container page, and on window load execute  --}%
-%{-- initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
+%{-- mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License" %>
 
@@ -12,34 +12,17 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-<g:if test="${editable}">
-    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
-            name="cust_prop_add_value"
-            class="ui form"
-            update="${custom_props_div}"
-            onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
-        <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
-        <input type="hidden" name="ownerId" value="${ownobj.id}"/>
-        <input type="hidden" name="editable" value="${editable}"/>
-        <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-
-        <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
-
-        <input type="submit" value="${message(code:'default.add.label', args:[message(code:'default.property.label')], default:'Add Property')}" class="ui button"/>
-    </g:formRemote>
-</g:if>
-
-<table class="ui celled table">
+<table class="ui celled la-table table">
     <thead>
         <tr>
-            <th>${message(code:'license.property.table.property')}</th>
-            <th>${message(code:'license.property.table.value')}</th>
+            <th>${message(code:'property.table.property')}</th>
+            <th>${message(code:'property.table.value')}</th>
             <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
-                <th>${message(code:'license.property.table.paragraph')}</th>
+                <th>${message(code:'property.table.paragraph')}</th>
             </g:if>
-            <th>${message(code:'license.property.table.notes')}</th>
-            <th>${message(code:'license.property.table.delete')}</th>
+            <th>${message(code:'property.table.notes')}</th>
+            <th>${message(code:'property.table.delete')}</th>
         </tr>
     </thead>
     <tbody>
@@ -82,7 +65,7 @@
                             <g:remoteLink controller="ajax" action="deleteCustomProperty"
                                           before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                                           params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
-                                          onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                          onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                           update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
                         </g:if>
                     </td>
@@ -90,7 +73,39 @@
             </g:if>
         </g:each>
     </tbody>
+
+    <g:if test="${editable}">
+        <tfoot>
+            <tr>
+                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <td colspan="5">
+                </g:if>
+                <g:else>
+                    <td colspan="4">
+                </g:else>
+
+                    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
+                                  name="cust_prop_add_value"
+                                  class="ui form"
+                                  update="${custom_props_div}"
+                                  onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+
+                        <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
+                        <input type="hidden" name="ownerId" value="${ownobj.id}"/>
+                        <input type="hidden" name="editable" value="${editable}"/>
+                        <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
+
+                        <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
+
+                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
+                    </g:formRemote>
+                </td>
+            </tr>
+        </tfoot>
+    </g:if>
+
 </table>
+
 <!--
 <div id="cust_prop_add_modal" class="modal hide">
 
@@ -100,7 +115,7 @@ TODO !!! this modal dialog has not been refactored ..
                   id="create_cust_prop"
                   name="modal_create_cust_prop"
                   update="${custom_props_div}"
-                  onComplete="initPropertiesScript('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+                  onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
         <input type="hidden" name="editable" value="${editable}"/>

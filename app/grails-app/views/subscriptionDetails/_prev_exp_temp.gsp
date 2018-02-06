@@ -34,7 +34,7 @@
 
         <dd>
 
-            <table  class="ui celled striped table">
+            <table  class="ui sortable celled la-rowspan table">
                 <thead>
 
                 <tr>

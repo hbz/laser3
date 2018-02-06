@@ -56,13 +56,13 @@
 
           <p>Current Roles and Affiliations that will be copied to ${userKeep?.displayName}</p>
 
-          <b> User Roles </b>
+          <strong> User Roles </strong>
           <ul>
             <g:each in="${userRoles}" var="userRole">
               <li> ${userRole.authority}</li>
             </g:each>
           </ul>
-          <b> Affiliations </b>
+          <strong> Affiliations </strong>
 
           <div style="height:300px;line-height:3em;overflow:auto;padding:5px;">
            <ul>

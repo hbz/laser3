@@ -68,3 +68,41 @@
     top: 15%;
     z-index: 9999;
 }
+
+/* new buttons */
+.ui table td.x {
+    text-align: right;
+}
+.ui.button > i.icon {
+    margin-right: 0 !important;
+    opacity: 1 !important;
+}
+
+/* select 2 */
+
+.ui .select2-container {
+    vertical-align: top;
+}
+.ui .select2-container .select2-choice {
+    height: 36px;
+}
+.ui .select2-container .select2-choice > .select2-chosen {
+    line-height: 36px;
+}
+
+/* identifier meta box */
+
+.metaboxToggle {
+    position: relative;
+}
+.metaboxToggle > button {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+/* property forms in tables */
+
+.ui .table tfoot form {
+    margin: 0;
+}

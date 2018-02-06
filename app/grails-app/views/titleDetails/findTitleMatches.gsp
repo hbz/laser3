@@ -22,7 +22,7 @@
 
             <g:if test="${titleMatches != null}">
               <g:if test="${titleMatches.size()>0}">
-                <table class="ui celled table">
+                <table class="ui celled la-table table">
                   <thead>
                     <tr>
                       <th>${message(code:'title.label', default:'Title')}</th>

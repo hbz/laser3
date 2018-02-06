@@ -60,7 +60,7 @@
                     <g:render template="/templates/cpa/address" model="${[address: address]}"></g:render>
                 </div>
             </g:each>
-			</div>
+		</div>
 
 	</g:if>
 </div>

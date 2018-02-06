@@ -12,6 +12,7 @@ class OrganisationsController {
     def permissionHelperService
     def contextService
     def addressbookService
+    def filterService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -64,55 +65,40 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         params.max = params.max ?: result.user?.getDefaultPageSize()
 
-      def results = null;
-      def count = null;
-      if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) &&
-           ( params.orgRole != null ) && ( params.orgRole.length() > 0 ) ) {
-        def qry = "from Org o where lower(o.name) like ? and exists ( from o.links r where r.roleType.id = ? )"
-        results = Org.findAll(qry, ["%${params.orgNameContains.toLowerCase()}%", Long.parseLong(params.orgRole)],params);
-        count = Org.executeQuery("select count(o) ${qry}",["%${params.orgNameContains.toLowerCase()}%", Long.parseLong(params.orgRole)])[0]
-      }
-      else if ( ( params.orgNameContains != null ) && ( params.orgNameContains.length() > 0 ) ) {
-        def qry = "from Org o where lower(o.name) like ?"
-        results = Org.findAll(qry, ["%${params.orgNameContains.toLowerCase()}%"], params);
-        count = Org.executeQuery("select count (o) ${qry}",["%${params.orgNameContains.toLowerCase()}%"])[0]
-      }
-      else if ( ( params.orgRole != null ) && ( params.orgRole.length() > 0 ) ) {
-        def qry = "from Org o where exists ( select r from o.links r where r.roleType.id = ? )"
-        results = Org.findAll(qry, [Long.parseLong(params.orgRole)],params);
-        count = Org.executeQuery("select count(o) ${qry}", [Long.parseLong(params.orgRole)])[0]
-      }
-      else { 
-        results = Org.list(params)
-        count = Org.count()
-      }
+        def fsq = filterService.getOrgQuery(params)
 
-      result.orgInstanceList = results
-      result.orgInstanceTotal = count
+        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
+        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
 
-      result
+        result
     }
 
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-    switch (request.method) {
-    case 'GET':
-        if (!params.name && !params.sector) {
-            params.sector = RefdataValue.findByValue('Higher Education')
-        }
-          [orgInstance: new Org(params)]
-      break
-    case 'POST':
-          def orgInstance = new Org(params)
-          if (!orgInstance.save(flush: true)) {
-              render view: 'create', model: [orgInstance: orgInstance]
-              return
-          }
+        switch (request.method) {
+            case 'GET':
+                if (!params.name && !params.sector) {
+                    params.sector = RefdataValue.findByValue('Higher Education')
+                }
+                if (!params.name && !params.orgType) {
+                    params.orgType = RefdataValue.findByValue('Institution')
+                }
+                [orgInstance: new Org(params)]
+                break
+            case 'POST':
+                def orgInstance = new Org(params)
 
-      flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
-          redirect action: 'show', id: orgInstance.id
-      break
-    }
+                if (params.name) {
+                    if (orgInstance.save(flush: true)) {
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+                        redirect action: 'show', id: orgInstance.id
+                        return
+                    }
+                }
+
+                render view: 'create', model: [orgInstance: orgInstance]
+                break
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

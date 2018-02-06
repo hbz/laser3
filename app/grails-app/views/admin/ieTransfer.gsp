@@ -28,7 +28,7 @@
  			<g:if test="${sourceTIPPObj && targetTIPPObj}">
  			<div>
 
-				  <table class="ui celled table">
+				  <table class="ui celled la-table table">
 			      <thead>
 			        <th></th>
 			        <th>(${params.sourceTIPP}) ${sourceTIPPObj.title.title}</th>

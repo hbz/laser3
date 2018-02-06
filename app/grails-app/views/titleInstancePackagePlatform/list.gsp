@@ -14,7 +14,7 @@
 
         <semui:messages data="${flash}" />
         
-        <table class="ui celled striped table">
+        <table class="ui sortable celled la-table table">
           <thead>
               <g:sortableColumn property="title.title" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Title')}" />
               <g:sortableColumn property="platform.name" title="${message(code: 'titleInstancePackagePlatform.title.label', default: 'Platform')}" />

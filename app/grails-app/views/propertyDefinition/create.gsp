@@ -69,7 +69,7 @@
 
                   </dd>
                   <button type="submit" class="ui positive button">
-                    <i class="icon-ok icon-white"></i>
+                    <i class="checkmark icon"></i>
                     Create Property
                 </button>
               </dl>

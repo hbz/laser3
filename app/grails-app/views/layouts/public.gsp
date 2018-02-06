@@ -23,56 +23,28 @@
 
     <g:layoutHead/>
     <r:layoutResources/>
-   
+
+    <tmpl:/layouts/favicon />
+
   </head>
 
-  <body class="public">
+    <body class="public">
 
- <script>
-    dataLayer = [{
-     'Institution': '${params.shortcode}',
-     'UserDefaultOrg': '${user?.defaultDash?.shortcode}',
-     'UserRole': 'ROLE_USER'
-    }];
-  </script>
+    <script>
+        dataLayer = [{
+            'Institution': '${params.shortcode}',
+            'UserDefaultOrg': '${user?.defaultDash?.shortcode}',
+            'UserRole': 'ROLE_USER'
+        }];
+    </script>
 
-    <g:layoutBody/>
+    <g:layoutBody/><!-- body here -->
     
     <div id="Footer">
-      <!--<div class="footer-links container">
-          <div class="row">
-              <div class="pull-right">
-              </div>
-          </div>
-      </div>-->
+         <div class="clearfix"></div>
+    </div>
 
-      <div class="clearfix"></div>
-
-      <div class="navbar navbar-footer">
-          <div class="navbar-inner">
-              <div>
-                  <div>
-                      <ul class="footer-sublinks nav">
-<!--                          <li><a href="${createLink(uri: '/terms-and-conditions')}">${message(code:'default.termsAndCond.label', default:'Terms & Conditions')}</a></li>
-                          <li><a href="${createLink(uri: '/privacy-policy')}">${message(code:'default.privacy.label', default:'Privacy Policy')}</a></li>
-                          <li><a href="${createLink(uri: '/freedom-of-information-policy')}">${message(code:'default.foi.label', default:'Freedom of Information Policy')}</a></li>-->
-                      </ul>
-                      <ul class="footer-sublinks nav pull-right">
-                          <li>
-                              <a href="https://github.com/hbz/laser">
-                                  Version ${grailsApplication.metadata['app.version']}
-                                  <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
-                                  // ${grailsApplication.metadata['app.buildDate']}
-                              </a>
-                          </li>
-                      </ul>
-                  </div>
-              </div>
-          </div>
-      </div>
-
-  </div>
     <r:layoutResources/>
-  </body>
 
+    </body>
 </html>

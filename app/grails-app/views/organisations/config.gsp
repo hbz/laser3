@@ -12,7 +12,10 @@
   <body>
 
 
-    <h1 class="ui header">${orgInstance.name}</h1>
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${orgInstance.name}
+    </h1>
 
     <g:render template="nav" contextPath="." />
 
@@ -25,7 +28,7 @@
         </div>
         <r:script language="JavaScript">
         $(document).ready(function(){
-            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
         });
         </r:script>
 

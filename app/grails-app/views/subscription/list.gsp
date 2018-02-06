@@ -14,7 +14,7 @@
 
 			<semui:messages data="${flash}" />
 				
-				<table class="ui celled striped table">
+				<table class="ui sortable celled la-table table">
 					<thead>
 						<tr>
   						        <th class="header">Subscription Name</th>

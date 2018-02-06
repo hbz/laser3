@@ -8,11 +8,11 @@
   <body>
 
   <semui:breadcrumbs>
-    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
     <semui:crumb message="default.changeLog.label" class="active" />
 
     <li class="dropdown pull-right">
-      <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.exports.label', default:'Exports')}<b class="caret"></b></a>
+      <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.exports.label', default:'Exports')}<strong class="caret"></strong></a>
       <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
         <li><g:link controller="myInstitutions" action="changeLog" params="${params+[format:'csv']}">CSV Export</g:link></li>
       </ul>
@@ -34,7 +34,7 @@
         </g:form>
       </div>
 
-      <table class="ui celled striped table">
+      <table class="ui celled la-table table">
         <g:each in="${changes}" var="chg">
           <tr>
             <td><g:formatDate format="yyyy-MM-dd" date="${chg.ts}"/>

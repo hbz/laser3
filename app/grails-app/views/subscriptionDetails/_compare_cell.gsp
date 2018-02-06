@@ -1,4 +1,4 @@
- <table class="ui celled table">
+ <table class="ui celled la-table table">
 	<thead>
 		<th>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start')}</th>
 		<th>${message(code:'subscription.details.coverageStartDate', default:'Coverage End')}</th>

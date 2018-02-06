@@ -159,7 +159,42 @@ class Person extends BaseDomainComponent {
         }
         resultPerson      
     }
-    
+
+
+    static def getByOrgAndFunction(Org org, String func) {
+        def result = Person.executeQuery(
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.functionType.value = ?",
+                [org, func]
+        )
+        result
+    }
+
+    static def getByOrgAndObjectAndResponsibility(Org org, def obj, String resp) {
+        // TODO implement: obj
+        def result = Person.executeQuery(
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.responsibilityType.value = ?",
+                [org, resp]
+        )
+        result
+    }
+
+    static def getByOrgAndFunctionFromAddressbook(Org org, String func, Org tenant) {
+        def result = Person.executeQuery(
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
+                [org, func, tenant]
+        )
+        result
+    }
+
+    static def getByOrgAndObjectAndResponsibilityFromAddressbook(Org org, def obj, String resp, Org tenant) {
+        // TODO implement: obj
+        def result = Person.executeQuery(
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.responsibilityType.value = ? and p.tenant = ?",
+                [org, resp, tenant]
+        )
+        result
+    }
+
     /**
      *
      * @param obj

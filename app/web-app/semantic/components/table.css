@@ -17,16 +17,16 @@
 /* Prototype */
 .ui.table {
   width: 100%;
-  background: #FFFFFF;
+  background: transparent;
   margin: 1em 0em;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: none;
   -webkit-box-shadow: none;
           box-shadow: none;
   border-radius: 0.28571429rem;
   text-align: left;
   color: rgba(0, 0, 0, 0.87);
-  border-collapse: separate;
-  border-spacing: 0px;
+  border-collapse: collapse;
+  border-spacing: 0 0.5rem;
 }
 .ui.table:first-child {
   margin-top: 0em;
@@ -55,15 +55,15 @@
 }
 .ui.table thead th {
   cursor: auto;
-  background: #F9FAFB;
+  background: none;
   text-align: inherit;
-  color: rgba(0, 0, 0, 0.87);
+  color: #767676;
   padding: 0.92857143em 0.78571429em;
   vertical-align: inherit;
   font-style: none;
   font-weight: bold;
   text-transform: none;
-  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+  border-bottom: none;
   border-left: none;
 }
 .ui.table thead tr > th:first-child {
@@ -230,8 +230,8 @@
 }
 .ui.structured.celled.table tr th,
 .ui.structured.celled.table tr td {
-  border-left: 1px solid rgba(34, 36, 38, 0.1);
-  border-right: 1px solid rgba(34, 36, 38, 0.1);
+  border-left: 1px dotted rgba(34, 36, 38, 0.1);
+  border-right: 1px dotted rgba(34, 36, 38, 0.1);
 }
 
 /*--------------
@@ -647,10 +647,10 @@
 
 /* Orange */
 .ui.orange.table {
-  border-top: 0.2em solid #F2711C;
+  border-top: 0.2em solid #fa820a;
 }
 .ui.inverted.orange.table {
-  background-color: #F2711C !important;
+  background-color: #fa820a !important;
   color: #FFFFFF !important;
 }
 
@@ -692,10 +692,10 @@
 
 /* Blue */
 .ui.blue.table {
-  border-top: 0.2em solid #2185D0;
+  border-top: 0.2em solid #2d6697;
 }
 .ui.inverted.blue.table {
-  background-color: #2185D0 !important;
+  background-color: #2d6697 !important;
   color: #FFFFFF !important;
 }
 
@@ -1056,7 +1056,7 @@
 
 .ui.celled.table tr th,
 .ui.celled.table tr td {
-  border-left: 1px solid rgba(34, 36, 38, 0.1);
+  border-left: 1px dotted rgba(34, 36, 38, 0.1);
 }
 .ui.celled.table tr th:first-child,
 .ui.celled.table tr td:first-child {
@@ -1126,8 +1126,84 @@
   font-size: 1.1em;
 }
 
+/*--------------
+    Sortable
+---------------*/
 
-/*******************************
-         Site Overrides
-*******************************/
 
+/* change classnames bec. of existing sort function in LAS:eR */
+.ui.sortable.table thead th.sortable:after {
+  content: '\f0dc';
+  color: #767676;
+  display: inline;
+}
+.ui.sortable.table thead th.asc:after {
+  content: '\f0d8';
+  color: #1B1C1D;
+}
+.ui.sortable.table thead th.desc:after {
+  content: '\f0d7';
+  color: #1B1C1D;
+}
+.ui.sortable.table thead th {
+  cursor: default;
+  color: #767676;
+}
+
+/* Hover */
+.ui.sortable.table thead th:hover {
+  background: transparent;
+  color: #767676;
+}
+.ui.sortable.table thead th.sortable:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.ui .table tr td {
+  background-color: white;
+  padding: 20px 0;
+}
+.ui .table tr td,
+.ui .table tr th {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.ui .table tr th {
+  color: gray;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+.ui .table tr th a {
+  display: inline-block;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  color: gray;
+}
+
+/*--------------
+     la-table
+---------------*/
+
+.ui.la-table.table {
+  border-collapse: separate;
+  background-color: transparent;
+}
+.ui.la-table.table tr th,
+.ui.la-table.table tr td {
+  border-top: none;
+}
+
+/*--------------
+     la-rowspan
+---------------*/
+
+.ui.la-rowspan.table {
+  border-collapse: separate;
+  background-color: transparent;
+}
+.ui.la-rowspan.table tr th {
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
+}
+.ui.la-rowspan.table tr td,
+.ui.la-rowspan.table tr:first-child th {
+  border-top: none;
+}

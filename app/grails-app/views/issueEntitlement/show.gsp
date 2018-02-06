@@ -98,7 +98,7 @@
             
             <h6 class="ui header"><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
 
-            <table class="ui celled striped table">
+            <table class="ui celled la-table table">
                 <thead>
                     <tr>
                         <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
@@ -136,7 +136,7 @@
             
             <h6 class="ui header"><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
 
-            <table class="ui celled striped table">
+            <table class="ui celled la-table table">
                 <thead>
                     <tr>
                         <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
@@ -176,7 +176,7 @@
                 <a href="${jusplink}">[JUSP]</a>
               </span>
               <h6 class="ui header">JUSP Usage Statistics</h6>
-              <table class="ui celled striped table">
+              <table class="ui celled la-table table">
                 <tr>
                   <th>Reporting Period</th>
                   <g:each in="${x_axis_labels}" var="l">
@@ -226,7 +226,7 @@
                     </g:form>
                 </semui:filter>
 
-                <table class="ui celled striped table">
+                <table class="ui celled la-table table">
                     <thead>
                         <tr>
                             <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>

@@ -47,23 +47,77 @@
 
     <g:render template="nav" />
 
-    <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-        <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
-    </sec:ifAnyGranted>
+    <semui:meta>
+        <div class="inline-lists">
 
-    <g:if test="${forum_url != null}">
-      <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-    </g:if>
+            <dl>
+                <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
+                <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
+            </dl>
+
+            <dl>
+                <dt>${message(code: 'package.show.persistent_id')}</dt>
+                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>
+            </dl>
+
+            <dl>
+                <dt>${message(code: 'package.show.other_ids')}</dt>
+                <dd>
+                    <table class="ui celled la-table table">
+                        <thead>
+                        <tr>
+                            <th>${message(code: 'component.id.label')}</th>
+                            <th>${message(code: 'identifier.namespace.label')}</th>
+                            <th>${message(code: 'identifier.label')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${packageInstance.ids}" var="io">
+                            <tr>
+                                <td>${io.id}</td>
+                                <td>${io.identifier.ns.ns}</td>
+                                <g:if test="${io.identifier.value =~ /^http/}">
+                                    <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
+                                </g:if>
+                                <g:else>
+                                    <td>${io.identifier.value}</td>
+                                </g:else>
+                            </tr>
+                        </g:each>
+
+                        </tbody>
+                    </table>
+
+                    <g:if test="${editable}">
+
+                        <semui:formAddIdentifier owner="${packageInstance}">
+                        </semui:formAddIdentifier>
+
+                    </g:if>
+
+                </dd>
+            </dl>
+
+  </div>
+    </semui:meta>
 
  <semui:messages data="${flash}" />
 
  <semui:errors bean="${packageInstance}" />
 
     <div class="ui grid">
+
         <div class="twelve wide column">
-            <h4 class="ui header">
-              ${message(code: 'package.show.pkg_information')}
-            </h4>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
+            </sec:ifAnyGranted>
+
+            <g:if test="${forum_url != null}">
+                <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
+            </g:if>
+        </div>
+
+        <div class="twelve wide column">
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">
 
@@ -71,55 +125,6 @@
                 <dt>${message(code: 'package.show.pkg_name')}</dt>
                 <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
               </dl>
-              
-              <dl>
-                <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
-              </dl>
-
-
-              <dl>
-                <dt>${message(code: 'package.show.other_ids')}</dt>
-                <dd>
-                  <table class="ui celled table">
-                    <thead>
-                      <tr>
-                        <th>${message(code: 'component.id.label')}</th>
-                        <th>${message(code: 'identifier.namespace.label')}</th>
-                        <th>${message(code: 'identifier.label')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <g:each in="${packageInstance.ids}" var="io">
-                          <tr>
-                            <td>${io.id}</td>
-                            <td>${io.identifier.ns.ns}</td>
-                            <g:if test="${io.identifier.value =~ /^http/}">
-                              <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
-                            </g:if>
-                            <g:else>
-                              <td>${io.identifier.value}</td>
-                            </g:else>
-                          </tr>
-                      </g:each>
-                     
-                    </tbody>
-                  </table>
-
-                  <g:if test="${editable}">
-
-                      <semui:formAddIdentifier owner="${packageInstance}">
-                      </semui:formAddIdentifier>
-
-                  </g:if>
-
-                </dd>
-              </dl>
-
-            <dl>
-                <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
-                <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
-            </dl>
 
               <dl>
                 <dt>${message(code: 'license.is_public')}</dt>
@@ -158,12 +163,16 @@
 
 
 
-              <dl>
-                <dt>${message(code: 'package.show.orglink')}</dt>
-                <dd><g:render template="orgLinks" 
+                <% /*
+                <dl>
+                    <dt>${message(code: 'package.show.orglink')}</dt>
+                    <dd><g:render template="orgLinks"
                             contextPath="../templates"
                             model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',editmode:editable]}" /></dd>
-              </dl>
+                </dl>
+                */ %>
+
+                <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:packageInstance?.orgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable]}" />
 
              <dl>
                 <dt>${message(code: 'package.list_status')}</dt>
@@ -296,7 +305,7 @@
             <g:hiddenField name="order" value="${params.order}"/>
             <g:hiddenField name="offset" value="${params.offset}"/>
             <g:hiddenField name="max" value="${params.max}"/>
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
             <thead>
             <tr class="no-background">
 
@@ -311,7 +320,7 @@
                     <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
                   </select>
                   <br/>
-                  <table class="ui celled table">
+                  <table class="ui celled la-table table">
                     <tr>
                         <td>
                             <semui:datepicker label="subscription.details.coverageStartDate" name="bulk_start_date" value="${params.bulk_start_date}" />
@@ -480,7 +489,7 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td>
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
-                   <b>${t.title.title}</b>
+                   <strong>${t.title.title}</strong>
                    <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <ul>

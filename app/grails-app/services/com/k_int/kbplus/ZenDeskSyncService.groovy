@@ -24,7 +24,7 @@ class ZenDeskSyncService {
 
   def doSync() {
     if ( ! Holders.config.ZenDeskBaseURL ||
-         ! Holders.config.kbplusSystemId   )
+         ! Holders.config.laserSystemId   )
       return;
 
     // Select all public packages where there is currently no forumId
@@ -54,7 +54,7 @@ class ZenDeskSyncService {
       def cp_category_id = null
       if ( cp != null ) {
         if ( cp.categoryId == null ) {
-          cp.categoryId = lookupOrCreateZenDeskCategory(http,"${cp.name} ( ${Holders.config.kbplusSystemId} )", current_categories);
+          cp.categoryId = lookupOrCreateZenDeskCategory(http,"${cp.name} ( ${Holders.config.laserSystemId} )", current_categories);
           cp.save(flush:true);
         }
         pkg.forumId = createForum(http,pkg,cp.categoryId)
@@ -64,7 +64,7 @@ class ZenDeskSyncService {
     }
 
 
-    def systemObject = SystemObject.findBySysId(Holders.config.kbplusSystemId)
+    def systemObject = SystemObject.findBySysId(Holders.config.laserSystemId)
     if ( systemObject.announcementsForumId == null ) {
       systemObject.announcementsForumId = createSysForum(http);
       systemObject.save();
@@ -93,7 +93,7 @@ class ZenDeskSyncService {
                 def system_id = pkg_info[0][3]
     
                 // Only hook up forums if they correspond to our local system identifier
-                if ( system_id == Holders.config.kbplusSystemId ) {
+                if ( system_id == Holders.config.laserSystemId ) {
                   // Lookup package with package_id
                   try {
                     Package.withNewTransaction {
@@ -112,11 +112,11 @@ class ZenDeskSyncService {
                   }
                 }
                 else {
-                  log.error("No system id set in config. Holders.config.kbplusSystemId");
+                  log.error("No system id set in config. Holders.config.laserSystemId");
                 }
               }
               else if ( f.name == 'Announcements' ) {
-                def systemObject = SystemObject.findBySysId(Holders.config.kbplusSystemId)
+                def systemObject = SystemObject.findBySysId(Holders.config.laserSystemId)
                 if ( systemObject.announcementsForumId == null ) {
                   systemObject.announcementsForumId = f.id
                   systemObject.save();
@@ -147,7 +147,7 @@ class ZenDeskSyncService {
     //   -H "Content-Type: application/json" -X POST \
     //   -d '{"forum": {"name": "My Forum", "forum_type": "articles", "access": "logged-in users", "category_id":"xx"  }}' \
     //   -v -u {email_address}:{password}
-    def forum_name = pkg.name+" (Package ${pkg.id} from ${Holders.config.kbplusSystemId})".toString()
+    def forum_name = pkg.name+" (Package ${pkg.id} from ${Holders.config.laserSystemId})".toString()
     def forum_desc = 'Questions and discussions relating to package :'+pkg.name.toString()
 
     log.debug("Create forum: ${forum_name}, ${forum_desc}, ${categoryId}");
@@ -159,7 +159,7 @@ class ZenDeskSyncService {
                                     'access': 'everybody', // 'logged-in users'
                                     'category_id' : "${categoryId}".toString(),
                                     'description' : forum_desc//,
-                                    // 'tags' : [ 'kbpluspkg' , "pkg:${pkg.id}".toString(), Holders.config.kbplusSystemId.toString()  ]  
+                                    // 'tags' : [ 'kbpluspkg' , "pkg:${pkg.id}".toString(), Holders.config.laserSystemId.toString()  ]
                                   ] 
                       ]) { resp, json ->
       log.debug("Create forum Result: ${resp.status}, ${json}");
@@ -177,7 +177,7 @@ class ZenDeskSyncService {
                                     'forum_type': 'articles', // 'questions', 
                                     'access': 'everybody', // 'logged-in users'
                                     'description' : 'Announcements' //,
-                                    // 'tags' : [ 'kbpluspkg' , "pkg:${pkg.id}".toString(), Holders.config.kbplusSystemId.toString()  ]  
+                                    // 'tags' : [ 'kbpluspkg' , "pkg:${pkg.id}".toString(), Holders.config.laserSystemId.toString()  ]
                                   ]
                       ]) { resp, json ->
       log.debug("Create forum Result: ${resp.status}, ${json}");
