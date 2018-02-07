@@ -222,13 +222,10 @@
         </dd>
       </dl>
 
-
-        <g:if test="${entitlements}" >
-          <semui:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
-        </g:if>
-
     </div>
-
+  <g:if test="${entitlements}" >
+      <semui:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
+  </g:if>
 
 
     <div id="magicArea">
