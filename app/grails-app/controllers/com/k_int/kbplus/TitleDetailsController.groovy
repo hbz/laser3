@@ -69,31 +69,37 @@ class TitleDetailsController {
             result.user = springSecurityService.getCurrentUser()
             params.max = result.user.defaultPageSize
 
-
-            if(params.search.equals("yes")){
+            if (params.search.equals("yes")) {
                 //when searching make sure results start from first page
                 params.offset = 0
                 params.remove("search")
             }
 
             def old_q = params.q
-            if(!params.q ){
-                params.remove('q');
-                if(!params.sort){
-                    params.sort = "sortTitle"
-                }
-            }
+            def old_sort = params.sort
 
-            if(params.filter) params.q ="${params.filter}:${params.q}";
+            params.q = params.q ?: "*"
+            params.sort = params.sort ?: "sortTitle"
+
+            if (params.filter) {
+                params.q = "${params.filter}:${params.q}"
+            }
 
             result =  ESSearchService.search(params)
             //Double-Quoted search strings wont display without this
             params.q = old_q?.replace("\"","&quot;")
+
+            if(! old_q ) {
+                params.remove('q')
+            }
+            if(! old_sort ) {
+                params.remove('sort')
+            }
         }
 
-        result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-        log.debug(result);
+        log.debug(result)
 
         result
     }
