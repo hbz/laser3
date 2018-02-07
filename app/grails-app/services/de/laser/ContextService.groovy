@@ -10,13 +10,13 @@ class ContextService {
 
     def setOrg(Org context) {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
-        session.setAttribute('contextOrg', GrailsHibernateUtil.unwrapIfProxy(context))
+        session.setAttribute('contextOrg', context)
     }
 
     def getOrg() {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
         def context = session.getAttribute('contextOrg') ?: Org.findByShortcode(getUser()?.defaultDash?.shortcode)
-        context
+        context?.refresh()
     }
 
     def getUser() {
