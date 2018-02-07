@@ -1,7 +1,8 @@
 0.3.1
 
 - overworked inplace edit date fields
-- bugfix: unaccessible subscription details form
+- bugfix: unaccessible subscription form
+- hotfix: title list query
 
 0.3
 

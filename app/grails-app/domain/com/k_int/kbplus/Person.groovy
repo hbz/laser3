@@ -69,7 +69,7 @@ class Person extends BaseDomainComponent {
     
     @Override
     String toString() {
-        last_name + ', ' + first_name + ' ' + middle_name + ' (' + id + ')'
+        (last_name ? last_name + ', ':' ') + (first_name ?: '') + ' ' + (middle_name ?: '') + ' (' + id + ')'
     }
 
     static def lookup(firstName, lastName, tenant, isPublic, org, functionType) {
