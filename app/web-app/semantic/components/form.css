@@ -1067,8 +1067,17 @@
   font-size: 1.71428571rem;
 }
 
-
-/*******************************
-         Theme Overrides
-*******************************/
-
+/* Field */
+.ui.form .inline.fields {
+  margin: 0;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.ui.form .inline.fields.la-filter-inline {
+  padding-top: 0.3rem;
+}
+.ui.form .fields .field.la-filter-search {
+  text-align: right;
+  margin-top: 1.2rem;
+}
