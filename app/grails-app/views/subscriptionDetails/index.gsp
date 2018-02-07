@@ -91,7 +91,7 @@
               <g:hiddenField name="order" value="${params.order}"/>
               <g:hiddenField name="offset" value="${params.offset}"/>
               <g:hiddenField name="max" value="${params.max}"/>
-          <table  class="ui sortable table">
+          <table  class="ui sortable celled la-rowspan table">
             <thead>
 
                 <tr>
