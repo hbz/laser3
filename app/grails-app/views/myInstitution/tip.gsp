@@ -11,11 +11,11 @@
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link>
           <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}">${institution.name} - ${message(code:'menu.institutions.dash', default:'Dashboard')}</g:link>
+        <li> <g:link controller="myInstitution" action="dashboard">${institution.name} - ${message(code:'menu.institutions.dash', default:'Dashboard')}</g:link>
           <span class="divider">/</span>  </li>
-        <li> <g:link controller="myInstitutions" action="tipview" params="${[shortcode:params.shortcode]}"> ${message(code:'title.plural', default:'Titles')} </g:link>
+        <li> <g:link controller="myInstitution" action="tipview"> ${message(code:'title.plural', default:'Titles')} </g:link>
           <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="tip" params="${[shortcode:params.shortcode, id:params.id]}"> ${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name} </g:link>
+        <li> <g:link controller="myInstitution" action="tip"> ${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name} </g:link>
            </li>
 
       </ul>
@@ -66,7 +66,7 @@
           </table>
 
           <h4 class="ui header">${message(code:'myinst.tip.addUsage', default:'Add usage information')}</h4>
-          <g:form action="tip" params="${[shortcode:params.shortcode]}" id="${params.id}">
+          <g:form action="tip" id="${params.id}">
             ${message(code:'myinst.tip.usageDate', default:'Usage Date')} : <input type="date" name="usageDate"/><br/>
             ${message(code:'myinst.tip.usageRecord', default:'Usage Record')} : <input type="text" name="usageValue"/><br/>
             ${message(code:'myinst.tip.usageType', default:'Usage Type')} :

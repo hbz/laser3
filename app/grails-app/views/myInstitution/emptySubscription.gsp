@@ -1,3 +1,4 @@
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <%@ page import="com.k_int.kbplus.Combo" %>
 <!doctype html>
 <html>
@@ -8,8 +9,8 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
-            <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" message="myinst.currentSubscriptions.label" />
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
             <semui:crumb message="myinst.addSubscription.label" class="active" />
         </semui:breadcrumbs>
 
@@ -19,7 +20,7 @@
 
         <semui:messages data="${flash}"/>
 
-        <g:form action="processEmptySubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="post" class="ui form">
+        <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form">
 
             <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>
 
@@ -61,7 +62,7 @@
 
             <div class="cons-options">
                 <semui:filter>
-                    <g:formRemote name="x" url="[controller:'MyInstitutions', action:'ajaxEmptySubscription', params:[shortcode:params.shortcode]]" update="orgListTable" class="ui form">
+                    <g:formRemote name="x" url="[controller:'MyInstitution', action:'ajaxEmptySubscription', params:[shortcode:contextService.getOrg()?.shortcode]]" update="orgListTable" class="ui form">
                         <g:render template="/templates/filter/orgFilter" />
                     </g:formRemote>
                 </semui:filter>

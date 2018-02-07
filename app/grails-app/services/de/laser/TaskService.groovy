@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.MyInstitutionsController
+import com.k_int.kbplus.MyInstitutionController
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.RefdataCategory
@@ -130,10 +130,10 @@ class TaskService {
         def validResponsibleOrgs    = [contextOrg]
         def validResponsibleUsers   = User.executeQuery(responsibleUsersQuery, [contextOrg])
 
-        result.validLicenses        = License.executeQuery('select l ' + MyInstitutionsController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
+        result.validLicenses        = License.executeQuery('select l ' + MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
         result.validOrgs            = Org.list()
         result.validPackages        = Package.list() // TODO
-        result.validSubscriptions   = Subscription.executeQuery("select s " + MyInstitutionsController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
+        result.validSubscriptions   = Subscription.executeQuery("select s " + MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
 
         result.taskCreator          = springSecurityService.getCurrentUser()
         result.validResponsibleOrgs = validResponsibleOrgs

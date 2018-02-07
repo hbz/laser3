@@ -7,8 +7,8 @@
   <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
-        <semui:crumb controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+        <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
         <semui:crumb message="license.copy" class="active" />
     </semui:breadcrumbs>
 
@@ -18,10 +18,10 @@
 
   <!--
     <semui:subNav actionName="${actionName}">
-      <semui:subNavItem controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
-      <semui:subNavItem controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}" message="license.copy" />
+      <semui:subNavItem controller="myInstitution" action="currentLicenses" message="license.current" />
+      <semui:subNavItem controller="myInstitution" action="addLicense" message="license.copy" />
       <g:if test="${is_inst_admin}">
-        <semui:subNavItem controller="myInstitutions" action="cleanLicense" params="${[shortcode:params.shortcode]}" message="license.add.blank" />
+        <semui:subNavItem controller="myInstitution" action="cleanLicense" message="license.add.blank" />
       </g:if>
     </semui:subNav>-->
 
@@ -95,7 +95,7 @@
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.startDate}"/></td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
-                  <td><g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui positive button">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
+                  <td><g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui positive button">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
                 </tr>
               </g:each>
             </tbody>
@@ -103,7 +103,7 @@
 
 
             <g:if test="${licenses}" >
-              <semui:paginate  action="addLicense" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${numLicenses}" />
+              <semui:paginate  action="addLicense" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${numLicenses}" />
             </g:if>
 
         </div>

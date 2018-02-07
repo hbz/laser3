@@ -279,7 +279,7 @@ class LicenseDetailsController {
         if(p.key.startsWith("_create.")){
          def orgID = p.key.substring(8)
          def orgaisation = Org.get(orgID)
-          def attrMap = [shortcode:orgaisation.shortcode,baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:slaved]
+          def attrMap = [baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:slaved]
           log.debug("Create slave license for ${orgaisation.name}")
           attrMap.copyStartEnd = true
           institutionsService.copyLicense(attrMap);
@@ -466,7 +466,7 @@ class LicenseDetailsController {
       }
     }
 
-    redirect controller: 'licenseDetails', action:params.redirectAction, params:[shortcode:params.shortcode], id:params.instanceId, fragment:'docstab'
+    redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId, fragment:'docstab'
   }
 
     def userAccessCheck(license, user, role_str) {

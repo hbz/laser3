@@ -8,7 +8,7 @@
   <body>
 
   <semui:breadcrumbs>
-    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
     <semui:crumb message="menu.datamanager.ann" class="active" />
   </semui:breadcrumbs>
 
@@ -24,7 +24,7 @@
 
 
         <g:if test="${recentAnnouncements!=null}" >
-          <semui:paginate  action="announcements" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_announcements}" />
+          <semui:paginate  action="announcements" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_announcements}" />
         </g:if>
 
 

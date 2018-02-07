@@ -6,9 +6,6 @@ import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
-import java.text.SimpleDateFormat
-
-
 //For Transform
 import static groovyx.net.http.ContentType.*
 
@@ -58,7 +55,6 @@ class SubscriptionDetailsController {
 
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance = Subscription.get(params.id)
-    result.shortcode = params.shortcode;
 
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
@@ -430,8 +426,9 @@ class SubscriptionDetailsController {
       params.insrt = "Y"
       params.dlt = "Y"
       params.updt = "Y"
-      if(params.shortcode){
-        result.institutionName = Org.findByShortcode(params.shortcode).name
+
+      if(contextService.getOrg()){
+        result.institutionName = contextService.getOrg().getName()
         log.debug("FIND ORG NAME ${result.institutionName}")
       }
       flash.message = message(code:'subscription.compare.note', default:"Please select two subscriptions for comparison")
@@ -773,7 +770,7 @@ class SubscriptionDetailsController {
                 }
             }
         }
-        redirect controller: 'subscriptionDetails', action: 'details', params:[id: result.subscriptionInstance?.id, shortcode: params.shortcode]
+        redirect controller: 'subscriptionDetails', action: 'details', params:[id: result.subscriptionInstance?.id]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -813,7 +810,7 @@ class SubscriptionDetailsController {
             flash.message = message(code: 'subscription.delete.norights')
         }
 
-        redirect action: 'members', params: [shortcode: params.shortcode, id: params.id], model: result
+        redirect action: 'members', params: [id: params.id], model: result
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -1069,7 +1066,7 @@ class SubscriptionDetailsController {
     def oid = "com.k_int.kbplus.Subscription:${params.id}"
     shopping_basket.addIfNotPresent(oid)
 
-    redirect controller:'myInstitutions',action:'renewalsSearch',params:[shortcode:result.subscriptionInstance.subscriber.shortcode]
+    redirect controller:'myInstitution', action:'renewalsSearch'
   }
 
     def userAccessCheck(sub, user, role_str) {
@@ -1343,8 +1340,8 @@ class SubscriptionDetailsController {
     
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-    result.institution = Org.findByShortcode(params.shortcode)
-    if( !result.institution ) {
+    result.institution = contextService.getOrg()
+    if( ! result.institution ) {
       result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
     }
     if ( result.institution ) {

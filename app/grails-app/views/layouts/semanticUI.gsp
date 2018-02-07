@@ -32,14 +32,6 @@
     <g:set var="contextUser" value="${contextService.getUser()}" />
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
 
-    <script>
-        dataLayer = [{
-            'Institution': '${params.shortcode}',
-            'UserDefaultOrg': '${user?.defaultDash?.shortcode}',
-            'UserRole': 'ROLE_USER'
-        }];
-    </script>
-
     <div class="ui fixed inverted menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item">LAS:eR</g:link>
@@ -100,10 +92,8 @@
 
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="myInstitutions" action="currentTitles"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.myTitles')}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="tipview"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.myCoreTitles')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
 
                                 <div class="divider"></div>
 
@@ -128,9 +118,9 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="myInstitutions" action="currentTitles"
+                                <g:link class="item" controller="myInstitution" action="currentTitles"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="tipview"
+                                <g:link class="item" controller="myInstitution" action="tipview"
                                         params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.core_ttl')}</g:link>
                             </div>
                         </div>
@@ -142,25 +132,20 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="myInstitutions" action="currentSubscriptions"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.mySubs')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="currentSubscriptions">${message(code:'menu.institutions.mySubs')}</g:link>
 
                                 <sec:ifAnyGranted roles="INST_USER">
                                     <div class="divider"></div>
 
-                                    <g:link class="item" controller="myInstitutions" action="emptySubscription"
-                                            params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.emptySubscription')}</g:link>
+                                    <g:link class="item" controller="myInstitution" action="emptySubscription">${message(code:'menu.institutions.emptySubscription')}</g:link>
 
                                     <div class="divider"></div>
                                 </sec:ifAnyGranted>
 
-                                <g:link class="item" controller="subscriptionDetails" action="compare"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.comp_sub')}</g:link>
+                                <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
 
-                                <g:link class="item" controller="myInstitutions" action="renewalsSearch"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.gen_renewals')}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="renewalsUpload"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.imp_renew')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
 
                                 <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
@@ -176,13 +161,11 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="myInstitutions" action="currentLicenses"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.myLics')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
 
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="licenseCompare" action="index"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.comp_lic')}</g:link>
+                                <g:link class="item" controller="licenseCompare" action="index">${message(code:'menu.institutions.comp_lic')}</g:link>
                             </div>
                         </div>
                     </sec:ifLoggedIn>
@@ -193,29 +176,20 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="myInstitutions" action="dashboard"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.dash')}</g:link>
-                                <g:link class="item" controller="organisations" action="show"
-                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.org_info')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="dashboard">${message(code:'menu.institutions.dash')}</g:link>
+                                <g:link class="item" controller="organisations" action="show">${message(code:'menu.institutions.org_info')}</g:link>
 
-                                <g:link class="item" controller="myInstitutions" action="tasks"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.tasks')}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="changes"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.todo')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="tasks">${message(code:'menu.institutions.tasks')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="changes">${message(code:'menu.institutions.todo')}</g:link>
 
-                                <g:link class="item" controller="myInstitutions" action="addressbook"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
-                                <g:link class="item" controller="myInstitutions" action="managePrivateProperties"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="addressbook">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="managePrivateProperties">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link>
 
-                                <g:link class="item" controller="myInstitutions" action="changeLog"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.change_log')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
 
                                 <g:if test="${grailsApplication.config.feature_finance}">
-                                    <g:link class="item" controller="myInstitutions" action="finance"
-                                            params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.finance')}</g:link>
-                                    <g:link class="item" controller="myInstitutions" action="financeImport"
-                                            params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.financeImport')}</g:link>
+                                    <g:link class="item" controller="myInstitution" action="finance">${message(code:'menu.institutions.finance')}</g:link>
+                                    <g:link class="item" controller="myInstitution" action="financeImport">${message(code:'menu.institutions.financeImport')}</g:link>
                                 </g:if>
 
                             </div>
@@ -409,10 +383,10 @@
                                 <g:if test="${usaf && usaf.size() > 0}">
                                     <g:each in="${usaf}" var="org">
                                         <g:if test="${org.id == contextOrg?.id}">
-                                            <g:link class="item active" controller="myInstitutions" action="switchContext" params="${[shortcode:org.shortcode]}">${org.name}</g:link>
+                                            <g:link class="item active" controller="myInstitution" action="switchContext" params="${[shortcode:org.shortcode]}">${org.name}</g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link class="item" controller="myInstitutions" action="switchContext" params="${[shortcode:org.shortcode]}">${org.name}</g:link>
+                                            <g:link class="item" controller="myInstitution" action="switchContext" params="${[shortcode:org.shortcode]}">${org.name}</g:link>
                                         </g:else>
                                     </g:each>
                                 </g:if>
@@ -425,7 +399,7 @@
                     </g:if>
                 </sec:ifLoggedIn>
                 <sec:ifNotLoggedIn>
-                    <g:link class="item" controller="myInstitutions" action="dashboard">${message(code:'menu.user.login')}</g:link>
+                    <g:link class="item" controller="myInstitution" action="dashboard">${message(code:'menu.user.login')}</g:link>
                 </sec:ifNotLoggedIn>
             </div>
 

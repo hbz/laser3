@@ -1,10 +1,11 @@
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 %{--Two rows of data per CostItem--}%
 
 <g:each in="${cost_items}" var="ci">
     <tr id="bulkdelete-a${ci.id}">
         <td rowspan="2">${ci.id}</td>
         <td>
-                <g:simpleReferenceTypedown disabled="${!editable}" modified="${true}" class="refData" data-shortcode="${params.shortcode}"
+                <g:simpleReferenceTypedown disabled="${!editable}" modified="${true}" class="refData" data-shortcode="${contextService.getOrg()?.shortcode}"
                        data-owner="${ci.class.name}" baseClass="com.k_int.kbplus.Invoice"
                        data-relationID="${ci?.invoice!=null? ci.invoice.id:'create'}"
                        data-placeholder="${ci?.invoice==null? 'Enter invoice number':''}"
@@ -12,7 +13,7 @@
                        data-ownerfield="invoice" name="invoiceField" data-relationField="invoiceNumber"/>
         </td>
         <td>
-                <g:simpleReferenceTypedown disabled="${!editable}" modified="${true}" class="refData" data-shortcode="${params.shortcode}"
+                <g:simpleReferenceTypedown disabled="${!editable}" modified="${true}" class="refData" data-shortcode="${contextService.getOrg()?.shortcode}"
                        data-owner="${ci.class.name}" baseClass="com.k_int.kbplus.Order"
                        data-relationID="${ci?.order!=null? ci.order.id:'create'}"
                        data-placeholder="${ci?.order==null? 'Enter order number':''}"
@@ -21,21 +22,21 @@
         </td>
         <td>
             <g:simpleReferenceTypedown disabled="${!editable}" id="${ci.id}_sub" modified="${true}" class="refObj" data-mode="sub" data-isSubPkg="${false}"
-                        style="max-width:300px;" name="name" data-shortcode="${params.shortcode}"
+                        style="max-width:300px;" name="name" data-shortcode="${contextService.getOrg()?.shortcode}"
                         data-placeholder="${ci?.sub==null? 'Enter sub name':''}" data-ownerfield="sub"
                         data-defaultValue="${ci.sub?.name}" data-ownerid="${ci.id}"
                         data-owner="${ci.class.name}" baseClass="com.k_int.kbplus.Subscription"/>
 
         <td>
             <g:simpleReferenceTypedown disabled="${!editable}" id="${ci.id}_subPkg" modified="${true}" class="refObj" data-isSubPkg="${true}"
-                        style="max-width:300px;" name="name" data-shortcode="${params.shortcode}"
+                        style="max-width:300px;" name="name" data-shortcode="${contextService.getOrg()?.shortcode}"
                         data-placeholder="${ci?.subPkg==null? 'Enter sub pkg name':''}" data-mode="pkg" data-ownerfield="subPkg"
                         data-defaultValue="${ci?.subPkg?.pkg?.name}" data-ownerid="${ci.id}" data-subfilter="${ci?.sub?.id}"
                         data-owner="${ci.class.name}" baseClass="com.k_int.kbplus.SubscriptionPackage"/>
         </td>
         <td colspan="2">
             <g:simpleReferenceTypedown disabled="${!editable}" id="${ci.id}_ie" modified="${true}" class="refObj" data-mode="ie"
-                        style="max-width:300px;" name="title" data-shortcode="${params.shortcode}" data-subfilter="${ci?.sub?.id}"
+                        style="max-width:300px;" name="title" data-shortcode="${contextService.getOrg()?.shortcode}" data-subfilter="${ci?.sub?.id}"
                         data-placeholder="${ci?.issueEntitlement==null? 'Enter IE name':''}" data-ownerfield="issueEntitlement"
                         data-defaultValue="${ci?.issueEntitlement?.tipp?.title?.title}" data-ownerid="${ci.id}"
                         data-owner="${ci.class.name}" baseClass="com.k_int.kbplus.IssueEntitlement"/>

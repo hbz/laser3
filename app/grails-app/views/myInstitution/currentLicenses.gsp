@@ -7,7 +7,7 @@
   <body>
 
   <semui:breadcrumbs>
-      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+      <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
       <semui:crumb message="license.current" class="active" />
 
       <semui:exportDropdown>
@@ -30,10 +30,10 @@
   <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
     <!--<semui:subNav actionName="${actionName}">
-        <semui:subNavItem controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" message="license.current" />
-        <semui:subNavItem controller="myInstitutions" action="addLicense" params="${[shortcode:params.shortcode]}" message="license.copy" />
+        <semui:subNavItem controller="myInstitution" action="currentLicenses" message="license.current" />
+        <semui:subNavItem controller="myInstitution" action="addLicense" message="license.copy" />
         <g:if test="${is_inst_admin}">
-            <semui:subNavItem controller="myInstitutions" action="cleanLicense" params="${[shortcode:params.shortcode]}" message="license.add.blank" />
+            <semui:subNavItem controller="myInstitution" action="cleanLicense" message="license.add.blank" />
         </g:if>
     </semui:subNav>-->
 
@@ -101,10 +101,10 @@
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
-                    <g:link controller="myInstitutions" action="actionLicenses" params="${[shortcode:params.shortcode,baselicense:l.id,'copy-license':'Y']}" class="ui icon basic positive button">
+                    <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon basic positive button">
                         <i class="copy icon"></i></g:link>
-                    <g:link controller="myInstitutions" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
-                            params="${[shortcode:params.shortcode,baselicense:l.id,'delete-license':'Y']}" class="ui icon basic negative button">
+                    <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
+                            params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon basic negative button">
                         <i class="trash icon"></i></g:link>
                   </td>
                 </tr>
@@ -114,7 +114,7 @@
         </div>
        
 
-          <semui:paginate action="currentLicenses" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
+          <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
 
 
     <r:script type="text/javascript">

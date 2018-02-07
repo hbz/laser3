@@ -8,8 +8,8 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
-            <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" message="myinst.currentSubscriptions.label" />
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
             <semui:crumb message="menu.institutions.gen_renewals" class="active" />
         </semui:breadcrumbs>
 
@@ -92,7 +92,7 @@
 
                      <div class="paginateButtons" style="text-align:center">
                         <g:if test="${hits}" >
-                          <span><g:paginate controller="myInstitutions" action="renewalsSearch" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${resultsTotal}" /></span>
+                          <span><g:paginate controller="myInstitution" action="renewalsSearch" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${resultsTotal}" /></span>
                         </g:if>
                       </div>
                 </div>

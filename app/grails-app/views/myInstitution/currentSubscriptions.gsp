@@ -9,7 +9,7 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.getDesignation()}" />
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
         <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
@@ -21,7 +21,7 @@
 
       <semui:filter>
 
-        <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline ui form">
+        <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui form">
             <div class="fields">
                 <div class="field">
                     <label>${message(code: 'default.search.text', default: 'Search text')}</label>
@@ -100,7 +100,7 @@
               <g:if test="${true || ! s.instanceOf}">
                 <tr>
                   <td>
-                    <g:link controller="subscriptionDetails" action="details" params="${[shortcode:institution.shortcode]}" id="${s.id}">
+                    <g:link controller="subscriptionDetails" action="details" id="${s.id}">
                         <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code:'myinst.currentSubscriptions.name_not_set', default:'Name Not Set')}  --</g:else>
                         <g:if test="${s.instanceOf}">(${message(code:'subscription.isInstanceOf.label', default:'Dependent')}<g:if test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
                     </g:link>
@@ -146,8 +146,8 @@
 
                     <td class="x">
                         <g:if test="${ editable && ( (institution in s.allSubscribers) || s.consortia == institution )}">
-                            <g:link controller="myInstitutions" action="actionCurrentSubscriptions" class="ui icon basic negative button"
-                                    params="${[shortcode:institution.shortcode,curInst:institution.id,basesubscription:s.id]}"
+                            <g:link controller="myInstitution" action="actionCurrentSubscriptions" class="ui icon basic negative button"
+                                    params="${[curInst:institution.id, basesubscription:s.id]}"
                                     onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(s.name?:'this subscription')])}')">
                                 <i class="trash icon"></i></g:link>
                         </g:if>
@@ -159,7 +159,7 @@
       </div>
 
         <g:if test="${subscriptions}" >
-          <semui:paginate  action="currentSubscriptions" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
+          <semui:paginate  action="currentSubscriptions" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
         </g:if>
 
     <r:script type="text/javascript">

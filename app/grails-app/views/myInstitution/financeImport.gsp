@@ -10,7 +10,7 @@
 
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="financeImport" params="${[shortcode:params.shortcode]}">${institution.name} Finance Import</g:link> </li>
+        <li> <g:link controller="myInstitution" action="financeImport">${institution.name} Finance Import</g:link> </li>
       </ul>
 
     <semui:messages data="${flash}" />
@@ -46,7 +46,7 @@
             </tbody>
           </table>
 
-          <g:form action="financeImport" method="post" enctype="multipart/form-data" params="${[shortcode:params.shortcode]}">
+          <g:form action="financeImport" method="post" enctype="multipart/form-data">
             <dl>
               <div class="control-group">
                 <dt>Upload TSV File according to the column definitions above</dt>

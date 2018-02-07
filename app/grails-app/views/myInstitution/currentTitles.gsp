@@ -12,7 +12,7 @@
   <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
         <semui:crumb message="myinst.currentTitles.label" class="active" />
 
         <semui:exportDropdown>
@@ -23,7 +23,7 @@
                 <g:link action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link action="currentTitles" params="${params + [format:'xml', shortcode:params.shortcode]}">XML Export</g:link>
+                <g:link action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
             </semui:exportDropdownItem>
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
@@ -39,7 +39,7 @@
     <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
 
     <semui:filter>
-      <g:form id="filtering-form" action="currentTitles" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="ui form">
+      <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
 
         <g:set var="filterSub" value="${params.filterSub?params.list('filterSub'):"all"}" />
         <g:set var="filterPvd" value="${params.filterPvd?params.list('filterPvd'):"all"}" />
@@ -189,7 +189,7 @@
 
 
         <g:if test="${titles}" >
-          <semui:paginate  action="currentTitles" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_ti_rows}" />
+          <semui:paginate  action="currentTitles" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_ti_rows}" />
         </g:if>
 
       <g:if env="development">

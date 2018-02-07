@@ -8,7 +8,7 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
             <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
         </semui:breadcrumbs>
 
@@ -26,7 +26,7 @@
         <semui:messages data="${flash}" />
 
         <semui:filter>
-            <g:form class="ui form" action="tipview" method="get" params="${[shortcode:params.shortcode]}">
+            <g:form class="ui form" action="tipview" method="get">
 
                 <div class="fields">
                     <div class="field">
@@ -77,7 +77,7 @@
             <tr>
 
               <td>
-              <g:link controller="myInstitutions" action="tip" params="${[shortcode:params.shortcode]}" id="${tip.id}">${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}</g:link>;
+              <g:link controller="myInstitution" action="tip" id="${tip.id}">${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}</g:link>;
               &nbsp;
               <g:link controller="titleDetails" action="show" id="${tip?.title?.id}">${message(code:'myinst.tipview.link_to_title', default:'Link to Title Details')}</g:link>
               </td>
