@@ -28,17 +28,19 @@ class SemanticUiInplaceTagLib {
             def data_link     = null
 
             if (attrs.type == "date") {
-               // out << '<div class="ui calendar datepicker">'
+               //out << '<div class="ui calendar datepicker">'
             }
 
             out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
 
             if (attrs.type == "date") {
-                out << " data-type=\"combodate\""
+                out << " data-type=\"text\"" // combodate | date
                 def df = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toUpperCase()}"
                 out << " data-format=\"${df}\""
                 out << " data-viewformat=\"${df}\""
                 out << " data-template=\"${df}\""
+
+                default_empty = message(code:'default.date.format.notime').toLowerCase()
 
             } else {
                 out << " data-type=\"${attrs.type?:'textarea'}\""
@@ -72,14 +74,6 @@ class SemanticUiInplaceTagLib {
 
             if (attrs.type == "date") {
                 //out << '</div>'
-                /*
-                out <<   '<div class="ui calendar datepicker">'
-                out <<      '<div class="ui input left icon">'
-                out <<          '<i class="calendar icon"></i>'
-                out <<          '<input name="' + attrs.name +'" type="text" placeholder="' + attrs.placeholder + '" value="' + attrs.value + '">'
-                out <<      '</div>'
-                out <<   '</div>'
-                */
             }
 
             if (body) {
@@ -159,7 +153,6 @@ class SemanticUiInplaceTagLib {
 
     def simpleHiddenValue = { attrs, body ->
         def default_empty = message(code:'default.button.edit.label')
-        def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
         if (attrs.type == "date") {
             out << '<div class="ui calendar datepicker">'
@@ -168,11 +161,13 @@ class SemanticUiInplaceTagLib {
         out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\""
 
         if (attrs.type == "date") {
-            out << " data-type=\"combodate\""
+            out << " data-type=\"text\"" // combodate | date
             def df = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toUpperCase()}"
             out << " data-format=\"${df}\""
             out << " data-viewformat=\"${df}\""
             out << " data-template=\"${df}\""
+
+            default_empty = message(code:'default.date.format.notime').toLowerCase()
 
             if (attrs.language) {
                 out << " data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\""
@@ -180,6 +175,8 @@ class SemanticUiInplaceTagLib {
         } else {
             out << " data-type=\"${attrs.type?:'textarea'}\" "
         }
+
+        def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
         out << "data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
         out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
