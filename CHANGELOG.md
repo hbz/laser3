@@ -1,3 +1,8 @@
+0.3.1
+
+- overworked inplace edit date fields
+- bugfix: unaccessible subscription details form
+
 0.3
 
 - switched frontend to semantic ui 
