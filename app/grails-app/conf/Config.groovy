@@ -646,7 +646,7 @@ financialImportTSVLoaderMappings = [
           ]
         ]
       ],
-      [
+       /* [
         ref:'CICategory',
         cls:'com.k_int.kbplus.RefdataValue',
         heuristics:[
@@ -658,7 +658,20 @@ financialImportTSVLoaderMappings = [
         creation:[
           onMissing:false,
         ]
-      ],
+      ], */
+      [
+       ref:'CICategory',
+       cls:'com.k_int.kbplus.RefdataValue',
+       heuristics:[
+         [ type : 'hql',
+           hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
+           values : [ citype : [type:'static', value:'CostItemCategory'], civalue: [type:'static', value: 'Price']]
+         ]
+       ],
+       creation:[
+         onMissing:false,
+       ]
+     ],
       [
         ref:'CIElement',
         cls:'com.k_int.kbplus.RefdataValue',
@@ -678,7 +691,7 @@ financialImportTSVLoaderMappings = [
         heuristics:[
                 [ type : 'hql',
                   hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
-                  values : [ citype : [type:'static', value:'Currency'], civalue: [type:'static', value:'Content']]
+                  values : [ citype : [type:'static', value:'Currency'], civalue: [type:'column', colname:'Currency']]
                 ]
         ],
         creation:[
@@ -814,42 +827,45 @@ financialImportTSVLoaderMappings = [
     ]
   ],
   cols: [
-    [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''],
+    /* [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''], */
     [colname:'SubscriptionId', desc:'Used to match to an existing KB+ subscription - must contain the KB+ Subscription Reference to match. Subscriptions are matched using references from JC Namespace'],
-    [colname:'JC_OrderNumber', desc:''],
+    /* [colname:'JC_OrderNumber', desc:''], */
     [colname:'InvoiceNumber', desc:'Used to match this line item to an existing KB+ Invoice. Line must first match an organisation via InstitutionId, then this is matched on Invoice Reference. If none found, a new invoice will be created'],
     [colname:'PoNumber', desc:''],
     [colname:'IssuedDate', desc:''],
     [colname:'DueDate', desc:''],
-    [colname:'InstitutionName', desc:''],
+    /* [colname:'InstitutionName', desc:''], */
     [colname:'InstitutionId', desc:'Used to look up an institution based on the JC Institution ID.'],
-    [colname:'ISNIId', desc:''],
+    /* [colname:'ISNIId', desc:''],
     [colname:'AccountId', desc:''],
     [colname:'ResourceName', desc:''],
     [colname:'ResourceId', desc:''],
     [colname:'AgreementName', desc:''],
     [colname:'AgreementId', desc:''],
-    [colname:'PublisherName', desc:''],
+    [colname:'PublisherName', desc:''], */
     [colname:'InvoicePeriodStart', desc:''],
     [colname:'InvoicePeriodEnd', desc:''],
     [colname:'Price', desc:''],
-    [colname:'AnnualAccessFee', desc:''],
+    /* [colname:'Price', desc:'', type:'vocab', mapping:[
+            'SubscriptionInvoice':'Price'
+    ]], */
+    /* [colname:'AnnualAccessFee', desc:''],
     [colname:'AdditionalFees', desc:''],
     [colname:'SubscriptionTransactionCharge', desc:''],
-    [colname:'SubscriptionVAT', desc:''],
+    [colname:'SubscriptionVAT', desc:''], */
     [colname:'DatePaid', desc:''],
     [colname:'InvoiceNotes', desc:''],
     [colname:'InvoiceStatus', desc:''],
-    [colname:'Currency', desc:''],
-    [colname:'InvoiceTotalExcVat', desc:''],
+    [colname:'Currency', desc:'']
+    /* [colname:'InvoiceTotalExcVat', desc:''],
     [colname:'InvoiceTransactionCharge', gormMappingPath: 'costItem.costInLocalCurrency', desc:''],
     [colname:'InvoiceVat', desc:''],
     [colname:'InvoiceTotal', desc:''],
     [colname:'ItemCount', desc:''],
     [colname:'TotalSubscriptionValue', desc:''],
     [colname:'InvoiceType', desc:'', type:'vocab', mapping:[
-      'SubscriptionInvoice':'Price',
-    ]]
+      'SubscriptionInvoice':'Price'
+    ]] */
   ]
 ];
 
