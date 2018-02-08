@@ -1,6 +1,7 @@
 <semui:breadcrumbs>
     <g:if test="${params.shortcode}">
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${params.shortcode}" />
+        <% def fallbackInst = com.k_int.kbplus.Org.findByShortcode(params.shortcode) %>
+        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${fallbackInst.getDesignation()}" />
         <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${message(code:'myinst.currentSubscriptions.label')}" />
     </g:if>
     <g:if test="${subscriptionInstance}">

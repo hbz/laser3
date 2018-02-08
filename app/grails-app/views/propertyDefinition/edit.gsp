@@ -95,7 +95,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ui segment form-actions">
+                    <div class="ui form-actions">
                         <g:if test="${editable}">
                           <button type="submit" <%= ( ( usages == 0  ) ) ? '' : 'disabled' %> class="ui negative button" name="_action_delete" formnovalidate>
                               <i class="trash icon"></i>

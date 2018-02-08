@@ -28,7 +28,7 @@
                  </div>
               </div>
 
-              <div class="ui segment form-actions">
+              <div class="ui form-actions">
                 <button type="submit" class="ui button">
                   <i class="checkmark icon"></i>
                   <g:message code="default.button.create.label" default="Create" />

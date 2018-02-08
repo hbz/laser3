@@ -248,7 +248,7 @@
 
                                 <r:script language="JavaScript">
                                         $(document).ready(function(){
-                                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
                                         });
                                 </r:script>
                             </div>
@@ -257,9 +257,9 @@
 
                     <r:script language="JavaScript">
                         $(document).ready(function(){
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-                            initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
                         });
                     </r:script>
 

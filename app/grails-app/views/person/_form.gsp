@@ -127,8 +127,8 @@
 
 <div id="person-role-manager">
 
-	<div class="ui segment person-role-function-manager">
-		<h3 class="ui header">Functions</h3>
+	<div class="ui person-role-function-manager">
+		<h4 class="ui header"><g:message code="person.functions.label" default="Functions" /></h4>
 
 		<div class="field">
 			<div class="two fields">
@@ -145,17 +145,22 @@
 			</div>
 		</div>
 
-		<div class="workspace">
-			<h4 class="ui header">Adding</h4>
+		<div class="ui segment workspace">
+			<h5 class="ui header">
+				<g:message code="default.button.create_new.label" default="Adding"/>
+			</h5>
 			<div class="adding"></div>
-			<h4 class="ui header">Existing</h4>
+			<h5 class="ui header">
+				<g:message code="default.button.delete.label" default="Delete"/>
+			</h5>
 			<div class="existing"></div>
 		</div>
 	</div>
 
+    <br />
 
-	<div class="ui segment person-role-responsibility-manager">
-		<h3 class="ui header">Responsibilities</h3>
+	<div class="ui person-role-responsibility-manager">
+		<h4 class="ui header"><g:message code="person.responsibilites.label" default="Responsibilites" /></h4>
 
 		<div class="field">
 			<div class="two fields">
@@ -171,11 +176,14 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="workspace">
-			<h4 class="ui header">Adding</h4>
+		<div class="ui segment workspace">
+			<h5 class="ui header">
+				<g:message code="default.button.create_new.label" default="Adding"/>
+			</h5>
 			<div class="adding"></div>
-			<h4 class="ui header">Existing</h4>
+			<h5 class="ui header">
+				<g:message code="default.button.delete.label" default="Delete"/>
+			</h5>
 			<div class="existing"></div>
 		</div>
 	</div>

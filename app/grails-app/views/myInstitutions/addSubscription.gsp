@@ -7,8 +7,8 @@
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
-      <semui:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.name}" message="myinst.addSubscription.label" />
+      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+      <semui:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" message="myinst.addSubscription.label" />
     </semui:breadcrumbs>
 
     <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>

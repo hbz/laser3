@@ -17,7 +17,7 @@ import="com.k_int.kbplus.RefdataCategory"
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.name}" />
+            <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
             <semui:crumb message="menu.institutions.addressbook" class="active"/>
         </semui:breadcrumbs>
 

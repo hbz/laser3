@@ -8,6 +8,8 @@
     </head>
     <body>
 
+        <g:render template="actions" />
+
         <h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /> - ${orgListTotal} Matches</h1>
 
         <semui:messages data="${flash}" />

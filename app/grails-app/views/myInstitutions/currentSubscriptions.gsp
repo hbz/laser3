@@ -19,6 +19,7 @@
 
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
+      <semui:filter>
 
 
         <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline ui small form">
@@ -180,8 +181,23 @@
                     <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
                 </div>
             </div>
+            <div class="inline fields">
+                <label>Filter by Role:</label>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input name="orgRole" <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if> class="hidden" type="radio" value="Subscriber">
+                        <label>${message(code:'consortium.subscriber', default:'Subscriber')}</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input name="orgRole" <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if> class="hidden" type="radio" value="Subscription Consortia">
+                        <label>${message(code:'consortium', default:'Consortia')}</label>
+                    </div>
+                </div>
+            </div>
         </g:form>
-
+      </semui:filter>
 
 
       <div class="subscription-results">
@@ -191,16 +207,23 @@
                 <g:sortableColumn params="${params}" property="s.name" title="${message(code:'license.slash.name')}" />
                 <th><g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code:'license.details.linked_pkg', default:'Linked Packages')}</g:annotatedLabel></th>
                 <th>${message(code:'myinst.currentSubscriptions.subscription_type', default:'Subscription Type')}</th>
-                <th>${message(code:'consortium', default:'Consortia')}</th>
-                <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'subscription.startDate.label', default:'Start Date')}" />
-                <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'subscription.endDate.label', default:'End Date')}" />
+
+                <g:if test="${params.orgRole == 'Subscriber'}">
+                    <th>${message(code:'consortium', default:'Consortia')}</th>
+                </g:if>
+                <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                    <th>${message(code:'consortium.subscriber', default:'Subscriber')}</th>
+                </g:if>
+
+                <g:sortableColumn params="${params}" property="s.startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                <g:sortableColumn params="${params}" property="s.endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
 
                 <!--<g:sortableColumn params="${params}" property="s.manualCancellationDate" title="${message(code:'default.cancellationDate.label', default:'Cancellation Date')}" />-->
                 <th></th>
             </tr>
           </thead>
           <g:each in="${subscriptions}" var="s">
-              <g:if test="${! s.instanceOf}">
+              <g:if test="${true || ! s.instanceOf}">
                 <tr>
                   <td>
                     <g:link controller="subscriptionDetails" action="details" params="${[shortcode:institution.shortcode]}" id="${s.id}">
@@ -234,7 +257,16 @@
                         <!-- subscriptions type -->
                         <!-- subscriptions type -->
                     </td>
-                    <td>${s.consortia?.name}</td>
+                    <g:if test="${params.orgRole == 'Subscriber'}">
+                        <td>${s.consortia?.name}</td>
+                    </g:if>
+                    <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                        <td>
+                            <g:each in="${s.allSubscribers}" var="subscriber">
+                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link>
+                            </g:each>
+                        </td>
+                    </g:if>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 

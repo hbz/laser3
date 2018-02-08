@@ -101,7 +101,7 @@
               <sec:ifAnyGranted roles="ROLE_ADMIN">
                   <g:hiddenField name="id" value="${titleInstanceInstance?.id}" />
 
-                  <div class="ui segment form-actions">
+                  <div class="ui form-actions">
                       <g:link class="ui button" action="edit" id="${titleInstanceInstance?.id}">
                           <i class="write icon"></i>
                           <g:message code="default.button.edit.label" default="Edit" />

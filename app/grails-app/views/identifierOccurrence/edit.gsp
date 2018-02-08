@@ -47,7 +47,7 @@
 						<g:hiddenField name="version" value="${identifierOccurrenceInstance?.version}" />
 						<fieldset>
 							<f:all bean="identifierOccurrenceInstance"/>
-							<div class="ui segment form-actions">
+							<div class="ui form-actions">
 								<button type="submit" class="ui button">
 									<i class="checkmark icon"></i>
 									<g:message code="default.button.update.label" default="Update" />

@@ -77,7 +77,7 @@
 
 				<g:form>
 					<g:hiddenField name="id" value="${taskInstance?.id}" />
-					<div class="form-actions">
+					<div class="ui form-actions">
 						<g:link class="ui button" action="edit" id="${taskInstance?.id}">
 							<i class="write icon"></i>
 							<g:message code="default.button.edit.label" default="Edit" />

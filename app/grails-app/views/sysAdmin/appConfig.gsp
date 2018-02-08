@@ -27,7 +27,7 @@
     </div>
     <r:script language="JavaScript">
     $(document).ready(function(){
-        initPropertiesScript("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+        mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
     });
     </r:script>
 
