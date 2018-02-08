@@ -21,7 +21,133 @@
 
       <semui:filter>
 
-        <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline ui form">
+        <g:form action="currentSubscriptions" params="${[shortcode:institution.shortcode]}" controller="myInstitutions" method="get" class="form-inline ui small form">
+
+            <div class="four fields">
+                    <!-- 1-1 -->
+                    <div class="field">
+                        <label>Suchbegriff</label>
+                        <div class="ui input">
+                            <input type="text" name="q" placeholder="Suchbegriff eingeben" value="">
+                        </div>
+                    </div>
+                    <!-- 1-2 -->
+                    <div class="field fieldcontain"><label for="validOn">Gültig am</label>
+                        <div class="ui calendar datepicker">
+                            <div class="ui input left icon">
+                                <div class="ui popup calendar">
+                                </div><i class="calendar icon"></i><input name="validOn" type="text" placeholder="Datum" value="02.02.2018"></div>
+                        </div>
+                    </div>
+                    <!-- 1-3 -->
+                    <div class="field fieldcontain"><label for="dateBeforeVal">Erneuerungsdatum vor</label>
+                        <div class="ui calendar datepicker">
+                            <div class="ui input left icon">
+                                <div class="ui popup calendar">
+                                </div><i class="calendar icon"></i><input name="dateBeforeVal" type="text" placeholder="Datum" value=""></div>
+                        </div>
+                    </div>
+                    <!-- 1-4 -->
+                    <div class="field fieldcontain"><label for="dateBeforeVal">Laufzeit (Ende) vor</label>
+                        <div class="ui calendar datepicker">
+                            <div class="ui input left icon">
+                                <div class="ui popup calendar">
+                                </div><i class="calendar icon"></i><input name="dateBeforeVal" type="text" placeholder="Datum" value=""></div>
+                        </div>
+                    </div>
+                </div>
+            <div class="four fields">
+                    <!-- 2-1 -->
+                    <div class="field fieldcontain">
+                        <label>Konsortium</label>
+                        <select class="ui dropdown">
+                            <option value="">Keine Auswahl</option>
+                        </select>
+                    </div>
+                    <!-- 2-2 -->
+                    <div class="field fieldcontain">
+                        <label for="validOn">Status</label>
+                        <select class="ui dropdown">
+                            <option value="">Keine Auswahl</option>
+                        </select>
+                    </div>
+
+                    <!-- 2-3 -->
+                    <div class="field fieldcontain la-combi-input-left">
+                    <label>${message(code:'myinst.currentSubscriptions.licence_property')}</label>
+                        <g:select class="ui dropdown" id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
+
+                    </div>
+                    <!-- 2-4 -->
+                    <div class="field fieldcontain la-combi-input-right">
+                        <label for="dateBeforeVal">Wert</label>
+                        <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
+                        <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
+                    </div>
+                </div>
+            <div class="two fields">
+                    <div class="field">
+                        <label for="subscritionType">${message(code:'myinst.currentSubscriptions.subscription_type')}</label>
+                        <fieldset id="subscritionType">
+                            <div class="inline fields la-filter-inline">
+                                <!-- 3-1 -->
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkConstortial">Konsortial</label>
+                                        <input id="checkConstortial" type="checkbox" tabindex="0">
+                                    </div>
+                                </div>
+                                <!-- 3-2 -->
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkLocal">Lokal</label>
+                                        <input id="checkLocal" type="checkbox" tabindex="0">
+                                    </div>
+                                </div>
+                                <!-- 3-3 -->
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkAllinz">Allianz</label>
+                                        <input id="checkAllinz" type="checkbox" tabindex="0">
+                                    </div>
+                                </div>
+                                <!-- 3-4 -->
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkNational">National</label>
+                                        <input id="checkNational" type="checkbox">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="field">
+                        <div class="two fields">
+                            <div class="field">
+                                <label>Filtern nach Rolle</label>
+                                <div class="inline fields la-filter-inline">
+                                    <div class="field">
+                                        <div class="ui radio checkbox">
+                                            <input name="orgRole" <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if> class="hidden" type="radio" value="Subscriber">
+                                            <label>${message(code:'consortium.subscriber', default:'Subscriber')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="ui radio checkbox">
+                                            <input name="orgRole" <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if> class="hidden" type="radio" value="Subscription Consortia">
+                                            <label>${message(code:'consortium', default:'Consortia')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field la-filter-search ">
+                                <input type="submit" class="ui secondary button" value="Suchen">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             <div class="fields">
                 <div class="field">
                     <label>${message(code: 'default.search.text', default: 'Search text')}</label>
@@ -55,21 +181,7 @@
                     <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
                 </div>
             </div>
-            <div class="inline fields">
-                <label>Filter by Role:</label>
-                <div class="field">
-                    <div class="ui radio checkbox">
-                        <input name="orgRole" <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if> class="hidden" type="radio" value="Subscriber">
-                        <label>${message(code:'consortium.subscriber', default:'Subscriber')}</label>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="ui radio checkbox">
-                        <input name="orgRole" <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if> class="hidden" type="radio" value="Subscription Consortia">
-                        <label>${message(code:'consortium', default:'Consortia')}</label>
-                    </div>
-                </div>
-            </div>
+
         </g:form>
       </semui:filter>
 
