@@ -733,7 +733,7 @@ financialImportTSVLoaderMappings = [
             [ type:'val', property:'dateOfInvoice', colname: 'IssuedDate', datatype:'date'],
             [ type:'val', property:'dateOfPayment', colname: 'DueDate', datatype:'date'],
             [ type:'val', property:'datePassedToFinance', colname: 'IssuedDate', datatype:'date'],
-            [ type:'valueClosure', property:'dateDescription', closure: { colmap, values, locatedObjects -> "[Invoice] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ] // added by frank
+            [ type:'valueClosure', property:'description', closure: { colmap, values, locatedObjects -> "[Invoice] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ] // added by frank
           ]
         ]
       ],
