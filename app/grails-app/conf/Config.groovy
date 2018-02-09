@@ -699,6 +699,19 @@ financialImportTSVLoaderMappings = [
         ]
       ],
       [
+              ref:'status',
+              cls:'com.k_int.kbplus.RefdataValue',
+              heuristics:[
+                      [ type : 'hql',
+                        hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
+                        values : [ citype : [type:'static', value:'CostItemStatus'], civalue: [type:'column', colname:'Status']]
+                      ]
+              ],
+              creation:[
+                      onMissing:false,
+              ]
+      ],
+      [
         ref:'owner',
         cls:'com.k_int.kbplus.Org',
         onOverride:'mustEqual',
@@ -773,6 +786,7 @@ financialImportTSVLoaderMappings = [
             [ type:'ref', property:'costItemCategory', refname:'CICategory'],
             [ type:'ref', property:'costItemElement', refname:'CIElement'],
             [ type:'ref', property:'billingCurrency', refname:'currency'],
+            [ type:'ref', property:'costItemStatus', refname:'status'],
             [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
             [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
             [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
@@ -798,6 +812,7 @@ financialImportTSVLoaderMappings = [
             [ type:'ref', property:'costItemCategory', refname:'CICategory'],
             [ type:'ref', property:'costItemElement', refname:'CIElement'],
             [ type:'ref', property:'billingCurrency', refname:'currency'],
+            [ type:'ref', property:'costItemStatus', refname:'status'],
             [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Tax] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
           ]
         ]
@@ -820,6 +835,7 @@ financialImportTSVLoaderMappings = [
             [ type:'ref', property:'costItemCategory', refname:'CICategory'],
             [ type:'ref', property:'costItemElement', refname:'CIElement'],
             [ type:'ref', property:'billingCurrency', refname:'currency'],
+            [ type:'ref', property:'costItemStatus', refname:'status'],
             [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Transaction Charge] ${values[colmap['ResourceName']]}, ${values[colmap['AgreementName']]}, ${values[colmap['InvoiceNotes']]} "} ]
           ]
         ]
@@ -827,16 +843,16 @@ financialImportTSVLoaderMappings = [
     ]
   ],
   cols: [
-    /* [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''], */
+ /* [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''], */
     [colname:'SubscriptionId', desc:'Used to match to an existing KB+ subscription - must contain the KB+ Subscription Reference to match. Subscriptions are matched using references from JC Namespace'],
-    /* [colname:'JC_OrderNumber', desc:''], */
+ /* [colname:'JC_OrderNumber', desc:''], */
     [colname:'InvoiceNumber', desc:'Used to match this line item to an existing KB+ Invoice. Line must first match an organisation via InstitutionId, then this is matched on Invoice Reference. If none found, a new invoice will be created'],
     [colname:'PoNumber', desc:''],
     [colname:'IssuedDate', desc:''],
     [colname:'DueDate', desc:''],
-    /* [colname:'InstitutionName', desc:''], */
+ /* [colname:'InstitutionName', desc:''], */
     [colname:'InstitutionId', desc:'Used to look up an institution based on the JC Institution ID.'],
-    /* [colname:'ISNIId', desc:''],
+ /* [colname:'ISNIId', desc:''],
     [colname:'AccountId', desc:''],
     [colname:'ResourceName', desc:''],
     [colname:'ResourceId', desc:''],
@@ -846,18 +862,18 @@ financialImportTSVLoaderMappings = [
     [colname:'InvoicePeriodStart', desc:''],
     [colname:'InvoicePeriodEnd', desc:''],
     [colname:'Price', desc:''],
-    /* [colname:'Price', desc:'', type:'vocab', mapping:[
+ /* [colname:'Price', desc:'', type:'vocab', mapping:[
             'SubscriptionInvoice':'Price'
     ]], */
-    /* [colname:'AnnualAccessFee', desc:''],
+ /* [colname:'AnnualAccessFee', desc:''],
     [colname:'AdditionalFees', desc:''],
     [colname:'SubscriptionTransactionCharge', desc:''],
     [colname:'SubscriptionVAT', desc:''], */
     [colname:'DatePaid', desc:''],
     [colname:'InvoiceNotes', desc:''],
     [colname:'InvoiceStatus', desc:''],
-    [colname:'Currency', desc:'']
-    /* [colname:'InvoiceTotalExcVat', desc:''],
+    [colname:'Currency', desc:''],
+ /* [colname:'InvoiceTotalExcVat', desc:''],
     [colname:'InvoiceTransactionCharge', gormMappingPath: 'costItem.costInLocalCurrency', desc:''],
     [colname:'InvoiceVat', desc:''],
     [colname:'InvoiceTotal', desc:''],
@@ -866,6 +882,7 @@ financialImportTSVLoaderMappings = [
     [colname:'InvoiceType', desc:'', type:'vocab', mapping:[
       'SubscriptionInvoice':'Price'
     ]] */
+    [colname:'Status', desc:'Must be one of: Estimate, Commitment, Actual, Other']
   ]
 ];
 
