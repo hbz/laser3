@@ -704,7 +704,7 @@ financialImportTSVLoaderMappings = [
               heuristics:[
                       [ type : 'hql',
                         hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
-                        values : [ citype : [type:'static', value:'CostItemStatus'], civalue: [type:'column', colname:'Status']]
+                        values : [ citype : [type:'static', value:'CostItemStatus'], civalue: [type:'column', colname:'InvoiceStatus']]
                       ]
               ],
               creation:[
@@ -871,8 +871,8 @@ financialImportTSVLoaderMappings = [
     [colname:'SubscriptionVAT', desc:''], */
     [colname:'DatePaid', desc:''],
     [colname:'InvoiceNotes', desc:''],
-    [colname:'InvoiceStatus', desc:''],
-    [colname:'Currency', desc:''],
+    [colname:'InvoiceStatus', desc:'Must be one of: Estimate, Commitment, Actual, Other'],
+    [colname:'Currency', desc:'']
  /* [colname:'InvoiceTotalExcVat', desc:''],
     [colname:'InvoiceTransactionCharge', gormMappingPath: 'costItem.costInLocalCurrency', desc:''],
     [colname:'InvoiceVat', desc:''],
@@ -882,7 +882,6 @@ financialImportTSVLoaderMappings = [
     [colname:'InvoiceType', desc:'', type:'vocab', mapping:[
       'SubscriptionInvoice':'Price'
     ]] */
-    [colname:'Status', desc:'Must be one of: Estimate, Commitment, Actual, Other']
   ]
 ];
 
