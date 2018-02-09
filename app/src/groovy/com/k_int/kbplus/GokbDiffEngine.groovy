@@ -8,7 +8,7 @@ public class GokbDiffEngine {
       println("Error - null package passed to diff");
       return
     }
-  
+
     if ( oldpkg.packageName != newpkg.packageName ) {
       // println("packageName updated from ${oldpkg.packageName} to ${newpkg.packageName}");
       pkgPropChangeClosure(ctx, 'title', newpkg.packageName, auto_accept);
@@ -35,23 +35,22 @@ public class GokbDiffEngine {
 
     while ( tippa != null || tippb != null ) {
 
-      if ( tippa != null &&
-           tippb != null &&
-           tippa.tippId == tippb.tippId ) {
+        if (tippa != null && tippb != null && tippa.tippId == tippb.tippId) {
 
         def tipp_diff = getTippDiff(tippa, tippb)
 
-        if ( tippb.status != 'Current'){
+            if (tippb.status != 'Current' && tipp_diff.size() == 0) {
           deletedTippClosure(ctx, tippa, auto_accept)
           System.out.println("Title "+tippa+" Was removed from the package");
           tippa = ai.hasNext() ? ai.next() : null;
+                tippb = bi.hasNext() ? bi.next() : null
         }
         else if ( tipp_diff.size() == 0 ) {
           tippUnchangedClosure(ctx, tippa);
 
           tippa = ai.hasNext() ? ai.next() : null
           tippb = bi.hasNext() ? bi.next() : null
-        } 
+            }
         else {
           // See if any of the actual properties are null
           println("Got tipp diffs: ${tipp_diff}");
@@ -90,7 +89,17 @@ public class GokbDiffEngine {
       result.add([field:'coverage',newValue:tippb.coverage,oldValue:tippa.coverage])
     }
 
-    // See if the coverage is the same?
+      if (tippa.accessStart.equals(tippb.accessStart)) {
+      } else {
+          result.add([field: 'accessStart', newValue: tippb.accessStart, oldValue: tippa.accessStart])
+      }
+
+      if (tippa.accessEnd.equals(tippb.accessEnd)) {
+      } else {
+          result.add([field: 'accessEnd', newValue: tippb.accessEnd, oldValue: tippa.accessEnd])
+      }
+
+      // See if the coverage is the same?
     result;
   }
 

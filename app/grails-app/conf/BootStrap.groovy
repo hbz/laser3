@@ -67,6 +67,7 @@ class BootStrap {
         def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
         def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
         def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
+        def packageEditorRole      = Role.findByAuthority('ROLE_PACKAGE_EDITOR')      ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
         def institutionalAdmin = Role.findByAuthority('INST_ADM')
@@ -605,7 +606,7 @@ class BootStrap {
         RefdataCategory.loc('License.Arc.Authorized',                       [en: 'Hosting Authorized', de: 'Hostingrecht Berechtigte'])
         RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'])
         RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'])
-        
+        RefdataCategory.loc('Package Status',       [en: 'Package Status', de: 'Paketstatus'])
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'])
@@ -709,6 +710,10 @@ class BootStrap {
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
+
+        RefdataValue.loc('Package Status',                   [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc('Package Status',                   [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc('Package Status',                   [en: 'Retired', de: 'im Ruhestand'])
 
         RefdataValue.loc('Person Contact Type',      [en: 'Personal contact', de: 'Personenkontakt'])
         RefdataValue.loc('Person Contact Type',      [en: 'Functional contact', de: 'Funktionskontakt'])
