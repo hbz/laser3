@@ -644,10 +644,8 @@ class BootStrap {
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'])
         RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'])
 
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1a'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1-JR1a'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'STATS:JR1'])
+        RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
 
         RefdataValue.loc('Federal State',   [en: 'Baden-Wurttemberg', de: 'Baden-Württemberg'])
         RefdataValue.loc('Federal State',   [en: 'Bavaria', de: 'Bayern'])
