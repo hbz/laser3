@@ -247,6 +247,10 @@ class TsvSuperlifterService {
         case 'Double':
           result = Double.parseDouble(value);
           break;
+        case 'Long':
+          // result = Double.parseDouble(value);
+          result = Long.parseLong(value)
+          break;
         case 'date':
           def sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
           result = sdf.parse(value)
@@ -337,10 +341,11 @@ class TsvSuperlifterService {
     def col_cfg = config.cols.find { it.colname==colname }
 
     // Find out where this column appears in the uploaded document
-    def position = colmap[colname]
+    def position = -1
+    position = colmap[colname]
     def value = null
 
-    if ( position )
+    if ( position >= 0)
       value = nl[position]
 
     log.debug("getColumnValue cfg:${col_cfg} val:${value} colname:${colname}")
