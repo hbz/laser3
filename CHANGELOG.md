@@ -1,6 +1,7 @@
 0.3.1
 
 - overworked inplace edit date fields
+- bugfixes and improvements for global data sync
 - bugfix: unaccessible subscription form
 - hotfix: title list query
 
@@ -17,6 +18,7 @@
 - introduced filter panels
 - overworked orgs, subscriptions, licenses and costitems
 - overworked persons, contacts and addresses
+- added task functionality
 - added globalUID support
 - added more consortial functionality
 - added new custom tags
