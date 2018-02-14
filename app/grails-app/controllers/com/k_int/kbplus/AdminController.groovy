@@ -902,7 +902,6 @@ class AdminController {
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def manageNamespaces() {
-    // TODO check role and editable !!!
 
     def identifierNamespaceInstance = new IdentifierNamespace(params)
     switch (request.method) {
@@ -918,6 +917,7 @@ class AdminController {
         break
     }
     render view: 'manageNamespaces', model: [
+            editable: true, // TODO check role and editable !!!
             identifierNamespaceInstance: identifierNamespaceInstance,
             identifierNamespaces: IdentifierNamespace.where{}.sort('ns')
     ]

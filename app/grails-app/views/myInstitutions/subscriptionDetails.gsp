@@ -43,7 +43,7 @@
                  <input type="hidden" name="order" value="${params.order}">
                  Filter: <input name="filter" value="${params.filter}"/><input type="submit">
               </g:form>
-            </td>
+            </dt>
             <dd>
               <g:form action="subscriptionBatchUpdate" params="${[shortcode:params.shortcode, id:subscriptionInstance?.id]}">
               <g:set var="counter" value="${offset+1}" />
@@ -100,7 +100,7 @@
               </g:form>
             </dd>
         </g:if>
-        <dt>Org Links</td>
+        <dt>Org Links</dt>
         <dd>
           <ul>
             <g:each in="${subscriptionInstance.orgRelations}" var="or">
