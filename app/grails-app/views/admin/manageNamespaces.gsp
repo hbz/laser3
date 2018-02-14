@@ -40,7 +40,7 @@
 								<td>${Identifier.countByNs(idNs)}</td>
 								<td>${fieldValue(bean: idNs, field: "family")}</td>
 								<td>${fieldValue(bean: idNs, field: "validationRegex")}</td>
-								<td>${fieldValue(bean: idNs, field: "nstype")}</td>
+								<td>${fieldValue(bean: idNs, field: "nsType")}</td>
 								<td>${fieldValue(bean: idNs, field: "hide")}</td>
 								<td>${fieldValue(bean: idNs, field: "nonUnique")}</td>
 							</tr>
@@ -76,7 +76,7 @@
 									<g:textField name="validationRegex" value="${identifierNamespaceInstance?.validationRegex}"/>
 								</div>
 
-								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nstype', 'error')} ">
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nsType', 'error')} ">
 									<label for="nstype">
 										<g:message code="identifierNamespace.nstype.label" /> TODO !!!
 									</label>
@@ -84,7 +84,7 @@
 											  from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YNO')}"
 											  optionKey="id"
 											  optionValue="value"
-											  value="${identifierNamespaceInstance?.nstype?.id}"
+											  value="${identifierNamespaceInstance?.nsType?.id}"
 											  class="many-to-one" noSelection="['null': '']"/>
 								</div>
 

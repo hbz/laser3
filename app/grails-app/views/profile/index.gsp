@@ -64,17 +64,25 @@
                             ${message(code: 'profile.password.label', default:'Update Password')}
                         </h4>
 
-                        <div class="field">
+                        <div class="field required">
                             <label>${message(code: 'profile.password.current', default:'Current Password')}</label>
-                            <input type="password" name="passwordCurrent" value=""/>
+                            <input type="password" name="passwordCurrent" required class="pw"/>
+                        </div>
+                        <div class="field required">
+                            <label>${message(code: 'profile.password.new', default:'New Password')}</label>
+                            <input type="password" name="passwordNew" required class="pw pwn"/>
+                        </div>
+                        <div class="field required">
+                            <label>${message(code: 'profile.password.new.repeat', default:'New Password (Repeat)')}</label>
+                            <input type="password" name="passwordNew2" required class="pw pwn"/>
                         </div>
                         <div class="field">
-                            <label>${message(code: 'profile.password.new', default:'New Password')}</label>
-                            <input type="text" name="passwordNew" value=""/>
+                            <label>${message(code: 'profile.password.show', default:'Show Passwords')}</label>
+                            <input type="checkbox" name="showPasswords" id="passwordToggler">
                         </div>
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui button">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
+                            <button type="submit" class="ui button" id="passwordSubmit">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
                         </div>
 
                     </g:form>
@@ -321,6 +329,25 @@
 
 <r:script>
     $(document).ready(function () {
+
+        $('#passwordToggler').on('change', function(e) {
+            $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
+        })
+
+        $('#passwordSubmit').on('click', function(e) {
+            e.preventDefault()
+            var pw1 = $('input[name=passwordNew]')
+            var pw2 = $('input[name=passwordNew2]')
+
+            $('input.pwn').parents('div.field').removeClass('error')
+
+            if ( pw1.val() && (pw1.val() == pw2.val()) ) {
+                $(this).parents('form').submit()
+            } else {
+                $('input.pwn').parents('div.field').addClass('error')
+            }
+        })
+
         $("#unit").on('change', function (e) {
             var unit = this.options[e.target.selectedIndex].text;
             var val = $(this).next();

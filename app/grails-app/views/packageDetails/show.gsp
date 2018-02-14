@@ -6,7 +6,6 @@
     <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
- <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
     <semui:breadcrumbs>
@@ -30,7 +29,9 @@
 
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
-    <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':packageInstance]}"/>
+<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_PACKAGE_EDITOR">
+    <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
+</sec:ifAnyGranted>
 
     <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
 
@@ -108,7 +109,7 @@
     <div class="ui grid">
 
         <div class="twelve wide column">
-            <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+            <sec:ifAnyGranted roles="ROLE_ADMIN, KBPLUS_EDITOR, ROLE_PACKAGE_EDITOR">
                 <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
             </sec:ifAnyGranted>
 
@@ -125,6 +126,11 @@
                 <dt>${message(code: 'package.show.pkg_name')}</dt>
                 <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
               </dl>
+
+                <dl>
+                    <dt>${message(code: 'package.show.status')}</dt>
+                    <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
+                </dl>
 
               <dl>
                 <dt>${message(code: 'license.is_public')}</dt>

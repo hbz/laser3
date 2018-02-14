@@ -4,13 +4,14 @@ import javax.persistence.Transient
 
 class Invoice {
 
-  Date dateOfInvoice
-  Date dateOfPayment
-  Date datePassedToFinance
-  Date startDate
-  Date endDate
-  String invoiceNumber
-  Org owner
+  Date      dateOfInvoice
+  Date      dateOfPayment
+  Date      datePassedToFinance
+  Date      startDate
+  Date      endDate
+  String    invoiceNumber
+  Org       owner
+  String    dateDescription
 
   static mapping = {
                       id column:'inv_id'
@@ -22,6 +23,7 @@ class Invoice {
                startDate column:'inv_start_date'
                  endDate column:'inv_end_date'
                    owner column:'inv_owner'
+         dateDescription column:'inv_date_description', type:'text'
   }
 
   static constraints = {
@@ -29,9 +31,10 @@ class Invoice {
           dateOfPayment(nullable:true, blank:false)
     datePassedToFinance(nullable:true, blank:false)
           invoiceNumber(nullable:false, blank:false)
-          startDate(nullable:true, blank:false)
-          endDate(nullable:true, blank:false)
+              startDate(nullable:true, blank:false)
+                endDate(nullable:true, blank:false)
                   owner(nullable:false, blank:false)
+        dateDescription(nullable: true, blank: false)
   }
 
 
