@@ -898,6 +898,43 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.la-eye-catcher .la-eye-catcher-header.ui.blue.button:hover {
   background-color: #2d6697 !important;
 }
+
+/* Filter */
+
+.la-input-selected {
+  background-color: #cbd9e2!important;
+}
+
+.la-right {
+  text-align: right;
+}
+
+.ui.form .fields > .field.la-combi-input-left {
+  padding-right: 0;
+}
+
+.ui.form .fields > .field.la-combi-input-left input,
+.ui.form .fields > .field.la-combi-input-left select {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  border-right: 2px dotted lightgrey;
+}
+
+.ui.form .fields > .field.la-combi-input-right {
+  padding-left: 0;
+}
+
+.ui.form .fields > .field.la-combi-input-right input,
+.ui.form .fields > .field.la-combi-input-right select {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  border-left: none;
+}
+
+.la-filter-search {
+  text-align: right;
+  margin-top: 1.2rem!important;
+}
 /*!
  * # Semantic UI 2.2.13 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -18993,9 +19030,23 @@ ol.ui.horizontal.list li:before,
   font-size: 1.71428571rem;
 }
 
-/*******************************
-         Theme Overrides
-*******************************/
+/* Field */
+
+.ui.form .inline.fields {
+  margin: 0;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.ui.form .inline.fields.la-filter-inline {
+  padding-top: 0.3rem;
+}
+
+.ui.form .fields .field.la-filter-search {
+  text-align: right;
+  margin-top: 1.2rem;
+}
 /*!
  * # Semantic UI 2.2.13 - Grid
  * http://github.com/semantic-org/semantic-ui/
