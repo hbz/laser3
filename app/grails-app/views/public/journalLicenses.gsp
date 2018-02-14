@@ -139,13 +139,13 @@
           $(function(){
             $(".onix-pl-undefined").replaceWith("<span title='Not defined by the license' style='height:1em' class='onix-status fa-stack fa-4x'> <i class='fa fa-info-circle fa-stack-1x' style='color:#166fe7;' ></i> <i class='fa fa-ban fa-stack-1x' style='color:#FF0000'></i> </span>")
               // Tooltips.
-            /* TODO js removed
+
             $('.onix-code, .onix-status').tooltip(
                 {placement: 'bottom', trigger:'hover', html: true, container: 'body'}
             );
             $('.onix-icons span i').popover(
               {placement: 'left', trigger:'hover', html: true, container: 'body'}
-            ); */
+            );
           });
         </r:script>
 

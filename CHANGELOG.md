@@ -2,6 +2,7 @@
 0.3.2
 
 - bugfix: current subscriptions query for subscribers
+- hotfix: legacy bootstrap for tooltip and popover
 
 0.3.1
 
