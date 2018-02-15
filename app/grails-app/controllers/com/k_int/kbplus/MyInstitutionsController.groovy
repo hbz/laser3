@@ -708,7 +708,7 @@ from Subscription as s where (
                   }
                 }
 
-                redirect controller: 'subscriptionDetails', action: 'index', id: new_sub.id
+                redirect controller: 'subscriptionDetails', action: 'details', id: new_sub.id
             } else {
                 new_sub.errors.each { e ->
                     log.debug("Problem creating new sub: ${e}");
