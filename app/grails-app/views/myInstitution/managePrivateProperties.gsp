@@ -10,7 +10,7 @@
     <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
         <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
 
@@ -23,7 +23,7 @@
 
             <g:if test="${privatePropertyDefinitions}">
 
-                <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" method="post">
+                <g:form class="ui form" action="managePrivateProperties" method="post">
                     <table class="ui celled la-table table">
                         <thead>
                             <tr>
@@ -83,7 +83,7 @@
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
-        <g:form class="ui form" params="${['shortcode':params.shortcode]}" action="managePrivateProperties" >
+        <g:form class="ui form" action="managePrivateProperties" >
             <g:field type="hidden" name="cmd" value="add" />
 
             <div class="field">

@@ -104,7 +104,7 @@
 
                         <g:if test="${editable}">
                             <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon basic negative button"
-                                    params="${[shortcode:params.shortcode, id:subscriptionInstance.id, basesubscription: sub.id]}"
+                                    params="${[id:subscriptionInstance.id, basesubscription: sub.id]}"
                                     onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(sub.name?:'this subscription')])}')">
                                 <i class="trash icon"></i>
                             </g:link>

@@ -4,8 +4,8 @@ import javax.persistence.Transient
 
 class Order {
 
-  String orderNumber
-  Org owner
+    String orderNumber
+    Org owner
 
   static mapping = {
              table 'kbplus_ord'

@@ -7,6 +7,9 @@ import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class AjaxController {
+
+    def contextService
+
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
@@ -883,6 +886,9 @@ class AjaxController {
   }
 
   def lookup() {
+      // fallback for static refdataFind calls
+      params.shortcode  = contextService.getOrg()?.shortcode
+
     // log.debug("AjaxController::lookup ${params}");
     def result = [:]
     // params.max = params.max ?: 20;
@@ -904,6 +910,9 @@ class AjaxController {
 
   // used only from IdentifierTabLib.formAddIdentifier
   def lookup2() {
+      // fallback for static refdataFind calls
+      params.shortcode  = contextService.getOrg()?.shortcode
+
     def result = [:]
     def domain_class = grailsApplication.getArtefact('Domain', params.baseClass)
     if (domain_class) {

@@ -15,7 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
 
-class MyInstitutionsController {
+class MyInstitutionController {
     def dataSource
     def springSecurityService
     def ESSearchService
@@ -84,8 +84,8 @@ class MyInstitutionsController {
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        def current_inst = null
-        if(params.shortcode) current_inst = Org.findByShortcode(params.shortcode);
+        def current_inst = contextService.getOrg()
+        //if(params.shortcode) current_inst = Org.findByShortcode(params.shortcode);
         //Parameters needed for criteria searching
         def (tip_property, property_field) = (params.sort ?: 'title-title').split("-")
         def list_order = params.order ?: 'asc'
@@ -98,7 +98,8 @@ class MyInstitutionsController {
 
         def criteria = TitleInstitutionProvider.createCriteria();
         def results = criteria.list(max: result.max, offset:result.offset) {
-              if (params.shortcode){
+              //if (params.shortcode){
+              if (current_inst){
                 institution{
                     idEq(current_inst.id)
                 }
@@ -593,7 +594,7 @@ class MyInstitutionsController {
 
             result
         } else {
-            redirect action: 'currentSubscriptions', params: [shortcode: params.shortcode]
+            redirect action: 'currentSubscriptions'
         }
     }
 
@@ -702,10 +703,10 @@ class MyInstitutionsController {
                     log.debug("Problem creating new sub: ${e}");
                 }
                 flash.error = new_sub.errors
-                redirect action: 'emptySubscription', params: [shortcode: params.shortcode]
+                redirect action: 'emptySubscription'
             }
         } else {
-            redirect action: 'currentSubscriptions', params: [shortcode: params.shortcode]
+            redirect action: 'currentSubscriptions'
         }
     }
 
@@ -752,7 +753,7 @@ class MyInstitutionsController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def cleanLicense() {
         def user = User.get(springSecurityService.principal.id)
-        def org = Org.findByShortcode(params.shortcode)
+        def org = contextService.getOrg()
 
         if (! permissionHelperService.hasUserWithRole(user, org, 'INST_ADM')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
@@ -782,7 +783,7 @@ class MyInstitutionsController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def newLicense(params) {
         def user = User.get(springSecurityService.principal.id)
-        def org = Org.findByShortcode(params.shortcode)
+        def org = contextService.getOrg()
 
         if (! permissionHelperService.hasUserWithRole(user, org, 'INST_ADM')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
@@ -846,7 +847,7 @@ class MyInstitutionsController {
             return
         }
 
-        redirect action: 'currentLicenses', params: [shortcode: params.shortcode]
+        redirect action: 'currentLicenses'
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -864,14 +865,14 @@ class MyInstitutionsController {
             }
         }
 
-        redirect controller: 'licenseDetails', action: 'index', params: [shortcode: params.shortcode], id: params.licid, fragment: 'docstab'
+        redirect controller: 'licenseDetails', action: 'index', id: params.licid, fragment: 'docstab'
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def processAddSubscription() {
 
         def user = User.get(springSecurityService.principal.id)
-        def institution = Org.findByShortcode(params.shortcode)
+        def institution = contextService.getOrg()
 
         if (! permissionHelperService.checkUserIsMember(user, institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
@@ -1273,7 +1274,7 @@ AND EXISTS (
 
 
         def user = User.get(springSecurityService.principal.id)
-        def institution = Org.findByShortcode(params.shortcode)
+        def institution = contextService.getOrg()
 
         if (! permissionHelperService.checkUserIsMember(user, institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[institution.name]);
@@ -1332,7 +1333,7 @@ AND EXISTS (
             flash.message = message(code: 'subscription.delete.norights')
         }
 
-        redirect action: 'currentSubscriptions', params: [shortcode: params.shortcode]
+        redirect action: 'currentSubscriptions'
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -1347,8 +1348,7 @@ AND EXISTS (
         // Internal testing with http://localhost:9200/kbplus/_search?q=subtype:'Subscription%20Offered'
         def result = [:]
 
-        result.institution = Org.findByShortcode(params.shortcode)
-
+        result.institution = contextService.getOrg()
         result.user = springSecurityService.getCurrentUser()
 
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
@@ -2647,7 +2647,7 @@ AND EXISTS (
     def managePrivateProperties() {
         def result = setResultGenerics()
 
-        result.shortcode = params.shortcode
+        //result.shortcode = params.shortcode
 
         result.editable = true // TODO check roles !!!
 
@@ -2673,7 +2673,7 @@ AND EXISTS (
             contextService.setOrg(org)
         }
 
-        redirect action:'dashboard', params:params
+        redirect action:'dashboard', params:params.remove('shortcode')
     }
 
     /**
@@ -2686,7 +2686,7 @@ AND EXISTS (
     private addPrivatePropertyDefinition(params) {
         log.debug("adding private property definition for institution: " + params)
 
-        def tenant = Org.findByShortcode(params.shortcode)
+        def tenant = contextService.getOrg()
 
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
@@ -2733,7 +2733,7 @@ AND EXISTS (
         log.debug("delete private property definition for institution: " + params)
 
         def messages  = []
-        def tenant    = Org.findByShortcode(params.shortcode)
+        def tenant    = contextService.getOrg()
         def deleteIds = params.list('deleteIds')
 
         deleteIds.each { did ->
@@ -2751,8 +2751,8 @@ AND EXISTS (
 
         def result          = [:]
         result.user         = User.get(springSecurityService.principal.id)
-        result.institution  = Org.findByShortcode(params.shortcode)
-
+        //result.institution  = Org.findByShortcode(params.shortcode)
+        result.institution  = contextService.getOrg()
         result
     }
 

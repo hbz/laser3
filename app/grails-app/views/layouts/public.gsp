@@ -30,14 +30,6 @@
 
     <body class="public">
 
-    <script>
-        dataLayer = [{
-            'Institution': '${params.shortcode}',
-            'UserDefaultOrg': '${user?.defaultDash?.shortcode}',
-            'UserRole': 'ROLE_USER'
-        }];
-    </script>
-
     <g:layoutBody/><!-- body here -->
     
     <div id="Footer">

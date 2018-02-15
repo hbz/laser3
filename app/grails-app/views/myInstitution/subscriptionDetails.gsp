@@ -17,13 +17,13 @@
        <h1 class="ui header"><g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit></h1>
 
       <ul class="nav nav-pills">
-        <li class="active"><g:link controller="myInstitutions" 
+        <li class="active"><g:link controller="myInstitution"
                                    action="subscriptionDetails" 
-                                   params="${[shortcode:params.shortcode, id:params.id]}">Current Entitlements</g:link></li>
+                                   params="${[id:params.id]}">Current Entitlements</g:link></li>
 
-        <li><g:link controller="myInstitutions" 
+        <li><g:link controller="myInstitution"
                     action="subscriptionAdd" 
-                    params="${[shortcode:params.shortcode, id:params.id]}">Add Entitlements</g:link></li>
+                    params="${[id:params.id]}">Add Entitlements</g:link></li>
       </ul>
 
 
@@ -45,7 +45,7 @@
               </g:form>
             </dt>
             <dd>
-              <g:form action="subscriptionBatchUpdate" params="${[shortcode:params.shortcode, id:subscriptionInstance?.id]}">
+              <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}">
               <g:set var="counter" value="${offset+1}" />
               <table  class="table table-striped table-bordered table-condensed">
                 <tr>
@@ -112,7 +112,7 @@
     </div>
 
       <g:if test="${entitlements}" >
-        <semui:paginate controller="myInstitutions"
+        <semui:paginate controller="myInstitution"
                           action="subscriptionDetails" 
                           params="${params}" next="Next" prev="Prev" 
                           max="15" 
@@ -173,7 +173,7 @@
          });
 
          $('dd span.reldataEdit').editable('<g:createLink controller="ajax" params="${[resultProp:'reference']}" action="genericSetRel" />', {
-           loadurl: '<g:createLink controller="MyInstitutions" params="${[shortcode:params.shortcode]}" action="availableLicenses" />',
+           loadurl: '<g:createLink controller="myInstitution" action="availableLicenses" />',
            type   : 'select',
            cancel : 'Cancel',
            submit : 'OK',

@@ -21,30 +21,31 @@
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.view', default:'View')}</h5>-->
                         <div class="ui divided relaxed list">
-                            <div class="item"><g:link controller="myInstitutions"
-                                        action="currentLicenses"
-                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.myLics')}</g:link></div>
-                            <div class="item"><g:link controller="myInstitutions"
-                                        action="currentSubscriptions"
-                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.mySubs')}</g:link></div>
-                            <div class="item"><g:link controller="myInstitutions"
-                                        action="currentTitles"
-                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.myTitles')}</g:link></div>
+                            <div class="item">
+                                <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
+                            </div>
+                            <div class="item">
+                                <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.institutions.mySubs')}</g:link>
+                            </div>
+                            <div class="item">
+                                <g:link controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
+                            </div>
                         </div>
                     </div>
 
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.renewals', default:'Renewals')}</h5>-->
                         <div class="ui divided relaxed list">
-                            <div class="item"><g:link controller="myInstitutions"
-                                        action="renewalsSearch"
-                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link></div>
-                            <div class="item"><g:link controller="myInstitutions"
-                                        action="renewalsUpload"
-                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link></div>
+                            <div class="item">
+                                <g:link controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link>
+                            </div>
+                            <div class="item">
+                                <g:link controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link>
+                            </div>
                             <g:if test="${grailsApplication.config.feature_finance}">
-                                <div class="item"><g:link controller="myInstitutions"
-                                        action="finance" params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.finance', default:'Finance')}</g:link></div>
+                                <div class="item">
+                                    <g:link controller="myInstitution" action="finance">${message(code:'menu.institutions.finance', default:'Finance')}</g:link>
+                                </div>
                             </g:if>
 
                         </div>
@@ -53,15 +54,15 @@
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'default.special.label', default:'Special')}</h5>-->
                         <div class="ui divided relaxed list">
-                            <div class="item"><g:link controller="myInstitutions"
-                                        action="tasks"
-                                        params="${[shortcode:params.shortcode]}">${message(code:'task.plural', default:'Tasks')}</g:link></div>
-                            <div class="item"><g:link controller="myInstitutions"
-                                        action="addressbook"
-                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link></div>
-                            <div class="item"><g:link controller="myInstitutions"
-                                        action="managePrivateProperties"
-                                        params="${[shortcode:params.shortcode]}">${message(code:'menu.institutions.manage_props')}</g:link></div>
+                            <div class="item">
+                                <g:link controller="myInstitution" action="tasks">${message(code:'task.plural', default:'Tasks')}</g:link>
+                            </div>
+                            <div class="item">
+                                <g:link controller="myInstitution" action="addressbook">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
+                            </div>
+                            <div class="item">
+                                <g:link controller="myInstitution" action="managePrivateProperties">${message(code:'menu.institutions.manage_props')}</g:link>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -90,7 +91,7 @@
 
     <div class="ui bottom attached tab segment" data-tab="first">
         <div class="pull-right">
-            <g:link action="changes" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
+            <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
         </div>
 
         <div class="ui relaxed divided list">
@@ -123,7 +124,7 @@
 
     <div class="ui bottom attached tab segment" data-tab="second">
         <div class="pull-right">
-            <g:link action="announcements" params="${[shortcode:params.shortcode]}" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
+            <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
         </div>
 
         <div class="ui relaxed divided list">

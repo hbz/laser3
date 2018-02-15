@@ -15,9 +15,7 @@
         <semui:errors bean="${licenseInstance}" />
 
         <fieldset>
-          <g:form class="ui form"
-                  action="newLicense" 
-                  params="${[shortcode:params.shortcode]}">
+          <g:form class="ui form" action="newLicense">
             <fieldset>
               
 

@@ -1,3 +1,4 @@
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
@@ -17,19 +18,25 @@
 
 
     <semui:breadcrumbs>
-        <li>
+
             <g:if test="${inSubMode}">
-                <li> <g:link controller="subscriptionDetails" action="index" params="${[shortcode: params.shortcode, sub:fixedSubscription?.id]}" id="${fixedSubscription?.id}">${fixedSubscription?.name}</g:link> <span class="divider">/</span> </li>
-                <g:link mapping="subfinance" controller="myInstitutions" action="finance" params="${[shortcode:params.shortcode, sub:fixedSubscription?.id]}">${institution.name} Finance <i>(Subscription Mode)</i></g:link>
+                <li>
+                    <g:link controller="subscriptionDetails" action="index" params="${[sub:fixedSubscription?.id]}" id="${fixedSubscription?.id}">
+                        ${fixedSubscription?.name}
+                    </g:link>
+                    <span class="divider">/</span>
+                </li>
+                <g:link mapping="subfinance" controller="myInstitutions" action="finance" params="${[sub:fixedSubscription?.id]}">
+                    ${institution.name} Finance <i>(Subscription Mode)</i>
+                </g:link>
             </g:if>
             <g:else>
-                <g:link controller="myInstitutions" action="finance" params="${[shortcode:params.shortcode]}">${institution.name} Finance</g:link>
+                <g:link controller="myInstitution" action="finance">${institution.name} Finance</g:link>
             </g:else>
-        </li>
         <g:if test="${editable}">
             <semui:crumbAsBadge message="default.editable" class="orange" />
 
-            <li class="pull-right"><a href="${createLink(controller: 'myInstitutions', action: 'financeImport', params: [shortcode:params.shortcode])}" class="ui button">Finance Import</a></li>
+            <li class="pull-right"><a href="${createLink(controller: 'myInstitution', action: 'financeImport')}" class="ui button">Finance Import</a></li>
         </g:if>
         <li class="pull-left"><a class="badge badge-info" onclick="quickHelpInfo()">?</a>&nbsp;</li>
 
@@ -169,7 +176,7 @@
                     data: {
                     from: "${from}",
                     to: to,
-                    shortcode: "${params.shortcode}"
+                    shortcode: "${contextService.getOrg()?.shortcode}"
                 },
                 global: false
             }).done(function(data) {
@@ -244,7 +251,7 @@
                       format:'json',
                       q: '%'+term,
                       baseClass:$(this).data('domain'),
-                      inst_shortcode: '${params.shortcode}',
+                      inst_shortcode: '${contextService.getOrg()?.shortcode}',
                       subFilter: $(this).data('subfilter'),
                       hideDeleted: 'true',
                       hideIdent: 'false',
@@ -287,7 +294,7 @@
                                 hideDeleted: 'true',
                                 hideIdent: 'false',
                                 inclSubStartDate: 'false',
-                                inst_shortcode: '${params.shortcode}',
+                                inst_shortcode: '${contextService.getOrg()?.shortcode}',
                                 q: '%'+term , // contains search term
                                 page_limit: 20,
                                 baseClass:'com.k_int.kbplus.Subscription'
@@ -318,7 +325,7 @@
                             hideDeleted: 'true',
                             hideIdent: 'false',
                             inclSubStartDate: 'false',
-                            inst_shortcode: '${params.shortcode}',
+                            inst_shortcode: '${contextService.getOrg()?.shortcode}',
                             q: '%'+term , // contains search term
                             page_limit: 20,
                             subFilter:$(s.ft.filterSubscription).data().filtermode.split(":")[1],
@@ -361,7 +368,7 @@
                 method: "POST",
                 url: s.url.ajaxFinancePresent,
                 data: {
-                    shortcode: "${params.shortcode}",
+                    shortcode: "${contextService.getOrg()?.shortcode}",
                     to:renderedDateTo,
                     from: "${from}",
                     format:'json'
@@ -409,7 +416,7 @@
                 data: {
                   format:'json',
                   del:JSON.stringify(allVals),
-                  shortcode:'${params.shortcode}'
+                  shortcode:'${contextService.getOrg()?.shortcode}'
                 },
                 dataType:'json'
               }).done(function(data) {
@@ -460,7 +467,7 @@
                 url: s.url.ajaxFinanceCodeDel,
                 data: {
                     bcci:element.attr('id'),
-                    shortcode:"${params.shortcode}"
+                    shortcode:"${contextService.getOrg()?.shortcode}"
                 }
              })
              .done(function(data) {
@@ -594,7 +601,7 @@
                 method: "POST",
                 url: s.url.ajaxFinanceIndex,
                 data: {
-                    shortcode:"${params.shortcode}",
+                    shortcode:"${contextService.getOrg()?.shortcode}",
                     offset:adjustedOffset,
                     max:paginateData.max,
                     sort:paginateData.sort,
@@ -637,7 +644,7 @@
             //Default config....
             url: s.url.ajaxFinanceIndex,
             data: {
-                    shortcode:"${params.shortcode}",
+                    shortcode:"${contextService.getOrg()?.shortcode}",
                     offset:paginateData.offset,
                     max:paginateData.max,
                     sort:paginateData.sort,
@@ -689,7 +696,7 @@
                                 hideDeleted: 'true',
                                 hideIdent: 'false',
                                 inclSubStartDate: 'false',
-                                inst_shortcode: '${params.shortcode}',
+                                inst_shortcode: '${contextService.getOrg()?.shortcode}',
                                 q: '%'+term , // contains search term
                                 page_limit: 20,
                                 baseClass:'com.k_int.kbplus.Subscription'
@@ -718,7 +725,7 @@
                             hideDeleted: 'true',
                             hideIdent: 'false',
                             inclSubStartDate: 'false',
-                            inst_shortcode: '${params.shortcode}',
+                            inst_shortcode: '${contextService.getOrg()?.shortcode}',
                             q: '%'+term , // contains search term
                             page_limit: 20,
                             subFilter: $(s.ct.newSubscription).data().filtermode.split(":")[1],
@@ -769,7 +776,7 @@
                     return {
                         format:'json',
                         q: term,
-                        shortcode: '${params.shortcode}',
+                        shortcode: '${contextService.getOrg()?.shortcode}',
                         baseClass:'com.k_int.kbplus.CostItemGroup'
                     };
                 },
@@ -1052,7 +1059,7 @@
                           return {
                               format:'json',
                               q: term,
-                              shortcode: '${params.shortcode}',
+                              shortcode: '${contextService.getOrg()?.shortcode}',
                               baseClass:'com.k_int.kbplus.CostItemGroup'
                           };
                       },
@@ -1079,7 +1086,7 @@
                      var cost_item_id = budget_code_ci.split("_")[1]
                      var new_code = $("input[name='additionalBudgetCode']").val()
                      var data = {
-                      shortcode :"${params.shortcode}",
+                      shortcode :"${contextService.getOrg()?.shortcode}",
                       id : cost_item_id,
                       code : new_code
                      };
@@ -1108,7 +1115,7 @@
                 var order          = $(this).data('order');
                 var paginateData   = $('#paginateInfo').data();
                 var data = {
-                    shortcode: "${params.shortcode}",
+                    shortcode: "${contextService.getOrg()?.shortcode}",
                     filterMode: paginateData.filtermode,
                     opSort:true,
                     sort:paginateData.sort,
@@ -1181,7 +1188,7 @@
                 var totalResults = parseInt(paginateData.total);
             
                 var data  = {
-                    shortcode: "${params.shortcode}",
+                    shortcode: "${contextService.getOrg()?.shortcode}",
                     filterMode: paginateData.filtermode,
                     wildcard: paginateData.wildcard,
                     opSort: false,

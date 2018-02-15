@@ -7,8 +7,8 @@
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
-      <semui:crumb controller="myInstitutions" action="addSubscription" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" message="myinst.addSubscription.label" />
+      <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+      <semui:crumb controller="myInstitution" action="addSubscription" text="${institution.getDesignation()}" message="myinst.addSubscription.label" />
     </semui:breadcrumbs>
 
     <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
@@ -17,7 +17,7 @@
 
       <div>
           <div class="pull-right">
-              <g:form action="addSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="get" class="ui form">
+              <g:form action="addSubscription" controller="myInstitution" method="get" class="ui form">
                   <label>${message(code:'default.search.text', default:'Search text')}</label>: <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"  value="${params.q?.encodeAsHTML()}"  />
                   <label>${message(code:'default.valid_on.label', default:'Valid On')}</label>: <input name="validOn" type="text" value="${validOn}"/>
                   <input type="submit" class="ui button" value="${message(code:'default.button.search.label', default:'Search')}" />
@@ -27,7 +27,7 @@
 
     <div>
         <g:if test="${packages}" >
-          <g:form action="processAddSubscription" params="${[shortcode:params.shortcode]}" controller="myInstitutions" method="post">
+          <g:form action="processAddSubscription" controller="myInstitution" method="post">
  
             <div class="pull-left subscription-create">
             <g:if test="${is_inst_admin}">
@@ -73,7 +73,7 @@
   
 
           <g:if test="${packages}" >
-            <semui:paginate  action="addSubscription" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
+            <semui:paginate  action="addSubscription" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_pkg_rows}" />
           </g:if>
 
     </div>

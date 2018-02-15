@@ -8,8 +8,8 @@
   <body>
 
   <semui:breadcrumbs>
-    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
-    <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" message="myinst.currentSubscriptions.label" />
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
     <semui:crumb message="menu.institutions.imp_renew" class="active" />
   </semui:breadcrumbs>
 

@@ -276,7 +276,7 @@
 
                         <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" name="orgShortcode" id="orgShortcode" class="ui fluid dropdown"/>
 
-                        <g:link name="copyLicenseBtn" controller="myInstitutions" action="actionLicenses" params="${[shortcode:'replaceme',baselicense:license.id,'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui positive button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                        <g:link name="copyLicenseBtn" controller="myInstitution" action="actionLicenses" params="${[shortcode:'replaceme', baselicense:license.id, 'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui positive button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
 
                         <br />
                         <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
@@ -288,7 +288,7 @@
                         </g:form>
     %{--
               leave this out for now.. it is a bit confusing.
-              <g:link name="deletLicenseBtn" controller="myInstitutions" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
+              <g:link name="deletLicenseBtn" controller="myInstitution" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
                     </g:if>
                     <g:else>
                         ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}

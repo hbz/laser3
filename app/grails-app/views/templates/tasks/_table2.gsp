@@ -50,7 +50,7 @@
                         <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon basic button">
                             <i class="write icon"></i>
                         </g:link>
-                        <g:link controller="myInstitutions" action="tasks" params="[shortcode:params.shortcode, deleteId:taskInstance.id]" class="ui icon basic negative button">
+                        <g:link controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" class="ui icon basic negative button">
                             <i class="trash icon"></i>
                         </g:link>
                     </td>

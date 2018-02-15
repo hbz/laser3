@@ -1,28 +1,26 @@
 <!doctype html>
-<r:require module="annotations"/>
+<r:require module="annotations" />
 
 <html>
-<head>
+  <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} - ${institution.name} - ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
-</head>
+    <title>${message(code:'laser', default:'LAS:eR')} - ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+  </head>
+    <body>
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode: institution.shortcode]}"
-                 text="${institution.getDesignation()}"/>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
-</semui:breadcrumbs>
-<semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}"/>
-<g:render template="actions"/>
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+            <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
+        </semui:breadcrumbs>
+        <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
+        <g:render template="actions" />
 
 <semui:messages data="${flash}"/>
 
-<h1 class="ui header">${institution?.name} - ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</h1>
+        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
 <semui:filter>
-    <g:form action="currentSubscriptions" params="${[shortcode: institution.shortcode]}" controller="myInstitutions"
+    <g:form action="currentSubscriptions" params="${[shortcode: institution.shortcode]}" controller="myInstitution"
             method="get" class="form-inline ui small form">
 
         <div class="four fields">
@@ -182,11 +180,19 @@
             <g:if test="${true || !s.instanceOf}">
                 <tr>
                     <td>
-                        <g:link controller="subscriptionDetails" action="details"
-                                params="${[shortcode: institution.shortcode]}" id="${s.id}">
-                            <g:if test="${s.name}">${s.name}</g:if><g:else>-- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --</g:else>
-                            <g:if test="${s.instanceOf}">(${message(code: 'subscription.isInstanceOf.label', default: 'Dependent')}<g:if
-                                    test="${s.consortia && s.consortia == institution}">: ${s.subscriber?.name}</g:if>)</g:if>
+                        <g:link controller="subscriptionDetails" action="details" id="${s.id}">
+                            <g:if test="${s.name}">
+                                ${s.name}
+                            </g:if>
+                            <g:else>
+                                -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                            </g:else>
+                            <g:if test="${s.instanceOf}">
+                                (${message(code: 'subscription.isInstanceOf.label', default: 'Dependent')}
+                                <g:if test="${s.consortia && s.consortia == institution}">
+                                    : ${s.subscriber?.name}
+                                </g:if>)
+                            </g:if>
                         </g:link>
                         <g:if test="${s.owner}">
                             <g:link class="icon ico-object-link sub-link-icon law" controller="licenseDetails"
@@ -224,8 +230,7 @@
                     <g:if test="${params.orgRole == 'Subscription Consortia'}">
                         <td>
                             <g:each in="${s.allSubscribers}" var="subscriber">
-                                <g:link controller="organisations" action="show"
-                                        id="${subscriber.id}">${subscriber}</g:link>
+                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link>
                             </g:each>
                         </td>
                     </g:if>
@@ -234,11 +239,12 @@
 
                     <td class="x">
                         <g:if test="${editable && ((institution in s.allSubscribers) || s.consortia == institution)}">
-                            <g:link controller="myInstitutions" action="actionCurrentSubscriptions"
+                            <g:link controller="myInstitution" action="actionCurrentSubscriptions"
                                     class="ui icon basic negative button"
-                                    params="${[shortcode: institution.shortcode, curInst: institution.id, basesubscription: s.id]}"
+                                    params="${[curInst: institution.id, basesubscription: s.id]}"
                                     onclick="return confirm('${message(code: 'license.details.delete.confirm', args: [(s.name ?: 'this subscription')])}')">
-                                <i class="trash icon"></i></g:link>
+                                <i class="trash icon"></i>
+                            </g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -248,13 +254,13 @@
 </div>
 
 <g:if test="${subscriptions}">
-    <semui:paginate action="currentSubscriptions" controller="myInstitutions" params="${params}"
+    <semui:paginate action="currentSubscriptions" controller="myInstitution" params="${params}"
                     next="${message(code: 'default.paginate.next', default: 'Next')}"
                     prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
                     total="${num_sub_rows}"/>
 </g:if>
 
-<r:script type="text/javascript">
+    <r:script type="text/javascript">
         $(document).ready(function(){
             var val = "${params.dateBeforeFilter}";
             if(val == "null"){
@@ -262,27 +268,18 @@
             }else{
                 $(".dateBefore").removeClass("hidden");
             }
-            $( "input" ).keyup(function() {
-              var val2 =  $( "input" ).val();
-              if(val2 == ""){
-                $( this ).removeClass( "la-input-selected" );
-              }
-              else {
-                $( this ).addClass( "la-input-selected" );
-              }
-            });
         });
 
         $("[name='dateBeforeFilter']").change(function(){
             var val = $(this)['context']['selectedOptions'][0]['label'];
 
-            if(val != "${message(code: 'default.filter.date.none', default: '-None-')}"){
+            if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
                 $(".dateBefore").removeClass("hidden");
             }else{
                 $(".dateBefore").addClass("hidden");
             }
         })
-</r:script>
+    </r:script>
 
-</body>
+  </body>
 </html>

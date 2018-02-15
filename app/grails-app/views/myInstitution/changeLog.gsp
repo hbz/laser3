@@ -8,13 +8,13 @@
   <body>
 
   <semui:breadcrumbs>
-    <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
     <semui:crumb message="default.changeLog.label" class="active" />
 
     <li class="dropdown pull-right">
       <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.exports.label', default:'Exports')}<strong class="caret"></strong></a>
       <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-        <li><g:link controller="myInstitutions" action="changeLog" params="${params+[format:'csv']}">CSV Export</g:link></li>
+        <li><g:link controller="myInstitution" action="changeLog" params="${params+[format:'csv']}">CSV Export</g:link></li>
       </ul>
     </li>
   </semui:breadcrumbs>
@@ -23,7 +23,7 @@
 
       <div style="text-align:center">
         ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br/>
-        <semui:paginate  action="changeLog" controller="myInstitutions" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br/>
+        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br/>
         <g:form method="get" action="changeLog" params="${params}">
           ${message(code:'myinst.changeLog.restrictTo', default:'Restrict to')}: <select name="restrict" onchange="this.form.submit()">
             <option value="">${message(code:'myinst.changelog.all', default:'ALL')}</option>
@@ -54,7 +54,7 @@
       </table>
 
 
-        <semui:paginate  action="changeLog" controller="myInstitutions" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_changes}" />
+        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_changes}" />
 
 
     </div>

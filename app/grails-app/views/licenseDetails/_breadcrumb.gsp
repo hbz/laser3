@@ -1,7 +1,7 @@
 <semui:breadcrumbs>
     <g:if test="${license?.licensee}">
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:license.licensee.shortcode]}" text="${license.licensee?.getDesignation()}" />
-        <semui:crumb text="${message(code:'license.current')}" controller="myInstitutions" action="currentLicenses" params="${[shortcode:license.licensee.shortcode]}" />
+        <semui:crumb controller="myInstitution" action="dashboard" text="${license.licensee?.getDesignation()}" />
+        <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
     </g:if>
 
     <semui:crumb message="license.details" id="${params.id}" class="active"/>
