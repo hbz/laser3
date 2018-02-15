@@ -177,7 +177,7 @@
 
                             <div class="menu">
                                 <g:link class="item" controller="myInstitution" action="dashboard">${message(code:'menu.institutions.dash')}</g:link>
-                                <g:link class="item" controller="organisations" action="show">${message(code:'menu.institutions.org_info')}</g:link>
+                                <g:link class="item" controller="organisations" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
                                 <g:link class="item" controller="myInstitution" action="tasks">${message(code:'menu.institutions.tasks')}</g:link>
                                 <g:link class="item" controller="myInstitution" action="changes">${message(code:'menu.institutions.todo')}</g:link>
