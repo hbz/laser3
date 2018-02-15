@@ -1031,12 +1031,12 @@
                      trigger: 'manual',
                      html:true,
                      placement:'top',
-                     title:'Add to codes...',
-                     template: "<div class='popover' style='width: 600px;'><div></div><div class='popover-inner'><h3 class='popover-title'></h3><div class='popover-content'></div>"+ $(this).text() +"</div></div>",
+                     title:'Code hinzufügen',
+                     template: "<div class='popover' style='width:600px;'><div></div><div class='popover-inner'><h3 class='popover-title'></h3><div class='popover-content'></div></div></div>",
                      'max-width':600,
                      content:function() {
                         //return getContent();
-                        return '<input type="text" class="select2" style="width: 220px; border-radius: 4px;" placeholder="New code or lookup code" data-ci_id='+cost_item_id+' name="additionalBudgetCode" id="additionalBudgetCode" ><input type="button" name="addAdditionalBudgetCode" id="addAdditionalBudgetCode" value="Add"/>'
+                        return '<input type="text" class="select2" style="width:220px; border-radius:4px;" placeholder="New code or lookup code" data-ci_id='+cost_item_id+' name="additionalBudgetCode" id="additionalBudgetCode"><input type="button" name="addAdditionalBudgetCode" id="addAdditionalBudgetCode" value="Hinzufügen"/>'
                      }
                 });
 

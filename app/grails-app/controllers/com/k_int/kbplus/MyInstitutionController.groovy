@@ -458,8 +458,20 @@ class MyInstitutionController {
 
         if (params.orgRole == 'Subscriber') {
 
-            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
-            qry_params = ['roleType':role_sub, 'activeInst':result.institution]
+            //base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
+
+            base_qry = """
+from Subscription as s where (
+    exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) 
+    AND ( s.status.value != 'Deleted' )
+    AND (
+        ( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) )
+        or
+        ( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) )
+    )
+)
+"""
+            qry_params = ['roleType':role_sub, 'activeInst':result.institution, 'scRoleType':role_sub_consortia]
         }
 
         if (params.orgRole == 'Subscription Consortia') {
@@ -702,7 +714,7 @@ class MyInstitutionController {
                   }
                 }
 
-                redirect controller: 'subscriptionDetails', action: 'index', id: new_sub.id
+                redirect controller: 'subscriptionDetails', action: 'details', id: new_sub.id
             } else {
                 new_sub.errors.each { e ->
                     log.debug("Problem creating new sub: ${e}");
