@@ -233,13 +233,13 @@
 
 /*---  Colors for Objects---*/
 
-o-yellow:#FBC71C;
-o-red:#F98D28;
-o-light-orange:#F95E1B;
-o-dark-orange:#DE3907;
-o-lila: #582BA0;
-o-light-turquoise: #4192B0;
-o-dark-turquoise: #0D5363;
+@o-yellow:#FBC71C;
+@o-red:#F98D28;
+@o-light-orange:#F95E1B;
+@o-dark-orange:#DE3907;
+@o-lila: #582BA0;
+@o-light-turquoise: #4192B0;
+@o-dark-turquoise: #0D5363;
 
 /*---  Light Colors  ---*/
 @lightRed         : #FF695E;
