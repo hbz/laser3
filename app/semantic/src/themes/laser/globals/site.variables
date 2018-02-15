@@ -217,14 +217,13 @@
 --------------------*/
 
 /*---  Colors  ---*/
-/*---  Colors  ---*/
 @red              : #DB2828;
 @orange           : #fa820a; /*hbz-orange */
 @yellow           : #FBBD08;
 @olive            : #B5CC18;
 @green            : #21BA45;
 @teal             : #00B5AD;
-@blue             : #2d6697; /*laser-blue, little bit less red than hbz-blue, little lighter to functioning on black */
+@blue             : #004678; /*hbz-blue */
 @violet           : #6435C9;
 @purple           : #A333C8;
 @pink             : #E03997;
@@ -232,13 +231,23 @@
 @grey             : #767676;
 @black            : #1B1C1D; /*laser-black -matching the blue*/
 
+/*---  Colors for Objects---*/
+
+o-yellow:#FBC71C;
+o-red:#F98D28;
+o-light-orange:#F95E1B;
+o-dark-orange:#DE3907;
+o-lila: #582BA0;
+o-light-turquoise: #4192B0;
+o-dark-turquoise: #0D5363;
+
 /*---  Light Colors  ---*/
 @lightRed         : #FF695E;
-@lightOrange      : #FF851B;
+@lightOrange      : #F95E1B;
 @lightYellow      : #FFE21F;
 @lightOlive       : #D9E778;
 @lightGreen       : #2ECC40;
-@lightTeal        : #6DFFFF;
+@lightTeal        : #4192B0;
 @lightBlue        : #39a1f2;
 @lightViolet      : #A291FB;
 @lightPurple      : #DC73FF;
