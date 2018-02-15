@@ -1,21 +1,25 @@
+<%@ page import="com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
+
 <r:require module="annotations" />
 
 <html>
-  <head>
-    <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} - ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
-  </head>
+    <head>
+        <meta name="layout" content="semanticUI" />
+        <title>${message(code:'laser', default:'LAS:eR')} - ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+    </head>
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
+
         <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
+
         <g:render template="actions" />
 
-<semui:messages data="${flash}"/>
+        <semui:messages data="${flash}"/>
 
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
@@ -40,50 +44,59 @@
                                   value="${validOn}"/>
             </div>
             <!-- 1-3 -->
-            <div class="field fieldcontain">
+            <div class="field disabled fieldcontain">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label" name="renewalDate"
-                                  placeholder="filter.placeholder" value="${xyz}"/>
+                                  placeholder="filter.placeholder" value="${params.renewalDate}"/>
             </div>
             <!-- 1-4 -->
-            <div class="field fieldcontain">
+            <div class="field disabled fieldcontain">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
-                                  name="durationDateEnd" placeholder="filter.placeholder" value="${xyz}"/>
+                                  name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
             </div>
         </div>
 
         <div class="four fields">
             <!-- 2-1 -->
-            <div class="field fieldcontain">
-                <semui:datepicker label="myinst.currentSubscriptions.filter.consortium.label" name="consortium"
-                                  placeholder="filter.placeholder" value="${xyz}"/>
-            </div>
-            <!-- 2-2 -->
-            <div class="field fieldcontain">
-                <semui:datepicker label="myinst.currentSubscriptions.filter.status.label" name="status"
-                                  placeholder="filter.placeholder" value="${xyz}"/>
-            </div>
-            <!-- 2-3 -->
-            <div class="field fieldcontain la-combi-input-left">
-                <label>${message(code: 'myinst.currentSubscriptions.licence_property')}</label>
-                <g:select class="ui dropdown" id="availablePropertyTypes" name="availablePropertyTypes"
-                          from="${custom_prop_types}" optionKey="value" optionValue="key"
-                          value="${params.propertyFilterType}"/>
+            <div class="field disabled fieldcontain">
+                <label>${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
+                <laser:select name="status" class="ui dropdown"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.consortium}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
 
             </div>
+            <!-- 2-2 -->
+            <div class="field disabled fieldcontain">
+                <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
+                <laser:select name="status" class="ui dropdown"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.status}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <!-- 2-3 -->
+            <div class="field disabled fieldcontain la-combi-input-left">
+                <label>${message(code:'subscription.property.search')}</label>
+                <g:select class="ui dropdown" id="availablePropertyTypes" name="availablePropertyTypes"
+                          from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
+            </div>
             <!-- 2-4 -->
-            <div class="field fieldcontain la-combi-input-right">
-                <label for="dateBeforeVal">Wert</label>
-                <input id="selectVal" type="text" name="propertyFilter"
-                       placeholder="${message(code: 'license.search.property.ph', default: 'property value...')}"
-                       value="${params.propertyFilter ?: ''}"/>
-                <input type="hidden" id="propertyFilterType" name="propertyFilterType"
-                       value="${params.propertyFilterType}"/>
+            <div class="field disabled fieldcontain la-combi-input-right">
+                <label for="propertyFilter">Wert</label>
+
+                <input id="propertyFilter" type="text" name="propertyFilter"
+                       placeholder="${message(code: 'license.search.property.ph')}" value="${params.propertyFilter ?: ''}"/>
+                <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
             </div>
         </div>
 
         <div class="two fields">
-            <div class="field">
+            <div class="field disabled">
                 <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
+
                 <fieldset id="subscritionType">
                     <div class="inline fields la-filter-inline">
                         <!-- 3-1 -->
@@ -126,14 +139,18 @@
                         <div class="inline fields la-filter-inline">
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input id="radioSubscriber" type="radio" name="fruit" tabindex="0" class="hidden">
+                                    <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
+                                           <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
+                                    >
                                     <label for="radioSubscriber">${message(code: 'subscription.details.members.label')}</label>
                                 </div>
                             </div>
 
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input id="radioKonsortium" type="radio" name="fruit" tabindex="0" class="hidden">
+                                    <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
+                                           <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
+                                    >
                                     <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
                                 </div>
                             </div>
@@ -149,15 +166,17 @@
     </g:form>
 </semui:filter>
 
-
 <div class="subscription-results">
     <table class="ui celled sortable table table-tworow la-table">
         <thead>
         <tr>
             <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}"/>
-            <th><g:annotatedLabel owner="${institution}"
-                                  property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel></th>
-            <th>${message(code: 'myinst.currentSubscriptions.subscription_type', default: 'Subscription Type')}</th>
+            <th>
+                <g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel>
+            </th>
+            <th>
+                ${message(code: 'myinst.currentSubscriptions.subscription_type', default: 'Subscription Type')}
+            </th>
 
             <g:if test="${params.orgRole == 'Subscriber'}">
                 <th>${message(code: 'consortium', default: 'Consortia')}</th>
@@ -166,13 +185,12 @@
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
             </g:if>
 
-            <g:sortableColumn params="${params}" property="s.startDate"
-                              title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
-            <g:sortableColumn params="${params}" property="s.endDate"
-                              title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+            <g:sortableColumn params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
-        <!--<g:sortableColumn params="${params}" property="s.manualCancellationDate"
-                              title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/>-->
+            <g:sortableColumn params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+
+            <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
+                              title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
             <th></th>
         </tr>
         </thead>
@@ -213,16 +231,16 @@
                             <div>${message(code: 'myinst.currentSubscriptions.etc.label', args: [s.packages.size() - 10])}</div>
                         </g:if>
                         <g:if test="${editable && (s.packages == null || s.packages.size() == 0)}">
-                            <i>${message(code: 'myinst.currentSubscriptions.no_links', default: 'None currently, Add packages via')}
-                            <g:link controller="subscriptionDetails" action="linkPackage"
+                            <i>
+                                ${message(code: 'myinst.currentSubscriptions.no_links', default: 'None currently, Add packages via')}
+                                <g:link controller="subscriptionDetails" action="linkPackage"
                                     id="${s.id}">${message(code: 'subscription.details.linkPackage.label', default: 'Link Package')}</g:link>
                             </i>
                         </g:if>
                     <!-- packages -->
                     </td>
                     <td>
-                        <!-- subscriptions type -->
-                        <!-- subscriptions type -->
+                        ${s.type?.getI10n('value')}
                     </td>
                     <g:if test="${params.orgRole == 'Subscriber'}">
                         <td>${s.consortia?.name}</td>
@@ -253,12 +271,12 @@
     </table>
 </div>
 
-<g:if test="${subscriptions}">
-    <semui:paginate action="currentSubscriptions" controller="myInstitution" params="${params}"
-                    next="${message(code: 'default.paginate.next', default: 'Next')}"
-                    prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                    total="${num_sub_rows}"/>
-</g:if>
+    <g:if test="${subscriptions}">
+        <semui:paginate action="currentSubscriptions" controller="myInstitution" params="${params}"
+                        next="${message(code: 'default.paginate.next', default: 'Next')}"
+                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                        total="${num_sub_rows}"/>
+    </g:if>
 
     <r:script type="text/javascript">
         $(document).ready(function(){
@@ -279,6 +297,74 @@
                 $(".dateBefore").addClass("hidden");
             }
         })
+    </r:script>
+
+    <r:script type="text/javascript">
+
+        function availableTypesSelectUpdated(optionSelected){
+
+          var selectedOption = $( "#availablePropertyTypes option:selected" )
+
+          var selectedValue = selectedOption.val()
+
+          //Set the value of the hidden input, to be passed on controller
+          $('#propertyFilterType').val(selectedOption.text())
+
+          updateInputType(selectedValue)
+        }
+
+        function updateInputType(selectedValue){
+          //If we are working with RefdataValue, grab the values and create select box
+          if(selectedValue.indexOf("RefdataValue") != -1){
+            var refdataType = selectedValue.split("&&")[1]
+            $.ajax({ url:'<g:createLink controller="ajax" action="sel2RefdataSearch"/>'+'/'+refdataType+'?format=json',
+                        success: function(data) {
+                          var select = ' <select id="propertyFilter" name="propertyFilter" > '
+    //we need empty when we dont want to search by property
+    select += ' <option></option> '
+    for(var index=0; index < data.length; index++ ){
+    var option = data[index]
+    select += ' <option value="'+option.text+'">'+option.text+'</option> '
+    }
+    select += '</select>'
+                          $('#propertyFilter').replaceWith(select)
+                        },async:false
+            });
+          }else{
+            //If we dont have RefdataValues,create a simple text input
+            $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
+          }
+        }
+
+        function setTypeAndSearch(){
+          var selectedType = $("#propertyFilterType").val()
+          //Iterate the options, find the one with the text we want and select it
+          var selectedOption = $("#availablePropertyTypes option").filter(function() {
+                return $(this).text() == selectedType ;
+          }).prop('selected', true); //This will trigger a change event as well.
+
+
+          //Generate the correct select box
+          availableTypesSelectUpdated(selectedOption)
+
+          //Set selected value for the actual search
+          var paramPropertyFilter = "${params.propertyFilter}";
+          var propertyFilterElement = $("#propertyFilter");
+          if(propertyFilterElement.is("input")){
+            propertyFilterElement.val(paramPropertyFilter);
+          }else{
+              $("#propertyFilter option").filter(function() {
+                return $(this).text() == paramPropertyFilter ;
+              }).prop('selected', true);
+          }
+        }
+
+        $('#availablePropertyTypes').change(function(e) {
+          var optionSelected = $("option:selected", this);
+          availableTypesSelectUpdated(optionSelected);
+        });
+
+        window.onload = setTypeAndSearch()
     </r:script>
 
   </body>

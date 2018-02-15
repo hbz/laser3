@@ -51,7 +51,7 @@
                     <label>${message(code:'license.property.search')}</label>
                     <div class="two fields">
                         <g:select id="availablePropertyTypes" name="availablePropertyTypes" from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
-                        <input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
+                        <input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
                         <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
                     </div>
                 </div>
@@ -141,7 +141,7 @@
             var refdataType = selectedValue.split("&&")[1]
             $.ajax({ url:'<g:createLink controller="ajax" action="sel2RefdataSearch"/>'+'/'+refdataType+'?format=json',
                         success: function(data) {
-                          var select = ' <select id="selectVal" name="propertyFilter" > '
+                          var select = ' <select id="propertyFilter" name="propertyFilter" > '
                           //we need empty when we dont want to search by property
                           select += ' <option></option> '
                           for(var index=0; index < data.length; index++ ){
@@ -149,12 +149,12 @@
                             select += ' <option value="'+option.text+'">'+option.text+'</option> '
                           }
                           select += '</select>'
-                          $('#selectVal').replaceWith(select)
+                          $('#propertyFilter').replaceWith(select)
                         },async:false
             });
           }else{
             //If we dont have RefdataValues,create a simple text input
-            $('#selectVal').replaceWith('<input id="selectVal" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
+            $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
           }
         }
 
@@ -171,11 +171,11 @@
 
           //Set selected value for the actual search
           var paramPropertyFilter = "${params.propertyFilter}";
-          var propertyFilterElement = $("#selectVal");
+          var propertyFilterElement = $("#propertyFilter");
           if(propertyFilterElement.is("input")){
             propertyFilterElement.val(paramPropertyFilter);
           }else{
-              $("#selectVal option").filter(function() {
+              $("#propertyFilter option").filter(function() {
                 return $(this).text() == paramPropertyFilter ;
               }).prop('selected', true);
           }

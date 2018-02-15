@@ -188,8 +188,8 @@ class MyInstitutionController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        def prop_types_list = PropertyDefinition.findAll()
-          result.custom_prop_types = prop_types_list.collectEntries{
+        def propFilterList = PropertyDefinition.findAllWhere(descr: PropertyDefinition.LIC_PROP)
+          result.custom_prop_types = propFilterList.collectEntries{
           [(it.getI10n('name')) : it.type + "&&" + it.refdataCategory]
           //We do this for the interface, so we can display select box when we are working with refdata.
           //Its possible there is another way
@@ -204,7 +204,7 @@ class MyInstitutionController {
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
 
-        def qry_params = [lic_org:result.institution, org_role:licensee_role,lic_status:license_status]
+        def qry_params = [lic_org:result.institution, org_role:licensee_role, lic_status:license_status]
 
         def qry = INSTITUTIONAL_LICENSES_QUERY
         // def qry = "from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
@@ -217,7 +217,7 @@ class MyInstitutionController {
 
         if ( (params.propertyFilter != null) && params.propertyFilter.trim().length() > 0 ) {
             def propDef = PropertyDefinition.findByName(params.propertyFilterType)
-            def propQuery = buildPropertySearchQuery(params,propDef)
+            def propQuery = buildPropertySearchQuery(params, propDef)
             qry += propQuery.query
             qry_params += propQuery.queryParam
             result.propertyFilterType = params.propertyFilterType
@@ -494,6 +494,11 @@ class MyInstitutionController {
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         result.date_restriction = date_restriction;
+
+        def propFilterList = PropertyDefinition.findAllWhere(descr: PropertyDefinition.SUB_PROP)
+        result.custom_prop_types = propFilterList.collectEntries{
+            [(it.getI10n('name')) : it.type + "&&" + it.refdataCategory]
+        }
 
         withFormat {
             html result
