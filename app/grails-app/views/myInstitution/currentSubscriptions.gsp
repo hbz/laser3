@@ -43,6 +43,7 @@
                 <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder"
                                   value="${validOn}"/>
             </div>
+            <% /*
             <!-- 1-3 -->
             <div class="field disabled fieldcontain">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label" name="renewalDate"
@@ -53,9 +54,23 @@
                 <semui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
                                   name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
             </div>
+            */ %>
+
+            <!-- TMP -->
+            <div class="field fieldcontain">
+                <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
+                <laser:select name="status" class="ui dropdown"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.status}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
         </div>
 
         <div class="four fields">
+
+            <% /*
             <!-- 2-1 -->
             <div class="field disabled fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
@@ -91,42 +106,27 @@
                        placeholder="${message(code: 'license.search.property.ph')}" value="${params.propertyFilter ?: ''}"/>
                 <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
             </div>
+
+            */ %>
         </div>
 
         <div class="two fields">
-            <div class="field disabled">
+            <div class="field">
                 <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
 
                 <fieldset id="subscritionType">
                     <div class="inline fields la-filter-inline">
-                        <!-- 3-1 -->
-                        <div class="inline field">
-                            <div class="ui checkbox">
-                                <label for="checkConstortial">${message(code: 'myinst.currentSubscriptions.filter.consortial.label')}</label>
-                                <input id="checkConstortial" type="checkbox" tabindex="0">
+
+                        <g:each in="${RefdataCategory.getAllRefdataValues('Subscription Type')}" var="subType">
+                            <div class="inline field">
+                                <div class="ui checkbox">
+                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                    <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                        <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                           tabindex="0">
+                                </div>
                             </div>
-                        </div>
-                        <!-- 3-2 -->
-                        <div class="inline field">
-                            <div class="ui checkbox">
-                                <label for="checkLocal">${message(code: 'myinst.currentSubscriptions.filter.lokal.label')}</label>
-                                <input id="checkLocal" type="checkbox" tabindex="0">
-                            </div>
-                        </div>
-                        <!-- 3-3 -->
-                        <div class="inline field">
-                            <div class="ui checkbox">
-                                <label for="checkAllinz">${message(code: 'myinst.currentSubscriptions.filter.alliance.label')}</label>
-                                <input id="checkAllinz" type="checkbox" tabindex="0">
-                            </div>
-                        </div>
-                        <!-- 3-4 -->
-                        <div class="inline field">
-                            <div class="ui checkbox">
-                                <label for="checkNational">${message(code: 'myinst.currentSubscriptions.filter.national.label')}</label>
-                                <input id="checkNational" type="checkbox">
-                            </div>
-                        </div>
+                        </g:each>
                     </div>
                 </fieldset>
             </div>
@@ -141,7 +141,7 @@
                                 <div class="ui radio checkbox">
                                     <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
                                            <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
-                                    >
+                                        >
                                     <label for="radioSubscriber">${message(code: 'subscription.details.members.label')}</label>
                                 </div>
                             </div>
@@ -150,7 +150,7 @@
                                 <div class="ui radio checkbox">
                                     <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
                                            <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
-                                    >
+                                        >
                                     <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
                                 </div>
                             </div>
@@ -301,67 +301,70 @@
 
     <r:script type="text/javascript">
 
-        function availableTypesSelectUpdated(optionSelected){
+        function availableTypesSelectUpdated(optionSelected) {
 
-          var selectedOption = $( "#availablePropertyTypes option:selected" )
+            var selectedOption = $( "#availablePropertyTypes option:selected" )
+            var selectedValue = selectedOption.val()
 
-          var selectedValue = selectedOption.val()
+            if (selectedValue) {
+                //Set the value of the hidden input, to be passed on controller
+                $('#propertyFilterType').val(selectedOption.text())
 
-          //Set the value of the hidden input, to be passed on controller
-          $('#propertyFilterType').val(selectedOption.text())
-
-          updateInputType(selectedValue)
+                updateInputType(selectedValue)
+            }
         }
 
-        function updateInputType(selectedValue){
-          //If we are working with RefdataValue, grab the values and create select box
-          if(selectedValue.indexOf("RefdataValue") != -1){
-            var refdataType = selectedValue.split("&&")[1]
-            $.ajax({ url:'<g:createLink controller="ajax" action="sel2RefdataSearch"/>'+'/'+refdataType+'?format=json',
-                        success: function(data) {
-                          var select = ' <select id="propertyFilter" name="propertyFilter" > '
-    //we need empty when we dont want to search by property
-    select += ' <option></option> '
-    for(var index=0; index < data.length; index++ ){
-    var option = data[index]
-    select += ' <option value="'+option.text+'">'+option.text+'</option> '
-    }
-    select += '</select>'
-                          $('#propertyFilter').replaceWith(select)
-                        },async:false
-            });
-          }else{
-            //If we dont have RefdataValues,create a simple text input
-            $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
-          }
+        function updateInputType(selectedValue) {
+            //If we are working with RefdataValue, grab the values and create select box
+            if(selectedValue.indexOf("RefdataValue") != -1) {
+                var refdataType = selectedValue.split("&&")[1]
+                $.ajax({
+                    url:'<g:createLink controller="ajax" action="sel2RefdataSearch"/>'+'/'+refdataType+'?format=json',
+                    success: function(data) {
+                        var select = ' <select id="propertyFilter" name="propertyFilter" > '
+                        //we need empty when we dont want to search by property
+                        select += ' <option></option> '
+                        for (var index=0; index < data.length; index++ ) {
+                            var option = data[index]
+                            select += ' <option value="'+option.text+'">'+option.text+'</option> '
+                        }
+                        select += '</select>'
+                        $('#propertyFilter').replaceWith(select)
+                    },async:false
+                });
+            }else{
+                //If we dont have RefdataValues,create a simple text input
+                $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
+            }
         }
 
         function setTypeAndSearch(){
-          var selectedType = $("#propertyFilterType").val()
-          //Iterate the options, find the one with the text we want and select it
-          var selectedOption = $("#availablePropertyTypes option").filter(function() {
+            var selectedType = $("#propertyFilterType").val()
+            //Iterate the options, find the one with the text we want and select it
+            var selectedOption = $("#availablePropertyTypes option").filter(function() {
                 return $(this).text() == selectedType ;
-          }).prop('selected', true); //This will trigger a change event as well.
+            }).prop('selected', true); //This will trigger a change event as well.
 
 
-          //Generate the correct select box
-          availableTypesSelectUpdated(selectedOption)
+            //Generate the correct select box
+            availableTypesSelectUpdated(selectedOption)
 
-          //Set selected value for the actual search
-          var paramPropertyFilter = "${params.propertyFilter}";
-          var propertyFilterElement = $("#propertyFilter");
-          if(propertyFilterElement.is("input")){
-            propertyFilterElement.val(paramPropertyFilter);
-          }else{
-              $("#propertyFilter option").filter(function() {
-                return $(this).text() == paramPropertyFilter ;
-              }).prop('selected', true);
-          }
+            //Set selected value for the actual search
+            var paramPropertyFilter = "${params.propertyFilter}";
+            var propertyFilterElement = $("#propertyFilter");
+            if(propertyFilterElement.is("input")){
+                propertyFilterElement.val(paramPropertyFilter);
+            }
+            else {
+                $("#propertyFilter option").filter(function() {
+                    return $(this).text() == paramPropertyFilter ;
+                }).prop('selected', true);
+            }
         }
 
         $('#availablePropertyTypes').change(function(e) {
-          var optionSelected = $("option:selected", this);
-          availableTypesSelectUpdated(optionSelected);
+            var optionSelected = $("option:selected", this);
+            availableTypesSelectUpdated(optionSelected);
         });
 
         window.onload = setTypeAndSearch()

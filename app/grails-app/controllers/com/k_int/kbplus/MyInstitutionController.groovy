@@ -413,6 +413,7 @@ class MyInstitutionController {
             date_restriction = sdf.parse(params.validOn)
         }
 
+        /*
         def dateBeforeFilter = null;
         def dateBeforeFilterVal = null;
         if(params.dateBeforeFilter && params.dateBeforeVal){
@@ -428,6 +429,7 @@ class MyInstitutionController {
             }
 
         }
+        */
 
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
@@ -490,9 +492,21 @@ from Subscription as s where (
             qry_params.put('date_restr', date_restriction)
         }
 
-        if(dateBeforeFilter ){
+        /* if(dateBeforeFilter ){
             base_qry += dateBeforeFilter
             qry_params.put('date_before', dateBeforeFilterVal)
+        } */
+
+        def subTypes = params.list('subTypes')
+        if (subTypes) {
+            subTypes = subTypes.collect{it as Long}
+            base_qry += " and s.type.id in (:subTypes) "
+            qry_params.put('subTypes', subTypes)
+        }
+
+        if (params.status) {
+            base_qry += " and s.status.id = :status "
+            qry_params.put('status', (params.status as Long))
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -501,7 +515,7 @@ from Subscription as s where (
             base_qry += " order by s.name asc"
         }
 
-        //log.debug("current subs base query: ${base_qry} params: ${qry_params}")
+        log.debug("query: ${base_qry} && params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
