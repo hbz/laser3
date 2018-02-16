@@ -317,53 +317,58 @@ class OrganisationsController {
 
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
-    switch (request.method) {
-    case 'GET':
-          def orgInstance = Org.get(params.id)
-          if (!orgInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-              redirect action: 'list'
-              return
-          }
+        redirect controller: 'organisations', action: 'show', params: params
+        return
 
-          [orgInstance: orgInstance, editable:true]
-      break
-    case 'POST':
-          def orgInstance = Org.get(params.id)
-          if (!orgInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-              redirect action: 'list'
-              return
-          }
-
-          if (params.version) {
-              def version = params.version.toLong()
-              if (orgInstance.version > version) {
-                  orgInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'org.label', default: 'Org')] as Object[],
-                            "Another user has updated this Org while you were editing")
-                  render view: 'edit', model: [orgInstance: orgInstance]
+        /*
+        switch (request.method) {
+        case 'GET':
+              def orgInstance = Org.get(params.id)
+              if (!orgInstance) {
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+                  redirect action: 'list'
                   return
               }
-          }
-          
-          if (params.fromOrg){
-            addOrgCombo(Org.get(params.fromOrg), Org.get(params.toOrg))
-            render view: 'edit', model: [orgInstance: orgInstance]
-            return
-          }
 
-          orgInstance.properties = params
+              [orgInstance: orgInstance, editable:true]
+          break
+        case 'POST':
+              def orgInstance = Org.get(params.id)
+              if (!orgInstance) {
+                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+                  redirect action: 'list'
+                  return
+              }
 
-          if (!orgInstance.save(flush: true)) {
-              render view: 'edit', model: [orgInstance: orgInstance, editable:true]
-              return
-          }
+              if (params.version) {
+                  def version = params.version.toLong()
+                  if (orgInstance.version > version) {
+                      orgInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                                [message(code: 'org.label', default: 'Org')] as Object[],
+                                "Another user has updated this Org while you were editing")
+                      render view: 'edit', model: [orgInstance: orgInstance]
+                      return
+                  }
+              }
 
-          flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
-          redirect action: 'show', id: orgInstance.id
-      break
-    }
+              if (params.fromOrg){
+                addOrgCombo(Org.get(params.fromOrg), Org.get(params.toOrg))
+                render view: 'edit', model: [orgInstance: orgInstance]
+                return
+              }
+
+              orgInstance.properties = params
+
+              if (!orgInstance.save(flush: true)) {
+                  render view: 'edit', model: [orgInstance: orgInstance, editable:true]
+                  return
+              }
+
+              flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+              redirect action: 'show', id: orgInstance.id
+          break
+        }
+        */
     }
 
     @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
