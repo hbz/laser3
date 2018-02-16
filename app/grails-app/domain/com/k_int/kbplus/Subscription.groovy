@@ -156,11 +156,12 @@ class Subscription extends BaseDomainComponent implements Permissions {
   }
 
     def getConsortia() {
+        def result = null;
         orgRelations.each { or ->
             if ( or?.roleType?.value=='Subscription Consortia' )
-                return or.org
+                result = or.org
             }
-        null
+        result
     }
 
     def isEditableBy(user) {
