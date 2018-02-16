@@ -1,4 +1,10 @@
 
+0.3.3
+
+- bugfix: subscription get consortia
+- bugfix: redirect organisation edit
+- added admin action for creating users
+
 0.3.2
 
 - bugfix: current subscriptions query for subscribers
