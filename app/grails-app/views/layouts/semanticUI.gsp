@@ -27,7 +27,8 @@
     <r:layoutResources/>
 </head>
 
-<body>
+<body class="${controllerName}_${actionName}">
+
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
