@@ -8,7 +8,7 @@
   <body>
 
   <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
     <semui:crumb message="default.changeLog.label" class="active" />
 
     <li class="dropdown pull-right">

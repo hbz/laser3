@@ -9,7 +9,7 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
             <semui:crumb message="myinst.addSubscription.label" class="active" />
         </semui:breadcrumbs>
