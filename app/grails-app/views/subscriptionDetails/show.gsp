@@ -161,8 +161,8 @@
                             <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
                             <g:if test="${subscriptionInstance.owner != null}">
                                 (
-                                <g:link controller="licenseDetails" action="index" id="${subscriptionInstance.owner.id}">${message(code:'default.button.show.label', default:'Show')}</g:link>
-                                <g:link controller="licenseDetails" action="index" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
+                                <g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">${message(code:'default.button.show.label', default:'Show')}</g:link>
+                                <g:link controller="licenseDetails" action="show" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
                                 )
                             </g:if>
                         </g:if>
@@ -191,7 +191,7 @@
                     <dl>
                         <dt>${message(code:'subscription.isInstanceOfSub.label')}</dt>
                         <dd>
-                            <g:link controller="subscriptionDetails" action="details" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
+                            <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
                         </dd>
                     </dl>
                 </g:if>

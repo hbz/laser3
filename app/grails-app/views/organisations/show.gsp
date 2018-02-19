@@ -75,12 +75,12 @@
             <dd>
                 <semui:xEditable owner="${orgInstance}" field="shortname"/>
             </dd>
-            <!--
+            <% /*
             <dt><g:message code="org.shortcode.label" default="Shortcode" /></dt>
             <dd>
                 <semui:xEditable owner="${orgInstance}" field="shortcode"/>
             </dd>
-            -->
+            */ %>
             <dt><g:message code="org.sortname.label" default="Sortname" /></dt>
             <dd>
                 <semui:xEditable owner="${orgInstance}" field="sortname"/>
@@ -195,7 +195,7 @@
             	<semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
             </dd>
 
-            <!--
+            <% /*
             <dt><g:message code="org.membership.label" default="Membership Organisation" /></dt>
             <dd>
                 <g:if test="${editable}">
@@ -205,7 +205,7 @@
                     <g:fieldValue bean="${orgInstance}" field="membership"/>
                 </g:else>
             </dd>
-            -->
+            */ %>
 
             <g:if test="${orgInstance?.outgoingCombos}">
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
@@ -252,13 +252,13 @@
                                     (${i.pkg?.packageStatus?.getI10n('value')})
                               </g:if>
                               <g:if test="${i.sub}">
-                                    <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
+                                    <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">
                                         ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
                                     </g:link>
                                     (${i.sub.status?.getI10n('value')})
                               </g:if>
                               <g:if test="${i.lic}">
-                                    <g:link controller="licenseDetails" action="index" id="${i.lic.id}">
+                                    <g:link controller="licenseDetails" action="show" id="${i.lic.id}">
                                         ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
                                     </g:link>
                                   (${i.lic.status?.getI10n('value')})

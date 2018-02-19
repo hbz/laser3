@@ -100,7 +100,7 @@
                         ${sub.status.getI10n('value')}
                     </td>
                     <td class="x">
-                        <g:link controller="subscriptionDetails" action="details" id="${sub.id}" class="ui icon basic button"><i class="write icon"></i></g:link>
+                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon basic button"><i class="write icon"></i></g:link>
 
                         <g:if test="${editable}">
                             <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon basic negative button"

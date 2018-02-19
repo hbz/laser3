@@ -198,7 +198,7 @@
             <g:if test="${true || !s.instanceOf}">
                 <tr>
                     <td>
-                        <g:link controller="subscriptionDetails" action="details" id="${s.id}">
+                        <g:link controller="subscriptionDetails" action="show" id="${s.id}">
                             <g:if test="${s.name}">
                                 ${s.name}
                             </g:if>
@@ -214,7 +214,7 @@
                         </g:link>
                         <g:if test="${s.owner}">
                             <g:link class="icon ico-object-link sub-link-icon law" controller="licenseDetails"
-                                    action="index" id="${s.owner.id}">${s.owner?.reference}</g:link>
+                                    action="show" id="${s.owner.id}">${s.owner?.reference}</g:link>
                         </g:if>
                     </td>
                     <td>

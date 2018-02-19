@@ -770,7 +770,7 @@ class SubscriptionDetailsController {
                 }
             }
         }
-        redirect controller: 'subscriptionDetails', action: 'details', params:[id: result.subscriptionInstance?.id]
+        redirect controller: 'subscriptionDetails', action: 'show', params:[id: result.subscriptionInstance?.id]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -1333,7 +1333,7 @@ class SubscriptionDetailsController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def details() {
+  def show() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance =  Subscription.get(params.id) 

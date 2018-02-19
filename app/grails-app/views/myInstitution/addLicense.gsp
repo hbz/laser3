@@ -75,7 +75,7 @@
               <g:each in="${licenses}" var="l">
                 <tr>
                   <td>
-                    <g:link action="index"
+                    <g:link action="show"
                               controller="licenseDetails" 
                               id="${l.id}">
                               <g:if test="${l.reference}">${l.reference}</g:if>

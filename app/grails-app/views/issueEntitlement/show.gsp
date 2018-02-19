@@ -34,7 +34,7 @@
             <g:if test="${issueEntitlementInstance?.subscription.owner}">
                 <dt><g:message code="licence.label" default="License" /></dt>
 
-                <dd><g:link controller="licenseDetails" action="index" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference.encodeAsHTML()}</g:link></dd>
+                <dd><g:link controller="licenseDetails" action="show" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference.encodeAsHTML()}</g:link></dd>
 
             </g:if>
             <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">

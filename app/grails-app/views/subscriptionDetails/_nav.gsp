@@ -2,7 +2,7 @@
 
 <semui:subNav actionName="${actionName}">
 
-    <semui:subNavItem controller="subscriptionDetails" action="details" params="${[id:params.id]}" message="subscription.details.details.label" />
+    <semui:subNavItem controller="subscriptionDetails" action="show" params="${[id:params.id]}" message="subscription.details.details.label" />
     <semui:subNavItem controller="subscriptionDetails" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
 
     <g:if test="${(subscriptionInstance?.getConsortia()?.id == contextService.getOrg()?.id) && !subscriptionInstance.instanceOf}">

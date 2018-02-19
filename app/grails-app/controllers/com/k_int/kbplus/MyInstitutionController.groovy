@@ -8,7 +8,6 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.PropertyDefinition
-import org.springframework.dao.DataIntegrityViolationException
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -728,7 +727,7 @@ from Subscription as s where (
                   }
                 }
 
-                redirect controller: 'subscriptionDetails', action: 'details', id: new_sub.id
+                redirect controller: 'subscriptionDetails', action: 'show', id: new_sub.id
             } else {
                 new_sub.errors.each { e ->
                     log.debug("Problem creating new sub: ${e}");
@@ -807,7 +806,7 @@ from Subscription as s where (
                 log.error("Problem saving org links to license ${org.errors}");
             }
             flash.message = message(code: 'license.created.message')
-            redirect controller: 'licenseDetails', action: 'index', params: params, id: licenseInstance.id
+            redirect controller: 'licenseDetails', action: 'show', params: params, id: licenseInstance.id
         }
     }
 
@@ -837,7 +836,7 @@ from Subscription as s where (
                 render view: 'editLicense', model: [licenseInstance: copyLicense]
             }else{
                 flash.message = message(code: 'license.created.message')
-                redirect controller: 'licenseDetails', action: 'index', params: params, id: copyLicense.id
+                redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
             }
         }
     }
@@ -896,7 +895,7 @@ from Subscription as s where (
             }
         }
 
-        redirect controller: 'licenseDetails', action: 'index', id: params.licid, fragment: 'docstab'
+        redirect controller: 'licenseDetails', action: 'show', id: params.licid, fragment: 'docstab'
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

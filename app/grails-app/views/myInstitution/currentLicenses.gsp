@@ -81,7 +81,7 @@
               <g:each in="${licenses}" var="l">
                 <tr>
                   <td>
-                    <g:link action="index" controller="licenseDetails" id="${l.id}">
+                    <g:link action="show" controller="licenseDetails" id="${l.id}">
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
