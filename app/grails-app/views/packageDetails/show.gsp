@@ -246,6 +246,8 @@
     </div><!-- .grid -->
 
 
+    <% /* TODO: DO NOT REMOVE
+
     <div>
       <br/>
       <p>
@@ -643,6 +645,7 @@
         document.body.style.background = "#fcf8e3";
       });</g:if>
     </r:script>
+    */ %>
 
   </body>
 </html>
