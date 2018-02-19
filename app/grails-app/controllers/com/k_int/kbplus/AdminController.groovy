@@ -437,19 +437,22 @@ class AdminController {
     redirect(controller:'home')
 
   }
+    /*
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    def forumSync() {
+        redirect(controller:'home')
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def forumSync() {
-    redirect(controller:'home')
-    zenDeskSyncService.doSync()
-  }
+        //zenDeskSyncService.doSync()
+    }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def juspSync() {
-    log.debug("juspSync()");
-    juspSyncService.doSync()
-    redirect(controller:'home')
-  }
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    def juspSync() {
+        redirect(controller:'home')
+
+        //log.debug("juspSync()");
+        //juspSyncService.doSync()
+    }
+    */
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def globalSync() {
