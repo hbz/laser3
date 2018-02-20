@@ -24,7 +24,6 @@
             </g:each>
         </semui:exportDropdown>
     </g:if>
-
-    <li class="pull-right"><g:annotatedLabel owner="${license}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
+    <g:annotatedLabel owner="${license}" property="detailsPageInfo"></g:annotatedLabel>
 </semui:breadcrumbs>
 
