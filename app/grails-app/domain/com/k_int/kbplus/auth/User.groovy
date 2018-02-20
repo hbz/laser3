@@ -176,7 +176,8 @@ class User implements Permissions {
         def result = false
         def role = Role.findByAuthority(roleName)
         if (role) {
-            result = (null != roles.contains(UserRole.findByUserAndRole(this, role)))
+            def ur = UserRole.findByUserAndRole(this, role)
+            result = (ur && roles?.contains(ur))
         }
         result
     }
