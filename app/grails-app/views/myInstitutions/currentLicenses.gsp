@@ -6,24 +6,26 @@
   </head>
   <body>
 
-  <semui:breadcrumbs>
-      <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
-      <semui:crumb message="license.current" class="active" />
 
-      <semui:exportDropdown>
-          <semui:exportDropdownItem>
-              <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-          </semui:exportDropdownItem>
-          <g:each in="${transforms}" var="transkey,transval">
+      <semui:breadcrumbs>
+          <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
+          <semui:crumb message="license.current" class="active" />
+      </semui:breadcrumbs>
+
+      <semui:controlButtons>
+          <semui:exportDropdown>
               <semui:exportDropdownItem>
-                  <g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
               </semui:exportDropdownItem>
-          </g:each>
-      </semui:exportDropdown>
+              <g:each in="${transforms}" var="transkey,transval">
+                  <semui:exportDropdownItem>
+                      <g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  </semui:exportDropdownItem>
+              </g:each>
+          </semui:exportDropdown>
 
-  </semui:breadcrumbs>
-
-  <g:render template="actions" />
+          <g:render template="actions" />
+      </semui:controlButtons>
 
   <semui:messages data="${flash}" />
 

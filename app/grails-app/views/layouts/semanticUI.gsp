@@ -40,9 +40,11 @@
         }];
     </script>
 
-    <div class="ui fixed inverted menu">
+    <div class="ui fixed menu inverted la-menu ">
         <div class="ui container">
-            <g:link controller="home" action="index" class="header item">LAS:eR</g:link>
+            <g:link controller="home" action="index" class="header item la-logoItem">
+                <img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26">
+            </g:link>
 
             <sec:ifLoggedIn>
                 <g:if test="${false}">
@@ -344,7 +346,7 @@
                             <g:link class="item" controller="stats" action="statsHome">Statistics</g:link>
                             <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>
 
-                            <div class="ui dropdown item">
+                            <div class="ui dropdown item la-noBorder">
                                 Batch tasks
                                 <i class="dropdown icon"></i>
 
@@ -399,7 +401,7 @@
             <div class="right menu">
                 <sec:ifLoggedIn>
                     <g:if test="${user}">
-                        <div class="ui simple dropdown item">
+                        <div class="ui simple dropdown item la-noBorder">
                             ${user.displayName}
                             <i class="dropdown icon"></i>
 
@@ -429,23 +431,34 @@
                 </sec:ifNotLoggedIn>
             </div>
 
+
         </div><!-- container -->
-    </div><!-- inverted menu -->
 
-        <div class="navbar-push"></div>
+    </div><!-- main menu -->
+    <div class="ui fixed menu la-contextBar"  >
+        <div class="ui container">
+            <div class="ui sub header item">${contextOrg?.name}</div>
+            <div class="right menu la-advanced-view">
+            </div>
+        </div>
+    </div><!-- Context Bar -->
 
-        <sec:ifLoggedIn>
-            <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
-                <div>
-                    <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
-                        Your display name</g:link> as soon as possible.
-                    </bootstrap:alert>
-                </div>
-            </g:if>
-        </sec:ifLoggedIn>
+
+    <div class="ui right aligned sub header">${contextOrg?.name}</div>
+    <div class="navbar-push"></div>
+
+    <sec:ifLoggedIn>
+        <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
+            <div>
+                <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
+                                        Your display name</g:link> as soon as possible.
+                </bootstrap:alert>
+            </div>
+        </g:if>
+    </sec:ifLoggedIn>
 
         <div class="ui main container">
-            <div class="ui right aligned sub header">${contextOrg?.name}</div>
+
 
             <g:layoutBody/>
         </div><!-- .main -->

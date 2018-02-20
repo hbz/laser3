@@ -6,11 +6,17 @@
     <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
+<body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
+
+    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
     <semui:breadcrumbs>
         <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
-        <semui:crumb class="active" text="${packageInstance.name}" />
+        <semui:crumb class="active" text="${packageInstance.name}" /
+    </semui:breadcrumbs>
+
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
@@ -25,9 +31,9 @@
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
-    </semui:breadcrumbs>
+    </semui:controlButtons>
 
-    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
+
 
 <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_PACKAGE_EDITOR">
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
