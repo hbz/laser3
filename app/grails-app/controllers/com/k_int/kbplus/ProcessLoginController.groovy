@@ -99,10 +99,7 @@ class ProcessLoginController {
             else {
               log.error("Unable to look up ROLE_USER");
             }
-    
-            // log.debug("Granting user ROLE_EDITOR");
-            // new com.k_int.kbplus.auth.UserRole(user:user,role:com.k_int.kbplus.auth.Role.findByAuthority('ROLE_EDITOR')).save(flush:true)
-  
+
             // See if we can find the org this user is attached to
             if ( grailsApplication.config.autoAffiliate ) {
               createUserOrgLink(user, map.authInstitutionName, map.shibbScope);
