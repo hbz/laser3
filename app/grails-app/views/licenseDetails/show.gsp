@@ -137,7 +137,7 @@
                         </dd>
                     </dl>
 
-                    <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                    <sec:ifAnyGranted roles="ROLE_ADMIN">
                         <dl>
                             <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
                             <dd>

@@ -300,7 +300,7 @@ class DataManagerController {
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def deletedTitleManagement() {
     def result = [:]
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;
@@ -327,7 +327,7 @@ class DataManagerController {
   def expungeDeletedTitles() {
 
     log.debug("expungeDeletedTitles.. Create async task..");
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;
@@ -387,7 +387,7 @@ class DataManagerController {
   def expungeDeletedTIPPS() {
 
     log.debug("expungeDeletedTIPPS.. Create async task..");
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;

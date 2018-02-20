@@ -239,7 +239,7 @@ class OrganisationsController {
       if ( permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM') ) {
         result.editable = true
       }
-      def tracked_roles = ["KBPLUS_EDITOR":"KB+ Editor","ROLE_ADMIN":"KB+ Administrator"]
+      def tracked_roles = ["ROLE_ADMIN":"KB+ Administrator"]
 
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])

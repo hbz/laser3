@@ -79,7 +79,7 @@ class PropertyDefinitionController {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
 
-        if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+        if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
           flash.error =  message(code:"default.access.error")
           response.sendError(401)
           return;
@@ -107,7 +107,7 @@ class PropertyDefinitionController {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
 
-        if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+        if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
           flash.error =  message(code:"default.access.error")
           response.sendError(401)
           return;
@@ -132,7 +132,7 @@ class PropertyDefinitionController {
     }
   
    def isEditable(){
-    if ( SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN') ) {
+    if ( SpringSecurityUtils.ifNotGranted('ROLE_ADMIN') ) {
         return false
     }
     return true

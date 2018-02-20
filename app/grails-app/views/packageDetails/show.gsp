@@ -110,7 +110,7 @@
     <div class="ui grid">
 
         <div class="twelve wide column">
-            <sec:ifAnyGranted roles="ROLE_ADMIN, KBPLUS_EDITOR, ROLE_PACKAGE_EDITOR">
+            <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_PACKAGE_EDITOR">
                 <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
             </sec:ifAnyGranted>
 

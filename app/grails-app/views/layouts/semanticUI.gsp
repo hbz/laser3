@@ -200,7 +200,7 @@
             </g:if>
 
             <sec:ifLoggedIn>
-                <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.datamanager')}
                         <i class="dropdown icon"></i>
@@ -341,7 +341,7 @@
             </sec:ifLoggedIn>
 
             <% /*sec:ifLoggedIn>
-                <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <g:if env="development">
                         <div class="ui simple dropdown item">
                             Demo **
