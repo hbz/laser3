@@ -1,4 +1,8 @@
 
+0.3.4
+
+- bugfix: corrupted orgPermShare access
+
 0.3.3
 
 - bugfix: subscription get consortia

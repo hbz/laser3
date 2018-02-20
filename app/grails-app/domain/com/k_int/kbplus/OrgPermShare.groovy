@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
 
 class OrgPermShare {
 
@@ -13,16 +13,12 @@ class OrgPermShare {
     rdv   column: 'rdv_id'
   }
 
-  static mappedBy = [
-    rdv: 'sharedPermissions'
-  ]
-
   static constraints = {
     perm blank: false, nullable:false
     rdv blank: false, nullable:false
   }
 
-  public static def assertPermShare(perm, rdv) {
+  static def assertPermShare(perm, rdv) {
     def result = OrgPermShare.findByPermAndRdv(perm,rdv);
 
     if ( result == null ) {
