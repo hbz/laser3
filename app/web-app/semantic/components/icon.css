@@ -221,14 +221,14 @@ i.inverted.icon {
 
 /* Red */
 i.red.icon {
-  color: #F98D28 !important;
+  color: #BB1600 !important;
 }
 i.inverted.red.icon {
   color: #FF695E !important;
 }
 i.inverted.bordered.red.icon,
 i.inverted.circular.red.icon {
-  background-color: #F98D28 !important;
+  background-color: #BB1600 !important;
   color: #FFFFFF !important;
 }
 
@@ -247,14 +247,14 @@ i.inverted.circular.orange.icon {
 
 /* Yellow */
 i.yellow.icon {
-  color: #FBC71C !important;
+  color: #FBBD08 !important;
 }
 i.inverted.yellow.icon {
   color: #FFE21F !important;
 }
 i.inverted.bordered.yellow.icon,
 i.inverted.circular.yellow.icon {
-  background-color: #FBC71C !important;
+  background-color: #FBBD08 !important;
   color: #FFFFFF !important;
 }
 
@@ -273,27 +273,27 @@ i.inverted.circular.olive.icon {
 
 /* Green */
 i.green.icon {
-  color: #21BA45 !important;
+  color: #98B500 !important;
 }
 i.inverted.green.icon {
   color: #2ECC40 !important;
 }
 i.inverted.bordered.green.icon,
 i.inverted.circular.green.icon {
-  background-color: #21BA45 !important;
+  background-color: #98B500 !important;
   color: #FFFFFF !important;
 }
 
 /* Teal */
 i.teal.icon {
-  color: #4192B0 !important;
+  color: #00B5AD !important;
 }
 i.inverted.teal.icon {
   color: #4192B0 !important;
 }
 i.inverted.bordered.teal.icon,
 i.inverted.circular.teal.icon {
-  background-color: #4192B0 !important;
+  background-color: #00B5AD !important;
   color: #FFFFFF !important;
 }
 
@@ -312,27 +312,27 @@ i.inverted.circular.blue.icon {
 
 /* Violet */
 i.violet.icon {
-  color: #582BA0 !important;
+  color: #6435C9 !important;
 }
 i.inverted.violet.icon {
   color: #A291FB !important;
 }
 i.inverted.bordered.violet.icon,
 i.inverted.circular.violet.icon {
-  background-color: #582BA0 !important;
+  background-color: #6435C9 !important;
   color: #FFFFFF !important;
 }
 
 /* Purple */
 i.purple.icon {
-  color: #582BA0 !important;
+  color: #A333C8 !important;
 }
 i.inverted.purple.icon {
   color: #DC73FF !important;
 }
 i.inverted.bordered.purple.icon,
 i.inverted.circular.purple.icon {
-  background-color: #582BA0 !important;
+  background-color: #A333C8 !important;
   color: #FFFFFF !important;
 }
 

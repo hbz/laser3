@@ -197,6 +197,15 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 
 /*******************************
+        MISSED IN SEMANTIC UI
+*******************************/
+
+.la-float-right {
+  float: right;
+}
+
+
+/*******************************
         Landingpage
 *******************************/
 

@@ -15,14 +15,20 @@ class SemanticUiDropdownTagLib {
 
     // <semui:exportDropdown params="${params}" transforms="${transforms}" />
 
+    def controlButtons = { attrs, body ->
+
+
+        out << '<div class="ui icon buttons la-float-right">'
+        out <<       body()
+        out <<       '</div>'
+    }
+
     def exportDropdown = { attrs, body ->
 
-        out << '<div class="ui right floated compact menu">'
-        out <<   '<div class="ui simple dropdown item">'
-        out <<     '<i class="download icon"></i>&nbsp;'
-        out <<     'Export'
-        out <<     '<i class="dropdown icon"></i>'
-        out <<     '<div class="menu">'
+
+        out << '<button class="ui button dropdown">'
+        out <<   '<i class="download icon"></i>'
+        out <<   '<div class="menu">'
 
         out <<       body()
         /*
@@ -40,9 +46,8 @@ class SemanticUiDropdownTagLib {
         }
         */
 
-        out <<     '</div>'
-        out <<   '</div>'
-        out << '</div>'
+        out <<  '</div>'
+        out << '</button>'
     }
 
     //<semui:exportDropdownItem> LINK <semui:exportDropdownItem>
@@ -58,16 +63,14 @@ class SemanticUiDropdownTagLib {
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<div class="ui right floated compact menu">'
-        out <<   '<div class="ui simple dropdown item">'
-        out <<     '<div class="ui blue circular label" style="margin-left:0"><i class="play icon" style="margin-right:0"></i></div>&nbsp;' // TODO css
-        out <<     "${message(code:'default.actions', default:'Aktionen')}"
-        out <<     '<i class="dropdown icon"></i>'
-        out <<     '<div class="menu">'
-        out <<       body()
-        out <<     '</div>'
-        out <<   '</div>'
-        out << '</div>'
+        out << '<button class="ui button dropdown">'
+        out <<  '<i class="setting icon"></i>'
+        out <<  '<div class="menu">'
+
+        out <<          body()
+
+        out <<  '</div>'
+        out << '</button>'
     }
 
     def actionsDropdownItem = { attrs, body ->
@@ -92,3 +95,4 @@ class SemanticUiDropdownTagLib {
         }
     }
 }
+
