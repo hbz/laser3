@@ -14,11 +14,11 @@ class CostItem {
     Invoice invoice
 
     //Status & Costing Values...
-    RefdataValue costItemStatus    //cost est,actual,etc
-    RefdataValue costItemCategory
-    RefdataValue billingCurrency  //GDP,USD,etc
-    RefdataValue costItemElement
-    RefdataValue taxCode
+    RefdataValue costItemStatus     // RefdataCategory 'CostItemStatus' : cost est,actual,etc
+    RefdataValue costItemCategory   // RefdataCategory 'CostItemCategory'
+    RefdataValue billingCurrency    // GDP,USD,etc
+    RefdataValue costItemElement    // RefdataCategory 'CostItemElement'
+    RefdataValue taxCode            // RefdataCategory 'TaxType'
     Boolean includeInSubscription //include in sub details page
 
     Double costInBillingCurrency   //The actual amount - new cost ex tax

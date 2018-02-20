@@ -1,4 +1,4 @@
-  <table class="ui celled striped table">
+  <table class="ui celled la-table table">
     <thead>
       <tr>
         <th>${message(code:'license.organisationName')}</th>
@@ -13,7 +13,9 @@
           <td>${role?.roleType?.getI10n("value")}</td>
           <td>
             <g:if test="${editmode}">
-              <g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">${message(code:'default.button.delete.label')}</g:link>
+              <g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
+                ${message(code:'default.button.delete.label')}
+              </g:link>
             </g:if>
           </td>
         </g:if>

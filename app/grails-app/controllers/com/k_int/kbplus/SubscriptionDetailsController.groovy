@@ -6,7 +6,6 @@ import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
-
 //For Transform
 import static groovyx.net.http.ContentType.*
 
@@ -28,7 +27,8 @@ class SubscriptionDetailsController {
     def ESSearchService
     def executorWrapperService
     def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
-
+    def permissionHelperService
+    def filterService
 
   private static String INVOICES_FOR_SUB_HQL =
      'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -55,7 +55,6 @@ class SubscriptionDetailsController {
 
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance = Subscription.get(params.id)
-    result.shortcode = params.shortcode;
 
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
@@ -427,8 +426,9 @@ class SubscriptionDetailsController {
       params.insrt = "Y"
       params.dlt = "Y"
       params.updt = "Y"
-      if(params.shortcode){
-        result.institutionName = Org.findByShortcode(params.shortcode).name
+
+      if(contextService.getOrg()){
+        result.institutionName = contextService.getOrg().getName()
         log.debug("FIND ORG NAME ${result.institutionName}")
       }
       flash.message = message(code:'subscription.compare.note', default:"Please select two subscriptions for comparison")
@@ -579,7 +579,7 @@ class SubscriptionDetailsController {
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def addEntitlements() {
-    log.debug("addEntitlements....");
+    log.debug("addEntitlements ..")
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance = Subscription.get(params.id)
@@ -653,9 +653,164 @@ class SubscriptionDetailsController {
 
     result
   }
+
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def previous() {
        previousAndExpected(params,'previous');
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def members() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
+
+        if (params.showDeleted == 'Y') {
+            result.subscriptionChildren = Subscription.findAllByInstanceOf(result.subscriptionInstance)
+        }
+        else {
+            result.subscriptionChildren = Subscription.executeQuery(
+                    "select sub from Subscription as sub where sub.instanceOf = ? and sub.status.value != 'Deleted'",
+                    [result.subscriptionInstance]
+            )
+        }
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def addMembers() {
+        log.debug("addMembers ..")
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+
+        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
+
+        result.institution = result.subscriptionInstance.subscriber
+        if(result.institution?.orgType?.value == 'Consortium') {
+            def fsq = filterService.getOrgComboQuery(params, result.institution)
+            result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            result.cons_members_disabled = []
+            result.cons_members.each{ it ->
+                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+                        [result.subscriptionInstance, it.id])
+                ) {
+                    result.cons_members_disabled << it
+                }
+            }
+       }
+
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+        result
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def processAddMembers() {
+        log.debug(params)
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+
+        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
+
+        result.institution = result.subscriptionInstance.subscriber
+
+        def orgType   = RefdataValue.get(params.asOrgType)
+        def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
+        def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+
+        if (permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')) {
+
+            if (orgType?.value == 'Consortium') {
+                def cons_members = []
+
+                params.list('selectedOrgs').each { it ->
+                    def fo = Org.findById(Long.valueOf(it))
+                    cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
+                }
+
+                cons_members.each { cm ->
+
+                    if (params.generateSlavedSubs == "Y") {
+                        log.debug("Generating seperate slaved instances for consortia members")
+
+                        def postfix = cm.get(0).shortname ?: cm.get(0).name
+                        def cons_sub = new Subscription(
+                                type: RefdataValue.findByValue("Subscription Taken"),
+                                status: subStatus,
+                                name: result.subscriptionInstance.name + " (${postfix})",
+                                startDate: result.subscriptionInstance.startDate,
+                                endDate: result.subscriptionInstance.endDate,
+                                manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
+                                manualCancellationDate: result.subscriptionInstance.manualCancellationDate,
+                                identifier: java.util.UUID.randomUUID().toString(),
+                                instanceOf: result.subscriptionInstance,
+                                isSlaved: RefdataCategory.lookupOrCreate('YN', 'Yes'),
+                                isPublic: result.subscriptionInstance.isPublic,
+                                impId: java.util.UUID.randomUUID().toString(),
+                                owner: result.subscriptionInstance.owner
+                        ).save()
+
+                        if (cons_sub) {
+                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
+                            new OrgRole(org: result.institution, sub: cons_sub, roleType: role_cons).save()
+                        }
+
+                        cons_sub?.errors.each { e ->
+                            log.debug("Problem creating new sub: ${e}")
+                        }
+                        flash.error = cons_sub.errors
+                    }
+                }
+            }
+        }
+        redirect controller: 'subscriptionDetails', action: 'show', params:[id: result.subscriptionInstance?.id]
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def deleteMember() {
+        log.debug(params)
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.getSubscriber()
+
+        def delSubscription = Subscription.get(params.basesubscription)
+        def delInstitution = delSubscription.getSubscriber()
+
+        userAccessCheck(delSubscription, result.user, 'edit')
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
+
+        if (delSubscription.hasPerm("edit", result.user)) {
+            def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
+
+            if (! derived_subs) {
+                if( delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution ) {
+                    OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
+
+                    delSubscription.status = deletedStatus
+                    delSubscription.save(flush: true)
+                }
+            }
+            else {
+                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
+            }
+        }
+        else {
+            log.warn("${result.user} attempted to delete subscription ${delSubscription} without perms")
+            flash.message = message(code: 'subscription.delete.norights')
+        }
+
+        redirect action: 'members', params: [id: params.id], model: result
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -911,7 +1066,7 @@ class SubscriptionDetailsController {
     def oid = "com.k_int.kbplus.Subscription:${params.id}"
     shopping_basket.addIfNotPresent(oid)
 
-    redirect controller:'myInstitutions',action:'renewalsSearch',params:[shortcode:result.subscriptionInstance.subscriber.shortcode]
+    redirect controller:'myInstitution', action:'renewalsSearch'
   }
 
     def userAccessCheck(sub, user, role_str) {
@@ -1057,8 +1212,8 @@ class SubscriptionDetailsController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def editHistory() {
-    log.debug("subscriptionDetails::editHistory ${params}");
+  def history() {
+    log.debug("subscriptionDetails::history ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscription = Subscription.get(params.id)
@@ -1079,8 +1234,8 @@ class SubscriptionDetailsController {
   }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def todoHistory() {
-    log.debug("subscriptionDetails::todoHistory ${params}");
+  def changes() {
+    log.debug("subscriptionDetails::changes ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscription = Subscription.get(params.id)
@@ -1178,15 +1333,15 @@ class SubscriptionDetailsController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def details() {
+  def show() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance =  Subscription.get(params.id) 
     
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-    result.institution = Org.findByShortcode(params.shortcode)
-    if( !result.institution ) {
+    result.institution = contextService.getOrg()
+    if( ! result.institution ) {
       result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
     }
     if ( result.institution ) {

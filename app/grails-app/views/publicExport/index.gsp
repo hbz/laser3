@@ -174,7 +174,7 @@
                 </div>
 
                 <div id="resultsarea">
-                  <table class="ui celled striped table">
+                  <table class="ui sortable celled la-table table">
                     <thead>
                       <tr style="white-space: nowrap">
                       <g:sortableColumn property="sortname" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />

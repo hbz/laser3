@@ -25,11 +25,11 @@ class PendingChangeController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def acceptAll() {
         log.debug("acceptAll - ${params}")
-        def owner = genericOIDService.resolveOID(params.id)
+        def owner = genericOIDService.resolveOID(params.OID)
 
         def changes_to_accept = []
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-        def pendingChanges = owner.pendingChanges.findAll {
+        def pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
         pendingChanges = pendingChanges.collect { it.id }
@@ -46,11 +46,11 @@ class PendingChangeController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def rejectAll() {
         log.debug("rejectAll ${params}")
-        def owner = genericOIDService.resolveOID(params.id)
+        def owner = genericOIDService.resolveOID(params.OID)
 
         def changes_to_reject = []
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-        def pendingChanges = owner.pendingChanges.findAll {
+        def pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
         pendingChanges = pendingChanges.collect { it.id }

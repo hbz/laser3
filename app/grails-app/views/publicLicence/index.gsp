@@ -25,7 +25,7 @@
 
 
     <div id="resultsarea">
-      <table class="ui celled striped table">
+      <table class="ui sortable celled la-table table">
         <thead>
           <tr style="white-space: nowrap">
           <g:sortableColumn property="reference" title="Reference" />

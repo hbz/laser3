@@ -8,7 +8,7 @@
         </div>
 
     </g:if>
-    <table class="ui celled table license-documents">
+    <table class="ui celled la-table table license-documents">
         <thead>
         <tr>
             <g:if test="${editable}"><th>${message(code:'default.select.label', default:'Select')}</th></g:if>

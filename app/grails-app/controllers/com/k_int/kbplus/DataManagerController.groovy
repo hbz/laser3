@@ -1,13 +1,8 @@
 package com.k_int.kbplus
 
-import com.k_int.properties.PropertyDefinition
-import grails.converters.*
 import grails.plugins.springsecurity.Secured
-import grails.web.JSONBuilder
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import com.k_int.kbplus.auth.User
-import static java.util.concurrent.TimeUnit.*
-import static grails.async.Promises.*
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 
@@ -178,7 +173,7 @@ class DataManagerController {
             if (license_object) {
                 def license_name = license_object.licenseType ? license_object.licenseType+': ' : ''
                 license_name += license_object.reference ?: '**No reference**'
-                line_to_add.link = createLink(controller:'licenseDetails', action: 'index', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'licenseDetails', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = license_name
             }
             linetype = 'License'

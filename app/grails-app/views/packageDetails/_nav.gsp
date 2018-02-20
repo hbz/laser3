@@ -14,11 +14,13 @@
 
     <semui:subNavItem controller="packageDetails" action="notes" params="${[id:params.id]}" message="package.show.nav.notes" />
 
-    <semui:subNavItem controller="packageDetails" action="history" params="${[id:params.id]}" message="package.show.nav.history" />
-
-    <g:if test="${editable}">
+    <g:if test="${false && editable}">
         <g:if test="${packageInstance?.consortia != null}">
             <semui:subNavItem controller="packageDetails" action="consortia" params="${[id:params.id]}" message="package.show.nav.consortia" />
         </g:if>
+    </g:if>
+
+    <g:if test="${user.hasRole('ROLE_ADMIN')}">
+        <semui:subNavItem controller="packageDetails" action="history" params="${[id:params.id]}" message="package.show.nav.history" />
     </g:if>
 </semui:subNav>

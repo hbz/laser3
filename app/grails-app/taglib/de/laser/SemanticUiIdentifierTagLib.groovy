@@ -35,7 +35,8 @@ class SemanticUiIdentifierTagLib {
         out <<     '<div class="field">'
         out <<       '<label></label>'
         out <<       '<select name="namespace" id="' + namespaceSelector + '" class="ui search dropdown" />'
-        IdentifierNamespace.where{}.list(sort:'ns').each{ ns ->
+
+        IdentifierNamespace.where{(nsType == attrs.owner.class.name) || (nsType == null)}.list(sort:'ns').each{ ns ->
             out <<     '<option value="' + ns.ns + '">' + ns.ns + '</option>'
         }
         out <<       '</select>'

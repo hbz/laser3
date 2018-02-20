@@ -1,9 +1,9 @@
 <%@ page import="com.k_int.kbplus.PersonRole" %>
 
-<div class="ui vertical segment template-element template-element-${timestamp}">
+<div class="ui vertical template-element template-element-${timestamp}">
 
 	<div class="field">
-        <label>${roleRdv?.value}</label>
+        <label>${roleRdv?.getI10n('value')}</label>
 
         <div class="two fields">
 
@@ -32,7 +32,7 @@
                 </g:if>
             </div>
             <div class="field wide four">
-                <button class="ui button template-element-delete-${timestamp}" type="button">${message('code':'default.button.delete.label')}</button>
+                <button class="ui button template-element-delete-${timestamp}" type="button">${message('code':'default.button.remove.label')}</button>
             </div>
 
 

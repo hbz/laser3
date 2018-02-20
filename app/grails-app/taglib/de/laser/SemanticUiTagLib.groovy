@@ -85,10 +85,13 @@ class SemanticUiTagLib {
         def title  = (text && message) ? text + " - " + message : text + message
 
         out << '<div class="ui card ' + attrs.class + '">'
-        out <<   '<div class="content">'
+
         if (title) {
-            out << '<div class="header">' + title + '</div>'
+            out << '<div class="content">'
+            out <<   '<div class="header">' + title + '</div>'
+            out << '</div>'
         }
+        out <<   '<div class="content">'
         out <<     body()
         out <<   '</div>'
         out << '</div>'
@@ -126,7 +129,7 @@ class SemanticUiTagLib {
                 class: "ui mini button ${mode == 'basic' ? 'positive' : ''}"
         )
 
-        out << '<div class="or"></div>'
+        //out << '<div class="or"></div>'
 
         out << g.link( "${message(code:'profile.advancedView', default:'Advanced')}",
                 controller: attrs.controller,
@@ -134,6 +137,17 @@ class SemanticUiTagLib {
                 params: attrs.params + ['mode':'advanced'],
                 class: "ui mini button ${mode == 'advanced' ? 'positive' : ''}"
         )
+        out << '</div>'
+    }
+
+    //<semui:meta> CONTENT <semui:meta>
+
+    def meta = { attrs, body ->
+
+        out << '<div class="metaboxToggle"><button class="ui icon button">Identifikatoren anzeigen</button></div>'
+        out << '<div class="ui blue segment metaboxContent hide">'
+        out <<   '<i class="close icon"></i>'
+        out <<   body()
         out << '</div>'
     }
 
@@ -150,7 +164,7 @@ class SemanticUiTagLib {
 
     def form = { attrs, body ->
 
-        out << '<div class="ui blue segment">'
+        out << '<div class="ui grey segment">'
         out <<   body()
         out << '</div>'
     }

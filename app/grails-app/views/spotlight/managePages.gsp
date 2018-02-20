@@ -21,7 +21,7 @@
     <semui:errors bean="${newPage}" />
 
       <div class="span6"> 
-          <table class="ui celled striped table">
+          <table class="ui celled la-table table">
               <thead>
                 <tr>
                   <th>Controller</th>

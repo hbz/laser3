@@ -30,11 +30,15 @@ class GlobalSourceSyncService {
       log.debug("Failed to resolve ${grt.localOid} - Exiting");
       return
     }
-    
-    if(newtitle.status != 'Current'){
-      title_instance.status = RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, 'Deleted')
+
+    title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+
+    if (newtitle.status == 'Current') {
+      title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+    } else if (newtitle.status == 'Current') {
+      title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Retired', de: 'im Ruhestand'])
     }
-    
+
     newtitle.identifiers.each {
       log.debug("Checking title has ${it.namespace}:${it.value}");
       title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
@@ -206,41 +210,53 @@ class GlobalSourceSyncService {
     // Firstly, make sure that there is a package for this record
     if ( grt.localOid != null ) {
       pkg = genericOIDService.resolveOID(grt.localOid)
-      
+
       if( pkg && newpkg.status != 'Current' ){
-        def pkg_del_status = RefdataCategory.lookupOrCreate('Package Status', 'Deleted');
-        
+        def pkg_del_status = RefdataValue.loc('Package Status', [en: 'Deleted', de: 'Gelöscht'])
+        if (newpkg.status == 'Retired') {
+          pkg_del_status = RefdataValue.loc('Package Status', [en: 'Retired', de: 'im Ruhestand'])
+        }
+
         pkg.packageStatus = pkg_del_status
       }
-      
+
       if( pkg ) {
         newpkg.identifiers.each {
           log.debug("Checking package has ${it.namespace}:${it.value}");
           pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
         }
       }
+      pkg.save()
     }
     else {
       // create a new package
       log.debug("Creating new Package..")
 
+      def packageStatus = RefdataValue.loc('Package Status', [en: 'Deleted', de: 'Gelöscht'])
+
+      if (newpkg.status == 'Current') {
+        packageStatus = RefdataValue.loc('Package Status', [en: 'Current', de: 'Aktuell'])
+      } else if (newpkg.status == 'Retired') {
+        packageStatus = RefdataValue.loc('Package Status', [en: 'Retired', de: 'im Ruhestand'])
+      }
+
       // Auto accept everything whilst we load the package initially
       auto_accept_flag = true;
 
       pkg = new Package(
-                         identifier:grt.identifier,
-                         name:grt.name,
-                         impId:grt.owner.identifier,
-                         autoAccept:false,
-                         packageType:null,
-                         packageStatus:null,
-                         packageListStatus:listStatus,
-                         breakable:breakable,
-                         consistent:consistent,
-                         fixed:fixed,
-                         isPublic:isPublic,
-                         packageScope:scope
-                       )
+              identifier: grt.identifier,
+              name: grt.name,
+              impId: grt.owner.identifier,
+              autoAccept: false,
+              packageType: null,
+              packageStatus: packageStatus,
+              packageListStatus: listStatus,
+              breakable: breakable,
+              consistent: consistent,
+              fixed: fixed,
+              isPublic: isPublic,
+              packageScope: scope
+      )
 
 
       if ( pkg.save() ) {
@@ -288,15 +304,15 @@ class GlobalSourceSyncService {
         // to change in the future.
         // tipp.coverage.each { cov ->
         def cov = tipp.coverage[0]
-          new_tipp.startDate=((cov.startDate != null ) && ( cov.startDate.length() > 0 ) ) ? sdf.parse(cov.startDate) : null;
-          new_tipp.startVolume=cov.startVolume;
-          new_tipp.startIssue=cov.startIssue;
-          new_tipp.endDate= ((cov.endDate != null ) && ( cov.endDate.length() > 0 ) ) ? sdf.parse(cov.endDate) : null;
-          new_tipp.endVolume=cov.endVolume;
-          new_tipp.endIssue=cov.endIssue;
-          new_tipp.embargo=cov.embargo;
-          new_tipp.coverageDepth=cov.coverageDepth;
-          new_tipp.coverageNote=cov.coverageNote;
+        new_tipp.startDate = ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null;
+        new_tipp.startVolume = cov.startVolume;
+        new_tipp.startIssue = cov.startIssue;
+        new_tipp.endDate = ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null;
+        new_tipp.endVolume = cov.endVolume;
+        new_tipp.endIssue = cov.endIssue;
+        new_tipp.embargo = cov.embargo;
+        new_tipp.coverageDepth = cov.coverageDepth;
+        new_tipp.coverageNote = cov.coverageNote;
         // }
         new_tipp.hostPlatformURL=tipp.url;
 
@@ -316,31 +332,31 @@ class GlobalSourceSyncService {
         println("Register new tipp event for user to accept or reject");
 
         def cov = tipp.coverage[0]
-        def change_doc = [ 
-                           pkg:[id:ctx.id],
-                           platform:[id:plat_instance.id],
-                           title:[id:title_instance.id],
-                           impId:tipp.tippId,
-                           status:[id:tipp_status.id],
-                           startDate:((cov.startDate != null ) && ( cov.startDate.length() > 0 ) ) ? sdf.parse(cov.startDate) : null,
-                           startVolume:cov.startVolume,
-                           startIssue:cov.startIssue,
-                           endDate:((cov.endDate != null ) && ( cov.endDate.length() > 0 ) ) ? sdf.parse(cov.endDate) : null,
-                           endVolume:cov.endVolume,
-                           endIssue:cov.endIssue,
-                           embargo:cov.embargo,
-                           coverageDepth:cov.coverageDepth,
-                           coverageNote: cov.coverageNote];
+        def change_doc = [
+                pkg          : [id: ctx.id],
+                platform     : [id: plat_instance.id],
+                title        : [id: title_instance.id],
+                impId        : tipp.tippId,
+                status       : [id: tipp_status.id],
+                startDate    : ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null,
+                startVolume  : cov.startVolume,
+                startIssue   : cov.startIssue,
+                endDate      : ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null,
+                endVolume    : cov.endVolume,
+                endIssue     : cov.endIssue,
+                embargo      : cov.embargo,
+                coverageDepth: cov.coverageDepth,
+                coverageNote : cov.coverageNote];
 
         changeNotificationService.registerPendingChange('pkg',
-                                                        ctx,
-                                                        "New TIPP for ${title_instance.title} from ${plat_instance.name}",
-                                                        null,
-                                                        [
-                                                          newObjectClass:"com.k_int.kbplus.TitleInstancePackagePlatform",
-                                                          changeType:'New Object',
-                                                          changeDoc:change_doc
-                                                        ])
+                ctx,
+                "New TIPP for ${title_instance.title} from ${plat_instance.name}",
+                null,
+                [
+                        newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
+                        changeType    : 'New Object',
+                        changeDoc     : change_doc
+                ])
 
       }
     }
@@ -354,36 +370,80 @@ class GlobalSourceSyncService {
       def db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
 
       if ( db_tipp != null) {
+
+        def TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+
+        if (tipp.status == 'Current') {
+          TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'])
+        } else if (tipp.status == 'Retired') {
+          TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+        }
+
+        def changetext
+        def change_doc = [:]
         changes.each { chg ->
 
-          def change_doc = [ 
-              startDate:tipp.coverage[0].startDate,
-              startVolume:tipp.coverage[0].startVolume,
-              startIssue:tipp.coverage[0].startIssue,
-              endDate:tipp.coverage[0].endDate,
-              endVolume:tipp.coverage[0].endVolume,
-              endIssue:tipp.coverage[0].endIssue,
-              embargo:tipp.coverage[0].embargo,
-              coverageDepth:tipp.coverage[0].coverageDepth,
-              coverageNote:tipp.coverage[0].coverageNote,
-              // status:null,
-              // option:null,
-              // delayedOA:null,
-              // hybridOA:null,
-              // statusReason:null,
-              // payment:null,
-              hostPlatformURL:tipp.url
-          ]
+          if ("${chg.field}" == "accessStart") {
+            changetext = changetext ? changetext + ", accessStartDate: ${tipp.accessStart}" : "accessStartDate: ${tipp.accessStart}"
+            change_doc.put("accessStartDate", tipp.accessStart)
+          }
+          if ("${chg.field}" == "accessEnd") {
+            changetext = changetext ? changetext + ", accessEndDate: ${tipp.accessEnd}" : "accessEndDate: ${tipp.accessEnd}"
+            change_doc.put("accessEndDate", tipp.accessEnd)
 
+          }
+          if ("${chg.field}" == "coverage") {
+            changetext = changetext ? changetext + ", coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})" : "Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})"
+            change_doc.put("startDate", tipp.coverage[0].startDate)
+            change_doc.put("startVolume", tipp.coverage[0].startVolume)
+            change_doc.put("startIssue", tipp.coverage[0].startIssue)
+            change_doc.put("endDate", tipp.coverage[0].endDate)
+            change_doc.put("endVolume", tipp.coverage[0].endVolume)
+            change_doc.put("endIssue", tipp.coverage[0].endIssue)
+            change_doc.put("embargo", tipp.coverage[0].embargo)
+            change_doc.put("coverageDepth", tipp.coverage[0].coverageDepth)
+            change_doc.put("coverageNote", tipp.coverage[0].coverageNote)
+          }
+          if ("${chg.field}" == "hostPlatformURL") {
+            changetext = changetext ? changetext + ", url: ${tipp.url}" : "url: ${tipp.url}"
+            change_doc.put("hostPlatformURL", tipp.url)
+
+          }
+
+//          change_doc = [
+//                  startDate      : tipp.coverage[0].startDate,
+//                  startVolume    : tipp.coverage[0].startVolume,
+//                  startIssue     : tipp.coverage[0].startIssue,
+//                  endDate        : tipp.coverage[0].endDate,
+//                  endVolume      : tipp.coverage[0].endVolume,
+//                  endIssue       : tipp.coverage[0].endIssue,
+//                  embargo        : tipp.coverage[0].embargo,
+//                  coverageDepth  : tipp.coverage[0].coverageDepth,
+//                  coverageNote   : tipp.coverage[0].coverageNote,
+//                  status         : TippStatus,
+//                  accessStartDate: tipp.accessStart,
+//                  accessEndDate  : tipp.accessEnd,
+//                  // option:null,
+//                  // delayedOA:null,
+//                  // hybridOA:null,
+//                  // statusReason:null,
+//                  // payment:null,
+//                  hostPlatformURL: tipp.url
+//          ]
+
+        }
+        if (change_doc) {
           changeNotificationService.registerPendingChange('pkg',
-                                                          ctx,
-                                                          "A tipp/coverage update for \"${title_of_tipp_to_update.title}\" (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote}, url:${tipp.url}",
-                                                          null,
-                                                          [
-                                                            changeTarget:"com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                                                            changeType:'Update Object',
-                                                            changeDoc:change_doc
-                                                          ])
+                  ctx,
+                  "A tipp/coverage update for \"${title_of_tipp_to_update.title}\", ${changetext}, status: ${TippStatus}",
+                  null,
+                  [
+                          changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
+                          changeType  : 'Update Object',
+                          changeDoc   : change_doc
+                  ])
+        } else {
+          throw new RuntimeException("changeDoc is empty. ctx:${ctx}, tipp:${tipp}");
         }
       }
       else {
@@ -392,7 +452,32 @@ class GlobalSourceSyncService {
     }
 
     def onDeletedTipp = { ctx, tipp, auto_accept ->
-      println("deleted tipp");
+
+      // Find title with ID tipp... in package ctx
+      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name)
+
+      def TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+      if (tipp.status == 'Retired') {
+        TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+      }
+      def db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
+
+      if (db_tipp != null && !(db_tipp.status.equals(TippStatus))) {
+
+        def change_doc = [status: TippStatus]
+
+        changeNotificationService.registerPendingChange('pkg',
+                ctx,
+                "A tipp status update for \"${title_of_tipp_to_update.title}\", status: ${TippStatus}",
+                null,
+                [
+                        changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
+                        changeType  : 'Update Object',
+                        changeDoc   : change_doc
+                ])
+        println("deleted tipp");
+      }
+
     }
 
     def onPkgPropChange = { ctx, propname, value, auto_accept ->
@@ -407,7 +492,7 @@ class GlobalSourceSyncService {
 
   def testTitleCompliance = { json_record ->
     log.debug("testTitleCompliance:: ${json_record}");
-    
+
     def result = RefdataCategory.lookupOrCreate("YNO","No")
 
     if ( json_record.identifiers?.size() > 0 ) {
@@ -453,7 +538,7 @@ class GlobalSourceSyncService {
     else {
       result = RefdataCategory.lookupOrCreate("YNO","Yes")
     }
-    
+
     result
   }
   def packageConv = { md, synctask ->
@@ -470,6 +555,14 @@ class GlobalSourceSyncService {
     result.parsed_rec.tipps = []
     result.parsed_rec.identifiers = []
     result.parsed_rec.status = md.gokb.package.status.text()
+    result.parsed_rec.scope = md.gokb.package.scope.text()
+    result.parsed_rec.listStatus = md.gokb.package.listStatus.text()
+    result.parsed_rec.breakable = md.gokb.package.breakable.text()
+    result.parsed_rec.consistent = md.gokb.package.consistent.text()
+    result.parsed_rec.fixed = md.gokb.package.fixed.text()
+    result.parsed_rec.global = md.gokb.package.global.text()
+    result.parsed_rec.paymentType = md.gokb.package.paymentType.text()
+    result.parsed_rec.nominalPlatform = md.gokb.package.nominalPlatform.text()
 
     md.gokb.package.identifiers.identifier.each { id ->
       result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
@@ -479,31 +572,34 @@ class GlobalSourceSyncService {
     md.gokb.package.TIPPs.TIPP.each { tip ->
       log.debug("Processing tipp ${ctr++} from package ${result.parsed_rec.packageId} - ${result.title} (source:${synctask.uri})");
       def newtip = [
-                     title: [
-                       name:tip.title.name.text(), 
-                       identifiers:[]
-                     ],
-                     status:tip.status?.text()?: 'Current',
-                     titleId:tip.title.'@id'.text(),
-                     platform:tip.platform.name.text(),
-                     platformId:tip.platform.'@id'.text(),
-                     coverage:[],
-                     url:tip.url.text(),
-                     identifiers:[],
-                     tippId:tip.'@id'.text()
-                   ];
+              title      : [
+                      name       : tip.title.name.text(),
+                      identifiers: []
+              ],
+              status     : tip.status?.text() ?: 'Current',
+              titleId    : tip.title.'@id'.text(),
+              platform   : tip.platform.name.text(),
+              platformId : tip.platform.'@id'.text(),
+              coverage   : [],
+              url        : tip.url.text(),
+              identifiers: [],
+              tippId     : tip.'@id'.text(),
+              accessStart: tip.access.'@start'.text(),
+              accessEnd  : tip.access.'@end'.text()
+      ];
 
       tip.coverage.each { cov ->
         newtip.coverage.add([
-                       startDate:cov.'@startDate'.text(),
-                       endDate:cov.'@endDate'.text(),
-                       startVolume:cov.'@startVolume'.text(),
-                       endVolume:cov.'@endVolume'.text(),
-                       startIssue:cov.'@startIssue'.text(),
-                       endIssue:cov.'@endIssue'.text(),
-                       coverageDepth:cov.'@coverageDepth'.text(),
-                       coverageNote:cov.'@coverageNote'.text(),
-                     ]);
+                startDate    : cov.'@startDate'.text(),
+                endDate      : cov.'@endDate'.text(),
+                startVolume  : cov.'@startVolume'.text(),
+                endVolume    : cov.'@endVolume'.text(),
+                startIssue   : cov.'@startIssue'.text(),
+                endIssue     : cov.'@endIssue'.text(),
+                coverageDepth: cov.'@coverageDepth'.text(),
+                coverageNote : cov.'@coverageNote'.text(),
+                embargo      : cov.'@embargo'.text()
+        ]);
       }
 
       tip.title.identifiers.identifier.each { id ->
@@ -514,7 +610,7 @@ class GlobalSourceSyncService {
       newtip.identifiers.add([namespace:'uri',value:newtip.tippId]);
 
       log.debug("Harmonise identifiers");
-      harmoniseTitleIdentifiers(newtip);
+      //harmoniseTitleIdentifiers(newtip);
 
       result.parsed_rec.tipps.add(newtip)
     }
@@ -552,10 +648,10 @@ class GlobalSourceSyncService {
 
 
       def grt = new GlobalRecordTracker(
-        owner:global_record_info,
-        localOid:title_instance.class.name+':'+title_instance.id,
-        identifier:java.util.UUID.randomUUID().toString(),
-        name:newtitle.title
+              owner: global_record_info,
+              localOid: title_instance.class.name + ':' + title_instance.id,
+              identifier: java.util.UUID.randomUUID().toString(),
+              name: newtitle.title
       ).save(flush:true)
 
       log.debug("call title reconcile");
@@ -569,10 +665,10 @@ class GlobalSourceSyncService {
 
   // Main configuration map
   def rectypes = [
-    [ name:'Package', converter:packageConv, reconciler:packageReconcile, newRemoteRecordHandler:null, complianceCheck:testPackageCompliance ],
-    [ name:'Title', converter:titleConv, reconciler:titleReconcile, newRemoteRecordHandler:onNewTitle, complianceCheck:testTitleCompliance ],
+          [name: 'Package', converter: packageConv, reconciler: packageReconcile, newRemoteRecordHandler: null, complianceCheck: testPackageCompliance],
+          [name: 'Title', converter: titleConv, reconciler: titleReconcile, newRemoteRecordHandler: onNewTitle, complianceCheck: testTitleCompliance],
   ]
-  
+
   def runAllActiveSyncTasks() {
 
     if ( running == false ) {
@@ -585,33 +681,33 @@ class GlobalSourceSyncService {
 
   def internalRunAllActiveSyncTasks() {
 
-      running = true;
+    running = true;
 
-     def jobs = GlobalRecordSource.findAll() 
+    def jobs = GlobalRecordSource.findAll()
 
-     jobs.each { sync_job ->
-       log.debug(sync_job);
-       // String identifier
-       // String name
-       // String type
-       // Date haveUpTo
-       // String uri
-       // String listPrefix
-       // String fullPrefix
-       // String principal
-       // String credentials
-       switch ( sync_job.type ) {
-         case 'OAI':
-           log.debug("start internal sync");
-           this.doOAISync(sync_job)
-           log.debug("this.doOAISync has returned...");
-           break;
-         default:
-           log.error("Unhandled sync job type: ${sync_job.type}");
-           break;
-       }
-     }
-     running = false
+    jobs.each { sync_job ->
+      log.debug(sync_job);
+      // String identifier
+      // String name
+      // String type
+      // Date haveUpTo
+      // String uri
+      // String listPrefix
+      // String fullPrefix
+      // String principal
+      // String credentials
+      switch (sync_job.type) {
+        case 'OAI':
+          log.debug("start internal sync");
+          this.doOAISync(sync_job)
+          log.debug("this.doOAISync has returned...");
+          break;
+        default:
+          log.error("Unhandled sync job type: ${sync_job.type}");
+          break;
+      }
+    }
+    running = false
   }
 
   def private doOAISync(sync_job) {
@@ -624,7 +720,7 @@ class GlobalSourceSyncService {
     }
     log.debug("doneOAISync");
   }
- 
+
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   def intOAI(sync_job_id) {
 
@@ -634,127 +730,145 @@ class GlobalSourceSyncService {
     int rectype = sync_job.rectype.longValue()
     def cfg = rectypes[rectype]
 
+    Thread.currentThread().setName("GlobalDataSync");
+
     try {
-  
+
       log.debug("Rectype: ${rectype} == config ${cfg}");
-  
-        log.debug("internalOAISync records from [job ${sync_job_id}] ${sync_job.uri} since ${sync_job.haveUpTo} using ${sync_job.fullPrefix}");
-  
-        if ( cfg == null ) {
-          throw new RuntimeException("Unable to resolve config for ID ${sync_job.rectype}");
+
+      log.debug("internalOAISync records from [job ${sync_job_id}] ${sync_job.uri} since ${sync_job.haveUpTo} using ${sync_job.fullPrefix}");
+
+      if (cfg == null) {
+        throw new RuntimeException("Unable to resolve config for ID ${sync_job.rectype}");
+      }
+
+      def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+      def date = sync_job.haveUpTo
+
+      log.debug("upto: ${date} uri:${sync_job.uri} prefix:${sync_job.fullPrefix}");
+
+      def oai_client = new OaiClient(host: sync_job.uri)
+      def max_timestamp = 0
+
+      log.debug("Collect ${cfg.name} changes since ${date}");
+
+      oai_client.getChangesSince(date, sync_job.fullPrefix) { rec ->
+
+        log.debug("Got OAI Record ${rec.header.identifier} datestamp: ${rec.header.datestamp} job:${sync_job.id} url:${sync_job.uri} cfg:${cfg.name}")
+
+        def qryparams = [sync_job.id, rec.header.identifier.text()]
+        def record_timestamp = sdf.parse(rec.header.datestamp.text())
+        def existing_record_info = GlobalRecordInfo.executeQuery('select r from GlobalRecordInfo as r where r.source.id = ? and r.identifier = ?', qryparams);
+        if (existing_record_info.size() == 1) {
+          log.debug("convert xml into json - config is ${cfg} ");
+          def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
+
+          // Deserialize
+          def bais = new ByteArrayInputStream((byte[]) (existing_record_info[0].record))
+          def ins = new ObjectInputStream(bais);
+          def old_rec_info = ins.readObject()
+          ins.close()
+          def new_record_info = parsed_rec.parsed_rec
+
+          // For each tracker we need to update the local object which reflects that remote record
+          existing_record_info[0].trackers.each { tracker ->
+            cfg.reconciler.call(tracker, old_rec_info, new_record_info)
+          }
+
+          log.debug("Calling compliance check, cfg name is ${cfg.name}");
+          existing_record_info[0].kbplusCompliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
+          log.debug("Result of compliance check: ${existing_record_info[0].kbplusCompliant}");
+
+          // Finally, update our local copy of the remote object
+          def baos = new ByteArrayOutputStream()
+          def out = new ObjectOutputStream(baos)
+          out.writeObject(new_record_info)
+          out.close()
+          existing_record_info[0].record = baos.toByteArray();
+          existing_record_info[0].desc = "Package ${parsed_rec.title} consisting of ${parsed_rec.parsed_rec.tipps?.size()} titles"
+
+
+          def status = RefdataValue.loc("${cfg.name} Status", [en: 'Deleted', de: 'Gelöscht'])
+
+          if (parsed_rec.parsed_rec.status == 'Current') {
+            status = RefdataValue.loc("${cfg.name} Status", [en: 'Current', de: 'Aktuell'])
+          } else if (parsed_rec.parsed_rec.status == 'Retired') {
+            status = RefdataValue.loc("${cfg.name} Status", [en: 'Retired', de: 'im Ruhestand'])
+          }
+
+          existing_record_info[0].globalRecordInfoStatus = status
+          existing_record_info[0].save()
+        } else {
+          log.debug("First time we have seen this record - converting ${cfg.name}");
+          def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
+          log.debug("Converter thinks this rec has title :: ${parsed_rec.title}");
+
+          // Evaluate the incoming record to see if it meets KB+ stringent data quality standards
+          log.debug("Calling compliance check, cfg name is ${cfg.name}");
+          def kbplus_compliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
+          // RefdataCategory.lookupOrCreate("YNO","No")
+          log.debug("Result of compliance [new] check: ${kbplus_compliant}");
+
+          def baos = new ByteArrayOutputStream()
+          def out = new ObjectOutputStream(baos)
+          log.debug("write object ${parsed_rec.parsed_rec}");
+          out.writeObject(parsed_rec.parsed_rec)
+
+          log.debug("written, closed...");
+
+          out.close()
+
+          log.debug("Create new GlobalRecordInfo");
+
+          def status = RefdataValue.loc("${cfg.name} Status", [en: 'Deleted', de: 'Gelöscht'])
+          if (parsed_rec.parsed_rec.status == 'Current') {
+            status = RefdataValue.loc("${cfg.name} Status", [en: 'Current', de: 'Aktuell'])
+          } else if (parsed_rec.parsed_rec.status == 'Retired') {
+            status = RefdataValue.loc("${cfg.name} Status", [en: 'Retired', de: 'im Ruhestand'])
+          }
+
+          // Because we don't know about this record, we can't possibly be already tracking it. Just create a local tracking record.
+          existing_record_info = new GlobalRecordInfo(
+                  ts: record_timestamp,
+                  name: parsed_rec.title,
+                  identifier: rec.header.identifier.text(),
+                  desc: "${parsed_rec.title}",
+                  source: sync_job,
+                  rectype: sync_job.rectype,
+                  record: baos.toByteArray(),
+                  kbplusCompliant: kbplus_compliant,
+                  globalRecordInfoStatus: status);
+
+          if (existing_record_info.save(flush: true)) {
+            log.debug("existing_record_info created ok");
+          } else {
+            log.error("Problem saving record info: ${existing_record_info.errors}");
+          }
+
+          if (kbplus_compliant?.value == 'Yes') {
+            if (cfg.newRemoteRecordHandler != null) {
+              log.debug("Calling new remote record handler...");
+              cfg.newRemoteRecordHandler.call(existing_record_info, parsed_rec.parsed_rec)
+              log.debug("Call completed");
+            } else {
+              log.debug("No new record handler");
+            }
+          } else {
+            log.debug("Skip record - not KBPlus compliant");
+          }
         }
-  
-        def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-  
-        def date = sync_job.haveUpTo
-  
-        log.debug("upto: ${date} uri:${sync_job.uri} prefix:${sync_job.fullPrefix}");
-  
-        def oai_client = new OaiClient(host:sync_job.uri)
-        def max_timestamp = 0
-  
-        log.debug("Collect ${cfg.name} changes since ${date}");
-  
-        oai_client.getChangesSince(date, sync_job.fullPrefix) { rec ->
-  
-          log.debug("Got OAI Record ${rec.header.identifier} datestamp: ${rec.header.datestamp} job:${sync_job.id} url:${sync_job.uri} cfg:${cfg.name}")
-  
-          def qryparams = [sync_job.id, rec.header.identifier.text()]
-          def record_timestamp = sdf.parse(rec.header.datestamp.text())
-          def existing_record_info = GlobalRecordInfo.executeQuery('select r from GlobalRecordInfo as r where r.source.id = ? and r.identifier = ?',qryparams);
-          if ( existing_record_info.size() == 1 ) {
-            log.debug("convert xml into json - config is ${cfg} ");
-            def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
-  
-            // Deserialize
-            def bais = new ByteArrayInputStream((byte[])(existing_record_info[0].record))
-            def ins = new ObjectInputStream(bais);
-            def old_rec_info = ins.readObject()
-            ins.close()
-            def new_record_info = parsed_rec.parsed_rec
-  
-            // For each tracker we need to update the local object which reflects that remote record
-            existing_record_info[0].trackers.each { tracker ->
-              cfg.reconciler.call(tracker, old_rec_info, new_record_info)
-            }
-  
-            log.debug("Calling compliance check, cfg name is ${cfg.name}");
-            existing_record_info[0].kbplusCompliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
-            log.debug("Result of compliance check: ${existing_record_info[0].kbplusCompliant}");
-  
-            // Finally, update our local copy of the remote object
-            def baos = new ByteArrayOutputStream()
-            def out= new ObjectOutputStream(baos)
-            out.writeObject(new_record_info)
-            out.close()
-            existing_record_info[0].record = baos.toByteArray();
-            existing_record_info[0].desc="Package ${parsed_rec.title} consisting of ${parsed_rec.parsed_rec.tipps?.size()} titles"
-            existing_record_info[0].save()
-          }
-          else {
-            log.debug("First time we have seen this record - converting ${cfg.name}");
-            def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
-            log.debug("Converter thinks this rec has title :: ${parsed_rec.title}");
-  
-            // Evaluate the incoming record to see if it meets KB+ stringent data quality standards
-            log.debug("Calling compliance check, cfg name is ${cfg.name}");
-            def kbplus_compliant = cfg.complianceCheck.call(parsed_rec.parsed_rec) // RefdataCategory.lookupOrCreate("YNO","No")
-            log.debug("Result of compliance [new] check: ${kbplus_compliant}");
-  
-            def baos = new ByteArrayOutputStream()
-            def out= new ObjectOutputStream(baos)
-            log.debug("write object ${parsed_rec.parsed_rec}");
-            out.writeObject(parsed_rec.parsed_rec)
 
-            log.debug("written, closed...");
-
-            out.close()
-  
-            log.debug("Create new GlobalRecordInfo");
-
-            // Because we don't know about this record, we can't possibly be already tracking it. Just create a local tracking record.
-            existing_record_info = new GlobalRecordInfo(
-                                                        ts:record_timestamp,
-                                                        name:parsed_rec.title,
-                                                        identifier:rec.header.identifier.text(),
-                                                        desc:"${parsed_rec.title}",
-                                                        source: sync_job,
-                                                        rectype:sync_job.rectype,
-                                                        record: baos.toByteArray(),
-                                                        kbplusCompliant: kbplus_compliant);
-  
-            if ( existing_record_info.save(flush:true) ) {
-              log.debug("existing_record_info created ok");
-            }
-            else {
-              log.error("Problem saving record info: ${existing_record_info.errors}");
-            }
-
-            if ( kbplus_compliant?.value == 'Yes' ) {
-              if ( cfg.newRemoteRecordHandler != null ) {
-                log.debug("Calling new remote record handler...");
-                cfg.newRemoteRecordHandler.call(existing_record_info, parsed_rec.parsed_rec)
-                log.debug("Call completed");
-              }
-              else {
-                log.debug("No new record handler");
-              }
-            }
-            else {
-              log.debug("Skip record - not KBPlus compliant");
-            }
-          }
-  
-          if ( record_timestamp.getTime() > max_timestamp ) {
-            max_timestamp = record_timestamp.getTime()
-            log.debug("Max timestamp is now ${record_timestamp}");
-          }
-  
-          log.debug("Updating sync job max timestamp");
-          sync_job.haveUpTo=new Date(max_timestamp)
-          sync_job.save(flush:true);
-          sleep(3000);
+        if (record_timestamp.getTime() > max_timestamp) {
+          max_timestamp = record_timestamp.getTime()
+          log.debug("Max timestamp is now ${record_timestamp}");
         }
+
+        log.debug("Updating sync job max timestamp");
+        sync_job.haveUpTo = new Date(max_timestamp)
+        sync_job.save(flush: true);
+        sleep(3000);
+      }
     }
     catch ( Exception e ) {
       log.error("Problem",e);
@@ -821,7 +935,7 @@ class GlobalSourceSyncService {
     // println("harmoniseTitleIdentifiers");
     // println("Remote Title ID: ${titleinfo.titleId}");
     // println("Identifiers: ${titleinfo.title.identifiers}");
-    def title_instance = TitleInstance.lookupOrCreate(titleinfo.title.identifiers,titleinfo.title.name, true)
+    //def title_instance = TitleInstance.lookupOrCreate(titleinfo.title.identifiers,titleinfo.title.name, true)
   }
 
   def diff(localPackage, globalRecordInfo) {
@@ -845,5 +959,19 @@ class GlobalSourceSyncService {
 
     return result
   }
+  //NICHT FERTIG
+  def updatedTitelafterPackageReconcile(grt) {
+    def sync_job = GlobalRecordSource.get(GlobalRecordInfo.get(grt.owner).source.id)
+    def oai_client = new OaiClient(host: sync_job.uri)
+    oai_client.getChangesSince(null, sync_job.fullPrefix) { rec ->
+
+      def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
+
+      def kbplus_compliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
+
+    }
+
+  }
+
 
 }

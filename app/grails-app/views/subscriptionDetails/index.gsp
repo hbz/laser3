@@ -24,13 +24,11 @@
       <semui:xEditable owner="${subscriptionInstance}" field="name" />
   </h1>
 
-  <g:render template="nav" />
-
-
+    <g:render template="nav" />
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
-   <div>
+   <div class="ui grid">
       <dl>
         <dt>
           <g:annotatedLabel owner="${subscriptionInstance}" property="entitlements">
@@ -93,7 +91,7 @@
               <g:hiddenField name="order" value="${params.order}"/>
               <g:hiddenField name="offset" value="${params.offset}"/>
               <g:hiddenField name="max" value="${params.max}"/>
-          <table  class="ui celled striped table">
+          <table  class="ui sortable celled la-rowspan table">
             <thead>
 
                 <tr>
@@ -197,8 +195,12 @@
 
                <semui:xEditableRefData owner="${ie}" field="coreStatus" config='CoreStatus'/>
                 </td>
-                <td>
-                  <g:if test="${editable}"><g:link action="removeEntitlement" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">${message(code:'default.button.delete.label', default:'Delete')}</g:link></g:if>
+                <td class="x">
+                  <g:if test="${editable}">
+                      <g:link action="removeEntitlement" class="ui icon negative button" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">
+                          <i class="trash icon"></i>
+                      </g:link>
+                  </g:if>
 
 <!-- Review for use in LAS:eR
                   <g:if test="${institutional_usage_identifier}">
@@ -220,13 +222,11 @@
         </dd>
       </dl>
 
-
-        <g:if test="${entitlements}" >
-          <semui:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
-        </g:if>
-
     </div>
 
+  <g:if test="${entitlements}" >
+      <semui:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
+  </g:if>
 
 
     <div id="magicArea">

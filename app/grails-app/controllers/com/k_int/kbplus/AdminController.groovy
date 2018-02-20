@@ -126,9 +126,9 @@ class AdminController {
         pkg.subscriptions.each{
 
           if(it.subscription.status.value != "Deleted"){
-            subscription_map.details += ['link':createLink(controller:'subscriptionDetails', action: 'details', id:it.subscription.id), 'text': it.subscription.name]
+            subscription_map.details += ['link':createLink(controller:'subscriptionDetails', action: 'show', id:it.subscription.id), 'text': it.subscription.name]
           }else{
-            subscription_map.details += ['link':createLink(controller:'subscriptionDetails', action: 'details', id:it.subscription.id), 'text': "(Deleted)" + it.subscription.name]
+            subscription_map.details += ['link':createLink(controller:'subscriptionDetails', action: 'show', id:it.subscription.id), 'text': "(Deleted)" + it.subscription.name]
           }
         }
         subscription_map.action = ['actionRequired':true,'text':"Unlink subscriptions. (IEs will be removed as well)"]
@@ -437,19 +437,22 @@ class AdminController {
     redirect(controller:'home')
 
   }
+    /*
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    def forumSync() {
+        redirect(controller:'home')
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def forumSync() {
-    redirect(controller:'home')
-    zenDeskSyncService.doSync()
-  }
+        //zenDeskSyncService.doSync()
+    }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def juspSync() {
-    log.debug("juspSync()");
-    juspSyncService.doSync()
-    redirect(controller:'home')
-  }
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    def juspSync() {
+        redirect(controller:'home')
+
+        //log.debug("juspSync()");
+        //juspSyncService.doSync()
+    }
+    */
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def globalSync() {
@@ -902,7 +905,6 @@ class AdminController {
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def manageNamespaces() {
-    // TODO check role and editable !!!
 
     def identifierNamespaceInstance = new IdentifierNamespace(params)
     switch (request.method) {
@@ -918,6 +920,7 @@ class AdminController {
         break
     }
     render view: 'manageNamespaces', model: [
+            editable: true, // TODO check role and editable !!!
             identifierNamespaceInstance: identifierNamespaceInstance,
             identifierNamespaces: IdentifierNamespace.where{}.sort('ns')
     ]

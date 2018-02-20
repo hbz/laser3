@@ -55,7 +55,7 @@ class PackageDetailsController {
 
       result.editable = true
 
-      def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
+      def paginate_after = params.paginate_after ?: ((2 * result.max)-1)
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
       def deleted_package_status =  RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
@@ -403,8 +403,8 @@ class PackageDetailsController {
       boolean showDeletedTipps=false
 
       result.transforms = grailsApplication.config.packageTransforms
-      
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
         result.editable=true
         showDeletedTipps=true
       }
@@ -422,7 +422,7 @@ class PackageDetailsController {
 
       def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
 
-      result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts desc", [packageInstance, pending_change_pending_status]);
+        result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, changeDoc", [packageInstance, pending_change_pending_status]);
 
       log.debug("Package has ${result.pendingChanges?.size()} pending changes");
 
@@ -852,7 +852,7 @@ class PackageDetailsController {
   }
 
   def isEditable(){
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+      if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
           return true
       }
       else {
@@ -901,7 +901,7 @@ class PackageDetailsController {
     def packageInstance = Package.get(params.id)
     boolean showDeletedTipps=false
 
-    if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+      if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
       showDeletedTipps=true
     }
 

@@ -1,8 +1,9 @@
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
 <semui:breadcrumbs>
-    <g:if test="${params.shortcode}">
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${params.shortcode}" />
-        <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${message(code:'myinst.currentSubscriptions.label')}" />
-    </g:if>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
+
     <g:if test="${subscriptionInstance}">
         <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
     </g:if>

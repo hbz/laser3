@@ -2,9 +2,11 @@ package com.k_int.kbplus
 
 class InstitutionsService {
 
+    def contextService
+
     def copyLicense(params){
         def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
-        def org = Org.findByShortcode(params.shortcode)
+        def org = contextService.getOrg()
 
         def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Current')

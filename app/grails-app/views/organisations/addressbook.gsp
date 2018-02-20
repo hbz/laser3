@@ -15,7 +15,10 @@ import="com.k_int.kbplus.RefdataCategory"
   </head>
   <body>
 
-      <h1 class="ui header">${orgInstance.name}</h1>
+      <h1 class="ui header">
+		  <semui:editableLabel editable="${editable}" />
+		  ${orgInstance.name}
+	  </h1>
 
       <g:render template="nav" contextPath="." />
 
@@ -34,11 +37,15 @@ import="com.k_int.kbplus.RefdataCategory"
 
 		<g:if test="${visiblePersons}">
 			<h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
-			<div class="ui divided list">
+
+			<g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
+			<% /*
+			<div class="ui relaxed list">
 				<g:each in="${visiblePersons}" var="p">
 					<g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
 				</g:each>
 			</div>
+			*/ %>
 		</g:if>
 
   </body>

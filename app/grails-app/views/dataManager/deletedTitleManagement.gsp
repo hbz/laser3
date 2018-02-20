@@ -8,7 +8,7 @@
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="dataManager" action="index" params="${[shortcode:params.shortcode]}" text="${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}" />
+      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}" />
       <semui:crumb text="${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title management')}" class="active"/>
     </semui:breadcrumbs>
 
@@ -21,7 +21,7 @@
 
     <div>
 
-      <table class="ui celled striped table">
+      <table class="ui sortable celled la-table table">
         <thead>
           <tr>
             <g:sortableColumn property="title" title="${message(code: 'title.label', default: 'Title')}" />

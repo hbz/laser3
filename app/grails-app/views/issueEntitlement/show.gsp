@@ -9,7 +9,7 @@
 <body>
     <semui:breadcrumbs>
         <g:if test="${issueEntitlementInstance?.subscription.subscriber}">
-            <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance?.subscription.subscriber.name} - ${message(code:'subscription.plural', default:'Subscriptions')}"/>
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" params="${[shortcode:issueEntitlementInstance?.subscription.subscriber.shortcode]}" text="${issueEntitlementInstance?.subscription.subscriber.name} - ${message(code:'subscription.plural', default:'Subscriptions')}"/>
         </g:if>
         <semui:crumb controller="subscriptionDetails" action="index" id="${issueEntitlementInstance?.subscription.id}"  text="${issueEntitlementInstance?.subscription.name}" />
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
@@ -34,7 +34,7 @@
             <g:if test="${issueEntitlementInstance?.subscription.owner}">
                 <dt><g:message code="licence.label" default="License" /></dt>
 
-                <dd><g:link controller="licenseDetails" action="index" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference.encodeAsHTML()}</g:link></dd>
+                <dd><g:link controller="licenseDetails" action="show" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference.encodeAsHTML()}</g:link></dd>
 
             </g:if>
             <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">
@@ -98,7 +98,7 @@
             
             <h6 class="ui header"><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
 
-            <table class="ui celled striped table">
+            <table class="ui celled la-table table">
                 <thead>
                     <tr>
                         <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
@@ -136,7 +136,7 @@
             
             <h6 class="ui header"><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
 
-            <table class="ui celled striped table">
+            <table class="ui celled la-table table">
                 <thead>
                     <tr>
                         <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
@@ -176,7 +176,7 @@
                 <a href="${jusplink}">[JUSP]</a>
               </span>
               <h6 class="ui header">JUSP Usage Statistics</h6>
-              <table class="ui celled striped table">
+              <table class="ui celled la-table table">
                 <tr>
                   <th>Reporting Period</th>
                   <g:each in="${x_axis_labels}" var="l">
@@ -226,7 +226,7 @@
                     </g:form>
                 </semui:filter>
 
-                <table class="ui celled striped table">
+                <table class="ui celled la-table table">
                     <thead>
                         <tr>
                             <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>

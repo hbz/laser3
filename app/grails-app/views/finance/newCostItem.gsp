@@ -1,3 +1,4 @@
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <!doctype html>
 <html>
 <!-- deprecated -->
@@ -11,15 +12,15 @@
     <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="finance" params="${[shortcode:params.shortcode]}">${institution.name} Finance</g:link> </li>
+        <li> <g:link controller="myInstitution" action="finance">${institution.name} Finance</g:link> </li>
       </ul>
     </div>
 
     <div>
       <h1 class="ui header">${institution.name} Cost Items</h1>
-      <g:form action="index" class="ui form" method="post" params="${[shortcode:params.shortcode]}">
-        <input type="hidden" name="shortcode" value="${params.shortcode}"/>
-        <table class="ui celled striped table table table-tworow">
+      <g:form action="index" class="ui form" method="post">
+        <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+        <table class="ui celled la-table table table table-tworow">
           <thead>
           <tr><td colspan="9">&nbsp;</td></tr>
           <tr>

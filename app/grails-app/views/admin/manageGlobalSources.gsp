@@ -16,7 +16,7 @@
 
     <div class="ui grid">
         <div class="twelve wide column">
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
                 <th>Identifier</th>
@@ -24,6 +24,7 @@
                 <th>Type</th>
                 <th>Up To</th>
                 <th>URL</th>
+                <th>URL with Up To</th>
                 <th>List Prefix</th>
                 <th>Full Prefix</th>
                 <th>Principal</th>
@@ -41,6 +42,9 @@
                   <td>${source.type}</td>
                   <td>${source.haveUpTo}</td>
                   <td>${source.uri}</td>
+                  <td><g:link
+                          uri="${source.uri + '?verb=ListRecords&metadataPrefix=' + source.fullPrefix + '&from=' + formatDate(format: "yyyy-MM-dd'T'HH:mm:ss'Z'", date: source.haveUpTo)}"
+                          target="_blank">Link</g:link></td>
                   <td>${source.listPrefix}</td>
                   <td>${source.fullPrefix}</td>
                   <td>${source.principal}</td>
@@ -59,6 +63,7 @@
             </tbody>
           </table>
         </div><!-- .twelve -->
+      <br>
         <div class="four wide column">
           <g:form action="newGlobalSource">
             <dl>

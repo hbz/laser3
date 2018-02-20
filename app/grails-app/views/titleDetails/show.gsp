@@ -33,60 +33,66 @@
 
         <g:render template="nav" />
 
+        <semui:meta>
+            <div class="inline-lists">
+                <g:if test="${ti.globalUID}">
+                    <dl>
+                        <dt><g:message code="title.globalUID.label" default="Global UID" /></dt>
+                        <dd>
+                            <g:fieldValue bean="${ti}" field="globalUID"/>
+                        </dd>
+                    </dl>
+                </g:if>
+
+                <dl>
+                    <dt>${message(code: 'title.identifiers.label')}</dt>
+                    <dd>
+                    <table class="ui celled la-table table">
+                        <thead>
+                        <tr>
+                            <th>${message(code:'title.edit.component_id.label')}</th>
+                            <th>${message(code:'title.edit.namespace.label')}</th>
+                            <th>${message(code:'identifier.label')}</th>
+                            <th>${message(code:'default.actions.label')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${ti.ids}" var="io">
+                            <tr>
+                                <td>${io.id}</td>
+                                <td>${io.identifier.ns.ns}</td>
+                                <td>${io.identifier.value}</td>
+                                <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ti.class.name}:${ti.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'title.edit.identifier.delete')}</g:link></g:if></td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                    </table>
+
+                    <g:if test="${editable}">
+                        <semui:formAddIdentifier owner="${ti}" buttonText="${message(code:'title.edit.identifier.select.add')}"
+                                                 uniqueCheck="yes" uniqueWarningText="${message(code:'title.edit.duplicate.warn.list')}">
+                            ${message(code:'identifier.select.text', args:['eISSN:2190-9180'])}
+                        </semui:formAddIdentifier>
+                    </g:if>
+                    </dd>
+                </dl>
+
+            </div>
+        </semui:meta>
+
         <semui:messages data="${flash}" />
 
         <div class="ui grid">
 
-            <div class="sixteen wide column">
+            <div class="twelve wide column">
 
               <h3 class="ui header">${message(code:'default.status.label')}:
                 <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/>
               </h3>
 
-              <g:if test="${ti.globalUID}">
-                  <dt><g:message code="title.globalUID.label" default="Global UID" /></dt>
-                  <dd>
-                      <g:fieldValue bean="${ti}" field="globalUID"/>
-                  </dd>
-              </g:if>
+            </div><!-- .eight -->
 
-            </div>
-
-          <div class="eight wide column">
-
-              <h3 class="ui header">${message(code:'title.identifiers.label')}</h3>
-
-              <table class="ui celled table">
-                  <thead>
-                  <tr>
-                      <th>${message(code:'title.edit.component_id.label')}</th>
-                      <th>${message(code:'title.edit.namespace.label')}</th>
-                      <th>${message(code:'identifier.label')}</th>
-                      <th>${message(code:'default.actions.label')}</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <g:each in="${ti.ids}" var="io">
-                      <tr>
-                          <td>${io.id}</td>
-                          <td>${io.identifier.ns.ns}</td>
-                          <td>${io.identifier.value}</td>
-                          <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ti.class.name}:${ti.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'title.edit.identifier.delete')}</g:link></g:if></td>
-                      </tr>
-                  </g:each>
-                  </tbody>
-              </table>
-
-              <g:if test="${editable}">
-                  <semui:formAddIdentifier owner="${ti}" buttonText="${message(code:'title.edit.identifier.select.add')}"
-                                           uniqueCheck="yes" uniqueWarningText="${message(code:'title.edit.duplicate.warn.list')}">
-                      ${message(code:'identifier.select.text', args:['eISSN:2190-9180'])}
-                  </semui:formAddIdentifier>
-              </g:if>
-
-          </div><!-- .eight -->
-
-          <div class="eight wide column">
+            <div class="twelve wide column">
 
               <g:each in="${duplicates}" var="entry">
                   <bootstrap:alert class="alert-info">
@@ -99,12 +105,12 @@
                   </bootstrap:alert>
               </g:each>
 
-          </div><!-- .eight -->
+            </div><!-- .eight -->
         </div><!-- .grid -->
 
           <h3 class="ui header">${message(code:'title.edit.orglink')}</h3>
 
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
               <thead>
                 <tr>
                   <th>${message(code:'title.edit.component_id.label')}</th>
@@ -139,7 +145,7 @@
 
             <h3 class="ui header">${message(code: 'title.show.history.label')}</h3>
 
-            <table class="ui celled striped table">
+            <table class="ui celled la-table table">
               <thead>
                 <tr>
                   <th>${message(code: 'title.show.history.date')}</th>
@@ -177,7 +183,7 @@
 
             <h3 class="ui header">${message(code:'title.edit.tipp')}</h3>
 
-              <table class="ui celled striped table">
+              <table class="ui celled la-table table">
                   <thead>
                   <tr>
                       <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
@@ -204,7 +210,7 @@
               </table>
 
             <g:form id="${params.id}" controller="titleDetails" action="batchUpdate" class="ui form">
-              <table class="ui celled striped table">
+              <table class="ui celled la-rowspan table">
                   <thead>
                     <tr>
                       <th rowspan="2"></th>

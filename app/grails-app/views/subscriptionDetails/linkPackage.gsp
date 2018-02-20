@@ -45,11 +45,8 @@
     <body>
 
         <semui:breadcrumbs>
-            <g:if test="${params.shortcode}">
-                <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-            </g:if>
-            <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" text="${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.notes.label', default:'Notes')}" />
-
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
+            <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
             <semui:crumb class="active" text="${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}" />
         </semui:breadcrumbs>
 
@@ -118,7 +115,7 @@
              <g:if test="${hits}">
 
                 <div id="resultsarea">
-                  <table class="ui celled striped table">
+                  <table class="ui celled la-table table">
                     <thead>
                       <tr><th>${message(code:'package.show.pkg_name', default:'Package Name')}</th><th>${message(code:'consortium.label', default:'Consortium')}</th><th>${message(code:'default.action.label', default:'Action')}</th></tr>
                     </thead>

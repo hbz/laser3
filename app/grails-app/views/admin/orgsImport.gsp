@@ -11,7 +11,7 @@
           <p>
             Upload a .csv file formatted as<br/>
             org_name, sector, id.type...,affiliation.role...,role,</br>
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
               <tr>
                 <td>Example Header Row:</td>
                 <td>name,</td>

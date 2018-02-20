@@ -13,7 +13,7 @@
     </semui:breadcrumbs>
 
     <div>
-      <table class="ui celled table">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
             <th colspan="4">Note attached to</th>
@@ -30,7 +30,7 @@
             <td colspan="4">
               <g:if test="${ua.license}">
                 <span class="label label-info">License</span>
-                <em><g:link action="index"
+                <em><g:link action="show"
                         controller="licenseDetails" 
                         id="${ua.license.id}">${ua.license.reference}</g:link></em>
            

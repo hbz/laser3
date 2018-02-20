@@ -25,7 +25,7 @@ class LicenseDetailsController {
     def addressbookService
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def index() {
+  def show() {
       log.debug("licenseDetails: ${params}");
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -218,7 +218,7 @@ class LicenseDetailsController {
       owner.addToSubscriptions(sub)
       owner.save(flush:true)
     }
-    redirect controller:'licenseDetails', action:'index', params: [id:params.license]
+    redirect controller:'licenseDetails', action:'show', params: [id:params.license]
 
   }
 
@@ -279,7 +279,7 @@ class LicenseDetailsController {
         if(p.key.startsWith("_create.")){
          def orgID = p.key.substring(8)
          def orgaisation = Org.get(orgID)
-          def attrMap = [shortcode:orgaisation.shortcode,baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:slaved]
+          def attrMap = [baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:slaved]
           log.debug("Create slave license for ${orgaisation.name}")
           attrMap.copyStartEnd = true
           institutionsService.copyLicense(attrMap);
@@ -306,8 +306,8 @@ class LicenseDetailsController {
     result
   }
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def editHistory() {
-    log.debug("licenseDetails::editHistory : ${params}");
+  def history() {
+    log.debug("licenseDetails::history : ${params}");
 
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -342,8 +342,8 @@ class LicenseDetailsController {
 
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def todoHistory() {
-    log.debug("licenseDetails::todoHistory : ${params}");
+  def changes() {
+    log.debug("licenseDetails::changes : ${params}");
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.license = License.get(params.id)
@@ -466,7 +466,7 @@ class LicenseDetailsController {
       }
     }
 
-    redirect controller: 'licenseDetails', action:params.redirectAction, params:[shortcode:params.shortcode], id:params.instanceId, fragment:'docstab'
+    redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId, fragment:'docstab'
   }
 
     def userAccessCheck(license, user, role_str) {
@@ -484,13 +484,13 @@ class LicenseDetailsController {
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def acceptChange() {
     processAcceptChange(params, License.get(params.id), genericOIDService)
-    redirect controller: 'licenseDetails', action:'index',id:params.id
+    redirect controller: 'licenseDetails', action:'show',id:params.id
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def rejectChange() {
     processRejectChange(params, License.get(params.id))
-    redirect controller: 'licenseDetails', action:'index',id:params.id
+    redirect controller: 'licenseDetails', action:'show',id:params.id
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -520,7 +520,7 @@ class LicenseDetailsController {
       def new_template_license = new License(reference:params.reference,
                                              type:template_license_type,
                                              status:license_status_current).save(flush:true);
-      redirect(action:'index', id:new_template_license.id);
+      redirect(action:'show', id:new_template_license.id);
     }
     else {
       redirect(action:'create');
@@ -535,7 +535,7 @@ class LicenseDetailsController {
       if(! (opl && license)){
         log.error("Something has gone mysteriously wrong. Could not get License or OnixLicense. params:${params} license:${license} onix: ${opl}")
         flash.message = message(code:'license.unlink.error.unknown');
-        redirect(action: 'index', id: license.id);
+        redirect(action: 'show', id: license.id);
       }
 
       String oplTitle = opl?.title;
@@ -563,6 +563,6 @@ class LicenseDetailsController {
       } else {
           flash.message = message(code:'license.unlink.success', args:[oplTitle]);
       }
-      redirect(action: 'index', id: license.id);
+      redirect(action: 'show', id: license.id);
   }
 }
