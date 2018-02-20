@@ -383,7 +383,8 @@ button:-moz-focusring,
  */
 
 fieldset {
-  padding: 0.35em 0.75em 0.625em;
+  padding: 0;
+  border-width: 0;
 }
 
 /**
@@ -17790,7 +17791,7 @@ ol.ui.horizontal.list li:before,
 }
 
 .ui.breadcrumb a:hover {
-  color: #1e70bf;
+  color: #39a1f2;
 }
 
 /* Icon Divider */

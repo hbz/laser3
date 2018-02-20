@@ -34,7 +34,7 @@
   color @defaultDuration @defaultEasing
 ;
 @itemFontWeight: normal;
-@itemTextColor: @textColor;
+@itemTextColor: @blue;
 
 /* Divider */
 @dividerSize: 1px;

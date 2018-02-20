@@ -1,0 +1,32 @@
+.ui.menu .item>img.logo {
+  width: 100px;
+}
+.ui.menu.la-menu {
+  .item.la-logoItem{
+    background-color: white;
+  }
+  .item:first-child{
+    border-left-width: 0!important;
+  }
+  .item.la-noBorder{
+    &:before {
+      width: 0;
+    }
+  }
+}
+.ui.menu.la-contextBar {
+  top: 44px;
+  z-index:1;
+  background-color: @lightGrey;
+  .ui.sub.header.item {
+    border-left: none!important;
+    border-right: none;
+    &:before {
+      width: 0!important;
+    }
+    &:first-child{
+      padding-left:0!important;
+    }
+  }
+
+}
