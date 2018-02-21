@@ -7,6 +7,8 @@
   </head>
   <body>
 
+    <g:render template="breadcrumb" model="${[ params:params ]}"/>
+
      <h1 class="ui header">
          <semui:editableLabel editable="${editable}" />
          <span id="displayEdit"

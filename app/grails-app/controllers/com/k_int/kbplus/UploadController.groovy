@@ -54,7 +54,7 @@ class UploadController {
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def reviewPackage() {
     def result = [:]
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;

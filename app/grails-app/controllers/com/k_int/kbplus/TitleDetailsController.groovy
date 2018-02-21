@@ -317,7 +317,7 @@ class TitleDetailsController {
   def dmIndex() {
 
     log.debug("dmIndex ${params}");
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error = message(code:"default.access.error")
       response.sendError(401)
       return;

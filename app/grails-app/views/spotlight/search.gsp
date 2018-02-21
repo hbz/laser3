@@ -33,7 +33,7 @@
           <g:link controller="subscriptionDetails" action="index" id="${hit.getSource().dbId}">${hit.getSource().name} (${hit.getSource().type})</g:link>
         </g:if>
         <g:if test="${hit.type=='com.k_int.kbplus.License'}">
-          <g:link controller="licenseDetails" action="index" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link>
+          <g:link controller="licenseDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link>
         </g:if>
       </li>
     </g:each>

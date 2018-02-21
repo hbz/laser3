@@ -32,6 +32,15 @@ class RefdataValue extends I10nTranslatableAbstract {
     @Transient
     Set<OrgPermShare> sharedPermissions = []
 
+    /*
+    static hasMany = [
+            sharedPermissions: com.k_int.kbplus.OrgPermShare
+    ]
+    static mappedBy = [
+            sharedPermissions: 'rdv'
+    ]
+    */
+
     static mapping = {
                     id column: 'rdv_id'
                version column: 'rdv_version'
@@ -47,7 +56,6 @@ class RefdataValue extends I10nTranslatableAbstract {
         group    (nullable:true,  blank:false)
         softData (nullable:false, blank:false, default:false)
     }
-
 
     /**
      * Create RefdataValue and matching I10nTranslation.
@@ -143,13 +151,7 @@ class RefdataValue extends I10nTranslatableAbstract {
         I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
     }
 
-    /*
-    * Error 500: Internal Server Error
-    * URI /laser/licenseDetails/index/12
-    * Class org.hibernate.AssertionFailure
-    * Message collection [com.k_int.kbplus.RefdataValue.sharedPermissions] was not processed by flush()
-     */
     def getSharedPermissions() {
-        sharedPermissions
+        OrgPermShare.findAllByRdv(this)
     }
 }

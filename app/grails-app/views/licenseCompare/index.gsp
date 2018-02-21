@@ -12,8 +12,8 @@
 
 	<semui:breadcrumbs>
 		<g:if test="${institution}">
-			<semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution?.name}" />
-			<semui:crumb text="${message(code:'license.current')}" controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" />
+			<semui:crumb controller="myInstitution" action="dashboard" text="${institution?.name}" />
+			<semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
 		</g:if>
 		<semui:crumb class="active" message="menu.institutions.comp_lic" />
 	</semui:breadcrumbs>

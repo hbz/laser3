@@ -1,29 +1,51 @@
 package com.k_int.kbplus
 
+import javax.persistence.Transient
+
 class IdentifierNamespace {
 
-  String ns
-  RefdataValue nstype
-  Boolean hide
-  String validationRegex
-  String family
-  Boolean nonUnique
+    @Transient
+    public static final NS_ORGANISATION = "com.k_int.kbplus.Org"
+    @Transient
+    public static final NS_LICENSE      = "com.k_int.kbplus.License"
+    @Transient
+    public static final NS_SUBSCRIPTION = "com.k_int.kbplus.Subscription"
+    @Transient
+    public static final NS_PACKAGE      = "com.k_int.kbplus.Package"
+    @Transient
+    public static final NS_TITLE        = "com.k_int.kbplus.TitleInstance"
 
-  static mapping = {
-    id column:'idns_id'
-    ns column:'idns_ns'
-    nstype column:'idns_type_fl'
-    hide column:'idns_hide'
-    validationRegex column:'idns_val_regex'
-    family column:'idns_family'
-    nonUnique column:'idns_nonUnique'
-  }
+    @Transient
+    final static String[] AVAILABLE_NSTYPES = [
+            NS_ORGANISATION,
+            NS_LICENSE,
+            NS_SUBSCRIPTION,
+            NS_PACKAGE,
+            NS_TITLE
+    ]
 
-  static constraints = {
-    nstype nullable:true, blank:false
-    hide nullable:true, blank:false
-    validationRegex nullable:true, black:false
-    family nullable:true, black:false
-    nonUnique nullable:true, black:false
-  }
+    String ns
+    String nsType
+    Boolean hide
+    String validationRegex
+    String family
+    Boolean nonUnique
+
+    static mapping = {
+        id column:'idns_id'
+        ns column:'idns_ns'
+        nsType column:'idns_type'
+        hide column:'idns_hide'
+        validationRegex column:'idns_val_regex'
+        family column:'idns_family'
+        nonUnique column:'idns_non_unique'
+    }
+
+    static constraints = {
+        nsType          nullable:true, blank:false
+        hide            nullable:true, blank:false
+        validationRegex nullable:true, blank:false
+        family          nullable:true, blank:false
+        nonUnique       nullable:true, blank:false
+    }
 }

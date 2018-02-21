@@ -1,11 +1,12 @@
 <%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
-    <title><g:message code="default.edit.label" args="[entityName]" /></title>
-  </head>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
+        <title><g:message code="default.edit.label" args="[entityName]" /></title>
+    </head>
+    <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
     <semui:breadcrumbs>
@@ -109,7 +110,7 @@
     <div class="ui grid">
 
         <div class="twelve wide column">
-            <sec:ifAnyGranted roles="ROLE_ADMIN, KBPLUS_EDITOR, ROLE_PACKAGE_EDITOR">
+            <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_PACKAGE_EDITOR">
                 <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
             </sec:ifAnyGranted>
 
@@ -223,15 +224,25 @@
 
             <semui:card message="package.show.addToSub" class="card-grey notes">
                 <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
-                  <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}">
-                    <select name="subid">
-                      <g:each in="${subscriptionList}" var="s">
-                        <option value="${s.sub.id}">${s.sub.name ?: "unnamed subscription ${s.sub.id}"} - ${s.org.name}</option>
-                      </g:each>
-                    </select><br/>
-                    ${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" style="vertical-align:text-bottom;"/><br/>
-                    <input class="ui button" id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
-                  </g:form>
+
+                    <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}" class="ui form">
+
+                        <select class="ui dropdown" name="subid">
+                            <g:each in="${subscriptionList}" var="s">
+                                <option value="${s.sub.id}">${s.sub.name ?: "unnamed subscription ${s.sub.id}"} - ${s.org.name}</option>
+                            </g:each>
+                        </select>
+
+                        <br/>
+                        <br/>
+                        <div class="ui checkbox">
+                            <label>${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}</label>
+                            <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" class="hidden"/>
+                        </div>
+
+                        <input class="ui button" id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
+
+                    </g:form>
                 </g:if>
                 <g:else>
                   ${message(code: 'package.show.no_subs')}
@@ -245,6 +256,8 @@
 
     </div><!-- .grid -->
 
+
+    <% /* TODO: DO NOT REMOVE
 
     <div>
       <br/>
@@ -643,6 +656,7 @@
         document.body.style.background = "#fcf8e3";
       });</g:if>
     </r:script>
+    */ %>
 
   </body>
 </html>

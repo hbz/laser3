@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.*" %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <!doctype html>
 <html>
     <head>
@@ -7,9 +8,7 @@
         </head>
         <body>
             <semui:breadcrumbs>
-                <g:if test="${params.shortcode}">
-                    <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-                </g:if>
+                <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
                 <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
                 <semui:crumb class="active" text="${message(code:'subscription.details.addMembers.label', default:'Add Members')}" />
             </semui:breadcrumbs>
@@ -26,13 +25,13 @@
             <g:if test="${institution?.orgType?.value == 'Consortium'}">
 
                 <semui:filter>
-                    <g:form action="addMembers" method="get" params="[shortcode:params.shortcode, id:params.id]" class="ui form">
-                        <input type="hidden" name="shortcode" value="${params.shortcode}" />
+                    <g:form action="addMembers" method="get" params="[id:params.id]" class="ui form">
+                        <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}" />
                         <g:render template="/templates/filter/orgFilter" />
                     </g:form>
                 </semui:filter>
 
-                <g:form action="processAddMembers" params="${[shortcode:params.shortcode, id:params.id]}" controller="subscriptionDetails" method="post" class="ui form">
+                <g:form action="processAddMembers" params="${[id:params.id]}" controller="subscriptionDetails" method="post" class="ui form">
 
                     <input type="hidden" name="asOrgType" value="${institution?.orgType?.id}">
 

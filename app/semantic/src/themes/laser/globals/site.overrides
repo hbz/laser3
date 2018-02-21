@@ -128,3 +128,31 @@
         }
     }
 }
+/* Filter */
+.la-input-selected {
+    background-color: #cbd9e2!important;
+}
+.la-right {
+    text-align: right;
+}
+.ui.form .fields>.field.la-combi-input-left {
+    padding-right: 0;
+    input,select {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        border-right: 2px dotted lightgrey;
+
+    }
+}
+.ui.form .fields>.field.la-combi-input-right {
+    padding-left: 0;
+    input,select {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+        border-left: none;
+    }
+}
+.la-filter-search {
+    text-align: right;
+    margin-top: 1.2rem!important;
+}

@@ -17,8 +17,6 @@
 
 			<semui:errors bean="${identifierNamespaceInstance}" />
 
-
-
 			<div class="ui grid">
 				<div class="twelve wide column">
 					<table class="ui celled la-table table">
@@ -28,7 +26,7 @@
 							<th>Identifiers</th>
 							<th><g:message code="identifierNamespace.family.label"/></th>
 							<th><g:message code="identifierNamespace.validationRegex.label"/></th>
-							<th><g:message code="identifierNamespace.nstype.label"/></th>
+							<th><g:message code="identifierNamespace.nsType.label"/></th>
 							<th><g:message code="identifierNamespace.hide.label"/></th>
 							<th><g:message code="identifierNamespace.nonUnique.label"/></th>
 						</tr>
@@ -40,7 +38,9 @@
 								<td>${Identifier.countByNs(idNs)}</td>
 								<td>${fieldValue(bean: idNs, field: "family")}</td>
 								<td>${fieldValue(bean: idNs, field: "validationRegex")}</td>
-								<td>${fieldValue(bean: idNs, field: "nstype")}</td>
+								<td>
+                                    <semui:xEditable owner="${idNs}" field="nsType"/>
+                                </td>
 								<td>${fieldValue(bean: idNs, field: "hide")}</td>
 								<td>${fieldValue(bean: idNs, field: "nonUnique")}</td>
 							</tr>
@@ -76,16 +76,14 @@
 									<g:textField name="validationRegex" value="${identifierNamespaceInstance?.validationRegex}"/>
 								</div>
 
-								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nstype', 'error')} ">
-									<label for="nstype">
-										<g:message code="identifierNamespace.nstype.label" /> TODO !!!
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nsType', 'error')} ">
+									<label for="nsType">
+										<g:message code="identifierNamespace.nsType.label" />
 									</label>
-									<laser:select id="nstype" name="nstype.id"
-											  from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YNO')}"
-											  optionKey="id"
-											  optionValue="value"
-											  value="${identifierNamespaceInstance?.nstype?.id}"
-											  class="many-to-one" noSelection="['null': '']"/>
+									<g:select id="nsType" name="nsType"
+									        from="${IdentifierNamespace.getAVAILABLE_NSTYPES()}"
+                                            value="${identifierNamespaceInstance.nsType}"
+									        noSelection="['null': '']"/>
 								</div>
 
 								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'hide', 'error')} ">
@@ -115,7 +113,6 @@
 					</semui:card>
 				</div><!--.four-->
 			</div><!--.grid-->
-
 
 	</body>
 </html>

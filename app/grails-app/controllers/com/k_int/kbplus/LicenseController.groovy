@@ -1,10 +1,6 @@
 package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
-import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
-import grails.plugins.springsecurity.Secured
 import com.k_int.kbplus.auth.*
 import org.springframework.security.access.annotation.Secured;
 
@@ -17,7 +13,7 @@ class LicenseController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
-        redirect controller: 'licenseDetails', action: 'index', params: params
+        redirect controller: 'licenseDetails', action: 'show', params: params
         return // ----- deprecated
 
         redirect action: 'list', params: params
