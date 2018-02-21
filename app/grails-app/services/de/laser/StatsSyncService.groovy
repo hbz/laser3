@@ -150,7 +150,7 @@ class StatsSyncService {
                         log.debug("Period Begin: ${beginDate}, Period End: ${endDate}")
                         stats_api_endpoint.get(
                                 path: 'Sushiservice/GetReport',
-                                contentType: ANY, // XML does not work
+                                contentType: ANY, // We get no XmlSlurper Objects for value XML
                                 query: [
                                         APIKey        : apiKey,
                                         RequestorID   : requestor,

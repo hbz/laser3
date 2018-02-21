@@ -248,6 +248,9 @@ class BootStrap {
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
 
+        log.debug("createOrganisationProperties ..")
+        createOrganisationConfig()
+
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
 
@@ -319,6 +322,15 @@ class BootStrap {
                 newProp.save()
             }
         }
+    }
+
+    def createOrganisationConfig() {
+        def allDescr = [en: PropertyDefinition.ORG_CONF, de: PropertyDefinition.ORG_CONF]
+        def requiredProps = [
+                [name: [en: "API Key", de: "API Key"],                            descr:allDescr, type:String.toString()],
+                [name: [en: "statslogin", de: "statslogin"],                      descr:allDescr, type:String.toString()],
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
     def createSubscriptionProperties() {
