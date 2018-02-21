@@ -456,7 +456,7 @@ class AdminController {
     log.debug("start global sync...");
     globalSourceSyncService.runAllActiveSyncTasks()
     log.debug("done global sync...");
-    redirect(controller:'home')
+    redirect(controller: 'globalDataSync')
   }
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])

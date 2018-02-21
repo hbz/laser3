@@ -57,7 +57,7 @@ class ESSearchService{
             query {
               query_string (query: query_str)
             }
-            facets {
+            aggregations {
               consortiaName {
                 terms {
                   field = 'consortiaName'
@@ -99,15 +99,19 @@ class ESSearchService{
           result.resultsTotal = search_hits.totalHits
 
           // We pre-process the facet response to work around some translation issues in ES
-          if ( search.getFacets()) {
+          if (search.getAggregations()) {
             result.facets = [:]
-            search.getFacets().facets().each { facet ->
+            search.getAggregations().each { entry ->
               def facet_values = []
-              for(entry in facet){
-                facet_values.add([term:entry.getTerm(),display:entry.getTerm(),count:entry.getCount()])
+              entry.buckets.each { bucket ->
+                log.debug("Bucket: ${bucket}");
+                bucket.each { bi ->
+                  log.debug("Bucket item: ${bi} ${bi.getKey()} ${bi.getDocCount()}");
+                  facet_values.add([term: bi.getKey(), display: bi.getKey(), count: bi.getDocCount()])
+                }
               }
+              result.facets[entry.getName()] = facet_values
 
-              result.facets[facet.getName()] = facet_values
             }
           }
         }

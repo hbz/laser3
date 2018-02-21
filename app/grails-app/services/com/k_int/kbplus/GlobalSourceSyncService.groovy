@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.*
 class GlobalSourceSyncService {
 
 
+    def dataloadService
   public static boolean running = false;
   def genericOIDService
   def executorService
@@ -277,6 +278,10 @@ class GlobalSourceSyncService {
 
         grt.localOid = "com.k_int.kbplus.Package:${pkg.id}"
         grt.save()
+
+          //Update INDEX ES
+          dataloadService.updateSiteMapping();
+          dataloadService.updateFTIndexes();
       }
     }
 
@@ -488,6 +493,7 @@ class GlobalSourceSyncService {
     }
 
     com.k_int.kbplus.GokbDiffEngine.diff(pkg, oldpkg, newpkg, onNewTipp, onUpdatedTipp, onDeletedTipp, onPkgPropChange, onTippUnchanged, auto_accept_flag)
+
   }
 
   def testTitleCompliance = { json_record ->

@@ -4,8 +4,7 @@ import com.k_int.kbplus.auth.User
 import grails.transaction.Transactional
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.lang3.time.DateUtils
-import org.elasticsearch.common.joda.time.DateTime
-import org.elasticsearch.common.joda.time.LocalDate
+import org.joda.time.*
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 

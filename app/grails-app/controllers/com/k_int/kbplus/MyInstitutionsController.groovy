@@ -1423,7 +1423,7 @@ AND EXISTS (
                 fq = sw.toString();
                 log.debug("Filter Query: ${fq}");
             }
-            params.sort = "sortname"
+            params.sort = ""
             params.rectype = "Package" // Tells ESSearchService what to look for
             if(params.pkgname) params.q = params.pkgname
             if(fq){
