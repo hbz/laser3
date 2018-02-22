@@ -6,28 +6,28 @@
     <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
-<body>
+<body class="showModeToggle">
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
     <semui:breadcrumbs>
         <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
-        <semui:crumb class="active" text="${packageInstance.name}" /
+        <semui:crumb class="active" text="${packageInstance.name}" />
     </semui:breadcrumbs>
 
     <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
+                <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link action="show" params="${params+[format:'xml']}">XML</g:link>
+                <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
 
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                    <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
