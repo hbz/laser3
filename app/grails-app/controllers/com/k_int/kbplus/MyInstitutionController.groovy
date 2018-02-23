@@ -1453,7 +1453,7 @@ AND EXISTS (
                 fq = sw.toString();
                 log.debug("Filter Query: ${fq}");
             }
-            params.sort = "sortname"
+            params.sort = ""
             params.rectype = "Package" // Tells ESSearchService what to look for
             if(params.pkgname) params.q = params.pkgname
             if(fq){
@@ -1657,14 +1657,14 @@ AND EXISTS (
                                     log.debug("get jusp usage");
                                     title_info.jr1_last_4_years = factService.lastNYearsByType(title_info.id,
                                             inst.id,
-                                            ie.tipp.pkg.contentProvider.id, 'JUSP:JR1', 4, current_year)
+                                            ie.tipp.pkg.contentProvider.id, 'STATS:JR1', 4, current_year)
 
                                     title_info.jr1a_last_4_years = factService.lastNYearsByType(title_info.id,
                                             inst.id,
-                                            ie.tipp.pkg.contentProvider.id, 'JUSP:JR1a', 4, current_year)
+                                            ie.tipp.pkg.contentProvider.id, 'STATS:JR1a', 4, current_year)
                                 }
                                 catch (Exception e) {
-                                    log.error("Problem collating JUSP report info for title ${title_info.id}", e);
+                                    log.error("Problem collating STATS report info for title ${title_info.id}", e);
                                 }
 
                                 // log.debug("added title info: ${title_info}");

@@ -78,7 +78,8 @@ class IssueEntitlementController {
 
         if ( ( jusp_login != null ) && ( jusp_sid != null ) && ( jusp_title_id != null ) ) {
           // result.jusplink = "https://www.jusp.mimas.ac.uk/api/v1/Journals/Statistics/?jid=${jusp_title_id}&sid=${jusp_sid}&loginid=${jusp_login}&startrange=1800-01&endrange=2100-01&granularity=monthly"
-          result.jusplink = "https://www.jusp.mimas.ac.uk/secure/demonstrator/journalusage.php?R=16&PID=All&IID=${jusp_iid}&code=${jusp_login}&Type=All&date=All&form=HTML&JID[]=${jusp_title_id}"
+          //result.jusplink = "https://www.jusp.mimas.ac.uk/secure/demonstrator/journalusage.php?R=16&PID=All&IID=${jusp_iid}&code=${jusp_login}&Type=All&date=All&form=HTML&JID[]=${jusp_title_id}"
+            result.jusplink = "https://www.statistik.hebis.de"
         }
 
         result.usage = fsresult?.usage

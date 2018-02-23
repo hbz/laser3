@@ -11,7 +11,7 @@ class AdminController {
   def springSecurityService
   def dataloadService
   def zenDeskSyncService
-  def juspSyncService
+  def statsSyncService
   def globalSourceSyncService
   def messageService
   def changeNotificationService
@@ -452,11 +452,18 @@ class AdminController {
     */
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  def statsSync() {
+    log.debug("statsSync()")
+    statsSyncService.doSync()
+    redirect(controller:'home')
+  }
+
+  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def globalSync() {
     log.debug("start global sync...");
     globalSourceSyncService.runAllActiveSyncTasks()
     log.debug("done global sync...");
-    redirect(controller:'home')
+    redirect(controller: 'globalDataSync')
   }
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
