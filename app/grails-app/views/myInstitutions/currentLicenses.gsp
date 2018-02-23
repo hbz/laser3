@@ -15,11 +15,11 @@
       <semui:controlButtons>
           <semui:exportDropdown>
               <semui:exportDropdownItem>
-                  <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+                  <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
               </semui:exportDropdownItem>
               <g:each in="${transforms}" var="transkey,transval">
                   <semui:exportDropdownItem>
-                      <g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                      <g:link  class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
                   </semui:exportDropdownItem>
               </g:each>
           </semui:exportDropdown>
