@@ -133,8 +133,9 @@ hal9000 = {
         // dropdowns
         $('.ui.dropdown').dropdown({duration: 150, transition: 'fade'});
 
+
         // checkboxes
-        $('.ui.checkbox').checkbox();
+        $('.ui.checkbox').not('#la-advanced').checkbox();
 
         // datepicker
         $('.datepicker').calendar(hal9000.configs.datepicker);
