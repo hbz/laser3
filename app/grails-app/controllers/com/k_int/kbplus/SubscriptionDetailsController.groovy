@@ -106,7 +106,7 @@ class SubscriptionDetailsController {
     result.institution = result.subscriptionInstance.subscriber
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
     }
 
     result.editable = result.subscriptionInstance.isEditableBy(result.user)
@@ -1163,7 +1163,7 @@ class SubscriptionDetailsController {
 
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
     }
     log.debug("Going for ES")
     params.rectype = "Package"
@@ -1270,7 +1270,7 @@ class SubscriptionDetailsController {
     result.institution = result.subscription.subscriber
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
     }
 
     if ( !result.subscription.hasPerm("view", result.user) ) {
@@ -1301,7 +1301,7 @@ class SubscriptionDetailsController {
                                                                          start:it[3].startDate, 
                                                                          end:it[3].endDate, 
                                                                          sub:result.subscription, 
-                                                                         jr1a:'JUSP:JR1' ])[0]
+                                                                         jr1a:'STATS:JR1' ])[0]
 
         if ( usage_str && usage_str.trim().length() > 0 ) {
           cost_row.total_usage_for_sub = Double.parseDouble(usage_str);
@@ -1319,7 +1319,7 @@ class SubscriptionDetailsController {
 
 
         // Work out what cost items appear under this subscription in the period given
-        cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD,[start:it[3].startDate, end:it[3].endDate, sub:result.subscription, jr1a:'JUSP:JR1' ])
+        cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD,[start:it[3].startDate, end:it[3].endDate, sub:result.subscription, jr1a:'STATS:JR1' ])
 
         result.costItems.add(cost_row);
       }

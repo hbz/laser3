@@ -248,6 +248,9 @@ class BootStrap {
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
 
+        log.debug("createOrganisationProperties ..")
+        createOrganisationConfig()
+
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
 
@@ -319,6 +322,15 @@ class BootStrap {
                 newProp.save()
             }
         }
+    }
+
+    def createOrganisationConfig() {
+        def allDescr = [en: PropertyDefinition.ORG_CONF, de: PropertyDefinition.ORG_CONF]
+        def requiredProps = [
+                [name: [en: "API Key", de: "API Key"],                            descr:allDescr, type:String.toString()],
+                [name: [en: "statslogin", de: "statslogin"],                      descr:allDescr, type:String.toString()],
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
     def createSubscriptionProperties() {
@@ -644,10 +656,8 @@ class BootStrap {
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'])
         RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'])
 
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1a'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1-JR1a'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'STATS:JR1'])
+        RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
 
         RefdataValue.loc('Federal State',   [en: 'Baden-Wurttemberg', de: 'Baden-Württemberg'])
         RefdataValue.loc('Federal State',   [en: 'Bavaria', de: 'Bayern'])

@@ -173,16 +173,19 @@
             <g:if test="${( usage != null ) && ( usage.size() > 0 ) }">
               <span class="pull-right">
                 <!-- PID== IID== JID==JUSP Journal ID -->
-                <a href="${jusplink}">[JUSP]</a>
+                <a href="https://statistik.hebis.de">[STATS]</a>
               </span>
-              <h6 class="ui header">JUSP Usage Statistics</h6>
+                <h6 class="ui header">${message(code:'tipp.show.usage.header')}</h6>
               <table class="ui celled la-table table">
+                  <thead>
                 <tr>
-                  <th>Reporting Period</th>
+                  <th>${message(code:'tipp.show.usage.period')}</th>
                   <g:each in="${x_axis_labels}" var="l">
                     <th>${l}</th>
                   </g:each>
                 </tr>
+                  </thead>
+                  <tbody>
                 <g:set var="counter" value="${0}" />
                 <g:each in="${usage}" var="v">
                   <tr>
@@ -192,6 +195,7 @@
                     </g:each>
                   </tr>
                 </g:each>
+                  </tbody>
               </table>
             </g:if>
 

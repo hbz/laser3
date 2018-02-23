@@ -5,7 +5,7 @@ import grails.util.Holders
 
 class SysAdminController {
     def zenDeskSyncService
-    def juspSyncService
+    def statsSyncService
     def dataloadService
     def globalSourceSyncService
 
@@ -27,20 +27,20 @@ class SysAdminController {
 
         def result = [:]
 
-        result.juspSyncService = [:]
+        result.statsSyncService = [:]
         result.dataloadService = [:]
         result.globalSourceSyncService = [:]
         result.globalSourceSyncService.running = globalSourceSyncService.running
-        result.juspSyncService.running = juspSyncService.running
-        result.juspSyncService.submitCount = juspSyncService.submitCount
-        result.juspSyncService.completedCount = juspSyncService.completedCount
-        result.juspSyncService.newFactCount = juspSyncService.newFactCount
-        result.juspSyncService.totalTime = juspSyncService.totalTime
-        result.juspSyncService.threads = juspSyncService.FIXED_THREAD_POOL_SIZE
-        result.juspSyncService.queryTime = juspSyncService.queryTime
-        result.juspSyncService.activityHistogram = juspSyncService.activityHistogram
-        result.juspSyncService.syncStartTime = juspSyncService.syncStartTime
-        result.juspSyncService.syncElapsed = juspSyncService.syncElapsed
+        result.statsSyncService.running = statsSyncService.running
+        result.statsSyncService.submitCount = statsSyncService.submitCount
+        result.statsSyncService.completedCount = statsSyncService.completedCount
+        result.statsSyncService.newFactCount = statsSyncService.newFactCount
+        result.statsSyncService.totalTime = statsSyncService.totalTime
+        result.statsSyncService.threads = statsSyncService.FIXED_THREAD_POOL_SIZE
+        result.statsSyncService.queryTime = statsSyncService.queryTime
+        result.statsSyncService.activityHistogram = statsSyncService.activityHistogram
+        result.statsSyncService.syncStartTime = statsSyncService.syncStartTime
+        result.statsSyncService.syncElapsed = statsSyncService.syncElapsed
         result.dataloadService.update_running = dataloadService.update_running
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
         result;
