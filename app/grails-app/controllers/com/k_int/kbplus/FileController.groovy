@@ -1,12 +1,12 @@
 package com.k_int.kbplus
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 class FileController {
 
     def fileLocations
     
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
-    def index = {
+    def index() {
         Map model = [locations: fileLocations.locations]
         if (params.filePath) {
             File file = new File(params.filePath)
@@ -31,7 +31,7 @@ class FileController {
     }
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
-    def downloadFile = {
+    def downloadFile() {
         File file = new File(params.filePath)
         byte[] assetContent = file.readBytes();
         response.setContentLength(assetContent.size())

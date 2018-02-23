@@ -161,9 +161,10 @@ grails.project.dependency.resolution = {
         // TODO: remove, because of semantic-ui
         //compile ":font-awesome-resources:4.3.0.1"
 
-        compile ':spring-security-core:1.2.7.4'
-        compile ':spring-security-ldap:1.0.6'
-        compile ':spring-security-shibboleth-native-sp:1.0.3'
+        compile ':spring-security-core:2.0.0'
+        //compile ':spring-security-core:1.2.7.4'
+        //compile ':spring-security-ldap:1.0.6'
+        //compile ':spring-security-shibboleth-native-sp:1.0.3'
 
         runtime ":gsp-resources:0.4.4"
         runtime ":jquery:1.11.1"

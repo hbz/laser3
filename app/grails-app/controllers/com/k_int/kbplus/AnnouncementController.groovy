@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
@@ -14,7 +14,7 @@ class AnnouncementController {
     def alertsService
     def genericOIDService
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -24,7 +24,7 @@ class AnnouncementController {
         result
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
     def createAnnouncement() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)

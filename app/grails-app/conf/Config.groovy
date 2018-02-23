@@ -1,7 +1,7 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 import org.apache.log4j.DailyRollingFileAppender
 import org.apache.log4j.RollingFileAppender
 
@@ -514,7 +514,8 @@ log4j = {
       'net.sf.ehcache.hibernate',
       'formfields',
       'com.k_int.kbplus.filter',
-      'org.codehaus.groovy.grails.plugins.springsecurity'
+      // 'org.codehaus.groovy.grails.plugins.springsecurity'
+      'grails.plugin.springsecurity' // 2.0
 
 
   debug  'grails.app.controllers',
@@ -534,17 +535,19 @@ log4j = {
 }
 
 // Added by the Spring Security Core plugin:
-grails.gsp.tldScanPattern                                       = 'classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
-grails.plugins.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
-grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
-grails.plugins.springsecurity.userLookup.usernamePropertyName   = 'username'
-grails.plugins.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
-grails.plugins.springsecurity.securityConfigType                = "Annotation"
+grails.gsp.tldScanPattern                                      = 'classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
+grails.plugin.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
+grails.plugin.springsecurity.userLookup.usernamePropertyName   = 'username'
+grails.plugin.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
+grails.plugin.springsecurity.securityConfigType                = "Annotation"
+//grails.plugin.springsecurity.
+//grails.plugin.springsecurity.useSessionFixationPrevention      = false // 2.0
 
-grails.plugins.springsecurity.providerNames = [
+grails.plugin.springsecurity.providerNames = [
         'preAuthenticatedAuthenticationProvider',
-        'daoAuthenticationProvider' // ,
-        // 'anonymousAuthenticationProvider',
+        'daoAuthenticationProvider' //,
+        // 'anonymousAuthenticationProvider' //,
         // 'rememberMeAuthenticationProvider'
 ]
 

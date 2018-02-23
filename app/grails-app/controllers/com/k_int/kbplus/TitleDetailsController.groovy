@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 import org.apache.log4j.*
 import java.text.SimpleDateFormat
 import com.k_int.kbplus.*;
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
 class TitleDetailsController {
 
@@ -178,7 +178,8 @@ class TitleDetailsController {
     }
     return duplicates
   }
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+
+    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def batchUpdate() {
     log.debug(params);
     def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -231,8 +232,6 @@ class TitleDetailsController {
 
     redirect(controller:'titleDetails', action:'show', id:params.id);
   }
-
-
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def history() {
@@ -313,7 +312,7 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def dmIndex() {
 
     log.debug("dmIndex ${params}");

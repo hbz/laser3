@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import org.springframework.dao.DataIntegrityViolationException
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 @Deprecated
 class IdentifierController {

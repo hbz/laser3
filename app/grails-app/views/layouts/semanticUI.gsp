@@ -200,7 +200,7 @@
             </g:if>
 
             <sec:ifLoggedIn>
-                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.datamanager')}
                         <i class="dropdown icon"></i>

@@ -4,14 +4,14 @@ import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.log4j.*
 import au.com.bytecode.opencsv.CSVReader
 import java.text.SimpleDateFormat
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 import org.mozilla.universalchardet.UniversalDetector;
 import org.apache.commons.io.input.BOMInputStream
 
@@ -51,7 +51,7 @@ class UploadController {
     [regexp:'[0-9]{4}', format: new SimpleDateFormat('yyyy')]
   ];
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def reviewPackage() {
     def result = [:]
     if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){

@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.converters.*
 import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;

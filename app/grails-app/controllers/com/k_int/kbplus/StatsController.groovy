@@ -1,10 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
-import grails.plugins.springsecurity.Secured
-import grails.converters.*
-
-
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 class StatsController {
 

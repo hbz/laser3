@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.hssf.usermodel.*;
@@ -114,7 +114,6 @@ class SubscriptionImportController {
     render (view:'packageSearch', model:result);
   }
 
-
   def materialiseFolder(f) {
     def result = []
     f.each {
@@ -129,7 +128,6 @@ class SubscriptionImportController {
     result
   }
 
-
   def generate(plist, inst) {
     try {
       def m = generateMatrix(plist)
@@ -140,7 +138,6 @@ class SubscriptionImportController {
       response.sendError(500)
     }
   }
-
 
   def generateMatrix(plist) {
 

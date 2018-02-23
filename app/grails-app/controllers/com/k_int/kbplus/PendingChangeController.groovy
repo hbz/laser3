@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 class PendingChangeController {
 

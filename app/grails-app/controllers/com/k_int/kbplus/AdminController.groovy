@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*;
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
@@ -22,7 +22,6 @@ class AdminController {
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
-
 
   static boolean ftupdate_running = false
 
@@ -65,7 +64,6 @@ class AdminController {
     redirect(controller:'home')
 
   }
-
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def actionAffiliationRequest() {
@@ -366,7 +364,6 @@ class AdminController {
     // Sets nominal platform
     dataloadService.titleAugment()
   }
-
 
   @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def licenseLink() {
