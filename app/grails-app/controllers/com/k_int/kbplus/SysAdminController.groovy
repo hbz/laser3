@@ -3,13 +3,14 @@ package com.k_int.kbplus
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.util.Holders
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class SysAdminController {
     def zenDeskSyncService
     def statsSyncService
     def dataloadService
     def globalSourceSyncService
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def appConfig() {
         def result = [:]
         //SystemAdmin should only be created once in BootStrap
@@ -22,7 +23,7 @@ class SysAdminController {
         result
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def appInfo() {
 
         def result = [:]
@@ -46,7 +47,7 @@ class SysAdminController {
         result;
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def logViewer() {
         def f = new File("${Holders.config.log_location}")
 

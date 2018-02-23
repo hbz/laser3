@@ -2,11 +2,12 @@ package com.k_int.kbplus
 
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class StatsController {
 
   def springSecurityService
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def statsHome() { 
     def result = [:]
 

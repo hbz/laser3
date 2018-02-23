@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 import com.k_int.properties.*
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationsController {
 
     def springSecurityService
@@ -16,11 +17,11 @@ class OrganisationsController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def config() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -58,7 +59,7 @@ class OrganisationsController {
       result.orgInstance = orgInstance
       result
     }
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def list() {
 
         def result = [:]
@@ -73,7 +74,7 @@ class OrganisationsController {
         result
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def create() {
         switch (request.method) {
             case 'GET':
@@ -101,7 +102,7 @@ class OrganisationsController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -183,8 +184,7 @@ class OrganisationsController {
       result
     }
 
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def properties() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -229,7 +229,7 @@ class OrganisationsController {
         result
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def users() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -263,7 +263,6 @@ class OrganisationsController {
       result.orgInstance = orgInstance
       result
     }
-
 
     /* TODO remove, because redirected to show
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -314,8 +313,7 @@ class OrganisationsController {
     }
     */
 
-
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def edit() {
         redirect controller: 'organisations', action: 'show', params: params
         return
@@ -371,7 +369,7 @@ class OrganisationsController {
         */
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def delete() {
         def orgInstance = Org.get(params.id)
         if (!orgInstance) {
@@ -391,7 +389,7 @@ class OrganisationsController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def revokeRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -403,7 +401,7 @@ class OrganisationsController {
       redirect action: 'users', id: params.id
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def enableRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -415,7 +413,7 @@ class OrganisationsController {
       redirect action: 'users', id: params.id
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addOrgCombo(Org fromOrg, Org toOrg) {
       //def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
       def comboType = RefdataValue.get(params.comboTypeTo)
@@ -434,8 +432,7 @@ class OrganisationsController {
       }
     }
 
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def deleteRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -446,7 +443,7 @@ class OrganisationsController {
       redirect action: 'users', id: params.id
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addressbook() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)

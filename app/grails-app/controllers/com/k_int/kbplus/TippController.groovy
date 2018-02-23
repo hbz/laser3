@@ -7,11 +7,12 @@ import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class TippController {
 
  def springSecurityService
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def show() { 
     def result = [:]
 

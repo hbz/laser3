@@ -8,18 +8,19 @@ import groovy.xml.MarkupBuilder
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController {
 
     def springSecurityService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -50,7 +51,7 @@ class PlatformController {
       result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def create() {
     switch (request.method) {
     case 'GET':
@@ -69,7 +70,7 @@ class PlatformController {
     }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
       def editable
       def platformInstance = Platform.get(params.id)
@@ -133,7 +134,7 @@ class PlatformController {
 
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit() {
     switch (request.method) {
     case 'GET':
@@ -178,7 +179,7 @@ class PlatformController {
     }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def delete() {
         def platformInstance = Platform.get(params.id)
         if (!platformInstance) {

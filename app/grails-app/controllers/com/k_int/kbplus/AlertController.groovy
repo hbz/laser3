@@ -7,10 +7,12 @@ import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AlertController {
 
     def springSecurityService
 
+    @Secured(['ROLE_USER'])
     def commentsFragment() {
         def result = [:]
         if (params.id) {
@@ -19,6 +21,7 @@ class AlertController {
         result
     }
 
+    @Secured(['ROLE_USER'])
     def addComment() {
         log.debug("Adding comment ${params.newcomment} on alert ${params.alertid}")
 

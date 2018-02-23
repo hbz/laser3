@@ -6,23 +6,24 @@ import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.*
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PersonController {
 
     def springSecurityService
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def create() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
 
@@ -54,7 +55,7 @@ class PersonController {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
@@ -66,7 +67,7 @@ class PersonController {
         [personInstance: personInstance, editable: true] // TODO
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         
@@ -129,7 +130,7 @@ class PersonController {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def delete() {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
@@ -149,7 +150,7 @@ class PersonController {
         }
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def properties() {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
@@ -185,7 +186,7 @@ class PersonController {
         [personInstance: personInstance, authorizedOrgs: user?.authorizedOrgs, editable: editable]
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def ajax() {        
         def person                  = Person.get(params.id)
         def existingPrsLinks
@@ -277,7 +278,7 @@ class PersonController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     private deletePersonRoles(Person prs){
 
         params?.personRoleDeleteIds?.each{ key, value ->
@@ -289,7 +290,7 @@ class PersonController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     private addPersonRoles(Person prs){
     
         params?.functionType?.each{ key, value ->

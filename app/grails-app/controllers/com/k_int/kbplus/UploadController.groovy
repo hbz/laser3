@@ -51,14 +51,9 @@ class UploadController {
     [regexp:'[0-9]{4}', format: new SimpleDateFormat('yyyy')]
   ];
 
-  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def reviewPackage() {
     def result = [:]
-    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
-      flash.error =  message(code:"default.access.error")
-      response.sendError(401)
-      return;
-    }
     result.user = User.get(springSecurityService.principal.id)
 
     if ( request.method == 'POST' ) {

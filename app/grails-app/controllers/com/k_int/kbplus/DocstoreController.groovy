@@ -10,11 +10,12 @@ import org.elasticsearch.groovy.common.xcontent.*
 
 import com.k_int.kbplus.auth.*
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class DocstoreController {
 
     def docstoreService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         def doc = Doc.findByUuid(params.id)
         if (doc) {

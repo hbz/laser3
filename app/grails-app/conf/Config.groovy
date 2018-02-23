@@ -551,6 +551,11 @@ grails.plugin.springsecurity.providerNames = [
         // 'rememberMeAuthenticationProvider'
 ]
 
+grails.plugin.springsecurity.roleHierarchy = '''
+    ROLE_ADMIN > ROLE_DATAMANAGER
+    ROLE_DATAMANAGER > ROLE_USER
+'''
+
 /*grails.plugins.springsecurity.controllerAnnotations.staticRules = [
   '/monitoring/**': ['ROLE_ADMIN']  // javaMelody ?
 ]*/

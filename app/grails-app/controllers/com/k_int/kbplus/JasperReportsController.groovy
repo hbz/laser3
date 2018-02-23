@@ -19,7 +19,7 @@ import net.sf.jasperreports.export.Exporter
 class JasperReportsController {
 def dataSource
 
-	@Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+	@Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
 	def index(){
 		def result=[:]
 		flash.error = ""
@@ -95,7 +95,7 @@ def dataSource
 
 	}
 
-	@Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+	@Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
 	def generateReport(){
 		flash.error = ""
 		flash.message = ""

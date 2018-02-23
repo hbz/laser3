@@ -7,24 +7,25 @@ import com.k_int.kbplus.ajax.AjaxHandler
 
 import org.springframework.dao.DataIntegrityViolationException
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class ClusterController extends AjaxHandler {
 
     def springSecurityService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [clusterInstanceList: Cluster.list(params), clusterInstanceTotal: Cluster.count()]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -43,7 +44,7 @@ class ClusterController extends AjaxHandler {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
         def clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {
@@ -55,7 +56,7 @@ class ClusterController extends AjaxHandler {
         [clusterInstance: clusterInstance]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit() {
 		switch (request.method) {
 		case 'GET':
@@ -100,7 +101,7 @@ class ClusterController extends AjaxHandler {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def delete() {
         def clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {

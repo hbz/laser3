@@ -6,6 +6,7 @@ import grails.converters.*
 import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+@Secured(['permitAll']) // TODO
 class AjaxController {
 
     def contextService
@@ -52,8 +53,7 @@ class AjaxController {
     ]
   ]
 
-
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def setValue() {
     // [id:1, value:JISC_Collections_NESLi2_Lic_IOP_Institute_of_Physics_NESLi2_2011-2012_01012011-31122012.., type:License, action:inPlaceSave, controller:ajax
     // def clazz=grailsApplication.domainClasses.findByFullName(params.type)
@@ -87,7 +87,7 @@ class AjaxController {
     outs.close()
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def setRef() {
     def rdv = RefdataCategory.lookupOrCreate(params.cat, params.value)
     def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
@@ -122,7 +122,7 @@ class AjaxController {
 
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def setFieldNote() {
     def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
     if ( domain_class ) {
@@ -146,7 +146,7 @@ class AjaxController {
     outs.close()
   }
 
-   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+   @Secured(['ROLE_USER'])
   def setFieldTableNote() {
     // log.debug("setFieldTableNote(${params})")
     def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
@@ -174,7 +174,7 @@ class AjaxController {
     outs.close()
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def genericSetValue() {
     // [id:1, value:JISC_Collections_NESLi2_Lic_IOP_Institute_of_Physics_NESLi2_2011-2012_01012011-31122012.., type:License, action:inPlaceSave, controller:ajax
     // def clazz=grailsApplication.domainClasses.findByFullName(params.type)
@@ -232,7 +232,7 @@ class AjaxController {
     outs.close()
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def genericSetRel() {
     String[] target_components = params.pk.split(":");
     def result = ''
@@ -486,7 +486,8 @@ class AjaxController {
       }
     }
   }
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+
+    @Secured(['ROLE_USER'])
     def addOrgRole() {
         // log.debug("addOrgRole ${params}");
         def org_to_link = resolveOID(params.orm_orgoid?.split(":"))
@@ -510,7 +511,7 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addPrsRole() {
         def org     = resolveOID(params.org?.split(":"))
         def parent  = resolveOID(params.parent?.split(":"))
@@ -546,7 +547,7 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def delPrsRole() {
         def prsRole = PersonRole.get(params.id)
 
@@ -559,7 +560,7 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addRefdataValue() {
 
         def newRefdataValue
@@ -593,7 +594,7 @@ class AjaxController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addRefdataCategory() {
 
         def newRefdataCategory
@@ -626,7 +627,7 @@ class AjaxController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addCustomPropertyType() {
         def newProp
         def error
@@ -703,7 +704,7 @@ class AjaxController {
         }
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def addCustomPropertyValue(){
     def error
     def newProp
@@ -738,7 +739,7 @@ class AjaxController {
     * Add domain specific private property
     * @return
     */
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addPrivatePropertyValue(){
         def error
         def newProp
@@ -780,7 +781,7 @@ class AjaxController {
         ])
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def delOrgRole() {
         // log.debug("delOrgRole ${params}");
         def or = OrgRole.get(params.id)
@@ -789,7 +790,7 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def deleteCustomProperty(){
     def className = params.propclass.split(" ")[1]
     def propClass = Class.forName(className)
@@ -819,7 +820,7 @@ class AjaxController {
     *
     * @return
     */
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def deletePrivateProperty(){
     def className = params.propclass.split(" ")[1]
     def propClass = Class.forName(className)
@@ -877,14 +878,16 @@ class AjaxController {
       request.setAttribute("editable",params.editable?:true)
       render(template:"/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);    
     }
-  } 
-  def deleteCoreDate(){
+  }
+
+    @Secured(['ROLE_USER'])
+    def deleteCoreDate(){
     log.debug("ajax:: deleteCoreDate::${params}")
     def date = CoreAssertion.get(params.coreDateID)
     if(date) date.delete(flush:true)
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
-
+    
   def lookup() {
       // fallback for static refdataFind calls
       params.shortcode  = contextService.getOrg()?.shortcode
@@ -925,6 +928,7 @@ class AjaxController {
     render result as JSON
   }
 
+    @Secured(['ROLE_USER'])
   def addToCollection() {
     log.debug("AjaxController::addToCollection ${params}");
 
@@ -1020,7 +1024,7 @@ class AjaxController {
     log.debug("validateIdentifierUniqueness - ${result}")
     render result as JSON
   }
-
+    
   def resolveOID2(oid) {
     def oid_components = oid.split(':');
     def result = null;
@@ -1041,6 +1045,7 @@ class AjaxController {
     result
   }
 
+    @Secured(['ROLE_USER'])
   def deleteThrough() {
     // log.debug("deleteThrough(${params})");
     def context_object = resolveOID2(params.contextOid)
@@ -1054,6 +1059,7 @@ class AjaxController {
 
   }
 
+    @Secured(['ROLE_USER'])
   def deleteManyToMany() {
     // log.debug("deleteManyToMany(${params})");
     def context_object = resolveOID2(params.contextOid)
@@ -1072,6 +1078,7 @@ class AjaxController {
     outs << "Value validation failed"
   }
 
+    @Secured(['ROLE_USER'])
   def editableSetValue() {
     log.debug("editableSetValue ${params}");
     def target_object = resolveOID2(params.pk)
@@ -1107,7 +1114,7 @@ class AjaxController {
     outs.close()
   }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def removeUserRole() {
         def user = resolveOID2(params.user);
         def role = resolveOID2(params.role);

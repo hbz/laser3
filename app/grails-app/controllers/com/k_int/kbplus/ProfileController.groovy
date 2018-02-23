@@ -9,12 +9,13 @@ import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*
 import com.k_int.kbplus.Org
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
 
     def springSecurityService
     def passwordEncoder
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def index() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -22,7 +23,7 @@ class ProfileController {
     result
   }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def processJoinRequest() {
         log.debug("processJoinRequest(${params}) org with id ${params.org} role ${params.formalRole}")
 
@@ -64,7 +65,7 @@ class ProfileController {
         redirect(action: "index")
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def processCancelRequest() {
         log.debug("processCancelRequest(${params}) userOrg with id ${params.assoc}")
         def user        = User.get(springSecurityService.principal.id)
@@ -77,7 +78,7 @@ class ProfileController {
         redirect(action: "index")
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def updateProfile() {
     def user = User.get(springSecurityService.principal.id)
 
@@ -136,7 +137,7 @@ class ProfileController {
     redirect(action: "index")
   }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def updatePassword() {
         def user = User.get(springSecurityService.principal.id)
         flash.message = ""
@@ -158,7 +159,7 @@ class ProfileController {
         redirect(action: "index")
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def addTransforms() {
 
     def user = User.get(springSecurityService.principal.id)
@@ -183,7 +184,7 @@ class ProfileController {
     redirect(action: "index")
   }
   
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def removeTransforms() {
     def user = User.get(springSecurityService.principal.id)
     def transforms = Transforms.findById(params.transformId)
@@ -205,7 +206,7 @@ class ProfileController {
     redirect(action: "index")
   }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def createReminder() {
         log.debug("Profile :: createReminder - ${params}")
         def result    = [:]
@@ -234,8 +235,7 @@ class ProfileController {
             redirect(action: "index", fragment: "reminders")
     }
 
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def updateReminder() {
         def result    = [:]
         result.status = true

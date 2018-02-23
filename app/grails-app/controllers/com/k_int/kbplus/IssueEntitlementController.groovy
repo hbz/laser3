@@ -7,7 +7,7 @@ import grails.converters.*
 import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;
 
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class IssueEntitlementController {
 
   def factService
@@ -15,18 +15,18 @@ class IssueEntitlementController {
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
    def springSecurityService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def create() {
     switch (request.method) {
     case 'GET':
@@ -46,7 +46,7 @@ class IssueEntitlementController {
     }
 
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
       def result = [:]
 
@@ -133,7 +133,7 @@ class IssueEntitlementController {
 
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit() {
     switch (request.method) {
     case 'GET':
@@ -178,7 +178,7 @@ class IssueEntitlementController {
     }
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def delete() {
     def issueEntitlementInstance = IssueEntitlement.get(params.id)
     if (!issueEntitlementInstance) {

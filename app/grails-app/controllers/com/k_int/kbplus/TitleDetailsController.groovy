@@ -8,12 +8,13 @@ import java.text.SimpleDateFormat
 import com.k_int.kbplus.*;
 import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleDetailsController {
 
     def springSecurityService
     def ESSearchService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'titleDetails', action: 'list', params: params
         return // ----- deprecated
@@ -56,7 +57,7 @@ class TitleDetailsController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         log.debug("titleSearch : ${params}");
 
@@ -104,7 +105,7 @@ class TitleDetailsController {
         result
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def findTitleMatches() { 
     // find all titles by n_title proposedTitle
     def result=[:]
@@ -117,7 +118,7 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString())
@@ -134,7 +135,7 @@ class TitleDetailsController {
   }
 
     @Deprecated
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def edit() {
         redirect controller: 'titleDetails', action: 'show', params: params
         return // ----- deprecated
@@ -148,7 +149,7 @@ class TitleDetailsController {
         result
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def show() {
     def result = [:]
 
@@ -179,7 +180,7 @@ class TitleDetailsController {
     return duplicates
   }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
   def batchUpdate() {
     log.debug(params);
     def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -233,7 +234,7 @@ class TitleDetailsController {
     redirect(controller:'titleDetails', action:'show', id:params.id);
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def history() {
     def result = [:]
     def exporting = params.format == 'csv' ? true : false
@@ -303,7 +304,7 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def availability() {
     def result = [:]
     result.ti = TitleInstance.get(params.id)
@@ -312,15 +313,10 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def dmIndex() {
-
     log.debug("dmIndex ${params}");
-    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
-      flash.error = message(code:"default.access.error")
-      response.sendError(401)
-      return;
-    }
+
     if(params.search == "yes"){
       params.offset = 0
       params.remove("search")

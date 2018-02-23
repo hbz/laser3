@@ -7,7 +7,7 @@ import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;
 
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class DocWidgetController {
 
   def springSecurityService
@@ -15,7 +15,7 @@ class DocWidgetController {
   def gazetteerService
   def alertsService
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def createNote() { 
     log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}");
     def user = User.get(springSecurityService.principal.id)
@@ -66,7 +66,7 @@ class DocWidgetController {
     // request.getHeader('referer') 
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def uploadDocument() {
     log.debug("upload document....");
 

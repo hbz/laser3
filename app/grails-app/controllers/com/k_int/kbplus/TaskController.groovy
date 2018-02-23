@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController {
 
 	def springSecurityService
@@ -11,10 +13,12 @@ class TaskController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
 
+	@Secured(['ROLE_USER'])
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
@@ -23,6 +27,7 @@ class TaskController {
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
+    @Secured(['ROLE_USER'])
     def create() {
         def contextOrg  = contextService.getOrg()
 		def result      = taskService.getPreconditions(contextOrg)
@@ -53,6 +58,7 @@ class TaskController {
 		}
     }
 
+    @Secured(['ROLE_USER'])
     def show() {
         def taskInstance = Task.get(params.id)
         if (! taskInstance) {
@@ -64,6 +70,7 @@ class TaskController {
         [taskInstance: taskInstance]
     }
 
+    @Secured(['ROLE_USER'])
     def edit() {
         def contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
@@ -121,6 +128,7 @@ class TaskController {
 		}
     }
 
+    @Secured(['ROLE_USER'])
     def delete() {
         def taskInstance = Task.get(params.id)
         if (! taskInstance) {
