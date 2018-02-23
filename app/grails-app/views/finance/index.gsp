@@ -35,7 +35,7 @@
 
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <a data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
+                <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
             </semui:exportDropdownItem>
             <!--
             <semui:exportDropdownItem>

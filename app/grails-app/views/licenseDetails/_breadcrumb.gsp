@@ -9,17 +9,17 @@
     <g:if test="${actionName == 'index'}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link controller="licenseDetails" action="index" id="${license.id}" params="${params + [format:'json']}">JSON</g:link>
+                <g:link class="item"controller="licenseDetails" action="index" id="${license.id}" params="${params + [format:'json']}">JSON</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link controller="licenseDetails" action="index" id="${license.id}" params="${params + [format:'xml']}">XML</g:link>
+                <g:link class="item" controller="licenseDetails" action="index" id="${license.id}" params="${params + [format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link controller="licenseDetails" action="index" id="${license.id}" params="${params + [format:'csv']}">CSV</g:link>
+                <g:link class="item" controller="licenseDetails" action="index" id="${license.id}" params="${params + [format:'csv']}">CSV</g:link>
             </semui:exportDropdownItem>
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link action="index" id="${params.id}" params="${params + [format:'xml', transformId:transkey]}">${transval.name}</g:link>
+                    <g:link class="item" action="index" id="${params.id}" params="${params + [format:'xml', transformId:transkey]}">${transval.name}</g:link>
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>

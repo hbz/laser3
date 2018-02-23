@@ -11,14 +11,14 @@
     <g:if test="${actionName == 'index'}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
+                <g:link class="item" controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
+                <g:link class="item" controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
+                    <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
@@ -28,7 +28,7 @@
 
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+                <g:link class="item"action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
     </g:if>

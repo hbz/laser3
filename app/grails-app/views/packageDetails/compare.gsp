@@ -13,7 +13,7 @@
 
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+                <g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
 	</semui:breadcrumbs>

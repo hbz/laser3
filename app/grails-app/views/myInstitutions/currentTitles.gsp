@@ -17,17 +17,17 @@
 
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link action="currentTitles" params="${params + [format:'csv']}">CSV Export</g:link>
+                <g:link class="item" action="currentTitles" params="${params + [format:'csv']}">CSV Export</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
+                <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link action="currentTitles" params="${params + [format:'xml', shortcode:params.shortcode]}">XML Export</g:link>
+                <g:link class="item" action="currentTitles" params="${params + [format:'xml', shortcode:params.shortcode]}">XML Export</g:link>
             </semui:exportDropdownItem>
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link action="currentTitles" id="${params.id}" params="${params + [format:'xml', transformId:transkey]}"> ${transval.name}</g:link>
+                    <g:link class="item" action="currentTitles" id="${params.id}" params="${params + [format:'xml', transformId:transkey]}"> ${transval.name}</g:link>
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>

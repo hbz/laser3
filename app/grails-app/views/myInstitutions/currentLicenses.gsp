@@ -19,7 +19,7 @@
               </semui:exportDropdownItem>
               <g:each in="${transforms}" var="transkey,transval">
                   <semui:exportDropdownItem>
-                      <g:link  class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                      <g:link class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
                   </semui:exportDropdownItem>
               </g:each>
           </semui:exportDropdown>
