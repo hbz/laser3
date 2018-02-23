@@ -2031,6 +2031,9 @@ Floated Menu / Item
 .ui.menu .item > img.logo {
   width: 100px;
 }
+.ui.menu.la-menu .item {
+  font-weight: 700;
+}
 .ui.menu.la-menu .item.la-logoItem {
   background-color: white;
 }
@@ -2045,6 +2048,10 @@ Floated Menu / Item
   z-index: 1;
   background-color: #DCDDDE;
 }
+.ui.menu.la-contextBar .la-context-org {
+  font-size: 0.87em;
+  color: #767676;
+}
 .ui.menu.la-contextBar .ui.sub.header.item {
   border-left: none!important;
   border-right: none;
@@ -2053,5 +2060,12 @@ Floated Menu / Item
   width: 0!important;
 }
 .ui.menu.la-contextBar .ui.sub.header.item:first-child {
-  padding-left: 0!important;
+  padding-left: 0;
+}
+.ui.menu.la-contextBar .ui.checkbox label {
+  font-size: 0.87em;
+  color: #004678;
+}
+.ui.menu.la-contextBar .ui.slider.checkbox input:checked ~ label {
+  font-weight: 700;
 }
