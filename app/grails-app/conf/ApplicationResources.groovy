@@ -31,7 +31,7 @@ modules = {
         resource url:'css/dataTables.colVis.min.css'
         //resource url:'css/bootstrap-editable.css'
         resource url:'css/select2.css'
-        //resource url:"css/instances/deprecated.css" // legacy
+        resource url:"css/instances/deprecated.css" // legacy
 
         resource url:'js/tmp_semui.js'   // only tmp
         resource url:'css/tmp_semui.css' // only tmp
