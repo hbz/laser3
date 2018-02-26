@@ -36,13 +36,14 @@
         <g:if test="${editable}">
             <semui:crumbAsBadge message="default.editable" class="orange" />
 
-            <li class="pull-right"><a href="${createLink(controller: 'myInstitution', action: 'financeImport')}" class="ui button">Finance Import</a></li>
+            <a href="${createLink(controller: 'myInstitution', action: 'financeImport')}" class="ui button">Finance Import</a>
         </g:if>
         <li class="pull-left"><a class="badge badge-info" onclick="quickHelpInfo()">?</a>&nbsp;</li>
-
+    </semui:breadcrumbs>
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <a data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
+                <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
             </semui:exportDropdownItem>
             <!--
             <semui:exportDropdownItem>
@@ -53,7 +54,7 @@
             </semui:exportDropdownItem>
             -->
         </semui:exportDropdown>
-    </semui:breadcrumbs>
+    </semui:controlButtons>
 
 <br/>
 <br/>

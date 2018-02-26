@@ -11,11 +11,10 @@
         <semui:crumb text="${institution?.getDesignation()}" class="active" />
     </semui:breadcrumbs>
 
-    <div class="home-page">
-        <div class="ui">
-            <h1 class="ui header">${institution.name}</h1>
 
-            <div class="ui equal width grid">
+    <h1 class="ui header">${institution.name}</h1>
+
+    <div class="ui equal width grid">
                 <div class="row">
 
                     <div class="column">
@@ -66,9 +65,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
     </div>
+
+
 
     <semui:messages data="${flash}" />
 

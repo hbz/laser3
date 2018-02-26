@@ -197,6 +197,15 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 
 /*******************************
+        MISSED IN SEMANTIC UI
+*******************************/
+
+.la-float-right {
+  float: right;
+}
+
+
+/*******************************
         Landingpage
 *******************************/
 
@@ -318,7 +327,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   cursor: default!important;
 }
 .ui.la-eye-catcher .la-eye-catcher-header.ui.blue.button:hover {
-  background-color: #2d6697 !important;
+  background-color: #004678 !important;
 }
 
 /* Filter */

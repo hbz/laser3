@@ -88,7 +88,7 @@
   background: none;
   padding: 0.92857143em 1.14285714em;
   text-transform: none;
-  color: rgba(0, 0, 0, 0.87);
+  color: #004678;
   font-weight: normal;
   -webkit-transition: background 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: background 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease;
@@ -628,7 +628,7 @@ Floated Menu / Item
   border-right: 1px solid transparent;
   border-top: 2px solid transparent;
   padding: 0.92857143em 1.42857143em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #004678;
 }
 .ui.tabular.menu .item:before {
   display: none;
@@ -1309,8 +1309,8 @@ Floated Menu / Item
 
 .ui.menu .red.active.item,
 .ui.red.menu .active.item {
-  border-color: #DB2828 !important;
-  color: #DB2828 !important;
+  border-color: #BB1600 !important;
+  color: #BB1600 !important;
 }
 .ui.menu .orange.active.item,
 .ui.orange.menu .active.item {
@@ -1329,8 +1329,8 @@ Floated Menu / Item
 }
 .ui.menu .green.active.item,
 .ui.green.menu .active.item {
-  border-color: #21BA45 !important;
-  color: #21BA45 !important;
+  border-color: #98B500 !important;
+  color: #98B500 !important;
 }
 .ui.menu .teal.active.item,
 .ui.teal.menu .active.item {
@@ -1339,8 +1339,8 @@ Floated Menu / Item
 }
 .ui.menu .blue.active.item,
 .ui.blue.menu .active.item {
-  border-color: #2d6697 !important;
-  color: #2d6697 !important;
+  border-color: #004678 !important;
+  color: #004678 !important;
 }
 .ui.menu .violet.active.item,
 .ui.violet.menu .active.item {
@@ -1493,7 +1493,7 @@ Floated Menu / Item
 /* Red */
 .ui.inverted.menu .red.active.item,
 .ui.inverted.red.menu {
-  background-color: #DB2828;
+  background-color: #BB1600;
 }
 .ui.inverted.red.menu .item:before {
   background-color: rgba(34, 36, 38, 0.1);
@@ -1541,7 +1541,7 @@ Floated Menu / Item
 /* Green */
 .ui.inverted.menu .green.active.item,
 .ui.inverted.green.menu {
-  background-color: #21BA45;
+  background-color: #98B500;
 }
 .ui.inverted.green.menu .item:before {
   background-color: rgba(34, 36, 38, 0.1);
@@ -1565,7 +1565,7 @@ Floated Menu / Item
 /* Blue */
 .ui.inverted.menu .blue.active.item,
 .ui.inverted.blue.menu {
-  background-color: #2d6697;
+  background-color: #004678;
 }
 .ui.inverted.blue.menu .item:before {
   background-color: rgba(34, 36, 38, 0.1);
@@ -2027,4 +2027,46 @@ Floated Menu / Item
 }
 .ui.massive.vertical.menu {
   width: 25rem;
+}
+.ui.menu .item > img.logo {
+  width: 100px;
+}
+.ui.menu.la-menu .item {
+  font-weight: 700;
+}
+.ui.menu.la-menu .item.la-logoItem {
+  
+/* background-color: white; */
+}
+.ui.menu.la-menu .item:first-child {
+  border-left-width: 0!important;
+}
+.ui.menu.la-menu .item.la-noBorder:before {
+  width: 0;
+}
+.ui.menu.la-contextBar {
+  top: 40px;
+  z-index: 1;
+  background-color: #DCDDDE;
+}
+.ui.menu.la-contextBar .la-context-org {
+  font-size: 0.87em;
+  color: #767676;
+}
+.ui.menu.la-contextBar .ui.sub.header.item {
+  border-left: none!important;
+  border-right: none;
+}
+.ui.menu.la-contextBar .ui.sub.header.item:before {
+  width: 0!important;
+}
+.ui.menu.la-contextBar .ui.sub.header.item:first-child {
+  padding-left: 0;
+}
+.ui.menu.la-contextBar .ui.checkbox label {
+  font-size: 0.87em;
+  color: #004678;
+}
+.ui.menu.la-contextBar .ui.slider.checkbox input:checked ~ label {
+  font-weight: 700;
 }

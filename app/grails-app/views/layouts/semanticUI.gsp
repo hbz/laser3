@@ -36,7 +36,7 @@
     <div class="ui fixed inverted menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item">LAS:eR</g:link>
-
+            <!-- img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26" -->
             <sec:ifLoggedIn>
                 <g:if test="${false}">
                 <div class="ui simple dropdown item">
@@ -271,9 +271,8 @@
                             <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
                             <g:link class="item" controller="admin" action="allNotes">All Notes</g:link>
                             <g:link class="item" controller="userDetails" action="list">User Details</g:link>
-                            <g:link class="item" controller="admin" action="statsSync">Run Stats Sync</g:link>
-                            <% /* <g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link> */ %>
-                            <% /* <g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link> */ %>
+                            <g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link>
+                            <g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
 
                             <div class="ui dropdown item">
@@ -376,7 +375,7 @@
             <div class="right menu">
                 <sec:ifLoggedIn>
                     <g:if test="${user}">
-                        <div class="ui simple dropdown item">
+                        <div class="ui simple dropdown item la-noBorder">
                             ${user.displayName}
                             <i class="dropdown icon"></i>
 
@@ -406,10 +405,60 @@
                 </sec:ifNotLoggedIn>
             </div>
 
-        </div><!-- container -->
-    </div><!-- inverted menu -->
 
-        <div class="navbar-push"></div>
+        </div><!-- container -->
+
+    </div><!-- main menu -->
+    <div class="ui fixed menu la-contextBar"  >
+        <div class="ui container">
+            <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
+
+
+            <div class="right menu la-advanced-view">
+
+
+            <g:if test="${ (params.mode)}">
+
+                            <div class="ui slider item checkbox"  id="la-advanced">
+                                <input type="checkbox" tabindex="0" >
+                                <label>${message(code:'profile.advancedView')}</label>
+                            </div>
+
+                            <script>
+                                $(document).ready(function() {
+
+                                    <% if (params.mode=='advanced') { %>
+                                        $('#la-advanced').addClass('checked')
+                                    <% } %>
+                                    $('#la-advanced').checkbox(
+                                        <% if (params.mode=='basic') { %> 'uncheck' <% } %>
+                                        <% if (params.mode=='advanced') { %> 'check' <% } %>
+                                        )
+                                        .checkbox({
+
+                                             onChecked: function () {
+                                                 window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />"
+
+                                            },
+                                            onUnchecked: function () {
+                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />"
+                                            }
+
+
+                                            });
+
+
+
+                                })
+                            </script>
+            </g:if>
+            </div>
+        </div>
+    </div><!-- Context Bar -->
+
+
+    <div class="ui right aligned sub header">${contextOrg?.name}</div>
+    <div class="navbar-push"></div>
 
         <sec:ifLoggedIn>
             <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
@@ -422,7 +471,6 @@
         </sec:ifLoggedIn>
 
         <div class="ui main container">
-            <div class="ui right aligned sub header">${contextOrg?.name}</div>
 
             <g:layoutBody/>
         </div><!-- .main -->

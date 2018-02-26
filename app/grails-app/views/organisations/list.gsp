@@ -7,9 +7,9 @@
         <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.list.label" args="[entityName]" /></title>
     </head>
     <body>
-
-        <g:render template="actions" />
-
+        <semui:controlButtons>
+                <g:render template="actions" />
+        </semui:controlButtons>
         <h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /> - ${orgListTotal} Matches</h1>
 
         <semui:messages data="${flash}" />

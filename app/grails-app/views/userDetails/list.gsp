@@ -9,9 +9,9 @@
     <body>
 
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
-
-        <g:render template="actions" />
-
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
             <h1 class="ui header">${message(code:'user.show_all.label')}</h1>
 
             <semui:filter>

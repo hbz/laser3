@@ -10,8 +10,9 @@
   <body>
 
   <g:render template="breadcrumb" model="${[ params:params ]}"/>
-
-  <g:render template="actions" />
+  <semui:controlButtons>
+     <g:render template="actions" />
+  </semui:controlButtons>
 
   <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
 

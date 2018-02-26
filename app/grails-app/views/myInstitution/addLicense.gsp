@@ -11,9 +11,9 @@
         <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
         <semui:crumb message="license.copy" class="active" />
     </semui:breadcrumbs>
-
-    <g:render template="actions" />
-
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
     <h1 class="ui header">${institution?.name} - ${message(code:'license.copy')}</h1>
 
   <!--
