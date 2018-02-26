@@ -8,21 +8,7 @@
         <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
     </g:if>
 
-    <g:if test="${actionName == 'index'}">
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <g:link class="item" controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
-                <g:link class="item" controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
-            </semui:exportDropdownItem>
-            <g:each in="${transforms}" var="transkey,transval">
-                <semui:exportDropdownItem>
-                    <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
-                </semui:exportDropdownItem>
-            </g:each>
-        </semui:exportDropdown>
-    </g:if>
+
     <g:if test="${actionName == 'compare'}">
         <semui:crumb class="active" message="subscription.compare.label" />
 
@@ -34,6 +20,6 @@
     </g:if>
 
     <g:if test="${subscriptionInstance}">
-        <li class="pull-right"><g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>&nbsp;</li>
+       <g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>
     </g:if>
 </semui:breadcrumbs>

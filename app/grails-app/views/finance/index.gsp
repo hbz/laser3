@@ -29,7 +29,7 @@
         <g:if test="${editable}">
             <semui:crumbAsBadge message="default.editable" class="orange" />
 
-            <li class="pull-right"><a href="${createLink(controller: 'myInstitutions', action: 'financeImport', params: [shortcode:params.shortcode])}" class="ui button">Finance Import</a></li>
+            <a href="${createLink(controller: 'myInstitutions', action: 'financeImport', params: [shortcode:params.shortcode])}" class="ui button">Finance Import</a>
         </g:if>
         <li class="pull-left"><a class="badge badge-info" onclick="quickHelpInfo()">?</a>&nbsp;</li>
 
