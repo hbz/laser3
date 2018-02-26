@@ -543,6 +543,8 @@ grails.plugin.springsecurity.authority.className               = 'com.k_int.kbpl
 grails.plugin.springsecurity.securityConfigType                = "Annotation"
 grails.plugin.springsecurity.successHandler.alwaysUseDefault   = true
 grails.plugin.springsecurity.successHandler.defaultTargetUrl   = '/home/index'
+grails.plugin.springsecurity.password.algorithm                = 'SHA-256' // default: 'bcrypt'
+grails.plugin.springsecurity.password.hash.iterations          = 1
 
 //grails.plugin.springsecurity.
 //grails.plugin.springsecurity.useSessionFixationPrevention      = false // 2.0
