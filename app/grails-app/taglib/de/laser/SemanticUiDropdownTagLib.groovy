@@ -26,7 +26,7 @@ class SemanticUiDropdownTagLib {
     def exportDropdown = { attrs, body ->
 
 
-        out << '<button class="ui simple dropdown button">'
+        out << '<div class="ui simple dropdown button">'
         out <<   '<i class="download icon"></i>'
         out <<   '<div class="menu">'
 
@@ -47,7 +47,7 @@ class SemanticUiDropdownTagLib {
         */
 
         out <<  '</div>'
-        out << '</button>'
+        out << '</div>'
     }
 
     //<semui:exportDropdownItem> LINK <semui:exportDropdownItem>
@@ -63,14 +63,14 @@ class SemanticUiDropdownTagLib {
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<button class="ui simple dropdown button">'
+        out << '<div class="ui simple dropdown button">'
         out <<  '<i class="setting icon"></i>'
         out <<  '<div class="menu">'
 
         out <<          body()
 
         out <<  '</div>'
-        out << '</button>'
+        out << '</div>'
     }
 
     def actionsDropdownItem = { attrs, body ->
