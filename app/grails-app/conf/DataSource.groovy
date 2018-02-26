@@ -17,9 +17,9 @@ environments {
             dbCreate = "update"
             driverClassName = "com.mysql.jdbc.Driver"
             dialect = org.hibernate.dialect.MySQL5Dialect
-            username = "laser"
-            password = "laser"
-            url = "jdbc:mysql://localhost/laserDev?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
+            username = "k-int"
+            password = "K-int_2017"
+            url = "jdbc:mysql://localhost/KBPlus?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
             // logSql = true
             // formatSql = true
@@ -40,9 +40,9 @@ environments {
             dbCreate = "create-drop"
             driverClassName = "com.mysql.jdbc.Driver"
             dialect = org.hibernate.dialect.MySQL5Dialect
-            username = "laser"
-            password = "laser"
-            url = "jdbc:mysql://localhost/laserTest?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
+            username = "k-int"
+            password = "k-int"
+            url = "jdbc:mysql://localhost/KBPlusTest?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
             // logSql = true
             // formatSql = true
@@ -62,9 +62,9 @@ environments {
         dataSource {
             dbCreate = "none" // disabled due database migration plugin; overwritten on dev-server
             driverClassName = "com.mysql.jdbc.Driver"
-            username = "laser"
-            password = "laser"
-            url = "jdbc:mysql://localhost/laser?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
+            username = "k-int"
+            password = "k-int"
+            url = "jdbc:mysql://localhost/KBPlus?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
             dialect = org.hibernate.dialect.MySQL5Dialect
             properties {
