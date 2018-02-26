@@ -35,11 +35,8 @@
 
     <div class="ui fixed inverted menu">
         <div class="ui container">
-            <g:link controller="home" action="index" class="header item la-logoItem">
-                LAS:eR
-                <!-- img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26" -->
-            </g:link>
-
+            <g:link controller="home" action="index" class="header item">LAS:eR</g:link>
+            <!-- img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26" -->
             <sec:ifLoggedIn>
                 <g:if test="${false}">
                 <div class="ui simple dropdown item">
@@ -274,9 +271,8 @@
                             <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
                             <g:link class="item" controller="admin" action="allNotes">All Notes</g:link>
                             <g:link class="item" controller="userDetails" action="list">User Details</g:link>
-                            <g:link class="item" controller="admin" action="statsSync">Run Stats Sync</g:link>
-                            <% /* <g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link> */ %>
-                            <% /* <g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link> */ %>
+                            <g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link>
+                            <g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
 
                             <div class="ui dropdown item">
@@ -324,7 +320,7 @@
                             <g:link class="item" controller="stats" action="statsHome">Statistics</g:link>
                             <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>
 
-                            <div class="ui dropdown item la-noBorder">
+                            <div class="ui dropdown item">
                                 Batch tasks
                                 <i class="dropdown icon"></i>
 
@@ -475,7 +471,6 @@
         </sec:ifLoggedIn>
 
         <div class="ui main container">
-            <div class="ui right aligned sub header">${contextOrg?.name}</div>
 
             <g:layoutBody/>
         </div><!-- .main -->
