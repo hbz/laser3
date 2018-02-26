@@ -9,26 +9,31 @@
     <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
+    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
+
     <semui:breadcrumbs>
         <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
         <semui:crumb class="active" text="${packageInstance.name}" />
+    </semui:breadcrumbs>
+
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
+                <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link action="show" params="${params+[format:'xml']}">XML</g:link>
+                <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
 
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                    <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
-    </semui:breadcrumbs>
+    </semui:controlButtons>
 
-    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
+
 
     <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_PACKAGE_EDITOR">
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
@@ -103,7 +108,7 @@
     <div class="ui grid">
 
         <div class="twelve wide column">
-            <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_PACKAGE_EDITOR">
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
                 <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
             </sec:ifAnyGranted>
 

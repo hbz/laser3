@@ -1,0 +1,48 @@
+.ui.menu{
+  .item>img.logo {
+    width: 100px;
+  }
+  &.la-menu {
+    .item {
+      font-weight: 700;
+      &.la-logoItem {
+        /* background-color: white; */
+      }
+    }
+    .item:first-child {
+      border-left-width: 0!important;
+    }
+    .item.la-noBorder {
+      &:before {
+        width: 0;
+      }
+    }
+  }
+}
+// Light Grey Sub Menu
+.ui.menu.la-contextBar {
+  top: 40px;
+  z-index:1;
+  background-color: @lightGrey;
+  .la-context-org {
+    font-size: 0.87em;
+    color: @grey;
+  }
+  .ui.sub.header.item {
+    border-left: none!important;
+    border-right: none;
+    &:before {
+      width: 0!important;
+    }
+    &:first-child{
+      padding-left:0;
+    }
+  }
+  .ui.checkbox label {
+    font-size: 0.87em;
+    color:  @blue;
+  }
+  .ui.slider.checkbox input:checked~label{
+    font-weight: 700;
+  }
+}

@@ -12,6 +12,8 @@
             <semui:crumb text="(JUSP & KB+)" message="myinst.tipview.label" class="active" />
         </semui:breadcrumbs>
 
+    <h1 class="ui header">${message(code:'menu.institutions.myCoreTitles')}</h1>
+
         <ul class="nav nav-pills">
             <g:set var="nparams" value="${params.clone()}"/>
             <g:set var="active_filter" value="${nparams.remove('filter')}"/>

@@ -17,12 +17,12 @@
     </head>
     <body>
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
-
-        <g:render template="actions" />
-
-            <g:if test="${params.asAt}">
-                <h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1>
-            </g:if>
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
+      <g:if test="${params.asAt}">
+          <h1 class="ui header">${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1>
+      </g:if>
 
            <h1 class="ui header">
                <semui:editableLabel editable="${editable}" />
