@@ -130,10 +130,17 @@ class TaskService {
         def validResponsibleOrgs    = contextOrg ? [contextOrg] : []
         def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
-        result.validLicenses        = License.executeQuery('select l ' + MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
-        result.validOrgs            = Org.list()
+        if (contextOrg) {
+            result.validLicenses = License.executeQuery('select l ' + MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
+            result.validSubscriptions = Subscription.executeQuery("select s " + MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
+        }
+        else { // TODO: admin and datamanager without contextOrg possible ?
+            result.validLicenses = License.list()
+            result.validSubscriptions = Subscription.list()
+        }
+
+        result.validOrgs            = Org.list() // TODO
         result.validPackages        = Package.list() // TODO
-        result.validSubscriptions   = Subscription.executeQuery("select s " + MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
 
         result.taskCreator          = springSecurityService.getCurrentUser()
         result.validResponsibleOrgs = validResponsibleOrgs
