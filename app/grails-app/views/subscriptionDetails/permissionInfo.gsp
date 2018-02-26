@@ -8,9 +8,9 @@
   <body>
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
-
-    <g:render template="actions" />
-
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
     <h1 class="ui header">
       <semui:editableLabel editable="${editable}" />
       <semui:xEditable owner="${subscriptionInstance}" field="name" />

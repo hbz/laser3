@@ -12,9 +12,9 @@
                 <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
                 <semui:crumb class="active" text="${message(code:'subscription.details.addMembers.label', default:'Add Members')}" />
             </semui:breadcrumbs>
-
-            <g:render template="actions" />
-
+            <semui:controlButtons>
+                        <g:render template="actions" />
+            </semui:controlButtons>
             <h1 class="ui header">
                 <semui:editableLabel editable="${editable}" />
                 <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>

@@ -15,10 +15,10 @@
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
 
-        <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
 
-        <g:render template="actions" />
-
+        <semui:controlButtons>
+                <g:render template="actions" />
+        </semui:controlButtons>
         <semui:messages data="${flash}"/>
 
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
