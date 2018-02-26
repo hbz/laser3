@@ -1374,7 +1374,7 @@ Floated Menu / Item
 
 .ui.inverted.menu {
   border: 0px solid transparent;
-  background: #004678;
+  background: #1B1C1D;
   -webkit-box-shadow: none;
           box-shadow: none;
 }
@@ -2035,7 +2035,8 @@ Floated Menu / Item
   font-weight: 700;
 }
 .ui.menu.la-menu .item.la-logoItem {
-  background-color: white;
+  
+/* background-color: white; */
 }
 .ui.menu.la-menu .item:first-child {
   border-left-width: 0!important;
@@ -2044,7 +2045,7 @@ Floated Menu / Item
   width: 0;
 }
 .ui.menu.la-contextBar {
-  top: 44px;
+  top: 40px;
   z-index: 1;
   background-color: #DCDDDE;
 }

@@ -6,7 +6,7 @@
     .item {
       font-weight: 700;
       &.la-logoItem {
-        background-color: white;
+        /* background-color: white; */
       }
     }
     .item:first-child {
@@ -21,7 +21,7 @@
 }
 // Light Grey Sub Menu
 .ui.menu.la-contextBar {
-  top: 44px;
+  top: 40px;
   z-index:1;
   background-color: @lightGrey;
   .la-context-org {

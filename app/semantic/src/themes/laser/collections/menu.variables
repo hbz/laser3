@@ -380,7 +380,7 @@
 ---------------*/
 
 /* Inverted */
-@invertedBackground: #004678;
+@invertedBackground: @black;
 @invertedBoxShadow: none;
 @invertedBorder: 0px solid transparent;
 @invertedHeaderBackground: transparent;
