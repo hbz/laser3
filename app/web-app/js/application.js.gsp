@@ -46,7 +46,10 @@ hal9000 = {
         console.log("hal9000.legacyStuff()")
 
         $.fn.editable.defaults.mode = 'inline'
-        $.fn.editableform.buttons = '<button type="submit" class="ui tiny button editable-submit">ok</button><button type="button" class="ui tiny button editable-cancel">cancel</button>'
+        $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
+            '<button type="button" class="ui icon button editable-cancel"><i class="minus icon"></i></button>'
+        $.fn.editableform.template = '<form class="ui form form-inline editableform"><div class="control-group"><div><div class="editable-input"></div>' +
+            '<div class="editable-buttons"></div></div><div class="editable-error-block"></div></div></form>'
 
         // TODO $.fn.datepicker.defaults.language = gspLocale
 
