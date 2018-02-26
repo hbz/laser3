@@ -21,25 +21,21 @@
     <semui:meta>
         <div class="inline-lists">
 
-            <g:if test="${orgInstance.globalUID}">
-                <dl>
+            <dl>
+                <g:if test="${orgInstance.globalUID}">
                     <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
                     <dd>
                         <g:fieldValue bean="${orgInstance}" field="globalUID"/>
                     </dd>
-                </dl>
-            </g:if>
+                </g:if>
 
-            <g:if test="${orgInstance.impId}">
-                <dl>
+                <g:if test="${orgInstance.impId}">
                     <dt><g:message code="org.impId.label" default="Import ID" /></dt>
                     <dd>
                         <g:fieldValue bean="${orgInstance}" field="impId"/>
                     </dd>
-                </dl>
-            </g:if>
+                </g:if>
 
-            <dl>
                 <dt><g:message code="org.ids.label" default="Ids" /></dt>
                 <dd>
                     <g:if test="${orgInstance?.ids}">

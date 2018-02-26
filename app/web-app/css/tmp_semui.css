@@ -97,11 +97,20 @@
 
 .metaboxToggle {
     position: relative;
+    height: 36px;
+    margin-bottom: 1em;
 }
 .metaboxToggle > button {
     position: absolute;
     right: 0;
     top: 0;
+}
+
+/* <type>Details/show */
+
+.ui.main div.inline-lists dl > dt,
+.ui.main div.inline-lists dl > dd {
+    line-height: 2.25em;
 }
 
 /* property forms in tables */

@@ -1,4 +1,4 @@
-<dl>
+
     <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
     <dd>
 
@@ -36,10 +36,9 @@
         </g:each>
 
     </dd>
-</dl>
 
 <g:if test="${editable}">
-    <dl>
+
         <dt></dt>
         <dd>
             <input class="ui button"
@@ -47,5 +46,5 @@
                    data-semui="modal"
                    href="#prsLinksModal" />
         </dd>
-    </dl>
+
 </g:if>
