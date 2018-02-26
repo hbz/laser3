@@ -17756,7 +17756,7 @@ ol.ui.horizontal.list li:before,
 
 .ui.breadcrumb {
   line-height: 1;
-  display: inline-block;
+  display: inline;
   margin: 0em 0em;
   vertical-align: middle;
 }
