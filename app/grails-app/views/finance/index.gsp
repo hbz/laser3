@@ -32,7 +32,8 @@
             <a href="${createLink(controller: 'myInstitutions', action: 'financeImport', params: [shortcode:params.shortcode])}" class="ui button">Finance Import</a>
         </g:if>
         <li class="pull-left"><a class="badge badge-info" onclick="quickHelpInfo()">?</a>&nbsp;</li>
-
+    </semui:breadcrumbs>
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
@@ -46,7 +47,7 @@
             </semui:exportDropdownItem>
             -->
         </semui:exportDropdown>
-    </semui:breadcrumbs>
+    </semui:controlButtons>
 
 <br/>
 <br/>

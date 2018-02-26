@@ -8,7 +8,12 @@
         <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
     </g:if>
 
+    <g:if test="${subscriptionInstance}">
+       <g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>
+    </g:if>
+</semui:breadcrumbs>
 
+<semui:controlButtons>
     <g:if test="${actionName == 'compare'}">
         <semui:crumb class="active" message="subscription.compare.label" />
 
@@ -18,8 +23,4 @@
             </semui:exportDropdownItem>
         </semui:exportDropdown>
     </g:if>
-
-    <g:if test="${subscriptionInstance}">
-       <g:annotatedLabel owner="${subscriptionInstance}" property="detailsPageInfo"></g:annotatedLabel>
-    </g:if>
-</semui:breadcrumbs>
+</semui:controlButtons>

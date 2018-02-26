@@ -14,7 +14,8 @@
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution.getDesignation()}" />
         <semui:crumb message="myinst.currentTitles.label" class="active" />
-
+    </semui:breadcrumbs>
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="currentTitles" params="${params + [format:'csv']}">CSV Export</g:link>
@@ -31,8 +32,7 @@
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
-
-    </semui:breadcrumbs>
+    </semui:controlButtons>
 
     <semui:messages data="${flash}" />
 

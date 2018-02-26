@@ -43,7 +43,8 @@
     <div class="ui fixed menu inverted la-menu ">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item la-logoItem">
-                <img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26">
+                LAS:eR
+                <!-- img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26" -->
             </g:link>
 
             <sec:ifLoggedIn>

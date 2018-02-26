@@ -10,13 +10,15 @@
 	<semui:breadcrumbs>
 		<semui:crumb controller="packageDetails" action="index" message="package.show.all" />
 		<semui:crumb class="active" message="package.compare.compare" />
-
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
 	</semui:breadcrumbs>
+
+	<semui:controlButtons>
+		<semui:exportDropdown>
+			<semui:exportDropdownItem>
+				<g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+			</semui:exportDropdownItem>
+		</semui:exportDropdown>
+	</semui:controlButtons>
 
 	<h2 class="ui header">${message(code:'package.compare', default:'Package Comparison')}</h2>
 
