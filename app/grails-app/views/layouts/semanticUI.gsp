@@ -439,42 +439,46 @@
     <div class="ui fixed menu la-contextBar"  >
         <div class="ui container">
             <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
+
+
             <div class="right menu la-advanced-view">
 
-                <div class="ui slider item checkbox"  id="la-advanced">
-                    <input type="checkbox" tabindex="0" >
-                    <label>${message(code:'profile.advancedView')}</label>
-                </div>
 
-                <script>
-                    $(document).ready(function() {
-                        <% if (!params.mode) { %>
-                            $('#la-advanced').addClass('disabled')
-                        <% } %>
-                        <% if (params.mode=='advanced') { %>
-                            $('#la-advanced').addClass('checked')
-                        <% } %>
-                        $('#la-advanced').checkbox(
-                            <% if (params.mode=='basic') { %> 'uncheck' <% } %>
-                            <% if (params.mode=='advanced') { %> 'check' <% } %>
-                            )
-                            .checkbox({
+            <g:if test="${ (params.mode)}">
 
-                                 onChecked: function () {
-                                     window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />"
+                            <div class="ui slider item checkbox"  id="la-advanced">
+                                <input type="checkbox" tabindex="0" >
+                                <label>${message(code:'profile.advancedView')}</label>
+                            </div>
 
-                                },
-                                onUnchecked: function () {
-                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />"
-                                }
+                            <script>
+                                $(document).ready(function() {
 
+                                    <% if (params.mode=='advanced') { %>
+                                        $('#la-advanced').addClass('checked')
+                                    <% } %>
+                                    $('#la-advanced').checkbox(
+                                        <% if (params.mode=='basic') { %> 'uncheck' <% } %>
+                                        <% if (params.mode=='advanced') { %> 'check' <% } %>
+                                        )
+                                        .checkbox({
 
-                                });
+                                             onChecked: function () {
+                                                 window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />"
+
+                                            },
+                                            onUnchecked: function () {
+                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />"
+                                            }
 
 
+                                            });
 
-                    })
-                </script>
+
+
+                                })
+                            </script>
+            </g:if>
             </div>
         </div>
     </div><!-- Context Bar -->
