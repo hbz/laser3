@@ -59,7 +59,7 @@ class OrganisationsController {
       result.orgInstance = orgInstance
       result
     }
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_USER'])
     def list() {
 
         def result = [:]
@@ -74,7 +74,7 @@ class OrganisationsController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_USER'])
     def create() {
         switch (request.method) {
             case 'GET':
@@ -313,7 +313,7 @@ class OrganisationsController {
     }
     */
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_USER'])
     def edit() {
         redirect controller: 'organisations', action: 'show', params: params
         return
