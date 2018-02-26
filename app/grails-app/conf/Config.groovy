@@ -541,6 +541,9 @@ grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbpl
 grails.plugin.springsecurity.userLookup.usernamePropertyName   = 'username'
 grails.plugin.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
 grails.plugin.springsecurity.securityConfigType                = "Annotation"
+grails.plugin.springsecurity.successHandler.alwaysUseDefault   = true
+grails.plugin.springsecurity.successHandler.defaultTargetUrl   = '/home/index'
+
 //grails.plugin.springsecurity.
 //grails.plugin.springsecurity.useSessionFixationPrevention      = false // 2.0
 
