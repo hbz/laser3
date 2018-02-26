@@ -110,7 +110,11 @@ class SemanticUiTagLib {
 
     // <semui:modeSwitch controller="controller" action="action" params="params" />
 
+
     def modeSwitch = { attrs, body ->
+
+        //return;
+
 
         def mode = (attrs.params.mode=='basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
         if (!mode) {
@@ -122,7 +126,7 @@ class SemanticUiTagLib {
         }
 
 
-
+        /*
 
         out << '<div class="ui tiny buttons">'
         out << g.link( "${message(code:'profile.simpleView', default:'Basic')}",
@@ -141,6 +145,7 @@ class SemanticUiTagLib {
                 class: "ui mini button ${mode == 'advanced' ? 'positive' : ''}"
         )
         out << '</div>'
+        */
     }
 
     //<semui:meta> CONTENT <semui:meta>
