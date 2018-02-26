@@ -447,6 +447,7 @@ class OrganisationsController {
     def addressbook() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
+        result.editable = result.user.affiliations?.size() > 0
       
         def orgInstance = Org.get(params.id)
         if (! orgInstance) {

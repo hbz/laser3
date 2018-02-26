@@ -120,15 +120,13 @@
                         </g:if>
                     </g:each>
                 </div>
-                <input class="ui button"
-                       value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
-                       data-semui="modal"
-                       href="#addressFormModal" />
-                <g:render template="/address/formModal" model="['orgId': orgInstance?.id, 'redirect': '.']"/>
-
-                <% /* <g:link controller="address" action="create" class="ui button" params="['org.id': orgInstance.id]" >
-                    ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}
-                </g:link>*/ %>
+                <g:if test="${editable}">
+                    <input class="ui button"
+                           value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
+                           data-semui="modal"
+                           href="#addressFormModal" />
+                    <g:render template="/address/formModal" model="['orgId': orgInstance?.id, 'redirect': '.']"/>
+                </g:if>
             </dd>
 
             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
@@ -140,15 +138,13 @@
                         </g:if>
                     </g:each>
                 </div>
-                <input class="ui button"
-                       value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
-                       data-semui="modal"
-                       href="#contactFormModal" />
-                <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>
-
-                <% /* <g:link controller="contact" action="create" class="ui button" params="['org.id': orgInstance.id]" >
-                    ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
-                </g:link>*/ %>
+                <g:if test="${editable}">
+                    <input class="ui button"
+                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+                           data-semui="modal"
+                           href="#contactFormModal" />
+                    <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>
+                </g:if>
             </dd>
 
             <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
@@ -160,17 +156,12 @@
                         </g:if>
                     </g:each>
                 </div>
-                <% /*
-                <input class="ui button"
-                       value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
-                       data-semui="modal"
-                       href="#personFormModal" />
-                <g:render template="/person/formModal" model="['orgId': orgInstance?.id]"/>
-                */ %>
-                <g:link controller="person" action="create" class="ui button"
-                        params="['tenant.id': contextOrg?.id, 'org.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
-                    ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
-                </g:link>
+                <g:if test="${editable}">
+                    <g:link controller="person" action="create" class="ui button"
+                            params="['tenant.id': contextOrg?.id, 'org.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
+                        ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                    </g:link>
+                </g:if>
             </dd>
 
             <dt><g:message code="org.type.label" default="Org Type" /></dt>

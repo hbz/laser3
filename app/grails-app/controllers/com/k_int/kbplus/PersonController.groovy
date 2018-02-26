@@ -10,6 +10,8 @@ import com.k_int.properties.*
 class PersonController {
 
     def springSecurityService
+    def addressbookService
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     @Secured(['ROLE_USER'])
@@ -58,46 +60,47 @@ class PersonController {
     @Secured(['ROLE_USER'])
     def show() {
         def personInstance = Person.get(params.id)
-        if (!personInstance) {
+        if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect action: 'list'
             return
         }
 
-        [personInstance: personInstance, editable: true] // TODO
+        [
+            personInstance: personInstance,
+            editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())
+        ] // TODO
     }
 
     @Secured(['ROLE_USER'])
     def edit() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
-        
+        def personInstance = Person.get(params.id)
+
+        if (! personInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+            redirect action: 'list'
+            return
+        }
+        if (! addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
+            redirect action: 'show', id: params.id
+            return
+        }
+
 		switch (request.method) {
 		case 'GET':
-	        def personInstance = Person.get(params.id)
-	        if (!personInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
             // processing dynamic form data
             addPersonRoles(personInstance)
             deletePersonRoles(personInstance)
             
             // current tenant must be present
-            if(personInstance.tenant){
+            if (personInstance.tenant){
                 userMemberships << personInstance.tenant 
             }
             
 	        [personInstance: personInstance, userMemberships: userMemberships]
 			break
 		case 'POST':
-	        def personInstance = Person.get(params.id)
-	        if (!personInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
 	        if (params.version) {
 	            def version = params.version.toLong()
 	            if (personInstance.version > version) {
@@ -111,7 +114,7 @@ class PersonController {
 
 	        personInstance.properties = params
 
-	        if (!personInstance.save(flush: true)) {
+	        if (! personInstance.save(flush: true)) {
 	            render view: 'edit', model: [personInstance: personInstance, userMemberships: userMemberships]
 	            return
 	        }
@@ -120,7 +123,7 @@ class PersonController {
             deletePersonRoles(personInstance)
             
             // current tenant must be present
-            if(personInstance.tenant){
+            if (personInstance.tenant){
                 userMemberships << personInstance.tenant 
             }
             
@@ -133,9 +136,13 @@ class PersonController {
     @Secured(['ROLE_USER'])
     def delete() {
         def personInstance = Person.get(params.id)
-        if (!personInstance) {
+        if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect action: 'list'
+            return
+        }
+        if (! addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
+            redirect action: 'show', id: params.id
             return
         }
 

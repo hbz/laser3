@@ -2637,6 +2637,7 @@ AND EXISTS (
             }
         }
         result.visiblePersons = visiblePersons
+        result.editable = result.user.affiliations?.size() > 0
 
         result
       }

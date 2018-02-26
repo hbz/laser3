@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException
 class ContactController {
 
 	def springSecurityService
+	def addressbookService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -53,36 +54,36 @@ class ContactController {
     @Secured(['ROLE_USER'])
     def show() {
         def contactInstance = Contact.get(params.id)
-        if (!contactInstance) {
+        if (! contactInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
             redirect action: 'list'
             return
         }
 
-        [contactInstance: contactInstance, editable: true]
+		[
+            contactInstance: contactInstance,
+            editable: addressbookService.isContactEditable(contactInstance, springSecurityService.getCurrentUser())
+		] // TODO
     }
 
     @Secured(['ROLE_USER'])
     def edit() {
+        def contactInstance = Contact.get(params.id)
+        if (! contactInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
+            redirect action: 'list'
+            return
+        }
+        if (! addressbookService.isContactEditable(contactInstance, springSecurityService.getCurrentUser())) {
+            redirect action: 'show', id: params.id
+            return
+        }
+
 		switch (request.method) {
 		case 'GET':
-	        def contactInstance = Contact.get(params.id)
-	        if (!contactInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
 	        [contactInstance: contactInstance]
 			break
 		case 'POST':
-	        def contactInstance = Contact.get(params.id)
-	        if (!contactInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
 	        if (params.version) {
 	            def version = params.version.toLong()
 	            if (contactInstance.version > version) {
@@ -96,7 +97,7 @@ class ContactController {
 
 	        contactInstance.properties = params
 
-	        if (!contactInstance.save(flush: true)) {
+	        if (! contactInstance.save(flush: true)) {
 	            render view: 'edit', model: [contactInstance: contactInstance]
 	            return
 	        }
@@ -110,9 +111,13 @@ class ContactController {
     @Secured(['ROLE_USER'])
     def delete() {
         def contactInstance = Contact.get(params.id)
-        if (!contactInstance) {
+        if (! contactInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])
             redirect action: 'list'
+            return
+        }
+        if (! addressbookService.isContactEditable(contactInstance, springSecurityService.getCurrentUser())) {
+            redirect action: 'show', id: params.id
             return
         }
 

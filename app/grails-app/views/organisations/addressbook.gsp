@@ -22,18 +22,22 @@ import="com.k_int.kbplus.RefdataCategory"
 
       <g:render template="nav" contextPath="." />
 
-        <semui:messages data="${flash}" />
+		<semui:messages data="${flash}" />
 
 		<p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership ..')}</p>
-		
-		<div>
-			<input class="ui button"
-				   value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
-				   data-semui="modal"
-				   href="#personFormModal" />
-			<g:render template="/person/formModal" model="['org': orgInstance, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
-		</div>
-		
+
+
+        <div>
+            <g:if test="${editable}">
+                <input class="ui button"
+                   value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                   data-semui="modal"
+                   href="#personFormModal" />
+            </g:if>
+
+            <g:render template="/person/formModal" model="['org': orgInstance, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
+        </div>
+
 
 		<g:if test="${visiblePersons}">
 			<h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>

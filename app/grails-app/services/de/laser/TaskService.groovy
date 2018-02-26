@@ -127,8 +127,8 @@ class TaskService {
         ]
 
         def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
-        def validResponsibleOrgs    = [contextOrg]
-        def validResponsibleUsers   = User.executeQuery(responsibleUsersQuery, [contextOrg])
+        def validResponsibleOrgs    = contextOrg ? [contextOrg] : []
+        def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
         result.validLicenses        = License.executeQuery('select l ' + MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
         result.validOrgs            = Org.list()
