@@ -8,7 +8,7 @@
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="dataManager" action="index" params="${[shortcode:params.shortcode]}" text="${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}" />
+      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}" />
       <semui:crumb text="${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title management')}" class="active"/>
     </semui:breadcrumbs>
 

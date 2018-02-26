@@ -4,7 +4,7 @@ import com.k_int.kbplus.api.v0.ApiMainService
 import com.k_int.kbplus.auth.*
 import de.laser.domain.Constants
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 class ApiController {
 

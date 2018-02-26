@@ -1,9 +1,8 @@
 package com.k_int.kbplus
 
 import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 
 class HomeController {
@@ -22,14 +21,13 @@ class HomeController {
 
     if ( result.user != null ) {
       if ( result.user?.defaultDash != null ) {
-        redirect(controller:'myInstitutions', action:'dashboard', params:[shortcode:result.user.defaultDash.shortcode]);
+        redirect(controller:'myInstitution', action:'dashboard')
       }
       else {
         if ( result.user.affiliations.size() == 1 ) {
           result.user.defaultDash = result.user.affiliations.first().org
           result.user.save();
-          redirect(controller:'myInstitutions', action:'dashboard',
-           params:[shortcode:result.user.defaultDash.shortcode]);
+          redirect(controller:'myInstitution', action:'dashboard')
         }
         else {
           flash.message= message(code:'profile.dash.not_set', default:'Please select an institution to use as your default home dashboard')

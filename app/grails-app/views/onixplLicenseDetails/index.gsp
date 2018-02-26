@@ -10,7 +10,7 @@
     <div>
         <ul class="breadcrumb">
             <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-            <li> <g:link controller="licenseDetails" action="index" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
+            <li> <g:link controller="licenseDetails" action="show" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
         </ul>
     </div>
 
@@ -35,7 +35,7 @@
                     <dt><label class="control-label" for="license">Reference</label></dt>
                     <dd>
                         <g:each in="${onixplLicense.licenses}">
-                            <g:link name="license" controller="licenseDetails" action="index" id="${it.id}">${it.reference}</g:link>
+                            <g:link name="license" controller="licenseDetails" action="show" id="${it.id}">${it.reference}</g:link>
                         </g:each>
                     </dd>
                 </dl>

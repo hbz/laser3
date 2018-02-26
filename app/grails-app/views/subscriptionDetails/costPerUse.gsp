@@ -10,9 +10,7 @@
   <body>
 
   <semui:breadcrumbs>
-      <g:if test="${params.shortcode}">
-          <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-      </g:if>
+      <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
       <semui:crumb controller="subscriptionDetails" action="index" id="${subscription.id}"  text="${subscription.name}" />
       <semui:crumb class="active" text="${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')}" />
   </semui:breadcrumbs>

@@ -11,7 +11,7 @@ class Invoice {
   Date      endDate
   String    invoiceNumber
   Org       owner
-  String    dateDescription
+  String    description
 
   static mapping = {
                       id column:'inv_id'
@@ -23,7 +23,7 @@ class Invoice {
                startDate column:'inv_start_date'
                  endDate column:'inv_end_date'
                    owner column:'inv_owner'
-         dateDescription column:'inv_date_description', type:'text'
+         description column:'inv_description', type:'text'
   }
 
   static constraints = {
@@ -34,7 +34,7 @@ class Invoice {
               startDate(nullable:true, blank:false)
                 endDate(nullable:true, blank:false)
                   owner(nullable:false, blank:false)
-        dateDescription(nullable: true, blank: false)
+            description(nullable: true, blank: false)
   }
 
 

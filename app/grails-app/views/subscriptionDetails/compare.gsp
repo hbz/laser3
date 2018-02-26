@@ -1,4 +1,6 @@
 <%@ page import ="com.k_int.kbplus.Subscription" %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
 <!doctype html>
 <html>
 	<head>
@@ -236,7 +238,7 @@
                 	startDate: $("#start"+filter).val(),
                 	endDate: $("#end"+filter).val(),
                 	hideDeleted: 'true',
-                	inst_shortcode: '${params.shortcode}',
+                	inst_shortcode: '${contextService.getOrg()?.shortcode}',
                     q: term , // search term
                     page_limit: 10,
                     baseClass:'com.k_int.kbplus.Subscription'

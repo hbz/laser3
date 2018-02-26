@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import net.sf.jasperreports.engine.JasperCompileManager
 import net.sf.jasperreports.engine.JasperReport
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.jasper.JasperExportFormat
 import javax.servlet.http.HttpSession
 import net.sf.jasperreports.engine.JasperPrint
@@ -16,14 +16,10 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader
 import net.sf.jasperreports.engine.*
 import net.sf.jasperreports.export.Exporter
 
-
-
-
-
 class JasperReportsController {
 def dataSource
 
-	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+	@Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
 	def index(){
 		def result=[:]
 		flash.error = ""
@@ -58,7 +54,7 @@ def dataSource
 		}
 	}
 
-	@Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
+	@Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
 	def uploadReport(){
 		def result = [:]
 		flash.error = params.errorMsg ?: ""
@@ -99,7 +95,7 @@ def dataSource
 
 	}
 
-	@Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+	@Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
 	def generateReport(){
 		flash.error = ""
 		flash.message = ""
@@ -135,6 +131,7 @@ def dataSource
 		generateResponse(jasperPrint,response, params)
 
 	}
+
 	def retrieveAndSetProperties( jasperReport){
 		def config = grails.util.Holders.config
 		def confKeys = config.keySet()
@@ -177,7 +174,8 @@ def dataSource
 		}
 		formats
 	}
-	def availableReportNames(){
+
+    def availableReportNames(){
 		def names=[]
 
 		JasperReportFile.getAll().each{

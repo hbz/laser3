@@ -3,8 +3,8 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SecurityFilterPosition // 2.0
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
 class BootStrap {
 
@@ -58,11 +58,10 @@ class BootStrap {
         OrgPermShare.assertPermShare(view_permission, cons_combo)
 
         // Global System Roles
-        def userRole        = Role.findByAuthority('ROLE_USER')     ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-        def editorRole      = Role.findByAuthority('ROLE_EDITOR')   ?: new Role(authority: 'ROLE_EDITOR', roleType: 'global').save(failOnError: true)
-        def adminRole       = Role.findByAuthority('ROLE_ADMIN')    ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
-        def kbplus_editor   = Role.findByAuthority('KBPLUS_EDITOR') ?: new Role(authority: 'KBPLUS_EDITOR', roleType: 'global').save(failOnError: true)
-        def apiRole         = Role.findByAuthority('ROLE_API')      ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
+        def userRole        = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
+        def dmRole          = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
+        def adminRole       = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
+        def apiRole         = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
         def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
         def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
@@ -250,6 +249,9 @@ class BootStrap {
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
 
+        log.debug("createOrganisationProperties ..")
+        createOrganisationConfig()
+
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
 
@@ -321,6 +323,15 @@ class BootStrap {
                 newProp.save()
             }
         }
+    }
+
+    def createOrganisationConfig() {
+        def allDescr = [en: PropertyDefinition.ORG_CONF, de: PropertyDefinition.ORG_CONF]
+        def requiredProps = [
+                [name: [en: "API Key", de: "API Key"],                            descr:allDescr, type:String.toString()],
+                [name: [en: "statslogin", de: "statslogin"],                      descr:allDescr, type:String.toString()],
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
     def createSubscriptionProperties() {
@@ -646,10 +657,8 @@ class BootStrap {
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'])
         RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'])
 
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1a'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1-JR1a'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'STATS:JR1'])
+        RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
 
         RefdataValue.loc('Federal State',   [en: 'Baden-Wurttemberg', de: 'Baden-Württemberg'])
         RefdataValue.loc('Federal State',   [en: 'Bavaria', de: 'Bayern'])

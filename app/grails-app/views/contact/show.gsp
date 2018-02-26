@@ -56,19 +56,21 @@
 						</g:if>
 					</dl>
 				</div>
-				<g:form>
-					<g:hiddenField name="id" value="${contactInstance?.id}" />
-					<div class="ui form-actions">
-						<g:link class="ui button" action="edit" id="${contactInstance?.id}">
-							<i class="write icon"></i>
-							<g:message code="default.button.edit.label" default="Edit" />
-						</g:link>
-						<button class="ui negative button" type="submit" name="_action_delete">
-							<i class="trash icon"></i>
-							<g:message code="default.button.delete.label" default="Delete" />
-						</button>
-					</div>
-				</g:form>
+				<g:if test="${editable}">
+					<g:form>
+						<g:hiddenField name="id" value="${contactInstance?.id}" />
+						<div class="ui form-actions">
+							<g:link class="ui button" action="edit" id="${contactInstance?.id}">
+								<i class="write icon"></i>
+								<g:message code="default.button.edit.label" default="Edit" />
+							</g:link>
+							<button class="ui negative button" type="submit" name="_action_delete">
+								<i class="trash icon"></i>
+								<g:message code="default.button.delete.label" default="Delete" />
+							</button>
+						</div>
+					</g:form>
+				</g:if>
 
 			</div><!-- .twelve -->
 

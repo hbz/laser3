@@ -1,21 +1,15 @@
 package com.k_int.kbplus
 
-import com.k_int.properties.PropertyDefinition
-import grails.converters.*
-import grails.plugins.springsecurity.Secured
-import grails.web.JSONBuilder
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import com.k_int.kbplus.auth.User
-import static java.util.concurrent.TimeUnit.*
-import static grails.async.Promises.*
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
 class DataManagerController {
 
   def springSecurityService 
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def index() { 
     def result =[:]
     def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
@@ -25,7 +19,7 @@ class DataManagerController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def changeLog() { 
 
     def result =[:]
@@ -178,7 +172,7 @@ class DataManagerController {
             if (license_object) {
                 def license_name = license_object.licenseType ? license_object.licenseType+': ' : ''
                 license_name += license_object.reference ?: '**No reference**'
-                line_to_add.link = createLink(controller:'licenseDetails', action: 'index', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'licenseDetails', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = license_name
             }
             linetype = 'License'
@@ -302,10 +296,10 @@ class DataManagerController {
     return actors
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def deletedTitleManagement() {
     def result = [:]
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;
@@ -328,11 +322,11 @@ class DataManagerController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def expungeDeletedTitles() {
 
     log.debug("expungeDeletedTitles.. Create async task..");
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;
@@ -388,11 +382,11 @@ class DataManagerController {
     redirect(controller:'home')
   }
   
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def expungeDeletedTIPPS() {
 
     log.debug("expungeDeletedTIPPS.. Create async task..");
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;

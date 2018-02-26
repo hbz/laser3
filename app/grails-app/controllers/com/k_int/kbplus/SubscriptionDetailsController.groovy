@@ -1,13 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
-
-import java.text.SimpleDateFormat
-
 
 //For Transform
 import static groovyx.net.http.ContentType.*
@@ -58,7 +55,6 @@ class SubscriptionDetailsController {
 
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance = Subscription.get(params.id)
-    result.shortcode = params.shortcode;
 
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
@@ -110,7 +106,7 @@ class SubscriptionDetailsController {
     result.institution = result.subscriptionInstance.subscriber
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
     }
 
     result.editable = result.subscriptionInstance.isEditableBy(result.user)
@@ -430,8 +426,9 @@ class SubscriptionDetailsController {
       params.insrt = "Y"
       params.dlt = "Y"
       params.updt = "Y"
-      if(params.shortcode){
-        result.institutionName = Org.findByShortcode(params.shortcode).name
+
+      if(contextService.getOrg()){
+        result.institutionName = contextService.getOrg().getName()
         log.debug("FIND ORG NAME ${result.institutionName}")
       }
       flash.message = message(code:'subscription.compare.note', default:"Please select two subscriptions for comparison")
@@ -773,7 +770,7 @@ class SubscriptionDetailsController {
                 }
             }
         }
-        redirect controller: 'subscriptionDetails', action: 'details', params:[id: result.subscriptionInstance?.id, shortcode: params.shortcode]
+        redirect controller: 'subscriptionDetails', action: 'show', params:[id: result.subscriptionInstance?.id]
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -813,7 +810,7 @@ class SubscriptionDetailsController {
             flash.message = message(code: 'subscription.delete.norights')
         }
 
-        redirect action: 'members', params: [shortcode: params.shortcode, id: params.id], model: result
+        redirect action: 'members', params: [id: params.id], model: result
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
@@ -1069,7 +1066,7 @@ class SubscriptionDetailsController {
     def oid = "com.k_int.kbplus.Subscription:${params.id}"
     shopping_basket.addIfNotPresent(oid)
 
-    redirect controller:'myInstitutions',action:'renewalsSearch',params:[shortcode:result.subscriptionInstance.subscriber.shortcode]
+    redirect controller:'myInstitution', action:'renewalsSearch'
   }
 
     def userAccessCheck(sub, user, role_str) {
@@ -1166,7 +1163,7 @@ class SubscriptionDetailsController {
 
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
     }
     log.debug("Going for ES")
     params.rectype = "Package"
@@ -1273,7 +1270,7 @@ class SubscriptionDetailsController {
     result.institution = result.subscription.subscriber
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
     }
 
     if ( !result.subscription.hasPerm("view", result.user) ) {
@@ -1304,7 +1301,7 @@ class SubscriptionDetailsController {
                                                                          start:it[3].startDate, 
                                                                          end:it[3].endDate, 
                                                                          sub:result.subscription, 
-                                                                         jr1a:'JUSP:JR1' ])[0]
+                                                                         jr1a:'STATS:JR1' ])[0]
 
         if ( usage_str && usage_str.trim().length() > 0 ) {
           cost_row.total_usage_for_sub = Double.parseDouble(usage_str);
@@ -1322,7 +1319,7 @@ class SubscriptionDetailsController {
 
 
         // Work out what cost items appear under this subscription in the period given
-        cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD,[start:it[3].startDate, end:it[3].endDate, sub:result.subscription, jr1a:'JUSP:JR1' ])
+        cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD,[start:it[3].startDate, end:it[3].endDate, sub:result.subscription, jr1a:'STATS:JR1' ])
 
         result.costItems.add(cost_row);
       }
@@ -1336,15 +1333,15 @@ class SubscriptionDetailsController {
   }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def details() {
+  def show() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
     result.subscriptionInstance =  Subscription.get(params.id) 
     
     userAccessCheck( result.subscriptionInstance, result.user, 'view')
 
-    result.institution = Org.findByShortcode(params.shortcode)
-    if( !result.institution ) {
+    result.institution = contextService.getOrg()
+    if( ! result.institution ) {
       result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
     }
     if ( result.institution ) {

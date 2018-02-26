@@ -1,3 +1,4 @@
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <form class="ui form" id="createCost">
     <table id="newCosts" class="ui striped celled la-rowspan table table-tworow">
         <thead>
@@ -120,7 +121,7 @@
                 <textarea name="newDescription" placeholder="New Item Description" id="newCostItemDescription"/></textarea>
             </td>
         </tr>
-        <g:hiddenField name="shortcode" value="${params.shortcode}"></g:hiddenField>
+        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
         </tbody>
     </table>
 </form>

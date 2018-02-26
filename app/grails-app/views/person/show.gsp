@@ -54,9 +54,11 @@
                             </li>
                         </g:each>
                         </ul>
-                        <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
-                                value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
-                        <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
+                        <g:if test="${editable}">
+                            <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
+                                    value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
+                            <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
+                        </g:if>
                     </dd>
 				</dl>
 				<dl>
@@ -69,9 +71,11 @@
                             </li>
                         </g:each>
                         </ul>
-                        <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
-                               value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
-                        <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
+                        <g:if test="${editable}">
+                            <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
+                                   value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
+                            <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
+                        </g:if>
                     </dd>
 				</dl>
 				<dl class="debug-only">
@@ -140,6 +144,7 @@
                     </dd>
                 </dl>
             </div>
+            <g:if test="${editable}">
 				<g:form>
 					<g:hiddenField name="id" value="${personInstance?.id}" />
 					<div class="ui form-actions">
@@ -153,6 +158,7 @@
 						</button>
 					</div>
 				</g:form>
+            </g:if>
 
 			</div><!-- .twelve -->
 

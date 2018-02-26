@@ -100,11 +100,11 @@
                         ${sub.status.getI10n('value')}
                     </td>
                     <td class="x">
-                        <g:link controller="subscriptionDetails" action="details" id="${sub.id}" class="ui icon basic button"><i class="write icon"></i></g:link>
+                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon basic button"><i class="write icon"></i></g:link>
 
                         <g:if test="${editable}">
                             <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon basic negative button"
-                                    params="${[shortcode:params.shortcode, id:subscriptionInstance.id, basesubscription: sub.id]}"
+                                    params="${[id:subscriptionInstance.id, basesubscription: sub.id]}"
                                     onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(sub.name?:'this subscription')])}')">
                                 <i class="trash icon"></i>
                             </g:link>

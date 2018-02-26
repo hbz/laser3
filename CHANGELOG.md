@@ -1,3 +1,19 @@
+
+0.3.4
+
+- bugfix: corrupted orgPermShare access
+
+0.3.3
+
+- bugfix: subscription get consortia
+- bugfix: redirect organisation edit
+- added admin action for creating users
+
+0.3.2
+
+- bugfix: current subscriptions query for subscribers
+- hotfix: legacy bootstrap for tooltip and popover
+
 0.3.1
 
 - overworked inplace edit date fields

@@ -33,7 +33,7 @@
                                     </div>
                                 </g:if>
                                 <g:else>
-                                    ${message(code:'template.notes.not_shared')}
+                                    <!--${message(code:'template.notes.not_shared')}-->
                                 </g:else>
                             </div>
                         </div>

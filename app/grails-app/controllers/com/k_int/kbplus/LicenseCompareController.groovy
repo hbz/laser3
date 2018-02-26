@@ -1,7 +1,8 @@
 package com.k_int.kbplus
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.User
+
 
 class LicenseCompareController {
   
@@ -9,12 +10,15 @@ class LicenseCompareController {
     def springSecurityService
     def exportService
     def permissionHelperService
+    def contextService
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def index() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.institution = Org.findByShortcode(params.shortcode)
+        //result.institution = Org.findByShortcode(params.shortcode)
+        result.institution = contextService.getOrg()
+
         if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
             response.sendError(401)

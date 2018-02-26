@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.MyInstitutionsController
+import com.k_int.kbplus.MyInstitutionController
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.RefdataCategory
@@ -127,13 +127,20 @@ class TaskService {
         ]
 
         def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
-        def validResponsibleOrgs    = [contextOrg]
-        def validResponsibleUsers   = User.executeQuery(responsibleUsersQuery, [contextOrg])
+        def validResponsibleOrgs    = contextOrg ? [contextOrg] : []
+        def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
-        result.validLicenses        = License.executeQuery('select l ' + MyInstitutionsController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
-        result.validOrgs            = Org.list()
+        if (contextOrg) {
+            result.validLicenses = License.executeQuery('select l ' + MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
+            result.validSubscriptions = Subscription.executeQuery("select s " + MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
+        }
+        else { // TODO: admin and datamanager without contextOrg possible ?
+            result.validLicenses = License.list()
+            result.validSubscriptions = Subscription.list()
+        }
+
+        result.validOrgs            = Org.list() // TODO
         result.validPackages        = Package.list() // TODO
-        result.validSubscriptions   = Subscription.executeQuery("select s " + MyInstitutionsController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
 
         result.taskCreator          = springSecurityService.getCurrentUser()
         result.validResponsibleOrgs = validResponsibleOrgs

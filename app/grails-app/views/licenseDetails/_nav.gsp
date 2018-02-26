@@ -2,7 +2,7 @@
 <g:set var="license" value="${com.k_int.kbplus.License.get(params.id)}"/>
 
 <semui:subNav actionName="${actionName}">
-    <semui:subNavItem controller="licenseDetails" action="index" params="${[id:params.id]}" message="license.nav.details" />
+    <semui:subNavItem controller="licenseDetails" action="show" params="${[id:params.id]}" message="license.nav.details" />
     <semui:subNavItem controller="licenseDetails" action="tasks" params="${[id:params.id]}" message="task.plural" />
     <semui:subNavItem controller="licenseDetails" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <semui:subNavItem controller="licenseDetails" action="notes" params="${[id:params.id]}" message="license.nav.notes" />

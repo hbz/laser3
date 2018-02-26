@@ -44,7 +44,7 @@
                       ${message(code:'onix.import.file', args:[upload_filename,upload_mime_type])}</strong>
             <g:if test="${validationResult.license}">
                 ${message(code:'onix.import.assoc', default:'and associated with')}
-                <g:link action="index"
+                <g:link action="show"
                         controller="licenseDetails"
                         class="ui button"
                         id="${validationResult.license.id}">

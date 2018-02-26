@@ -4,12 +4,13 @@ import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 import grails.gorm.*
 
 import java.security.MessageDigest
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class UserDetailsController {
 
     def springSecurityService
@@ -17,12 +18,12 @@ class UserDetailsController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def list() {
 
         def result = [:]
@@ -59,7 +60,7 @@ class UserDetailsController {
       result
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def edit() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -90,7 +91,7 @@ class UserDetailsController {
         result
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def show() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -99,7 +100,7 @@ class UserDetailsController {
     result
   }    
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def create() {
     switch (request.method) {
       case 'GET':
@@ -117,6 +118,5 @@ class UserDetailsController {
         break
     }
   }
-  
-  
+
 }

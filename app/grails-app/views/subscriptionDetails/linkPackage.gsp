@@ -45,11 +45,8 @@
     <body>
 
         <semui:breadcrumbs>
-            <g:if test="${params.shortcode}">
-                <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-            </g:if>
-            <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" text="${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'default.notes.label', default:'Notes')}" />
-
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
+            <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
             <semui:crumb class="active" text="${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}" />
         </semui:breadcrumbs>
 

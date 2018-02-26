@@ -8,16 +8,19 @@
     padding-bottom: 3em;
 }
 
-/*.ui.main .ui.breadcrumb {
+.ui.main .ui.breadcrumb {
     margin-bottom: 1em;
     width: 100%;
     border: none;
-} */
+}
 
 /* myInstitutions/../dashboard */
-/* .ui.main .home-page {
+.ui.main .home-page {
     margin-bottom: 1em;
-} */
+}
+.myInstitution_dashboard .ui.tab.active {
+    min-height: 150px;
+}
 
 /* hyperlinks */
 /*

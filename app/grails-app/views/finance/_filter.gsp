@@ -1,3 +1,4 @@
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 %{--AJAX rendered messages--}%
 <g:if test="${info}">
     <div id="info" >
@@ -29,8 +30,8 @@
     <button class="ui button pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
 </g:if>
 <h1 class="ui header">${institution.name} Cost Items</h1>
-<g:form id="filterView" class="ui form" action="index" method="post" params="${[shortcode:params.shortcode]}">
-    <input type="hidden" name="shortcode" value="${params.shortcode}"/>
+<g:form id="filterView" class="ui form" action="index" method="post">
+    <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
         <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
             <thead>
                 <tr>
