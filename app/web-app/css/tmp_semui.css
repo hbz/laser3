@@ -113,6 +113,10 @@
     line-height: 2.25em;
 }
 
+.ui.main div.inline-lists dl > dd > .ui.list {
+    margin: 0;
+}
+
 /* property forms in tables */
 
 .ui .table tfoot form {

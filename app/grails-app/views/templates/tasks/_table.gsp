@@ -44,7 +44,7 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
 
                     <td class="x">
-                        <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon basic button">
+                        <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon button">
                             <i class="write icon"></i>
                         </g:link>
                     </td>

@@ -48,22 +48,22 @@
             <td>
               <g:message code="cv.membership.status.${userOrg[0].status}" />
             </td>
-            <td>
+            <td class="x">
               <g:if test="${editable}">
-              <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
-                <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui basic icon negative button">
-                  <i class="minus icon"></i>
+                <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
+                  <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
+                    <i class="minus icon"></i>
+                  </g:link>
+                </g:if>
+                <g:else>
+                  <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon positive button">
+                    <i class="checkmark icon"></i>
+                  </g:link>
+                </g:else>
+                <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
+                  <i class="trash icon"></i>
                 </g:link>
               </g:if>
-              <g:else>
-                <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui basic icon positive button">
-                  <i class="checkmark icon"></i>
-                </g:link>
-              </g:else>
-              <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui basic icon negative button">
-                <i class="trash icon"></i>
-              </g:link>
-            </g:if>
             </td>
           </tr>
         </g:each>
