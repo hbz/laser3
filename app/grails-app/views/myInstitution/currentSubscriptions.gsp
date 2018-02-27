@@ -24,8 +24,7 @@
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
 <semui:filter>
-    <g:form action="currentSubscriptions" params="${[shortcode: institution.shortcode]}" controller="myInstitution"
-            method="get" class="form-inline ui small form">
+    <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
 
         <div class="four fields">
             <!-- 1-1 -->

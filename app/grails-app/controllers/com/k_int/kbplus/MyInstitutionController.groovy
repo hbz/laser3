@@ -2697,14 +2697,13 @@ AND EXISTS (
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def switchContext() {
         def user = User.get(springSecurityService.principal.id)
-        def org  = Org.findByShortcode(params.shortcode)
+        def org  = genericOIDService.resolveOID(params.oid)
 
         if (user && org && org.id in user.getAuthorizedOrgsIds()) {
             log.debug('switched context to: ' + org)
             contextService.setOrg(org)
         }
-
-        redirect action:'dashboard', params:params.remove('shortcode')
+        redirect action:'dashboard', params:params.remove('oid')
     }
 
     /**

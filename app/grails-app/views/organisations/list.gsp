@@ -7,10 +7,16 @@
         <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.list.label" args="[entityName]" /></title>
     </head>
     <body>
+
+        <semui:breadcrumbs>
+            <semui:crumb message="menu.institutions.all_orgs" class="active" />
+        </semui:breadcrumbs>
+
         <semui:controlButtons>
-                <g:render template="actions" />
+            <g:render template="actions" />
         </semui:controlButtons>
-        <h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /> - ${orgListTotal} Matches</h1>
+
+        <h1 class="ui header"><g:message code="menu.institutions.all_orgs" /> - ${orgListTotal} Treffer</h1>
 
         <semui:messages data="${flash}" />
 

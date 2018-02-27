@@ -12,7 +12,7 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-<table class="ui celled la-table table">
+<table class="ui celled la-table la-table-small table">
     <thead>
 	    <tr>
             <th>${message(code:'property.table.property')}</th>
@@ -51,13 +51,16 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
-                    <td>
+                    <td class="x">
                         <g:if test="${editable == true}">
                         <g:remoteLink controller="ajax" action="deletePrivateProperty"
                             before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                             params='[propclass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
                             onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                            update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
+                            update="${custom_props_div}" class="ui icon negative button">
+                            <i class="trash icon"></i>
+                                <!--${message(code:'default.button.delete.label', default:'Delete')}-->
+                        </g:remoteLink>
                         </g:if>
                     </td>
                 </tr>

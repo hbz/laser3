@@ -11,6 +11,8 @@
   </head>
   <body>
 
+    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+
       <h1 class="ui header">${orgInstance.name}</h1>
 
       <g:render template="nav" contextPath="." />
