@@ -464,4 +464,14 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
    
   }
 
+    def getIdentifierByType(idtype) {
+        def result = null
+        ids.each { id ->
+            if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
+                result = id.identifier;
+            }
+        }
+        result
+    }
+
 }

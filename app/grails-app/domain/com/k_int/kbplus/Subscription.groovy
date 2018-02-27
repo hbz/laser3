@@ -366,5 +366,13 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
   }
 
+    def getCommaSeperatedPackagesIsilList() {
+        def result = []
+        packages.each { it ->
+            result += it.pkg.getIdentifierByType('isil').value
+        }
+        result.join(',')
+    }
+
 
 }

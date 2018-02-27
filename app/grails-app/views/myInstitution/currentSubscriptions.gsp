@@ -255,6 +255,11 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 
                     <td class="x">
+                        <!-- TODO test on stats in system? -->
+                        <g:link class="ui basic negative button"
+                                url="http://localhost/prod/statistics/default/select?mode=institution&packages=${s.getCommaSeperatedPackagesIsilList()}">
+                            <i class="chart bar outline icon"></i>
+                        </g:link>
                         <g:if test="${editable && ((institution in s.allSubscribers) || s.consortia == institution)}">
                             <g:link controller="myInstitution" action="actionCurrentSubscriptions"
                                     class="ui icon negative button"
