@@ -33,7 +33,7 @@ class HomeController {
             }
 
             if (uao.size() == 1) {
-                result.user.defaultDash = uao.first().org
+                result.user.defaultDash = Org.findById(uao.first())
                 result.user.save()
                 redirect(controller:'myInstitution', action:'dashboard')
                 return

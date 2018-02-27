@@ -12,9 +12,11 @@
             <semui:crumb message="menu.institutions.all_orgs" class="active" />
         </semui:breadcrumbs>
 
-        <semui:controlButtons>
-            <g:render template="actions" />
-        </semui:controlButtons>
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+            <semui:controlButtons>
+                <g:render template="actions" />
+            </semui:controlButtons>
+        </sec:ifAnyGranted>
 
         <h1 class="ui header"><g:message code="menu.institutions.all_orgs" /> - ${orgListTotal} Treffer</h1>
 
