@@ -11,6 +11,8 @@
     </head>
     <body>
 
+    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+
     <h1 class="ui header">
         <semui:editableLabel editable="${editable}" />
         ${orgInstance.name}
@@ -64,7 +66,7 @@
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
             <dd>
-                <g:fieldValue bean="${orgInstance}" field="name"/>
+                <semui:xEditable owner="${orgInstance}" field="name"/>
             </dd>
 
             <dt><g:message code="org.shortname.label" default="Shortname" /></dt>

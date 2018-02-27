@@ -11,34 +11,43 @@ class HomeController {
   def ESSearchService
   
  
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def index() { 
-    def result = [:]
-    
-    log.debug("HomeController::index - ${springSecurityService.principal.id}");
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def index() {
+        def result = [:]
+        log.debug("HomeController::index - ${springSecurityService.principal.id}");
 
-    result.user = User.get(springSecurityService.principal.id)
+        result.user = User.get(springSecurityService.principal.id)
 
-    if ( result.user != null ) {
-      if ( result.user?.defaultDash != null ) {
-        redirect(controller:'myInstitution', action:'dashboard')
-      }
-      else {
-        if ( result.user.affiliations.size() == 1 ) {
-          result.user.defaultDash = result.user.affiliations.first().org
-          result.user.save();
-          redirect(controller:'myInstitution', action:'dashboard')
+        if (result.user) {
+            def uao = result.user.getAuthorizedOrgsIds()
+
+            if (result.user.defaultDash) {
+                if (result.user.defaultDash.id in uao) {
+                    redirect(controller: 'myInstitution', action: 'dashboard')
+                    return
+                }
+                else {
+                    result.user.defaultDash = null
+                    result.user.save()
+                }
+            }
+
+            if (uao.size() == 1) {
+                result.user.defaultDash = Org.findById(uao.first())
+                result.user.save()
+                redirect(controller:'myInstitution', action:'dashboard')
+                return
+            }
+            else {
+                flash.message = message(code:'profile.dash.not_set', default:'Please select an institution to use as your default home dashboard')
+                redirect(controller:'profile', action:'index')
+                return
+            }
         }
         else {
-          flash.message= message(code:'profile.dash.not_set', default:'Please select an institution to use as your default home dashboard')
-          redirect(controller:'profile', action:'index')
+            log.error("Unable to lookup user for principal id :: ${springSecurityService.principal.id}");
         }
-      }
     }
-    else {
-      log.error("Unable to lookup user for principal id :: ${springSecurityService.principal.id}");
-    }
-  }
 
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def search() { 

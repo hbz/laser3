@@ -122,3 +122,12 @@
 .ui .table tfoot form {
     margin: 0;
 }
+
+/*
+TODO: remove and set in semantic css: la-table-small
+ */
+
+.ui.table.la-table-small tr td {
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
+}

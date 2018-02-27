@@ -21,59 +21,65 @@
             <input class="ui button" value="${message(code:'refdataCategory.create_new.label')}" href="#addRefdataCategoryModal" data-semui="modal">
         </semui:card>
 
-        <div class="ui grid">
-            <div class="twelve wide column">
-					<table class="ui celled la-table table">
-						<thead>
-						<tr>
-							<th>Category (Key)</th>
-							<th>Value (Key)</th>
-							<th>DE</th>
-							<th>EN</th>
-						</tr>
-						</thead>
-						<tbody>
-                            <g:each in="${rdCategories}" var="rdc">
-                                <g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
+        <div class="ui styled fluid accordion">
+            <g:each in="${rdCategories}" var="rdc">
+                <g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
+
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    ${fieldValue(bean: rdc, field: "desc")}
+                </div>
+                <div class="content">
+
+                    <table class="ui celled la-table la-table-small table">
+                        <thead>
+                        <tr>
+                            <th>Category (Key)</th>
+                            <th>Value (Key)</th>
+                            <th>DE</th>
+                            <th>EN</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    ${fieldValue(bean: rdc, field: "desc")}
+                                    <g:if test="${rdc.softData}">
+                                        <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                    </g:if>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                </td>
+                                <td>
+                                    <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                </td>
+                            </tr>
+
+                            <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
                                 <tr>
+                                    <td></td>
                                     <td>
-                                        ${fieldValue(bean: rdc, field: "desc")}
-                                        <g:if test="${rdc.softData}">
+                                        ${rdv.value}
+                                        <g:if test="${rdv.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                                         </g:if>
                                     </td>
-                                    <td></td>
                                     <td>
-                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                        <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
                                     </td>
                                     <td>
-                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                        <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
                                     </td>
                                 </tr>
-
-                                    <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
-                                        <tr>
-                                            <td></td>
-                                            <td>
-                                                ${rdv.value}
-                                                <g:if test="${rdv.softData}">
-                                                    <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
-                                                </g:if>
-                                            </td>
-                                            <td>
-                                                <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
-                                            </td>
-                                            <td>
-                                                <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
-                                            </td>
-                                        </tr>
-                                    </g:each>
-
                             </g:each>
-						</tbody>
-					</table>
-				</div><!--.twelve-->
-        </div><!--.grid-->
+                        </tbody>
+                    </table>
+                </div>
+
+            </g:each>
+        </div>
 
         <semui:modal id="addRefdataValueModal" message="refdataValue.create_new.label">
 

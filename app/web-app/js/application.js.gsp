@@ -136,6 +136,8 @@ hal9000 = {
         // dropdowns
         $('.ui.dropdown').dropdown({duration: 150, transition: 'fade'});
 
+        // accordions
+        $('.ui.accordion').accordion()
 
         // checkboxes
         $('.ui.checkbox').not('#la-advanced').checkbox();

@@ -1,16 +1,18 @@
 <%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
-  </head>
+    <head>
+        <meta name="layout" content="semanticUI"/>
+        <title>${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
+    </head>
 
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb message="profile.bc.profile" class="active"/>
         </semui:breadcrumbs>
+
+        <h1 class="ui header">${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
 
         <semui:messages data="${flash}" />
 

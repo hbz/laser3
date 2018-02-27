@@ -341,24 +341,6 @@
                 </sec:ifAnyGranted>
             </sec:ifLoggedIn>
 
-            <% /*sec:ifLoggedIn>
-                <sec:ifAnyGranted roles="ROLE_ADMIN">
-                    <g:if env="development">
-                        <div class="ui simple dropdown item">
-                            Demo **
-                            <i class="dropdown icon"></i>
-
-                            <div class="menu">
-                                <g:link class="item" controller="address" action="index">Address Controller</g:link>
-                                <g:link class="item" controller="cluster" action="index">Cluster Controller</g:link>
-                                <g:link class="item" controller="contact" action="index">Contact Controller</g:link>
-                                <g:link class="item" controller="person" action="index">Person Controller</g:link>
-                            </div>
-                        </div>
-                    </g:if>
-                </sec:ifAnyGranted>
-            </sec:ifLoggedIn */ %>
-
 <% /* TODO
             <sec:ifLoggedIn>
                 <div class="right menu">
@@ -385,15 +367,16 @@
                                 <g:if test="${usaf && usaf.size() > 0}">
                                     <g:each in="${usaf}" var="org">
                                         <g:if test="${org.id == contextOrg?.id}">
-                                            <g:link class="item active" controller="myInstitution" action="switchContext" params="${[shortcode:org.shortcode]}">${org.name}</g:link>
+                                            <g:link class="item active" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link class="item" controller="myInstitution" action="switchContext" params="${[shortcode:org.shortcode]}">${org.name}</g:link>
+                                            <g:link class="item" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</g:link>
                                         </g:else>
                                     </g:each>
                                 </g:if>
 
                                 <div class="divider"></div>
+
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="logout">${message(code:'menu.user.logout')}</g:link>
                             </div>
