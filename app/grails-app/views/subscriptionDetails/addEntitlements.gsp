@@ -13,6 +13,7 @@
         </semui:breadcrumbs>
         <semui:controlButtons>
             <g:render template="actions" />
+        </semui:controlButtons>
         <h1 class="ui header">
             <semui:editableLabel editable="${editable}" />
             <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
