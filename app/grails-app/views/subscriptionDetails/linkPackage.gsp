@@ -49,8 +49,9 @@
             <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
             <semui:crumb class="active" text="${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}" />
         </semui:breadcrumbs>
-
-        <g:render template="actions" />
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
 
         <h1 class="ui header">${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
 
