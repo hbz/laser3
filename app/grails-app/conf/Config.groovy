@@ -14,6 +14,9 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 // access via grailsApplication.config.pilotDisableFlag
 pilotDisableFlag = false
 
+// STATS-CONFIG
+//statsApiUrl = ''
+
 // @NotificationsJob
 // - enable notification
 // - enable reminder
