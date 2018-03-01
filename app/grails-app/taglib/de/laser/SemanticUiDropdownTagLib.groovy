@@ -19,8 +19,8 @@ class SemanticUiDropdownTagLib {
 
 
         out << '<div class="ui icon buttons la-float-right">'
-        out <<       body()
-        out <<       '</div>'
+        out <<   body()
+        out << '</div>'
     }
 
     def exportDropdown = { attrs, body ->

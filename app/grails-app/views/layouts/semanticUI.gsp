@@ -109,7 +109,7 @@
 
                                 <div class="divider"></div>
 
-                                <a class="item" href="${message(code:'help.location')}">${message(code:'menu.institutions.help')}</a>
+                                <a class="item" href="${message(code:'laser.help.href')}">${message(code:'menu.institutions.help')}</a>
                             </div>
                         </div>
                     </sec:ifLoggedIn>
@@ -251,7 +251,13 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
-                            <g:link class="item" controller="admin" action="manageAffiliationRequests">Manage Affiliation Requests</g:link>
+                            <g:link class="item" controller="admin" action="manageAffiliationRequests">
+                                Manage Affiliation Requests
+                                <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0, [sort:'dateRequested']).size()}" />
+                                <g:if test="${newAffiliationRequests > 0}">
+                                    <div class="ui floating red circular label">${newAffiliationRequests}</div>
+                                </g:if>
+                            </g:link>
                             <g:link class="item" controller="admin" action="settings">System Settings</g:link>
 
                             <div class="ui dropdown item">
@@ -271,6 +277,7 @@
                             <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
                             <g:link class="item" controller="admin" action="allNotes">All Notes</g:link>
                             <g:link class="item" controller="userDetails" action="list">User Details</g:link>
+                            <g:link class="item" controller="admin" action="statsSync">Run Stats Sync</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>

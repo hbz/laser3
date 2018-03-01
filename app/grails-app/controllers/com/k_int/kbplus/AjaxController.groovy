@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.domain.I10nTranslatableAbstract
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
@@ -466,16 +467,25 @@ class AjaxController {
 
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-        //def no_ws = rowobj[config.cols[0]].replaceAll(' ','');
-        //def local_text = message(code:"refdata.${no_ws}", default:"${rowobj[config.cols[0]]}");
-        //result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"]);
-        // i10n
-        result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"]);
+
+          if ( it instanceof I10nTranslatableAbstract) {
+              result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
+          }
+          else {
+              def objTest = rowobj[config.cols[0]]
+              if (objTest) {
+                  def no_ws = objTest.replaceAll(' ','');
+                  def local_text = message(code:"refdata.${no_ws}", default:"${objTest}");
+                  result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"])
+              }
+          }
       }
     }
     else {
       log.error("No config for refdata search ${params.id}");
     }
+
+      def test = result
 
     withFormat {
       html {

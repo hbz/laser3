@@ -11,7 +11,7 @@
                 <div class="ui list">
                     <g:each in="${Person.getByOrgAndFunction(role.org, 'General contact person')}" var="gcp">
                         <div class="item">
-                            <i class="icon"></i>
+                            <i class="address card outline icon"></i>
                             <div class="content">
                                 <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
                                 ,
@@ -21,7 +21,7 @@
                     </g:each>
                     <g:each in="${Person.getByOrgAndFunctionFromAddressbook(role.org, 'General contact person', contextService.getOrg())}" var="gcp">
                         <div class="item">
-                            <i class="address book outline icon"></i>
+                            <i class="address card icon"></i>
                             <div class="content">
                                 <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
                                 ,

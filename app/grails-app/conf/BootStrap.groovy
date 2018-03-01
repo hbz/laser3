@@ -59,10 +59,11 @@ class BootStrap {
 
         // Global System Roles
 
-        def userRole        = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-        def dmRole          = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
-        def adminRole       = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
-        def apiRole         = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
+        def yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'global').save(failOnError: true)
+        def adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
+        def dmRole      = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
+        def userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
+        def apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
         def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
         def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
@@ -604,7 +605,7 @@ class BootStrap {
         RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Person: Typ des Kontakts'])
         RefdataCategory.loc('Person Position',      	                    [en: 'Person Position', de: 'Person Position'])
         RefdataCategory.loc('Person Responsibility',	                    [en: 'Person Responsibility', de: 'Verantwortlich'])
-        RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Subskriptionsstatus'])
+        RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'])
         RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'])
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'])
         RefdataCategory.loc('License.OA.ReceivingModalities',               [en: 'Receiving Modalities', de: 'Bezugsmodalitäten'])
@@ -620,7 +621,7 @@ class BootStrap {
         RefdataCategory.loc('License.Arc.Authorized',                       [en: 'Hosting Authorized', de: 'Hostingrecht Berechtigte'])
         RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'])
         RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'])
-        RefdataCategory.loc('Package Status',       [en: 'Package Status', de: 'Paketstatus'])
+        RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'])
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'])
@@ -696,7 +697,7 @@ class BootStrap {
 
         RefdataValue.loc('Gender',   [en: 'Female', de: 'Weiblich'])
         RefdataValue.loc('Gender',   [en: 'Male', de: 'Männlich'])
-		RefdataValue.loc('Gender',   [en: 'Third Gender', de: 'Third Gender'])
+		RefdataValue.loc('Gender',   [en: 'Third Gender', de: 'Inter/Divers'])
 
         RefdataValue.loc('Library Network',   [en: 'BVB', de: 'BVB'])
         RefdataValue.loc('Library Network',   [en: 'GBV', de: 'GBV'])
@@ -716,7 +717,7 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'])
 
-        RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Bibliothek'])
+        RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'])
         RefdataValue.loc('OrgSector',    [en: 'Publisher', de: 'Verlag'])
 
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
@@ -725,12 +726,12 @@ class BootStrap {
 
         RefdataValue.loc('Package Status',                   [en: 'Deleted', de: 'Gelöscht'])
         RefdataValue.loc('Package Status',                   [en: 'Current', de: 'Aktuell'])
-        RefdataValue.loc('Package Status',                   [en: 'Retired', de: 'im Ruhestand'])
+        RefdataValue.loc('Package Status',                   [en: 'Retired', de: 'Abgelaufen'])
 
         RefdataValue.loc('Person Contact Type',      [en: 'Personal contact', de: 'Personenkontakt'])
         RefdataValue.loc('Person Contact Type',      [en: 'Functional contact', de: 'Funktionskontakt'])
 
-        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Kontaktperson'])
+        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Allgemeine Kontaktperson'])
 
         RefdataValue.loc('Person Position',     [en: 'Account Manager', de: 'Account Manager'])
         RefdataValue.loc('Person Position',     [en: 'Head Access Services', de: 'Erwerbungsleiter'])
@@ -739,10 +740,10 @@ class BootStrap {
         RefdataValue.loc('Person Position',     [en: 'Sales Support', de: 'Sales Support'])
         RefdataValue.loc('Person Position',     [en: 'Technichal Support', de: 'Technischer Support'])
 
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Lizenzbearbeiter'])
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor', de: 'Subskriptionskontakt'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Vertragsbearbeiter'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor', de: 'Lizenzkontakt'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'])
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Clusterkontakt'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Gruppenkontakt'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'])
 
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'])

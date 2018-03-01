@@ -14,6 +14,9 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 // access via grailsApplication.config.pilotDisableFlag
 pilotDisableFlag = false
 
+// STATS-CONFIG
+//statsApiUrl = ''
+
 // @NotificationsJob
 // - enable notification
 // - enable reminder
@@ -557,6 +560,7 @@ grails.plugin.springsecurity.providerNames = [
 ]
 
 grails.plugin.springsecurity.roleHierarchy = '''
+    ROLE_YODA > ROLE_ADMIN
     ROLE_ADMIN > ROLE_DATAMANAGER
     ROLE_DATAMANAGER > ROLE_USER
 '''
