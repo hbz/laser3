@@ -10,6 +10,7 @@
         <div class="ui grid">
             <div class="twelve wide column">
                 <semui:card>
+                    <div class="content">
                     <h1 class="ui header">404</h1>
                     <h3 class="ui header">${message(code:'serverCode.notFound.message1')}</h3>
 
@@ -22,6 +23,7 @@
                             </p>
                         </div>
                     </g:if>
+                    </div>
                 </semui:card>
             </div><!-- .twelve -->
         </div><!-- .grid -->

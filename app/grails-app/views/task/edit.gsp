@@ -47,6 +47,7 @@
             <div class="four wide column">
 
                 <semui:card text="${entityName}" class="card-grey">
+					<div class="content">
                     <ul class="nav nav-list">
                         <li>
                             <g:link class="list" action="list">
@@ -61,6 +62,7 @@
                             </g:link>
                         </li>
                     </ul>
+					</div>
                 </semui:card>
             </div><!-- .four -->
 

@@ -40,6 +40,7 @@
         </div><!-- .twelve -->
         <div class="four wide column">
             <semui:card class="card-grey">
+                <div class="content">
           <g:form action="newContentItem">
             <dl>
               <dt>New Content Item Key</dt>
@@ -62,6 +63,7 @@
             </dl>
             <input type="submit" value="Create" class="ui button"/>
           </g:form>
+                </div>
             </semui:card>
         </div><!-- .four -->
       </div><!-- .grid -->

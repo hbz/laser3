@@ -74,8 +74,10 @@
         </div>
         <div class="four wide column">
             <semui:card class="card-grey">
-                <input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}"
-                       data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
+                <div class="content">
+                    <input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}"
+                           data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
+                </div>
             </semui:card>
         </div>
     </div><!-- .grid -->
