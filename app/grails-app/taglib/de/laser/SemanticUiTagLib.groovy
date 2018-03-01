@@ -88,13 +88,16 @@ class SemanticUiTagLib {
 
         if (title) {
             out << '<div class="content">'
-            out <<   '<div class="header">' + title + '</div>'
+            out <<   '<div class="header" style="display: inline">' + title + '</div>'
+            if (attrs.editable && attrs.href) {
+                out << '<button type="button" class="ui right floated  icon button editable-cancel" data-semui="modal" href="' + attrs.href + '" ><i class="plus icon"></i></button>'
+            }
             out << '</div>'
         }
-        out <<   '<div class="content">'
+
         out <<     body()
-        out <<   '</div>'
         out << '</div>'
+
     }
 
     // <semui:editableLabel editable="${editable}" />
