@@ -1,0 +1,9 @@
+
+
+/*******************************
+            Segment
+*******************************/
+
+.ui.segment.la-filter {
+  background: @background;
+}
