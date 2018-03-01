@@ -16,9 +16,14 @@
         <semui:messages data="${flash}" />
 
         <semui:card class="card-grey">
-            <input class="ui button" value="${message(code:'refdataValue.create_new.label')}" href="#addRefdataValueModal" data-semui="modal">
-            &nbsp;
-            <input class="ui button" value="${message(code:'refdataCategory.create_new.label')}" href="#addRefdataCategoryModal" data-semui="modal">
+            <div class="content ui form">
+                <div class="field">
+                    <button class="ui button" value="" href="#addRefdataValueModal" data-semui="modal">${message(code:'refdataValue.create_new.label')}</button>
+                </div>
+                <div class="field">
+                    <button class="ui button" value="" href="#addRefdataCategoryModal" data-semui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                </div>
+            </div>
         </semui:card>
 
         <div class="ui styled fluid accordion">
