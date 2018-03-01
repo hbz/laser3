@@ -605,7 +605,7 @@ class BootStrap {
         RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Person: Typ des Kontakts'])
         RefdataCategory.loc('Person Position',      	                    [en: 'Person Position', de: 'Person Position'])
         RefdataCategory.loc('Person Responsibility',	                    [en: 'Person Responsibility', de: 'Verantwortlich'])
-        RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Subskriptionsstatus'])
+        RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'])
         RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'])
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'])
         RefdataCategory.loc('License.OA.ReceivingModalities',               [en: 'Receiving Modalities', de: 'Bezugsmodalitäten'])
@@ -741,7 +741,7 @@ class BootStrap {
         RefdataValue.loc('Person Position',     [en: 'Technichal Support', de: 'Technischer Support'])
 
         RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Vertragsbearbeiter'])
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor', de: 'Subskriptionskontakt'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor', de: 'Lizenzkontakt'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Gruppenkontakt'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'])
