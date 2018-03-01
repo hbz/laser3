@@ -3,8 +3,8 @@
 
 <g:each in="${roleLinks}" var="role">
     <g:if test="${role.org}">
-
-            <dt><label class="control-label">${role?.roleType?.getI10n("value")}</label></dt>
+        <dl>
+             <dt><label class="control-label">${role?.roleType?.getI10n("value")}</label></dt>
             <dd>
                 <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
 
@@ -38,15 +38,16 @@
                     </g:link>)
                 </g:if>
             </dd>
+        </dl>
 
     </g:if>
 </g:each>
 
 <g:if test="${editmode}">
-
+    <dl>
         <dt></dt>
         <dd>
             <a class="ui button" data-semui="modal" href="#osel_add_modal" >${message(code:'license.addOrgLink')}</a>
         </dd>
-
+    </dl>
 </g:if>
