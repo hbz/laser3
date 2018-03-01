@@ -206,6 +206,15 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 
 /*******************************
+        Object Overview Site
+*******************************/
+
+.ui.card.card-grey {
+  background: #fffaf5;
+}
+
+
+/*******************************
         Landingpage
 *******************************/
 

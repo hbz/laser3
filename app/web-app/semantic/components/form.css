@@ -108,9 +108,9 @@
   padding: 0.67857143em 1em;
   font-size: 1em;
   background: #FFFFFF;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: 1px solid #eaeaea;
   color: rgba(0, 0, 0, 0.87);
-  border-radius: 0.28571429rem;
+  border-radius: 0.14285714rem;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;
   -webkit-transition: color 0.1s ease, border-color 0.1s ease;
@@ -124,10 +124,10 @@
   tap-highlight-color: rgba(255, 255, 255, 0);
   padding: 0.78571429em 1em;
   background: #FFFFFF;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: 1px solid #eaeaea;
   outline: none;
   color: rgba(0, 0, 0, 0.87);
-  border-radius: 0.28571429rem;
+  border-radius: 0.14285714rem;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;
   -webkit-transition: color 0.1s ease, border-color 0.1s ease;
@@ -163,8 +163,8 @@
   height: auto;
   width: 100%;
   background: #FFFFFF;
-  border: 1px solid rgba(34, 36, 38, 0.15);
-  border-radius: 0.28571429rem;
+  border: 1px solid #eaeaea;
+  border-radius: 0.14285714rem;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;
   padding: 0.62em 1em;
@@ -370,7 +370,7 @@
 .ui.form input[type="url"]:focus {
   color: rgba(0, 0, 0, 0.95);
   border-color: #85B7D9;
-  border-radius: 0.28571429rem;
+  border-radius: 0.14285714rem;
   background: #FFFFFF;
   -webkit-box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
           box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
@@ -378,7 +378,7 @@
 .ui.form textarea:focus {
   color: rgba(0, 0, 0, 0.95);
   border-color: #85B7D9;
-  border-radius: 0.28571429rem;
+  border-radius: 0.14285714rem;
   background: #FFFFFF;
   -webkit-box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
           box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
