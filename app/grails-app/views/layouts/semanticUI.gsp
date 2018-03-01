@@ -109,7 +109,7 @@
 
                                 <div class="divider"></div>
 
-                                <a class="item" href="${message(code:'help.location')}">${message(code:'menu.institutions.help')}</a>
+                                <a class="item" href="${message(code:'laser.help.href')}">${message(code:'menu.institutions.help')}</a>
                             </div>
                         </div>
                     </sec:ifLoggedIn>
@@ -251,7 +251,13 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
-                            <g:link class="item" controller="admin" action="manageAffiliationRequests">Manage Affiliation Requests</g:link>
+                            <g:link class="item" controller="admin" action="manageAffiliationRequests">
+                                Manage Affiliation Requests
+                                <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0, [sort:'dateRequested']).size()}" />
+                                <g:if test="${newAffiliationRequests > 0}">
+                                    <div class="ui floating red circular label">${newAffiliationRequests}</div>
+                                </g:if>
+                            </g:link>
                             <g:link class="item" controller="admin" action="settings">System Settings</g:link>
 
                             <div class="ui dropdown item">

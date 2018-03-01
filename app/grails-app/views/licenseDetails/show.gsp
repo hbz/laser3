@@ -250,14 +250,17 @@
 
                         <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" name="orgShortcode" id="orgShortcode" class="ui fluid dropdown"/>
 
+                        <br />
                         <g:link name="copyLicenseBtn" controller="myInstitution" action="actionLicenses" params="${[shortcode:'replaceme', baselicense:license.id, 'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui positive button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
 
                         <br />
+
                         <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
 
                         <g:form id="linkSubscription" name="linkSubscription" action="linkToSubscription">
                             <input type="hidden" name="license" value="${license.id}"/>
                             <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
+                            <br />
                             <input type="submit" class="ui positive button" value="${message(code:'default.button.link.label', default:'Link')}"/>
                         </g:form>
     %{--

@@ -13,14 +13,14 @@
     </g:if>
 </semui:breadcrumbs>
 
-<semui:controlButtons>
-    <g:if test="${actionName == 'compare'}">
-        <semui:crumb class="active" message="subscription.compare.label" />
+<g:if test="${actionName == 'compare'}">
+    <semui:crumb class="active" message="subscription.compare.label" />
 
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
-    </g:if>
-</semui:controlButtons>
+    </semui:controlButtons>
+</g:if>
