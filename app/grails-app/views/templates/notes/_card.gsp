@@ -1,11 +1,11 @@
 <%@ page import="com.k_int.kbplus.Doc" %>
-<semui:card message="license.notes" class="card-grey notes">
+<semui:card message="license.notes" class="card-grey notes" href="#modalCreateNote" editable="${editable}">
 
         <g:each in="${ownobj.documents}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
-                <div class="ui small feed">
+                <div class="ui small feed content">
                     <!--<div class="event">-->
-                        <div class="content">
+
                             <div class="summary">
                                 <g:if test="${docctx.owner.title}">
                                     <g:link controller="doc" action="show" id="${docctx.owner.id}">${docctx.owner.title}</g:link>
@@ -36,17 +36,11 @@
                                     <!--${message(code:'template.notes.not_shared')}-->
                                 </g:else>
                             </div>
-                        </div>
+
                     <!--</div>-->
                 </div>
             </g:if>
         </g:each>
-
-    <g:if test="${editable}">
-        </div>
-        <div class="extra content">
-            <input type="submit" class="ui button" value="${message(code:'default.button.create_new.label')}" data-semui="modal" href="#modalCreateNote" />
-    </g:if>
 </semui:card>
 
 <g:render template="/templates/notes/modal" />

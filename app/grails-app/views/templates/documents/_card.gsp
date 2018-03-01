@@ -1,4 +1,4 @@
-<semui:card message="license.documents" class="card-grey documents">
+<semui:card message="license.documents" class="card-grey documents" href="#modalCreateDocument" editable="${editable}">
 
     <g:each in="${ownobj.documents}" var="docctx">
         <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
@@ -26,12 +26,6 @@
             </div>
         </g:if>
     </g:each>
-
-    <g:if test="${editable}">
-        </div>
-        <div class="extra content">
-            <input type="submit" class="ui button" value="${message(code:'default.button.create_new.label')}" data-semui="modal" href="#modalCreateDocument" />
-    </g:if>
 </semui:card>
 
 <g:render template="/templates/documents/modal"  />
