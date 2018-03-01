@@ -4,7 +4,7 @@
 
     <div class="field">
 
-        <table id="prs_role_tab" class="ui celled la-table table">
+        <table id="prs_role_tab" class="ui celled la-table la-table-small table">
             <thead>
             <tr>
                 <th>Person</th>

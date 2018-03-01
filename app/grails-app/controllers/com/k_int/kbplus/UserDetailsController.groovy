@@ -28,6 +28,8 @@ class UserDetailsController {
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
+        result.editable = true // TODO; checked in gsp against ROLE_YODA
+
 
         params.max = params.max ?: result.user?.getDefaultPageSize()
         def results = null;
@@ -60,11 +62,11 @@ class UserDetailsController {
       result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_YODA','ROLE_ADMIN'])
     def edit() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.editable = true // TODO
+        result.editable = true // TODO; checked in gsp against ROLE_YODA
 
         def userInstance = User.get(params.id)
         if (! userInstance) {

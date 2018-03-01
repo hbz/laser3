@@ -9,7 +9,7 @@
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-      <h1 class="ui header">${ui.displayName?:'No username'}</h1>
+      <h1 class="ui header">${ui.username} : ${ui.displayName?:'No username'}</h1>
 
       <semui:messages data="${flash}" />
 
