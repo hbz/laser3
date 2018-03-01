@@ -36,7 +36,7 @@
                         <g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel>
                     </dt>
                     <dd>
-                        <table class="ui celled la-table table">
+                        <table class="ui celled la-table la-table-small table">
                             <thead>
                             <tr>
                                 <th>${message(code:'default.authority.label', default:'Authority')}</th>
