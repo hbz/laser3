@@ -1330,6 +1330,7 @@ class SubscriptionDetailsController {
 
         // Work out what cost items appear under this subscription in the period given
         cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD,[start:it[3].startDate, end:it[3].endDate, sub:result.subscription, jr1a:'STATS:JR1' ])
+        cost_row.billingCurrency = it[3].billingCurrency.value.take(3)
         result.costItems.add(cost_row);
       }
       else {
