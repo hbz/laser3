@@ -1265,6 +1265,7 @@ class SubscriptionDetailsController {
 
     result.user = User.get(springSecurityService.principal.id)
     result.subscription = Subscription.get(params.id)
+    result.subscriptionInstance = Subscription.get(params.id) // TODO: for generic template _breadcumb
 
     // result.institution = Org.findByShortcode(params.shortcode)
     result.institution = result.subscription.subscriber

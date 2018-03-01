@@ -11,6 +11,7 @@
   <body>
 
       <semui:breadcrumbs>
+          <semui:crumb controller="titleDetails" action="list" message="menu.institutions.all_titles" />
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
 

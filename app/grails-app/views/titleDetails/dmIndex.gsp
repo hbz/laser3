@@ -7,6 +7,7 @@
 
   <body>
     <semui:breadcrumbs>
+      <semui:crumb controller="titleDetails" action="list" message="menu.institutions.all_titles" />
       <semui:crumb text="${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}" class="active"/>
     </semui:breadcrumbs>
 
