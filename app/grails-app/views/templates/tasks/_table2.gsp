@@ -51,7 +51,7 @@
                             <i class="write icon"></i>
                         </g:link>
                         <g:link controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" class="ui icon negative button">
-                            <i class="trash icon"></i>
+                            <i class="trash alternate icon"></i>
                         </g:link>
                     </td>
                 </tr>

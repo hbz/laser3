@@ -33,6 +33,8 @@ class OrganisationsController {
       else {
         result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
       }
+        // TODO: deactived
+      /*
       if(! orgInstance.customProperties){
         grails.util.Holders.config.customProperties.org.each{ 
           def entry = it.getValue()
@@ -49,6 +51,7 @@ class OrganisationsController {
           prop.save()
         }
       }
+      */
 
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])

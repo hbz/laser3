@@ -5029,17 +5029,6 @@ table .badge:hover {
 	margin-bottom: 0.25em;
 }
 
-body #modalCreateDocument,
-body #modalCreateNote
-{
-    width: 700px;
-    margin-left: -350px;
-}
-
-body #modalCreateNote textarea {
-    width: 97%;
-}
-
 /* identifier forms */
 
 form.form-inline > * {

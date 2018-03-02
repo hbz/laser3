@@ -9,10 +9,10 @@
                 <div class="ui list">
                     <div class="item">
                         <g:if test="${pr.prs.isPublic?.value == "No"}">
-                            <i class="address card icon"></i>
+                            <i class="address card outline icon"></i>
                         </g:if>
                         <g:else>
-                            <i class="address card outline icon"></i>
+                            <i class="address card icon"></i>
                         </g:else>
 
                         <div class="content">
@@ -30,10 +30,10 @@
                     </div>
                 </div>
                 <g:if test="${editable}">
-                    (<g:link controller="ajax" action="delPrsRole" id="${pr.id}"
+                    [<g:link controller="ajax" action="delPrsRole" id="${pr.id}"
                             onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
                             <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                    </g:link>)
+                    </g:link>]
                     <br />
                 </g:if>
             </g:if>
