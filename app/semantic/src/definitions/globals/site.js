@@ -439,7 +439,7 @@ $.site.settings = {
   modules: [
     'accordion',
     'api',
-      'calendar',
+    'calendar',
     'checkbox',
     'dimmer',
     'dropdown',
