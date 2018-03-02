@@ -9,7 +9,10 @@
             <semui:actionsDropdownItem controller="subscriptionDetails" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
-        <semui:actionsDropdownItem controller="subscriptionDetails" action="renewals" params="${[id:params.id]}" message="subscription.details.renewals.label" />
+        <semui:actionsDropdownItem controller="subscriptionDetails" action="launchRenewalsProcess"
+                                   params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+        <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
+                                   message="menu.institutions.imp_renew"/>
     </semui:actionsDropdown>
 </g:if>
 <g:if test="${actionName == 'index'}">

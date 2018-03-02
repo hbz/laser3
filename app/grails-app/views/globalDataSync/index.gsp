@@ -63,8 +63,7 @@
             <g:sortableColumn property="identifier" title="${message(code: 'package.identifier.label')}"/>
             <g:sortableColumn property="name" title="${message(code: 'package.name.label')}"/>
             <g:sortableColumn property="desc" title="${message(code: 'package.description.label')}"/>
-            <g:sortableColumn property="source.name" title="${message(code: 'package.source.label')}"/>
-            <g:sortableColumn property="type" title="${message(code: 'package.type.label')}"/>
+            %{--<g:sortableColumn property="source.name" title="${message(code: 'package.source.label')}"/>--}%
             <g:sortableColumn property="kbplusCompliant" title="${message(code: 'package.kbplusCompliant.label')}"/>
             <g:sortableColumn property="globalRecordInfoStatus"
                               title="${message(code: 'package.globalRecordInfoStatus.label')}"/>
@@ -84,7 +83,7 @@
                 </td>
                 <td><a href="${item.source.uri}?verb=getRecord&amp;identifier=${item.identifier}&amp;metadataPrefix=${item.source.fullPrefix}">
                     ${item.source.name}</a></td>
-                <td><a href="${item.source.baseUrl}search/index?qbe=g:1packages">${item.displayRectype}</a></td>
+                %{--<td><a href="${item.source.baseUrl}search/index?qbe=g:1packages">${item.displayRectype}</a></td>--}%
                 <td>${item.kbplusCompliant?.getI10n('value')}</td>
                 <td>${item.globalRecordInfoStatus?.getI10n('value')}</td>
                 <td>${tippcount[k]}</td>
