@@ -36,7 +36,7 @@
     <div class="ui fixed inverted menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item">LAS:eR</g:link>
-            <!-- img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26" -->
+            <%-- <img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26"/> --%>
             <sec:ifLoggedIn>
                 <g:if test="${false}">
                 <div class="ui simple dropdown item">

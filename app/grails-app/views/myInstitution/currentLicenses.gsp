@@ -105,7 +105,7 @@
                         <i class="copy icon"></i></g:link>
                     <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
                             params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
-                        <i class="trash icon"></i></g:link>
+                        <i class="trash alternate icon"></i></g:link>
                   </td>
                 </tr>
               </g:each>

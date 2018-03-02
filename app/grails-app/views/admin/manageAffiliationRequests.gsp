@@ -46,7 +46,7 @@
                             <i class="checkmark icon"></i>
                         </g:link>
                         <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="ui icon negative button">
-                            <i class="minus icon"></i>
+                            <i class="times icon"></i>
                         </g:link>
                     </td>
                 </tr>

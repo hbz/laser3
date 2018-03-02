@@ -55,13 +55,13 @@
 
 /* Headers */
 .ui.table thead {
-  box-shadow: none;
+  box-shadow: @headerBoxShadow;
 }
 .ui.table thead th {
   cursor: auto;
-  background: none;
+  background: @headerBackground;
   text-align: @headerAlign;
-  color: @grey;
+  color: @headerColor;
   padding: @headerVerticalPadding @headerHorizontalPadding;
   vertical-align: @headerVerticalAlign;
   font-style: @headerFontStyle;
@@ -120,6 +120,11 @@
 }
 .ui.table tr:first-child td {
   border-top: none;
+}
+
+/* Repeated tbody */
+.ui.table tbody + tbody tr:first-child td {
+  border-top: @rowBorder;
 }
 
 /* Table Cells */
@@ -186,7 +191,7 @@
   }
   .ui.table:not(.unstackable) th:first-child,
   .ui.table:not(.unstackable) td:first-child {
-    font-weight: bold;
+    font-weight: @responsiveCellHeaderFontWeight;
   }
 
   /* Definition Table */
@@ -888,7 +893,7 @@
 .ui.sortable.table thead th:after {
   display: none;
   font-style: normal;
-  font-weight: normal;
+  font-weight: @normal;
   text-decoration: inherit;
   content: '';
   height: 1em;

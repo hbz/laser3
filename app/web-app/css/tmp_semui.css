@@ -131,3 +131,10 @@ TODO: remove and set in semantic css: la-table-small
     padding-top: 0.6em;
     padding-bottom: 0.6em;
 }
+
+/* semantic ui - upgrade to 2.3 - start */
+
+.ui.modal {
+    left: initial; /* BUG !? */
+}
+/* semantic ui - upgrade to 2.3 - stop */

@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.2.13 - Table
+ * # Semantic UI 2.3.0 - Table
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -55,9 +55,9 @@
 }
 .ui.table thead th {
   cursor: auto;
-  background: none;
+  background: #F9FAFB;
   text-align: inherit;
-  color: #767676;
+  color: rgba(0, 0, 0, 0.87);
   padding: 0.92857143em 0.78571429em;
   vertical-align: inherit;
   font-style: none;
@@ -115,6 +115,11 @@
 }
 .ui.table tr:first-child td {
   border-top: none;
+}
+
+/* Repeated tbody */
+.ui.table tbody + tbody tr:first-child td {
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
 }
 
 /* Table Cells */

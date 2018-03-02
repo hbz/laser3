@@ -39,9 +39,10 @@
 /* See Power-user section below
    for explanation of @px variables
 */
+@relativeBorderRadius: @relative2px;
+@absoluteBorderRadius: @2px;
 
-
-@defaultBorderRadius:0;
+@defaultBorderRadius: @absoluteBorderRadius;
 
 /*-------------------
     Brand Colors
@@ -250,12 +251,12 @@
 
 /*---  Colors for Site Elements---*/
 
-@functionalObjects  :   #d3dae3;/* Click an find out more */
+@functionalObjects  :   #d3dae3 /* Click an find out more */
 @showWhatsChosen    :   #9bacc0; /* You can Click me but you can also see what was Chosen */
 
 @laSideCards        : lighten(@orange, 47);
 
-@laFilterBackground :lighten(@functionalObjects,6);
+@laFilterBackground : @functionalObjects;
 @laFilterChosen     : @showWhatsChosen;
 
 /*---  Light Colors  ---*/
@@ -270,7 +271,7 @@
 @lightPurple      : #DC73FF;
 @lightPink        : #FF8EDF;
 @lightBrown       : #D67C1C;
-@lightGrey        : #d3dae3;
+@lightGrey        : #DCDDDE;
 @lightBlack       : #545454;
 
 /*---   Neutrals  ---*/
@@ -354,7 +355,7 @@
 
 /* Differentiating Layers */
 @subtleShadow:
-  none
+  0px 1px 2px 0 @borderColor
 ;
 @floatingShadow:
   0px 2px 4px 0px rgba(34, 36, 38, 0.12),

@@ -54,7 +54,7 @@
               <g:if test="${editable}">
                 <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
                   <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
-                    <i class="minus icon"></i>
+                    <i class="times icon"></i>
                   </g:link>
                 </g:if>
                 <g:else>
@@ -63,7 +63,7 @@
                   </g:link>
                 </g:else>
                 <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
-                  <i class="trash icon"></i>
+                  <i class="trash alternate icon"></i>
                 </g:link>
               </g:if>
             </td>
