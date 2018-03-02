@@ -39,8 +39,8 @@
 /* See Power-user section below
    for explanation of @px variables
 */
-@relativeBorderRadius: @relative4px;
-@absoluteBorderRadius: @4px;
+@relativeBorderRadius: @relative2px;
+@absoluteBorderRadius: @2px;
 
 @defaultBorderRadius: @absoluteBorderRadius;
 
@@ -53,6 +53,8 @@
 
 @lightPrimaryColor   : @lightBlue;
 @lightSecondaryColor : @lightBlack;
+
+
 
 /*--------------
   Page Heading
@@ -118,6 +120,7 @@
         Page
 --------------------*/
 
+//@pageBackground      : #f3f4f7;
 @pageBackground      : #f4f8f9;
 @pageOverflowX       : hidden;
 
@@ -240,13 +243,21 @@
 @o-light-turquoise: #4192B0;
 @o-dark-turquoise: #0D5363;
 
-@o-subscription: @orange; /* hbz-orange */
-@o-package: #BB6A00; /* ocker */
-@o-title: #007070; /* Teal */
-@o-organization: #008C25; /* Dark Green */
-@o-organization: #76007A; /* Purple */
+@subscription     :    @orange; /* hbz-orange */
+@package          :    #BB6A00; /* ocker */
+@title            :    #007070; /* Teal */
+@organization     :    #008C25; /* Dark Green */
+@organization     :    #76007A; /* Purple */
 
+/*---  Colors for Site Elements---*/
 
+@functionalObjects  :   #d3dae3 /* Click an find out more */
+@showWhatsChosen    :   #9bacc0; /* You can Click me but you can also see what was Chosen */
+
+@laSideCards        : lighten(@orange, 47);
+
+@laFilterBackground : @functionalObjects;
+@laFilterChosen     : @showWhatsChosen;
 
 /*---  Light Colors  ---*/
 @lightRed         : #FF695E;
@@ -482,7 +493,7 @@
 
 @circularRadius                : 500rem;
 
-@borderColor               : rgba(34, 36, 38, 0.15);
+@borderColor               : #eaeaea;
 @strongBorderColor         : rgba(34, 36, 38, 0.22);
 @internalBorderColor       : rgba(34, 36, 38, 0.1);
 @selectedBorderColor       : rgba(34, 36, 38, 0.35);
