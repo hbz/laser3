@@ -251,7 +251,7 @@
 
 /*---  Colors for Site Elements---*/
 
-@functionalObjects  :   #d3dae3 /* Click an find out more */
+@functionalObjects  :   #d3dae3; /* Click an find out more */
 @showWhatsChosen    :   #9bacc0; /* You can Click me but you can also see what was Chosen */
 
 @laSideCards        : lighten(@orange, 47);
