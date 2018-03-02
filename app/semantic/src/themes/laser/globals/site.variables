@@ -39,10 +39,9 @@
 /* See Power-user section below
    for explanation of @px variables
 */
-@relativeBorderRadius: @relative2px;
-@absoluteBorderRadius: @2px;
 
-@defaultBorderRadius: @absoluteBorderRadius;
+
+@defaultBorderRadius:0;
 
 /*-------------------
     Brand Colors
@@ -256,7 +255,7 @@
 
 @laSideCards        : lighten(@orange, 47);
 
-@laFilterBackground : @functionalObjects;
+@laFilterBackground :lighten(@functionalObjects,6);
 @laFilterChosen     : @showWhatsChosen;
 
 /*---  Light Colors  ---*/
@@ -355,7 +354,7 @@
 
 /* Differentiating Layers */
 @subtleShadow:
-  0px 1px 2px 0 @borderColor
+  none
 ;
 @floatingShadow:
   0px 2px 4px 0px rgba(34, 36, 38, 0.12),

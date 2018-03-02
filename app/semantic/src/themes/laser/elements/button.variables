@@ -1,3 +1,30 @@
 /*******************************
             Button
 *******************************/
+
+/*-------------------
+       Element
+--------------------*/
+
+/* Button */
+
+
+@backgroundColor: @lightGrey;
+@backgroundImage: none;
+@background: @backgroundColor @backgroundImage;
+@borderRadius: 0;
+
+
+/* Internal Shadow */
+@shadowDistance: 0em;
+@shadowOffset: (@shadowDistance / 2);
+@shadowBoxShadow: 0px -@shadowDistance 0px 0px @borderColor inset;
+
+/* Box Shadow */
+@borderBoxShadowColor: transparent;
+@borderBoxShadowWidth: 1px;
+@borderBoxShadow: 0px 0px 0px @borderBoxShadowWidth @borderBoxShadowColor inset;
+@boxShadow:
+  @borderBoxShadow,
+  @shadowBoxShadow
+;

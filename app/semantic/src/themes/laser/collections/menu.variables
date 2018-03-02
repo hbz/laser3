@@ -18,8 +18,8 @@
 @fontFamily: @pageFont;
 @itemBackground: none;
 @fontWeight: normal;
-@borderWidth: 1px;
-@border: @borderWidth solid @borderColor;
+@borderWidth: 0;
+@border: none;
 @boxShadow: @subtleShadow;
 @borderRadius: @defaultBorderRadius;
 @minHeight: (@itemVerticalPadding * 2) + 1em;
