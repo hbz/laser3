@@ -39,10 +39,9 @@
 /* See Power-user section below
    for explanation of @px variables
 */
-@relativeBorderRadius: @relative2px;
-@absoluteBorderRadius: @2px;
 
-@defaultBorderRadius: @absoluteBorderRadius;
+
+@defaultBorderRadius: 0;
 
 /*-------------------
     Brand Colors
