@@ -145,8 +145,8 @@
 
                                 <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
 
-                                <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
+                            %{--<g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>--}%
+                            %{--<g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>--}%
 
                                 <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>

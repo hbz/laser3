@@ -74,7 +74,7 @@ class DataloadService {
         updateES(esclient, com.k_int.kbplus.Org.class) { org ->
             def result = [:]
             //result._id = org.impId
-            result._id = org.globalUID ?: org.impId
+            result._id = org.globalUID
             result.dbId = org.id
             result.guid = org.globalUID ?:''
 
@@ -102,7 +102,7 @@ class DataloadService {
                 }
 
                 //result._id = ti.impId
-                result._id = ti.globalUID ?: ti.impId
+                result._id = ti.globalUID
                 result.dbId = ti.id
                 result.guid = ti.globalUID ?:''
 
@@ -132,7 +132,7 @@ class DataloadService {
         updateES(esclient, com.k_int.kbplus.Package.class) { pkg ->
             def result = [:]
             //result._id = pkg.impId
-            result._id = pkg.globalUID ?: pkg.impId
+            result._id = pkg.globalUID
             result.dbId = pkg.id
             result.guid = pkg.globalUID ?:''
 
@@ -176,7 +176,7 @@ class DataloadService {
         updateES(esclient, com.k_int.kbplus.License.class) { lic ->
             def result = [:]
             //result._id = lic.impId
-            result._id = lic.globalUID ?: lic.impId
+            result._id = lic.globalUID
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
 
@@ -193,7 +193,7 @@ class DataloadService {
         updateES(esclient, com.k_int.kbplus.Platform.class) { plat ->
             def result = [:]
             //result._id = plat.impId
-            result._id = plat.globalUID ?: plat.impId
+            result._id = plat.globalUID
             result.dbId = plat.id
             result.guid = plat.globalUID ?:''
 
@@ -207,7 +207,7 @@ class DataloadService {
         updateES(esclient, com.k_int.kbplus.Subscription.class) { sub ->
             def result = [:]
             //result._id = sub.impId
-            result._id = sub.globalUID ?: sub.impId
+            result._id = sub.globalUID
             result.dbId = sub.id
             result.guid = sub.globalUID ?:''
 

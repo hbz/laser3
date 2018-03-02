@@ -36,11 +36,19 @@
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.renewals', default:'Renewals')}</h5>-->
                         <div class="ui divided relaxed list">
+                            %{--<div class="item">--}%
+                            %{--<g:link controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link>--}%
+                            %{--</div>--}%
+                            %{--<div class="item">--}%
+                            %{--<g:link controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link>--}%
+                            %{--</div>--}%
                             <div class="item">
-                                <g:link controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link>
+                                <g:link controller="myInstitution"
+                                        action="changes">${message(code: 'myinst.todo.label', default: 'To Do')}</g:link>
                             </div>
                             <div class="item">
-                                <g:link controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link>
+                                <g:link controller="myInstitution"
+                                        action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
                             </div>
                             <g:if test="${grailsApplication.config.feature_finance}">
                                 <div class="item">

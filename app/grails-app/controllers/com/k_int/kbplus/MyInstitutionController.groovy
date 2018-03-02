@@ -1388,7 +1388,14 @@ AND EXISTS (
             return;
         }
 
-        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'SOBasket') ?: new UserFolder(user: result.user, shortcode: 'SOBasket').save();
+        if (params.searchreset) {
+            params.remove("pkgname")
+            params.remove("search")
+        }
+
+        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save();
+
+        shopping_basket.save(flush: true)
 
         if (params.addBtn) {
             log.debug("Add item ${params.addBtn} to basket");
@@ -1397,7 +1404,12 @@ AND EXISTS (
             shopping_basket.save(flush: true);
         } else if (params.clearBasket == 'yes') {
             log.debug("Clear basket....");
-            shopping_basket.items?.clear();
+            shopping_basket.removePackageItems();
+            shopping_basket.save(flush: true)
+        } else if (params.clearOnlyoneitemBasket) {
+            log.debug("Clear item ${params.clearOnlyoneitemBasket} from basket ");
+            def oid = "com.k_int.kbplus.Package:${params.clearOnlyoneitemBasket}"
+            shopping_basket.removeItem(oid)
             shopping_basket.save(flush: true)
         } else if (params.generate == 'yes') {
             log.debug("Generate");
@@ -1447,13 +1459,16 @@ AND EXISTS (
                         sw.append(filter_components[2])
                     }
                 }
+                if ((p.key.startsWith('fct:')) && p.value.equals("")) {
+                    params.remove(p.key)
+                }
             }
 
             if (has_filter) {
                 fq = sw.toString();
                 log.debug("Filter Query: ${fq}");
             }
-            params.sort = ""
+            params.sort = "name"
             params.rectype = "Package" // Tells ESSearchService what to look for
             if(params.pkgname) params.q = params.pkgname
             if(fq){
@@ -1465,6 +1480,11 @@ AND EXISTS (
         catch (Exception e) {
             log.error("problem", e);
         }
+
+        result.basket.each
+                {
+                    if (it instanceof Subscription) result.sub_id = it.id
+                }
 
         result
     }
@@ -1652,20 +1672,19 @@ AND EXISTS (
                                 title_info.core_status_on = formatted_date
                                 title_info.core_medium = ie.coreStatus
 
-
-                                try {
-                                    log.debug("get jusp usage");
-                                    title_info.jr1_last_4_years = factService.lastNYearsByType(title_info.id,
-                                            inst.id,
-                                            ie.tipp.pkg.contentProvider.id, 'JUSP:JR1', 4, current_year)
-
-                                    title_info.jr1a_last_4_years = factService.lastNYearsByType(title_info.id,
-                                            inst.id,
-                                            ie.tipp.pkg.contentProvider.id, 'JUSP:JR1a', 4, current_year)
-                                }
-                                catch (Exception e) {
-                                    log.error("Problem collating JUSP report info for title ${title_info.id}", e);
-                                }
+//                                try {
+//                                    log.debug("get jusp usage");
+//                                    title_info.jr1_last_4_years = factService.lastNYearsByType(title_info.id,
+//                                            inst.id,
+//                                            ie.tipp.pkg.contentProvider.id, 'JUSP:JR1', 4, current_year)
+//
+//                                    title_info.jr1a_last_4_years = factService.lastNYearsByType(title_info.id,
+//                                            inst.id,
+//                                            ie.tipp.pkg.contentProvider.id, 'JUSP:JR1a', 4, current_year)
+//                                }
+//                                catch (Exception e) {
+//                                    log.error("Problem collating JUSP report info for title ${title_info.id}", e);
+//                                }
 
                                 // log.debug("added title info: ${title_info}");
                             }
@@ -1780,6 +1799,8 @@ AND EXISTS (
             log.debug("export workbook");
 
             // read http://stackoverflow.com/questions/2824486/groovy-grails-how-do-you-stream-or-buffer-a-large-file-in-a-controllers-respon
+            def date = new Date()
+            def sdf = new SimpleDateFormat("dd.MM.yyyy")
 
             HSSFWorkbook workbook = new HSSFWorkbook();
 
@@ -1789,7 +1810,7 @@ AND EXISTS (
             // Create two sheets in the excel document and name it First Sheet and
             // Second Sheet.
             //
-            HSSFSheet firstSheet = workbook.createSheet("Renewals Worksheet");
+            HSSFSheet firstSheet = workbook.createSheet(g.message(code: "renewalexport.renewalsworksheet", default: "Renewals Worksheet"));
             Drawing drawing = firstSheet.createDrawingPatriarch();
 
             // Cell style for a present TI
@@ -1801,6 +1822,11 @@ AND EXISTS (
             HSSFCellStyle core_cell_style = workbook.createCellStyle();
             core_cell_style.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
             core_cell_style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+
+            //NOT CHANGE
+            HSSFCellStyle notchange_cell_style = workbook.createCellStyle();
+            notchange_cell_style.setFillForegroundColor(HSSFColor.RED.index);
+            notchange_cell_style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
             int rc = 0;
             // header
@@ -1815,23 +1841,26 @@ AND EXISTS (
             row = firstSheet.createRow(rc++);
             cc = 0;
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Subscriber ID"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscriberID", default: "Subscriber ID")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Subscriber Name"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscribername", default: "Subscriber Name")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Subscriber Shortcode"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscriberShortcode", default: "Subscriber Shortcode")));
 
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Subscription Start Date"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscriptionStartDate", default: "Subscription Startdate")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Subscription End Date"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscriptionEndDate", default: "Subscription Enddate")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Copy Subscription Documents"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.copySubscriptionDoc", default: "Copy Subscription Doc")));
+            cell = row.createCell(cc++);
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.generated", default: "Generated at")));
 
             row = firstSheet.createRow(rc++);
             cc = 0;
             cell = row.createCell(cc++);
             cell.setCellValue(new HSSFRichTextString("${inst.id}"));
+            cell.setCellStyle(notchange_cell_style);
             cell = row.createCell(cc++);
             cell.setCellValue(new HSSFRichTextString(inst.name));
             cell = row.createCell(cc++);
@@ -1844,26 +1873,31 @@ AND EXISTS (
             cell.setCellValue(new HSSFRichTextString("${subscription?.sub_endDate?:''}"));
             cell = row.createCell(cc++);
             cell.setCellValue(new HSSFRichTextString("${subscription?.sub_id?:m.sub_info[0].sub_id}"));
-
+            cell.setCellStyle(notchange_cell_style);
+            cell = row.createCell(cc++);
+            cell.setCellValue(new HSSFRichTextString("${sdf.format(date)}"));
             row = firstSheet.createRow(rc++);
 
             // Key
             row = firstSheet.createRow(rc++);
             cc = 0;
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Key"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.key", default: "Key")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Title In Subscription"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.inSubscription", default: "In Subscription")));
             cell.setCellStyle(present_cell_style);
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Core Title"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.coreTitle", default: "Core Title")));
             cell.setCellStyle(core_cell_style);
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Not In Subscription"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.notinSubscription", default: "Not in Subscription")));
+            cell = row.createCell(cc++);
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.notChange", default: "Not Change")));
+            cell.setCellStyle(notchange_cell_style);
             cell = row.createCell(21);
-            cell.setCellValue(new HSSFRichTextString("Current Sub"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentSub", default: "Current Subscription")));
             cell = row.createCell(22);
-            cell.setCellValue(new HSSFRichTextString("Candidates ->"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.candidates", default: "Candidates")));
 
 
             row = firstSheet.createRow(rc++);
@@ -1871,55 +1905,56 @@ AND EXISTS (
             m.sub_info.each { sub ->
                 cell = row.createCell(cc++);
                 cell.setCellValue(new HSSFRichTextString("${sub.sub_id}"));
+                cell.setCellStyle(notchange_cell_style);
             }
 
             // headings
             row = firstSheet.createRow(rc++);
             cc = 0;
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Title ID"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.titleID", default: "Title ID")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Title"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.title", default: "Title")));
             cell = row.createCell(cc++);
             cell.setCellValue(new HSSFRichTextString("ISSN"));
             cell = row.createCell(cc++);
             cell.setCellValue(new HSSFRichTextString("eISSN"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Current Start Date"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentStartDate", default: "Current Startdate")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Current End Date"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentEndDate", default: "Current Enddate")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Current Coverage Depth"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentCoverageDepth", default: "Current Coverage Depth")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Current Coverage Note"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentCoverageNote", default: "Current Coverage Note")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Core Status"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.coreStatus", default: "Core Status")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Core Status Checked"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.coreStatusCheked", default: "Core Status Checked")));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Core Medium"));
+            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.coreMedium", default: "Core Medium")));
 
             // USAGE History
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1\n${m.current_year - 4}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year - 4}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1a\n${m.current_year - 4}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year - 4}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1\n${m.current_year - 3}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year - 3}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1a\n${m.current_year - 3}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year - 3}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1\n${m.current_year - 2}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year - 2}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1a\n${m.current_year - 2}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year - 2}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1\n${m.current_year - 1}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year - 1}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1a\n${m.current_year - 1}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year - 1}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1\n${m.current_year}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year}"));
             cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("JR1a\n${m.current_year}"));
+            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year}"));
 
             m.sub_info.each { sub ->
                 cell = row.createCell(cc++);
@@ -2011,6 +2046,7 @@ AND EXISTS (
                     cell.setCellValue(new HSSFRichTextString(title.jr1a_last_4_years[0] ?: '0'));
 
                 m.sub_info.each { sub ->
+
                     cell = row.createCell(cc++);
                     def ie_info = m.ti_info[title.title_idx][sub.sub_idx]
                     if (ie_info) {
@@ -2021,7 +2057,11 @@ AND EXISTS (
                             cell.setCellValue(new HSSFRichTextString(""));
                             cell.setCellStyle(present_cell_style);
                         }
-                        addCellComment(row, cell, "${title.title} provided by ${sub.sub_name}\nStart Date:${ie_info.startDate ?: 'Not set'}\nStart Volume:${ie_info.startVolume ?: 'Not set'}\nStart Issue:${ie_info.startIssue ?: 'Not set'}\nEnd Date:${ie_info.endDate ?: 'Not set'}\nEnd Volume:${ie_info.endVolume ?: 'Not set'}\nEnd Issue:${ie_info.endIssue ?: 'Not set'}\nSelect Title by setting this cell to Y", drawing, factory);
+                        if (sub.sub_idx == 0) {
+                            addCellComment(row, cell, "${title.title} ${g.message(code: "renewalexport.providedby", default: "provided by")} ${sub.sub_name}\n${g.message(code: "renewalexport.startDate", default: "Start Date")}:${ie_info.startDate ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.startVolume", default: "Start Volume")}:${ie_info.startVolume ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.startIssue", default: "Start Issue")}:${ie_info.startIssue ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.endDate", default: "End Date")}:${ie_info.endDate ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.endVolume", default: "End Volume")}:${ie_info.endVolume ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.endIssue", default: "End Issue")}:${ie_info.endIssue ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n", drawing, factory);
+                        } else {
+                            addCellComment(row, cell, "${title.title} ${g.message(code: "renewalexport.providedby", default: "provided by")} ${sub.sub_name}\n${g.message(code: "renewalexport.startDate", default: "Start Date")}:${ie_info.startDate ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.startVolume", default: "Start Volume")}:${ie_info.startVolume ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.startIssue", default: "Start Issue")}:${ie_info.startIssue ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.endDate", default: "End Date")}:${ie_info.endDate ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.endVolume", default: "End Volume")}:${ie_info.endVolume ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.endIssue", default: "End Issue")}:${ie_info.endIssue ?: g.message(code: "renewalexport.notSet", default: "Not set")}\n${g.message(code: "renewalexport.selectTitle", default: "Select Title by setting this cell to Y")}\n", drawing, factory);
+                        }
                     }
 
                 }
@@ -2031,20 +2071,17 @@ AND EXISTS (
             cell.setCellValue(new HSSFRichTextString("END"));
 
             // firstSheet.autoSizeRow(6); //adjust width of row 6 (Headings for JUSP Stats)
-            Row jusp_heads_row = firstSheet.getRow(6);
-            jusp_heads_row.setHeight((short) (jusp_heads_row.getHeight() * 2));
+//            Row jusp_heads_row = firstSheet.getRow(6);
+//            jusp_heads_row.setHeight((short) (jusp_heads_row.getHeight() * 2));
 
-            firstSheet.autoSizeColumn(0); //adjust width of the first column
-            firstSheet.autoSizeColumn(1); //adjust width of the first column
-            firstSheet.autoSizeColumn(2); //adjust width of the first column
-            firstSheet.autoSizeColumn(3); //adjust width of the first column
+            for (int i = 0; i < 22; i++) {
+                firstSheet.autoSizeColumn(i); //adjust width of the first column
+            }
             for (int i = 0; i < m.sub_info.size(); i++) {
-                firstSheet.autoSizeColumn(7 + i); //adjust width of the second column
+                firstSheet.autoSizeColumn(22 + i); //adjust width of the second column
             }
 
-
-
-            response.setHeader "Content-disposition", "attachment; filename=\"comparison.xls\""
+            response.setHeader "Content-disposition", "attachment; filename=\"${g.message(code: "renewalexport.renewals", default: "Renewals")}.xls\""
             // response.contentType = 'application/xls'
             response.contentType = 'application/vnd.ms-excel'
             workbook.write(response.outputStream)
@@ -2056,6 +2093,34 @@ AND EXISTS (
         }
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def renewalsnoPackageChange() {
+        def result = setResultGenerics()
+
+        if (!permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
+            response.sendError(401)
+            return;
+        } else if (!permissionHelperService.hasUserWithRole(result.user, result.institution, "INST_ADM")) {
+            flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
+            response.sendError(401)
+            return;
+        }
+
+        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+
+        def subscription = Subscription.get(params.sub_id)
+
+        result.errors = []
+
+        result.permissionInfo = [sub_startDate: sdf.format(subscription.startDate), sub_endDate: sdf.format(subscription.endDate), sub_name: subscription.name, sub_id: subscription.id]
+
+        result.entitlements = subscription.issueEntitlements
+
+
+
+        result
+    }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def renewalsUpload() {
@@ -2090,6 +2155,7 @@ AND EXISTS (
         result
     }
 
+
     def processRenewalUpload(input_stream, upload_filename, result) {
         int SO_START_COL = 22
         int SO_START_ROW = 7
@@ -2110,6 +2176,8 @@ AND EXISTS (
                 return result;
             }
             HSSFSheet firstSheet = wb.getSheetAt(0);
+
+            def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
 
             // Step 1 - Extract institution id, name and shortcode
             HSSFRow org_details_row = firstSheet.getRow(2)
@@ -2233,6 +2301,8 @@ AND EXISTS (
         def sub_startDate = params.subscription?.copyStart ? parseDate(params.subscription?.start_date,possible_date_formats) : null
         def sub_endDate = params.subscription?.copyEnd ? parseDate(params.subscription?.end_date,possible_date_formats): null
         def copy_documents = params.subscription?.copy_docs && params.subscription.copyDocs
+        def old_subOID = params.subscription.copy_docs
+        def old_subname = params.subscription.name
 
         def new_subscription = new Subscription(
                 identifier: java.util.UUID.randomUUID().toString(),
@@ -2241,7 +2311,7 @@ AND EXISTS (
                 name: "Unset: Generated by import",
                 startDate: sub_startDate,
                 endDate: sub_endDate,
-                // instanceOf: db_sub,
+                instanceOf: old_subOID ?: null,
                 type: RefdataValue.findByValue('Subscription Taken'))
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
@@ -2372,15 +2442,15 @@ AND EXISTS (
         // When the comment box is visible, have it show in a 1x3 space
         ClientAnchor anchor = factory.createClientAnchor();
         anchor.setCol1(cell.getColumnIndex());
-        anchor.setCol2(cell.getColumnIndex() + 7);
+        anchor.setCol2(cell.getColumnIndex() + 9);
         anchor.setRow1(row.getRowNum());
-        anchor.setRow2(row.getRowNum() + 9);
+        anchor.setRow2(row.getRowNum() + 11);
 
         // Create the comment and set the text+author
         def comment = drawing.createCellComment(anchor);
         RichTextString str = factory.createRichTextString(comment_text);
         comment.setString(str);
-        comment.setAuthor("KBPlus System");
+        comment.setAuthor("LAS:eR System");
 
         // Assign the comment to the cell
         cell.setCellComment(comment);
