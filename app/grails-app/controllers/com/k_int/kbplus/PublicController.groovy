@@ -1,10 +1,13 @@
 package com.k_int.kbplus
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
+import grails.plugin.springsecurity.annotation.Secured;
 
+@Secured(['permitAll'])
 class PublicController {
 
     def springSecurityService
 
+    @Secured(['ROLE_USER'])
   def journalLicenses(){
     log.debug("journalLicenses :: ${params}")
     def result = [:]
@@ -58,6 +61,7 @@ class PublicController {
     result
   }
 
+    @Secured(['ROLE_USER'])
   def checkUserAccessToOrg(user,org,org_access){
     def hasAccess = false
     def org_access_rights = org_access?.getValue() ? org_access.getValue().split(",") : []
@@ -79,6 +83,7 @@ class PublicController {
     return hasAccess
   }
 
+    @Secured(['ROLE_USER'])
   def generateIELicenseMap(ies,result){
     log.debug("generateIELicenseMap")
     def comparisonMap = [:]
@@ -111,6 +116,7 @@ class PublicController {
     log.debug("Processed: "+result)
   }
 
+    @Secured(['ROLE_USER'])
   def retrieveIssueEntitlements(ti,org,result){
     log.debug("retrieveIssueEntitlements")
     def issueEntitlements = []
