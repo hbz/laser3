@@ -674,7 +674,7 @@ ol.ui.horizontal.list li:before,
 --------------------*/
 
 .ui.divided.list > .item {
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-top: 1px solid #eaeaea;
 }
 .ui.divided.list .list > .item {
   border-top: none;
@@ -738,7 +738,7 @@ ol.ui.horizontal.list li:before,
 }
 .ui.divided.horizontal.list > .item {
   border-top: none;
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
   margin: 0em;
   line-height: 0.6;
 }
@@ -759,12 +759,12 @@ ol.ui.horizontal.list li:before,
 
 .ui.celled.list > .item,
 .ui.celled.list > .list {
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-top: 1px solid #eaeaea;
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
 .ui.celled.list > .item:last-child {
-  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 1px solid #eaeaea;
 }
 
 /* Padding on all elements */
@@ -820,7 +820,7 @@ ol.ui.horizontal.list li:before,
 .ui.horizontal.celled.list .list > .item,
 .ui.horizontal.celled.list > .item {
   border-top: none;
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
   margin: 0em;
   padding-left: 0.5em;
   padding-right: 0.5em;
@@ -829,7 +829,7 @@ ol.ui.horizontal.list li:before,
 .ui.horizontal.celled.list .list > .item:last-child,
 .ui.horizontal.celled.list > .item:last-child {
   border-bottom: none;
-  border-right: 1px solid rgba(34, 36, 38, 0.15);
+  border-right: 1px solid #eaeaea;
 }
 
 /* Inverted */
