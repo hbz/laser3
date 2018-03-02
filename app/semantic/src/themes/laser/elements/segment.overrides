@@ -5,5 +5,5 @@
 *******************************/
 
 .ui.segment.la-filter {
-  background: @background;
+  background: @laFilterBackground;
 }

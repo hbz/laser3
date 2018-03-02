@@ -166,7 +166,7 @@ class SemanticUiTagLib {
 
     def filter = { attrs, body ->
 
-        out << '<div class="ui yellow segment">'
+        out << '<div class="ui la-filter segment">'
         out <<   body()
         out << '</div>'
     }

@@ -2047,7 +2047,7 @@ Floated Menu / Item
 .ui.menu.la-contextBar {
   top: 40px;
   z-index: 1;
-  background-color: #DCDDDE;
+  background-color: #d3dae3;
 }
 .ui.menu.la-contextBar .la-context-org {
   font-size: 0.87em;
