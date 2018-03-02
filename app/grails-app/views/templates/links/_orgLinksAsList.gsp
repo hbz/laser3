@@ -31,11 +31,9 @@
                     </g:each>
                 </div>
                 <g:if test="${editmode}">
-                    (<g:link controller="ajax" action="delOrgRole" id="${role.id}"
-                            onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
-                        <i class="unlinkify icon red"></i>
-                        ${message(code:'default.button.unlink.label')}
-                    </g:link>)
+                    [<g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
+                        <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
+                    </g:link>]
                 </g:if>
             </dd>
 

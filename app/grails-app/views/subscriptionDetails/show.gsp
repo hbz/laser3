@@ -110,10 +110,10 @@
                         </g:if>
 
                         <g:if test="${editable}">
+                            [<a href="" onclick="unlinkPackage(${sp.pkg.id})">
+                                <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
+                            </a>]
                             <br />
-                            <a href="" onclick="unlinkPackage(${sp.pkg.id})">
-                                ( <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')} )
-                            </a>
                         </g:if>
 
                     </g:each>
@@ -124,10 +124,9 @@
                     <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
                         <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
                         <g:if test="${subscriptionInstance.owner != null}">
-                            (
-                            <g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">${message(code:'default.button.show.label', default:'Show')}</g:link>
-                            <g:link controller="licenseDetails" action="show" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
-                            )
+                            [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
+                            </g:link>]
                         </g:if>
                     </g:if>
                     <g:else>N/A (Subscription offered)</g:else>

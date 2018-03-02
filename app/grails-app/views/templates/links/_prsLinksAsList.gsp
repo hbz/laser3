@@ -30,10 +30,10 @@
                     </div>
                 </div>
                 <g:if test="${editable}">
-                    (<g:link controller="ajax" action="delPrsRole" id="${pr.id}"
+                    [<g:link controller="ajax" action="delPrsRole" id="${pr.id}"
                             onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
                             <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                    </g:link>)
+                    </g:link>]
                     <br />
                 </g:if>
             </g:if>
