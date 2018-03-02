@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.2.13 - Segment
+ * # Semantic UI 2.3.0 - Segment
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -574,10 +574,10 @@
 
 /* Blue */
 .ui.blue.segment:not(.inverted) {
-  border-top: 2px solid red !important;
+  border-top: 2px solid #2185D0 !important;
 }
 .ui.inverted.blue.segment {
-  background-color: red !important;
+  background-color: #2185D0 !important;
   color: #FFFFFF !important;
 }
 
