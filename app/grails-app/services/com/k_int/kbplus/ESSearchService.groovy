@@ -73,6 +73,7 @@ class ESSearchService{
               type {
                 terms {
                   field = 'rectype'
+                  size = 25
                 }
               }
               startYear {
