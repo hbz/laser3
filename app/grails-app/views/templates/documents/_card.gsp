@@ -2,9 +2,9 @@
 
     <g:each in="${ownobj.documents}" var="docctx">
         <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
-            <div class="ui small feed">
+            <div class="ui small feed content">
                 <!--<div class="event">-->
-                    <div class="content">
+
                         <div class="summary">
                             (${docctx.owner.id})
                             <g:link controller="docstore" id="${docctx.owner.uuid}">
@@ -21,7 +21,7 @@
                                 </g:else>
                             </g:link>
                         </div>
-                    </div>
+
                 <!--</div>-->
             </div>
         </g:if>
