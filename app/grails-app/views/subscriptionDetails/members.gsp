@@ -106,7 +106,7 @@
                             <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon negative button"
                                     params="${[id:subscriptionInstance.id, basesubscription: sub.id]}"
                                     onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(sub.name?:'this subscription')])}')">
-                                <i class="trash icon"></i>
+                                <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
 

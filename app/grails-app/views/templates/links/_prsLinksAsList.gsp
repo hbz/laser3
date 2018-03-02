@@ -9,10 +9,10 @@
                 <div class="ui list">
                     <div class="item">
                         <g:if test="${pr.prs.isPublic?.value == "No"}">
-                            <i class="address card icon"></i>
+                            <i class="address card outline icon"></i>
                         </g:if>
                         <g:else>
-                            <i class="address card outline icon"></i>
+                            <i class="address card icon"></i>
                         </g:else>
 
                         <div class="content">
