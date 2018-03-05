@@ -256,7 +256,7 @@
 
 @laSideCards        : lighten(@orange, 47);
 
-@laFilterBackground : @functionalObjects;
+@laFilterBackground : lighten(@functionalObjects,6);
 @laFilterChosen     : @showWhatsChosen;
 
 /*---  Light Colors  ---*/

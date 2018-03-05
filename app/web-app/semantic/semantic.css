@@ -761,6 +761,14 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 /*******************************
+        Object Overview Site
+*******************************/
+
+.ui.card.card-grey {
+  background: #fffaf5;
+}
+
+/*******************************
         Landingpage
 *******************************/
 
@@ -978,7 +986,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   font-style: normal;
   text-align: center;
   text-decoration: none;
-  border-radius: 0;
+  border-radius: 0.14285714rem;
   -webkit-box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #eaeaea inset;
   box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #eaeaea inset;
   -webkit-user-select: none;
@@ -1765,7 +1773,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   background: transparent none !important;
   color: rgba(0, 0, 0, 0.6) !important;
   font-weight: normal;
-  border-radius: 0;
+  border-radius: 0.14285714rem;
   text-transform: none;
   text-shadow: none !important;
   -webkit-box-shadow: 0px 0px 0px 1px #eaeaea inset;
@@ -1776,7 +1784,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   -webkit-box-shadow: none;
   box-shadow: none;
   border: 1px solid #eaeaea;
-  border-radius: 0;
+  border-radius: 0.14285714rem;
 }
 
 .ui.basic.buttons .button {
@@ -1842,7 +1850,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.basic.inverted.buttons .button,
 .ui.basic.inverted.button {
   background-color: transparent !important;
-  color: #f4f8f9 !important;
+  color: #F9FAFB !important;
   -webkit-box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 0.5) inset !important;
   box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 0.5) inset !important;
 }
@@ -1979,23 +1987,23 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 .ui.labeled.icon.buttons .button:first-child > .icon {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-top-left-radius: 0.14285714rem;
+  border-bottom-left-radius: 0.14285714rem;
 }
 
 .ui.labeled.icon.buttons .button:last-child > .icon {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-top-right-radius: 0.14285714rem;
+  border-bottom-right-radius: 0.14285714rem;
 }
 
 .ui.vertical.labeled.icon.buttons .button:first-child > .icon {
   border-radius: 0em;
-  border-top-left-radius: 0;
+  border-top-left-radius: 0.14285714rem;
 }
 
 .ui.vertical.labeled.icon.buttons .button:last-child > .icon {
   border-radius: 0em;
-  border-bottom-left-radius: 0;
+  border-bottom-left-radius: 0.14285714rem;
 }
 
 /* Fluid Labeled */
@@ -2105,11 +2113,11 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 /* Top / Bottom */
 
 .ui.attached.top.button {
-  border-radius: 0 0 0em 0em;
+  border-radius: 0.14285714rem 0.14285714rem 0em 0em;
 }
 
 .ui.attached.bottom.button {
-  border-radius: 0em 0em 0 0;
+  border-radius: 0em 0em 0.14285714rem 0.14285714rem;
 }
 
 /* Left / Right */
@@ -2119,14 +2127,14 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   border-left: none;
   text-align: right;
   padding-right: 0.75em;
-  border-radius: 0 0em 0em 0;
+  border-radius: 0.14285714rem 0em 0em 0.14285714rem;
 }
 
 .ui.right.attached.button {
   display: inline-block;
   text-align: left;
   padding-left: 0.75em;
-  border-radius: 0em 0 0 0em;
+  border-radius: 0em 0.14285714rem 0.14285714rem 0em;
 }
 
 /* Plural */
@@ -2159,28 +2167,28 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui[class*="top attached"].buttons {
   margin-bottom: -1px;
-  border-radius: 0 0 0em 0em;
+  border-radius: 0.14285714rem 0.14285714rem 0em 0em;
 }
 
 .ui[class*="top attached"].buttons .button:first-child {
-  border-radius: 0 0em 0em 0em;
+  border-radius: 0.14285714rem 0em 0em 0em;
 }
 
 .ui[class*="top attached"].buttons .button:last-child {
-  border-radius: 0em 0 0em 0em;
+  border-radius: 0em 0.14285714rem 0em 0em;
 }
 
 .ui[class*="bottom attached"].buttons {
   margin-top: -1px;
-  border-radius: 0em 0em 0 0;
+  border-radius: 0em 0em 0.14285714rem 0.14285714rem;
 }
 
 .ui[class*="bottom attached"].buttons .button:first-child {
-  border-radius: 0em 0em 0em 0;
+  border-radius: 0em 0em 0em 0.14285714rem;
 }
 
 .ui[class*="bottom attached"].buttons .button:last-child {
-  border-radius: 0em 0em 0 0em;
+  border-radius: 0em 0em 0.14285714rem 0em;
 }
 
 /* Left / Right */
@@ -2191,17 +2199,17 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   display: inline-flex;
   margin-right: 0em;
   margin-left: -1px;
-  border-radius: 0em 0 0 0em;
+  border-radius: 0em 0.14285714rem 0.14285714rem 0em;
 }
 
 .ui[class*="left attached"].buttons .button:first-child {
   margin-left: -1px;
-  border-radius: 0em 0 0em 0em;
+  border-radius: 0em 0.14285714rem 0em 0em;
 }
 
 .ui[class*="left attached"].buttons .button:last-child {
   margin-left: -1px;
-  border-radius: 0em 0em 0 0em;
+  border-radius: 0em 0em 0.14285714rem 0em;
 }
 
 .ui[class*="right attached"].buttons {
@@ -2210,17 +2218,17 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   display: inline-flex;
   margin-left: 0em;
   margin-right: -1px;
-  border-radius: 0 0em 0em 0;
+  border-radius: 0.14285714rem 0em 0em 0.14285714rem;
 }
 
 .ui[class*="right attached"].buttons .button:first-child {
   margin-left: -1px;
-  border-radius: 0 0em 0em 0em;
+  border-radius: 0.14285714rem 0em 0em 0em;
 }
 
 .ui[class*="right attached"].buttons .button:last-child {
   margin-left: -1px;
-  border-radius: 0em 0em 0em 0;
+  border-radius: 0em 0em 0em 0.14285714rem;
 }
 
 /*-------------------
@@ -2671,22 +2679,22 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.inverted.grey.buttons .button:hover,
 .ui.inverted.grey.button:hover {
-  background-color: #c2cdda;
+  background-color: #cfd0d2;
 }
 
 .ui.inverted.grey.buttons .button:focus,
 .ui.inverted.grey.button:focus {
-  background-color: #b8c5d6;
+  background-color: #c7c9cb;
 }
 
 .ui.inverted.grey.buttons .active.button,
 .ui.inverted.grey.active.button {
-  background-color: #c2cddb;
+  background-color: #cfd0d2;
 }
 
 .ui.inverted.grey.buttons .button:active,
 .ui.inverted.grey.button:active {
-  background-color: #b4c0cf;
+  background-color: #c2c4c5;
 }
 
 /* Inverted Basic */
@@ -2703,32 +2711,32 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.inverted.grey.basic.buttons .button:hover,
 .ui.inverted.grey.buttons .basic.button:hover,
 .ui.inverted.grey.basic.button:hover {
-  -webkit-box-shadow: 0px 0px 0px 2px #c2cdda inset !important;
-  box-shadow: 0px 0px 0px 2px #c2cdda inset !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #cfd0d2 inset !important;
+  box-shadow: 0px 0px 0px 2px #cfd0d2 inset !important;
   color: #FFFFFF !important;
 }
 
 .ui.inverted.grey.basic.buttons .button:focus,
 .ui.inverted.grey.basic.buttons .button:focus,
 .ui.inverted.grey.basic.button:focus {
-  -webkit-box-shadow: 0px 0px 0px 2px #b8c5d6 inset !important;
-  box-shadow: 0px 0px 0px 2px #b8c5d6 inset !important;
-  color: #d3dae3 !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #c7c9cb inset !important;
+  box-shadow: 0px 0px 0px 2px #c7c9cb inset !important;
+  color: #DCDDDE !important;
 }
 
 .ui.inverted.grey.basic.buttons .active.button,
 .ui.inverted.grey.buttons .basic.active.button,
 .ui.inverted.grey.basic.active.button {
-  -webkit-box-shadow: 0px 0px 0px 2px #c2cddb inset !important;
-  box-shadow: 0px 0px 0px 2px #c2cddb inset !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #cfd0d2 inset !important;
+  box-shadow: 0px 0px 0px 2px #cfd0d2 inset !important;
   color: #FFFFFF !important;
 }
 
 .ui.inverted.grey.basic.buttons .button:active,
 .ui.inverted.grey.buttons .basic.button:active,
 .ui.inverted.grey.basic.button:active {
-  -webkit-box-shadow: 0px 0px 0px 2px #b4c0cf inset !important;
-  box-shadow: 0px 0px 0px 2px #b4c0cf inset !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #c2c4c5 inset !important;
+  box-shadow: 0px 0px 0px 2px #c2c4c5 inset !important;
   color: #FFFFFF !important;
 }
 
@@ -5081,13 +5089,13 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.buttons .button:first-child {
   border-left: none;
   margin-left: 0em;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-top-left-radius: 0.14285714rem;
+  border-bottom-left-radius: 0.14285714rem;
 }
 
 .ui.buttons .button:last-child {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-top-right-radius: 0.14285714rem;
+  border-bottom-right-radius: 0.14285714rem;
 }
 
 /* Vertical  Style */
@@ -5113,18 +5121,18 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 .ui.vertical.buttons .button:first-child {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  border-top-left-radius: 0.14285714rem;
+  border-top-right-radius: 0.14285714rem;
 }
 
 .ui.vertical.buttons .button:last-child {
   margin-bottom: 0px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0.14285714rem;
+  border-bottom-right-radius: 0.14285714rem;
 }
 
 .ui.vertical.buttons .button:only-child {
-  border-radius: 0;
+  border-radius: 0.14285714rem;
 }
 
 /*******************************
@@ -17619,8 +17627,8 @@ ol.ui.horizontal.list li:before,
 .ui.segment {
   position: relative;
   background: #FFFFFF;
-  -webkit-box-shadow: 0px 1px 2px 0 #eaeaea;
-  box-shadow: 0px 1px 2px 0 #eaeaea;
+  -webkit-box-shadow: 0;
+  box-shadow: 0;
   margin: 1rem 0em;
   padding: 1em 1em;
   border-radius: 0.14285714rem;
@@ -17704,8 +17712,8 @@ ol.ui.horizontal.list li:before,
 .ui.basic.table.segment {
   background: #FFFFFF;
   border: 1px solid #eaeaea;
-  -webkit-box-shadow: 0px 1px 2px 0 #eaeaea;
-  box-shadow: 0px 1px 2px 0 #eaeaea;
+  -webkit-box-shadow: 0;
+  box-shadow: 0;
 }
 
 .ui[class*="very basic"].table.segment {
@@ -17915,8 +17923,8 @@ ol.ui.horizontal.list li:before,
   position: relative;
   margin: 1rem 0em;
   border: 1px solid #eaeaea;
-  -webkit-box-shadow: 0px 1px 2px 0 #eaeaea;
-  box-shadow: 0px 1px 2px 0 #eaeaea;
+  -webkit-box-shadow: 0;
+  box-shadow: 0;
   border-radius: 0.14285714rem;
 }
 
@@ -17958,8 +17966,8 @@ ol.ui.horizontal.list li:before,
   bottom: 0px;
   margin-top: 0em;
   margin-bottom: 0em;
-  -webkit-box-shadow: 0px 1px 2px 0 #eaeaea, none;
-  box-shadow: 0px 1px 2px 0 #eaeaea, none;
+  -webkit-box-shadow: 0, none;
+  box-shadow: 0, none;
   border-radius: 0em 0em 0.14285714rem 0.14285714rem;
 }
 
@@ -17998,8 +18006,8 @@ ol.ui.horizontal.list li:before,
   border-radius: 0px;
   padding: 0em;
   background-color: #FFFFFF;
-  -webkit-box-shadow: 0px 1px 2px 0 #eaeaea;
-  box-shadow: 0px 1px 2px 0 #eaeaea;
+  -webkit-box-shadow: 0;
+  box-shadow: 0;
   margin: 1rem 0em;
   border-radius: 0.14285714rem;
   border: 1px solid #eaeaea;
@@ -18442,8 +18450,8 @@ ol.ui.horizontal.list li:before,
   margin-top: 0em;
   top: 0px;
   margin-bottom: 1rem;
-  -webkit-box-shadow: 0px 1px 2px 0 #eaeaea, none;
-  box-shadow: 0px 1px 2px 0 #eaeaea, none;
+  -webkit-box-shadow: 0, none;
+  box-shadow: 0, none;
   border-radius: 0em 0em 0.14285714rem 0.14285714rem;
 }
 
@@ -18500,7 +18508,8 @@ ol.ui.horizontal.list li:before,
 *******************************/
 
 .ui.segment.la-filter {
-  background: #d3dae3;
+  background: #e6eaef;
+  border: none;
 }
 /*!
  * # Semantic UI 2.3.0 - Step
