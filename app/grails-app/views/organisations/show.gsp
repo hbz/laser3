@@ -299,7 +299,7 @@
 
             <r:script language="JavaScript">
                 $(document).ready(function(){
-                    mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
                 });
             </r:script>
 
@@ -316,7 +316,7 @@
 
                         <r:script language="JavaScript">
                             $(document).ready(function(){
-                                mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
                             });
                         </r:script>
                     </div>

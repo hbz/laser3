@@ -1,5 +1,5 @@
 
-hal9000 = {
+r2d2 = {
 
     configs : {
 
@@ -34,20 +34,19 @@ hal9000 = {
     },
 
     go : function() {
-        console.log("hal9000: Good morning, Dave.")
 
-        hal9000.legacyStuff()
-        hal9000.semuiStuff()
+        r2d2.legacyStuff()
+        r2d2.semuiStuff()
 
-        console.log("locale: ${message(code:'default.locale.label')} > " + gspLocale + " > " + gspDateFormat)
+        console.log("r2d2 / locale: " + gspLocale + " > " + gspDateFormat)
     },
 
     legacyStuff : function() {
-        console.log("hal9000.legacyStuff()")
+        console.log("r2d2.legacyStuff()")
 
         $.fn.editable.defaults.mode = 'inline'
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
-            '<button type="button" class="ui icon button editable-cancel"><i class="minus icon"></i></button>'
+            '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
         $.fn.editableform.template = '<form class="ui form form-inline editableform"><div class="control-group"><div><div class="editable-input"></div>' +
             '<div class="editable-buttons"></div></div><div class="editable-error-block"></div></div></form>'
 
@@ -117,7 +116,7 @@ hal9000 = {
     },
 
     semuiStuff : function() {
-        console.log("hal9000.semuiStuff()")
+        console.log("r2d2.semuiStuff()")
 
         // close semui:messages alerts
         $(".close.icon").click(function(){
@@ -128,7 +127,7 @@ hal9000 = {
         $("*[data-semui=modal]").click(function(){
             $($(this).attr('href') + '.ui.modal').modal({
                 onVisible: function(){
-                    $(this).find('.datepicker').calendar(hal9000.configs.datepicker);
+                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 }
             }).modal('show')
         });
@@ -143,7 +142,7 @@ hal9000 = {
         $('.ui.checkbox').not('#la-advanced').checkbox();
 
         // datepicker
-        $('.datepicker').calendar(hal9000.configs.datepicker);
+        $('.datepicker').calendar(r2d2.configs.datepicker);
 
         // metaboxes
         $('.metaboxToggle').click(function(){
@@ -153,7 +152,7 @@ hal9000 = {
 }
 
 $(document).ready(function() {
-    hal9000.go()
+    r2d2.go()
 })
 
 /*

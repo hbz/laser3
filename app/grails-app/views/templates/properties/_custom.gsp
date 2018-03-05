@@ -1,6 +1,6 @@
 %{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
 %{-- on head of container page, and on window load execute  --}%
-%{-- mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
+%{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License" %>
 
@@ -65,7 +65,7 @@
                             <g:remoteLink controller="ajax" action="deleteCustomProperty"
                                           before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
                                           params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
-                                          onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                          onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                           update="${custom_props_div}" class="ui icon negative button">
                                 <i class="trash alternate icon"></i>
                                 <!--${message(code:'default.button.delete.label', default:'Delete')}-->
@@ -91,7 +91,7 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+                                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
                         <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
@@ -118,7 +118,7 @@ TODO !!! this modal dialog has not been refactored ..
                   id="create_cust_prop"
                   name="modal_create_cust_prop"
                   update="${custom_props_div}"
-                  onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
         <input type="hidden" name="editable" value="${editable}"/>

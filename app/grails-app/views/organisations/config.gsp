@@ -30,7 +30,7 @@
         </div>
         <r:script language="JavaScript">
         $(document).ready(function(){
-            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
         });
         </r:script>
 
