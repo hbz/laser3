@@ -7,7 +7,11 @@
              <dt><label class="control-label">${role?.roleType?.getI10n("value")}</label></dt>
             <dd>
                 <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
-
+                <g:if test="${editmode}">
+                    [<g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
+                    <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
+                </g:link>]
+                </g:if>
                 <div class="ui list">
                     <g:each in="${Person.getByOrgAndFunction(role.org, 'General contact person')}" var="gcp">
                         <div class="item">
@@ -30,11 +34,7 @@
                         </div>
                     </g:each>
                 </div>
-                <g:if test="${editmode}">
-                    [<g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
-                        <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                    </g:link>]
-                </g:if>
+
             </dd>
         </dl>
 
