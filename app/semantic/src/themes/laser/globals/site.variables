@@ -276,7 +276,7 @@
 
 /*---   Neutrals  ---*/
 @fullBlack        : #000000;
-@offWhite         : #F9FAFB;
+@offWhite         : #f4f8f9;
 @darkWhite        : #F3F4F5;
 @midWhite         : #DCDDDE;
 @white            : #FFFFFF;
