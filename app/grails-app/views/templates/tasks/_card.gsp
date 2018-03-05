@@ -1,4 +1,4 @@
-<semui:card message="task.plural" class="card-grey notes" href="#modalCreateTask" editable="${true}">
+<semui:card message="task.plural" class="notes" href="#modalCreateTask" editable="${true}">
     <g:each in="${tasks}" var="tsk">
         <div class="ui small feed content">
             <!--<div class="event">-->

@@ -198,7 +198,7 @@
 
         <div class="four wide column">
 
-            <semui:card message="package.show.addToSub" class="card-grey notes">
+            <semui:card message="package.show.addToSub" class="notes">
                 <div class="content">
                 <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
 

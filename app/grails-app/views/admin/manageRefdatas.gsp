@@ -15,7 +15,7 @@
 
         <semui:messages data="${flash}" />
 
-        <semui:card class="card-grey">
+        <semui:card>
             <div class="content ui form">
                 <div class="field">
                     <button class="ui button" value="" href="#addRefdataValueModal" data-semui="modal">${message(code:'refdataValue.create_new.label')}</button>

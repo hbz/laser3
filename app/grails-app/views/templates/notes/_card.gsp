@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Doc" %>
-<semui:card message="license.notes" class="card-grey notes" href="#modalCreateNote" editable="${editable}">
+<semui:card message="license.notes" class="notes" href="#modalCreateNote" editable="${editable}">
 
         <g:each in="${ownobj.documents}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">

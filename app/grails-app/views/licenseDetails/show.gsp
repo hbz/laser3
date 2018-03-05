@@ -242,7 +242,7 @@
               </div><!-- .twelve -->
 
             <div class="four wide column">
-                <semui:card message="license.actions" class="card-grey">
+                <semui:card message="license.actions">
                     <div class="content">
                     <div class="ui form content">
 
