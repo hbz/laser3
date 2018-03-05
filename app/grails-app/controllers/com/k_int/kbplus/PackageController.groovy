@@ -9,6 +9,7 @@ import com.k_int.kbplus.auth.*;
 
 
 @Deprecated
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController {
 
     def springSecurityService

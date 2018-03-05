@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.springframework.security.access.annotation.Secured
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
+@grails.plugin.springsecurity.annotation.Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseDetailsController {
 
     def springSecurityService

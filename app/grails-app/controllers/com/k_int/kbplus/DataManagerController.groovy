@@ -5,6 +5,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController {
 
   def springSecurityService 

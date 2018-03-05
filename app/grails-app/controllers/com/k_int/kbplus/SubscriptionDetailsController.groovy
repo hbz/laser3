@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import static groovyx.net.http.ContentType.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionDetailsController {
 
     def springSecurityService

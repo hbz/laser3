@@ -7,6 +7,7 @@ import grails.util.GrailsNameUtils
 import com.k_int.kbplus.onixpl.OnixPLHelperService
 import com.k_int.kbplus.onixpl.OnixPLService
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class OnixplLicenseCompareController {
   
   private static final String TEMPLATE_ROOT = "/templates/onix/"

@@ -7,6 +7,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import java.text.SimpleDateFormat
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionImportController {
 
   def springSecurityService

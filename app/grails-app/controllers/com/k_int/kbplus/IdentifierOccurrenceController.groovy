@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 @Deprecated
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class IdentifierOccurrenceController {
 
 	def springSecurityService

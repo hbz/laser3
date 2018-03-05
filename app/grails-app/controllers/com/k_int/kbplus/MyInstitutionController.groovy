@@ -14,6 +14,7 @@ import com.k_int.properties.PropertyDefinition
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController {
     def dataSource
     def springSecurityService

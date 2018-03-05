@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 //todo Change notifications integration maybe use : changeNotificationService with the onChange domain event action
 //todo Refactor index separation of filter page (used for AJAX), too much content, slows DOM on render/binding of JS functionality
 //todo Enable advanced searching, use configurable map, see filterQuery() 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController {
 
     def springSecurityService
