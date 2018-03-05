@@ -8,6 +8,7 @@ import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 
 @Deprecated
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleInstanceController {
 
     def springSecurityService

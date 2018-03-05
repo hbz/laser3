@@ -9,6 +9,7 @@ import com.k_int.kbplus.auth.*;
 import groovy.xml.MarkupBuilder
 
 @Deprecated
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PublicExportController {
   def ESSearchService
   def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")

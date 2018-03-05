@@ -1,16 +1,16 @@
 
 0.4
 
-- overworked markup and stylesheets
-- overworked templates
+- reworked markup and stylesheets
+- reworked templates
 - removed url parameter: shortcode
 - storing context organisation in session
 - added cost per use statistics
 - improved user management
 - improved passwort management in profile
-- overworked system roles
-- overworked renewals
-- overworked cost items bulk import
+- reworked system roles
+- reworked renewals
+- reworked cost items bulk import
 - upgrade to spring security 2.0
 - upgrade to elasticsearch 2.4
 - upgrade to semantic-ui 2.3
@@ -33,7 +33,7 @@
 
 0.3.1
 
-- overworked inplace edit date fields
+- reworked inplace edit date fields
 - bugfixes and improvements for global data sync
 - bugfix: unaccessible subscription form
 - hotfix: title list query
@@ -44,13 +44,13 @@
 - upgraded to jQuery 3.x
 - upgraded x-editable library
 - removed legacy bootstrap
-- overworked complete markup
-- overworked javascript
-- overworked navigation and menus
+- reworked complete markup
+- reworked javascript
+- reworked navigation and menus
 - unified modal dialogs
 - introduced filter panels
-- overworked orgs, subscriptions, licenses and costitems
-- overworked persons, contacts and addresses
+- reworked orgs, subscriptions, licenses and costitems
+- reworked persons, contacts and addresses
 - added task functionality
 - added globalUID support
 - added more consortial functionality

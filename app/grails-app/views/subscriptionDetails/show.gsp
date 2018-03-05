@@ -327,7 +327,7 @@
 
                 <r:script language="JavaScript">
                     $(document).ready(function(){
-                        mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                        c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
                     });
                 </r:script>
 
@@ -344,16 +344,14 @@
                                         custom_props_div: "custom_props_div_${authOrg.shortcode}",
                                         tenant: authOrg]}"/>
 
-                                <r:script language="JavaScript">
-                                    $(document).ready(function(){
-                                        mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
-                                    });
-                                </r:script>
-                            </div>
-                        </g:if>
-                    </g:each>
-                    </div>
-                </div>
+                            <r:script language="JavaScript">
+                                $(document).ready(function(){
+                                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                });
+                            </r:script>
+                        </div>
+                    </g:if>
+                </g:each>
 
                <div class="clear-fix"></div>
             </div>

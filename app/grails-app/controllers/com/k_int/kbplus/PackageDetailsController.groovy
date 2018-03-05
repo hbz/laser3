@@ -7,7 +7,7 @@ import org.apache.poi.hssf.usermodel.*
 import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageDetailsController {
 
     def springSecurityService

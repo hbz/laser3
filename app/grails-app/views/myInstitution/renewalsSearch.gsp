@@ -51,10 +51,11 @@
 </g:if>
 
 <div class="field">
-    <g:link class="ui button" controller="myInstitution"
-            action="renewalsUpload">${message(code: 'menu.institutions.imp_renew', default: 'Import Renewals')}</g:link>
     <g:link class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
             action="renewalsnoPackageChange">${message(code: 'myinst.renewalSearch.uploadnopackageschange', default: 'Import Renewals')}</g:link>
+    <g:link class="ui button" controller="myInstitution"
+            action="renewalsUpload">${message(code: 'menu.institutions.imp_renew', default: 'Import Renewals')}</g:link>
+
 </div>
 <hr/>
 

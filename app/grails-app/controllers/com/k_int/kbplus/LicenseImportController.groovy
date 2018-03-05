@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.xml.sax.SAXException
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseImportController {
 
   def CAT_TYPE = "UsageType",

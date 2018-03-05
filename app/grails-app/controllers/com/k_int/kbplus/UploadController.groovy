@@ -15,7 +15,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 import org.mozilla.universalchardet.UniversalDetector;
 import org.apache.commons.io.input.BOMInputStream
 
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class UploadController {
 
   def springSecurityService
