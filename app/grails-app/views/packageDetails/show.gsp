@@ -66,7 +66,7 @@
 
                 <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
-                    <table class="ui celled la-table table">
+                    <table class="ui celled la-table la-table-small table">
                         <thead>
                         <tr>
                             <th>${message(code: 'component.id.label')}</th>
@@ -199,6 +199,7 @@
         <div class="four wide column">
 
             <semui:card message="package.show.addToSub" class="card-grey notes">
+                <div class="content">
                 <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
 
                     <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}" class="ui form">
@@ -223,6 +224,7 @@
                 <g:else>
                   ${message(code: 'package.show.no_subs')}
                 </g:else>
+                </div>
             </semui:card>
 
           <g:render template="/templates/tasks/card" model="${[ownobj:packageInstance, owntp:'pkg']}" />

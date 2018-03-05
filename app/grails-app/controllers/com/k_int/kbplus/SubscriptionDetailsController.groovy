@@ -1057,14 +1057,19 @@ class SubscriptionDetailsController {
     result.subscriptionInstance = Subscription.get(params.id)
     result.institution = result.subscriptionInstance.subscriber
 
-    def shopping_basket = UserFolder.findByUserAndShortcode(result.user,'SOBasket') ?: new UserFolder(user:result.user, shortcode:'SOBasket').save(flush:true);
+    def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
 
     log.debug("Clear basket....");
     shopping_basket.items?.clear();
-    shopping_basket.save(flush:true)
+    shopping_basket.save(flush: true)
 
     def oid = "com.k_int.kbplus.Subscription:${params.id}"
     shopping_basket.addIfNotPresent(oid)
+    Subscription.get(params.id).packages.each {
+      oid = "com.k_int.kbplus.Package:${it.pkg.id}"
+      shopping_basket.addIfNotPresent(oid)
+    }
+
 
     redirect controller:'myInstitution', action:'renewalsSearch'
   }
@@ -1265,6 +1270,7 @@ class SubscriptionDetailsController {
 
     result.user = User.get(springSecurityService.principal.id)
     result.subscription = Subscription.get(params.id)
+    result.subscriptionInstance = Subscription.get(params.id) // TODO: for generic template _breadcumb
 
     // result.institution = Org.findByShortcode(params.shortcode)
     result.institution = result.subscription.subscriber

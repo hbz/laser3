@@ -7,11 +7,10 @@
 
   <body>
 
-
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitution" action="financeImport">${institution.name} Finance Import</g:link> </li>
-      </ul>
+  <semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <semui:crumb text="Finance Import" class="active"/>
+  </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
 

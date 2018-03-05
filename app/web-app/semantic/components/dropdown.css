@@ -168,7 +168,7 @@
   height: 0em;
   margin: 0.5em 0em;
 }
-.ui.dropdown .menu > .input {
+.ui.dropdown.dropdown .menu > .input {
   width: auto;
   display: -webkit-box;
   display: -ms-flexbox;

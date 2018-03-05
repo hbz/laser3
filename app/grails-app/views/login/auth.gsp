@@ -14,7 +14,7 @@
     <p>
         <semui:messages data="${flash}" />
     </p>
-    <semui:card class="card-grey">
+    <semui:card >
         <div class="content">
             <form action='${postUrl}' method='POST' id='loginForm' class='ui form cssform' autocomplete='off'>
                 <div class="field">

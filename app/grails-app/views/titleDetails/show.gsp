@@ -11,6 +11,7 @@
   <body>
 
       <semui:breadcrumbs>
+          <semui:crumb controller="titleDetails" action="list" message="menu.institutions.all_titles" />
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
 
@@ -47,7 +48,7 @@
                 <dl>
                     <dt>${message(code: 'title.identifiers.label')}</dt>
                     <dd>
-                    <table class="ui celled la-table table">
+                    <table class="ui celled la-table la-table-small table">
                         <thead>
                         <tr>
                             <th>${message(code:'title.edit.component_id.label')}</th>

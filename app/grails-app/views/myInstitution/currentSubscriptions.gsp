@@ -260,7 +260,7 @@
                                     class="ui icon negative button"
                                     params="${[curInst: institution.id, basesubscription: s.id]}"
                                     onclick="return confirm('${message(code: 'license.details.delete.confirm', args: [(s.name ?: 'this subscription')])}')">
-                                <i class="trash icon"></i>
+                                <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
                     </td>

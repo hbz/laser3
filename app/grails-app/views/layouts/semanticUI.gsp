@@ -36,7 +36,7 @@
     <div class="ui fixed inverted menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item">LAS:eR</g:link>
-            <!-- img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26" -->
+            <%-- <img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26"/> --%>
             <sec:ifLoggedIn>
                 <g:if test="${false}">
                 <div class="ui simple dropdown item">
@@ -146,8 +146,8 @@
 
                                 <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
 
-                                <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
+                            %{--<g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>--}%
+                            %{--<g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>--}%
 
                                 <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>

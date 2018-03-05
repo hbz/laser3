@@ -4,34 +4,38 @@
 
         <g:each in="${visiblePrsLinks}" var="pr">
             <g:if test="${pr.org}">
-                <div>
-                    <g:if test="${pr.prs.isPublic?.value == "No"}"><i class="address book outline icon"></i> </g:if>
-                    <g:link controller="person" action="show" id="${pr.prs.id}">${pr.prs}</g:link>
 
-                    <g:if test="${true || tmplShowFunction}">
-
-                        <g:if test="${pr.functionType}">
-                            ,
-                            ${pr.functionType.getI10n("value")}
+                <g:link controller="Organisations" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
+                <div class="ui list">
+                    <div class="item">
+                        <g:if test="${pr.prs.isPublic?.value == "No"}">
+                            <i class="address card outline icon"></i>
                         </g:if>
-                        <g:if test="${pr.responsibilityType}">
-                            ,
-                            ${pr.responsibilityType.getI10n("value")}
-                        </g:if>
+                        <g:else>
+                            <i class="address card icon"></i>
+                        </g:else>
 
-                    </g:if>
+                        <div class="content">
+                            <g:link controller="person" action="show" id="${pr.prs.id}">${pr.prs}</g:link>
 
-                    <br />
-                    <g:link controller="Organisations" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
-
-                    <g:if test="${editable}">
-                        <br />
-                        (<g:link controller="ajax" action="delPrsRole" id="${pr.id}"
-                                onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
-                                <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                        </g:link>)
-                    </g:if>
+                            <g:if test="${true || tmplShowFunction}">
+                                <g:if test="${pr.functionType}">
+                                    , ${(pr.functionType).getI10n("value")}
+                                </g:if>
+                                <g:if test="${pr.responsibilityType}">
+                                    , ${(pr.responsibilityType).getI10n("value")}
+                                </g:if>
+                            </g:if>
+                        </div>
+                    </div>
                 </div>
+                <g:if test="${editable}">
+                    [<g:link controller="ajax" action="delPrsRole" id="${pr.id}"
+                            onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
+                            <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
+                    </g:link>]
+                    <br />
+                </g:if>
             </g:if>
         </g:each>
     </dd>

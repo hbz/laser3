@@ -9,21 +9,17 @@
   </head>
   <body>
 
-  <semui:breadcrumbs>
-      <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-      <semui:crumb controller="subscriptionDetails" action="index" id="${subscription.id}"  text="${subscription.name}" />
-      <semui:crumb class="active" text="${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')}" />
-  </semui:breadcrumbs>
+    <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
+    <semui:messages data="${flash}" />
 
-  <semui:messages data="${flash}" />
+    <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        <semui:xEditable owner="${subscriptionInstance}" field="name" />
+    </h1>
 
-    <div>
-        <h1 class="ui header">${message(code:'subscription.details.costPerUse.label', default:'Cost Per Use')} :: ${subscription.name}</h1>
-        <g:render template="nav"  />
-    </div>
+    <g:render template="nav"  />
 
-    <div>
       <g:if test="${costItems && costItems.size() > 0}">
         <table class="ui celled la-table table">
           <thead>
@@ -61,7 +57,6 @@
       <g:else>
         Unable to locate any invoices against this subscription
       </g:else>
-    </div>
 
   </body>
 </html>

@@ -35,7 +35,7 @@
                       <!--${message(code:'default.button.accept.label', default:'Accept')}-->
                     </g:link>
                     <g:link controller="pendingChange" action="reject" id="${pc.id}" class="ui icon negative button">
-                      <i class="minus icon"></i>
+                      <i class="times icon"></i>
                       <!--${message(code:'default.button.reject.label', default:'Reject')}-->
                     </g:link>
                   </g:if>

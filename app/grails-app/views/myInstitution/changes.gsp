@@ -12,14 +12,13 @@
             <semui:crumb text="(${num_todos} ${message(code:'myinst.todo.items', default:'Items')})" message="myinst.todo.list" class="active" />
         </semui:breadcrumbs>
 
-    <div class="home-page">
-      <h1 class="ui header">${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}</h1>
-   
+        <h1 class="ui header">
+            ${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}
+        </h1>
 
         <g:if test="${todos!=null}" >
           <semui:paginate  action="todo" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
         </g:if>
-
 
             <table class="ui table">
               <g:each in="${todos}" var="todo">
@@ -44,9 +43,6 @@
         <g:if test="${todos!=null}" >
           <semui:paginate  action="todo" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_todos}" />
         </g:if>
-
-    </div>
-
 
   </body>
 </html>

@@ -449,7 +449,7 @@ $.site.settings = {
   modules: [
     'accordion',
     'api',
-      'calendar',
+    'calendar',
     'checkbox',
     'dimmer',
     'dropdown',
@@ -857,7 +857,7 @@ $.fn.form = function(parameters) {
                   module.validate.field( validationRules );
                 }
               }
-              else if(settings.on == 'blur' || settings.on == 'change') {
+              else if(settings.on == 'blur') {
                 if(validationRules) {
                   module.validate.field( validationRules );
                 }
@@ -1102,9 +1102,9 @@ $.fn.form = function(parameters) {
                 }
                 else {
                   if(isRadio) {
-                    if(values[name] === undefined) {
+                    if(values[name] === undefined || values[name] == false) {
                       values[name] = (isChecked)
-                        ? true
+                        ? value || true
                         : false
                       ;
                     }
@@ -1762,10 +1762,10 @@ $.fn.form.settings = {
     isExactly            : '{name} must be exactly "{ruleValue}"',
     not                  : '{name} cannot be set to "{ruleValue}"',
     notExactly           : '{name} cannot be set to exactly "{ruleValue}"',
-    contain              : '{name} cannot contain "{ruleValue}"',
-    containExactly       : '{name} cannot contain exactly "{ruleValue}"',
-    doesntContain        : '{name} must contain  "{ruleValue}"',
-    doesntContainExactly : '{name} must contain exactly "{ruleValue}"',
+    contain              : '{name} must contain "{ruleValue}"',
+    containExactly       : '{name} must contain exactly "{ruleValue}"',
+    doesntContain        : '{name} cannot contain  "{ruleValue}"',
+    doesntContainExactly : '{name} cannot contain exactly "{ruleValue}"',
     minLength            : '{name} must be at least {ruleValue} characters',
     length               : '{name} must be at least {ruleValue} characters',
     exactLength          : '{name} must be exactly {ruleValue} characters',
@@ -2375,6 +2375,7 @@ $.fn.accordion = function(parameters) {
           }
           module.debug('Opening accordion content', $activeTitle);
           settings.onOpening.call($activeContent);
+          settings.onChanging.call($activeContent);
           if(settings.exclusive) {
             module.closeOthers.call($activeTitle);
           }
@@ -2438,6 +2439,7 @@ $.fn.accordion = function(parameters) {
           if((isActive || isOpening) && !isClosing) {
             module.debug('Closing accordion content', $activeContent);
             settings.onClosing.call($activeContent);
+            settings.onChanging.call($activeContent);
             $activeTitle
               .removeClass(className.active)
             ;
@@ -2780,10 +2782,11 @@ $.fn.accordion.settings = {
   duration        : 350, // duration of animation
   easing          : 'easeOutQuad', // easing equation for animation
 
-
   onOpening       : function(){}, // callback before open animation
-  onOpen          : function(){}, // callback after open animation
   onClosing       : function(){}, // callback before closing animation
+  onChanging      : function(){}, // callback before closing or opening animation
+
+  onOpen          : function(){}, // callback after open animation
   onClose         : function(){}, // callback after closing animation
   onChange        : function(){}, // callback after closing or opening animation
 
@@ -2816,7 +2819,7 @@ $.extend( $.easing, {
 
 
 /*
- * # Semantic UI 2.2.13 - Calendar
+ * # Semantic UI 2.3.0 - Calendar
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -5266,6 +5269,7 @@ $.fn.dimmer = function(parameters) {
               }
               $dimmer
                 .transition({
+                  displayType : 'flex',
                   animation   : settings.transition + ' in',
                   queue       : false,
                   duration    : module.get.duration(),
@@ -5310,6 +5314,7 @@ $.fn.dimmer = function(parameters) {
               module.verbose('Hiding dimmer with css');
               $dimmer
                 .transition({
+                  displayType : 'flex',
                   animation   : settings.transition + ' out',
                   queue       : false,
                   duration    : module.get.duration(),
@@ -6233,7 +6238,7 @@ $.fn.dropdown = function(parameters) {
             ? callback
             : function(){}
           ;
-          if( module.is.active() ) {
+          if( module.is.active() && !module.is.animatingOutward() ) {
             module.debug('Hiding dropdown');
             if(settings.onHide.call(element) !== false) {
               module.animate.hide(function() {
@@ -8172,7 +8177,6 @@ $.fn.dropdown = function(parameters) {
             var
               escapedValue = module.escape.value(value),
               hasInput     = ($input.length > 0),
-              isAddition   = !module.has.value(value),
               currentValue = module.get.values(),
               stringValue  = (value !== undefined)
                 ? String(value)
@@ -8275,8 +8279,8 @@ $.fn.dropdown = function(parameters) {
                       module.save.remoteData(selectedText, selectedValue);
                     }
                     if(settings.useLabels) {
-                      module.add.value(selectedValue, selectedText, $selected);
                       module.add.label(selectedValue, selectedText, shouldAnimate);
+                      module.add.value(selectedValue, selectedText, $selected);
                       module.set.activeItem($selected);
                       module.filterActive();
                       module.select.nextAvailable($selectedItem);
@@ -8324,8 +8328,8 @@ $.fn.dropdown = function(parameters) {
             ;
             $label = settings.onLabelCreate.call($label, escapedValue, text);
 
-            if(module.has.label(value)) {
-              module.debug('Label already exists, skipping', escapedValue);
+            if(module.has.value(value)) {
+              module.debug('User selection already exists, skipping', escapedValue);
               return;
             }
             if(settings.label.variation) {
@@ -8464,6 +8468,10 @@ $.fn.dropdown = function(parameters) {
               currentValue = module.get.values(),
               newValue
             ;
+            if(module.has.value(addedValue)) {
+              module.debug('Value already selected');
+              return;
+            }
             if(addedValue === '') {
               module.debug('Cannot select blank values from multiselect');
               return;
@@ -8795,6 +8803,12 @@ $.fn.dropdown = function(parameters) {
             return (module.get.query() !== '');
           },
           value: function(value) {
+            return (settings.ignoreCase)
+              ? module.has.valueIgnoringCase(value)
+              : module.has.valueMatchingCase(value)
+            ;
+          },
+          valueMatchingCase: function(value) {
             var
               values   = module.get.values(),
               hasValue = $.isArray(values)
@@ -8805,12 +8819,34 @@ $.fn.dropdown = function(parameters) {
               ? true
               : false
             ;
+          },
+          valueIgnoringCase: function(value) {
+            var
+              values   = module.get.values(),
+              hasValue = false
+            ;
+            if(!$.isArray(values)) {
+              values = [values];
+            }
+            $.each(values, function(index, existingValue) {
+              if(String(value).toLowerCase() == String(existingValue).toLowerCase()) {
+                hasValue = true;
+                return false;
+              }
+            });
+            return hasValue;
           }
         },
 
         is: {
           active: function() {
             return $module.hasClass(className.active);
+          },
+          animatingInward: function() {
+            return $menu.transition('is inward');
+          },
+          animatingOutward: function() {
+            return $menu.transition('is outward');
           },
           bubbledLabelClick: function(event) {
             return $(event.target).is('select, input') && $module.closest('label').length > 0;
@@ -8947,6 +8983,9 @@ $.fn.dropdown = function(parameters) {
             ;
             calculations = {
               context: {
+                offset    : ($context.get(0) === window)
+                  ? { top: 0, left: 0}
+                  : $context.offset(),
                 scrollTop : $context.scrollTop(),
                 height    : $context.outerHeight()
               },
@@ -8959,8 +8998,8 @@ $.fn.dropdown = function(parameters) {
               calculations.menu.offset.top += calculations.context.scrollTop;
             }
             onScreen = {
-              above : (calculations.context.scrollTop) <= calculations.menu.offset.top - calculations.menu.height,
-              below : (calculations.context.scrollTop + calculations.context.height) >= calculations.menu.offset.top + calculations.menu.height
+              above : (calculations.context.scrollTop) <= calculations.menu.offset.top - calculations.context.offset.top - calculations.menu.height,
+              below : (calculations.context.scrollTop + calculations.context.height) >= calculations.menu.offset.top - calculations.context.offset.top + calculations.menu.height
             };
             if(onScreen.below) {
               module.verbose('Dropdown can fit in context downward', onScreen);
@@ -8989,6 +9028,9 @@ $.fn.dropdown = function(parameters) {
             ;
             calculations = {
               context: {
+                offset     : ($context.get(0) === window)
+                  ? { top: 0, left: 0}
+                  : $context.offset(),
                 scrollLeft : $context.scrollLeft(),
                 width      : $context.outerWidth()
               },
@@ -9000,7 +9042,7 @@ $.fn.dropdown = function(parameters) {
             if(module.is.horizontallyScrollableContext()) {
               calculations.menu.offset.left += calculations.context.scrollLeft;
             }
-            isOffscreenRight = (calculations.menu.offset.left + calculations.menu.width >= calculations.context.scrollLeft + calculations.context.width);
+            isOffscreenRight = (calculations.menu.offset.left - calculations.context.offset.left + calculations.menu.width >= calculations.context.scrollLeft + calculations.context.width);
             if(isOffscreenRight) {
               module.verbose('Dropdown cannot fit in context rightward', isOffscreenRight);
               canOpenRightward = false;
@@ -9106,7 +9148,7 @@ $.fn.dropdown = function(parameters) {
                     duration   : settings.duration,
                     debug      : settings.debug,
                     verbose    : settings.verbose,
-                    queue      : true,
+                    queue      : false,
                     onStart    : start,
                     onComplete : function() {
                       callback.call(element);
@@ -9394,7 +9436,8 @@ $.fn.dropdown.settings = {
   forceSelection         : true,       // force a choice on blur with search selection
 
   allowAdditions         : false,      // whether multiple select should allow user added values
-  hideAdditions          : true,      // whether or not to hide special message prompting a user they can enter a value
+  ignoreCase             : false,       // whether to consider values not matching in case to be the same
+  hideAdditions          : true,       // whether or not to hide special message prompting a user they can enter a value
 
   maxSelections          : false,      // When set to a number limits the number of selections to this count
   useLabels              : true,       // whether multiple select should filter currently active selections from choices
@@ -10422,6 +10465,10 @@ $.fn.modal = function(parameters) {
             var
               defaultSettings = {
                 debug      : settings.debug,
+                variation  : settings.centered
+                  ? false
+                  : 'top aligned'
+                ,
                 dimmerName : 'modals'
               },
               dimmerSettings = $.extend(true, defaultSettings, settings.dimmerSettings)
@@ -10479,7 +10526,6 @@ $.fn.modal = function(parameters) {
           module.cacheSizes();
           module.set.screenHeight();
           module.set.type();
-          module.set.position();
         },
 
         refreshModals: function() {
@@ -10552,21 +10598,23 @@ $.fn.modal = function(parameters) {
             module.hide();
           },
           click: function(event) {
+            if(!settings.closable) {
+              module.verbose('Dimmer clicked but closable setting is disabled');
+              return;
+            }
             var
               $target   = $(event.target),
               isInModal = ($target.closest(selector.modal).length > 0),
               isInDOM   = $.contains(document.documentElement, event.target)
             ;
-            if(!isInModal && isInDOM) {
+            if(!isInModal && isInDOM && module.is.active()) {
               module.debug('Dimmer clicked, hiding all modals');
-              if( module.is.active() ) {
-                module.remove.clickaway();
-                if(settings.allowMultiple) {
-                  module.hide();
-                }
-                else {
-                  module.hideAll();
-                }
+              module.remove.clickaway();
+              if(settings.allowMultiple) {
+                module.hide();
+              }
+              else {
+                module.hideAll();
               }
             }
           },
@@ -10634,7 +10682,6 @@ $.fn.modal = function(parameters) {
 
             module.showDimmer();
             module.cacheSizes();
-            module.set.position();
             module.set.screenHeight();
             module.set.type();
             module.set.clickaway();
@@ -10801,7 +10848,13 @@ $.fn.modal = function(parameters) {
 
         save: {
           focus: function() {
-            $focusedElement = $(document.activeElement).blur();
+            var
+              $activeElement = $(document.activeElement),
+              inCurrentModal = $activeElement.closest($module).length > 0
+            ;
+            if(!inCurrentModal) {
+              $focusedElement = $(document.activeElement).blur();
+            }
           }
         },
 
@@ -10818,11 +10871,9 @@ $.fn.modal = function(parameters) {
             $module.removeClass(className.active);
           },
           clickaway: function() {
-            if(settings.closable) {
-              $dimmer
-                .off('click' + elementEventNamespace)
-              ;
-            }
+            $dimmer
+              .off('click' + elementEventNamespace)
+            ;
           },
           bodyStyle: function() {
             if($body.attr('style') === '') {
@@ -10920,11 +10971,9 @@ $.fn.modal = function(parameters) {
             }
           },
           clickaway: function() {
-            if(settings.closable) {
-              $dimmer
-                .on('click' + elementEventNamespace, module.event.click)
-              ;
-            }
+            $dimmer
+              .on('click' + elementEventNamespace, module.event.click)
+            ;
           },
           dimmerSettings: function() {
             if($.fn.dimmer === undefined) {
@@ -10935,8 +10984,11 @@ $.fn.modal = function(parameters) {
               defaultSettings = {
                 debug      : settings.debug,
                 dimmerName : 'modals',
-                variation  : false,
                 closable   : 'auto',
+                variation  : settings.centered
+                  ? false
+                  : 'top aligned'
+                ,
                 duration   : {
                   show     : settings.duration,
                   hide     : settings.duration
@@ -10990,25 +11042,6 @@ $.fn.modal = function(parameters) {
             else {
               module.verbose('Modal cannot fit on screen setting to scrolling');
               module.set.scrolling();
-            }
-          },
-          position: function() {
-            module.verbose('Centering modal on page', module.cache);
-            if(module.can.fit()) {
-              $module
-                .css({
-                  top: '',
-                  marginTop: module.cache.topOffset
-                })
-              ;
-            }
-            else {
-              $module
-                .css({
-                  marginTop : '',
-                  top       : $document.scrollTop()
-                })
-              ;
             }
           },
           undetached: function() {
@@ -11218,6 +11251,8 @@ $.fn.modal.settings = {
 
   inverted       : false,
   blurring       : false,
+
+  centered       : true,
 
   dimmerSettings : {
     closable : false,
@@ -12278,7 +12313,7 @@ $.fn.popup = function(parameters) {
           },
           content: function() {
             $module.removeData(metadata.content);
-            return $module.data(metadata.content) || $module.attr('title') || settings.content;
+            return $module.data(metadata.content) || settings.content || $module.attr('title');
           },
           variation: function() {
             $module.removeData(metadata.variation);
@@ -12292,9 +12327,10 @@ $.fn.popup = function(parameters) {
           },
           calculations: function() {
             var
-              targetElement    = $target[0],
-              isWindow         = ($boundary[0] == window),
-              targetPosition   = (settings.inline || (settings.popup && settings.movePopup))
+              $popupOffsetParent = module.get.offsetParent($popup),
+              targetElement      = $target[0],
+              isWindow           = ($boundary[0] == window),
+              targetPosition     = (settings.inline || (settings.popup && settings.movePopup))
                 ? $target.position()
                 : $target.offset(),
               screenPosition = (isWindow)
@@ -12338,6 +12374,17 @@ $.fn.popup = function(parameters) {
                 height : $boundary.height()
               }
             };
+
+            // if popup offset context is not same as target, then adjust calculations
+            if($popupOffsetParent.get(0) !== $offsetParent.get(0)) {
+              var
+                popupOffset        = $popupOffsetParent.offset()
+              ;
+              calculations.target.top -= popupOffset.top;
+              calculations.target.left -= popupOffset.left;
+              calculations.parent.width = $popupOffsetParent.outerWidth();
+              calculations.parent.height = $popupOffsetParent.outerHeight();
+            }
 
             // add in container calcs if fluid
             if( settings.setFluidWidth && module.is.fluid() ) {
@@ -12415,11 +12462,11 @@ $.fn.popup = function(parameters) {
             }
             return distanceFromBoundary;
           },
-          offsetParent: function($target) {
+          offsetParent: function($element) {
             var
-              element = ($target !== undefined)
-                ? $target[0]
-                : $module[0],
+              element = ($element !== undefined)
+                ? $element[0]
+                : $target[0],
               parentNode = element.parentNode,
               $node    = $(parentNode)
             ;
@@ -12427,14 +12474,14 @@ $.fn.popup = function(parameters) {
               var
                 is2D     = ($node.css('transform') === 'none'),
                 isStatic = ($node.css('position') === 'static'),
-                isHTML   = $node.is('html')
+                isBody   = $node.is('body')
               ;
-              while(parentNode && !isHTML && isStatic && is2D) {
+              while(parentNode && !isBody && isStatic && is2D) {
                 parentNode = parentNode.parentNode;
                 $node    = $(parentNode);
                 is2D     = ($node.css('transform') === 'none');
                 isStatic = ($node.css('position') === 'static');
-                isHTML   = $node.is('html');
+                isBody   = $node.is('body');
               }
             }
             return ($node && $node.length > 0)
@@ -12542,6 +12589,18 @@ $.fn.popup = function(parameters) {
             target = calculations.target;
             popup  = calculations.popup;
             parent = calculations.parent;
+
+            if(module.should.centerArrow(calculations)) {
+              module.verbose('Adjusting offset to center arrow on small target element');
+              if(position == 'top left' || position == 'bottom left') {
+                offset += (target.width / 2)
+                offset -= settings.arrowPixelsFromEdge;
+              }
+              if(position == 'top right' || position == 'bottom right') {
+                offset -= (target.width / 2)
+                offset += settings.arrowPixelsFromEdge;
+              }
+            }
 
             if(target.width === 0 && target.height === 0 && !module.is.svg(target.element)) {
               module.debug('Popup target is hidden, no action taken');
@@ -12836,6 +12895,12 @@ $.fn.popup = function(parameters) {
           }
         },
 
+        should: {
+          centerArrow: function(calculations) {
+            return !module.is.basic() && calculations.target.width <= (settings.arrowPixelsFromEdge * 2);
+          }
+        },
+
         is: {
           offstage: function(distanceFromBoundary, position) {
             var
@@ -12857,6 +12922,9 @@ $.fn.popup = function(parameters) {
           },
           svg: function(element) {
             return module.supports.svg() && (element instanceof SVGGraphicsElement);
+          },
+          basic: function() {
+            return $module.hasClass(className.basic);
           },
           active: function() {
             return $module.hasClass(className.active);
@@ -13170,8 +13238,11 @@ $.fn.popup.settings = {
   // specify position to appear even if it doesn't fit
   lastResort     : false,
 
+  // number of pixels from edge of popup to pointing arrow center (used from centering)
+  arrowPixelsFromEdge: 20,
+
   // delay used to prevent accidental refiring of animations due to user error
-  delay        : {
+  delay : {
     show : 50,
     hide : 70
   },
@@ -13215,6 +13286,7 @@ $.fn.popup.settings = {
 
   className   : {
     active       : 'active',
+    basic        : 'basic',
     animating    : 'animating',
     dropdown     : 'dropdown',
     fluid        : 'fluid',
@@ -14788,6 +14860,7 @@ $.fn.search = function(parameters) {
 
         initialize: function() {
           module.verbose('Initializing module');
+          module.get.settings();
           module.determine.searchFields();
           module.bind.events();
           module.set.type();
@@ -15120,6 +15193,12 @@ $.fn.search = function(parameters) {
         },
 
         get: {
+          settings: function() {
+            if($.isPlainObject(parameters) && parameters.searchFullText) {
+              settings.fullTextSearch = parameters.searchFullText;
+              module.error(settings.error.oldSearchSyntax, element);
+            }
+          },
           inputEvent: function() {
             var
               prompt = $prompt[0],
@@ -15263,8 +15342,14 @@ $.fn.search = function(parameters) {
             ;
             module.set.loading();
             module.save.results(results);
-            module.debug('Returned local search results', results);
-
+            module.debug('Returned full local search results', results);
+            if(settings.maxResults > 0) {
+              module.debug('Using specified max results', results);
+              results = results.slice(0, settings.maxResults);
+            }
+            if(settings.type == 'category') {
+              results = module.create.categoryResults(results);
+            }
             searchHTML = module.generateResults({
               results: results
             });
@@ -15292,6 +15377,7 @@ $.fn.search = function(parameters) {
           object: function(searchTerm, source, searchFields) {
             var
               results      = [],
+              exactResults = [],
               fuzzyResults = [],
               searchExp    = searchTerm.toString().replace(regExp.escape, '\\$&'),
               matchRegExp  = new RegExp(regExp.beginsWith + searchExp, 'i'),
@@ -15323,7 +15409,6 @@ $.fn.search = function(parameters) {
               module.error(error.source);
               return [];
             }
-
             // iterate through search fields looking for matches
             $.each(searchFields, function(index, field) {
               $.each(source, function(label, content) {
@@ -15335,17 +15420,30 @@ $.fn.search = function(parameters) {
                     // content starts with value (first in results)
                     addResult(results, content);
                   }
-                  else if(settings.searchFullText && module.fuzzySearch(searchTerm, content[field]) ) {
+                  else if(settings.fullTextSearch === 'exact' && module.exactSearch(searchTerm, content[field]) ) {
+                    // content fuzzy matches (last in results)
+                    addResult(exactResults, content);
+                  }
+                  else if(settings.fullTextSearch == true && module.fuzzySearch(searchTerm, content[field]) ) {
                     // content fuzzy matches (last in results)
                     addResult(fuzzyResults, content);
                   }
                 }
               });
             });
-            return $.merge(results, fuzzyResults);
+            $.merge(exactResults, fuzzyResults)
+            $.merge(results, exactResults);
+            return results;
           }
         },
-
+        exactSearch: function (query, term) {
+          query = query.toLowerCase();
+          term  = term.toLowerCase();
+          if(term.indexOf(query) > -1) {
+             return true;
+          }
+          return false;
+        },
         fuzzySearch: function(query, term) {
           var
             termLength  = term.length,
@@ -15457,6 +15555,27 @@ $.fn.search = function(parameters) {
         },
 
         create: {
+          categoryResults: function(results) {
+            var
+              categoryResults = {}
+            ;
+            $.each(results, function(index, result) {
+              if(!result.category) {
+                return;
+              }
+              if(categoryResults[result.category] === undefined) {
+                module.verbose('Creating new category of results', result.category);
+                categoryResults[result.category] = {
+                  name    : result.category,
+                  results : [result]
+                }
+              }
+              else {
+                categoryResults[result.category].results.push(result);
+              }
+            });
+            return categoryResults;
+          },
           id: function(resultIndex, categoryIndex) {
             var
               resultID      = (resultIndex + 1), // not zero indexed
@@ -15494,7 +15613,10 @@ $.fn.search = function(parameters) {
               $selectedResult = (categoryIndex !== undefined)
                 ? $results
                     .children().eq(categoryIndex)
-                      .children(selector.result).eq(resultIndex)
+                      .children(selector.results)
+                        .first()
+                        .children(selector.result)
+                          .eq(resultIndex)
                 : $results
                     .children(selector.result).eq(resultIndex)
             ;
@@ -15915,8 +16037,8 @@ $.fn.search.settings = {
   // field to display in standard results template
   displayField   : '',
 
-  // whether to include fuzzy results in local search
-  searchFullText : true,
+  // search anywhere in value (set to 'exact' to require exact matches
+  fullTextSearch : 'exact',
 
   // whether to add events to prompt automatically
   automatic      : true,
@@ -15927,7 +16049,7 @@ $.fn.search.settings = {
   // delay before searching
   searchDelay    : 200,
 
-  // maximum results returned from local
+  // maximum results returned from search
   maxResults     : 7,
 
   // whether to store lookups in local cache
@@ -15963,14 +16085,15 @@ $.fn.search.settings = {
   },
 
   error : {
-    source      : 'Cannot search. No source used, and Semantic API module was not included',
-    noResults   : 'Your search returned no results',
-    logging     : 'Error in debug logging, exiting.',
-    noEndpoint  : 'No search endpoint was specified',
-    noTemplate  : 'A valid template name was not specified.',
-    serverError : 'There was an issue querying the server.',
-    maxResults  : 'Results must be an array to use maxResults setting',
-    method      : 'The method you called is not defined.'
+    source          : 'Cannot search. No source used, and Semantic API module was not included',
+    noResults       : 'Your search returned no results',
+    logging         : 'Error in debug logging, exiting.',
+    noEndpoint      : 'No search endpoint was specified',
+    noTemplate      : 'A valid template name was not specified.',
+    oldSearchSyntax : 'searchFullText setting has been renamed fullTextSearch for consistency, please adjust your settings.',
+    serverError     : 'There was an issue querying the server.',
+    maxResults      : 'Results must be an array to use maxResults setting',
+    method          : 'The method you called is not defined.'
   },
 
   metadata: {
@@ -16072,6 +16195,7 @@ $.fn.search.settings = {
             }
 
             // each item inside category
+            html += '<div class="results">';
             $.each(category.results, function(index, result) {
               if(result[fields.url]) {
                 html  += '<a class="result" href="' + result[fields.url] + '">';
@@ -16101,6 +16225,7 @@ $.fn.search.settings = {
               ;
               html += '</a>';
             });
+            html += '</div>';
             html  += ''
               + '</div>'
             ;
@@ -18125,7 +18250,7 @@ $.fn.sidebar.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.13 - Sticky
+ * # Semantic UI 2.3.0 - Sticky
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -23939,8 +24064,8 @@ $.fn.visibility = function(parameters) {
             // visibility
             element.topPassed        = (screen.top >= element.top);
             element.bottomPassed     = (screen.top >= element.bottom);
-            element.topVisible       = (screen.bottom >= element.top) && !element.bottomPassed;
-            element.bottomVisible    = (screen.bottom >= element.bottom) && !element.topPassed;
+            element.topVisible       = (screen.bottom >= element.top) && !element.topPassed;
+            element.bottomVisible    = (screen.bottom >= element.bottom) && !element.bottomPassed;
             element.pixelsPassed     = 0;
             element.percentagePassed = 0;
 

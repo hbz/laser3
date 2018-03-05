@@ -67,7 +67,7 @@
                                           params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
                                           onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                           update="${custom_props_div}" class="ui icon negative button">
-                                <i class="trash icon"></i>
+                                <i class="trash alternate icon"></i>
                                 <!--${message(code:'default.button.delete.label', default:'Delete')}-->
                             </g:remoteLink>
                         </g:if>

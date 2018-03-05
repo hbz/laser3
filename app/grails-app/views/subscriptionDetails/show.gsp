@@ -67,17 +67,17 @@
                         </table>
                         <g:if test="${editable}">
 
-                            <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
-                                ${message(code:'identifier.select.text', args:['JC:66454'])}
-                            </semui:formAddIdentifier>
+                    <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
+                        ${message(code:'identifier.select.text', args:['JC:66454'])}
+                    </semui:formAddIdentifier>
 
-                        </g:if>
-                    </dd>
-                </dl>
-            </div>
-        </semui:meta>
+                </g:if>
+            </dd>
+        </dl>
+    </div>
+</semui:meta>
 
-        <semui:messages data="${flash}" />
+<semui:messages data="${flash}" />
 
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
@@ -136,30 +136,28 @@
                                             ${sp.pkg?.contentProvider?.name}
                                         </g:if>
 
-                                        <g:if test="${editable}">
-                                            <br />
-                                            <a href="" onclick="unlinkPackage(${sp.pkg.id})">
-                                                ( <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')} )
-                                            </a>
-                                        </g:if>
+                        <g:if test="${editable}">
+                            [<a href="" onclick="unlinkPackage(${sp.pkg.id})">
+                                <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
+                            </a>]
+                            <br />
+                        </g:if>
 
-                                    </g:each>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code:'license')}</dt>
-                                <dd>
-                                    <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
-                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                                        <g:if test="${subscriptionInstance.owner != null}">
-                                            (
-                                            <g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">${message(code:'default.button.show.label', default:'Show')}</g:link>
-                                            <g:link controller="licenseDetails" action="show" target="new" id="${subscriptionInstance.owner.id}"><i class="icon-share-alt"></i></g:link>
-                                            )
-                                        </g:if>
-                                    </g:if>
-                                    <g:else>N/A (Subscription offered)</g:else>
-                                </dd>
+                    </g:each>
+                </dd>
+</dl><dl>
+                <dt>${message(code:'license')}</dt>
+                <dd>
+                    <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
+                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                        <g:if test="${subscriptionInstance.owner != null}">
+                            [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
+                            </g:link>]
+                        </g:if>
+                    </g:if>
+                    <g:else>N/A (Subscription offered)</g:else>
+                </dd>
 
 
                             <% /*
@@ -370,15 +368,15 @@
 
 
     <div id="magicArea"></div>
-    <g:render template="orgLinksModal" 
-              contextPath="../templates" 
+    <g:render template="orgLinksModal"
+              contextPath="../templates"
               model="${[linkType:subscriptionInstance?.class?.name,roleLinks:subscriptionInstance?.orgRelations,parent:subscriptionInstance.class.name+':'+subscriptionInstance.id,property:'orgs',recip_prop:'sub']}" />
     <r:script language="JavaScript">
 
       function unlinkPackage(pkg_id){
         var req_url = "${createLink(controller:'subscriptionDetails', action:'unlinkPackage',params:[subscription:subscriptionInstance.id])}&package="+pkg_id
 
-        $.ajax({url: req_url, 
+        $.ajax({url: req_url,
           success: function(result){
              $('#magicArea').html(result);
           },
@@ -387,7 +385,7 @@
           }
         });
       }
-      
+
       function hideModal(){
         $("[name='coreAssertionEdit']").modal('hide');
       }
@@ -395,13 +393,13 @@
       function showCoreAssertionModal(){
 
         $("[name='coreAssertionEdit']").modal('show');
-       
+
       }
-      
+
       <g:if test="${editable}">
 
       $(document).ready(function() {
-           
+
         $(".announce").click(function(){
            var id = $(this).data('id');
            $('#modalComments').load('<g:createLink controller="alert" action="commentsFragment" />/'+id);
@@ -432,7 +430,7 @@
       <g:if test="${params.asAt && params.asAt.length() > 0}"> $(function() {
         document.body.style.background = "#fcf8e3";
       });</g:if>
-      
+
     </r:script>
   </body>
 </html>

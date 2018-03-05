@@ -2,7 +2,10 @@ package com.k_int.kbplus
 
 class FolderItem {
 
-  static belongsTo = [
+    Date dateCreated
+    Date lastUpdated
+
+    static belongsTo = [
     folder:UserFolder
   ]
 
@@ -13,6 +16,9 @@ class FolderItem {
             version column:'fi_version'
                user column:'fi_owner_id'
       referencedOid column:'fi_ref_oid'
+      dateCreated column: 'fi_dateCreated'
+      lastUpdated column: 'fi_lastUpdated'
+      //folder column: 'fi_userfolder_fk'
   }
 
   static constraints = {
