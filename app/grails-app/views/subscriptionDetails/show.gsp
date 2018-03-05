@@ -66,16 +66,14 @@
                             </tbody>
                         </table>
                         <g:if test="${editable}">
-
-                    <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
-                        ${message(code:'identifier.select.text', args:['JC:66454'])}
-                    </semui:formAddIdentifier>
-
-                </g:if>
-            </dd>
-        </dl>
-    </div>
-</semui:meta>
+                            <semui:formAddIdentifier owner="${subscriptionInstance}" uniqueCheck="yes" uniqueWarningText="${message(code:'subscription.details.details.duplicate.warn')}">
+                                ${message(code:'identifier.select.text', args:['JC:66454'])}
+                            </semui:formAddIdentifier>
+                        </g:if>
+                    </dd>
+                </dl>
+            </div>
+        </semui:meta>
 
 <semui:messages data="${flash}" />
 
@@ -116,6 +114,12 @@
                                 <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                             </dl>
+                            <dl>
+
+                                <dt>${message(code:'subscription.details.type', default:'Type')}</dt>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' /></dd>
+
+                            </dl>
                         </div>
                     </div>
                 </div>
@@ -136,28 +140,29 @@
                                             ${sp.pkg?.contentProvider?.name}
                                         </g:if>
 
-                        <g:if test="${editable}">
-                            [<a href="" onclick="unlinkPackage(${sp.pkg.id})">
-                                <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                            </a>]
-                            <br />
-                        </g:if>
+                                        <g:if test="${editable}">
+                                            [<a href="" onclick="unlinkPackage(${sp.pkg.id})">
+                                                <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
+                                            </a>]
+                                            <br />
+                                        </g:if>
 
-                    </g:each>
-                </dd>
-</dl><dl>
-                <dt>${message(code:'license')}</dt>
-                <dd>
-                    <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
-                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                        <g:if test="${subscriptionInstance.owner != null}">
-                            [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
-                                <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
-                            </g:link>]
-                        </g:if>
-                    </g:if>
-                    <g:else>N/A (Subscription offered)</g:else>
-                </dd>
+                                    </g:each>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code:'license')}</dt>
+                                <dd>
+                                    <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
+                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                                        <g:if test="${subscriptionInstance.owner != null}">
+                                            [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                                <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
+                                            </g:link>]
+                                        </g:if>
+                                    </g:if>
+                                    <g:else>N/A (Subscription offered)</g:else>
+                                </dd>
 
 
                             <% /*
@@ -171,12 +176,6 @@
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                             </dl>
                             */ %>
-                            </dl>
-                            <dl>
-
-                                <dt>${message(code:'subscription.details.type', default:'Type')}</dt>
-                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' /></dd>
-
                             </dl>
                         </div>
                     </div>
@@ -321,7 +320,7 @@
                             prop_desc: PropertyDefinition.SUB_PROP,
                             ownobj: subscriptionInstance,
                             custom_props_div: "custom_props_div_props" ]}"/>
-                </div>
+                        </div>
                     </div>
                 </div>
 
@@ -334,24 +333,26 @@
                 <div class="ui card la-dl-no-table">
                     <div class="content">
                         <g:each in="${authorizedOrgs}" var="authOrg">
-                        <g:if test="${authOrg.name == contextOrg?.name}">
-                            <h5 class="ui header">${message(code:'subscription.properties.private')} ${authOrg.name}</h5>
+                            <g:if test="${authOrg.name == contextOrg?.name}">
+                                <h5 class="ui header">${message(code:'subscription.properties.private')} ${authOrg.name}</h5>
 
-                            <div id="custom_props_div_${authOrg.shortcode}">
-                                <g:render template="/templates/properties/private" model="${[
-                                        prop_desc: PropertyDefinition.SUB_PROP,
-                                        ownobj: subscriptionInstance,
-                                        custom_props_div: "custom_props_div_${authOrg.shortcode}",
-                                        tenant: authOrg]}"/>
+                                <div id="custom_props_div_${authOrg.shortcode}">
+                                    <g:render template="/templates/properties/private" model="${[
+                                            prop_desc: PropertyDefinition.SUB_PROP,
+                                            ownobj: subscriptionInstance,
+                                            custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                            tenant: authOrg]}"/>
 
-                            <r:script language="JavaScript">
-                                $(document).ready(function(){
-                                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
-                                });
-                            </r:script>
-                        </div>
-                    </g:if>
-                </g:each>
+                                    <r:script language="JavaScript">
+                                        $(document).ready(function(){
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                        });
+                                    </r:script>
+                                </div>
+                            </g:if>
+                        </g:each>
+                    </div>
+                </div>
 
                <div class="clear-fix"></div>
             </div>
