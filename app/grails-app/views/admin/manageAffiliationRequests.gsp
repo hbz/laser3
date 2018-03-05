@@ -14,8 +14,6 @@
 
       <semui:messages data="${flash}" />
 
-    <div>
-
         <h2 class="ui header">Manage Pending Membership Requests</h2>
 
         <table class="ui celled la-table table">
@@ -53,9 +51,6 @@
             </g:each>
             </tbody>
         </table>
-    </div>
-
-
 
 
   </body>

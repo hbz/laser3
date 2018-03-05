@@ -1,4 +1,21 @@
 
+0.4
+
+- overworked markup and stylesheets
+- overworked templates
+- removed url parameter: shortcode
+- storing context organisation in session
+- added cost per use statistics
+- improved user management
+- improved passwort management in profile
+- overworked system roles
+- overworked renewals
+- overworked cost items bulk import
+- upgrade to spring security 2.0
+- upgrade to elasticsearch 2.4
+- upgrade to semantic-ui 2.3
+- bugfix: reseting default dashboard by revoking affiliations
+
 0.3.4
 
 - bugfix: corrupted orgPermShare access

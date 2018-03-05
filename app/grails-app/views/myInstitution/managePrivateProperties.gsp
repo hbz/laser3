@@ -73,7 +73,7 @@
             </g:if>
         </div>
         <div class="four wide column">
-            <semui:card class="card-grey">
+            <semui:card>
                 <div class="content">
                     <input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}"
                            data-semui="modal" href="#addPropertyDefinitionModal" type="submit">

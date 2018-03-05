@@ -42,7 +42,7 @@
 			</div><!-- .twelve -->
 
 			<div class="four wide column">
-				<semui:card text="${entityName}" class="card-grey">
+				<semui:card text="${entityName}">
 					<ul class="nav nav-list">
 						<li>
 							<g:link class="list" action="list">
