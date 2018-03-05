@@ -96,7 +96,6 @@
 			</div><!-- .twelve -->
 
 			<div class="four wide column">
-                <g:render template="../templates/sideMenu" />
 			</div><!-- .four -->
 
 		</div><!-- .grid -->

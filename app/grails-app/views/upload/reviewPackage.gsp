@@ -7,15 +7,12 @@
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
   <body>
-      <div>
 
+    <h1 class="ui header">${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
 
-          <h1 class="ui header">${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
+    <semui:messages data="${flash}" />
 
-
-        <semui:messages data="${flash}" />
-
-        <semui:errors bean="${packageInstance}" />
+    <semui:errors bean="${packageInstance}" />
 
         <semui:form>
           <g:form action="reviewPackage" method="post" enctype="multipart/form-data" class="ui form">
@@ -129,8 +126,6 @@
           </table>
           
         </g:if>
-        
-      </div>
 
   </body>
 </html>

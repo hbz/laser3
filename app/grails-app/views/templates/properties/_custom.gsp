@@ -60,10 +60,11 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
-                    <td class="x">
+                    <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${editable == true}">
+                            <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
                             <g:remoteLink controller="ajax" action="deleteCustomProperty"
-                                          before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
+                                          before="if(!confirm('${confirmMsg}')) return false"
                                           params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
                                           onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                           update="${custom_props_div}" class="ui icon negative button">
@@ -109,7 +110,7 @@
 
 </table>
 
-<!--
+<%--
 <div id="cust_prop_add_modal" class="modal hide">
 
 TODO !!! this modal dialog has not been refactored ..
@@ -169,4 +170,5 @@ TODO !!! this modal dialog has not been refactored ..
         </div>
     </g:formRemote>
 
-</div>-->
+</div>
+--%>

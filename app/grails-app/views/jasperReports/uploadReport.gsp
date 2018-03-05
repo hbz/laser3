@@ -5,7 +5,6 @@
     <meta name="layout" content="semanticUI"/>
 
 </head>
-
 <body>
 
     <semui:breadcrumbs>
@@ -28,7 +27,5 @@
 
     </g:uploadForm>
 
-
 </body>
-
 </html>

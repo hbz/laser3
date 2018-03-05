@@ -21,10 +21,10 @@
                         <!--<h5 class="ui header">${message(code:'myinst.view', default:'View')}</h5>-->
                         <div class="ui divided relaxed list">
                             <div class="item">
-                                <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
+                                <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.institutions.mySubs')}</g:link>
                             </div>
                             <div class="item">
-                                <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.institutions.mySubs')}</g:link>
+                                <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
                             </div>
                             <div class="item">
                                 <g:link controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
