@@ -28,7 +28,12 @@ pilotDisableFlag = false
 //aggr_es_hostname	= 'localhost'
 
 // FEATURE-CONFIG
+//feature.eBooks = true
+//feature.issnl = true
 feature_finance = true
+//feature.notifications = true
+//globalDataSyncJobActiv = true
+//AdminReminderJobActiv = true
 
 // Database Migration Plugin
 grails.plugin.databasemigration.updateOnStart = false
@@ -910,6 +915,7 @@ grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (p
 notifications.email.from = 'wincenter@hbz-nrw.de'
 notifications.email.replyTo = 'wincenter@hbz-nrw.de'
 notifications.email.genericTemplate = true //If enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
+systemEmail = 'wincenter@hbz-nrw.de'
 
 //Finance
 grails.plugins.remotepagination.enableBootstrap = true

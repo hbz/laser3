@@ -83,7 +83,7 @@ class ReminderService implements ApplicationContextAware{
             _content  = _template.toString()
             String[] userEmailList = userRemindersList.collect {it.user.email}.toArray()
             log.debug("Generating generic email for ${userEmailList.length} users")
-            mailReminder(userEmailList, "Renewal Reminder", _content,null, null)
+            mailReminder(userEmailList, "LAS:eR Renewal Reminder", _content,null, null)
             Reminder.withTransaction { status ->
                 userRemindersList.each { it.reminder.lastRan = now }
             }
