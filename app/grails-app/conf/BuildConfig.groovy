@@ -137,8 +137,9 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2.8" // 1.2.14 won't work @ kbplusapp.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
-        
-        compile ":file-viewer:0.3"
+
+        //Sicherheitsrisko
+        //compile ":file-viewer:0.3"
 
         build (':tomcat:7.0.55.2'){
             //This is crashing under Java8, we impport newer version manually
@@ -173,7 +174,8 @@ grails.project.dependency.resolution = {
         runtime ":audit-logging:1.0.3"
         runtime ":executor:0.3"
         runtime ":markdown:1.1.1"
-        runtime ":quartz:1.0.1"
+        runtime ":quartz:1.0.2"
+        //runtime ":quartz:1.0.1"
         //compile ":grails-melody:1.53.0"
         // runtime "com.k-int:domain-model-oai-pmh:0.1"
         compile ":jsonp:0.2"
