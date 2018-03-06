@@ -170,14 +170,16 @@
                 <dd>${issueEntitlementInstance.tipp.coverageNote}</dd>
             </dl>
 
-            <g:if test="${( usage != null ) && ( usage.size() > 0 ) }">
+            <g:if test="${(institutional_usage_identifier) && ( usage != null ) && ( usage.size() > 0 ) }">
               <span class="pull-right">
                   <laser:statsLink class="ui basic negative"
                                    base="${grailsApplication.config.statsApiUrl}"
                                    module="statistics"
                                    controller="default"
-                                   params="[mode:'institution',
+                                   action="select"
+                                   params="[mode:usageMode,
                                             packages:issueEntitlementInstance.subscription.getCommaSeperatedPackagesIsilList(),
+                                            institutions:statsWibid
                                    ]"
                                    title="Springe zu Statistik im Nationalen Statistikserver">
                       <i class="chart bar outline icon"></i>
