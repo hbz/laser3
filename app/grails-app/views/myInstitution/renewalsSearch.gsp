@@ -6,38 +6,40 @@
 </head>
 
 <body>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+        <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
+        <semui:crumb message="menu.institutions.gen_renewals" class="active"/>
+    </semui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-    <semui:crumb message="menu.institutions.gen_renewals" class="active"/>
-</semui:breadcrumbs>
+    <h1 class="ui header">${message(code:'menu.institutions.gen_renewals')}</h1>
 
-<g:form class="ui form" action="renewalsSearch" method="get" params="${params}">
-    <input type="hidden" name="offset" value="${params.offset}"/>
+    <g:form class="ui form" action="renewalsSearch" method="get" params="${params}">
+        <input type="hidden" name="offset" value="${params.offset}"/>
 
-    <div class="field">
-        <label>${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
-        <input name="pkgname" value="${params.pkgname}"/>
+        <div class="ui la-filter segment">
+            <div class="field">
+                <label>${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+                <input name="pkgname" value="${params.pkgname}"/>
+            </div>
+
+            <div class="field">
+                <button class="ui secondary button" type="submit" name="search"
+                        value="yes">${message(code: 'default.button.search.label', default: 'Search')}</button>
+                <g:if test="${params.search == 'yes'}">
+                    <button class="ui button" type="submit" name="searchreset"
+                            value="yes">${message(code: 'default.button.searchreset.label', default: 'Search Reset')}</button>
+                </g:if>
+            </div>
+        </div>
+    </g:form>
+
+    <div class="ui info message">
+        <div class="header">${message(code: 'myinst.renewalSearch.workflowinfo', default: 'Renewal Workflow')}</div>
+
+        <p>${message(code: 'myinst.renewalSearch.workflow', default: '')}</p>
     </div>
 
-    <div class="field">
-        <button class="ui button" type="submit" name="search"
-                value="yes">${message(code: 'default.button.search.label', default: 'Search')}</button>
-        <g:if test="${params.search == 'yes'}">
-            <button class="ui button" type="submit" name="searchreset"
-                    value="yes">${message(code: 'default.button.searchreset.label', default: 'Search Reset')}</button>
-        </g:if>
-
-    </div>
-</g:form>
-<hr/>
-
-<div class="ui info message">
-    <div class="header">${message(code: 'myinst.renewalSearch.workflowinfo', default: 'Renewal Workflow')}</div>
-
-    <p>${message(code: 'myinst.renewalSearch.workflow', default: '')}</p>
-</div>
 <hr/>
 
 <g:if test="${basket.size() <= 1}">
@@ -62,27 +64,38 @@
 <g:form class="ui form" action="renewalsSearch" method="get" params="${params}">
     <div class="ui grid">
 
-        <div class="four wide column">
-    <h3 class="ui header"><g:message code="default.filter.label" default="Filter"/>:</h3>
-    <g:each in="${facets}" var="facet">
-        <g:if test="${facet.key != 'consortiaName' && facet.key != 'type'}">
-            <div class="ui vertical segment">
-                <h4 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}"/></h4>
-            %{--<input type="hidden" name="search" value="yes">--}%
-                <g:each in="${facet.value.sort { it.display }}" var="fe">
-                    <g:if test="${fe.display.toString().length() > 3}">
-                        <g:set var="facetname" value="fct:${facet.key}:${fe.display}"/>
-                        <div class="ui checkbox">
-                            <g:checkBox class="hidden" name="${facetname}" value="${params[facetname]}"
-                                        onchange="submit()"/>
-                            <label>${fe.display} (${fe.count})</label>
-                        </div>
-                    </g:if>
-                </g:each>
+        <div class="four wide column facetFilter">
+            <div class="ui card">
+                <div class="content">
+                    <div class="header"><g:message code="default.filter.label" default="Filter"/></div>
+                </div>
+                <div class="content">
+                    <div class="ui relaxed list">
+
+                        <g:each in="${facets}" var="facet">
+
+                            <g:if test="${facet.key != 'consortiaName' && facet.key != 'type'}">
+                                <div class="item">
+                                    <h4 class="header"><g:message code="facet.so.${facet.key}" default="${facet.key}"/></h4>
+                                    %{--<input type="hidden" name="search" value="yes">--}%
+                                    <g:each in="${facet.value.sort { it.display }}" var="fe">
+                                        <g:if test="${fe.display.toString().length() > 3}">
+                                            <g:set var="facetname" value="fct:${facet.key}:${fe.display}"/>
+                                            <div class="ui checkbox">
+                                                <g:checkBox class="hidden" name="${facetname}" value="${params[facetname]}"
+                                                            onchange="submit()"/>
+                                                <label>${fe.display} (${fe.count})</label>
+                                            </div>
+                                        </g:if>
+                                    </g:each>
+                                </div>
+                            </g:if>
+
+                        </g:each>
+                    </div>
+                </div>
             </div>
-        </g:if>
-    </g:each>
-    </div>
+        </div>
 
     <div class="eight wide column">
         <g:if test="${hits}">

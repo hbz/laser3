@@ -15,7 +15,7 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 pilotDisableFlag = false
 
 // STATS-CONFIG
-//statsApiUrl = ''
+//statsApiUrl = 'http://statsServer'
 
 // @NotificationsJob
 // - enable notification
