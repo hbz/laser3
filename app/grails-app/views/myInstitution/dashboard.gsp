@@ -172,9 +172,13 @@
                         <span><em>${tsk.description}</em></span> <br />
                     </g:if>
                     <span>
-                        <strong>${tsk.status?.getI10n('value')}</strong>
-                        / fällig am
+                        Fällig am
                         <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
+                        <br />
+                    </span>
+                    <span>
+                        Status:
+                        <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
                     </span>
                 </div>
             </g:each>

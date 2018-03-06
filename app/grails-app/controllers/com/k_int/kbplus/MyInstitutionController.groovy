@@ -2484,6 +2484,7 @@ AND EXISTS (
         }
 
         result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.editable = true // TODO: for tasks only
 
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
         getTodoForInst(result)

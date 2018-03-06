@@ -113,21 +113,7 @@
                             </div>
                         </div>
                     </sec:ifLoggedIn>
-                    <% /*
-                    <sec:ifLoggedIn>
-                        <div class="ui simple dropdown item">
-                            ${message(code:'menu.institutions.ttls')}
-                            <i class="dropdown icon"></i>
 
-                            <div class="menu">
-                                <g:link class="item" controller="myInstitution" action="currentTitles"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.ttls')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="tipview"
-                                        params="${[shortcode:contextOrg?.shortcode]}">${message(code:'menu.institutions.core_ttl')}</g:link>
-                            </div>
-                        </div>
-                    </sec:ifLoggedIn>
-                    */ %>
                     <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
                             ${message(code:'menu.institutions.subs')}
