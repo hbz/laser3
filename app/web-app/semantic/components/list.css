@@ -185,7 +185,7 @@ ol.ui.list ol li,
 }
 .ui.list .list > a.item:hover,
 .ui.list > a.item:hover {
-  color: #39a1f2;
+  color: #1e70bf;
 }
 
 /* Linked Item Icons */
@@ -202,7 +202,7 @@ ol.ui.list ol li,
 }
 .ui.list .list > .item a.header:hover,
 .ui.list > .item a.header:hover {
-  color: #39a1f2 !important;
+  color: #1e70bf !important;
 }
 
 /* Floated Content */
@@ -366,7 +366,7 @@ ol.ui.list ol li,
 }
 .ui.inverted.list .list > a.item:hover,
 .ui.inverted.list > a.item:hover {
-  color: #39a1f2;
+  color: #1e70bf;
 }
 
 /* Linking Content */
@@ -374,7 +374,7 @@ ol.ui.list ol li,
   color: rgba(255, 255, 255, 0.9) !important;
 }
 .ui.inverted.list .item a:not(.ui):hover {
-  color: #39a1f2 !important;
+  color: #1e70bf !important;
 }
 
 /*-------------------
@@ -674,7 +674,7 @@ ol.ui.horizontal.list li:before,
 --------------------*/
 
 .ui.divided.list > .item {
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
 }
 .ui.divided.list .list > .item {
   border-top: none;
@@ -738,7 +738,7 @@ ol.ui.horizontal.list li:before,
 }
 .ui.divided.horizontal.list > .item {
   border-top: none;
-  border-left: 1px solid #eaeaea;
+  border-left: 1px solid rgba(34, 36, 38, 0.15);
   margin: 0em;
   line-height: 0.6;
 }
@@ -759,12 +759,12 @@ ol.ui.horizontal.list li:before,
 
 .ui.celled.list > .item,
 .ui.celled.list > .list {
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
 .ui.celled.list > .item:last-child {
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
 }
 
 /* Padding on all elements */
@@ -820,7 +820,7 @@ ol.ui.horizontal.list li:before,
 .ui.horizontal.celled.list .list > .item,
 .ui.horizontal.celled.list > .item {
   border-top: none;
-  border-left: 1px solid #eaeaea;
+  border-left: 1px solid rgba(34, 36, 38, 0.15);
   margin: 0em;
   padding-left: 0.5em;
   padding-right: 0.5em;
@@ -829,7 +829,7 @@ ol.ui.horizontal.list li:before,
 .ui.horizontal.celled.list .list > .item:last-child,
 .ui.horizontal.celled.list > .item:last-child {
   border-bottom: none;
-  border-right: 1px solid #eaeaea;
+  border-right: 1px solid rgba(34, 36, 38, 0.15);
 }
 
 /* Inverted */
@@ -937,3 +937,9 @@ ol.ui.horizontal.list li:before,
 .ui.massive.horizontal.list > .item {
   font-size: 1.71428571rem;
 }
+
+
+/*******************************
+         Theme Overrides
+*******************************/
+

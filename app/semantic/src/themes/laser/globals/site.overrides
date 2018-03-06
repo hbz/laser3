@@ -9,6 +9,14 @@
     float: right
 }
 
+/*******************************
+        Object Overview Site
+*******************************/
+
+.ui.card.card-grey{
+        background: @laSideCards;
+}
+
 
 /*******************************
         Landingpage

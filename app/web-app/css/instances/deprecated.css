@@ -4603,7 +4603,8 @@ dl > dt {
 .la-inline-lists dl  dd {
   display: table-cell;
   vertical-align: top;
-  padding: 0.6rem 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 .la-inline-lists dl  dd {
   padding-left: 1rem;
@@ -5027,6 +5028,17 @@ table .badge:hover {
 }
 .person-details ul {
 	margin-bottom: 0.25em;
+}
+
+body #modalCreateDocument,
+body #modalCreateNote
+{
+    width: 700px;
+    margin-left: -350px;
+}
+
+body #modalCreateNote textarea {
+    width: 97%;
 }
 
 /* identifier forms */
