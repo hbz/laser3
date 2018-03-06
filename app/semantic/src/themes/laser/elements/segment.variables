@@ -10,7 +10,7 @@
 @borderWidth: 1px;
 @border: @borderWidth solid @borderColor;
 
-@boxShadow: @subtleShadow;
+@boxShadow: 0;
 @verticalPadding: 1em;
 @horizontalPadding: 1em;
 @padding: @verticalPadding @horizontalPadding;

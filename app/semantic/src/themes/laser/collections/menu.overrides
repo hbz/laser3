@@ -23,7 +23,7 @@
 .ui.menu.la-contextBar {
   top: 40px;
   z-index:1;
-  background-color: @lightGrey;
+  background-color: #d3dae3;
   .la-context-org {
     font-size: 0.87em;
     color: @grey;
