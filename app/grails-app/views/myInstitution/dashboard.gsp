@@ -75,8 +75,6 @@
                 </div>
     </div>
 
-
-
     <semui:messages data="${flash}" />
 
     <br />

@@ -48,7 +48,7 @@ class AdminReminderService {
 
         users.each {
             it.roles.each { role ->
-                if (role.role.authority == "ROLE_ADMIN") {
+                if (role.role.authority == "ROLE_YODA") {
                     adminuser.add(it)
                 }
             }
