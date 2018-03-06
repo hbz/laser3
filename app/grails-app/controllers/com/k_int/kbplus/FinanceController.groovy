@@ -20,7 +20,7 @@ class FinanceController {
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
     private final def admin_role      = Role.findByAuthority('INST_ADM')
-    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR - Euro Member Countries')
+    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
 

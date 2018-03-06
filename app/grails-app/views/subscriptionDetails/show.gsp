@@ -243,7 +243,7 @@
                             <tr>
                                 <td>${ci.costItemCategory?.getI10n('value')}</td>
                                 <td>${ci.costItemElement?.getI10n('value')}</td>
-                                <td>${ci.costInLocalCurrency} ${RefdataCategory.lookupOrCreate('Currency','EUR - Euro Member Countries').getI10n('value')}</td>
+                                <td>${ci.costInLocalCurrency} ${RefdataCategory.lookupOrCreate('Currency','EUR').getI10n('value')}</td>
                                 <td>${ci.costItemStatus?.getI10n('value')}</td>
                             </tr>
                         </g:each>

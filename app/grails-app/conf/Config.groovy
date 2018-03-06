@@ -913,7 +913,7 @@ notifications.email.genericTemplate = true //If enabled, no customisation in ema
 
 //Finance
 grails.plugins.remotepagination.enableBootstrap = true
-financials.currency = "EUR - Euro Member Countries|GBP - United Kingdom Pound|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
+financials.currency = "EUR|GBP|USD|CHF" //List in priority of order
 
 defaultOaiConfig = [
   serverName: 'K-Int generic Grails OAI Module :: KBPlus.ac.uk',

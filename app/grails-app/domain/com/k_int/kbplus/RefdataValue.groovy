@@ -69,10 +69,11 @@ class RefdataValue extends I10nTranslatableAbstract {
     static def loc(String category_name, Map i10n) {
 
         def cat = RefdataCategory.loc(category_name, [:])
+        def rdvValue = i10n['key'] ?: i10n['en']
 
-        def result = findByOwnerAndValueIlike(cat, i10n['en'])
+        def result = findByOwnerAndValueIlike(cat, rdvValue)
         if (! result) {
-            result = new RefdataValue(owner: cat, value: i10n['en'])
+            result = new RefdataValue(owner: cat, value: rdvValue)
         }
         result.softData = false
         result.save(flush: true)

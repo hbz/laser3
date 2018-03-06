@@ -59,8 +59,6 @@ grails.project.dependency.resolution = {
         // For shibboleth native-sp
         // mavenRepo "http://projects.k-int.com/nexus-webapp-1.4.0/content/repositories/releases"
         mavenRepo "http://nexus.k-int.com/content/repositories/releases/"
-
-
     }
 
     dependencies {
