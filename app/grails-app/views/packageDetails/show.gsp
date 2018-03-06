@@ -636,5 +636,10 @@
     </r:script>
     */ %>
 
-  </body>
+    <g:render template="orgLinksModal"
+              contextPath="../templates"
+              model="${[linkType:packageInstance?.class?.name,roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
+
+
+    </body>
 </html>
