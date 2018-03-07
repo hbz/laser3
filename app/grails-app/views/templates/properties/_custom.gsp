@@ -12,7 +12,6 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-
 <table class="ui celled la-table la-table-small table">
     <g:if test="${ownobj.customProperties}">
         <thead>

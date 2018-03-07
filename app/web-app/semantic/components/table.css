@@ -55,7 +55,7 @@
 }
 .ui.table thead th {
   cursor: auto;
-  background: #f4f8f9;
+  background: transparent;
   text-align: inherit;
   color: rgba(0, 0, 0, 0.87);
   padding: 0.92857143em 0.78571429em;
