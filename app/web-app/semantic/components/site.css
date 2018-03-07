@@ -210,7 +210,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         Object Overview Site
 *******************************/
 
-.ui.card.card-grey {
+aside .ui.card {
   background: #fffaf5;
 }
 

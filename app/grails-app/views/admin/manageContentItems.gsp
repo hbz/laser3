@@ -37,7 +37,7 @@
             </tbody>
           </table>
         </div><!-- .twelve -->
-        <div class="four wide column">
+        <aside class="four wide column">
             <semui:card>
 
                 <g:form action="newContentItem" class="ui form">
@@ -70,7 +70,7 @@
                       </div>
                 </g:form>
             </semui:card>
-        </div><!-- .four -->
+        </aside><!-- .four -->
       </div><!-- .grid -->
 
   </body>

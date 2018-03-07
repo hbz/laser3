@@ -49,7 +49,7 @@
 					</table>
 				</div><!--.twelve-->
 
-				<div class="four wide column">
+				<aside class="four wide column">
 					<semui:card message="identifier.namespace.add.label">
 						<fieldset>
 							<g:form class="ui form" action="manageNamespaces">
@@ -111,7 +111,7 @@
 						</fieldset>
 
 					</semui:card>
-				</div><!--.four-->
+				</aside><!--.four-->
 			</div><!--.grid-->
 
 	</body>

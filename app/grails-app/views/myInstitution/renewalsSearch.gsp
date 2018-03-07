@@ -149,7 +149,7 @@
         </div>
     </div>
 
-    <div class="four wide column">
+    <aside class="four wide column">
         <div class="ui segment">
             <g:if test="${basket}">
 
@@ -190,7 +190,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </aside>
 </g:form>
 </body>
 </html>

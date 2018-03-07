@@ -41,8 +41,8 @@
 
 			</div><!-- .twelve -->
 
-            <div class="four wide column">
-            </div><!-- .four -->
+            <aside class="four wide column">
+            </aside><!-- .four -->
 
 		</div><!-- .grid -->
 	</body>

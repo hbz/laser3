@@ -66,7 +66,7 @@
 
 			</div><!-- .twelve -->
 
-			<div class="four wide column">
+			<aside class="four wide column">
 				<div class="well">
 					<ul class="nav nav-list">
 						<li class="nav-header">${entityName}</li>
@@ -84,7 +84,7 @@
 						</li>
 					</ul>
 				</div>
-			</div><!-- .four -->
+			</aside><!-- .four -->
 
 		</div><!-- .grid -->
 	</body>

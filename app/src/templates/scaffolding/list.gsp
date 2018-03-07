@@ -57,9 +57,9 @@
 
 			</div><!-- .twelve -->
 
-			<div class="four wide column">
+			<aside class="four wide column">
 				<g:render template="../templates/sideMenu" />
-			</div><!-- .four -->
+			</aside><!-- .four -->
 
 		</div><!-- .grid -->
 	</body>
