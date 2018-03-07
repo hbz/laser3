@@ -85,13 +85,14 @@
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
-                      <ul>
                         <g:each in="${l.subscriptions}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
-                            <li><g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.id} (${sub.name})</g:link><br/></li>
+                              <div class="la-flexbox">
+                                  <i class="icon folder open outline la-list-icon"></i>
+                                <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>
+                              </div>
                           </g:if>
                         </g:each>
-                      </ul>
                     </g:if>
                     <g:else>
                       <br/>${message(code:'myinst.currentLicenses.no_subs', default:'No linked subscriptions.')}

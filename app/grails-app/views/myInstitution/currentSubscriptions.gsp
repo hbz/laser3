@@ -214,7 +214,7 @@
                         <g:if test="${s.owner}">
                                 <div class="la-flexbox">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link style="" class="" controller="licenseDetails" action="show" id="${s.owner.id}">${s.owner?.reference}</g:link>
+                                    <g:link  controller="licenseDetails" action="show" id="${s.owner.id}">${s.owner?.reference}</g:link>
                                 </div>
                         </g:if>
                     </td>
