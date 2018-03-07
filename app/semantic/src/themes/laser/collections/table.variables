@@ -39,7 +39,7 @@
 /* Table Header */
 @headerBorder: none;
 @headerDivider: none;
-@headerBackground: @offWhite;
+@headerBackground: transparent;
 @headerAlign: inherit;
 @headerVerticalAlign: inherit;
 @headerColor: @textColor;
