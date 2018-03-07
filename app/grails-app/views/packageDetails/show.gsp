@@ -158,11 +158,11 @@
                     <dt>${message(code: 'package.show.orglink')}</dt>
                     <dd><g:render template="orgLinks"
                             contextPath="../templates"
-                            model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',editmode:editable]}" /></dd>
+                            model="${[roleLinks:visibleOrgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',editmode:editable]}" /></dd>
                 </dl>
                 */ %>
 
-                    <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:packageInstance?.orgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable]}" />
+                    <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable]}" />
 
 
                     <dt>${message(code: 'package.list_status')}</dt>
@@ -609,7 +609,7 @@
     <g:render template="enhanced_select" contextPath="../templates" />
     <g:render template="orgLinksModal" 
               contextPath="../templates" 
-              model="${[linkType:packageInstance?.class?.name,roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
+              model="${[linkType:packageInstance?.class?.name,roleLinks:visibleOrgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
 
     <r:script language="JavaScript">
       $(function(){
@@ -638,7 +638,7 @@
 
     <g:render template="orgLinksModal"
               contextPath="../templates"
-              model="${[linkType:packageInstance?.class?.name,roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
+              model="${[linkType:packageInstance?.class?.name,roleLinks:visibleOrgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
 
 
     </body>

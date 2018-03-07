@@ -175,7 +175,7 @@
                             </ul>
                         </dd>
 
-                        <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
+                        <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgLinks, editmode:editable]}" />
 
                         <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
 
@@ -288,7 +288,7 @@
 
     <g:render template="orgLinksModal" 
               contextPath="../templates" 
-              model="${[linkType:license?.class?.name,roleLinks:license?.orgLinks,parent:license.class.name+':'+license.id,property:'orgLinks',recip_prop:'lic']}" />
+              model="${[linkType:license?.class?.name,roleLinks:visibleOrgLinks,parent:license.class.name+':'+license.id,property:'orgLinks',recip_prop:'lic']}" />
 
     <r:script language="JavaScript">
         function changeLink(elem, msg) {

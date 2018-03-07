@@ -1364,6 +1364,15 @@ class SubscriptionDetailsController {
     def preCon      = taskService.getPreconditions(contextOrg)
     result << preCon
 
+    // restrict visible for templates/links/orgLinksAsList
+    result.visibleOrgRelations = result.subscriptionInstance.orgRelations
+      def restrict = OrgRole.findWhere(
+              sub: result.subscriptionInstance,
+              org: contextService.getOrg(),
+              roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role ')
+      )
+      result.visibleOrgRelations.remove(restrict)
+
     // -- private properties
 
     result.authorizedOrgs = result.user?.authorizedOrgs
