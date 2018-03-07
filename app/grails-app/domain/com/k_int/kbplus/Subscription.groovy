@@ -366,5 +366,31 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
   }
 
+  def getCommaSeperatedPackagesIsilList() {
+      def result = []
+      packages.each { it ->
+          def identifierValue = it.pkg.getIdentifierByType('isil')?.value ?: null
+          if (identifierValue) {
+              result += identifierValue
+          }
+      }
+      result.join(',')
+  }
+
+  def getOrgsWithUsageSupplierId() {
+      def hasUsageSupplier = false
+      packages.each { it ->
+          def hql = "select orole.id from OrgRole as orole "+
+                  "join orole.pkg as pa "+
+                  "join orole.roleType as roletype "+
+                  "where pa.id = :package_id and roletype.value='Content Provider' "+
+                  "and exists (select oid from orole.org.ids as oid where oid.identifier.ns.ns='statssid')"
+          def queryResult = OrgRole.executeQuery(hql, ['package_id':it.pkg.id])
+          if (queryResult[0] > 0){
+              hasUsageSupplier = true
+          }
+      }
+      return hasUsageSupplier
+  }
 
 }

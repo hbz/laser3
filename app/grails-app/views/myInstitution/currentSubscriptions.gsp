@@ -190,7 +190,7 @@
 
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
-            <th></th>
+            <th class="two wide"></th>
         </tr>
         </thead>
         <g:each in="${subscriptions}" var="s">
@@ -255,6 +255,20 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 
                     <td class="x">
+                        <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.getOrgsWithUsageSupplierId()}">
+                          <laser:statsLink class="ui icon button"
+                                         base="${grailsApplication.config.statsApiUrl}"
+                                         module="statistics"
+                                         controller="default"
+                                         action="select"
+                                         params="[mode:usageMode,
+                                                  packages:s.getCommaSeperatedPackagesIsilList(),
+                                                  institutions:statsWibid
+                                         ]"
+                                         title="Springe zu Statistik im Nationalen Statistikserver"> <!-- TODO message -->
+                            <i class="chart bar outline icon"></i>
+                          </laser:statsLink>
+                        </g:if>
                         <g:if test="${editable && ((institution in s.allSubscribers) || s.consortia == institution)}">
                             <g:link controller="myInstitution" action="actionCurrentSubscriptions"
                                     class="ui icon negative button"

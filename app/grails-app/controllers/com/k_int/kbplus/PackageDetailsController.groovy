@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
@@ -496,6 +497,11 @@ class PackageDetailsController {
 
       result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
+      if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), contextOrg)) {
+          result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
+          result.usageMode = (contextOrg.orgType?.value == 'Consortium') ? 'package' : 'institution'
+          result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
+      }
 
       result.packageInstance = packageInstance
       if(executorWrapperService.hasRunningProcess(packageInstance)){

@@ -107,7 +107,8 @@ class SubscriptionDetailsController {
     result.institution = result.subscriptionInstance.subscriber
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
+      result.institutional_usage_identifier =
+              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
     }
 
     result.editable = result.subscriptionInstance.isEditableBy(result.user)
@@ -1169,7 +1170,8 @@ class SubscriptionDetailsController {
 
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
+      result.institutional_usage_identifier =
+        OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
     }
     log.debug("Going for ES")
     params.rectype = "Package"
@@ -1277,7 +1279,8 @@ class SubscriptionDetailsController {
     result.institution = result.subscription.subscriber
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
+      result.institutional_usage_identifier =
+              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
     }
 
     if ( !result.subscription.hasPerm("view", result.user) ) {
@@ -1327,14 +1330,13 @@ class SubscriptionDetailsController {
 
         // Work out what cost items appear under this subscription in the period given
         cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD,[start:it[3].startDate, end:it[3].endDate, sub:result.subscription, jr1a:'STATS:JR1' ])
-
+        cost_row.billingCurrency = it[3].billingCurrency.value.take(3)
         result.costItems.add(cost_row);
       }
       else {
         log.error("Invoice ${it} had no start or end date");
       }
     }
-
 
     result
   }
@@ -1353,7 +1355,8 @@ class SubscriptionDetailsController {
     }
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+      result.institutional_usage_identifier =
+              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
     }
 
     result.editable = result.subscriptionInstance.isEditableBy(result.user)
