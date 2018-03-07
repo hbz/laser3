@@ -203,16 +203,15 @@
                                     </ul>
                                 </dd>
                             </dl>
-                            <dl>
+
                                 <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
-                            </dl>
-                            <dl>
+
+
                                 <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
-                            </dl>
-                            <dl>
+
                                 <g:render template="/templates/links/prsLinksModal"
                                       model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-                            </dl>
+
                         </div>
                     </div>
                     <div class="ui card la-dl-no-table">
@@ -289,7 +288,7 @@
 
             </div><!-- .twelve -->
 
-            <div class="four wide column">
+            <aside class="four wide column">
                 <semui:card message="license.actions">
                     <div class="content">
                     <div class="ui form content">
@@ -331,7 +330,7 @@
                 <g:render template="/templates/documents/card" model="${[ownobj:license, owntp:'license']}" />
                 <g:render template="/templates/notes/card"  model="${[ownobj:license, owntp:'license']}" />
 
-            </div><!-- .four -->
+            </aside><!-- .four -->
         </div><!-- .grid -->
 
     <g:render template="orgLinksModal" 
