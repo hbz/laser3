@@ -255,7 +255,7 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 
                     <td class="x">
-                        <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.getOrgsWithUsageSupplierId()}">
+                        <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">
                           <laser:statsLink class="ui icon button"
                                          base="${grailsApplication.config.statsApiUrl}"
                                          module="statistics"
