@@ -7,10 +7,11 @@
 
   <body>
 
-  <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-    <semui:crumb text="Finance Import" class="active"/>
-  </semui:breadcrumbs>
+
+      <ul class="breadcrumb">
+        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="myInstitutions" action="financeImport" params="${[shortcode:params.shortcode]}">${institution.name} Finance Import</g:link> </li>
+      </ul>
 
     <semui:messages data="${flash}" />
 
@@ -18,9 +19,12 @@
 
         <g:if test="${loaderResult==null}">
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
-          <table class="ui celled la-table table">
-            <thead>
-              <tr>
+          <a href="/laser/rest/docs/bulk_load_cost_item_records_template_01.csv" download="template_bulk_load_cost_item_records.csv">
+            <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
+          </a>
+         <table class="ui celled striped table">
+           <thead>
+             <tr>
                 <%-- <th>tsv column name</th>
                 <th>Description</th>
                 <th>maps to</th> --%>
@@ -50,7 +54,7 @@
             </tbody>
           </table>
 
-          <g:form action="financeImport" method="post" enctype="multipart/form-data">
+          <g:form action="financeImport" method="post" enctype="multipart/form-data" params="${[shortcode:params.shortcode]}">
             <dl>
               <div class="control-group">
                 <dt>${message(code:'myinst.financeImport.upload', default:'Upload TSV File')}</dt>
@@ -72,7 +76,7 @@
 
 
       <g:if test="${loaderResult}">
-        <table class="ui celled la-table table">
+        <table class="ui celled striped table">
           <thead>
             <tr>
               <th></th>

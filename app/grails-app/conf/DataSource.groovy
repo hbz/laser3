@@ -21,7 +21,7 @@ environments {
             password = "K-int_2017"
             url = "jdbc:mysql://localhost/KBPlus?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
-            // logSql = true
+            // logSql = truei
             // formatSql = true
             properties {
                 maxActive = -1
