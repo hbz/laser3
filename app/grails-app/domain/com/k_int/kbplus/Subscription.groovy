@@ -377,10 +377,10 @@ class Subscription extends BaseDomainComponent implements Permissions {
       result.join(',')
   }
 
-  def getOrgsWithUsageSupplierId() {
+  def hasOrgWithUsageSupplierId() {
       def hasUsageSupplier = false
       packages.each { it ->
-          def hql = "select orole.id from OrgRole as orole "+
+          def hql = "select count(orole.id) from OrgRole as orole "+
                   "join orole.pkg as pa "+
                   "join orole.roleType as roletype "+
                   "where pa.id = :package_id and roletype.value='Content Provider' "+
