@@ -12,6 +12,8 @@
   <body>
 
 
+    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+
     <h1 class="ui header">
         <semui:editableLabel editable="${editable}" />
         ${orgInstance.name}
@@ -28,7 +30,7 @@
         </div>
         <r:script language="JavaScript">
         $(document).ready(function(){
-            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
         });
         </r:script>
 

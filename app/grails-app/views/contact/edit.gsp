@@ -31,7 +31,7 @@
 									<g:message code="default.button.update.label" default="Update" />
 								</button>
 								<button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
-									<i class="trash icon"></i>
+									<i class="trash alternate icon"></i>
 									<g:message code="default.button.delete.label" default="Delete" />
 								</button>
 							</div>
@@ -42,7 +42,6 @@
 			</div><!-- .twelve -->
 
 			<div class="four wide column">
-				<g:render template="../templates/sideMenu" />
 			</div><!-- .four -->
 
 		</div><!-- .grid -->

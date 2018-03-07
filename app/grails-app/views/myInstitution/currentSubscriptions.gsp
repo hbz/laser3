@@ -15,17 +15,16 @@
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
 
-        <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
 
-        <g:render template="actions" />
-
+        <semui:controlButtons>
+                <g:render template="actions" />
+        </semui:controlButtons>
         <semui:messages data="${flash}"/>
 
         <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
 <semui:filter>
-    <g:form action="currentSubscriptions" params="${[shortcode: institution.shortcode]}" controller="myInstitution"
-            method="get" class="form-inline ui small form">
+    <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
 
         <div class="four fields">
             <!-- 1-1 -->
@@ -258,10 +257,10 @@
                     <td class="x">
                         <g:if test="${editable && ((institution in s.allSubscribers) || s.consortia == institution)}">
                             <g:link controller="myInstitution" action="actionCurrentSubscriptions"
-                                    class="ui icon basic negative button"
+                                    class="ui icon negative button"
                                     params="${[curInst: institution.id, basesubscription: s.id]}"
                                     onclick="return confirm('${message(code: 'license.details.delete.confirm', args: [(s.name ?: 'this subscription')])}')">
-                                <i class="trash icon"></i>
+                                <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
                     </td>

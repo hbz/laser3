@@ -4,7 +4,7 @@
 
     <div class="field">
 
-        <table id="prs_role_tab" class="ui celled la-table table">
+        <table id="prs_role_tab" class="ui celled la-table la-table-small table">
             <thead>
             <tr>
                 <th>Person</th>
@@ -19,7 +19,12 @@
 
                         <tr>
                             <td>
-                                <g:if test="${p.isPublic?.value == "No"}"><i class="address book outline icon"></i> </g:if>
+                                <g:if test="${p.isPublic?.value == "No"}">
+                                    <i class="address card outline icon"></i>
+                                </g:if>
+                                <g:else>
+                                    <i class="address card icon"></i>
+                                </g:else>
                                 ${p}
                             </td>
                             <td>

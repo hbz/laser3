@@ -30,12 +30,12 @@
                   <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
                 <td>
                   <g:if test="${editable && !processingpc}">
-                    <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui basic icon positive button">
+                    <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui icon positive button">
                       <i class="checkmark icon"></i>
                       <!--${message(code:'default.button.accept.label', default:'Accept')}-->
                     </g:link>
-                    <g:link controller="pendingChange" action="reject" id="${pc.id}" class="ui basic icon negative button">
-                      <i class="minus icon"></i>
+                    <g:link controller="pendingChange" action="reject" id="${pc.id}" class="ui icon negative button">
+                      <i class="times icon"></i>
                       <!--${message(code:'default.button.reject.label', default:'Reject')}-->
                     </g:link>
                   </g:if>

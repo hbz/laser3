@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
@@ -10,11 +10,12 @@ import org.elasticsearch.groovy.common.xcontent.*
 
 import com.k_int.kbplus.auth.*
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class DocstoreController {
 
     def docstoreService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         def doc = Doc.findByUuid(params.id)
         if (doc) {

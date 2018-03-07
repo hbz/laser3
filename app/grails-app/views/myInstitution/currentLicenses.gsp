@@ -9,21 +9,21 @@
   <semui:breadcrumbs>
       <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
       <semui:crumb message="license.current" class="active" />
-
+  </semui:breadcrumbs>
+  <semui:controlButtons>
       <semui:exportDropdown>
           <semui:exportDropdownItem>
-              <g:link action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+              <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
           </semui:exportDropdownItem>
           <g:each in="${transforms}" var="transkey,transval">
               <semui:exportDropdownItem>
-                  <g:link action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  <g:link class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
               </semui:exportDropdownItem>
           </g:each>
       </semui:exportDropdown>
 
-  </semui:breadcrumbs>
-
-  <g:render template="actions" />
+      <g:render template="actions" />
+  </semui:controlButtons>
 
   <semui:messages data="${flash}" />
 
@@ -101,11 +101,11 @@
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
-                    <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon basic positive button">
+                    <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon positive button">
                         <i class="copy icon"></i></g:link>
                     <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
-                            params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon basic negative button">
-                        <i class="trash icon"></i></g:link>
+                            params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
+                        <i class="trash alternate icon"></i></g:link>
                   </td>
                 </tr>
               </g:each>

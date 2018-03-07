@@ -4,8 +4,7 @@ import com.k_int.kbplus.auth.User
 import grails.transaction.Transactional
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.lang3.time.DateUtils
-import org.elasticsearch.common.joda.time.DateTime
-import org.elasticsearch.common.joda.time.LocalDate
+import org.joda.time.*
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
@@ -84,7 +83,7 @@ class ReminderService implements ApplicationContextAware{
             _content  = _template.toString()
             String[] userEmailList = userRemindersList.collect {it.user.email}.toArray()
             log.debug("Generating generic email for ${userEmailList.length} users")
-            mailReminder(userEmailList, "Renewal Reminder", _content,null, null)
+            mailReminder(userEmailList, "LAS:eR Renewal Reminder", _content,null, null)
             Reminder.withTransaction { status ->
                 userRemindersList.each { it.reminder.lastRan = now }
             }

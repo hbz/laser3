@@ -68,9 +68,9 @@
 
                 <r:script language="JavaScript">
                         $(document).ready(function(){
-                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
                         });
                 </r:script>
 
@@ -135,7 +135,7 @@
                      </dd>
                   </dl>
 
-                  <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+                  <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <dl>
                         <dt><label class="control-label">ONIX-PL License</label></dt>
                         <dd>

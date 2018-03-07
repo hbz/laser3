@@ -3468,26 +3468,7 @@ input[type="submit"].btn.btn-mini {
 .navbar-inverse .btn-navbar.active {
   background-color: #cfcfcf \9;
 }
-.breadcrumb {
-  padding: 8px 0;
-  margin: 0 0 20px;
-  list-style: none;
-  border-bottom: 1px solid #d1dde9;
-}
-.breadcrumb > li {
-  display: inline-block;
-  *display: inline;
-  /* IE7 inline-block hack */
 
-  *zoom: 1;
-}
-.breadcrumb > li > .divider {
-  padding: 0 5px;
-  color: #555;
-}
-.breadcrumb > .active {
-    color: #555;
-}
 .pagination {
   margin: 20px 0;
 }
@@ -4615,6 +4596,30 @@ dl > dt {
         </dl>
     </div>
 */
+.la-inline-lists  dl{
+  display: table-row;
+}
+.la-inline-lists  dl  dt,
+.la-inline-lists dl  dd {
+  display: table-cell;
+  vertical-align: top;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.la-inline-lists dl  dd {
+  padding-left: 1rem;
+}
+.la-inline-lists  dl  dd {
+  word-wrap: break-word;
+}
+.la-inline-lists .la-dl-no-table dl dt,
+.la-inline-lists .la-dl-no-table dl dd{
+  display: inline;
+}
+.la-inline-lists .ui.card {
+  width: 100%;
+}
+
 .inline-lists > dl > dt,
 .inline-lists > dl > dd {
   display: inline-block;
@@ -4686,32 +4691,8 @@ body.public #Footer .footer-sublinks a:hover {
 .notes li:last-child {
   border-bottom: none;
 }
-/* Breadcrumbs 
 
-    <ul class="breadcrumb">
-        <li><a href="#">Home</a> <span class="divider">/</span></li>
-        <li><a href="#">Library</a> <span class="divider">/</span></li>
-        <li class="active">Data</li>
-    </ul>
-*/
-.container .breadcrumb {
-  margin-top: -20px;
-  font-size: 0.8em;
-}
-/* Pagination
 
-    <div class="pagination">
-        <ul>
-            <li><a href="#">Prev</a></li>
-            <li><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li><a href="#">Next</a></li>
-        </ul>
-    </div>
-*/
 /* External link
 
     <a class="external-link">Link</a>

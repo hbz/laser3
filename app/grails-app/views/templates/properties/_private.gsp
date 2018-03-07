@@ -1,6 +1,6 @@
 %{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
 %{-- on head of container page, and on window load execute  --}%
-%{-- mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
+%{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
 
@@ -12,7 +12,7 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-<table class="ui celled la-table table">
+<table class="ui celled la-table la-table-small table">
     <thead>
 	    <tr>
             <th>${message(code:'property.table.property')}</th>
@@ -51,13 +51,17 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
-                    <td>
+                    <td class="x">
                         <g:if test="${editable == true}">
-                        <g:remoteLink controller="ajax" action="deletePrivateProperty"
-                            before="if(!confirm('Delete the property ${prop.type.name}?')) return false"
-                            params='[propclass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                            onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                            update="${custom_props_div}">${message(code:'default.button.delete.label', default:'Delete')}</g:remoteLink>
+                            <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
+                            <g:remoteLink controller="ajax" action="deletePrivateProperty"
+                                before="if(!confirm('${confirmMsg}')) return false"
+                                params='[propclass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
+                                onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                update="${custom_props_div}" class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                                    <!--${message(code:'default.button.delete.label', default:'Delete')}-->
+                            </g:remoteLink>
                         </g:if>
                     </td>
                 </tr>
@@ -74,7 +78,7 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onComplete="mcp.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
+                                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
 
                         <input type="hidden" name="propIdent"  desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>

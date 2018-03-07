@@ -26,7 +26,7 @@
               <td>${s.name}</td>
               <td>
                 <g:if test="${s.tp==1}">
-                  <g:link controller="admin" action="toggleBoolSetting" params="${[setting:s.name]}">${s.value}</g:link>
+                  <g:link controller="yoda" action="toggleBoolSetting" params="${[setting:s.name]}">${s.value}</g:link>
                 </g:if>
               </td>
             </tr>

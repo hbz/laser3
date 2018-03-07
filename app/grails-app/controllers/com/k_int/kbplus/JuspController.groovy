@@ -2,13 +2,13 @@ package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import java.text.SimpleDateFormat
 
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class JuspController {
 
   def index() {

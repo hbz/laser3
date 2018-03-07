@@ -107,7 +107,7 @@
                           <g:message code="default.button.edit.label" default="Edit" />
                       </g:link>
                       <button class="ui negative button" type="submit" name="_action_delete">
-                          <i class="trash icon"></i>
+                          <i class="trash alternate icon"></i>
                           <g:message code="default.button.delete.label" default="Delete" />
                       </button>
                   </div>

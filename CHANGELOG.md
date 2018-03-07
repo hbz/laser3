@@ -1,4 +1,29 @@
 
+0.4
+
+- removed url parameter: shortcode
+- stored context organisation in session
+- added cost per use statistics
+- improved user management
+- improved passwort management in profile
+- added admin reminder service
+- introduced yoda
+- reworked system roles
+- reworked renewals
+- reworked cost items bulk import
+- reworked markup and stylesheets
+- reworked templates
+- more translations
+- upgrade to spring security 2.0
+- upgrade to elasticsearch 2.4
+- upgrade to semantic-ui 2.3
+- removed file viewer plugin
+- bugfix: reseting default dashboard by revoking affiliations
+
+0.3.4
+
+- bugfix: corrupted orgPermShare access
+
 0.3.3
 
 - bugfix: subscription get consortia
@@ -12,7 +37,7 @@
 
 0.3.1
 
-- overworked inplace edit date fields
+- reworked inplace edit date fields
 - bugfixes and improvements for global data sync
 - bugfix: unaccessible subscription form
 - hotfix: title list query
@@ -23,13 +48,13 @@
 - upgraded to jQuery 3.x
 - upgraded x-editable library
 - removed legacy bootstrap
-- overworked complete markup
-- overworked javascript
-- overworked navigation and menus
+- reworked complete markup
+- reworked javascript
+- reworked navigation and menus
 - unified modal dialogs
 - introduced filter panels
-- overworked orgs, subscriptions, licenses and costitems
-- overworked persons, contacts and addresses
+- reworked orgs, subscriptions, licenses and costitems
+- reworked persons, contacts and addresses
 - added task functionality
 - added globalUID support
 - added more consortial functionality

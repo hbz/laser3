@@ -11,6 +11,8 @@
     </head>
     <body>
 
+    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+
     <h1 class="ui header">
         <semui:editableLabel editable="${editable}" />
         ${orgInstance.name}
@@ -21,25 +23,21 @@
     <semui:meta>
         <div class="inline-lists">
 
-            <g:if test="${orgInstance.globalUID}">
-                <dl>
+            <dl>
+                <g:if test="${orgInstance.globalUID}">
                     <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
                     <dd>
                         <g:fieldValue bean="${orgInstance}" field="globalUID"/>
                     </dd>
-                </dl>
-            </g:if>
+                </g:if>
 
-            <g:if test="${orgInstance.impId}">
-                <dl>
+                <g:if test="${orgInstance.impId}">
                     <dt><g:message code="org.impId.label" default="Import ID" /></dt>
                     <dd>
                         <g:fieldValue bean="${orgInstance}" field="impId"/>
                     </dd>
-                </dl>
-            </g:if>
+                </g:if>
 
-            <dl>
                 <dt><g:message code="org.ids.label" default="Ids" /></dt>
                 <dd>
                     <g:if test="${orgInstance?.ids}">
@@ -68,7 +66,7 @@
         <dl>
             <dt><g:message code="org.name.label" default="Name" /></dt>
             <dd>
-                <g:fieldValue bean="${orgInstance}" field="name"/>
+                <semui:xEditable owner="${orgInstance}" field="name"/>
             </dd>
 
             <dt><g:message code="org.shortname.label" default="Shortname" /></dt>
@@ -120,15 +118,13 @@
                         </g:if>
                     </g:each>
                 </div>
-                <input class="ui button"
-                       value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
-                       data-semui="modal"
-                       href="#addressFormModal" />
-                <g:render template="/address/formModal" model="['orgId': orgInstance?.id, 'redirect': '.']"/>
-
-                <% /* <g:link controller="address" action="create" class="ui button" params="['org.id': orgInstance.id]" >
-                    ${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}
-                </g:link>*/ %>
+                <g:if test="${editable}">
+                    <input class="ui button"
+                           value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
+                           data-semui="modal"
+                           href="#addressFormModal" />
+                    <g:render template="/address/formModal" model="['orgId': orgInstance?.id, 'redirect': '.']"/>
+                </g:if>
             </dd>
 
             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
@@ -140,15 +136,13 @@
                         </g:if>
                     </g:each>
                 </div>
-                <input class="ui button"
-                       value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
-                       data-semui="modal"
-                       href="#contactFormModal" />
-                <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>
-
-                <% /* <g:link controller="contact" action="create" class="ui button" params="['org.id': orgInstance.id]" >
-                    ${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}
-                </g:link>*/ %>
+                <g:if test="${editable}">
+                    <input class="ui button"
+                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
+                           data-semui="modal"
+                           href="#contactFormModal" />
+                    <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>
+                </g:if>
             </dd>
 
             <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
@@ -160,17 +154,12 @@
                         </g:if>
                     </g:each>
                 </div>
-                <% /*
-                <input class="ui button"
-                       value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
-                       data-semui="modal"
-                       href="#personFormModal" />
-                <g:render template="/person/formModal" model="['orgId': orgInstance?.id]"/>
-                */ %>
-                <g:link controller="person" action="create" class="ui button"
-                        params="['tenant.id': contextOrg?.id, 'org.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
-                    ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
-                </g:link>
+                <g:if test="${editable}">
+                    <g:link controller="person" action="create" class="ui button"
+                            params="['tenant.id': contextOrg?.id, 'org.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
+                        ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                    </g:link>
+                </g:if>
             </dd>
 
             <dt><g:message code="org.type.label" default="Org Type" /></dt>
@@ -310,7 +299,7 @@
 
             <r:script language="JavaScript">
                 $(document).ready(function(){
-                    mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
                 });
             </r:script>
 
@@ -327,7 +316,7 @@
 
                         <r:script language="JavaScript">
                             $(document).ready(function(){
-                                mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
                             });
                         </r:script>
                     </div>

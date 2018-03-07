@@ -2,9 +2,10 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import org.springframework.dao.DataIntegrityViolationException
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 @Deprecated
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class IdentifierController {
 
 	def springSecurityService

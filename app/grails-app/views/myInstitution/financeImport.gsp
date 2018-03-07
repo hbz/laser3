@@ -7,32 +7,36 @@
 
   <body>
 
-
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitution" action="financeImport">${institution.name} Finance Import</g:link> </li>
-      </ul>
+  <semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <semui:crumb text="Finance Import" class="active"/>
+  </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
 
     <h1 class="ui header">${institution?.name} - Finance Import</h1>
 
         <g:if test="${loaderResult==null}">
-          <p>This service allows institutonal admins to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
+          ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
           <table class="ui celled la-table table">
             <thead>
               <tr>
-                <th>tsv column name</th>
+                <%-- <th>tsv column name</th>
                 <th>Description</th>
-                <th>maps to</th>
+                <th>maps to</th> --%>
+                <th>${message(code:'myinst.financeImport.tsvColumnName', default:'tsv column name')}</th>
+                <th>${message(code:'myinst.financeImport.description', default:'Description')}</th>
+                <th>${message(code:'myinst.financeImport.mapsTo', default:'maps to')}</th>
               </tr>
             </thead>
             <tbody>
               <g:each in="${grailsApplication.config.financialImportTSVLoaderMappings.cols}" var="mpg">
                 <tr>
-                  <td>${mpg.colname}</td>
-                  <td>${mpg.desc}
-                      <g:if test="${mpg.type=='vocab'}">
+                  <%-- <td>${mpg.colname}</td>
+                  <td>${mpg.desc} --%>
+                  <td>${message(code:"myinst.financeImport.${mpg.colname}", default:"${mpg.colname}")}</td>
+                  <td>${message(code:"myinst.financeImport.description.${mpg.colname}", default:"${mpg.desc}")}
+                    <g:if test="${mpg.type=='vocab'}">
                         <br/>Must be one of : <ul>
                           <g:each in="${mpg.mapping}" var="m,k">
                             <li>${m}</li>
@@ -49,18 +53,19 @@
           <g:form action="financeImport" method="post" enctype="multipart/form-data">
             <dl>
               <div class="control-group">
-                <dt>Upload TSV File according to the column definitions above</dt>
+                <dt>${message(code:'myinst.financeImport.upload', default:'Upload TSV File')}</dt>
                 <dd>
                   <input type="file" name="tsvfile" />
                 </dd>
               </div>
               <div class="control-group">
-                <dt>Dry Run</dt>
+                <%-- <dt>Dry Run</dt> --%>
+                <dt>${message(code:'myinst.financeImport.dryrun', default:'Dry Run')}</dt>
                 <dd>
                   <input type="checkbox" name="dryRun" checked value="Y" />
                 </dd>
               </div>
-              <button name="load" type="submit" value="Go">Upload...</button>
+              <button name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload", default:'Upload...')}</button>
             </dl>
           </g:form>
         </g:if>

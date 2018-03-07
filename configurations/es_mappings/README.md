@@ -1,4 +1,4 @@
-### Elastic Search Mapping
+### Elastic Search Mapping (1.7.1)
 
 The mapping files should be copied to ES config dir (standard dir listed below)
 

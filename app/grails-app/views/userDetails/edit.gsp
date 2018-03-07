@@ -11,6 +11,7 @@
 
      <h1 class="ui header">
          <semui:editableLabel editable="${editable}" />
+         ${ui.username} :
          <span id="displayEdit"
                class="xEditableValue"
                data-type="textarea"
@@ -21,6 +22,11 @@
 
 
             <semui:messages data="${flash}" />
+
+            <sec:ifAnyGranted roles="ROLE_YODA">
+                <h3 class="ui header">Enabled</h3>
+                <p><semui:xEditable owner="${user}" field="enabled"/></p>
+            </sec:ifAnyGranted>
 
           <h3 class="ui header">
             ${message(code:'user.affiliation.plural', default:'Affiliations')}

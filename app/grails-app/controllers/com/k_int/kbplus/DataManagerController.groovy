@@ -1,16 +1,16 @@
 package com.k_int.kbplus
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import com.k_int.kbplus.auth.User
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController {
 
   def springSecurityService 
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def index() { 
     def result =[:]
     def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
@@ -20,7 +20,7 @@ class DataManagerController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def changeLog() { 
 
     def result =[:]
@@ -297,10 +297,10 @@ class DataManagerController {
     return actors
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def deletedTitleManagement() {
     def result = [:]
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;
@@ -323,11 +323,11 @@ class DataManagerController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def expungeDeletedTitles() {
 
     log.debug("expungeDeletedTitles.. Create async task..");
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;
@@ -383,11 +383,11 @@ class DataManagerController {
     redirect(controller:'home')
   }
   
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
   def expungeDeletedTIPPS() {
 
     log.debug("expungeDeletedTIPPS.. Create async task..");
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
       flash.error =  message(code:"default.access.error")
       response.sendError(401)
       return;

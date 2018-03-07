@@ -13,7 +13,6 @@
 
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-
         <h1 class="ui header">
             <semui:editableLabel editable="${editable}" />
             ${license.licensee?.name}
@@ -31,12 +30,13 @@
                     <dd>
                         <g:fieldValue bean="${license}" field="globalUID"/>
                     </dd>
-                </dl>
 
-                <dl>
-                    <dt><g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel></dt>
+                    <dt>
+                        <g:message code="org.ids.label" default="Ids" />
+                        <g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel>
+                    </dt>
                     <dd>
-                        <table class="ui celled la-table table">
+                        <table class="ui celled la-table la-table-small table">
                             <thead>
                             <tr>
                                 <th>${message(code:'default.authority.label', default:'Authority')}</th>
@@ -90,30 +90,22 @@
                         <dd>
                             <semui:xEditable owner="${license}" type="date" field="startDate" />
                         </dd>
-                    </dl>
 
-                    <dl>
                         <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
                         <dd>
                             <semui:xEditable owner="${license}" type="date" field="endDate" />
                         </dd>
-                    </dl>
 
-                    <dl>
                         <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
                         <dd>
                             <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
                         </dd>
-                    </dl>
 
-                    <dl>
                         <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
                         <dd>
                             <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                         </dd>
-                    </dl>
 
-                    <dl>
                         <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
                         <dd>
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
@@ -123,9 +115,7 @@
                             </g:if>
                             <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
                         </dd>
-                    </dl>
 
-                    <dl>
                         <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
                         <dd>
                             <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
@@ -135,10 +125,10 @@
                             </g:if>
                             <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
                         </dd>
-                    </dl>
 
-                    <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-                        <dl>
+
+                        <sec:ifAnyGranted roles="ROLE_ADMIN">
+
                             <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
                             <dd>
                                 <g:if test="${license.onixplLicense}">
@@ -153,8 +143,8 @@
                                     <g:link class="ui negative button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
                                 </g:else>
                             </dd>
-                        </dl>
-                    </sec:ifAnyGranted>
+
+                        </sec:ifAnyGranted>
 
                     <!--
                     <dl>
@@ -166,14 +156,12 @@
                     </dl>
                     -->
 
-                    <dl>
+
                         <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
                         <dd>
                             <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
                         </dd>
-                    </dl>
 
-                    <dl>
                         <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
                         <dd>
                             <ul>
@@ -186,54 +174,40 @@
 
                             </ul>
                         </dd>
-                    </dl>
 
-                    <% /*
-                    <dl>
-                        <dt><label class="control-label" for="orgLinks">${message(code:'license.orgLinks', default:'Org Links')}</label></dt>
-                        <dd>
-                            <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
-                        </dd>
-                    </dl>
-                    */ %>
-                    <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
+                        <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:license?.orgLinks, editmode:editable]}" />
 
-                    <dl>
-                        <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
-                        <dd>
-                            <g:render template="/templates/links/prsLinks" model="[tmplShowFunction:false]"/>
+                        <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
 
-                            <g:render template="/templates/links/prsLinksModal"
-                                      model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-                        </dd>
-                    </dl>
+                        <g:render template="/templates/links/prsLinksModal"
+                                  model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
 
-                    <h5 class="ui header">${message(code:'license.properties')}</h5>
+                        <h5 class="ui header">${message(code:'license.properties')}</h5>
 
-                    <div id="custom_props_div_props">
-                        <g:render template="/templates/properties/custom" model="${[
+                        <div id="custom_props_div_props">
+                            <g:render template="/templates/properties/custom" model="${[
                                 prop_desc: PropertyDefinition.LIC_PROP,
                                 ownobj: license,
                                 custom_props_div: "custom_props_div_props" ]}"/>
-                    </div>
+                        </div>
 
-                    <h5 class="ui header">${message(code:'license.openaccess.properties')}</h5>
+                        <h5 class="ui header">${message(code:'license.openaccess.properties')}</h5>
 
-                    <div id="custom_props_div_oa">
-                        <g:render template="/templates/properties/custom" model="${[
-                                prop_desc: PropertyDefinition.LIC_OA_PROP,
-                                ownobj: license,
-                                custom_props_div: "custom_props_div_oa" ]}"/>
-                    </div>
+                        <div id="custom_props_div_oa">
+                            <g:render template="/templates/properties/custom" model="${[
+                                    prop_desc: PropertyDefinition.LIC_OA_PROP,
+                                    ownobj: license,
+                                    custom_props_div: "custom_props_div_oa" ]}"/>
+                        </div>
 
-                    <h5 class="ui header">${message(code:'license.archive.properties')}</h5>
+                        <h5 class="ui header">${message(code:'license.archive.properties')}</h5>
 
-                    <div id="custom_props_div_archive">
-                        <g:render template="/templates/properties/custom" model="${[
-                                prop_desc: PropertyDefinition.LIC_ARC_PROP,
-                                ownobj: license,
-                                custom_props_div: "custom_props_div_archive" ]}"/>
-                    </div>
+                        <div id="custom_props_div_archive">
+                            <g:render template="/templates/properties/custom" model="${[
+                                    prop_desc: PropertyDefinition.LIC_ARC_PROP,
+                                    ownobj: license,
+                                    custom_props_div: "custom_props_div_archive" ]}"/>
+                        </div>
 
                     <g:each in="${authorizedOrgs}" var="authOrg">
                         <g:if test="${authOrg.name == contextOrg?.name}">
@@ -248,7 +222,7 @@
 
                                 <r:script language="JavaScript">
                                         $(document).ready(function(){
-                                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
                                         });
                                 </r:script>
                             </div>
@@ -257,9 +231,9 @@
 
                     <r:script language="JavaScript">
                         $(document).ready(function(){
-                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-                            mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
                         });
                     </r:script>
 
@@ -268,31 +242,41 @@
               </div><!-- .twelve -->
 
             <div class="four wide column">
-                <semui:card message="license.actions" class="card-grey">
+                <semui:card message="license.actions">
+                    <div class="content">
+                    <div class="ui form content">
 
-                    <g:if test="${canCopyOrgs}">
+                        <g:if test="${canCopyOrgs}">
+                            <div class="field">
+                                <label for="orgShortcode">${message(code:'license.copyLicensefor', default:'Copy license for')}:</label>
 
-                        <label for="orgShortcode">${message(code:'license.copyLicensefor', default:'Copy license for')}:</label>
+                                <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" name="orgShortcode" id="orgShortcode" class="ui fluid dropdown"/>
+                            </div>
 
-                        <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" name="orgShortcode" id="orgShortcode" class="ui fluid dropdown"/>
+                            <g:link name="copyLicenseBtn" controller="myInstitution" action="actionLicenses" params="${[shortcode:'replaceme', baselicense:license.id, 'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
 
-                        <g:link name="copyLicenseBtn" controller="myInstitution" action="actionLicenses" params="${[shortcode:'replaceme', baselicense:license.id, 'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui positive button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
+                            <br />
 
-                        <br />
-                        <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
+                                <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
 
-                        <g:form id="linkSubscription" name="linkSubscription" action="linkToSubscription">
-                            <input type="hidden" name="license" value="${license.id}"/>
-                            <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
-                            <input type="submit" class="ui positive button" value="${message(code:'default.button.link.label', default:'Link')}"/>
-                        </g:form>
-    %{--
-              leave this out for now.. it is a bit confusing.
-              <g:link name="deletLicenseBtn" controller="myInstitution" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
-                    </g:if>
-                    <g:else>
-                        ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
-                </g:else>
+                                <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
+                                    <div class="field">
+                                        <input type="hidden" name="license" value="${license.id}"/>
+                                        <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
+                                    </div>
+                                    <input type="submit" class="ui button" value="${message(code:'default.button.link.label', default:'Link')}"/>
+
+                                </g:form>
+
+        %{--
+                  leave this out for now.. it is a bit confusing.
+                  <g:link name="deletLicenseBtn" controller="myInstitution" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
+                        </g:if>
+                        <g:else>
+                            ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
+                        </g:else>
+                    </div>
+                    </div>
                 </semui:card>
 
                 <g:render template="/templates/tasks/card" model="${[ownobj:license, owntp:'license']}" />

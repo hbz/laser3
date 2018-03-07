@@ -10,7 +10,9 @@
 
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-        <g:render template="actions" />
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
 
             <h1 class="ui header">${message(code:'user.show_all.label')}</h1>
 
@@ -37,22 +39,33 @@
 
             <semui:messages data="${flash}" />
         
-            <table class="ui sortable celled la-table table">
+            <table class="ui sortable celled la-table la-table-small table">
                 <thead>
                     <tr>
                         <g:sortableColumn property="username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
                         <g:sortableColumn property="display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
                         <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
                         <th>Enabled</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <g:each in="${users}" var="user">
                         <tr>
-                            <td><g:link  action="edit" id="${user.id}">${user.displayName}</g:link></td>
-                            <td>${fieldValue(bean: user, field: "display")}</td>
+                            <td>${fieldValue(bean: user, field: "username")}</td>
+                            <td>${user.getDisplayName()}</td>
                             <td>${fieldValue(bean: user, field: "instname")}</td>
-                            <td>${fieldValue(bean: user, field: "enabled")}</td>
+                            <td>
+                                <sec:ifAnyGranted roles="ROLE_YODA">
+                                    <semui:xEditable owner="${user}" field="enabled"/>
+                                </sec:ifAnyGranted>
+                                <sec:ifNotGranted roles="ROLE_YODA">
+                                    ${fieldValue(bean: user, field: "enabled")}
+                                </sec:ifNotGranted>
+                            </td>
+                            <td class="x">
+                                <g:link action="edit" id="${user.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                            </td>
                         </tr>
                     </g:each>
                 </tbody>

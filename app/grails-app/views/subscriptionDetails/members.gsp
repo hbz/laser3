@@ -11,9 +11,9 @@
 <body>
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
-
-    <g:render template="actions" />
-
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
     <h1 class="ui header">
         <semui:editableLabel editable="${editable}" />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
@@ -100,13 +100,13 @@
                         ${sub.status.getI10n('value')}
                     </td>
                     <td class="x">
-                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon basic button"><i class="write icon"></i></g:link>
+                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
 
                         <g:if test="${editable}">
-                            <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon basic negative button"
+                            <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon negative button"
                                     params="${[id:subscriptionInstance.id, basesubscription: sub.id]}"
                                     onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(sub.name?:'this subscription')])}')">
-                                <i class="trash icon"></i>
+                                <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
 

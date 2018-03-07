@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import grails.converters.JSON;
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 //todo Refactor aspects into service
@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 //todo Change notifications integration maybe use : changeNotificationService with the onChange domain event action
 //todo Refactor index separation of filter page (used for AJAX), too much content, slows DOM on render/binding of JS functionality
 //todo Enable advanced searching, use configurable map, see filterQuery() 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController {
 
     def springSecurityService
@@ -19,7 +20,7 @@ class FinanceController {
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
     private final def admin_role      = Role.findByAuthority('INST_ADM')
-    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR - Euro Member Countries')
+    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
 

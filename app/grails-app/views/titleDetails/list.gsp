@@ -10,6 +10,8 @@
       <semui:crumb message="menu.institutions.all_titles" class="active" />
     </semui:breadcrumbs>
 
+    <h1 class="ui header">${message(code:'menu.institutions.all_titles')}</h1>
+
     <semui:filter>
       <g:form action="index" role="form" class="ui form" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>

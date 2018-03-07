@@ -78,6 +78,5 @@ environments {
                 validationQuery="select 1"
             }
         }
-
     }
 }

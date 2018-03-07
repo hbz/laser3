@@ -11,21 +11,20 @@
         <semui:crumb text="${institution?.getDesignation()}" class="active" />
     </semui:breadcrumbs>
 
-    <div class="home-page">
-        <div class="ui">
-            <h1 class="ui header">${institution.name}</h1>
 
-            <div class="ui equal width grid">
+    <h1 class="ui header">${institution.name}</h1>
+
+    <div class="ui equal width grid">
                 <div class="row">
 
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.view', default:'View')}</h5>-->
                         <div class="ui divided relaxed list">
                             <div class="item">
-                                <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
+                                <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.institutions.mySubs')}</g:link>
                             </div>
                             <div class="item">
-                                <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.institutions.mySubs')}</g:link>
+                                <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
                             </div>
                             <div class="item">
                                 <g:link controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
@@ -36,11 +35,19 @@
                     <div class="column">
                         <!--<h5 class="ui header">${message(code:'myinst.renewals', default:'Renewals')}</h5>-->
                         <div class="ui divided relaxed list">
+                            %{--<div class="item">--}%
+                            %{--<g:link controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link>--}%
+                            %{--</div>--}%
+                            %{--<div class="item">--}%
+                            %{--<g:link controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link>--}%
+                            %{--</div>--}%
                             <div class="item">
-                                <g:link controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link>
+                                <g:link controller="myInstitution"
+                                        action="changes">${message(code: 'myinst.todo.label', default: 'To Do')}</g:link>
                             </div>
                             <div class="item">
-                                <g:link controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link>
+                                <g:link controller="myInstitution"
+                                        action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
                             </div>
                             <g:if test="${grailsApplication.config.feature_finance}">
                                 <div class="item">
@@ -66,8 +73,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
     </div>
 
     <semui:messages data="${flash}" />
@@ -165,9 +170,13 @@
                         <span><em>${tsk.description}</em></span> <br />
                     </g:if>
                     <span>
-                        <strong>${tsk.status?.getI10n('value')}</strong>
-                        / fällig am
+                        Fällig am
                         <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
+                        <br />
+                    </span>
+                    <span>
+                        Status:
+                        <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
                     </span>
                 </div>
             </g:each>

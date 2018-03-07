@@ -43,30 +43,33 @@
     </head>
 
     <body>
-
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
             <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
             <semui:crumb class="active" text="${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}" />
         </semui:breadcrumbs>
 
-        <g:render template="actions" />
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
 
         <h1 class="ui header">${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
 
         <g:render template="nav" contextPath="." />
 
-      <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
-      <input type="hidden" name="offset" value="${params.offset}"/>
-      <input type="hidden" name="id" value="${params.id}"/>
+        <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
+            <input type="hidden" name="offset" value="${params.offset}"/>
+            <input type="hidden" name="id" value="${params.id}"/>
 
-        <div class="field">
-            <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
-            <input name="q" value="${params.q}"/>
-        </div>
-        <div class="field">
-            <button type="submit" name="search" value="yes" class="ui button">${message(code:'default.button.search.label', default:'Search')}</button>
-        </div>
+            <div class="ui la-filter segment">
+                <div class="field">
+                    <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
+                    <input name="q" value="${params.q}"/>
+                </div>
+                <div class="field">
+                    <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.search.label', default:'Search')}</button>
+                </div>
+            </div>
 
       <div class="ui grid">
 
@@ -79,35 +82,43 @@
           </div>
 
         <div class="four wide column facetFilter">
-          <g:each in="${facets}" var="facet">
-            <div class="ui vertical segment">
-                <h4 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h4>
-
-                <div class="ui list">
-                  <g:each in="${facet.value.sort{it.display}}" var="v">
-                      <g:if test="${v.display.toString().length() > 3}">
-                        <div class="item">
-                          <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
-
-                          <g:if test="${params.list(facet.key).contains(v.term.toString())}">
-                            ${v.display} (${v.count})
-                          </g:if>
-                          <g:else>
-                            <g:link controller="${controller}" action="linkPackage" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
-                          </g:else>
-
-                            <!--<div class="ui checkbox">
-                                <g:set var="facetname" value="${facet.key}" />
-                                <g:checkBox class="hidden" name="${facetname}" value="${params[facetname]}" />
-                                <label>${v.display} (${v.count})</label>
-                            </div>-->
-                        </div>
-                      </g:if>
-                  </g:each>
+            <div class="ui card">
+                <div class="content">
+                    <div class="header"><g:message code="default.filter.label" default="Filter"/></div>
                 </div>
+                <div class="content">
+                    <div class="ui relaxed list">
 
+                        <g:each in="${facets}" var="facet">
+                            <div class="item">
+                                <h4 class="header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h4>
+
+                                <g:each in="${facet.value.sort{it.display}}" var="v">
+                                  <g:if test="${v.display.toString().length() > 3}">
+                                    <div class="description">
+                                      <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
+
+
+                                      <g:if test="${params.list(facet.key).contains(v.term.toString())}">
+                                        ${v.display} (${v.count})
+                                      </g:if>
+                                      <g:else>
+                                        <g:link controller="${controller}" action="linkPackage" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
+                                      </g:else>
+
+                                        <%--<div class="ui checkbox">
+                                            <g:checkBox class="hidden" name="${facet.key}" value="${params[fname]}" onchange="submit()"/>
+                                            <label>${v.display} (${v.count})</label>
+                                        </div>--%>
+                                    </div>
+                                  </g:if>
+                              </g:each>
+
+                            </div>
+                        </g:each>
+                    </div>
+                </div>
             </div>
-          </g:each>
         </div>
 
         <div class="eight wide column">
@@ -166,16 +177,19 @@
               </div>
           </div>
         </div>
+
         <div class="four wide column">
-          <div class="ui segment">
-            <h4 class="ui header">${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</h4>
-            <hr/>
-            <g:each in="${subscriptionInstance.packages}" var="sp">
-              <p><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></p>
-            </g:each>
-          </div>
+            <div class="ui card">
+                <div class="content">
+                    <div class="header">${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</div>
+                </div>
+                <div class="content">
+                    <g:each in="${subscriptionInstance.packages}" var="sp">
+                        <div class="item"><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></div>
+                    </g:each>
+                </div>
+            </div>
         </div>
-      </div>
       </g:form>
 
 

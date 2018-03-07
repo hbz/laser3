@@ -1,20 +1,16 @@
 package com.k_int.kbplus
 
-
-import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
-
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class GlobalDataSyncController {
 
   def springSecurityService
   def globalSourceSyncService
   def genericOIDService
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def index() {
     def result = [:]
 
@@ -75,7 +71,7 @@ class GlobalDataSyncController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def newCleanTracker() {
     log.debug("params:"+params)
     def result = [:]
@@ -88,7 +84,7 @@ class GlobalDataSyncController {
     render view:'reviewTracker', model:result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def selectLocalPackage() {
     log.debug("params:"+params)
     def result = [:]
@@ -96,7 +92,7 @@ class GlobalDataSyncController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def cancelTracking() {
     log.debug("cancelTracking: " + params)
     GlobalRecordTracker.get(params.trackerId).delete()
@@ -104,7 +100,7 @@ class GlobalDataSyncController {
     redirect(action:'index', params:[q:params.itemName])
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def buildMergeTracker() {
     log.debug("params:"+params)
     def result = [:]
@@ -119,7 +115,7 @@ class GlobalDataSyncController {
     render view:'reviewTracker', model:result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def createTracker() {
     log.debug("params:"+params)
     def result = [:]

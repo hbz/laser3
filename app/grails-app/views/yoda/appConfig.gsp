@@ -15,8 +15,6 @@
         <semui:crumb text="Application Config" class="active"/>
     </semui:breadcrumbs>
 
-<div>
-
     <h6 class="ui header">${message(code:'sys.properties')}</h6>
 
     <div id="custom_props_div_1">
@@ -27,7 +25,7 @@
     </div>
     <r:script language="JavaScript">
     $(document).ready(function(){
-        mcp.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+        c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
     });
     </r:script>
 
@@ -43,6 +41,6 @@
             </div>
         </g:each>
     </div>
-</div>
+
 </body>
 </html>

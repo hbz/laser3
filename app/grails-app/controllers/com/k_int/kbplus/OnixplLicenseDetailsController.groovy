@@ -1,14 +1,15 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class OnixplLicenseDetailsController {
 
     def springSecurityService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         def user = User.get(springSecurityService.principal.id)
         // def onixplLicense = OnixplLicense.get(params.id)
@@ -23,7 +24,7 @@ class OnixplLicenseDetailsController {
         forward (action:'matrix', params:[Compare:"Compare", id:"compare",compareAll:true,selectedLicenses:licenses],controller:"onixplLicenseCompare")
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def notes() {
         log.debug("licenseDetails id:${params.id}");
         def user = User.get(springSecurityService.principal.id)
@@ -35,7 +36,7 @@ class OnixplLicenseDetailsController {
         [onixplLicense: onixplLicense, user: user]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def documents() {
         log.debug("licenseDetails id:${params.id}");
         def user = User.get(springSecurityService.principal.id)
@@ -47,7 +48,7 @@ class OnixplLicenseDetailsController {
         [onixplLicense: onixplLicense, user: user]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def history() {
         log.debug("licenseDetails id:${params.id}");
         def user = User.get(springSecurityService.principal.id)
@@ -66,14 +67,14 @@ class OnixplLicenseDetailsController {
         [onixplLicense: onixplLicense, user: user, max: max, offset: offset, historyLines: historyLines, historyLinesTotal: historyLinesTotal]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def permissionInfo() {
         def user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
         [onixplLicense: onixplLicense, user: user]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [onixplLicenseInstanceList: OnixplLicense.list(params), onixplLicenseInstanceTotal: OnixplLicense.count()]

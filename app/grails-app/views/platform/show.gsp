@@ -32,47 +32,32 @@
 
         <fieldset class="inline-lists">
             <dl>
-              <dt>${message(code:'platform.name', default:'Platform Name')}</dt>
-              <dd> <semui:xEditable owner="${platformInstance}" field="name"/></dd>
-            </dl>
 
-            <dl>
-              <dt>${message(code:'platform.primaryUrl', default:'Primary URL')}</dt>
-              <dd> <semui:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>
-            </dl>
+                <dt>${message(code:'platform.name', default:'Platform Name')}</dt>
+                <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
 
-            <dl>
-              <dt>${message(code:'platform.serviceProvider', default:'Service Provider')}</dt>
-              <dd>
-                <semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="YN"/>
-              </dd>
-            </dl>
+                <dt>${message(code:'platform.primaryUrl', default:'Primary URL')}</dt>
+                <dd><semui:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>
 
-            <dl>
-              <dt>${message(code:'platform.softwareProvider', default:'Software Provider')}</dt>
-              <dd>
-                <semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="YN"/>
-              </dd>
-            </dl>
+                <dt>${message(code:'platform.serviceProvider', default:'Service Provider')}</dt>
+                <dd><semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="YN"/></dd>
 
-            <g:if test="${params.mode=='advanced'}">
+                <dt>${message(code:'platform.softwareProvider', default:'Software Provider')}</dt>
+                <dd><semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="YN"/></dd>
 
-                <dl>
+                <g:if test="${params.mode=='advanced'}">
+
                     <dt>${message(code:'platform.type', default:'Type')}</dt>
-                    <dd> <semui:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
-                </dl>
+                    <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="YNO"/></dd>
 
-                <dl>
                     <dt>${message(code:'platform.status', default:'Status')}</dt>
-                    <dd> <semui:xEditableRefData owner="${platformInstance}" field="status" config="UsageStatus"/></dd>
-                </dl>
+                    <dd><semui:xEditableRefData owner="${platformInstance}" field="status" config="UsageStatus"/></dd>
 
-                <dl>
                     <dt><g:message code="platform.globalUID.label" default="Global UID" /></dt>
-                    <dd> <g:fieldValue bean="${platformInstance}" field="globalUID"/> </dd>
-                </dl>
-            </g:if>
+                    <dd><g:fieldValue bean="${platformInstance}" field="globalUID"/></dd>
 
+                </g:if>
+            </dl>
         </fieldset>
 
         ${message(code:'platform.show.availability', default:'Availability of titles in this platform by package')}

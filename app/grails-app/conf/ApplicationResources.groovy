@@ -68,4 +68,15 @@ modules = {
 
         resource url:'js/application.js.gsp'          // legacy app js
     }
+
+    swaggerApi {
+        dependsOn 'jquery'
+
+        resource url:'vendor/swagger-ui/swagger-ui.css'
+
+        resource url:'vendor/swagger-ui/swagger-ui-bundle.js'
+        resource url:'vendor/swagger-ui/swagger-ui-standalone-preset.js'
+        resource url:'vendor/cryptoJS-v3.1.2/rollups/hmac-sha256.js'
+        //resource url:'js', file: 'jquery-3.2.1.min.js'
+    }
 }

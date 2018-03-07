@@ -8,38 +8,38 @@
   <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="admin" action="userMerge" text="User Merge" />
+        <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+        <semui:crumb text="User Merge" class="active"/>
     </semui:breadcrumbs>
 
+    <h1 class="ui header">User Merge</h1>
 
-  <div>
-   <div class="span8">
-
-
-       <semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
     
-     <p>Select the user to keep, and the user whose rights will be transferred. When 'merge' is clicked,
-      a confirmation screen with 'user to merge' current rights will be displayed.</p>
 
-    <g:form action="userMerge" method="GET">
-   <dl>
+<semui:form>
+    <g:form action="userMerge" method="GET" class="ui form">
+
+        <p>Select the user to keep, and the user whose rights will be transferred. When 'merge' is clicked,
+        a confirmation screen with 'user to merge' current rights will be displayed.</p>
+
         <div class="control-group">
-          <dt>User to Keep</dt>
-          <dd>
-    <g:select name="userToKeep" from="${usersActive}" optionKey="id" 
-      optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to keep-']}" />
-      </dd>
-      <dt> User to Merge</dt>
-      <dd>
-
-    <g:select name="userToMerge" from="${usersAll}" optionKey="id" 
-    optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to merge-']}"/>
-    </dd>
-     </dl>
-     <input type="submit" value="Merge" class="ui button"/>
-  </g:form>
-  </div>
-  </div>
+            <div class="field">
+                <label>User to Keep</label>
+                <g:select name="userToKeep" from="${usersActive}" optionKey="id"
+                    optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to keep-']}" />
+            </div>
+            <div class="field">
+                <label> User to Merge</label>
+                <g:select name="userToMerge" from="${usersAll}" optionKey="id"
+                    optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to merge-']}"/>
+            </div>
+            <div class="field">
+                <input type="submit" value="Merge" class="ui button"/>
+            </div>
+        </div>
+    </g:form>
+</semui:form>
 
   
   <div id="user_merge_modal" class="modal hide">

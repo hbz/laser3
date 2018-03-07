@@ -14,8 +14,6 @@
 
       <semui:messages data="${flash}" />
 
-    <div>
-
         <h2 class="ui header">Manage Pending Membership Requests</h2>
 
         <table class="ui celled la-table table">
@@ -42,20 +40,17 @@
                     <td><g:message code="cv.membership.status.${req.status}"/></td>
                     <td><g:formatDate format="dd MMMM yyyy" date="${req.dateRequested}"/></td>
                     <td class="x">
-                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'approve']}" class="ui icon basic positive button">
+                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'approve']}" class="ui icon positive button">
                             <i class="checkmark icon"></i>
                         </g:link>
-                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="ui icon basic negative button">
-                            <i class="minus icon"></i>
+                        <g:link controller="admin" action="actionAffiliationRequest" params="${[req:req.id, act:'deny']}" class="ui icon negative button">
+                            <i class="times icon"></i>
                         </g:link>
                     </td>
                 </tr>
             </g:each>
             </tbody>
         </table>
-    </div>
-
-
 
 
   </body>

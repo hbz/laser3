@@ -97,6 +97,8 @@
 
 .metaboxToggle {
     position: relative;
+    height: 36px;
+    margin-bottom: 1em;
 }
 .metaboxToggle > button {
     position: absolute;
@@ -104,8 +106,35 @@
     top: 0;
 }
 
+/* <type>Details/show */
+
+.ui.main div.inline-lists dl > dt,
+.ui.main div.inline-lists dl > dd {
+    line-height: 2.25em;
+}
+
+.ui.main div.inline-lists dl > dd > .ui.list {
+    margin: 0;
+}
+
 /* property forms in tables */
 
 .ui .table tfoot form {
     margin: 0;
 }
+
+/*
+TODO: remove and set in semantic css: la-table-small
+ */
+
+.ui.table.la-table-small tr td {
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
+}
+
+/* semantic ui - upgrade to 2.3 - start */
+
+.ui.modal {
+    left: initial; /* BUG !? */
+}
+/* semantic ui - upgrade to 2.3 - stop */

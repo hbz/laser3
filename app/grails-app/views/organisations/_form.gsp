@@ -60,12 +60,13 @@
 </div>
 */ %>
 
+<%--
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'comment', 'error')} ">
 	<label for="comment">
 		<g:message code="org.comment.label" default="Comment" />
 	</label>
 	<g:textArea name="comment" cols="40" rows="5" maxlength="2048" value="${orgInstance?.comment}"/>
-</div>
+</div> --%>
 
 <% /*
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'ipRange', 'error')} ">
@@ -80,7 +81,8 @@
 	<label for="sector">
 		<g:message code="org.sector.label" default="Sector" />
 	</label>
-	<g:select id="sector" name="sector.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.sector?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<laser:select id="sector" name="sector.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector')}"
+			  optionKey="id" optionValue="value" value="${orgInstance?.sector?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <% /*
@@ -92,74 +94,86 @@
 </div>
 */ %>
 
+<%--
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'scope', 'error')} ">
 	<label for="scope">
 		<g:message code="org.scope.label" default="Scope" />
 	</label>
 	<g:textField name="scope" maxlength="128" value="${orgInstance?.scope}"/>
-</div>
+</div> --%>
 
+<%--
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'categoryId', 'error')} ">
 	<label for="categoryId">
 		<g:message code="org.categoryId.label" default="Category Id" />
 	</label>
 	<g:textField name="categoryId" maxlength="128" value="${orgInstance?.categoryId}"/>
-</div>
+</div> --%>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'orgType', 'error')} ">
 	<label for="orgType">
 		<g:message code="org.orgType.label" default="Org Type" />
 	</label>
-	<g:select id="orgType" name="orgType.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.orgType?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<laser:select id="orgType" name="orgType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
+			  optionKey="id" optionValue="value"  value="${orgInstance?.orgType?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
+<%--
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="org.status.label" default="Status" />
 	</label>
-	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
-</div>
+	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues()}"
+			  optionKey="id" value="${orgInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
+</div> --%>
 
+<%--
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
 	</label>
-	<g:select id="membership" name="membership.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
-</div>
+	<g:select id="membership" name="membership.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues()}"
+			  optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
+</div> --%>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'country', 'error')} ">
 	<label for="country">
 		<g:message code="org.country.label" default="Country" />
 	</label>
-	<g:select id="country" name="country.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.country?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<laser:select id="country" name="country.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country')}"
+			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'federalState', 'error')} ">
 	<label for="federalState">
 		<g:message code="org.federalState.label" default="Federal State" />
 	</label>
-	<g:select id="federalState" name="federalState.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.federalState?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<laser:select id="federalState" name="federalState.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Federal State')}"
+			  optionKey="id" optionValue="value" value="${orgInstance?.federalState?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryNetwork', 'error')} ">
 	<label for="libraryNetwork">
 		<g:message code="org.libraryNetwork.label" default="Library Network" />
 	</label>
-	<g:select id="libraryNetwork" name="libraryNetwork.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.libraryNetwork?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<laser:select id="libraryNetwork" name="libraryNetwork.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Library Network')}"
+			  optionKey="id" optionValue="value" value="${orgInstance?.libraryNetwork?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'funderType', 'error')} ">
 	<label for="funderType">
 		<g:message code="org.funderType.label" default="Funder Type" />
 	</label>
-	<g:select id="funderType" name="funderType.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.funderType?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<laser:select id="funderType" name="funderType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Funder Type')}"
+			  optionKey="id" optionValue="value" value="${orgInstance?.funderType?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryType', 'error')} ">
 	<label for="libraryType">
 		<g:message code="org.libraryType.label" default="Library Type" />
 	</label>
-	<g:select id="libraryType" name="libraryType.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${orgInstance?.libraryType?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<laser:select id="libraryType" name="libraryType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Library Type')}"
+			  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <% /*

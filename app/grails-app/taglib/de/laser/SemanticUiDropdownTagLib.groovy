@@ -15,14 +15,20 @@ class SemanticUiDropdownTagLib {
 
     // <semui:exportDropdown params="${params}" transforms="${transforms}" />
 
+    def controlButtons = { attrs, body ->
+
+
+        out << '<div class="ui icon buttons la-float-right">'
+        out <<   body()
+        out << '</div>'
+    }
+
     def exportDropdown = { attrs, body ->
 
-        out << '<div class="ui right floated compact menu">'
-        out <<   '<div class="ui simple dropdown item">'
-        out <<     '<i class="download icon"></i>&nbsp;'
-        out <<     'Export'
-        out <<     '<i class="dropdown icon"></i>'
-        out <<     '<div class="menu">'
+
+        out << '<div class="ui simple dropdown button">'
+        out <<   '<i class="download icon"></i>'
+        out <<   '<div class="menu">'
 
         out <<       body()
         /*
@@ -40,8 +46,7 @@ class SemanticUiDropdownTagLib {
         }
         */
 
-        out <<     '</div>'
-        out <<   '</div>'
+        out <<  '</div>'
         out << '</div>'
     }
 
@@ -49,24 +54,22 @@ class SemanticUiDropdownTagLib {
 
     def exportDropdownItem = { attrs, body ->
 
-        out << '<div class="item">'
+
         out <<   body()
-        out << '</div>'
+
     }
 
     // <semui:actionsDropdown params="${params}"  />
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<div class="ui right floated compact menu">'
-        out <<   '<div class="ui simple dropdown item">'
-        out <<     '<div class="ui blue circular label" style="margin-left:0"><i class="play icon" style="margin-right:0"></i></div>&nbsp;' // TODO css
-        out <<     "${message(code:'default.actions', default:'Aktionen')}"
-        out <<     '<i class="dropdown icon"></i>'
-        out <<     '<div class="menu">'
-        out <<       body()
-        out <<     '</div>'
-        out <<   '</div>'
+        out << '<div class="ui simple dropdown button">'
+        out <<  '<i class="setting icon"></i>'
+        out <<  '<div class="menu">'
+
+        out <<          body()
+
+        out <<  '</div>'
         out << '</div>'
     }
 
@@ -92,3 +95,4 @@ class SemanticUiDropdownTagLib {
         }
     }
 }
+

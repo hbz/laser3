@@ -2,17 +2,18 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.springframework.dao.DataIntegrityViolationException
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PropertyDefinitionController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     def springSecurityService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
@@ -21,7 +22,7 @@ class PropertyDefinitionController {
         [propDefInstanceList: PropertyDefinition.list(params), propertyDefinitionTotal: PropertyDefinition.count(), editable:isEditable()]
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit() {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
@@ -74,12 +75,12 @@ class PropertyDefinitionController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def create() {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
 
-        if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+        if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
           flash.error =  message(code:"default.access.error")
           response.sendError(401)
           return;
@@ -102,12 +103,12 @@ class PropertyDefinitionController {
             }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def delete() {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
 
-        if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
+        if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
           flash.error =  message(code:"default.access.error")
           response.sendError(401)
           return;
@@ -132,7 +133,7 @@ class PropertyDefinitionController {
     }
   
    def isEditable(){
-    if ( SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN') ) {
+    if ( SpringSecurityUtils.ifNotGranted('ROLE_ADMIN') ) {
         return false
     }
     return true

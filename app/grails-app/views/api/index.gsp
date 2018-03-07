@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
-    <link rel="stylesheet" href="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui.css')}" type="text/css">
+
     <title>${message(code:'laser', default:'LAS:eR')} - API</title>
     <style>
         html {
@@ -41,6 +41,10 @@
             background-color: #fff;
         }
     </style>
+
+    <r:require modules="swaggerApi" />
+
+    <r:layoutResources/>
 </head>
 
 <body>
@@ -79,11 +83,6 @@
   </svg>
 
     <div id="swagger-ui"></div>
-
-    <script src="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui-bundle.js')}"> </script>
-    <script src="${resource(dir: 'vendor/swagger-ui', file: 'swagger-ui-standalone-preset.js')}"> </script>
-    <script src="${resource(dir: 'vendor/cryptoJS-v3.1.2/rollups', file: 'hmac-sha256.js')}"> </script>
-    <script src="${resource(dir: 'js', file: 'jquery-3.2.1.min.js')}"> </script>
 
     <script>
         window.onload = function() {
@@ -145,6 +144,8 @@
             }
         }
     </script>
-</body>
 
+    <r:layoutResources/>
+
+</body>
 </html>

@@ -10,8 +10,9 @@
   <body>
 
   <g:render template="breadcrumb" model="${[ params:params ]}"/>
-
-  <g:render template="actions" />
+  <semui:controlButtons>
+     <g:render template="actions" />
+  </semui:controlButtons>
 
   <semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
 
@@ -28,69 +29,85 @@
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
-   <div class="ui grid">
-      <dl>
-        <dt>
-          <g:annotatedLabel owner="${subscriptionInstance}" property="entitlements">
-            <g:if test="${entitlements?.size() > 0}">
-              Entitlements ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(entitlements?.size())),num_sub_rows])}. (
-                <g:if test="${params.mode=='advanced'}">
-                  ${message(code:'subscription.details.advanced.note', default:'Includes Expected or Expired entitlements, switch to')} 
-                  <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link> 
-                  ${message(code:'subscription.details.advanced.note.end', default:'view to hide them')}
-                </g:if>
-                <g:else>
-                  ${message(code:'subscription.details.basic.note', default:'Expected or Expired entitlements are filtered, use')} 
-                  <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link> 
-                  ${message(code:'subscription.details.basic.note.end', default:'view to see them')}
-                </g:else>
-              )
-            </g:if>
-            <g:else>
-              ${message(code:'subscription.details.no_ents', default:'No entitlements yet')}
-            </g:else>
-          </g:annotatedLabel>
-            <semui:filter>
-                <g:form action="index" params="${params}" method="get" class="ui form">
-                    <input type="hidden" name="sort" value="${params.sort}">
-                    <input type="hidden" name="order" value="${params.order}">
+    <div class="ui grid">
 
-                    <div class="fields">
-                        <div class="field">
-                            <label>
-                                <g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')} </g:annotatedLabel>
-                            </label>
-                            <input name="filter" value="${params.filter}"/>
-                        </div>
-                        <div class="field">
-                            <label>${message(code:'subscription.details.from_pkg', default:'From Package')}</label>
-                            <select name="pkgfilter">
-                                <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
-                                <g:each in="${subscriptionInstance.packages}" var="sp">
-                                    <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
-                                </g:each>
-                            </select>
-                        </div>
-                        <g:if test="${params.mode!='advanced'}">
-                            <div class="field">
-                                <semui:datepicker label="subscription.details.asAt" name="asAt" value="${params.asAt}" />
-                            </div>
+        <div class="row">
+            <div class="column">
+
+                <g:annotatedLabel owner="${subscriptionInstance}" property="entitlements">
+                    <g:if test="${entitlements?.size() > 0}">
+                      Entitlements ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(entitlements?.size())),num_sub_rows])}. (
+                        <g:if test="${params.mode=='advanced'}">
+                          ${message(code:'subscription.details.advanced.note', default:'Includes Expected or Expired entitlements, switch to')}
+                          <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link>
+                          ${message(code:'subscription.details.advanced.note.end', default:'view to hide them')}
                         </g:if>
-                        <div class="field">
-                            <label>&nbsp;</label>
-                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
+                        <g:else>
+                          ${message(code:'subscription.details.basic.note', default:'Expected or Expired entitlements are filtered, use')}
+                          <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link>
+                          ${message(code:'subscription.details.basic.note.end', default:'view to see them')}
+                        </g:else>
+                      )
+                    </g:if>
+                    <g:else>
+                      ${message(code:'subscription.details.no_ents', default:'No entitlements yet')}
+                    </g:else>
+                </g:annotatedLabel>
+
+            </div>
+        </div><!--.row-->
+
+        <div class="row">
+            <div class="column">
+
+                <semui:filter>
+                    <g:form action="index" params="${params}" method="get" class="ui form">
+                        <input type="hidden" name="sort" value="${params.sort}">
+                        <input type="hidden" name="order" value="${params.order}">
+
+                        <div class="fields">
+                            <div class="field">
+                                <label>
+                                    <g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')} </g:annotatedLabel>
+                                </label>
+                                <input name="filter" value="${params.filter}"/>
+                            </div>
+                            <div class="field">
+                                <label>${message(code:'subscription.details.from_pkg', default:'From Package')}</label>
+                                <select name="pkgfilter">
+                                    <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
+                                    <g:each in="${subscriptionInstance.packages}" var="sp">
+                                        <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
+                                    </g:each>
+                                </select>
+                            </div>
+                            <g:if test="${params.mode!='advanced'}">
+                                <div class="field">
+                                    <semui:datepicker label="subscription.details.asAt" name="asAt" value="${params.asAt}" />
+                                </div>
+                            </g:if>
+                            <div class="field">
+                                <label>&nbsp;</label>
+                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
+                            </div>
                         </div>
-                    </div>
-                </g:form>
-            </semui:filter>
-        </dt>
-        <dd>
+                    </g:form>
+                </semui:filter>
+
+            </div>
+        </div><!--.row-->
+
+
+        <div class="row">
+            <div class="column">
+
           <g:form action="subscriptionBatchUpdate" params="${[id:subscriptionInstance?.id]}" class="ui form">
               <g:set var="counter" value="${offset+1}" />
               <g:hiddenField name="sort" value="${params.sort}"/>
               <g:hiddenField name="order" value="${params.order}"/>
               <g:hiddenField name="offset" value="${params.offset}"/>
               <g:hiddenField name="max" value="${params.max}"/>
+
           <table  class="ui sortable celled la-rowspan table">
             <thead>
 
@@ -198,7 +215,7 @@
                 <td class="x">
                   <g:if test="${editable}">
                       <g:link action="removeEntitlement" class="ui icon negative button" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">
-                          <i class="trash icon"></i>
+                          <i class="trash alternate icon"></i>
                       </g:link>
                   </g:if>
 
@@ -219,9 +236,9 @@
           </tbody>
           </table>
           </g:form>
-        </dd>
-      </dl>
 
+            </div>
+        </div><!--.row-->
     </div>
 
   <g:if test="${entitlements}" >

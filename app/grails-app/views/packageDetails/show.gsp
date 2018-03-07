@@ -9,30 +9,35 @@
     <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
+    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
+
     <semui:breadcrumbs>
         <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
         <semui:crumb class="active" text="${packageInstance.name}" />
+    </semui:breadcrumbs>
+
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
+                <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link action="show" params="${params+[format:'xml']}">XML</g:link>
+                <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
 
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                    <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
-    </semui:breadcrumbs>
+    </semui:controlButtons>
 
-    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
-<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_PACKAGE_EDITOR">
-    <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
-</sec:ifAnyGranted>
+
+    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
+    </sec:ifAnyGranted>
 
     <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
 
@@ -55,17 +60,13 @@
             <dl>
                 <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
                 <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
-            </dl>
 
-            <dl>
                 <dt>${message(code: 'package.show.persistent_id')}</dt>
                 <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>
-            </dl>
 
-            <dl>
                 <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
-                    <table class="ui celled la-table table">
+                    <table class="ui celled la-table la-table-small table">
                         <thead>
                         <tr>
                             <th>${message(code: 'component.id.label')}</th>
@@ -91,16 +92,13 @@
                     </table>
 
                     <g:if test="${editable}">
-
-                        <semui:formAddIdentifier owner="${packageInstance}">
-                        </semui:formAddIdentifier>
-
+                        <semui:formAddIdentifier owner="${packageInstance}" />
                     </g:if>
 
                 </dd>
             </dl>
 
-  </div>
+        </div>
     </semui:meta>
 
  <semui:messages data="${flash}" />
@@ -110,7 +108,7 @@
     <div class="ui grid">
 
         <div class="twelve wide column">
-            <sec:ifAnyGranted roles="ROLE_ADMIN, KBPLUS_EDITOR, ROLE_PACKAGE_EDITOR">
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
                 <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
             </sec:ifAnyGranted>
 
@@ -123,52 +121,37 @@
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">
 
-              <dl>
-                <dt>${message(code: 'package.show.pkg_name')}</dt>
-                <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
-              </dl>
-
                 <dl>
+                    <dt>${message(code: 'package.show.pkg_name')}</dt>
+                    <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
+
                     <dt>${message(code: 'package.show.status')}</dt>
                     <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
-                </dl>
 
-              <dl>
-                <dt>${message(code: 'license.is_public')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="isPublic" config='YN'/>
-                </dd>
-              </dl> 
+                    <dt>${message(code: 'license.is_public')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="isPublic" config='YN'/>
+                    </dd>
 
-              <dl>
-                <dt><g:message code="license" default="License"/></dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="license" config="Licenses"/>
-                </dd>
-              </dl>
+                    <dt><g:message code="license" default="License"/></dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="license" config="Licenses"/>
+                    </dd>
 
-              <dl>
-                <dt>${message(code: 'package.show.vendor_url')}</dt>
-                <dd>
-                  <semui:xEditable owner="${packageInstance}" field="vendorURL" />
-                </dd>
-              </dl>
+                    <dt>${message(code: 'package.show.vendor_url')}</dt>
+                    <dd>
+                        <semui:xEditable owner="${packageInstance}" field="vendorURL" />
+                    </dd>
 
-                <dl>
-                  <dt>${message(code: 'package.show.start_date')}</dt>
-                  <dd>
-                    <semui:xEditable owner="${packageInstance}" field="startDate" type="date"/>
-                </dd>
-                </dl>
+                    <dt>${message(code: 'package.show.start_date')}</dt>
+                    <dd>
+                        <semui:xEditable owner="${packageInstance}" field="startDate" type="date"/>
+                    </dd>
 
-               <dl>
                     <dt>${message(code: 'package.show.end_date')}</dt>
                     <dd>
                        <semui:xEditable owner="${packageInstance}" field="endDate" type="date"/>
                     </dd>
-               </dl>
-
-
 
                 <% /*
                 <dl>
@@ -179,50 +162,44 @@
                 </dl>
                 */ %>
 
-                <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:packageInstance?.orgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable]}" />
+                    <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:packageInstance?.orgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable]}" />
 
-             <dl>
-                <dt>${message(code: 'package.list_status')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RefdataCategory.PKG_LIST_STAT}"/>
-                </dd>
-             </dl>
 
-             <dl>
-                <dt>${message(code: 'package.breakable')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="breakable" config="${RefdataCategory.PKG_BREAKABLE}"/>
-                </dd>
-             </dl>
+                    <dt>${message(code: 'package.list_status')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RefdataCategory.PKG_LIST_STAT}"/>
+                    </dd>
 
-             <dl>
-                <dt>${message(code: 'package.consistent')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>
-                </dd>
-             </dl>
+                    <dt>${message(code: 'package.breakable')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="breakable" config="${RefdataCategory.PKG_BREAKABLE}"/>
+                    </dd>
 
-             <dl>
-                <dt>${message(code: 'package.fixed')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
-                </dd>
-             </dl>
+                    <dt>${message(code: 'package.consistent')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>
+                    </dd>
 
-              <dl>
-                <dt>${message(code: 'package.scope')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
-                </dd>
-              </dl>
+                    <dt>${message(code: 'package.fixed')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
+                    </dd>
 
-          </fieldset>
+                    <dt>${message(code: 'package.scope')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
+                    </dd>
+
+                </dl>
+
+            </fieldset>
         </div><!-- .twelve -->
 
 
         <div class="four wide column">
 
-            <semui:card message="package.show.addToSub" class="card-grey notes">
+            <semui:card message="package.show.addToSub" class="notes">
+                <div class="content">
                 <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
 
                     <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}" class="ui form">
@@ -247,6 +224,7 @@
                 <g:else>
                   ${message(code: 'package.show.no_subs')}
                 </g:else>
+                </div>
             </semui:card>
 
           <g:render template="/templates/tasks/card" model="${[ownobj:packageInstance, owntp:'pkg']}" />
@@ -658,5 +636,10 @@
     </r:script>
     */ %>
 
-  </body>
+    <g:render template="orgLinksModal"
+              contextPath="../templates"
+              model="${[linkType:packageInstance?.class?.name,roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
+
+
+    </body>
 </html>

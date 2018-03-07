@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.*
 import org.springframework.security.access.annotation.Secured;
 
 @Deprecated
+@grails.plugin.springsecurity.annotation.Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController {
 
     def springSecurityService

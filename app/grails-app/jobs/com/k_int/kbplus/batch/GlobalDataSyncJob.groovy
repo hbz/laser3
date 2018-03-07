@@ -9,8 +9,8 @@ class GlobalDataSyncJob {
     // Delay 20 seconds, run every 10 mins.
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
     // Example - every 10 mins 0 0/10 * * * ? 
-    // At 5 past 5am every day
-    cron name:'globalDataSyncTrigger', startDelay:180000, cronExpression: "0 5 5 * * ?"
+    // At 5 past 4am every day
+    cron name:'globalDataSyncTrigger', startDelay:180000, cronExpression: "0 5 4 * * ?"
     // cronExpression: "s m h D M W Y"
     //                  | | | | | | `- Year [optional]
     //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -24,6 +24,10 @@ class GlobalDataSyncJob {
   def execute() {
     log.debug("GlobalDataSyncJob");
     if ( grailsApplication.config.KBPlusMaster == true ) {
+      log.debug("This server is marked as KBPlus master. Running GlobalDataSyncJob batch job");
+      globalSourceSyncService.runAllActiveSyncTasks()
+    }
+    else if ( grailsApplication.config.KBPlusMaster == true && grailsApplication.config.globalDataSyncJobActiv == true ) {
       log.debug("This server is marked as KBPlus master. Running GlobalDataSyncJob batch job");
       globalSourceSyncService.runAllActiveSyncTasks()
     }

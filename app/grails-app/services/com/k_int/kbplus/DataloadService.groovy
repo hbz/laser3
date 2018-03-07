@@ -73,7 +73,8 @@ class DataloadService {
 
         updateES(esclient, com.k_int.kbplus.Org.class) { org ->
             def result = [:]
-            result._id = org.impId
+            //result._id = org.impId
+            result._id = org.globalUID
             result.dbId = org.id
             result.guid = org.globalUID ?:''
 
@@ -100,7 +101,8 @@ class DataloadService {
                 else {
                 }
 
-                result._id = ti.impId
+                //result._id = ti.impId
+                result._id = ti.globalUID
                 result.dbId = ti.id
                 result.guid = ti.globalUID ?:''
 
@@ -129,7 +131,8 @@ class DataloadService {
 
         updateES(esclient, com.k_int.kbplus.Package.class) { pkg ->
             def result = [:]
-            result._id = pkg.impId
+            //result._id = pkg.impId
+            result._id = pkg.globalUID
             result.dbId = pkg.id
             result.guid = pkg.globalUID ?:''
 
@@ -172,7 +175,8 @@ class DataloadService {
 
         updateES(esclient, com.k_int.kbplus.License.class) { lic ->
             def result = [:]
-            result._id = lic.impId
+            //result._id = lic.impId
+            result._id = lic.globalUID
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
 
@@ -180,13 +184,16 @@ class DataloadService {
             result.name = lic.reference
             result.rectype = 'License'
             result.status = lic.status?.value
+            result.endDate = lic.endDate
+            result.startDate = lic.startDate
             result.visible = ['Public']
             result
         }
 
         updateES(esclient, com.k_int.kbplus.Platform.class) { plat ->
             def result = [:]
-            result._id = plat.impId
+            //result._id = plat.impId
+            result._id = plat.globalUID
             result.dbId = plat.id
             result.guid = plat.globalUID ?:''
 
@@ -199,7 +206,8 @@ class DataloadService {
 
         updateES(esclient, com.k_int.kbplus.Subscription.class) { sub ->
             def result = [:]
-            result._id = sub.impId
+            //result._id = sub.impId
+            result._id = sub.globalUID
             result.dbId = sub.id
             result.guid = sub.globalUID ?:''
 
@@ -212,6 +220,8 @@ class DataloadService {
             // There really should only be one here? So think od this as SubscriptionOrg, but easier
             // to leave it as availableToOrgs I guess.
             result.rectype = 'Subscription'
+            result.endDate = sub.endDate
+            result.startDate = sub.startDate
             result.status = sub.status?.value
             result.subtype = sub.type?.value
             result.visible = ['Public']
@@ -278,11 +288,17 @@ class DataloadService {
     try {
         log.debug("updateES - ${domain.name}")
 
+        def highest_timestamp = 0;
+        def highest_id = 0;
+
         def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name,'ESIndex')
 
         log.debug("result of findByDomain: ${latest_ft_record}")
         if (! latest_ft_record) {
             latest_ft_record=new FTControl(domainClassName:domain.name,activity:'ESIndex', lastTimestamp:0)
+        } else {
+            highest_timestamp = latest_ft_record.lastTimestamp
+            log.debug("Got existing ftcontrol record for ${domain.name} max timestamp is ${highest_timestamp} which is ${new Date(highest_timestamp)}");
         }
 
         log.debug("updateES ${domain.name} since ${latest_ft_record.lastTimestamp}")
@@ -307,7 +323,7 @@ class DataloadService {
         }
 
         def results = c.scroll(ScrollMode.FORWARD_ONLY)
-    
+
         log.debug("Query completed .. processing rows ..")
 
       while (results.next()) {
@@ -318,29 +334,44 @@ class DataloadService {
           log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
           continue
         }
-        if ( idx_record?.status?.toLowerCase() == 'deleted' ) {
-            future = esclient.delete {
+
+          def recid = idx_record['_id'].toString()
+          idx_record.remove('_id');
+
+          future = esclient.indexAsync {
               index es_index
-              type domain.name
-              id idx_record['_id']
-            }.actionGet()
-        }
-        else {
-          future = esclient.index {
-            index es_index
-            type domain.name
-            id idx_record['_id']
-            source idx_record
-          }.actionGet()
-        }
-        
-        latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
+              type 'component'
+              id recid
+              source idx_record
+          }
+
+//        if ( idx_record?.status?.toLowerCase() == 'deleted' ) {
+//            future = esclient.delete {
+//              index es_index
+//              type domain.name
+//              id idx_record['_id']
+//            }.actionGet()
+//        }
+//        else {
+//          future = esclient.index {
+//            index es_index
+//            type domain.name
+//            id idx_record['_id']
+//            source idx_record
+//          }.actionGet()
+//        }
+
+          //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
+          if (r.lastUpdated?.getTime() > highest_timestamp) {
+              highest_timestamp = r.lastUpdated?.getTime();
+          }
 
         count++
         total++
         if ( count > 100 ) {
           count = 0;
           log.debug("processed ${++total} records (${domain.name})")
+            latest_ft_record.lastTimestamp = highest_timestamp
           latest_ft_record.save(flush:true);
           cleanUpGorm();
         }
@@ -350,6 +381,7 @@ class DataloadService {
       log.debug("Processed ${total} records for ${domain.name}")
 
       // update timestamp
+        latest_ft_record.lastTimestamp = highest_timestamp
       latest_ft_record.save(flush:true);
     }
     catch ( Exception e ) {

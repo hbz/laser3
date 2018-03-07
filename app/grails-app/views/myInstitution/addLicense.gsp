@@ -11,9 +11,9 @@
         <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
         <semui:crumb message="license.copy" class="active" />
     </semui:breadcrumbs>
-
-    <g:render template="actions" />
-
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
     <h1 class="ui header">${institution?.name} - ${message(code:'license.copy')}</h1>
 
   <!--
@@ -38,14 +38,22 @@
         </div>
     </div>
 
-      <semui:filter>
+    <semui:filter>
         <g:form action="addLicense" params="${params}" method="get" class="ui form">
-          <input type="hidden" name="sort" value="${params.sort}">
-          <input type="hidden" name="order" value="${params.order}">
-          <label>${message(code:'default.filter.plural', default:'Filters')} - ${message(code:'license.name')}:</label> <input name="filter" value="${params.filter}"/> &nbsp;
-          <input type="submit" class="ui button" value="${message(code:'default.button.submit.label')}" />
+            <div class="fields">
+                <div class="field">
+                    <label>${message(code:'license.name')}</label>
+                    <input name="filter" type="text" value="${params.filter}"/>
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label')}" />
+                </div>
+            </div>
+            <input type="hidden" name="sort" value="${params.sort}">
+            <input type="hidden" name="order" value="${params.order}">
         </g:form>
-      </semui:filter>
+    </semui:filter>
 
   <!--
       <div>
@@ -95,7 +103,11 @@
                   <td>${l.licensor?.name}</td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.startDate}"/></td>
                   <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
-                  <td><g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui positive button">${message(code:'default.button.copy.label', default:'Copy')}</g:link></td>
+                  <td class="x">
+                      <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon positive button">
+                          <i class="copy icon"></i>
+                      </g:link>
+                  </td>
                 </tr>
               </g:each>
             </tbody>

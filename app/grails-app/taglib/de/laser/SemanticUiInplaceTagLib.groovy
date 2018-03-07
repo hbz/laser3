@@ -43,7 +43,7 @@ class SemanticUiInplaceTagLib {
                 default_empty = message(code:'default.date.format.notime').toLowerCase()
 
             } else {
-                out << " data-type=\"${attrs.type?:'textarea'}\""
+                out << " data-type=\"${attrs.type?:'text'}\""
             }
             out << " data-pk=\"${oid}\""
             out << " data-name=\"${attrs.field}\""
@@ -173,7 +173,7 @@ class SemanticUiInplaceTagLib {
                 out << " data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\""
             }
         } else {
-            out << " data-type=\"${attrs.type?:'textarea'}\" "
+            out << " data-type=\"${attrs.type?:'text'}\" "
         }
 
         def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""

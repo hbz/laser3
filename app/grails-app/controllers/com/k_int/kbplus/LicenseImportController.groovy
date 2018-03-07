@@ -1,9 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.xml.sax.SAXException
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseImportController {
 
   def CAT_TYPE = "UsageType",
@@ -28,7 +29,7 @@ class LicenseImportController {
    * Review the offered import to make sure it is a valid ONIX-PL file.
    * @return
    */
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def doImport() {
     // log.debug("Ghost_license" + grails.util.Holders.config.onix_ghost_license);
     // Setup result object
@@ -155,7 +156,7 @@ class LicenseImportController {
    * @throws SAXException
    * @throws IOException
    */
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def readOnixMultipartFile(file) throws SAXException, IOException {
     log.debug("Reading uploaded ONIX-PL file ${file?.originalFilename} " +
         "of type ${file?.contentType}")
@@ -185,7 +186,7 @@ class LicenseImportController {
    * @param result
    * @return
    */
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def checkForExistingOpl(acceptedFile, license) {
     log.debug("Checking for existing OPL for acceptedFile ${acceptedFile} and license ${license}")
     //def existingOpl = license?.onixplLicense
@@ -207,7 +208,7 @@ class LicenseImportController {
    * @param upload
    * @return a stats object about the import
    */
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
   def processImport(upload) {
     // log.debug("processImport(upload) "); upload.each{k,v-> log.debug("  ${k} -> ${v}")}
     //log.debug("Processing imported ONIX-PL document");

@@ -44,7 +44,7 @@
 						<td>${fieldValue(bean: platformInstance, field: "name")}</td>
 
 						<td class="x">
-							<g:link action="show" id="${platformInstance.id}" class="ui basic icon button">
+							<g:link action="show" id="${platformInstance.id}" class="ui icon button">
 								<i class="write icon"></i>
 							</g:link>
 						</td>

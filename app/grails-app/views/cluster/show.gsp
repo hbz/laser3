@@ -21,20 +21,14 @@
 				
 					<g:if test="${clusterInstance?.definition}">
 						<dt><g:message code="cluster.definition.label" default="Definition" /></dt>
-						
-							<dd><g:fieldValue bean="${clusterInstance}" field="definition"/></dd>
-						
+						<dd><g:fieldValue bean="${clusterInstance}" field="definition"/></dd>
 					</g:if>
-				</dl>
-				<dl>
+
 					<g:if test="${clusterInstance?.name}">
 						<dt><g:message code="cluster.name.label" default="Name" /></dt>
-						
-							<dd><g:fieldValue bean="${clusterInstance}" field="name"/></dd>
-						
+						<dd><g:fieldValue bean="${clusterInstance}" field="name"/></dd>
 					</g:if>
-				</dl>
-				<dl>
+
 					<g:if test="${clusterInstance?.orgs}">
 						<dt><g:message code="cluster.orgs.label" default="Orgs" /></dt>
 						<dd><ul>
@@ -43,13 +37,10 @@
 							</g:each>
 						</ul></dd>
 					</g:if>
-				</dl>
-				<dl>
+
 					<g:if test="${clusterInstance?.type}">
 						<dt><g:message code="cluster.type.label" default="Type" /></dt>
-						
-							<dd>${clusterInstance?.type?.encodeAsHTML()}</dd>
-						
+						<dd>${clusterInstance?.type?.encodeAsHTML()}</dd>
 					</g:if>
 				
 				</dl>
@@ -62,7 +53,7 @@
 							<g:message code="default.button.edit.label" default="Edit" />
 						</g:link>
 						<button class="ui negative button" type="submit" name="_action_delete">
-							<i class="trash icon"></i>
+							<i class="trash alternate icon"></i>
 							<g:message code="default.button.delete.label" default="Delete" />
 						</button>
 					</div>
@@ -70,7 +61,6 @@
 			</div><!-- .twelve -->
 
 				<div class="four wide column">
-                    <g:render template="../templates/sideMenu" />
 				</div><!-- .four -->
 
 		</div><!-- .grid -->

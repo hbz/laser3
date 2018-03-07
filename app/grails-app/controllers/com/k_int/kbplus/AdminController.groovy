@@ -1,17 +1,18 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*;
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController {
 
   def springSecurityService
   def dataloadService
   def zenDeskSyncService
-  def juspSyncService
+  def statsSyncService
   def globalSourceSyncService
   def messageService
   def changeNotificationService
@@ -23,13 +24,10 @@ class AdminController {
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
 
-
-  static boolean ftupdate_running = false
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def index() { }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def manageAffiliationRequests() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -39,7 +37,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def updatePendingChanges() {
   //Find all pending changes with license FK and timestamp after summer 14
   // For those with changeType: CustomPropertyChange, change it to PropertyChange
@@ -66,8 +64,7 @@ class AdminController {
 
   }
 
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def actionAffiliationRequest() {
     log.debug("actionMembershipRequest");
     def req = UserOrg.get(params.req);
@@ -94,7 +91,7 @@ class AdminController {
     redirect(action: "manageAffiliationRequests")
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def hardDeletePkgs(){
     def result = [:]
     //If we make a search while paginating return to start
@@ -166,7 +163,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def performPackageDelete(){
    if (request.method == 'POST'){
       def pkg = Package.get(params.id)
@@ -197,7 +194,7 @@ class AdminController {
 
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def userMerge(){
      log.debug("AdminController :: userMerge :: ${params}");
      def usrMrgId = params.userToMerge == "null"?null:params.userToMerge
@@ -306,7 +303,7 @@ class AdminController {
     return true
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def showAffiliations() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -341,7 +338,7 @@ class AdminController {
     }
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def allNotes() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -355,97 +352,33 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def dataCleanse() {
     // Sets nominal platform
     dataloadService.dataCleanse()
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def titleAugment() {
     // Sets nominal platform
     dataloadService.titleAugment()
   }
 
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def licenseLink() {
     if ( ( params.sub_identifier ) && ( params.lic_reference.length() > 0 ) ) {
     }
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def settings() {
-    def result = [:]
-    result.settings = Setting.list();
-    result
-  }
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def toggleBoolSetting() {
-    def result = [:]
-    def s = Setting.findByName(params.setting)
-    if ( s ) {
-      if ( s.tp == Setting.CONTENT_TYPE_BOOLEAN ) {
-        if ( s.value == 'true' )
-          s.value = 'false'
-        else
-          s.value = 'true'
-      }
-      s.save(flush:true)
-    }
-    redirect controller: 'admin', action:'settings'
-  }
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def esIndexUpdate() { 
-    log.debug("manual start full text index");
-    dataloadService.updateSiteMapping();
-    dataloadService.updateFTIndexes();
-    log.debug("redirecting to home...");
-    redirect(controller:'home')
-  }
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def fullReset() {
-
-    if ( ftupdate_running == false ) {
-      try {
-        ftupdate_running = true
-        new EventLog(event:'kbplus.fullReset',message:'Full Reset',tstp:new Date(System.currentTimeMillis())).save(flush:true)
-        log.debug("Delete all existing FT Control entries");
-        FTControl.withTransaction {
-          FTControl.executeUpdate("delete FTControl c");
-        }
-
-        log.debug("Clear ES");
-        dataloadService.clearDownAndInitES();
-
-        log.debug("manual start full text index");
-        dataloadService.updateFTIndexes();
-      }
-      finally {
-        ftupdate_running = false
-        log.debug("fullReset complete..");
-      }
-    }
-    else {
-      log.debug("FT update already running");
-    }
-
-    log.debug("redirecting to home...");
-    redirect(controller:'home')
-
-  }
     /*
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def forumSync() {
         redirect(controller:'home')
 
         //zenDeskSyncService.doSync()
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def juspSync() {
         redirect(controller:'home')
 
@@ -454,43 +387,14 @@ class AdminController {
     }
     */
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def globalSync() {
-    log.debug("start global sync...");
-    globalSourceSyncService.runAllActiveSyncTasks()
-    log.debug("done global sync...");
+  @Secured(['ROLE_ADMIN'])
+  def statsSync() {
+    log.debug("statsSync()")
+    statsSyncService.doSync()
     redirect(controller:'home')
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def manageGlobalSources() {
-    def result=[:]
-    log.debug("manageGlobalSources...");
-    result.sources = GlobalRecordSource.list()
-    result
-  }
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def newGlobalSource() {
-    def result=[:]
-    log.debug("manageGlobalSources...");
-    result.newSource = GlobalRecordSource.findByIdentifier(params.identifier) ?: new GlobalRecordSource(
-                                                                                         identifier:params.identifier,
-                                                                                         name:params.name,
-                                                                                         type:params.type,
-                                                                                         haveUpTo:null,
-                                                                                         uri:params.uri,
-                                                                                         listPrefix:params.listPrefix,
-                                                                                         fullPrefix:params.fullPrefix,
-                                                                                         principal:params.principal,
-                                                                                         credentials:params.credentials,
-                                                                                         rectype:params.int('rectype'));
-    result.newSource.save();
-
-    redirect action:'manageGlobalSources'
-  }
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def manageContentItems() {
     def result=[:]
 
@@ -499,7 +403,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def newContentItem() {
     def result=[:]
     if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
@@ -519,7 +423,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def editContentItem() {
     def result=[:]
     def idparts = params.id?.split(':')
@@ -550,13 +454,13 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def forceSendNotifications() {
     changeNotificationService.aggregateAndNotifyChanges()
     redirect(controller:'home')
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def tippTransfer(){
     log.debug("tippTransfer :: ${params}")
     def result = [:]
@@ -583,7 +487,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def ieTransfer(){
     log.debug(params)
     def result = [:]
@@ -604,7 +508,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def titleMerge() {
 
     log.debug(params)
@@ -634,7 +538,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def orgsExport() {
     response.setHeader("Content-disposition", "attachment; filename=\"orgsExport.csv\"")
     response.contentType = "text/csv"
@@ -648,7 +552,7 @@ class AdminController {
     out.close()
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def orgsImport() {
 
     if ( request.method=="POST" ) {
@@ -683,33 +587,27 @@ class AdminController {
     }
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def docstoreMigrate() {
     docstoreService.migrateToDb()
     redirect(controller:'home')
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def triggerHousekeeping() {
     log.debug("trigggerHousekeeping()");
     enrichmentService.initiateHousekeeping()
     redirect(controller:'home')
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
-  def deleteGlobalSource() {
-    GlobalRecordSource.removeSource(params.long('id'));
-    redirect(action:'manageGlobalSources')
-  }
-
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def initiateCoreMigration() {
     log.debug("initiateCoreMigration...");
     enrichmentService.initiateCoreMigration()
     redirect(controller:'home')
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def titlesImport() {
 
     if ( request.method=="POST" ) {
@@ -798,7 +696,7 @@ class AdminController {
     }
   }
   
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def uploadIssnL() {
         def result=[:]
         boolean hasStarted = false
@@ -893,7 +791,7 @@ class AdminController {
     propertyInstanceMap.get().clear()
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def financeImport() {
     def result = [:];
     if (request.method == 'POST'){
@@ -903,7 +801,7 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def manageNamespaces() {
 
     def identifierNamespaceInstance = new IdentifierNamespace(params)
@@ -926,7 +824,7 @@ class AdminController {
     ]
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def managePropertyDefinitions() {
 
     def propDefs = [:]
@@ -940,7 +838,7 @@ class AdminController {
             ]
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def manageRefdatas() {
 
     render view: 'manageRefdatas', model: [

@@ -21,30 +21,22 @@
 				<dl>
                     <dt><g:message code="person.first_name.label" default="Firstname" /></dt>
                     <dd><semui:xEditable owner="${personInstance}" field="first_name" /></dd>
-				</dl>
-				<dl>
+
                     <dt><g:message code="person.middle_name.label" default="Middlename" /></dt>
                     <dd><semui:xEditable owner="${personInstance}" field="middle_name" /></dd>
-				</dl>
-				<dl>
+
                     <dt><g:message code="person.last_name.label" default="Lastname" /></dt>
                     <dd><semui:xEditable owner="${personInstance}" field="last_name" /></dd>
-				</dl>
-				<dl>
+
                     <dt><g:message code="person.gender.label" default="Gender" /></dt>
                     <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="Gender" /></dd>
-				</dl>
 
-                <dl>
                     <dt><g:message code="person.roleType.label" default="Person Position" /></dt>
                     <dd><semui:xEditableRefData owner="${personInstance}" field="roleType" config="Person Position" /></dd>
-                </dl>
-				<dl>
+
                     <dt><g:message code="person.contactType.label" default="Person Contact Type" /></dt>
                     <dd><semui:xEditableRefData owner="${personInstance}" field="contactType" config="Person Contact Type" /></dd>
-				</dl>
 
-				<dl>
                     <dt><g:message code="person.contacts.label" default="Contacts" /></dt>
                     <dd>
                         <ul>
@@ -54,12 +46,13 @@
                             </li>
                         </g:each>
                         </ul>
-                        <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
-                                value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
-                        <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
+                        <g:if test="${editable}">
+                            <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
+                                    value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
+                            <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
+                        </g:if>
                     </dd>
-				</dl>
-				<dl>
+
                     <dt><g:message code="person.addresses.label" default="Addresses" /></dt>
                     <dd>
                         <ul>
@@ -69,24 +62,25 @@
                             </li>
                         </g:each>
                         </ul>
-                        <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
-                               value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
-                        <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
+                        <g:if test="${editable}">
+                            <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
+                                   value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
+                            <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
+                        </g:if>
                     </dd>
-				</dl>
-				<dl class="debug-only">
+
+                    <%--
 					<g:if test="${personInstance?.tenant}">
 						<dt><g:message code="person.tenant.label" default="Tenant" /></dt>
 						<dd><g:link controller="organisations" action="show" id="${personInstance.tenant?.id}">${personInstance.tenant?.encodeAsHTML()}</g:link></dd>	
 					</g:if>
-				</dl>
-				<dl class="debug-only">
+
 					<g:if test="${personInstance?.isPublic}">
 						<dt><g:message code="person.isPublic.label" default="IsPublic" /></dt>
 						<dd><semui:xEditableRefData owner="${personInstance}" field="isPublic" config="YN" /></dd>
 					</g:if>
-				</dl>
-				<dl>
+				    --%>
+
                     <dt><g:message code="person.functions.label" default="Functions" /></dt>
                     <dd><ul>
                         <g:each in="${personInstance.roleLinks}" var="link">
@@ -101,8 +95,7 @@
                             </g:if>
                         </g:each>
                     </ul></dd>
-				</dl>
-				<dl>
+
                     <dt><g:message code="person.responsibilites.label" default="Responsibilites" /></dt>
                     <dd><ul>
                         <g:each in="${personInstance.roleLinks}" var="link">
@@ -140,6 +133,7 @@
                     </dd>
                 </dl>
             </div>
+            <g:if test="${editable}">
 				<g:form>
 					<g:hiddenField name="id" value="${personInstance?.id}" />
 					<div class="ui form-actions">
@@ -148,16 +142,16 @@
 							<g:message code="default.button.edit.label" default="Edit" />
 						</g:link>
 						<button class="ui negative button" type="submit" name="_action_delete">
-							<i class="trash icon"></i>
+							<i class="trash alternate icon"></i>
 							<g:message code="default.button.delete.label" default="Delete" />
 						</button>
 					</div>
 				</g:form>
+            </g:if>
 
 			</div><!-- .twelve -->
 
             <div class="four wide column">
-                <g:render template="../templates/sideMenu" />
             </div><!-- .four -->
 
 		</div><!-- .grid -->

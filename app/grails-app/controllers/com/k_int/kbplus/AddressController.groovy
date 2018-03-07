@@ -1,28 +1,30 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 import org.springframework.dao.DataIntegrityViolationException
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AddressController {
 
 	def springSecurityService
+	def addressbookService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
 		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def create() {
 		switch (request.method) {
 			case 'GET':
@@ -50,39 +52,39 @@ class AddressController {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
         def addressInstance = Address.get(params.id)
-        if (!addressInstance) {
+        if (! addressInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
             redirect action: 'list'
             return
         }
 
-        [addressInstance: addressInstance, editable: true] // TODO
+        [
+            addressInstance: addressInstance,
+            editable: addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser())
+        ] // TODO
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit() {
+        def addressInstance = Address.get(params.id)
+        if (! addressInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
+            redirect action: 'list'
+            return
+        }
+        if (! addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser())) {
+            redirect action: 'show', id: params.id
+            return
+        }
+
 		switch (request.method) {
 		case 'GET':
-	        def addressInstance = Address.get(params.id)
-	        if (!addressInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
 	        [addressInstance: addressInstance]
 			break
 		case 'POST':
-	        def addressInstance = Address.get(params.id)
-	        if (!addressInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
 	        if (params.version) {
 	            def version = params.version.toLong()
 	            if (addressInstance.version > version) {
@@ -96,7 +98,7 @@ class AddressController {
 
 	        addressInstance.properties = params
 
-	        if (!addressInstance.save(flush: true)) {
+	        if (! addressInstance.save(flush: true)) {
 	            render view: 'edit', model: [addressInstance: addressInstance]
 	            return
 	        }
@@ -107,12 +109,16 @@ class AddressController {
 		}
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def delete() {
         def addressInstance = Address.get(params.id)
-        if (!addressInstance) {
+        if (! addressInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
             redirect action: 'list'
+            return
+        }
+        if (! addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser())) {
+            redirect action: 'show', id: params.id
             return
         }
 

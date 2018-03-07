@@ -7,15 +7,15 @@
     <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
   <body>
-      <div>
 
-          <h1 class="ui header">Subscription Offered - Manual Upload</h1>
+    <h1 class="ui header">Subscription Offered - Manual Upload</h1>
 
-        <semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
-          <semui:errors bean="${packageInstance}" />
+    <semui:errors bean="${packageInstance}" />
 
-        <g:form action="so" method="post" enctype="multipart/form-data">
+        <g:form action="so" method="post" enctype="multipart/form-data" class="ui form">
+
             Updload File: <input type="file" id="soFile" name="soFile"/><br/>
 
             Doc Style: <select name="docstyle">
@@ -32,7 +32,6 @@
           <g:link controller="subscriptionDetails" action="index" id="${new_sub_id}">Created subscription ${new_sub_id}</g:link><br/>
           <g:link controller="packageDetails" action="show" id="${new_pkg_id}">Created package ${new_pkg_id}</g:link>
         </g:if>
-      </div>
 
   </body>
 </html>

@@ -10,8 +10,8 @@
 
         <semui:actionsDropdownItem controller="subscriptionDetails" action="compare" message="menu.institutions.comp_sub" />
 
-        <semui:actionsDropdownItem controller="myInstitution" action="renewalsSearch" message="menu.institutions.gen_renewals" />
-        <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload" message="menu.institutions.imp_renew" />
+    %{--<semui:actionsDropdownItem controller="myInstitution" action="renewalsSearch" message="menu.institutions.gen_renewals" />--}%
+    %{--<semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload" message="menu.institutions.imp_renew" />--}%
 
         <semui:actionsDropdownItem controller="subscriptionImport" action="generateImportWorksheet" params="${[id:contextOrg?.id]}" message="menu.institutions.sub_work" />
         <semui:actionsDropdownItem controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[id:contextOrg?.id]}" message="menu.institutions.imp_sub_work" />
