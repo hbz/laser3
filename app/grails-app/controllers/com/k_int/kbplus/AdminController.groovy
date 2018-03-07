@@ -24,8 +24,6 @@ class AdminController {
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
 
-  static boolean ftupdate_running = false
-
   @Secured(['ROLE_ADMIN'])
   def index() { }
 
@@ -372,69 +370,6 @@ class AdminController {
     }
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def settings() {
-    def result = [:]
-    result.settings = Setting.list();
-    result
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def toggleBoolSetting() {
-    def result = [:]
-    def s = Setting.findByName(params.setting)
-    if ( s ) {
-      if ( s.tp == Setting.CONTENT_TYPE_BOOLEAN ) {
-        if ( s.value == 'true' )
-          s.value = 'false'
-        else
-          s.value = 'true'
-      }
-      s.save(flush:true)
-    }
-    redirect controller: 'admin', action:'settings'
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def esIndexUpdate() { 
-    log.debug("manual start full text index");
-    dataloadService.updateSiteMapping();
-    dataloadService.updateFTIndexes();
-    log.debug("redirecting to home...");
-    redirect(controller:'home')
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def fullReset() {
-
-    if ( ftupdate_running == false ) {
-      try {
-        ftupdate_running = true
-        new EventLog(event:'kbplus.fullReset',message:'Full Reset',tstp:new Date(System.currentTimeMillis())).save(flush:true)
-        log.debug("Delete all existing FT Control entries");
-        FTControl.withTransaction {
-          FTControl.executeUpdate("delete FTControl c");
-        }
-
-        log.debug("Clear ES");
-        dataloadService.clearDownAndInitES();
-
-        log.debug("manual start full text index");
-        dataloadService.updateFTIndexes();
-      }
-      finally {
-        ftupdate_running = false
-        log.debug("fullReset complete..");
-      }
-    }
-    else {
-      log.debug("FT update already running");
-    }
-
-    log.debug("redirecting to home...");
-    redirect(controller:'home')
-
-  }
     /*
     @Secured(['ROLE_ADMIN'])
     def forumSync() {
@@ -457,42 +392,6 @@ class AdminController {
     log.debug("statsSync()")
     statsSyncService.doSync()
     redirect(controller:'home')
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def globalSync() {
-    log.debug("start global sync...");
-    globalSourceSyncService.runAllActiveSyncTasks()
-    log.debug("done global sync...");
-    redirect(controller: 'globalDataSync')
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def manageGlobalSources() {
-    def result=[:]
-    log.debug("manageGlobalSources...");
-    result.sources = GlobalRecordSource.list()
-    result
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def newGlobalSource() {
-    def result=[:]
-    log.debug("manageGlobalSources...");
-    result.newSource = GlobalRecordSource.findByIdentifier(params.identifier) ?: new GlobalRecordSource(
-                                                                                         identifier:params.identifier,
-                                                                                         name:params.name,
-                                                                                         type:params.type,
-                                                                                         haveUpTo:null,
-                                                                                         uri:params.uri,
-                                                                                         listPrefix:params.listPrefix,
-                                                                                         fullPrefix:params.fullPrefix,
-                                                                                         principal:params.principal,
-                                                                                         credentials:params.credentials,
-                                                                                         rectype:params.int('rectype'));
-    result.newSource.save();
-
-    redirect action:'manageGlobalSources'
   }
 
   @Secured(['ROLE_ADMIN'])
@@ -699,12 +598,6 @@ class AdminController {
     log.debug("trigggerHousekeeping()");
     enrichmentService.initiateHousekeeping()
     redirect(controller:'home')
-  }
-
-  @Secured(['ROLE_ADMIN'])
-  def deleteGlobalSource() {
-    GlobalRecordSource.removeSource(params.long('id'));
-    redirect(action:'manageGlobalSources')
   }
 
   @Secured(['ROLE_ADMIN'])

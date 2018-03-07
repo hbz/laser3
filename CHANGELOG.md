@@ -1,19 +1,23 @@
 
 0.4
 
-- reworked markup and stylesheets
-- reworked templates
 - removed url parameter: shortcode
-- storing context organisation in session
+- stored context organisation in session
 - added cost per use statistics
 - improved user management
 - improved passwort management in profile
+- added admin reminder service
+- introduced yoda
 - reworked system roles
 - reworked renewals
 - reworked cost items bulk import
+- reworked markup and stylesheets
+- reworked templates
+- more translations
 - upgrade to spring security 2.0
 - upgrade to elasticsearch 2.4
 - upgrade to semantic-ui 2.3
+- removed file viewer plugin
 - bugfix: reseting default dashboard by revoking affiliations
 
 0.3.4

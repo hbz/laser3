@@ -13,14 +13,6 @@ class UrlMappings {
         "/myInstitution/finance"        (controller: 'finance', action: 'index')
         name subfinance: "/subscriptionDetails/$sub/finance/"   (controller: 'finance', action: 'index')
 
-        /*
-        "/myInstitutions/$shortcode/$action"(controller: 'myInstitutions')
-        "/myInstitutions/$shortcode/$action/$id"(controller: 'myInstitutions')
-        "/myInstitutions/$shortcode/finance"(controller: 'finance', action: 'index')
-        name subfinance: "/subscriptionDetails/$sub/finance/"(controller: 'finance', action: 'index')
-        "/myInstitutions/$shortcode/tipview/$id"(controller: 'myInstitutions', action: 'tip')
-        */
-
         "/ajax/$action?/$id?"(controller: 'ajax')
 
         // new custom api
@@ -29,7 +21,9 @@ class UrlMappings {
         "/api/v0/$obj"          (controller: 'api', action: 'v0')
 
         "/"                     (view: "public/index")
+        "/public"               (view: "public/index")
 
+        /*
         "/about"                (view: "public/about")
         "/contact-us"           (view: "public/contact-us")
         "/freedom-of-information-policy"(view: "public/freedom-of-information-policy")
@@ -38,6 +32,7 @@ class UrlMappings {
         "/public"               (view: "public/index")
         "/signup"               (view: "public/signup")
         "/terms-and-conditions" (view: "public/terms-and-conditions")
+        */
 
         "/oai/$id"(controller: 'oai', action: 'index')
 

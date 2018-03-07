@@ -5,8 +5,15 @@
     <title>${message(code:'laser', default:'LAS:eR')} Admin::TIPP Transfer</title>
   </head>
   <body>
-    <div>
-    <h1 class="ui header">TIPP Transfer</h1>
+
+      <semui:breadcrumbs>
+        <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+        <semui:crumb text="TIPP Transfer" class="active"/>
+      </semui:breadcrumbs>
+
+      <h1 class="ui header">TIPP Transfer</h1>
+
+      <semui:messages data="${flash}" />
 
         <g:each in="${error}" var="err">
           <bootstrap:alert class="alert-danger">${err}</bootstrap:alert>
@@ -16,29 +23,27 @@
           <bootstrap:alert class="alert-info">Transfer Sucessful</bootstrap:alert>
         </g:if>
 
-        <g:form action="tippTransfer" method="get">
+      <semui:form>
+        <g:form action="tippTransfer" method="get" class="ui form">
           <p>Add the appropriate ID's below. All IssueEntitlements of source will be removed and transfered to target. Detailed information and confirmation will be presented before proceeding</p>
-          <dl>
             <div class="control-group">
-              <dt>Database ID of TIPP</dt>
-              <dd>
-                <input type="text" name="sourceTIPP" value="${params.sourceTIPP}" />
-
-              </dd>
+                <div class="field">
+                    <label>Database ID of TIPP</label>
+                    <input type="text" name="sourceTIPP" value="${params.sourceTIPP}" />
+              </div>
             </div>
 
             <div class="control-group">
-              <dt>Database ID of target TitleInstance</dt>
-              <dd>
-                <input type="text" name="targetTI" value="${params.targetTI}"/>
-              </dd>
+                <div class="field">
+                    <label>Database ID of target TitleInstance</label>
+                    <input type="text" name="targetTI" value="${params.targetTI}"/>
+                </div>
             </div>
-    
-              <button onclick="return confirm('Any existing TIs on TIPP will be replaced. Continue?')" class="ui positive button" type="submit">Transfer</button>
-          </dl>
+            <div class="field">
+                  <button onclick="return confirm('Any existing TIs on TIPP will be replaced. Continue?')" class="ui button" type="submit">Transfer</button>
+            </div>
         </g:form>
-      </div>
-    </div>
+      </semui:form>
 
   </body>
 </html>

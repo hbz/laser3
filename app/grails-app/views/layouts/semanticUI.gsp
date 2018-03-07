@@ -244,16 +244,26 @@
                                     <div class="ui floating red circular label">${newAffiliationRequests}</div>
                                 </g:if>
                             </g:link>
-                            <g:link class="item" controller="admin" action="settings">System Settings</g:link>
 
                             <div class="ui dropdown item">
                                 System Admin
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" controller="sysAdmin" action="appConfig">App Config</g:link>
-                                    <g:link class="item" controller="sysAdmin" action="appInfo">App Info</g:link>
-                                    <g:link class="item" controller="sysAdmin" action="logViewer">Log Viewer</g:link>
+                                    <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
+                                    <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
+                                    <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
+
+                                    <div class="divider"></div>
+
+                                    <g:link class="item" controller="yoda" action="globalSync">Start Global Data Sync</g:link>
+                                    <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
+
+                                    <div class="divider"></div>
+
+                                    <g:link class="item" controller="yoda" action="fullReset">Run Full ES Index Reset</g:link>
+                                    <g:link class="item" controller="yoda" action="esIndexUpdate">Start ES Index Update</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
                                 </div>
                             </div>
 
@@ -269,7 +279,7 @@
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
 
                             <div class="ui dropdown item">
-                                Data Management Tasks
+                                Data Management
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
@@ -284,10 +294,6 @@
                             </div>
 
                             <div class="divider"></div>
-
-                            <g:link class="item" controller="admin" action="globalSync">Start Global Data Sync</g:link>
-                            <g:link class="item" controller="admin" action="manageGlobalSources">Manage Global Sources</g:link>
-
 
                             <div class="ui dropdown item">
                                Bulk Operations
@@ -325,8 +331,8 @@
                                     </g:if>
                                     <g:link class="item" controller="admin" action="dataCleanse">Run Data Cleaning (Nominal Platforms)</g:link>
                                     <g:link class="item" controller="admin" action="titleAugment">Run Data Cleaning (Title Augment)</g:link>
-                                    <g:link class="item" controller="admin" action="fullReset">Run Full ES Index Reset</g:link>
-                                    <g:link class="item" controller="admin" action="esIndexUpdate">Start ES Index Update</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="fullReset">Run Full ES Index Reset</g:link>--%>
+                                    <%--<g:link class="item" controller="yoda" action="esIndexUpdate">Start ES Index Update</g:link>--%>
                                 </div>
                             </div>
                         </div>
