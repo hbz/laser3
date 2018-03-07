@@ -72,14 +72,14 @@
                 </g:form>
             </g:if>
         </div>
-        <div class="four wide column">
+        <aside class="four wide column">
             <semui:card>
                 <div class="content">
                     <input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}"
                            data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
                 </div>
             </semui:card>
-        </div>
+        </aside>
     </div><!-- .grid -->
 
 
