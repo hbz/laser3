@@ -2,6 +2,9 @@ package com.k_int.kbplus
 
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.util.Holders
+import grails.web.Action
+
+import java.lang.reflect.Method
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
@@ -47,6 +50,30 @@ class YodaController {
         result.dataloadService.update_running = dataloadService.update_running
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
 
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def appSecurity() {
+        def result = [:]
+        def cList = [:]
+
+        grailsApplication.controllerClasses.toList().each { controller ->
+            Class controllerClass = controller.clazz
+
+            if (controllerClass.name.startsWith('com.k_int.kbplus')) {
+                def mList = [:]
+                controllerClass.methods.each { Method method ->
+                    if (method.getAnnotation(Action)) {
+                        def aList = method.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value()
+                        mList << ["${method.name}": aList]
+                    }
+                }
+                def cAnn = controllerClass.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value()
+                cList<< ["${controllerClass.name}": mList.sort{it.key}]
+            }
+        }
+        result.controller = cList.sort{it.key}
         result
     }
 

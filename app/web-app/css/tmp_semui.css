@@ -138,3 +138,31 @@ TODO: remove and set in semantic css: la-table-small
     left: initial; /* BUG !? */
 }
 /* semantic ui - upgrade to 2.3 - stop */
+
+
+body.yoda_appSecurity .secInfoWrapper span {
+    color: white;
+    padding: 1px 5px;
+    background-color: #d3dae3;
+}
+body.yoda_appSecurity .secInfoWrapper .IS_AUTHENTICATED_FULLY {
+    background-color: green;
+}
+body.yoda_appSecurity .secInfoWrapper .ROLE_YODA {
+    background-color: red;
+}
+body.yoda_appSecurity .secInfoWrapper .ROLE_ADMIN {
+    background-color: orange;
+}
+body.yoda_appSecurity .secInfoWrapper .ROLE_DATAMANAGER {
+    background-color: purple;
+}
+body.yoda_appSecurity .secInfoWrapper .ROLE_USER {
+    background-color: blue;
+}
+body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR {
+    background-color: purple;
+}
+body.yoda_appSecurity .secInfoWrapper .ROLE_PAKET_EDITOR {
+    background-color: purple;
+}
