@@ -108,6 +108,7 @@
                                         <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                                     </dd>
                                 </dl>
+                                <!--
                                 <dl>
 
                                     <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
@@ -115,6 +116,7 @@
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
                                     </dd>
                                 </dl>
+                                -->
                                 <!--
                                 <dl>
                                     <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
@@ -139,6 +141,7 @@
                                     <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
                                 </dd>
                             </dl>
+                            <!--
                             <dl>
 
                                 <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
@@ -151,6 +154,7 @@
                                     <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
                                 </dd>
                             </dl>
+                            -->
                             <dl>
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
 
