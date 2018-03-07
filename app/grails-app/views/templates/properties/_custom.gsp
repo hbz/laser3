@@ -14,17 +14,19 @@
 
 
 <table class="ui celled la-table la-table-small table">
-    <thead>
-        <tr>
-            <th>${message(code:'property.table.property')}</th>
-            <th>${message(code:'property.table.value')}</th>
-            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
-                <th>${message(code:'property.table.paragraph')}</th>
-            </g:if>
-            <th>${message(code:'property.table.notes')}</th>
-            <th>${message(code:'property.table.delete')}</th>
-        </tr>
-    </thead>
+    <g:if test="${ownobj.customProperties}">
+        <thead>
+            <tr>
+                <th>${message(code:'property.table.property')}</th>
+                <th>${message(code:'property.table.value')}</th>
+                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <th>${message(code:'property.table.paragraph')}</th>
+                </g:if>
+                <th>${message(code:'property.table.notes')}</th>
+                <th>${message(code:'property.table.delete')}</th>
+            </tr>
+        </thead>
+    </g:if>
     <tbody>
         <g:each in="${ownobj.customProperties}" var="prop">
             <g:if test="${prop.type.descr == prop_desc}">

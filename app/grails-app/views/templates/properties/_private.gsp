@@ -13,14 +13,16 @@
 </g:if>
 
 <table class="ui celled la-table la-table-small table">
-    <thead>
-	    <tr>
-            <th>${message(code:'property.table.property')}</th>
-            <th>${message(code:'property.table.value')}</th>
-            <th>${message(code:'property.table.notes')}</th>
-            <th>${message(code:'property.table.delete')}</th>
-	    </tr>
-    </thead>
+    <g:if test="${ownobj.privateProperties}">
+        <thead>
+            <tr>
+                <th>${message(code:'property.table.property')}</th>
+                <th>${message(code:'property.table.value')}</th>
+                <th>${message(code:'property.table.notes')}</th>
+                <th>${message(code:'property.table.delete')}</th>
+            </tr>
+        </thead>
+    </g:if>
     <tbody>
         <g:each in="${ownobj.privateProperties}" var="prop">
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
