@@ -163,11 +163,12 @@ class SemanticUiTagLib {
         //out <<     '<i class="dropdown icon"></i> Identifikatoren anzeigen'
         //out <<   '</div>'
         //out <<   '<div class="content">'
-        out << '<div class="metaboxToggle"><button class="ui icon button">Identifikatoren anzeigen</button></div>'
-        out << '<div class="ui blue segment metaboxContent hide">'
-        out <<   '<i class="close icon"></i>'
+        out << '<aside class="ui segment metaboxContent accordion">'
+        out << '<div class="title"> <i class="dropdown icon la-dropdown-accordion"></i>Identifikatoren anzeigen</div>'
+        out <<  '<div class="content">'
         out <<      body()
         out << '</div>'
+        out << '</aside>'
         //out << '</div>'
     }
 
