@@ -254,8 +254,9 @@
                     </div>
 
 
+                <g:if test="${subscriptionInstance.costItems}">
 
-                <div class="ui card la-dl-no-table">
+                    <div class="ui card la-dl-no-table">
                         <div class="content">
                             <dl>
                                 <dt>${message(code:'financials.label', default:'Financials')}</dt>
@@ -310,6 +311,7 @@
                             </dl>
                         </div>
                     </div>
+                </g:if>
 
                 <div class="ui card la-dl-no-table">
                     <div class="content">

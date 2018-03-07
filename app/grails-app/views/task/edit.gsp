@@ -44,7 +44,7 @@
 
 			</div><!-- .twelve -->
 
-            <div class="four wide column">
+            <aside class="four wide column">
 
                 <semui:card text="${entityName}">
 					<div class="content">
@@ -64,7 +64,7 @@
                     </ul>
 					</div>
                 </semui:card>
-            </div><!-- .four -->
+            </aside><!-- .four -->
 
 		</div><!-- .grid -->
 	</body>

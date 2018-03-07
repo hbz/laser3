@@ -13,7 +13,7 @@
         Object Overview Site
 *******************************/
 
-.ui.card.card-grey{
+aside .ui.card{
         background: @laSideCards;
 }
 

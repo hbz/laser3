@@ -16,9 +16,9 @@
                 <markdown:renderHtml><g:dbContent key="kbplus.contact.text"/></markdown:renderHtml>
             </div>
 
-            <div class="four wide column">
+            <aside class="four wide column">
                 <g:render template="/templates/loginDiv"/>
-            </div>
+            </aside>
         </div>
     </div>
 </body>

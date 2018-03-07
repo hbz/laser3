@@ -78,170 +78,217 @@
         <div class="ui grid">
 
             <div class="twelve wide column">
-  
+                <semui:errors bean="${titleInstanceInstance}" />
+
                 <!--<h4 class="ui header">${message(code:'license.details.information', default:'Information')}</h4>-->
 
-                <div class="inline-lists">
+                <div class="la-inline-lists">
+                    <div class="ui two cards">
+                        <div class="ui card ">
+                            <div class="content">
+                                <dl>
+                                    <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
+                                    <dd>
+                                        <semui:xEditable owner="${license}" type="date" field="startDate" />
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
+                                    <dd>
+                                        <semui:xEditable owner="${license}" type="date" field="endDate" />
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="ui card ">
+                            <div class="content">
+                                <dl>
+                                    <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
+                                    <dd>
+                                        <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
+                                    </dd>
+                                </dl>
+                                <dl>
 
-                    <semui:errors bean="${titleInstanceInstance}" />
-
-                    <dl>
-                        <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
-                        <dd>
-                            <semui:xEditable owner="${license}" type="date" field="startDate" />
-                        </dd>
-
-                        <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
-                        <dd>
-                            <semui:xEditable owner="${license}" type="date" field="endDate" />
-                        </dd>
-
-                        <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
-                        <dd>
-                            <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
-                        </dd>
-
-                        <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
-                        <dd>
-                            <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
-                        </dd>
-
-                        <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
-                        <dd>
-                            <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
-                                <g:each in="${license.subscriptions}" var="sub">
-                                    <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>
-                                </g:each>
-                            </g:if>
-                            <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
-                        </dd>
-
-                        <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
-                        <dd>
-                            <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
-                                <g:each in="${license.pkgs}" var="pkg">
-                                    <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
-                                </g:each>
-                            </g:if>
-                            <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
-                        </dd>
-
-
-                        <sec:ifAnyGranted roles="ROLE_ADMIN">
-
-                            <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
-                            <dd>
-                                <g:if test="${license.onixplLicense}">
-                                    <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
-                                    <g:if test="${editable}">
-                                        ( <g:link controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
-                                            <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                                        </g:link> )
+                                    <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
+                                    <dd>
+                                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
+                                    </dd>
+                                </dl>
+                                <!--
+                                <dl>
+                                    <dt><label class="control-label" for="isPublic">${message(code:'license.isPublic', default:'Public?')}</label></dt>
+                                    <dd>
+                                        <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
+                                    </dd>
+                                </dl>
+                                -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui card">
+                        <div class="content">
+                            <dl>
+                                <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
+                                <dd>
+                                    <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
+                                        <g:each in="${license.subscriptions}" var="sub">
+                                            <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>
+                                        </g:each>
                                     </g:if>
-                                </g:if>
-                                <g:else>
-                                    <g:link class="ui negative button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
-                                </g:else>
+                                    <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
+                                </dd>
+                            </dl>
+                            <dl>
+
+                                <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
+                                <dd>
+                                    <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
+                                        <g:each in="${license.pkgs}" var="pkg">
+                                            <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
+                                        </g:each>
+                                    </g:if>
+                                    <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+
+                                    <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
+                                    <dd>
+                                        <g:if test="${license.onixplLicense}">
+                                            <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
+                                            <g:if test="${editable}">
+                                                ( <g:link controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
+                                                <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
+                                            </g:link> )
+                                            </g:if>
+                                        </g:if>
+                                        <g:else>
+                                            <g:link class="ui negative button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
+                                        </g:else>
+                                    </dd>
+
+                                </sec:ifAnyGranted>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="ui card">
+                        <div class="content">
+
+
+
+                        <!--
+                        <dl>
+                            <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
+                            <dd>
+                                <semui:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
+                                <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
                             </dd>
-
-                        </sec:ifAnyGranted>
-
-                    <!--
-                    <dl>
-                        <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
-                        <dd>
-                            <semui:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
-                            <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
-                        </dd>
-                    </dl>
-                    -->
+                        </dl>
+                        -->
 
 
-                        <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
-                        <dd>
-                            <semui:xEditableRefData owner="${license}" field="licenseCategory" config='LicenseCategory'/>
-                        </dd>
+                            <dl>
+                                <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
+                                <dd>
+                                    <ul>
+                                        <g:each in="${license?.incomingLinks}" var="il">
+                                            <li><g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> -
+                                            ${message(code:'license.details.incoming.child', default:'Child')}:
+                                            <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+                                            </li>
+                                        </g:each>
 
-                        <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
-                        <dd>
-                            <ul>
-                                <g:each in="${license?.incomingLinks}" var="il">
-                                    <li><g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> -
-                                    ${message(code:'license.details.incoming.child', default:'Child')}:
-                                    <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
-                                    </li>
-                                </g:each>
-
-                            </ul>
-                        </dd>
+                                    </ul>
+                                </dd>
+                            </dl>
 
                         <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgLinks, editmode:editable]}" />
 
-                        <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
 
-                        <g:render template="/templates/links/prsLinksModal"
-                                  model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
+                                <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
 
-                        <h5 class="ui header">${message(code:'license.properties')}</h5>
+                                <g:render template="/templates/links/prsLinksModal"
+                                      model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
 
-                        <div id="custom_props_div_props">
-                            <g:render template="/templates/properties/custom" model="${[
-                                prop_desc: PropertyDefinition.LIC_PROP,
-                                ownobj: license,
-                                custom_props_div: "custom_props_div_props" ]}"/>
                         </div>
+                    </div>
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
+                            <h5 class="ui header">${message(code:'license.properties')}</h5>
 
-                        <h5 class="ui header">${message(code:'license.openaccess.properties')}</h5>
-
-                        <div id="custom_props_div_oa">
-                            <g:render template="/templates/properties/custom" model="${[
-                                    prop_desc: PropertyDefinition.LIC_OA_PROP,
+                            <div id="custom_props_div_props">
+                                <g:render template="/templates/properties/custom" model="${[
+                                    prop_desc: PropertyDefinition.LIC_PROP,
                                     ownobj: license,
-                                    custom_props_div: "custom_props_div_oa" ]}"/>
-                        </div>
-
-                        <h5 class="ui header">${message(code:'license.archive.properties')}</h5>
-
-                        <div id="custom_props_div_archive">
-                            <g:render template="/templates/properties/custom" model="${[
-                                    prop_desc: PropertyDefinition.LIC_ARC_PROP,
-                                    ownobj: license,
-                                    custom_props_div: "custom_props_div_archive" ]}"/>
-                        </div>
-
-                    <g:each in="${authorizedOrgs}" var="authOrg">
-                        <g:if test="${authOrg.name == contextOrg?.name}">
-                            <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
-
-                            <div id="custom_props_div_${authOrg.shortcode}">
-                                <g:render template="/templates/properties/private" model="${[
-                                        prop_desc: PropertyDefinition.LIC_PROP,
-                                        ownobj: license,
-                                        custom_props_div: "custom_props_div_${authOrg.shortcode}",
-                                        tenant: authOrg]}"/>
-
-                                <r:script language="JavaScript">
-                                        $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
-                                        });
-                                </r:script>
+                                    custom_props_div: "custom_props_div_props" ]}"/>
                             </div>
-                        </g:if>
-                    </g:each>
+                        </div>
+                    </div>
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
 
-                    <r:script language="JavaScript">
-                        $(document).ready(function(){
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
-                        });
-                    </r:script>
+                            <h5 class="ui header">${message(code:'license.openaccess.properties')}</h5>
 
-                  <div class="clearfix"></div>
+                            <div id="custom_props_div_oa">
+                                <g:render template="/templates/properties/custom" model="${[
+                                        prop_desc: PropertyDefinition.LIC_OA_PROP,
+                                        ownobj: license,
+                                        custom_props_div: "custom_props_div_oa" ]}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
+
+                            <h5 class="ui header">${message(code:'license.archive.properties')}</h5>
+
+                            <div id="custom_props_div_archive">
+                                <g:render template="/templates/properties/custom" model="${[
+                                        prop_desc: PropertyDefinition.LIC_ARC_PROP,
+                                        ownobj: license,
+                                        custom_props_div: "custom_props_div_archive" ]}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
+                            <g:each in="${authorizedOrgs}" var="authOrg">
+                            <g:if test="${authOrg.name == contextOrg?.name}">
+                                <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
+
+                                <div id="custom_props_div_${authOrg.shortcode}">
+                                    <g:render template="/templates/properties/private" model="${[
+                                            prop_desc: PropertyDefinition.LIC_PROP,
+                                            ownobj: license,
+                                            custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                            tenant: authOrg]}"/>
+
+                                    <r:script language="JavaScript">
+                                            $(document).ready(function(){
+                                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                            });
+                                    </r:script>
+                                </div>
+                            </g:if>
+                        </g:each>
+                            <r:script language="JavaScript">
+                            $(document).ready(function(){
+                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                            });
+                        </r:script>
+                        </div>
+                    </div>
                 </div>
-              </div><!-- .twelve -->
 
-            <div class="four wide column">
+                <div class="clearfix"></div>
+
+            </div><!-- .twelve -->
+
+            <aside class="four wide column">
                 <semui:card message="license.actions">
                     <div class="content">
                     <div class="ui form content">
@@ -283,7 +330,7 @@
                 <g:render template="/templates/documents/card" model="${[ownobj:license, owntp:'license']}" />
                 <g:render template="/templates/notes/card"  model="${[ownobj:license, owntp:'license']}" />
 
-            </div><!-- .four -->
+            </aside><!-- .four -->
         </div><!-- .grid -->
 
     <g:render template="orgLinksModal" 
