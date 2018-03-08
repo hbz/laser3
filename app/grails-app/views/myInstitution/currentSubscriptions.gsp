@@ -157,7 +157,7 @@
                     </div>
 
                     <div class="field la-filter-search ">
-                        <input type="submit" class="ui secondary button" value="Suchen">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
                     </div>
                 </div>
             </div>
