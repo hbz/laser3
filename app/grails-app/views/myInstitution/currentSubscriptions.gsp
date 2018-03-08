@@ -222,10 +222,13 @@
                     <!-- packages -->
                         <g:each in="${s.packages}" var="sp" status="ind">
                             <g:if test="${ind < 10}">
-                                <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}"
-                                        title="${sp.pkg?.contentProvider?.name}">
-                                    ${sp.pkg.name}
-                                </g:link>
+                                <div class="la-flexbox">
+                                    <i class="icon gift la-list-icon"></i>
+                                    <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}"
+                                            title="${sp.pkg?.contentProvider?.name}">
+                                        ${sp.pkg.name}
+                                    </g:link>
+                                </div>
                             </g:if>
                         </g:each>
                         <g:if test="${s.packages.size() > 10}">
