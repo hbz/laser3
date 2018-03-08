@@ -26,7 +26,7 @@ class YodaController {
         result
     }
 
-    @Secured(['ROLE_YODA'])
+    @Secured(['ROLE_YODA', 'ROLE_ADMIN'])
     def appInfo() {
         def result = [:]
 
