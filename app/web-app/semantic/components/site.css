@@ -410,8 +410,6 @@ aside.ui.accordion .title:not(.ui) {
   display: inline-flex;
   text-decoration: none;
   opacity: 0.8;
-  margin: 0 .25em 0 0;
-  width: 1.18em;
   height: 1em;
   color: #767676;
 }
