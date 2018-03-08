@@ -87,7 +87,7 @@
 
             <div class="la-inline-lists">
                 <div class="ui two cards">
-                    <div class="ui card ">
+                    <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
                                 <dt>${message(code:'subscription.startDate.label', default:'Start Date')}</dt>
@@ -106,6 +106,12 @@
 
                                 </g:if>
                             </dl>
+                            <dl>
+                                <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
+                                <dd><semui:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
+                            </dl>
+
+
                         </div>
                     </div>
                     <div class="ui card">
@@ -166,11 +172,6 @@
 
 
                             <% /*
-                            <dl>
-                                <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
-                                <dd><semui:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
-                            </dl>
-
                             <dl>
                                 <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>

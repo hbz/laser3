@@ -1001,6 +1001,15 @@ aside.ui.accordion .title:not(.ui) {
   height: 1em;
   color: #767676;
 }
+
+/* EDITABLE OVERWRITE */
+
+/* Sorry for the !important - overwriting Javascript of the Editable-Javascript */
+
+.la-time-card .editable-input input[type=text] {
+  padding-right: 1em!important;
+  width: 8rem!important;
+}
 /*!
  * # Semantic UI 2.3.0 - Button
  * http://github.com/semantic-org/semantic-ui/

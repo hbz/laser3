@@ -397,6 +397,7 @@ aside.ui.accordion .title:not(.ui) {
         DIVERSE
 *******************************/
 
+
 /* */
 .la-flexbox {
   display: -webkit-box;
@@ -413,4 +414,11 @@ aside.ui.accordion .title:not(.ui) {
   width: 1.18em;
   height: 1em;
   color: #767676;
+}
+/* EDITABLE OVERWRITE */
+
+/* Sorry for the !important - overwriting Javascript of the Editable-Javascript */
+.la-time-card .editable-input input[type=text] {
+  padding-right: 1em!important;
+  width: 8rem!important;
 }
