@@ -51,7 +51,7 @@
               <td>${source.getNumberLocalPackages()}</td>
               <td>
                 <g:link class="ui button"
-                        controller="admin"
+                        controller="yoda"
                         onclick="return confirm('Deleting this package will remove all tracking info and unlink any local packages - Are you sure?')"
                         action="deleteGlobalSource"
                         id="${source.id}">${message('code':'default.button.delete.label')}</g:link>
@@ -63,6 +63,7 @@
 
       <br />
 
+    <semui:form>
         <g:form action="newGlobalSource" class="ui form">
 
             <div class="field">
@@ -120,6 +121,6 @@
             </div>
 
         </g:form>
-
+    </semui:form>
   </body>
 </html>

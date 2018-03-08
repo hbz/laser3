@@ -439,6 +439,9 @@ class PackageDetailsController {
         result << preCon
 
 
+        // restrict visible for templates/links/orgLinksAsList
+        result.visibleOrgs = packageInstance.orgs
+
       result.subscriptionList=[]
       // We need to cycle through all the users institutions, and their respective subscripions, and add to this list
       // and subscription that does not already link this package

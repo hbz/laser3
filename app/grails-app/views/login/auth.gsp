@@ -32,7 +32,7 @@
                     <input type='checkbox' class='chk' name='${rememberMeParameter}' id='remember_me' <g:if test='${hasCookie}'>checked='checked'</g:if>/>
                 </div>
 
-                <input type='submit' id="submit" class="ui button" value='${message(code: "springSecurity.login.button")}'/>
+                <input type='submit' id="submit" class="ui button" value='${message(code: "menu.user.login")}'/>
             </form>
         </div>
     </semui:card>

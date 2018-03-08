@@ -88,6 +88,16 @@ class LicenseDetailsController {
       def preCon = taskService.getPreconditions(contextOrg)
       result << preCon
 
+      // restrict visible for templates/links/orgLinksAsList
+      result.visibleOrgLinks = result.license.orgLinks
+
+      def restrict = OrgRole.findWhere(
+              lic: result.license,
+              org: contextService.getOrg(),
+              roleType: RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role ')
+      )
+      result.visibleOrgLinks.remove(restrict)
+
       // -- private properties
 
       result.authorizedOrgs = result.user?.authorizedOrgs

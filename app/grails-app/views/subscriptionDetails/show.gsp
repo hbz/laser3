@@ -215,12 +215,12 @@
                 </dl> */ %>
 
 
-                            <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:subscriptionInstance?.orgRelations, editmode:editable]}" />
+                            <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgRelations, editmode:editable]}" />
 
                 <% /*
                <dl>
                     <dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
-                        <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:subscriptionInstance?.orgRelations,editmode:editable]}" />
+                        <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:visibleOrgRelations,editmode:editable]}" />
                     </dd>
                </dl>
                */ %>
@@ -372,7 +372,7 @@
     <div id="magicArea"></div>
     <g:render template="orgLinksModal"
               contextPath="../templates"
-              model="${[linkType:subscriptionInstance?.class?.name,roleLinks:subscriptionInstance?.orgRelations,parent:subscriptionInstance.class.name+':'+subscriptionInstance.id,property:'orgs',recip_prop:'sub']}" />
+              model="${[linkType:subscriptionInstance?.class?.name,roleLinks:visibleOrgRelations,parent:subscriptionInstance.class.name+':'+subscriptionInstance.id,property:'orgs',recip_prop:'sub']}" />
     <r:script language="JavaScript">
 
       function unlinkPackage(pkg_id){
