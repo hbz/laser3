@@ -128,7 +128,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ui card">
+                    <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
                                 <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
