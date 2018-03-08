@@ -64,7 +64,7 @@ class SemanticUiDropdownTagLib {
     def actionsDropdown = { attrs, body ->
 
         out << '<div class="ui simple dropdown button">'
-        out <<  '<i class="play icon"></i>'
+        out <<  '<i class="magic icon"></i>'
         out <<  '<div class="menu">'
 
         out <<          body()
