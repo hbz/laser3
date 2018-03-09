@@ -549,7 +549,7 @@ class BootStrap {
         def entries = [
                 [[en: 'Licensor', de: 'Lizenzgeber'], lic],
                 [[en: 'Licensee', de: 'Lizenznehmer'], lic],
-                [[en: 'Licensing Consortium'], lic],
+                [[en: 'Licensing Consortium', de: 'Lizenzkonsortium'], lic],
                 [[en: 'Negotiator'], lic],
                 [[en: 'Subscriber'], sub],
                 [[en: 'Provider', de: 'Anbieter'], sub],

@@ -50,7 +50,7 @@ class SubscrDetailsPage extends AbstractDetails {
         }
         csvExport {
             $("a", text: "Exports").click()
-            $("a", text: "KBPlus (CSV)").click()
+            $("a", text: "LAS:eR (CSV)").click()
         }
         jsonExport {
             $("a", text: "Exports").click()

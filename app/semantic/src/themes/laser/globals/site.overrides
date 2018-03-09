@@ -17,6 +17,26 @@ aside .ui.card{
         background: @laSideCards;
 }
 
+/*******************************
+        Accordion
+*******************************/
+
+aside.ui.segment{
+    background: @laSideCards;
+}
+.ui.accordion .title .dropdown.icon.la-dropdown-accordion {
+    float: right;
+    margin-top: -0.4rem;
+    &:before{
+        font-size: 2rem;
+        color: @functionalObjects;
+    }
+}
+aside.ui.accordion .title:not(.ui) {
+    font-weight: 700;
+    font-size: 1rem;
+    color: @grey;
+}
 
 /*******************************
         Landingpage
@@ -171,4 +191,29 @@ aside .ui.card{
 .la-filter-search {
     text-align: right;
     margin-top: 1.2rem!important;
+}
+/*******************************
+        DIVERSE
+*******************************/
+/* */
+.la-flexbox{
+    display:flex;
+}
+.la-list-icon{
+    &:before{
+        display:inline-flex;
+        text-decoration: none;
+        opacity: 0.8;
+        height: 1em;
+        color: @grey;
+    }
+}
+/* EDITABLE OVERWRITE */
+/* Sorry for the !important - overwriting Javascript of the Editable-Javascript */
+
+.la-time-card {
+    .editable-input input[type=text]{
+        padding-right: 1em!important;
+        width: 8rem!important;
+    }
 }

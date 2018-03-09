@@ -87,7 +87,7 @@
 
             <div class="la-inline-lists">
                 <div class="ui two cards">
-                    <div class="ui card ">
+                    <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
                                 <dt>${message(code:'subscription.startDate.label', default:'Start Date')}</dt>
@@ -106,6 +106,19 @@
 
                                 </g:if>
                             </dl>
+                            <% /*
+                            <dl>
+                                <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
+                                <dd><semui:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
+                            </dl>
+                            */ %>
+                            <dl>
+                                <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
+                                <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
+                            </dl>
+
+
+
                         </div>
                     </div>
                     <div class="ui card">
@@ -132,6 +145,7 @@
                                 <dt>${message(code:'subscription.packages.label')}</dt>
                                 <dd>
                                     <g:each in="${subscriptionInstance.packages}" var="sp">
+
 
                                         <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
@@ -163,19 +177,6 @@
                                     </g:if>
                                     <g:else>N/A (Subscription offered)</g:else>
                                 </dd>
-
-
-                            <% /*
-                            <dl>
-                                <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
-                                <dd><semui:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
-                            </dl>
-
-                            <dl>
-                                <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
-                                <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
-                            </dl>
-                            */ %>
                             </dl>
                         </div>
                     </div>
@@ -214,7 +215,9 @@
                 </dl> */ %>
 
 
+
                             <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgRelations, editmode:editable]}" />
+
 
                 <% /*
                <dl>
@@ -360,11 +363,11 @@
             </div>
         </div>
 
-        <div class="four wide column la-sidekick">
+        <aside class="four wide column la-sidekick">
             <g:render template="card" contextPath="../templates/tasks" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="card" contextPath="../templates/documents" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="card" contextPath="../templates/notes" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-        </div><!-- .four -->
+        </aside><!-- .four -->
     </div><!-- .grid -->
 
 

@@ -157,7 +157,7 @@
                     </div>
 
                     <div class="field la-filter-search ">
-                        <input type="submit" class="ui secondary button" value="Suchen">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
                     </div>
                 </div>
             </div>
@@ -212,18 +212,23 @@
                             </g:if>
                         </g:link>
                         <g:if test="${s.owner}">
-                            <g:link class="icon ico-object-link sub-link-icon law" controller="licenseDetails"
-                                    action="show" id="${s.owner.id}">${s.owner?.reference}</g:link>
+                                <div class="la-flexbox">
+                                    <i class="icon balance scale la-list-icon"></i>
+                                    <g:link  controller="licenseDetails" action="show" id="${s.owner.id}">${s.owner?.reference}</g:link>
+                                </div>
                         </g:if>
                     </td>
                     <td>
                     <!-- packages -->
                         <g:each in="${s.packages}" var="sp" status="ind">
                             <g:if test="${ind < 10}">
-                                <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}"
-                                        title="${sp.pkg?.contentProvider?.name}">
-                                    ${sp.pkg.name}
-                                </g:link>
+                                <div class="la-flexbox">
+                                    <i class="icon gift la-list-icon"></i>
+                                    <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}"
+                                            title="${sp.pkg?.contentProvider?.name}">
+                                        ${sp.pkg.name}
+                                    </g:link>
+                                </div>
                             </g:if>
                         </g:each>
                         <g:if test="${s.packages.size() > 10}">
