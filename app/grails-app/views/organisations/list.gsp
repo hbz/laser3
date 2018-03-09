@@ -18,7 +18,7 @@
             </semui:controlButtons>
         </sec:ifAnyGranted>
 
-        <h1 class="ui header"><g:message code="menu.institutions.all_orgs" /> - ${orgListTotal} Treffer</h1>
+        <h1 class="ui header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" /> - ${orgListTotal} Treffer</h1>
 
         <semui:messages data="${flash}" />
 

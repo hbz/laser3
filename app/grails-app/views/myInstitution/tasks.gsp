@@ -17,7 +17,7 @@
 
         <semui:messages data="${flash}" />
 
-        <h1 class="ui header">${institution.name}</h1>
+        <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
 
         <semui:filter>
             <form class="ui form">

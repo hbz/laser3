@@ -9,7 +9,7 @@
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
     <div class="ui container">
-        <h1 class="ui header">No Host Platform URL</h1>
+        <h1 class="ui header"><semui:headerIcon />No Host Platform URL</h1>
 
         <div class="ui grid">
             <div class="twelve wide column">

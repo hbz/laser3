@@ -16,8 +16,8 @@
 
         <semui:modeSwitch controller="platform" action="show" params="${params}" />
 
-        <h1 class="ui header">
-            <semui:editableLabel editable="${editable}" />
+        <h1 class="ui header"><semui:headerIcon />
+
             <g:if test="${editable}"><span id="platformNameEdit"
                                                         class="xEditableValue"
                                                         data-type="textarea"

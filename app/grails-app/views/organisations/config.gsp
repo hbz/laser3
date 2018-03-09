@@ -14,8 +14,8 @@
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <h1 class="ui header">
-        <semui:editableLabel editable="${editable}" />
+    <h1 class="ui header"><semui:headerIcon />
+
         ${orgInstance.name}
     </h1>
 

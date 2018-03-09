@@ -12,8 +12,8 @@
       <semui:crumb text="${tipp.title.title} [${message(code:'title.label', default:'title')}]" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui header">
-      <semui:editableLabel editable="${editable}" />
+    <h1 class="ui header"><semui:headerIcon />
+
       ${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}
     </h1>
 

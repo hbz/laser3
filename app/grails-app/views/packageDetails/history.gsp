@@ -16,8 +16,8 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui header">
-        <semui:editableLabel editable="${editable}" />
+    <h1 class="ui header"><semui:headerIcon />
+
         ${packageInstance?.name}
     </h1>
 

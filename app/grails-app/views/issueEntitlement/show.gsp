@@ -15,8 +15,8 @@
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
     </semui:breadcrumbs>
 
-    <h1 class="ui header">
-        <semui:editableLabel editable="${editable}" />
+    <h1 class="ui header"><semui:headerIcon />
+
         ${message(code:'issueEntitlement.for_title.label', default:'Issue Entitlements for')} "${issueEntitlementInstance?.tipp.title.title}"
     </h1>
 

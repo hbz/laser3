@@ -227,7 +227,7 @@
 @green            : #98B500; /* light green */
 @teal             : #00B5AD;
 @blue             : #004678; /* hbz-blue */
-@violet           : #6435C9;
+@violet           : #76007A;
 @purple           : #A333C8;
 @pink             : #E03997;
 @brown            : #A5673F;
@@ -244,10 +244,11 @@
 @o-dark-turquoise: #0D5363;
 
 @subscription     :    @orange; /* hbz-orange */
-@package          :    #BB6A00; /* ocker */
-@title            :    #007070; /* Teal */
-@organization     :    #008C25; /* Dark Green */
-@organization     :    #76007A; /* Purple */
+@package          :    @violet; /*@violet */
+@title            :    @blue; /* hbz-blue */
+@license          :    #008C25; /* Dark Green */
+@organisation      :   #007070; /* @o-yellow */
+
 
 /*---  Colors for Site Elements---*/
 

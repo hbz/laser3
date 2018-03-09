@@ -10,8 +10,8 @@
 
     <g:render template="actions" />
 
-    <h1 class="ui header">
-        <semui:editableLabel editable="${editable}" />
+    <h1 class="ui header"><semui:headerIcon />
+
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
 

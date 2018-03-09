@@ -15,8 +15,8 @@
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
 
-        <h1 class="ui header">
-            <semui:editableLabel editable="${editable}" />
+        <h1 class="ui header"><semui:headerIcon />
+
             <% /*
             <g:if test="${editable}"><span id="titleEdit"
                                      class="xEditableValue"

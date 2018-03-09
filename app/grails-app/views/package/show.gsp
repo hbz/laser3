@@ -7,7 +7,7 @@
     <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
-    <h1 class="ui header">${message(code:'package.label', default:'Package')} : ${packageInstance?.name} (${packageInstance?.contentProvider?.name})</h1>
+    <h1 class="ui header"><semui:headerIcon />${message(code:'package.label', default:'Package')} : ${packageInstance?.name} (${packageInstance?.contentProvider?.name})</h1>
 
     <semui:messages data="${flash}" />
 

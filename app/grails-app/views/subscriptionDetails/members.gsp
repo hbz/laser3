@@ -14,8 +14,8 @@
     <semui:controlButtons>
         <g:render template="actions" />
     </semui:controlButtons>
-    <h1 class="ui header">
-        <semui:editableLabel editable="${editable}" />
+    <h1 class="ui header"><semui:headerIcon />
+
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
     </h1>
 

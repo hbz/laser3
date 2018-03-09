@@ -17,7 +17,7 @@
 <semui:messages data="${flash}" />
 
 <div>
-    <h1 class="ui header">${packageInstance?.name}</h1>
+    <h1 class="ui header"><semui:headerIcon />${packageInstance?.name}</h1>
     <g:render template="nav"/>
 </div>
 

@@ -420,3 +420,122 @@ aside.ui.accordion .title:not(.ui) {
   padding-right: 1em!important;
   width: 8rem!important;
 }
+.la-advanced-view {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.ui.label.la-object {
+  display: none;
+  color: white;
+  min-width: 16px!important;
+  min-height: 16px!important;
+}
+.ui.label.la-object .icon {
+  margin-right: 0!important;
+  width: 22px!important;
+  text-align: center!important;
+}
+.ui.label.la-object .icon:before {
+  text-align: center!important;
+}
+body[class*="License"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #008C25;
+  border-color: #008C25;
+}
+body[class*="License"] .ui.label.la-object .icon:before {
+  content: "\f24e";
+}
+body[class*="license"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #008C25;
+  border-color: #008C25;
+}
+body[class*="license"] .ui.label.la-object .icon:before {
+  content: "\f24e";
+}
+body[class*="Package"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #76007A;
+  border-color: #76007A;
+}
+body[class*="Package"] .ui.label.la-object .icon:before {
+  content: "\f06b";
+}
+body[class*="package"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #76007A;
+  border-color: #76007A;
+}
+body[class*="package"] .ui.label.la-object .icon:before {
+  content: "\f06b";
+}
+body[class*="Subscription"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #fa820a;
+  border-color: #fa820a;
+}
+body[class*="Subscription"] .ui.label.la-object .icon:before {
+  content: "\f07c";
+}
+body[class*="subscription"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #fa820a;
+  border-color: #fa820a;
+}
+body[class*="subscription"] .ui.label.la-object .icon:before {
+  content: "\f07c";
+}
+body[class*="Title"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #004678;
+  border-color: #004678;
+}
+body[class*="Title"] .ui.label.la-object .icon:before {
+  content: "\f02d";
+}
+body[class*="title"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #004678;
+  border-color: #004678;
+}
+body[class*="title"] .ui.label.la-object .icon:before {
+  content: "\f02d";
+}
+body[class*="Organisation"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #007070;
+  border-color: #007070;
+}
+body[class*="Organisation"] .ui.label.la-object .icon:before {
+  content: "\f19c";
+}
+body[class*="organisation"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #007070;
+  border-color: #007070;
+}
+body[class*="organisation"] .ui.label.la-object .icon:before {
+  content: "\f19c";
+}

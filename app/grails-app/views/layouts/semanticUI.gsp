@@ -398,6 +398,8 @@
 
             <div class="right menu la-advanced-view">
 
+
+
                 <g:if test="${ (params.mode)}">
 
                             <div class="ui slider item checkbox"  id="la-advanced">
@@ -433,6 +435,7 @@
                                 })
                             </script>
                 </g:if>
+                <semui:editableLabel editable="${editable}" />
             </div>
         </div>
     </div><!-- Context Bar -->

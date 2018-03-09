@@ -14,8 +14,8 @@
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
-        <h1 class="ui header">
-            <semui:editableLabel editable="${editable}" />
+        <h1 class="ui header"><semui:headerIcon />
+
             <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
         </h1>
 

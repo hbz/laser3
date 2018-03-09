@@ -7,7 +7,7 @@
   </head>
   <body>
 
-    <h1 class="ui header">${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
+    <h1 class="ui header"><semui:headerIcon />${message(code:'title.findTitleMatches.label', default:'New Title - Step 1')}</h1>
 
     <semui:messages data="${flash}" />
 

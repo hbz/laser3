@@ -7,7 +7,7 @@
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
-        <h1 class="ui header"><g:message code="default.show.label" args="[entityName]" /></h1>
+        <h1 class="ui header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
 
         <g:if test="${flash.message}">
             <bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>

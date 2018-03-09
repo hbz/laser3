@@ -9,7 +9,7 @@
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'contact']"/>
 
     <div class="ui container">
-        <h1 class="ui header">${message(code: 'public.nav.contact.label', default: 'Contact Us')}</h1>
+        <h1 class="ui header"><semui:headerIcon />${message(code: 'public.nav.contact.label', default: 'Contact Us')}</h1>
 
         <div class="ui grid">
             <div class="twelve wide column">

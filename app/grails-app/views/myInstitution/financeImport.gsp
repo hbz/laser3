@@ -14,7 +14,7 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui header">${institution?.name} - Finance Import</h1>
+    <h1 class="ui header"><semui:headerIcon />${institution?.name} - Finance Import</h1>
 
         <g:if test="${loaderResult==null}">
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}

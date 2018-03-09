@@ -103,8 +103,8 @@ class SemanticUiTagLib {
 
     }
 
-    // <semui:editableLabel editable="${editable}" />
-
+    //
+    /*
     def editableLabel = { attrs, body ->
 
         if (attrs.editable) {
@@ -113,7 +113,23 @@ class SemanticUiTagLib {
             out << '</div>'
         }
     }
+    */
+    def headerIcon = { attrs, body ->
 
+            out << '<div class="ui la-object circular label" style="margin-left:0; margin-right: 5px!important; ">'
+            out << '<i class="icon"></i>'
+            out << '</div>'
+    }
+
+    def editableLabel = { attrs, body ->
+
+        if (attrs.editable) {
+
+            out << '<div class="ui grey circular horizontal label"  style="width: 20px!important; margin-right:0; margin-left: 3rem; border: none!important;">'
+            out << '<i class="write icon" style="margin-right:0"></i>'
+            out << '</div>'
+        }
+    }
     // <semui:modeSwitch controller="controller" action="action" params="params" />
 
 

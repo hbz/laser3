@@ -14,7 +14,7 @@
 
     <semui:messages data="${flash}" />
 
-        <h1 class="ui header">Affiliations</h1>
+        <h1 class="ui header"><semui:headerIcon />Affiliations</h1>
 
         <table class="ui celled la-table table">
           <thead>

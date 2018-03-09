@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <h1 class="ui header">${personInstance.first_name} ${personInstance.middle_name} ${personInstance.last_name}</h1>
+    <h1 class="ui header"><semui:headerIcon />${personInstance.first_name} ${personInstance.middle_name} ${personInstance.last_name}</h1>
     <g:render template="nav" contextPath="." />
 
     <div class="ui grid">

@@ -9,8 +9,8 @@
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-     <h1 class="ui header">
-         <semui:editableLabel editable="${editable}" />
+     <h1 class="ui header"><semui:headerIcon />
+
          ${ui.username} :
          <span id="displayEdit"
                class="xEditableValue"

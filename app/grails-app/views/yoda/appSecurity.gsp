@@ -11,7 +11,7 @@
     <semui:crumb text="Application Security" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header">Application Security</h1>
+<h1 class="ui header"><semui:headerIcon />Application Security</h1>
 
 <pre>
     ROLE_YODA > ROLE_ADMIN > ROLE_DATAMANAGER > ROLE_USER
