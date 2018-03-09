@@ -166,3 +166,13 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR {
 body.yoda_appSecurity .secInfoWrapper .ROLE_PAKET_EDITOR {
     background-color: purple;
 }
+
+
+/* dashboard tasks */
+
+body.myInstitution_dashboard .ui.tab .item .header {
+    margin: 0.5rem 0;
+}
+body.myInstitution_dashboard .ui.tab .item span {
+    line-height: 1.3rem;
+}

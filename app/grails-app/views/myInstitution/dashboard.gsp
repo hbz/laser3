@@ -174,20 +174,18 @@
                                 <span><em>${tsk.description}</em></span> <br />
                             </g:if>
                             <span>
-                                Betrifft:
+                                <strong>Betrifft:</strong>
                                 <g:each in="${tsk.getObjects()}" var="tskObj">
-                                    <br/> <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
                                 </g:each>
                             </span>
                             <br />
                             <span>
-                                Fällig:
-                                <br /><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
-                            </span>
-                            <br />
-                            <span>
-                                Status:
-                                <br /><semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
+                                <strong>Fällig:</strong>
+                                <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
+                                &nbsp; / &nbsp;
+                                <strong>Status:</strong>
+                                <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
                             </span>
                         </div>
                     </div>

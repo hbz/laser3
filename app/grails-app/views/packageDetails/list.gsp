@@ -56,7 +56,6 @@
             <thead>
                 <tr>
                     <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />
-                    <%--<g:sortableColumn property="identifier" title="${message(code: 'package.identifier.label', default: 'Identifier')}" />--%>
                     <th>
                         ${message(code: 'package.content_provider')}
                     </th>
@@ -74,8 +73,6 @@
                             <g:each in="${packageInstance.orgs}" var="orgLink">
                                 <g:link action="show" id="${orgLink.org.id}">${orgLink.org.name}</g:link> <br/>
                             </g:each>
-
-                            <%--${packageInstance.identifier}--%>
                         </td>
                         <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format.noZ', default:'yyyy-MM-dd HH:mm:ss')}"/></td>
                         <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format.noZ', default:'yyyy-MM-dd HH:mm:ss')}"/></td>
