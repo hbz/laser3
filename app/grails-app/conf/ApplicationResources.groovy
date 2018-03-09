@@ -26,9 +26,6 @@ modules = {
     }
 
     deprecatedCSS {
-        //resource url:'css/jquery.dataTables.css'
-        //resource url:'css/dataTables.fixedColumns.min.css'
-        //resource url:'css/dataTables.colVis.min.css'
         resource url:'css/datatables.css'
         //resource url:'css/bootstrap-editable.css'
         resource url:'css/select2.css'
@@ -54,10 +51,6 @@ modules = {
         //resource url:'js/inline-content.js'
         resource url:'js/moment.min.js'
 
-        //resource url:'js/jquery.dataTables.min.js'
-        //resource url:'js/dataTables.colVis.min.js'
-        //resource url:'js/dataTables.fixedColumns.min.js'
-        //resource url:'js/dataTables.scroller.js'
         resource url:'js/datatables.min.js'                 // updated stuff // new version 1.10.16
 
         resource url:'semantic/semantic.min.js'     // new stuff
@@ -79,6 +72,5 @@ modules = {
         resource url:'vendor/swagger-ui/swagger-ui-bundle.js'
         resource url:'vendor/swagger-ui/swagger-ui-standalone-preset.js'
         resource url:'vendor/cryptoJS-v3.1.2/rollups/hmac-sha256.js'
-        //resource url:'js', file: 'jquery-3.2.1.min.js'
     }
 }

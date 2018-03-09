@@ -19,17 +19,17 @@
 
         <div class="field">
             <label class="control-label">${message(code:'template.orgLinksModal.role')}</label>
-
+            <g:set var="varSelectOne" value="${message(code:'default.selectOne.label')}" />
             <g:if test="${linkType}">
                 <g:select name="orm_orgRole"
-                      noSelection="${['':'Select One...']}"
+                      noSelection="${['':varSelectOne]}"
                       from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'),linkType)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:if>
             <g:else>
                 <g:select name="orm_orgRole"
-                      noSelection="${['':'Select One...']}"
+                      noSelection="${['':varSelectOne]}"
                       from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
@@ -64,7 +64,31 @@
                     "mRender": function ( data, type, full ) {
                         return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
                     }
-                } ]
+                } ],
+            "language": {
+                "decimal":        "<g:message code='datatables.decimal' />",
+                "emptyTable":     "<g:message code='datatables.emptyTable' />",
+                "info":           "<g:message code='datatables.info' />",
+                "infoEmpty":      "<g:message code='datatables.infoEmpty' />",
+                "infoFiltered":   "<g:message code='datatables.infoFiltered' />",
+                "infoPostFix":    "<g:message code='datatables.infoPostFix' />",
+                "thousands":      "<g:message code='datatables.thousands' />",
+                "lengthMenu":     "<g:message code='datatables.lengthMenu' />",
+                "loadingRecords": "<g:message code='datatables.loadingRecords' />",
+                "processing":     "<g:message code='datatables.processing' />",
+                "search":         "<g:message code='datatables.search' />",
+                "zeroRecords":    "<g:message code='datatables.zeroRecords' />",
+                "paginate": {
+                    "first":      "<g:message code='datatables.paginate.first' />",
+                    "last":       "<g:message code='datatables.paginate.last' />",
+                    "next":       "<g:message code='datatables.paginate.next' />",
+                    "previous":   "<g:message code='datatables.paginate.previous' />"
+                },
+                "aria": {
+                    "sortAscending":  "<g:message code='datatables.aria.sortAscending' />",
+                    "sortDescending": "<g:message code='datatables.aria.sortDescending' />"
+                }
+            }
         } );
 
         oOrTable.fnAdjustColumnSizing();
