@@ -11,7 +11,7 @@
       <semui:crumb controller="myInstitution" action="addSubscription" text="${institution?.getDesignation()}" message="myinst.addSubscription.label" />
     </semui:breadcrumbs>
 
-    <h1 class="ui header">${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
+    <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.addSubscription.label', default:'Add Subscripton')}</h1>
 
     <g:render template="subsNav" contextPath="." />
 

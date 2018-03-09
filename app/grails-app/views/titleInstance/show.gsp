@@ -9,7 +9,7 @@
   </head>
   <body>
 
-    <h1 class="ui header">${message(code:'titleInstance.label', default:'Title Instance')}: ${titleInstanceInstance?.title}</h1>
+    <h1 class="ui header"><semui:headerIcon />${message(code:'titleInstance.label', default:'Title Instance')}: ${titleInstanceInstance?.title}</h1>
     <semui:messages data="${flash}" />
 
     <div class="ui grid">

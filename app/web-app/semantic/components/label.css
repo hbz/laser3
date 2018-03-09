@@ -797,16 +797,16 @@ a.ui.basic.blue.label:hover {
 
 .ui.violet.labels .label,
 .ui.violet.label {
-  background-color: #6435C9 !important;
-  border-color: #6435C9 !important;
+  background-color: #76007A !important;
+  border-color: #76007A !important;
   color: #FFFFFF !important;
 }
 
 /* Link */
 .ui.violet.labels .label:hover,
 a.ui.violet.label:hover {
-  background-color: #5829bb !important;
-  border-color: #5829bb !important;
+  background-color: #5d0061 !important;
+  border-color: #5d0061 !important;
   color: #FFFFFF !important;
 }
 
@@ -818,20 +818,20 @@ a.ui.violet.label:hover {
 
 /* Ribbon */
 .ui.violet.ribbon.label {
-  border-color: #502aa1 !important;
+  border-color: #450047 !important;
 }
 
 /* Basic */
 .ui.basic.violet.label {
   background-color: #FFFFFF !important;
-  color: #6435C9 !important;
-  border-color: #6435C9 !important;
+  color: #76007A !important;
+  border-color: #76007A !important;
 }
 .ui.basic.violet.labels a.label:hover,
 a.ui.basic.violet.label:hover {
   background-color: #FFFFFF !important;
-  color: #5829bb !important;
-  border-color: #5829bb !important;
+  color: #5d0061 !important;
+  border-color: #5d0061 !important;
 }
 
 /*--- Purple ---*/

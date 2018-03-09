@@ -7,8 +7,8 @@
 <body>
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <h1 class="ui header">
-        <semui:editableLabel editable="${editable}" />
+    <h1 class="ui header"><semui:headerIcon />
+
         ${license.licensee?.name} ${license.type?.value} License : ${license.reference}
     </h1>
 

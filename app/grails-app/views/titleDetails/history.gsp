@@ -18,7 +18,7 @@
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
 
-    <h1 class="ui header">${titleInstance.title}</h1>
+    <h1 class="ui header"><semui:headerIcon />${titleInstance.title}</h1>
 
     <g:render template="nav" />
 

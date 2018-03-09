@@ -9,7 +9,7 @@
   </head>
   <body>
 
-    <h1 class="ui header">${orgInstance.name}</h1>
+    <h1 class="ui header"><semui:headerIcon />${orgInstance.name}</h1>
 
     <semui:messages data="${flash}" />
 

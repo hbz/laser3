@@ -27,7 +27,7 @@
 
   <semui:messages data="${flash}" />
 
-  <h1 class="ui header">${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
+  <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
     <!--<semui:subNav actionName="${actionName}">
         <semui:subNavItem controller="myInstitution" action="currentLicenses" message="license.current" />

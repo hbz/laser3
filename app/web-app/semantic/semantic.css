@@ -1008,6 +1008,149 @@ aside.ui.accordion .title:not(.ui) {
   padding-right: 1em!important;
   width: 8rem!important;
 }
+
+.la-advanced-view {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.ui.label.la-object {
+  display: none;
+  color: white;
+  min-width: 16px!important;
+  min-height: 16px!important;
+}
+
+.ui.label.la-object .icon {
+  margin-right: 0!important;
+  width: 22px!important;
+  text-align: center!important;
+}
+
+.ui.label.la-object .icon:before {
+  text-align: center!important;
+}
+
+body[class*="License"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #008C25;
+  border-color: #008C25;
+}
+
+body[class*="License"] .ui.label.la-object .icon:before {
+  content: "\f24e";
+}
+
+body[class*="license"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #008C25;
+  border-color: #008C25;
+}
+
+body[class*="license"] .ui.label.la-object .icon:before {
+  content: "\f24e";
+}
+
+body[class*="Package"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #76007A;
+  border-color: #76007A;
+}
+
+body[class*="Package"] .ui.label.la-object .icon:before {
+  content: "\f06b";
+}
+
+body[class*="package"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #76007A;
+  border-color: #76007A;
+}
+
+body[class*="package"] .ui.label.la-object .icon:before {
+  content: "\f06b";
+}
+
+body[class*="Subscription"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #fa820a;
+  border-color: #fa820a;
+}
+
+body[class*="Subscription"] .ui.label.la-object .icon:before {
+  content: "\f07c";
+}
+
+body[class*="subscription"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #fa820a;
+  border-color: #fa820a;
+}
+
+body[class*="subscription"] .ui.label.la-object .icon:before {
+  content: "\f07c";
+}
+
+body[class*="Title"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #004678;
+  border-color: #004678;
+}
+
+body[class*="Title"] .ui.label.la-object .icon:before {
+  content: "\f02d";
+}
+
+body[class*="title"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #004678;
+  border-color: #004678;
+}
+
+body[class*="title"] .ui.label.la-object .icon:before {
+  content: "\f02d";
+}
+
+body[class*="Organisation"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #007070;
+  border-color: #007070;
+}
+
+body[class*="Organisation"] .ui.label.la-object .icon:before {
+  content: "\f19c";
+}
+
+body[class*="organisation"] .ui.label.la-object {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #007070;
+  border-color: #007070;
+}
+
+body[class*="organisation"] .ui.label.la-object .icon:before {
+  content: "\f19c";
+}
 /*!
  * # Semantic UI 2.3.0 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -3674,7 +3817,7 @@ aside.ui.accordion .title:not(.ui) {
 
 .ui.violet.buttons .button,
 .ui.violet.button {
-  background-color: #6435C9;
+  background-color: #76007A;
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -3687,21 +3830,21 @@ aside.ui.accordion .title:not(.ui) {
 
 .ui.violet.buttons .button:hover,
 .ui.violet.button:hover {
-  background-color: #5829bb;
+  background-color: #5d0061;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.violet.buttons .button:focus,
 .ui.violet.button:focus {
-  background-color: #4f20b5;
+  background-color: #4f0051;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.violet.buttons .button:active,
 .ui.violet.button:active {
-  background-color: #502aa1;
+  background-color: #450047;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -3710,7 +3853,7 @@ aside.ui.accordion .title:not(.ui) {
 .ui.violet.buttons .active.button:active,
 .ui.violet.active.button,
 .ui.violet.button .active.button:active {
-  background-color: #5626bf;
+  background-color: #5d0061;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -3719,40 +3862,40 @@ aside.ui.accordion .title:not(.ui) {
 
 .ui.basic.violet.buttons .button,
 .ui.basic.violet.button {
-  -webkit-box-shadow: 0px 0px 0px 1px #6435C9 inset !important;
-  box-shadow: 0px 0px 0px 1px #6435C9 inset !important;
-  color: #6435C9 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #76007A inset !important;
+  box-shadow: 0px 0px 0px 1px #76007A inset !important;
+  color: #76007A !important;
 }
 
 .ui.basic.violet.buttons .button:hover,
 .ui.basic.violet.button:hover {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #5829bb inset !important;
-  box-shadow: 0px 0px 0px 1px #5829bb inset !important;
-  color: #5829bb !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #5d0061 inset !important;
+  box-shadow: 0px 0px 0px 1px #5d0061 inset !important;
+  color: #5d0061 !important;
 }
 
 .ui.basic.violet.buttons .button:focus,
 .ui.basic.violet.button:focus {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #4f20b5 inset !important;
-  box-shadow: 0px 0px 0px 1px #4f20b5 inset !important;
-  color: #5829bb !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #4f0051 inset !important;
+  box-shadow: 0px 0px 0px 1px #4f0051 inset !important;
+  color: #5d0061 !important;
 }
 
 .ui.basic.violet.buttons .active.button,
 .ui.basic.violet.active.button {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #5626bf inset !important;
-  box-shadow: 0px 0px 0px 1px #5626bf inset !important;
-  color: #502aa1 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #5d0061 inset !important;
+  box-shadow: 0px 0px 0px 1px #5d0061 inset !important;
+  color: #450047 !important;
 }
 
 .ui.basic.violet.buttons .button:active,
 .ui.basic.violet.button:active {
-  -webkit-box-shadow: 0px 0px 0px 1px #502aa1 inset !important;
-  box-shadow: 0px 0px 0px 1px #502aa1 inset !important;
-  color: #502aa1 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #450047 inset !important;
+  box-shadow: 0px 0px 0px 1px #450047 inset !important;
+  color: #450047 !important;
 }
 
 .ui.buttons:not(.vertical) > .basic.violet.button:not(:first-child) {
@@ -15171,8 +15314,8 @@ a.ui.basic.blue.label:hover {
 
 .ui.violet.labels .label,
 .ui.violet.label {
-  background-color: #6435C9 !important;
-  border-color: #6435C9 !important;
+  background-color: #76007A !important;
+  border-color: #76007A !important;
   color: #FFFFFF !important;
 }
 
@@ -15180,8 +15323,8 @@ a.ui.basic.blue.label:hover {
 
 .ui.violet.labels .label:hover,
 a.ui.violet.label:hover {
-  background-color: #5829bb !important;
-  border-color: #5829bb !important;
+  background-color: #5d0061 !important;
+  border-color: #5d0061 !important;
   color: #FFFFFF !important;
 }
 
@@ -15195,22 +15338,22 @@ a.ui.violet.label:hover {
 /* Ribbon */
 
 .ui.violet.ribbon.label {
-  border-color: #502aa1 !important;
+  border-color: #450047 !important;
 }
 
 /* Basic */
 
 .ui.basic.violet.label {
   background-color: #FFFFFF !important;
-  color: #6435C9 !important;
-  border-color: #6435C9 !important;
+  color: #76007A !important;
+  border-color: #76007A !important;
 }
 
 .ui.basic.violet.labels a.label:hover,
 a.ui.basic.violet.label:hover {
   background-color: #FFFFFF !important;
-  color: #5829bb !important;
-  border-color: #5829bb !important;
+  color: #5d0061 !important;
+  border-color: #5d0061 !important;
 }
 
 /*--- Purple ---*/
@@ -18274,11 +18417,11 @@ ol.ui.horizontal.list li:before,
 /* Violet */
 
 .ui.violet.segment:not(.inverted) {
-  border-top: 2px solid #6435C9 !important;
+  border-top: 2px solid #76007A !important;
 }
 
 .ui.inverted.violet.segment {
-  background-color: #6435C9 !important;
+  background-color: #76007A !important;
   color: #FFFFFF !important;
 }
 
@@ -24333,8 +24476,8 @@ Floated Menu / Item
 
 .ui.menu .violet.active.item,
 .ui.violet.menu .active.item {
-  border-color: #6435C9 !important;
-  color: #6435C9 !important;
+  border-color: #76007A !important;
+  color: #76007A !important;
 }
 
 .ui.menu .purple.active.item,
@@ -24603,7 +24746,7 @@ Floated Menu / Item
 
 .ui.inverted.menu .violet.active.item,
 .ui.inverted.violet.menu {
-  background-color: #6435C9;
+  background-color: #76007A;
 }
 
 .ui.inverted.violet.menu .item:before {
@@ -26537,11 +26680,11 @@ Floated Menu / Item
 /* Violet */
 
 .ui.violet.table {
-  border-top: 0.2em solid #6435C9;
+  border-top: 0.2em solid #76007A;
 }
 
 .ui.inverted.violet.table {
-  background-color: #6435C9 !important;
+  background-color: #76007A !important;
   color: #FFFFFF !important;
 }
 
@@ -28074,15 +28217,15 @@ a.ui.card:hover,
 .ui.violet.cards > .card,
 .ui.cards > .violet.card,
 .ui.violet.card {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #6435C9, 0px 1px 3px 0px #D4D4D5;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #6435C9, 0px 1px 3px 0px #D4D4D5;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #76007A, 0px 1px 3px 0px #D4D4D5;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #76007A, 0px 1px 3px 0px #D4D4D5;
 }
 
 .ui.violet.cards > .card:hover,
 .ui.cards > .violet.card:hover,
 .ui.violet.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #5829bb, 0px 1px 3px 0px #BCBDBD;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #5829bb, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #5d0061, 0px 1px 3px 0px #BCBDBD;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #5d0061, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Purple */

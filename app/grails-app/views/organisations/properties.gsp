@@ -13,7 +13,7 @@
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-      <h1 class="ui header">${orgInstance.name}</h1>
+      <h1 class="ui header"><semui:headerIcon />${orgInstance.name}</h1>
 
       <g:render template="nav" contextPath="." />
 

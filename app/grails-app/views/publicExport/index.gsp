@@ -54,7 +54,7 @@
 
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'publicExport']"/>
 
-    <h1 class="ui header">${message(code:'public.nav.exports.label', default:'Exports')}</h1>
+    <h1 class="ui header"><semui:headerIcon />${message(code:'public.nav.exports.label', default:'Exports')}</h1>
 
 
     <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">

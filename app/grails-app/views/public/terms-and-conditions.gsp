@@ -9,7 +9,7 @@
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'about']"/>
 
     <div class="ui container">
-        <h1 class="ui header">Terms and Conditions</h1>
+        <h1 class="ui header"><semui:headerIcon />Terms and Conditions</h1>
 
         <div class="ui grid">
             <div class="twelve wide column">

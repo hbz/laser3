@@ -53,7 +53,7 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-        <h1 class="ui header">${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
+        <h1 class="ui header"><semui:headerIcon />${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
 
         <g:render template="nav" contextPath="." />
 

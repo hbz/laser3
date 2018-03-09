@@ -18,10 +18,10 @@
 
   <semui:messages data="${flash}" />
 
-  <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>
+  <g:if test="${params.asAt}"><h1 class="ui header"><semui:headerIcon />${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>
 
-  <h1 class="ui header">
-      <semui:editableLabel editable="${editable}" />
+  <h1 class="ui header"><semui:headerIcon />
+
       <semui:xEditable owner="${subscriptionInstance}" field="name" />
   </h1>
 

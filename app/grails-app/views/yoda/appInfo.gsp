@@ -12,7 +12,7 @@
         <semui:crumb text="Application Info" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui header">Application Info</h1>
+    <h1 class="ui header"><semui:headerIcon />Application Info</h1>
 
     <table class="ui celled la-table table">
         <tr><td>Build Number</td><td> <g:meta name="app.buildNumber"/></td></tr>

@@ -21,7 +21,7 @@
         </semui:controlButtons>
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui header">${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
+        <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
 
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">

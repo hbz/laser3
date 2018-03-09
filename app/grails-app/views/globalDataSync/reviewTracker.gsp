@@ -8,7 +8,7 @@
   <body>
 
 
-        <h1 class="ui header">Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
+        <h1 class="ui header"><semui:headerIcon />Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
         <semui:messages data="${flash}" />
 
     <g:form action="createTracker" controller="globalDataSync" id="${params.id}">
@@ -17,7 +17,7 @@
       <input type="hidden" name="synctype" value="${type}"/>
 
       <div class="container well">
-        <h1 class="ui header">Review Tracker</h1>
+        <h1 class="ui header"><semui:headerIcon />Review Tracker</h1>
         <g:if test="${type=='new'}">
           <p>This tracker will create a new local package for "${item.name}" from "${item.source.name}". Set the new package name below.</p>
           <dl>
@@ -64,7 +64,7 @@
     </script>
 
     <div class="container well">
-      <h1 class="ui header">Package Sync Impact</h1>
+      <h1 class="ui header"><semui:headerIcon />Package Sync Impact</h1>
       <table class="ui celled la-table table">
         <tr>
           <th>

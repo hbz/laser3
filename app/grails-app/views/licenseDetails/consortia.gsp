@@ -13,7 +13,7 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui header">${license?.reference}</h1>
+    <h1 class="ui header"><semui:headerIcon />${license?.reference}</h1>
 
     <g:render template="nav"/>
 

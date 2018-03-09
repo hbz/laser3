@@ -8,7 +8,7 @@
   </head>
   <body>
 
-    <h1 class="ui header">${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
+    <h1 class="ui header"><semui:headerIcon />${message(code:'menu.datamanager.uploadPackage', default:'Upload New Package')}</h1>
 
     <semui:messages data="${flash}" />
 

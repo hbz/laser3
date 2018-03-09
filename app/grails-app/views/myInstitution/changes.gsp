@@ -12,7 +12,7 @@
             <semui:crumb text="(${num_todos} ${message(code:'myinst.todo.items', default:'Items')})" message="myinst.todo.list" class="active" />
         </semui:breadcrumbs>
 
-        <h1 class="ui header">
+        <h1 class="ui header"><semui:headerIcon />
             ${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}
         </h1>
 

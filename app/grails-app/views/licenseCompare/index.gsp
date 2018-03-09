@@ -18,7 +18,7 @@
 		<semui:crumb class="active" message="menu.institutions.comp_lic" />
 	</semui:breadcrumbs>
 
-	<h1 class="ui header">${message(code:'menu.institutions.comp_lic')}</h1>
+	<h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.comp_lic')}</h1>
 
 	<div>
 		<div class="row">

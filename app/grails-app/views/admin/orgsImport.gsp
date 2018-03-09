@@ -6,7 +6,7 @@
   </head>
 
   <body>
-        <h1 class="ui header">Orgs Import</h1>
+        <h1 class="ui header"><semui:headerIcon />Orgs Import</h1>
         <g:form action="orgsImport" method="post" enctype="multipart/form-data">
           <p>
             Upload a .csv file formatted as<br/>

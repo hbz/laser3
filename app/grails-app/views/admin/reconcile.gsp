@@ -23,7 +23,7 @@
       <semui:messages data="${flash}" />
 
       <div class="well">
-        <h1 class="ui header">Data Reconciliation</h1>
+        <h1 class="ui header"><semui:headerIcon />Data Reconciliation</h1>
         <g:if test="${recon_status.active}">
           Data reconciliation currently in stage : ${recon_status.stage} (nn%)
         </g:if>

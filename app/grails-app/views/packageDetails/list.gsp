@@ -16,7 +16,7 @@
       <g:render template="actions"/>
   </semui:controlButtons>
 
-  <h1 class="ui header">${message(code:'myinst.packages')}</h1>
+  <h1 class="ui header"><semui:headerIcon />${message(code:'myinst.packages')}</h1>
 
     <semui:messages data="${flash}" />
 

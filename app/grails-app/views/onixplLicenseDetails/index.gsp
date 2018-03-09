@@ -18,7 +18,7 @@
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
 
-    <h1 class="ui header">ONIX-PL License : ${onixplLicense?.title}</h1>
+    <h1 class="ui header"><semui:headerIcon />ONIX-PL License : ${onixplLicense?.title}</h1>
 
 <div>
     <div class="row">
