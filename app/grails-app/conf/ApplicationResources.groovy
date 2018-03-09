@@ -26,9 +26,10 @@ modules = {
     }
 
     deprecatedCSS {
-        resource url:'css/jquery.dataTables.css'
-        resource url:'css/dataTables.fixedColumns.min.css'
-        resource url:'css/dataTables.colVis.min.css'
+        //resource url:'css/jquery.dataTables.css'
+        //resource url:'css/dataTables.fixedColumns.min.css'
+        //resource url:'css/dataTables.colVis.min.css'
+        resource url:'css/datatables.css'
         //resource url:'css/bootstrap-editable.css'
         resource url:'css/select2.css'
         resource url:"css/instances/deprecated.css" // legacy
@@ -53,10 +54,11 @@ modules = {
         //resource url:'js/inline-content.js'
         resource url:'js/moment.min.js'
 
-        resource url:'js/jquery.dataTables.min.js'
-        resource url:'js/dataTables.colVis.min.js'
-        resource url:'js/dataTables.fixedColumns.min.js'
-        resource url:'js/dataTables.scroller.js'
+        //resource url:'js/jquery.dataTables.min.js'
+        //resource url:'js/dataTables.colVis.min.js'
+        //resource url:'js/dataTables.fixedColumns.min.js'
+        //resource url:'js/dataTables.scroller.js'
+        resource url:'js/datatables.min.js'                 // updated stuff // new version 1.10.16
 
         resource url:'semantic/semantic.min.js'     // new stuff
         resource url:'semantic/semantic.min.css'    // new stuff
@@ -66,7 +68,7 @@ modules = {
         resource url:'semantic_heave/select2.css'            // updated stuff // new version 3.5.4
         resource url:'semantic_heave/select2.min.js'         // updated stuff // new version 3.5.4
 
-        resource url:'js/application.js.gsp'          // legacy app js
+        resource url:'js/application.js.gsp'
     }
 
     swaggerApi {
