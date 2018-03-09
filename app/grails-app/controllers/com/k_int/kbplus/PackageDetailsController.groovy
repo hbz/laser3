@@ -59,9 +59,13 @@ class PackageDetailsController {
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
       def deleted_package_status =  RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
-      def qry_params = [deleted_package_status]
+      //def qry_params = [deleted_package_status]
+      def qry_params = []
 
-      def base_qry = " from Package as p where ( (p.packageStatus is null ) OR ( p.packageStatus = ? ) ) "
+      // TODO: filter by status in frontend
+      // TODO: use elastic search
+      def base_qry = " from Package as p where ( (p.packageStatus is null ) OR ( p.packageStatus is not null ) ) "
+      //def base_qry = " from Package as p where ( (p.packageStatus is null ) OR ( p.packageStatus = ? ) ) "
 
       if ( params.q?.length() > 0 ) {
         base_qry += " and ( ( lower(p.name) like ? ) or ( lower(p.identifier) like ? ) )"
@@ -97,7 +101,7 @@ class PackageDetailsController {
       }
 
 
-      log.debug(base_qry)
+      log.debug(base_qry + ' <<< ' + qry_params)
       result.packageInstanceTotal = Subscription.executeQuery("select count(p) "+base_qry, qry_params )[0]
 
 

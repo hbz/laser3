@@ -56,7 +56,10 @@
             <thead>
                 <tr>
                     <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />
-                    <g:sortableColumn property="identifier" title="${message(code: 'package.identifier.label', default: 'Identifier')}" />
+                    <%--<g:sortableColumn property="identifier" title="${message(code: 'package.identifier.label', default: 'Identifier')}" />--%>
+                    <th>
+                        ${message(code: 'package.content_provider')}
+                    </th>
                     <g:sortableColumn property="dateCreated" title="${message(code: 'package.dateCreated.label', default: 'Created')}" />
                     <g:sortableColumn property="lastUpdated" title="${message(code: 'package.lastUpdated.label', default: 'Last Updated')}" />
                 </tr>
@@ -68,10 +71,14 @@
                             <g:link action="show" id="${packageInstance.id}">${packageInstance.name}</g:link>
                         </td>
                         <td>
-                            ${packageInstance.identifier}
+                            <g:each in="${packageInstance.orgs}" var="orgLink">
+                                <g:link action="show" id="${orgLink.org.id}">${orgLink.org.name}</g:link> <br/>
+                            </g:each>
+
+                            <%--${packageInstance.identifier}--%>
                         </td>
-                        <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format', default:'yyyy-MM-dd HH:mm:ss z')}"/></td>
-                        <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format', default:'yyyy-MM-dd HH:mm:ss z')}"/></td>
+                        <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format.noZ', default:'yyyy-MM-dd HH:mm:ss')}"/></td>
+                        <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format.noZ', default:'yyyy-MM-dd HH:mm:ss')}"/></td>
                     </tr>
                 </g:each>
             </tbody>
