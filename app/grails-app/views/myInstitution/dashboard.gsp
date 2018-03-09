@@ -165,19 +165,32 @@
         <div class="ui relaxed divided list">
             <g:each in="${tasks}" var="tsk">
                 <div class="item">
-                    <strong><g:link controller="task" action="show" params="${[id:tsk.id]}">${tsk.title}</g:link></strong> <br />
-                    <g:if test="${tsk.description}">
-                        <span><em>${tsk.description}</em></span> <br />
-                    </g:if>
-                    <span>
-                        Fällig am
-                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
-                        <br />
-                    </span>
-                    <span>
-                        Status:
-                        <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
-                    </span>
+                    <div class="content">
+                        <div class="header">
+                            <g:link controller="task" action="show" params="${[id:tsk.id]}">${tsk.title}</g:link>
+                        </div>
+                        <div class="description">
+                            <g:if test="${tsk.description}">
+                                <span><em>${tsk.description}</em></span> <br />
+                            </g:if>
+                            <span>
+                                Betrifft:
+                                <g:each in="${tsk.getObjects()}" var="tskObj">
+                                    <br/> <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                </g:each>
+                            </span>
+                            <br />
+                            <span>
+                                Fällig:
+                                <br /><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
+                            </span>
+                            <br />
+                            <span>
+                                Status:
+                                <br /><semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </g:each>
         </div>

@@ -55,4 +55,19 @@ class Task {
         responsibleUser      column:'tsk_responsible_user_fk'
         responsibleOrg       column:'tsk_responsible_org_fk'
     }
+
+    def getObjects() {
+        def result = []
+
+        if (license)
+            result << [controller: 'licenseDetails', object: license]
+        if (org)
+            result << [controller: 'organisations', object: org]
+        if (pkg)
+            result << [controller: 'packageDetails', object: pkg]
+        if (subscription)
+            result << [controller: 'subscriptionDetails', object: subscription]
+
+        result
+    }
 }
