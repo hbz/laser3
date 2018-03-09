@@ -66,18 +66,18 @@ ul.ColVis_collection li label {
 }
 
 .onix-code {
-  border-bottom:1px dashed;
-  cursor: help;
+    border-bottom:1px dashed;
+    cursor: help;
 }
 
 .onix-status {
-  cursor: help;
-  font-size: 3.5em;
-  line-height: 1em;
+    cursor: help;
+    font-size: 3.5em;
+    line-height: 1em;
 }
 
 .exceptions i {
-  color: #ff8700;
+    color: #ff8700;
 }
 
 .textelement {
@@ -85,10 +85,10 @@ ul.ColVis_collection li label {
 }
 
 .onix-icons {
-	font-size: 1.5em;
-	position:relative;
-  padding: 10px;
-  text-align: right;
+    font-size: 1.5em;
+    position:relative;
+    padding: 10px;
+    text-align: right;
 }
 
 .onix-icons span {
@@ -100,11 +100,11 @@ ul.ColVis_collection li label {
 }
 
 .onix-icons .text-icon {
-	cursor:pointer;
+    cursor:pointer;
 }
 
 .text-preceding {
-	font-weight:bold;
+    font-weight:bold;
 }
 
 #onix-modal {
@@ -121,7 +121,7 @@ ul.ColVis_collection li label {
 .onix-pl-interpreted-as-prohibited:before,
 .onix-pl-undefined:before,
 .onix-status:before {
-  font-family: FontAwesome;
+  font-family: Icons;
   font-style: normal;
   font-weight: normal;
   text-decoration: inherit;
@@ -131,13 +131,13 @@ ul.ColVis_collection li label {
 .onix-pl-permitted:before,
 .onix-pl-interpreted-as-permitted:before,
 .onix-tick:before {
-  content: "";
+  content: "\f058";
   color:#2a9a32;
 }
 
 .onix-pl-prohibited:before,
 .onix-pl-interpreted-as-prohibited:before {
-  content: "";
+  content: "\f057";
   color:#FF0000;
 }
 
@@ -149,11 +149,11 @@ ul.ColVis_collection li label {
 }
 
 .onix-info:before {
-  content: "";
+  content: "\f05a";
   color: #166fe7;
 }
 
 .onix-pl-undefined:before {
-	content: "";
+	content: "\f059";
 	color:#969696;
 }

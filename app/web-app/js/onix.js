@@ -75,7 +75,7 @@ $(document).ready(function() {
       scrolling = false;
     }
   });
-  
+
   // Tooltips.
   $('.onix-code, .onix-status').tooltip(
       {placement: 'bottom', trigger:'hover', html: true, container: 'body'}
