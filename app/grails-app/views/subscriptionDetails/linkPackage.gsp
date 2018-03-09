@@ -90,31 +90,33 @@
                     <div class="ui relaxed list">
 
                         <g:each in="${facets}" var="facet">
-                            <div class="item">
-                                <h4 class="header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h4>
+                            <g:if test="${!(facet.key in ['consortiaName'])}"><%-- hide consortia filter --%>
+                                <div class="item">
+                                    <h4 class="header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h4>
 
-                                <g:each in="${facet.value.sort{it.display}}" var="v">
-                                  <g:if test="${v.display.toString().length() > 3}">
-                                    <div class="description">
-                                      <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
+                                    <g:each in="${facet.value.sort{it.display}}" var="v">
+                                      <g:if test="${v.display.toString().length() > 3}">
+                                        <div class="description">
+                                          <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
 
 
-                                      <g:if test="${params.list(facet.key).contains(v.term.toString())}">
-                                        ${v.display} (${v.count})
+                                          <g:if test="${params.list(facet.key).contains(v.term.toString())}">
+                                            ${v.display} (${v.count})
+                                          </g:if>
+                                          <g:else>
+                                            <g:link controller="${controller}" action="linkPackage" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
+                                          </g:else>
+
+                                            <%--<div class="ui checkbox">
+                                                <g:checkBox class="hidden" name="${facet.key}" value="${params[fname]}" onchange="submit()"/>
+                                                <label>${v.display} (${v.count})</label>
+                                            </div>--%>
+                                        </div>
                                       </g:if>
-                                      <g:else>
-                                        <g:link controller="${controller}" action="linkPackage" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
-                                      </g:else>
+                                  </g:each>
 
-                                        <%--<div class="ui checkbox">
-                                            <g:checkBox class="hidden" name="${facet.key}" value="${params[fname]}" onchange="submit()"/>
-                                            <label>${v.display} (${v.count})</label>
-                                        </div>--%>
-                                    </div>
-                                  </g:if>
-                              </g:each>
-
-                            </div>
+                                </div>
+                            </g:if>
                         </g:each>
                     </div>
                 </div>
@@ -128,71 +130,74 @@
                 <div id="resultsarea">
                   <table class="ui celled la-table table">
                     <thead>
-                      <tr><th>${message(code:'package.show.pkg_name', default:'Package Name')}</th><th>${message(code:'consortium.label', default:'Consortium')}</th><th>${message(code:'default.action.label', default:'Action')}</th></tr>
+                      <tr>
+                          <th>${message(code:'package.show.pkg_name', default:'Package Name')}</th>
+                          <%--<th>${message(code:'consortium.label', default:'Consortium')}</th>--%>
+                          <th>${message(code:'default.action.label', default:'Action')}</th></tr>
                     </thead>
                     <tbody>
                       <g:each in="${hits}" var="hit">
                           <tr>
-                            <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} </g:link>(${hit.getSource()?.titleCount?:'0'} ${message(code:'title.plural', default:'Titles')})</td>
-                            <td>${hit.getSource().consortiaName}</td>
-                            <td>
-                              <g:if test="${editable && (!pkgs || !pkgs.contains(hit.getSource().dbId.toLong()))}">
-                                <g:link action="linkPackage"
-                                    id="${params.id}"
-                                    params="${[addId:hit.getSource().dbId,addType:'Without']}"
-                                    style="white-space:nowrap;"
-                                    onClick="return confirm('${message(code:'subscription.details.link.no_ents.confirm', default:'Are you sure you want to add without entitlements?')}');">${message(code:'subscription.details.link.no_ents', default:'Link (no Entitlements)')}</g:link>
-                                <br/>
-                                <g:link action="linkPackage"
-                                    id="${params.id}"
-                                    params="${[addId:hit.getSource().dbId,addType:'With']}"
-                                    style="white-space:nowrap;"
-                                    onClick="return confirm('${message(code:'subscription.details.link.with_ents.confirm', default:'Are you sure you want to add with entitlements?')}');">${message(code:'subscription.details.link.with_ents', default:'Link (with Entitlements)')}</g:link>
-                              </g:if>
-                              <g:else>
-                                <span></span>
-                              </g:else>
-                            </td>
-                          </tr>
+                              <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} </g:link>(${hit.getSource()?.titleCount?:'0'} ${message(code:'title.plural', default:'Titles')})</td>
+                              <%--<td>${hit.getSource().consortiaName}</td>--%>
+                              <td>
+                                <g:if test="${editable && (!pkgs || !pkgs.contains(hit.getSource().dbId.toLong()))}">
+                                  <g:link action="linkPackage"
+                                      id="${params.id}"
+                                      params="${[addId:hit.getSource().dbId,addType:'Without']}"
+                                      style="white-space:nowrap;"
+                                      onClick="return confirm('${message(code:'subscription.details.link.no_ents.confirm', default:'Are you sure you want to add without entitlements?')}');">${message(code:'subscription.details.link.no_ents', default:'Link (no Entitlements)')}</g:link>
+                                  <br/>
+                                  <g:link action="linkPackage"
+                                      id="${params.id}"
+                                      params="${[addId:hit.getSource().dbId,addType:'With']}"
+                                      style="white-space:nowrap;"
+                                      onClick="return confirm('${message(code:'subscription.details.link.with_ents.confirm', default:'Are you sure you want to add with entitlements?')}');">${message(code:'subscription.details.link.with_ents', default:'Link (with Entitlements)')}</g:link>
+                                </g:if>
+                                <g:else>
+                                  <span></span>
+                                </g:else>
+                              </td>
+                            </tr>
                       </g:each>
-                    </tbody>
-                  </table>
-                </div>
-             </g:if>
-              <div class="paginateButtons" style="text-align:center">
-                  <g:if test="${params.int('offset')}">
-                      ${message(code:'title.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
-                  </g:if>
-                  <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                      ${message(code:'title.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
-                  </g:elseif>
-                  <g:else>
-                      ${message(code:'title.search.no_pagiantion.text', args:[resultsTotal])}
-                  </g:else>
-              </div>
-             <div class="paginateButtons" style="text-align:center">
-                <g:if test="${hits}" >
-                  <span><g:paginate controller="subscriptionDetails" action="linkPackage" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${resultsTotal}" /></span>
-                </g:if>
-              </div>
+              </tbody>
+            </table>
           </div>
+       </g:if>
+        <div class="paginateButtons" style="text-align:center">
+            <g:if test="${params.int('offset')}">
+                ${message(code:'title.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
+            </g:if>
+            <g:elseif test="${resultsTotal && resultsTotal > 0}">
+                ${message(code:'title.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
+            </g:elseif>
+            <g:else>
+                ${message(code:'title.search.no_pagiantion.text', args:[resultsTotal])}
+            </g:else>
         </div>
-
-        <div class="four wide column">
-            <div class="ui card">
-                <div class="content">
-                    <div class="header">${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</div>
-                </div>
-                <div class="content">
-                    <g:each in="${subscriptionInstance.packages}" var="sp">
-                        <div class="item"><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></div>
-                    </g:each>
-                </div>
-            </div>
+       <div class="paginateButtons" style="text-align:center">
+          <g:if test="${hits}" >
+            <span><g:paginate controller="subscriptionDetails" action="linkPackage" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${resultsTotal}" /></span>
+          </g:if>
         </div>
-      </g:form>
+    </div>
+  </div>
+
+  <div class="four wide column">
+      <div class="ui card">
+          <div class="content">
+              <div class="header">${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</div>
+          </div>
+          <div class="content">
+              <g:each in="${subscriptionInstance.packages}" var="sp">
+                  <div class="item"><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></div>
+              </g:each>
+          </div>
+      </div>
+  </div>
+</g:form>
 
 
-    <!-- ES Query String: ${es_query} -->
-  </body>
+<!-- ES Query String: ${es_query} -->
+</body>
 </html>
