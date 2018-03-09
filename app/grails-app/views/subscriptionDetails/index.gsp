@@ -88,7 +88,7 @@
                             </g:if>
                             <div class="field">
                                 <label>&nbsp;</label>
-                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}" />
+                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Suchen')}" />
                             </div>
                         </div>
                     </g:form>

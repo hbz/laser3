@@ -204,13 +204,16 @@ aside.ui.accordion .title:not(.ui) {
         display:inline-flex;
         text-decoration: none;
         opacity: 0.8;
-        margin:0 .25em 0 0;
-
-
-        width: 1.18em;
         height: 1em;
-
-
         color: @grey;
+    }
+}
+/* EDITABLE OVERWRITE */
+/* Sorry for the !important - overwriting Javascript of the Editable-Javascript */
+
+.la-time-card {
+    .editable-input input[type=text]{
+        padding-right: 1em!important;
+        width: 8rem!important;
     }
 }
