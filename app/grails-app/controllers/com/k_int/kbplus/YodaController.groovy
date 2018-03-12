@@ -30,7 +30,7 @@ class YodaController {
         result
     }
 
-    @Secured(['ROLE_YODA'])
+    @Secured(['ROLE_ADMIN'])
     def appInfo() {
         def result = [:]
 
@@ -81,8 +81,8 @@ class YodaController {
         result
     }
 
-    @Secured(['ROLE_YODA'])
-    def logViewer() {
+    @Secured(['ROLE_ADMIN'])
+    def appLogfile() {
         def f = new File("${Holders.config.log_location}")
         return [file: "${f.canonicalPath}"]
     }

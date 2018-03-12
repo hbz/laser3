@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="layout" content="semanticUI"/>
-<title>${message(code:'laser', default:'LAS:eR')} Log Watcher</title>
+<title>${message(code:'laser', default:'LAS:eR')} Logfile</title>
 <r:script type="JavaScript" >
   var initScroll = false;
 
@@ -153,10 +153,8 @@
     <semui:crumb text="Application Log" class="active"/>
   </semui:breadcrumbs>
 
-    <h1 class="page-header">Log Viewer</h1>
-    <div id="log-wrapper">
-      <g:link class="display-inline" controller="file" params="[filePath: (file)]" data-auto-refresh="1000" data-content-selector=".fileContents" />
-    </div>
+    <h1 class="page-header">Logfile</h1>
+    <div id="log-wrapper"><g:link class="display-inline" controller="file" params="[filePath: (file)]" data-auto-refresh="1000" data-content-selector=".fileContents" /></div>
 
 </body>
 </html>

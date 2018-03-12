@@ -252,7 +252,7 @@
                                 <div class="menu">
                                     <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
                                     <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
-                                    <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
+
                                     <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
 
                                     <div class="divider"></div>
@@ -277,6 +277,9 @@
                                     <g:link class="item" controller="admin" action="titleAugment">Run Data Cleaning (Title Augment)</g:link>
                                 </div>
                             </div>
+
+                            <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
+                            <g:link class="item" controller="yoda" action="appLogfile">App Logfile</g:link>
 
                             <div class="divider"></div>
 
