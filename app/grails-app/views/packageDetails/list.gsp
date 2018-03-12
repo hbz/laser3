@@ -13,6 +13,11 @@
   </semui:breadcrumbs>
 
   <semui:controlButtons>
+      <semui:exportDropdown>
+          <semui:exportDropdownItem>
+              <g:link class="item" action="list" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+          </semui:exportDropdownItem>
+      </semui:exportDropdown>
       <g:render template="actions"/>
   </semui:controlButtons>
 
@@ -42,10 +47,6 @@
                   <div class="field">
                       <label>&nbsp;</label>
                       <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}" />
-                  </div>
-                  <div class="field">
-                      <label>&nbsp;</label>
-                      <button type="submit" name="format" value="csv" class="ui button" value="Search">${message(code:'default.button.exports.csv')}</button>
                   </div>
               </div>
           </g:form>

@@ -247,7 +247,7 @@
 @package          :    @violet; /*@violet */
 @title            :    @blue; /* hbz-blue */
 @license          :    #008C25; /* Dark Green */
-@organisation      :   #007070; /* @o-yellow */
+@organisation      :   @teal; /* bluegreen */
 
 
 /*---  Colors for Site Elements---*/
