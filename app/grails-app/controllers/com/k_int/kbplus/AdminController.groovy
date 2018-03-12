@@ -352,13 +352,13 @@ class AdminController {
     result
   }
 
-  @Secured(['ROLE_ADMIN'])
+  @Secured(['ROLE_YODA'])
   def dataCleanse() {
     // Sets nominal platform
     dataloadService.dataCleanse()
   }
 
-  @Secured(['ROLE_ADMIN'])
+  @Secured(['ROLE_YODA'])
   def titleAugment() {
     // Sets nominal platform
     dataloadService.titleAugment()
@@ -593,14 +593,14 @@ class AdminController {
     redirect(controller:'home')
   }
 
-  @Secured(['ROLE_ADMIN'])
+  @Secured(['ROLE_YODA'])
   def triggerHousekeeping() {
-    log.debug("trigggerHousekeeping()");
+    log.debug("trigggerHousekeeping()")
     enrichmentService.initiateHousekeeping()
     redirect(controller:'home')
   }
 
-  @Secured(['ROLE_ADMIN'])
+  @Secured(['ROLE_YODA'])
   def initiateCoreMigration() {
     log.debug("initiateCoreMigration...");
     enrichmentService.initiateCoreMigration()
@@ -696,7 +696,7 @@ class AdminController {
     }
   }
   
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_YODA'])
     def uploadIssnL() {
         def result=[:]
         boolean hasStarted = false

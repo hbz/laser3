@@ -71,9 +71,6 @@
 
     <h2 class="ui header">Request</h2>
 
-    <table class="ui celled la-table table">
-        <tr><td>
-
     <div class="ui relaxed divided list">
         <g:each in="${request.getAttributeNames()}" var="an">
             <div class="item">${an} = ${request.getAttribute(an)}</div>
@@ -102,7 +99,5 @@
         <div class="item"> REMOTE_USER (fm) = ${request.getRemoteUser()}</div>
     </div>
 
-        </td></tr>
-    </table>
 </body>
 </html>

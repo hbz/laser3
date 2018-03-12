@@ -27,7 +27,7 @@
     <r:layoutResources/>
 </head>
 
-<body id="jumpMark_top" class="${controllerName}_${actionName}">
+<body class="${controllerName}_${actionName}">
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
@@ -265,6 +265,16 @@
                                     <g:link class="item" controller="yoda" action="fullReset">Run Full ES Index Reset</g:link>
                                     <g:link class="item" controller="yoda" action="esIndexUpdate">Start ES Index Update</g:link>
                                     <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
+
+                                    <div class="divider"></div>
+
+                                    <g:link class="item" controller="admin" action="triggerHousekeeping">Trigger Housekeeping</g:link>
+                                    <g:link class="item" controller="admin" action="initiateCoreMigration">Initiate Core Migration</g:link>
+                                    <g:if test="${grailsApplication.config.feature.issnl}">
+                                        <g:link class="item" controller="admin" action="uploadIssnL">Upload ISSN to ISSN-L File</g:link>
+                                    </g:if>
+                                    <g:link class="item" controller="admin" action="dataCleanse">Run Data Cleaning (Nominal Platforms)</g:link>
+                                    <g:link class="item" controller="admin" action="titleAugment">Run Data Cleaning (Title Augment)</g:link>
                                 </div>
                             </div>
 
@@ -320,22 +330,6 @@
                             <g:link class="item" controller="stats" action="statsHome">Statistics</g:link>
                             <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>
 
-                            <div class="ui dropdown item">
-                                Batch tasks
-                                <i class="dropdown icon"></i>
-
-                                <div class="menu">
-                                    <g:link class="item" controller="admin" action="triggerHousekeeping">Trigger Housekeeping</g:link>
-                                    <g:link class="item" controller="admin" action="initiateCoreMigration">Initiate Core Migration</g:link>
-                                    <g:if test="${grailsApplication.config.feature.issnl}">
-                                        <g:link class="item" controller="admin" action="uploadIssnL">Upload ISSN to ISSN-L File</g:link>
-                                    </g:if>
-                                    <g:link class="item" controller="admin" action="dataCleanse">Run Data Cleaning (Nominal Platforms)</g:link>
-                                    <g:link class="item" controller="admin" action="titleAugment">Run Data Cleaning (Title Augment)</g:link>
-                                    <%--<g:link class="item" controller="yoda" action="fullReset">Run Full ES Index Reset</g:link>--%>
-                                    <%--<g:link class="item" controller="yoda" action="esIndexUpdate">Start ES Index Update</g:link>--%>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </sec:ifAnyGranted>
