@@ -7,8 +7,11 @@
   </head>
   <body>
 
+    <g:render template="breadcrumb" model="${[ params:params ]}"/>
+
      <h1 class="ui header">
          <semui:editableLabel editable="${editable}" />
+         ${ui.username} :
          <span id="displayEdit"
                class="xEditableValue"
                data-type="textarea"
@@ -20,11 +23,16 @@
 
             <semui:messages data="${flash}" />
 
+            <sec:ifAnyGranted roles="ROLE_YODA">
+                <h3 class="ui header">Enabled</h3>
+                <p><semui:xEditable owner="${user}" field="enabled"/></p>
+            </sec:ifAnyGranted>
+
           <h3 class="ui header">
             ${message(code:'user.affiliation.plural', default:'Affiliations')}
           </h3>
 
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
                 <th>${message(code:'user.id', default:'Id')}</th>
@@ -49,7 +57,7 @@
 
           <h3 class="ui header">${message(code:'user.role.plural', default:'Roles')}</h3>
 
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
             <thead>
               <tr>
                 <th>${message(code:'user.role', default:'Role')}</th>

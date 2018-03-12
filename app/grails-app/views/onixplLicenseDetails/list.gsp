@@ -15,7 +15,7 @@
 
 			<semui:messages data="${flash}" />
 				
-				<table class="ui celled striped table">
+				<table class="ui sortable celled la-table table">
 					<thead>
 						<tr>
 						
@@ -44,7 +44,7 @@
                                 <ul>
                                     <g:each in="${onixplLicenseInstance.licenses}">
                                         <li>
-                                            <g:link controller="licenseDetails" action="index" id="${it.id}">${it}</g:link>
+                                            <g:link controller="licenseDetails" action="show" id="${it.id}">${it}</g:link>
                                         </li>
                                     </g:each>
                                 </ul>

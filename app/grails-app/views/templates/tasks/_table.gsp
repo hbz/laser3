@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <table class="ui celled striped table">
+        <table class="ui celled la-table table">
             <thead>
             <tr>
                 <th>${message(code: 'task.title.label', default: 'Title')}</th>
@@ -35,16 +35,18 @@
                     </td>
 
                     <td>
-                        <g:if test="${taskInstance.responsibleOrg}">${fieldValue(bean: taskInstance, field: "responsibleOrg")} <br /></g:if>
-                        <g:if test="${taskInstance.responsibleUser}">${fieldValue(bean: taskInstance, field: "responsibleUser")}</g:if>
+                        <g:if test="${taskInstance.responsibleOrg}">${taskInstance.responsibleOrg?.name} <br /></g:if>
+                        <g:if test="${taskInstance.responsibleUser}">${taskInstance.responsibleUser}</g:if>
                     </td>
 
                     <td>${fieldValue(bean: taskInstance, field: "creator")}</td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
 
-                    <td class="link">
-                        <g:link controller="task" action="show" id="${taskInstance.id}" class="ui button">${message(code:'default.button.show.label', default:'Show')}</g:link>
+                    <td class="x">
+                        <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon button">
+                            <i class="write icon"></i>
+                        </g:link>
                     </td>
                 </tr>
             </g:each>

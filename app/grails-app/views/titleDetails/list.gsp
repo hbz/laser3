@@ -10,6 +10,8 @@
       <semui:crumb message="menu.institutions.all_titles" class="active" />
     </semui:breadcrumbs>
 
+    <h1 class="ui header">${message(code:'menu.institutions.all_titles')}</h1>
+
     <semui:filter>
       <g:form action="index" role="form" class="ui form" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>
@@ -50,7 +52,7 @@
                 </div><!-- .paginateButtons -->
 
                 <div id="resultsarea">
-                  <table class="ui celled striped table">
+                  <table class="ui sortable celled la-table table">
                     <thead>
                       <tr>
                       <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />

@@ -44,6 +44,12 @@ class AnnotationTagLib {
    */
   def annotatedLabel = { attributes, body ->
 
+    // TODO: refactoring of annotatedLabel
+    if (body) {
+        out << body()
+    }
+    return
+
     // Set default attributes.
     def attr = [
       "element" : "span",

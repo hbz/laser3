@@ -15,50 +15,57 @@
 
 		<semui:messages data="${flash}" />
 
-		<semui:card class="card-grey">
-			<input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}" href="#addPropertyDefinitionModal"  data-semui="modal"/>
+		<semui:card>
+            <div class="content ui form">
+                <div class="field">
+                    <button class="ui button" value="" href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+                </div>
+            </div>
 		</semui:card>
 
-        <div class="ui grid">
-            <div class="twelve wide column">
-					<g:each in="${propertyDefinitions}" var="entry">
-						<h6 class="ui header">${entry.key}</h6>
-                        <table class="ui celled striped table">
-							<thead>
-							<tr>
-								<th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
-								<th>Name (DE)</th>
-								<th>Name (EN)</th>
-								<!--<th>DE: Description</th>
-								<th>EN: Description</th>-->
-							</tr>
-							</thead>
-							<tbody>
-								<g:each in="${entry.value}" var="pd">
-									<g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-									<!--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />-->
-									<tr>
-										<td>
-                                            ${fieldValue(bean: pd, field: "name")}
-											<g:if test="${pd.softData}">
-												<span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
-											</g:if>
-											<g:if test="${pd.multipleOccurrence}">
-												<span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
-											</g:if>
-										</td>
-										<td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-										<td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-										<!--<td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
-										<td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
-									</tr>
-								</g:each>
+		<div class="ui styled fluid accordion">
+			<g:each in="${propertyDefinitions}" var="entry">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    ${entry.key}
+                </div>
+                <div class="content">
+                    <table class="ui celled la-table la-table-small table">
+                        <thead>
+                        <tr>
+                            <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
+                            <th>Name (DE)</th>
+                            <th>Name (EN)</th>
+                            <!--<th>DE: Description</th>
+                            <th>EN: Description</th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${entry.value}" var="pd">
+                                <g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
+                                <!--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />-->
+                                <tr>
+                                    <td>
+                                        ${fieldValue(bean: pd, field: "name")}
+                                        <g:if test="${pd.softData}">
+                                            <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                        </g:if>
+                                        <g:if test="${pd.multipleOccurrence}">
+                                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                        </g:if>
+                                    </td>
+                                    <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
+                                    <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+                                    <!--<td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
+                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
+                                </tr>
+                            </g:each>
 
-							</tbody>
-						</table>
-					</g:each>
-            </div><!-- .twelve -->
-        </div><!-- .grid -->
+                        </tbody>
+                    </table>
+                </div>
+			</g:each>
+        </div>
 
         <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 

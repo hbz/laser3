@@ -1,19 +1,20 @@
 package com.k_int.kbplus
 
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 import org.apache.log4j.*
 import java.text.SimpleDateFormat
 import com.k_int.kbplus.*;
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleDetailsController {
 
     def springSecurityService
     def ESSearchService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'titleDetails', action: 'list', params: params
         return // ----- deprecated
@@ -56,7 +57,7 @@ class TitleDetailsController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         log.debug("titleSearch : ${params}");
 
@@ -69,36 +70,42 @@ class TitleDetailsController {
             result.user = springSecurityService.getCurrentUser()
             params.max = result.user.defaultPageSize
 
-
-            if(params.search.equals("yes")){
+            if (params.search.equals("yes")) {
                 //when searching make sure results start from first page
                 params.offset = 0
                 params.remove("search")
             }
 
             def old_q = params.q
-            if(!params.q ){
-                params.remove('q');
-                if(!params.sort){
-                    params.sort = "sortTitle"
-                }
-            }
+            def old_sort = params.sort
 
-            if(params.filter) params.q ="${params.filter}:${params.q}";
+            params.q = params.q ?: "*"
+            params.sort = params.sort ?: "sortTitle"
+
+            if (params.filter) {
+                params.q = "${params.filter}:${params.q}"
+            }
 
             result =  ESSearchService.search(params)
             //Double-Quoted search strings wont display without this
             params.q = old_q?.replace("\"","&quot;")
+
+            if(! old_q ) {
+                params.remove('q')
+            }
+            if(! old_sort ) {
+                params.remove('sort')
+            }
         }
 
-        result.editable=SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-        log.debug(result);
+        log.debug(result)
 
         result
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def findTitleMatches() { 
     // find all titles by n_title proposedTitle
     def result=[:]
@@ -111,7 +118,7 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString())
@@ -128,7 +135,7 @@ class TitleDetailsController {
   }
 
     @Deprecated
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def edit() {
         redirect controller: 'titleDetails', action: 'show', params: params
         return // ----- deprecated
@@ -142,7 +149,7 @@ class TitleDetailsController {
         result
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def show() {
     def result = [:]
 
@@ -172,7 +179,8 @@ class TitleDetailsController {
     }
     return duplicates
   }
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+
+    @Secured(['ROLE_ADMIN'])
   def batchUpdate() {
     log.debug(params);
     def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -226,9 +234,7 @@ class TitleDetailsController {
     redirect(controller:'titleDetails', action:'show', id:params.id);
   }
 
-
-
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def history() {
     def result = [:]
     def exporting = params.format == 'csv' ? true : false
@@ -298,7 +304,7 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def availability() {
     def result = [:]
     result.ti = TitleInstance.get(params.id)
@@ -307,15 +313,10 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def dmIndex() {
-
     log.debug("dmIndex ${params}");
-    if(SpringSecurityUtils.ifNotGranted('KBPLUS_EDITOR,ROLE_ADMIN')){
-      flash.error = message(code:"default.access.error")
-      response.sendError(401)
-      return;
-    }
+
     if(params.search == "yes"){
       params.offset = 0
       params.remove("search")

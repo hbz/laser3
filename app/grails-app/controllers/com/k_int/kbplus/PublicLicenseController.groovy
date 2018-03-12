@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PublicLicenseController {
 	def index(){
 		def result = [:]

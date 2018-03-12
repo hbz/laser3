@@ -1,13 +1,14 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
-import grails.converters.*
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import groovy.xml.MarkupBuilder
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
+import com.k_int.kbplus.OrgCustomProperty
 
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class IssueEntitlementController {
 
   def factService
@@ -15,18 +16,18 @@ class IssueEntitlementController {
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
    def springSecurityService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def create() {
     switch (request.method) {
     case 'GET':
@@ -46,7 +47,7 @@ class IssueEntitlementController {
     }
 
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
       def result = [:]
 
@@ -62,28 +63,28 @@ class IssueEntitlementController {
 
       // Get usage statistics
       def title_id = result.issueEntitlementInstance.tipp.title?.id
-      def org_id = result.issueEntitlementInstance.subscription.getSubscriber()?.id // TODO
+      def org = result.issueEntitlementInstance.subscription.getSubscriber() // TODO
       def supplier_id = result.issueEntitlementInstance.tipp.pkg.contentProvider?.id
 
-      if ( title_id != null && 
-           org_id != null &&
+      if ( title_id != null &&
+           org != null &&
            supplier_id != null ) {
 
-        def fsresult = factService.generateExpandableMonthlyUsageGrid(title_id,org_id,supplier_id)
+          def fsresult = factService.generateExpandableMonthlyUsageGrid(title_id, org.id, supplier_id)
+          result.institutional_usage_identifier =
+                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), org)
+          //def jusp_login = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('jusplogin')?.value
+          //def jusp_iid = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('juspiid')?.value
+          //def jusp_sid = result.issueEntitlementInstance.tipp.pkg.contentProvider?.getIdentifierByType('juspsid')?.value
+          //def jusp_title_id = result.issueEntitlementInstance.tipp.title.getIdentifierValue('jusp')
 
-        def jusp_login = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('jusplogin')?.value
-        def jusp_iid = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('juspiid')?.value
-        def jusp_sid = result.issueEntitlementInstance.tipp.pkg.contentProvider?.getIdentifierByType('juspsid')?.value
-        def jusp_title_id = result.issueEntitlementInstance.tipp.title.getIdentifierValue('jusp')
-
-        if ( ( jusp_login != null ) && ( jusp_sid != null ) && ( jusp_title_id != null ) ) {
-          // result.jusplink = "https://www.jusp.mimas.ac.uk/api/v1/Journals/Statistics/?jid=${jusp_title_id}&sid=${jusp_sid}&loginid=${jusp_login}&startrange=1800-01&endrange=2100-01&granularity=monthly"
-          result.jusplink = "https://www.jusp.mimas.ac.uk/secure/demonstrator/journalusage.php?R=16&PID=All&IID=${jusp_iid}&code=${jusp_login}&Type=All&date=All&form=HTML&JID[]=${jusp_title_id}"
-        }
-
-        result.usage = fsresult?.usage
-        result.x_axis_labels = fsresult?.x_axis_labels;
-        result.y_axis_labels = fsresult?.y_axis_labels;
+          if (result.institutional_usage_identifier) {
+              result.statsWibid = org.getIdentifierByType('wibid')?.value
+              result.usageMode = (org.orgType?.value == 'Consortium') ? 'package' : 'institution'
+              result.usage = fsresult?.usage
+              result.x_axis_labels = fsresult?.x_axis_labels
+              result.y_axis_labels = fsresult?.y_axis_labels
+          }
       }
 
       if (!result.issueEntitlementInstance) {
@@ -132,7 +133,7 @@ class IssueEntitlementController {
 
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit() {
     switch (request.method) {
     case 'GET':
@@ -177,7 +178,7 @@ class IssueEntitlementController {
     }
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def delete() {
     def issueEntitlementInstance = IssueEntitlement.get(params.id)
     if (!issueEntitlementInstance) {

@@ -59,7 +59,7 @@
                     <label for="status">
                         <g:message code="task.status.label" default="Status" />
                     </label>
-                    <g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
+                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionValue="value" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate" placeholder="default.date.label" value="${taskInstance?.endDate}" required="true" bean="${taskInstance}" />
@@ -95,7 +95,6 @@
                 </div>
 
                 <semui:datepicker label="task.createDate.label" name="createDate" placeholder="default.date.label" value="${taskInstance?.createDate}" required="true" bean="${taskInstance}"  />
-
             </div>
         </div>
 

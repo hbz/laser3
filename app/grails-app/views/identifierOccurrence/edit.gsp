@@ -39,7 +39,7 @@
 
 					<semui:errors bean="${identifierOccurrenceInstance}" />
 
-				<p><b> Action disabled. Please contact system administrator if you require access. </b></p>
+				<p><strong> Action disabled. Please contact system administrator if you require access. </strong></p>
 				%{-- The following code is causing the system to hang and crash, while failing to find the required fields. Something that was tested to work is defining a template within views/identifierOccurance path, like edit/_widget.gsp --}%
 
 %{-- 				<fieldset>
@@ -47,13 +47,13 @@
 						<g:hiddenField name="version" value="${identifierOccurrenceInstance?.version}" />
 						<fieldset>
 							<f:all bean="identifierOccurrenceInstance"/>
-							<div class="ui segment form-actions">
+							<div class="ui form-actions">
 								<button type="submit" class="ui button">
-									<i class="icon-ok icon-white"></i>
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.update.label" default="Update" />
 								</button>
 								<button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
-									<i class="icon-trash icon-white"></i>
+									<i class="trash alternate icon"></i>
 									<g:message code="default.button.delete.label" default="Delete" />
 								</button>
 							</div>

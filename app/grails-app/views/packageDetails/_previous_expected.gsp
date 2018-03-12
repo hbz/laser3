@@ -29,7 +29,7 @@
 
             <g:render template="nav" contextPath="." />
 
-            <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
+            <sec:ifAnyGranted roles="ROLE_ADMIN">
 
             <g:link controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement', default:'Mention this package in an announcement')}</g:link>
             </sec:ifAnyGranted>
@@ -49,7 +49,7 @@
           </dt>
           <dd>
 
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
             <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <thead>
             <tr>

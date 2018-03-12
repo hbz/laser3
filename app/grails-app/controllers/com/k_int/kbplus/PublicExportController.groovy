@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
@@ -9,6 +9,7 @@ import com.k_int.kbplus.auth.*;
 import groovy.xml.MarkupBuilder
 
 @Deprecated
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PublicExportController {
   def ESSearchService
   def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")

@@ -214,8 +214,13 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         def table
 
         def parts = this.descr.split(" ")
-        if(parts.size() == 2) {
+        if (parts.size() == 2) {
             table = parts[0] + "PrivateProperty"
+
+            // TODO: change table names from Org<x>Property to Organisation<x>Property
+            if (parts[0] == "Organisation"){
+                table = "OrgPrivateProperty"
+            }
         }
 
         if (table) {

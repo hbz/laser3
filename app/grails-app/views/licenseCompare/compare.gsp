@@ -9,12 +9,12 @@
 <r:require modules="onixMatrix" />
 
     <semui:breadcrumbs>
-        <semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:institution.shortcode]}" text="${institution.name}" />
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
 
         <semui:crumb class="active" message="menu.institutions.comp_lic" />
 
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<b class="caret"></b></a>&nbsp;
+          <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>&nbsp;
           <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
             <li>
               <g:link action="compare" params="${params+[format:'csv']}">CSV Export</g:link>
@@ -53,7 +53,7 @@
           </g:if>
         </div>
         <g:if test="${['stringValue','intValue','decValue'].contains(point.getValueType())}">
-            <span class="cell-inner">  <b>${point.getValue().encodeAsHTML()}</b></span>
+            <span class="cell-inner">  <strong>${point.getValue().encodeAsHTML()}</strong></span>
         </g:if>
         <g:else>
             <g:set var="val" value="${point.getValue()}"/>
@@ -78,7 +78,7 @@
               </span>
             </g:elseif>
             <g:else>
-               <span class="cell-inner">  <b>${point.getValue().encodeAsHTML()}</b></span>
+               <span class="cell-inner">  <strong>${point.getValue().encodeAsHTML()}</strong></span>
             </g:else>
         </g:else>
         </td>
@@ -122,13 +122,13 @@
             $(this).replaceWith("<span title='"+title+"' style='height:1em' class='onix-status fa-stack fa-4x'> <i class='fa fa-info-circle fa-stack-1x' style='color:#166fe7;' ></i> <i class='fa fa-ban fa-stack-1x' style='color:#FF0000'></i> </span>")
           })
             // Tooltips.
-            /* TODO js removed
+
           $('.onix-code, .onix-status').tooltip(
               {placement: 'bottom', trigger:'hover', html: true, container: 'body'}
           );
           $('.onix-icons span i').popover(
             {placement: 'left', trigger:'hover', html: true, container: 'body'}
-          ); */
+          );
         });
 
     </r:script>

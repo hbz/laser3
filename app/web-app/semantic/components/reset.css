@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.2.13 - Reset
+ * # Semantic UI 2.3.0 - Reset
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -337,7 +337,8 @@ button:-moz-focusring,
  * Correct the padding in Firefox.
  */
 fieldset {
-  padding: 0.35em 0.75em 0.625em;
+  padding: 0;
+  border-width: 0;
 }
 /**
  * 1. Correct the text wrapping in Edge and IE.
@@ -477,9 +478,3 @@ template {
 [hidden] {
   display: none;
 }
-
-
-/*******************************
-         Site Overrides
-*******************************/
-

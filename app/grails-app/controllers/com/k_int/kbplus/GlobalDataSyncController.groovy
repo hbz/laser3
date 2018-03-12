@@ -1,46 +1,78 @@
 package com.k_int.kbplus
 
-
-import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
-
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class GlobalDataSyncController {
 
   def springSecurityService
   def globalSourceSyncService
   def genericOIDService
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def index() { 
+  @Secured(['ROLE_DATAMANAGER'])
+  def index() {
     def result = [:]
 
     result.user = User.get(springSecurityService.principal.id)
-    result.max = params.max ? Integer.parseInt(params.max): result.user?.defaultPageSize
+    result.max = params.max ? Integer.parseInt(params.max) : result.user?.defaultPageSize
 
-    def paginate_after = params.paginate_after ?: ( (2*result.max)-1)
+    def paginate_after = params.paginate_after ?: ((2 * result.max) - 1)
     result.offset = params.offset ?: 0
+    result.order = params.order ?: 'desc'
 
-    def base_qry = " from GlobalRecordInfo as r where lower(r.name) like ? and r.source.rectype = 0 "
+    result.rectype = params.rectype ?: 0
+
+    if (result.order == "asc") {
+      result.order = "desc"
+    } else {
+      result.order = "asc"
+    }
+
+
+    def base_qry = " from GlobalRecordInfo as r where lower(r.name) like ? and r.source.rectype = ${result.rectype} "
 
     def qry_params = []
-    if ( params.q?.length() > 0 ) {
+    if (params.q?.length() > 0) {
       qry_params.add("%${params.q.trim().toLowerCase()}%");
-    }
-    else {
+    } else {
       qry_params.add("%");
     }
 
-    result.globalItemTotal = Subscription.executeQuery("select count(r) "+base_qry, qry_params )[0]
-    result.items = Subscription.executeQuery("select r ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
+    if ((params.sort != null) && (params.sort.length() > 0)) {
+      base_qry += " order by ${params.sort} ${params.order}"
+    } else {
+      base_qry += " order by r.name asc"
+    }
+
+    Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+    Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+
+    threadArray.each {
+      if (it.name == 'GlobalDataSync') {
+        flash.message = message(code: 'globalDataSync.running')
+      }
+    }
+
+    result.globalItemTotal = Subscription.executeQuery("select count(r) " + base_qry, qry_params)[0]
+    result.items = Subscription.executeQuery("select r ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
+
+    result.tippcount = []
+    result.items.each {
+      def bais = new ByteArrayInputStream((byte[]) (it.record))
+      def ins = new ObjectInputStream(bais);
+      def rec_info = ins.readObject()
+      ins.close()
+      result.tippcount.add(rec_info.tipps.size())
+    }
+
+
+
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def newCleanTracker() { 
+  @Secured(['ROLE_DATAMANAGER'])
+  def newCleanTracker() {
     log.debug("params:"+params)
     def result = [:]
     result.item = GlobalRecordInfo.get(params.id)
@@ -52,15 +84,15 @@ class GlobalDataSyncController {
     render view:'reviewTracker', model:result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def selectLocalPackage() { 
+  @Secured(['ROLE_DATAMANAGER'])
+  def selectLocalPackage() {
     log.debug("params:"+params)
     def result = [:]
     result.item = GlobalRecordInfo.get(params.id)
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def cancelTracking() {
     log.debug("cancelTracking: " + params)
     GlobalRecordTracker.get(params.trackerId).delete()
@@ -68,8 +100,8 @@ class GlobalDataSyncController {
     redirect(action:'index', params:[q:params.itemName])
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-  def buildMergeTracker() { 
+  @Secured(['ROLE_DATAMANAGER'])
+  def buildMergeTracker() {
     log.debug("params:"+params)
     def result = [:]
     result.type='existing'
@@ -83,7 +115,7 @@ class GlobalDataSyncController {
     render view:'reviewTracker', model:result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def createTracker() {
     log.debug("params:"+params)
     def result = [:]
@@ -98,13 +130,13 @@ class GlobalDataSyncController {
         case 'new':
           log.debug("merge remote package with new local package...");
           def grt = new GlobalRecordTracker(
-                                            owner:result.item, 
-                                            identifier:new_tracker_id, 
-                                            name:params.newPackageName,  
-                                            autoAcceptTippAddition:params.autoAcceptTippUpdate=='on'?true:false,
-                                            autoAcceptTippDelete:params.autoAcceptTippDelete=='on'?true:false,
-                                            autoAcceptTippUpdate:params.autoAcceptTippAddition=='on'?true:false,
-                                            autoAcceptPackageUpdate:params.autoAcceptPackageChange=='on'?true:false)
+                  owner: result.item,
+                  identifier: new_tracker_id,
+                  name: params.newPackageName,
+                  autoAcceptTippAddition: params.autoAcceptTippAddition == 'on' ? true : false,
+                  autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
+                  autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
+                  autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
           if ( grt.save() ) {
             globalSourceSyncService.initialiseTracker(grt);
           }
@@ -115,15 +147,15 @@ class GlobalDataSyncController {
           break;
         case 'existing':
           log.debug("merge remote package with existing local package...");
-          def grt = new GlobalRecordTracker( 
-                                            owner:result.item, 
-                                            identifier:new_tracker_id, 
-                                            name:result.item.name,
-                                            localOid:params.localPkg,
-                                            autoAcceptTippAddition:params.autoAcceptTippUpdate=='on'?true:false,
-                                            autoAcceptTippDelete:params.autoAcceptTippDelete=='on'?true:false,
-                                            autoAcceptTippUpdate:params.autoAcceptTippAddition=='on'?true:false,
-                                            autoAcceptPackageUpdate:params.autoAcceptPackageChange=='on'?true:false)
+          def grt = new GlobalRecordTracker(
+                  owner: result.item,
+                  identifier: new_tracker_id,
+                  name: result.item.name,
+                  localOid: params.localPkg,
+                  autoAcceptTippAddition: params.autoAcceptTippAddition == 'on' ? true : false,
+                  autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
+                  autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
+                  autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
           if ( grt.save() ) {
             globalSourceSyncService.initialiseTracker(grt, params.localPkg);
           }

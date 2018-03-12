@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import grails.converters.JSON;
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 //todo Refactor aspects into service
@@ -10,15 +10,17 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 //todo Change notifications integration maybe use : changeNotificationService with the onChange domain event action
 //todo Refactor index separation of filter page (used for AJAX), too much content, slows DOM on render/binding of JS functionality
 //todo Enable advanced searching, use configurable map, see filterQuery() 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController {
 
     def springSecurityService
     def permissionHelperService
+    def contextService
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
     private final def admin_role      = Role.findByAuthority('INST_ADM')
-    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR - Euro Member Countries')
+    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
 
@@ -47,7 +49,8 @@ class FinanceController {
       try {
 
         //Check nothing strange going on with financial data
-        result.institution =  Org.findByShortcode(params.shortcode)
+        result.institution =  contextService.getOrg()
+
         def user           =  User.get(springSecurityService.principal.id)
         if (!isFinanceAuthorised(result.institution, user)) {
             log.error("Sending 401 - forbidden");
@@ -188,7 +191,7 @@ class FinanceController {
 
         if (request.isPost() && params.format == "csv") {
             def result = [:]
-            result.institution =  Org.findByShortcode(params.shortcode)
+            result.institution =  contextService.getOrg()
             def user           =  User.get(springSecurityService.principal.id)
 
             if (!isFinanceAuthorised(result.institution, user)) {
@@ -593,7 +596,7 @@ class FinanceController {
       try {
         log.debug("FinanceController::newCostItem() ${params}");
 
-        result.institution  =  Org.findByShortcode(params.shortcode)
+        result.institution  =  contextService.getOrg()
         def user            =  User.get(springSecurityService.principal.id)
         result.error        =  [] as List
 
@@ -769,7 +772,7 @@ class FinanceController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def getRecentCostItems() {
         def dateTimeFormat     = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
-        def  institution       = Org.findByShortcode(params.shortcode)
+        def  institution       = contextService.getOrg()
         def  result            = [:]
         def  recentParams      = [max:10, order:'desc', sort:'lastUpdated']
         result.to              = new Date()
@@ -785,7 +788,7 @@ class FinanceController {
     @Secured(['ROLE_USER'])
     def newCostItemsPresent() {
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
-        def institution = Org.findByShortcode(params.shortcode)
+        def institution = contextService.getOrg()
         Date dateTo     = params.to? dateTimeFormat.parse(params.to):new Date()//getFromToDate(params.to,"to")
         int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution,dateTo)
 
@@ -808,7 +811,7 @@ class FinanceController {
         results.message    =  null
         results.sentIDs    =  JSON.parse(params.del) //comma seperated list
         def user           =  User.get(springSecurityService.principal.id)
-        def institution    =  Org.findByShortcode(params.shortcode)
+        def institution    =  contextService.getOrg()
         if (!isFinanceAuthorised(institution, user))
         {
             response.sendError(403)
@@ -972,7 +975,7 @@ class FinanceController {
         def result      = [:]
         result.success  = [status:  "Success: Deleted code", msg: "Deleted instance of the budget code for the specified cost item"]
         def user        = User.get(springSecurityService.principal.id)
-        def institution = Org.findByShortcode(params.shortcode)
+        def institution = contextService.getOrg()
 
         if (!user.getAuthorizedOrgs().id.contains(institution.id))
         {
@@ -1007,7 +1010,7 @@ class FinanceController {
     def createCode() {
         def result      = [:]
         def user        = springSecurityService.currentUser
-        def institution = Org.findByShortcode(params.shortcode)
+        def institution = contextService.getOrg()
 
         if (! userCertified(user, institution))
         {

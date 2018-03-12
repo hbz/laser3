@@ -10,13 +10,15 @@
 	<semui:breadcrumbs>
 		<semui:crumb controller="packageDetails" action="index" message="package.show.all" />
 		<semui:crumb class="active" message="package.compare.compare" />
-
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <g:link action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
 	</semui:breadcrumbs>
+
+	<semui:controlButtons>
+		<semui:exportDropdown>
+			<semui:exportDropdownItem>
+				<g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+			</semui:exportDropdownItem>
+		</semui:exportDropdown>
+	</semui:controlButtons>
 
 	<h2 class="ui header">${message(code:'package.compare', default:'Package Comparison')}</h2>
 
@@ -27,7 +29,7 @@
 	    </g:if>
 
 	<g:form action="compare" controller="packageDetails" method="GET" class="ui form">
-		<table class="ui celled table">
+		<table class="ui celled la-table table">
 			<thead>
 				<tr>
 					<th></th>
@@ -92,7 +94,7 @@
 
 	<div class="row">
 	<h3 class="ui header">${message(code:'package.compare.overview', default:'Packages Compared')}</h3>
-	<table class="ui celled table">
+	<table class="ui celled la-table table">
 		<thead>
 			<tr>
 				<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
@@ -137,7 +139,7 @@
 	<input type="hidden" name="countA" value="${params.countA}"/>
 	<input type="hidden" name="countB" value="${params.countB}"/>
 
-	 <table class="ui celled table">
+	 <table class="ui celled la-table table">
 		<tr>
 			<td style="text-align:right;padding-right:10px;">
 				${message(code:'package.compare.filter.title', default:'Filters - Title')}: <input type="text" name="filter" value="${params.filter}"/>
@@ -167,7 +169,7 @@
 <div class="span6 offset3">
 <dt class="center">${message(code:'package.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 </div>
-<table class="ui celled table">
+<table class="ui celled la-table table">
 	<thead>
 		<tr> 
 			<th> ${message(code:'title.label', default:'Title')} </th>
@@ -177,9 +179,9 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td><b>${message(code:'package.compare.results.tipps.total', default:'Total Titles (TIPPs) for query')}</b></td>
-			<td><b>${listACount.titles} (${listACount.tipps})</b></td>
-			<td><b>${listBCount.titles} (${listBCount.tipps})</b></td>
+			<td><strong>${message(code:'package.compare.results.tipps.total', default:'Total Titles (TIPPs) for query')}</strong></td>
+			<td><strong>${listACount.titles} (${listACount.tipps})</strong></td>
+			<td><strong>${listBCount.titles} (${listBCount.tipps})</strong></td>
 		<tr>
 		<g:each in="${comparisonMap}" var="entry">
                   <g:set var="pkgATipp" value="${entry.value[0]}"/>
@@ -190,7 +192,7 @@
 		<tr>
 			
 			<td>
-                          <b><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></b>
+                          <strong><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids}" var="id">

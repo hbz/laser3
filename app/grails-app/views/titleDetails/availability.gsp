@@ -28,7 +28,7 @@
     <g:if test="${availability?.size() > 0}">
 
       <div class="container alert-warn">
-        <table class="ui celled table">
+        <table class="ui celled la-rowspan table">
           <thead>
             <tr>
               <th rowspan="2">IE</th>

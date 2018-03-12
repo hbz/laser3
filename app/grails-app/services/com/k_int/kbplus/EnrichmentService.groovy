@@ -81,7 +81,7 @@ class EnrichmentService implements ApplicationContextAware {
       mailService.sendMail {
         to systemEmail
         from systemEmail
-        subject 'KBPlus Housekeeping Results'
+        subject 'LAS:eR Housekeeping Results'
         html content
       }
     }else{

@@ -38,7 +38,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
   License owner
   SortedSet issueEntitlements
-  RefdataValue isPublic
+  RefdataValue isPublic     // RefdataCategory 'YN'
   Set ids = []
 
   static transients = [ 'subscriber', 'provider', 'consortia' ]
@@ -84,12 +84,12 @@ class Subscription extends BaseDomainComponent implements Permissions {
         endDate     column:'sub_end_date'
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
-        instanceOf  column:'sub_parent_sub_fk'
+        instanceOf              column:'sub_parent_sub_fk'
         previousSubscription    column:'sub_previous_subscription_fk'
-        isSlaved    column:'sub_is_slaved'
-        noticePeriod            column:'sub_notice_period'
-        isPublic    column:'sub_is_public'
-        pendingChanges          sort: 'ts', order: 'asc'
+        isSlaved        column:'sub_is_slaved'
+        noticePeriod    column:'sub_notice_period'
+        isPublic        column:'sub_is_public'
+        pendingChanges  sort: 'ts', order: 'asc'
     }
 
     static constraints = {
@@ -155,14 +155,14 @@ class Subscription extends BaseDomainComponent implements Permissions {
     result
   }
 
-  def getConsortia() {
-    def result = null;
-    orgRelations.each { or ->
-      if ( or?.roleType?.value=='Subscription Consortia' )
-        result = or.org;
+    def getConsortia() {
+        def result = null;
+        orgRelations.each { or ->
+            if ( or?.roleType?.value=='Subscription Consortia' )
+                result = or.org
+            }
+        result
     }
-    result
-  }
 
     def isEditableBy(user) {
         hasPerm("edit", user)
@@ -366,5 +366,31 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
   }
 
+  def getCommaSeperatedPackagesIsilList() {
+      def result = []
+      packages.each { it ->
+          def identifierValue = it.pkg.getIdentifierByType('isil')?.value ?: null
+          if (identifierValue) {
+              result += identifierValue
+          }
+      }
+      result.join(',')
+  }
+
+  def hasOrgWithUsageSupplierId() {
+      def hasUsageSupplier = false
+      packages.each { it ->
+          def hql = "select count(orole.id) from OrgRole as orole "+
+                  "join orole.pkg as pa "+
+                  "join orole.roleType as roletype "+
+                  "where pa.id = :package_id and roletype.value='Content Provider' "+
+                  "and exists (select oid from orole.org.ids as oid where oid.identifier.ns.ns='statssid')"
+          def queryResult = OrgRole.executeQuery(hql, ['package_id':it.pkg.id])
+          if (queryResult[0] > 0){
+              hasUsageSupplier = true
+          }
+      }
+      return hasUsageSupplier
+  }
 
 }

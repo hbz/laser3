@@ -17,124 +17,99 @@
       ${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}
     </h1>
 
+    <semui:meta>
+        <div class="inline-lists">
+
+            <dl>
+                <dt><g:message code="titleInstance.globalUID.label" default="Global UID" /></dt>
+                <dd> <g:fieldValue bean="${tipp}" field="globalUID"/> </dd>
+
+                <g:if test="${titleInstanceInstance?.ids}">
+
+                    <dt><g:message code="title.identifiers.label" /></dt>
+
+                    <dd><g:each in="${titleInstanceInstance.ids}" var="i">
+                        <g:if test="${i.identifier.ns.ns != 'originediturl'}">
+                            ${i.identifier.ns.ns}:${i.identifier.value}<br/>
+                        </g:if>
+                        <g:else>
+                            GOKb: <a href="${i.identifier.value}">${message(code:'component.originediturl.label')}</a><br/>
+                        </g:else>
+                    </g:each>
+                    </dd>
+
+                </g:if>
+            </dl>
+        </div>
+    </semui:meta>
+
     <semui:messages data="${flash}" />
 
-  <div class="inline-lists">
-        <dl>
-          <g:if test="${titleInstanceInstance?.ids}">
-            <dt><g:message code="title.identifiers.label" /></dt>
-            
-              <dd><g:each in="${titleInstanceInstance.ids}" var="i">
-                <g:if test="${i.identifier.ns.ns != 'originediturl'}">
-                  ${i.identifier.ns.ns}:${i.identifier.value}<br/>
-                </g:if>
-                <g:else>
-                  GOKb: <a href="${i.identifier.value}">${message(code:'component.originediturl.label')}</a><br/>
-                </g:else>
-              </g:each>
-              </dd>
-            
-          </g:if>
-        </dl>
-
-          <dl><!-- TODO: error? -->
-              <dt><g:message code="titleInstance.globalUID.label" default="Global UID" /></dt>
-              <dd> <g:fieldValue bean="${tipp}" field="globalUID"/> </dd>
-          </dl>
+    <div class="inline-lists">
 
         <dl>
           <dt>${message(code:'tipp.show.avStatus', default:'Availability Status')}</dt>
-          <dd> <span title="${tipp.availabilityStatusExplanation}">${tipp.availabilityStatus?.value}</span></dd>
-        </dl>
-        <dl>
+          <dd><span title="${tipp.availabilityStatusExplanation}">${tipp.availabilityStatus?.value}</span></dd>
+
           <dt>${message(code:'tipp.show.accessStart', default:'Access Start Date (Enters Package)')}</dt>
           <dd><semui:xEditable owner="${tipp}" type="date" field="accessStartDate" /></dd>
-        </dl>
-        <dl>
+
           <dt>${message(code:'tipp.show.accessEnd', default:'Access End Date (Leaves Package)')}</dt>
           <dd><semui:xEditable owner="${tipp}" type="date" field="accessEndDate" /></dd>
-        </dl>
-        <dl>
+
           <dt>${message(code:'tipp.show.tippStartDate', default:'TIPP Start Date')}</dt>
           <dd><semui:xEditable owner="${tipp}" type="date" field="startDate"/></dd>
-        </dl>
-        <dl>
+
           <dt>${message(code:'tipp.show.tippStartVol', default:'TIPP Start Volume')}</dt>
           <dd><semui:xEditable owner="${tipp}" field="startVolume"/></dd>
-        </dl>
-        <dl>
+
           <dt>${message(code:'tipp.show.tippStartIss', default:'TIPP Start Issue')}</dt>
           <dd><semui:xEditable owner="${tipp}" field="startIssue"/></dd>
-        </dl>
-        <dl>
 
           <dt>${message(code:'tipp.show.tippEndDate', default:'TIPP End Date')}</dt>
           <dd><semui:xEditable owner="${tipp}"  type="date" field="endDate"/></dd>
-        </dl>
-        <dl>
 
           <dt>${message(code:'tipp.show.tippEndVol', default:'TIPP End Volume')}</dt>
           <dd><semui:xEditable owner="${tipp}" field="endVolume"/></dd>
-        </dl>
-        <dl>
 
           <dt>${message(code:'tipp.show.tippEndIss', default:'TIPP End Issue')}</dt>
           <dd><semui:xEditable owner="${tipp}" field="endIssue"/></dd>
-        </dl>
-        <dl>
 
           <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
           <dd><semui:xEditable owner="${tipp}" field="coverageDepth"/></dd>
-        </dl>
-        <dl>
 
           <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
           <dd><semui:xEditable owner="${tipp}" field="coverageNote"/></dd>
-        </dl>
-        <dl>
 
           <dt>${message(code:'tipp.embargo', default:'Embargo')}</dt>
           <dd><semui:xEditable owner="${tipp}" field="embargo"/></dd>
-        </dl>
-        <dl>
 
           <dt>${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}</dt>
           <dd><semui:xEditable type="text" owner="${tipp}" field="hostPlatformURL"/></dd>
-        </dl>
-        <dl>
 
           <dt>${message(code:'default.status.label', default:'Status')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="status" config='TIPP Status'/><dd>
-        </dl>
-        <dl>
+          <dd><semui:xEditableRefData owner="${tipp}" field="status" config='TIPP Status'/></dd>
 
           <dt>${message(code:'tipp.show.statusReason', default:'Status Reason')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="statusReason" config="Tipp.StatusReason"/><dd>
-        </dl>
+          <dd><semui:xEditableRefData owner="${tipp}" field="statusReason" config="Tipp.StatusReason"/></dd>
 
-        <dl>
           <dt>${message(code:'tipp.delayedOA', default:'Delayed OA')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/><dd>
-        </dl>
+          <dd><semui:xEditableRefData owner="${tipp}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/></dd>
 
-        <dl>
           <dt>${message(code:'tipp.hybridOA', default:'Hybrid OA')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/><dd>
-        </dl>
+          <dd><semui:xEditableRefData owner="${tipp}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/></dd>
 
-        <dl>
           <dt>${message(code:'tipp.paymentType', default:'Payment')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/><dd>
-        </dl>
+          <dd><semui:xEditableRefData owner="${tipp}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/></dd>
 
-        <dl>
           <dt>${message(code:'tipp.host_platform', default:'Host Platform')}</dt>
           <dd>${tipp.platform.name}</dd>
         </dl>
+
         <dl>
           <dt style="margin-top:10px">${message(code:'tipp.additionalPlatforms', default:'Additional Platforms')}</dt>
           <dd>
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
               <thead>
                 <tr><th>${message(code:'default.relation.label', default:'Relation')}</th><th>${message(code:'tipp.show.platformName', default:'Platform Name')}</th><th>${message(code:'platform.primaryURL', default:'Primary URL')}</th></tr>
               </thead>
@@ -150,8 +125,6 @@
             </table>
           </dd>
         </dl>
-
-
 
           <g:if test="${titleInstanceInstance?.tipps}">
             <dl>
@@ -181,7 +154,7 @@
                     </g:form>
                 </semui:filter>
 
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
               <thead>
               <tr>
                 <th>${message(code:'tipp.coverage_start')}</th>

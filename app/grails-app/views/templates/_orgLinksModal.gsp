@@ -6,7 +6,7 @@
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
 
         <div class="field">
-            <table id="org_role_tab" class="ui celled table">
+            <table id="org_role_tab" class="ui celled la-table la-table-small table">
                 <thead>
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>

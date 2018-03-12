@@ -59,8 +59,6 @@ grails.project.dependency.resolution = {
         // For shibboleth native-sp
         // mavenRepo "http://projects.k-int.com/nexus-webapp-1.4.0/content/repositories/releases"
         mavenRepo "http://nexus.k-int.com/content/repositories/releases/"
-
-
     }
 
     dependencies {
@@ -81,13 +79,21 @@ grails.project.dependency.resolution = {
         runtime 'xerces:xercesImpl:2.11.0'
         runtime 'mysql:mysql-connector-java:5.1.30'
 
-        runtime ('org.elasticsearch:elasticsearch:1.7.1') {
-            excludes "org.ow2.asm:asm:4.1"
-            //excludes "org.ow2.asm:asm-commons:4.1"
+//        runtime ('org.elasticsearch:elasticsearch:1.7.1') {
+//            excludes "org.ow2.asm:asm:4.1"
+//            //excludes "org.ow2.asm:asm-commons:4.1"
+//        }
+//        runtime ('org.elasticsearch:elasticsearch-groovy:1.7.0') {
+//            excludes "org.codehaus.groovy:groovy-all:2.4.3"
+//        }
+
+        compile 'org.elasticsearch:elasticsearch:2.1.2'
+        runtime ('org.elasticsearch:elasticsearch-groovy:2.1.2') {
+            excludes "org.codehaus.groovy:groovy-all"
         }
-        runtime ('org.elasticsearch:elasticsearch-groovy:1.7.0') {
-            excludes "org.codehaus.groovy:groovy-all:2.4.3"
-        }
+
+        compile 'joda-time:joda-time:2.9.9'
+
 
         runtime 'gov.loc:bagit:4.0'
         runtime 'org.apache.poi:poi:3.8'
@@ -131,8 +137,9 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2.8" // 1.2.14 won't work @ kbplusapp.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
-        
-        compile ":file-viewer:0.3"
+
+        //Sicherheitsrisko
+        //compile ":file-viewer:0.3"
 
         build (':tomcat:7.0.55.2'){
             //This is crashing under Java8, we impport newer version manually
@@ -156,14 +163,10 @@ grails.project.dependency.resolution = {
 
         test ":remote-control:2.0"
 
-        // Font awesome for font based icons.
-        // not needed, but removing will e.g. cause bootstrap errors with modals
-        // TODO: remove, because of semantic-ui
-        //compile ":font-awesome-resources:4.3.0.1"
-
-        compile ':spring-security-core:1.2.7.4'
-        compile ':spring-security-ldap:1.0.6'
-        compile ':spring-security-shibboleth-native-sp:1.0.3'
+        compile ':spring-security-core:2.0.0'
+        //compile ':spring-security-core:1.2.7.4'
+        //compile ':spring-security-ldap:1.0.6'
+        //compile ':spring-security-shibboleth-native-sp:1.0.3'
 
         runtime ":gsp-resources:0.4.4"
         runtime ":jquery:1.11.1"
@@ -171,7 +174,8 @@ grails.project.dependency.resolution = {
         runtime ":audit-logging:1.0.3"
         runtime ":executor:0.3"
         runtime ":markdown:1.1.1"
-        runtime ":quartz:1.0.1"
+        runtime ":quartz:1.0.2"
+        //runtime ":quartz:1.0.1"
         //compile ":grails-melody:1.53.0"
         // runtime "com.k-int:domain-model-oai-pmh:0.1"
         compile ":jsonp:0.2"

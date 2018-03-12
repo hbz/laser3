@@ -18,7 +18,7 @@
 		<div id="list-person" class="content scaffold-list" role="main">
 			<h1 class="ui header"><g:message code="default.list.label" args="[entityName]" /></h1>
 			<semui:messages data="${flash}" />
-			 <table class="ui celled table">
+			 <table class="ui celled la-table table">
 			<thead>
 					<tr>
 					

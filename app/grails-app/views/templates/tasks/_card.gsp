@@ -1,17 +1,21 @@
-<semui:card message="task.plural" class="card-grey notes">
-    <ul>
+<semui:card message="task.plural" class="notes" href="#modalCreateTask" editable="${true}">
     <g:each in="${tasks}" var="tsk">
-        <li>
-            <g:link controller="task" action="show" id="${tsk.id}">${tsk?.title}</g:link>
-            <br />
-            <i>
-                ${message(code:'task.endDate.label')}
-                <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk.endDate}"/>
-            </i>
-        </li>
+        <div class="ui small feed content">
+            <!--<div class="event">-->
+
+                    <div class="summary">
+                        <g:link controller="task" action="show" id="${tsk.id}">${tsk?.title}</g:link>
+        <br />
+                        <div class="content">
+                                        ${message(code:'task.endDate.label')}
+                                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk.endDate}"/>
+                        </div>
+                    </div>
+
+        <!--</div>-->
+        </div>
     </g:each>
-    </ul>
-    <input type="submit" class="ui fluid button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+
 </semui:card>
 
 <g:render template="/templates/tasks/modal" />

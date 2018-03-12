@@ -57,14 +57,26 @@ modules = {
         resource url:'js/dataTables.colVis.min.js'
         resource url:'js/dataTables.fixedColumns.min.js'
         resource url:'js/dataTables.scroller.js'
-        resource url:'js/jquery.dotdotdot.min.js'
 
         resource url:'semantic/semantic.min.js'     // new stuff
         resource url:'semantic/semantic.min.css'    // new stuff
 
-        resource url:'js/application.js.gsp'          // legacy app js
+        resource url:'semantic_heave/jquery.readmore.min.js' // new stuff
 
-        resource url:'semantic_heave/select2.css'       // updated stuff // new version 3.5.4
-        resource url:'semantic_heave/select2.min.js'    // updated stuff // new version 3.5.4
+        resource url:'semantic_heave/select2.css'            // updated stuff // new version 3.5.4
+        resource url:'semantic_heave/select2.min.js'         // updated stuff // new version 3.5.4
+
+        resource url:'js/application.js.gsp'          // legacy app js
+    }
+
+    swaggerApi {
+        dependsOn 'jquery'
+
+        resource url:'vendor/swagger-ui/swagger-ui.css'
+
+        resource url:'vendor/swagger-ui/swagger-ui-bundle.js'
+        resource url:'vendor/swagger-ui/swagger-ui-standalone-preset.js'
+        resource url:'vendor/cryptoJS-v3.1.2/rollups/hmac-sha256.js'
+        //resource url:'js', file: 'jquery-3.2.1.min.js'
     }
 }

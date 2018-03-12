@@ -1,13 +1,17 @@
 package de.laser
 
+import com.k_int.kbplus.Address
+import com.k_int.kbplus.Contact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Person
 import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.web.util.WebUtils
 
 class AddressbookService {
 
     def springSecurityService
+    def contextService
 
     def getVisiblePersonsByOrgRoles(User user, orgRoles) {
         def orgList = []
@@ -41,5 +45,15 @@ class AddressbookService {
             }
         }
         visiblePersons
+    }
+
+    def isAddressEditable(Address address, User user) {
+        true // TODO
+    }
+    def isContactEditable(Contact contact, User user) {
+        true // TODO
+    }
+    def isPersonEditable(Person person, User user) {
+        true // TODO
     }
 }

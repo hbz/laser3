@@ -1,3 +1,174 @@
 /*******************************
         Global Overrides
 *******************************/
+
+/*******************************
+        MISSED IN SEMANTIC UI
+*******************************/
+.la-float-right{
+    float: right
+}
+
+/*******************************
+        Object Overview Site
+*******************************/
+
+.ui.card.card-grey{
+        background: @laSideCards;
+}
+
+
+/*******************************
+        Landingpage
+*******************************/
+.landingpage {
+    background-color: #f1ebe5;
+    .ui.menu .item {
+        font-weight: 900;
+    }
+    .hidden.menu {
+        display: none;
+    }
+    .ui.inverted.menu.la-top-menu {
+        height: 70px;
+        margin: 0 !important;
+        border-radius:0 !important;
+        border: none !important;
+    }
+    .la-fixed-menu {
+        height: 70px;
+    }
+    .logo {
+        width: 144px;
+        padding-right: 2rem;
+
+    }
+    .ui.segment {
+        padding: 2em 1em;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        margin:1rem 0rem;
+        border-radius: 0;
+
+        &.masthead {
+            background-image: url('../images/landingpage/hero.jpg') !important;
+            background-repeat: no-repeat !important;
+            background-position: top center !important;
+            border: none !important;
+            min-height: 450px;
+            padding: 0 0 3rem 0em;
+            margin:0 0 2rem 0;
+        }
+        &.footer {
+            padding: 3rem 0 0 0;
+        }
+    }
+    .la-hero {
+        padding-top: 7rem !important;
+        .button {
+            background-color: #f1ebe5;
+        }
+    }
+    .masthead h1.ui.header{
+        font-size: 28px;
+        font-weight: 900;
+        text-align: left;
+    }
+    .masthead h2{
+        font-size: 1.3rem;
+        font-weight: normal;
+        text-align: left;
+    }
+    .la-lead {
+        font-size: 14px;
+        font-weight: 900;
+        display: block;
+    }
+
+    h3 {
+        color: #2d6697 !important;
+    }
+    .la-feature {
+        display: flex;
+        justify-content: center;
+    }
+    .la-feature svg {
+        height: 108px;
+    }
+
+
+    @media only screen and (max-width: 700px) {
+        .ui.fixed.menu {
+            display: none !important;
+        }
+
+        .masthead.segment {
+            min-height: 350px;
+        }
+
+        .masthead h1.ui.header {
+            font-size: 20px;
+            margin-top: 0;
+        }
+
+        .masthead h2 {
+            margin-top: 0.5em;
+            font-size: 14px;
+        }
+    }
+}
+.ui {
+    &.la-eye-catcher {
+        .labeled.button{
+            width: 100%;
+            cursor: default!important;
+        }
+        .label.la-eye-catcher-txt{
+            white-space: normal!important;
+            cursor: default!important;
+            display: inline-block!important;
+            text-align: left;
+            line-height: 1.6em!important;
+            background-color:#d7c4b2!important;
+            color:#544e48!important;
+            font-weight:400!important;
+        }
+        .la-eye-catcher-header {
+            display: flex!important;
+            align-items: center!important;
+            cursor: default!important;
+            &.ui.blue.button:hover {
+                background-color: @blue!important;
+            }
+        }
+    }
+}
+/* Filter */
+.la-input-selected {
+    background-color: #cbd9e2!important;
+}
+.la-right {
+    text-align: right;
+}
+.ui.form .fields>.field.la-combi-input-left {
+    padding-right: 0;
+    input,select {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        border-right: 2px dotted lightgrey;
+
+    }
+}
+.ui.form .fields>.field.la-combi-input-right {
+    padding-left: 0;
+    input,select {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+        border-left: none;
+    }
+}
+.la-filter-search {
+    text-align: right;
+    margin-top: 1.2rem!important;
+}

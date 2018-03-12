@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.2.13 - Accordion
+ * # Semantic UI 2.3.0 - Accordion
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -245,9 +245,3 @@
 .ui.accordion .accordion .title .dropdown.icon:before {
   content: '\f0da' /*rtl:'\f0d9'*/;
 }
-
-
-/*******************************
-        User Overrides
-*******************************/
-

@@ -69,7 +69,7 @@ class Person extends BaseDomainComponent {
     
     @Override
     String toString() {
-        last_name + ', ' + first_name + ' ' + middle_name + ' (' + id + ')'
+        (last_name ? last_name + ', ':' ') + (first_name ?: '') + ' ' + (middle_name ?: '') // + ' (' + id + ')'
     }
 
     static def lookup(firstName, lastName, tenant, isPublic, org, functionType) {
@@ -78,15 +78,14 @@ class Person extends BaseDomainComponent {
         // TODO gender
 
         def person
-        def p = Person.executeQuery(
+        def check = Person.executeQuery(
             "select p from Person as p, PersonRole as pr where pr.prs = p and p.first_name = ? and p.last_name = ? and p.tenant = ? and p.isPublic = ? and pr.org = ? and pr.functionType = ? order by p.id asc",
             [firstName, lastName, tenant, isPublic, org, functionType]
         )
 
-        if ( p.size() > 0 ) {
-            person = p[0]
+        if ( check.size() > 0 ) {
+            person = check.get(0)
         }
-
         person
     }
 
@@ -153,14 +152,49 @@ class Person extends BaseDomainComponent {
                     resultPersonRole.errors.each{ println it }
                 }
                 else {
-                    info += " > ok"
+                    info += " > OK"
                 }
             }
             LogFactory.getLog(this).debug(info)
         }
         resultPerson      
     }
-    
+
+
+    static def getByOrgAndFunction(Org org, String func) {
+        def result = Person.executeQuery(
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.functionType.value = ?",
+                [org, func]
+        )
+        result
+    }
+
+    static def getByOrgAndObjectAndResponsibility(Org org, def obj, String resp) {
+        // TODO implement: obj
+        def result = Person.executeQuery(
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.responsibilityType.value = ?",
+                [org, resp]
+        )
+        result
+    }
+
+    static def getByOrgAndFunctionFromAddressbook(Org org, String func, Org tenant) {
+        def result = Person.executeQuery(
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
+                [org, func, tenant]
+        )
+        result
+    }
+
+    static def getByOrgAndObjectAndResponsibilityFromAddressbook(Org org, def obj, String resp, Org tenant) {
+        // TODO implement: obj
+        def result = Person.executeQuery(
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.responsibilityType.value = ? and p.tenant = ?",
+                [org, resp, tenant]
+        )
+        result
+    }
+
     /**
      *
      * @param obj

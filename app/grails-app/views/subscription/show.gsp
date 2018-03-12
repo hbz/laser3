@@ -102,7 +102,7 @@
 
           <g:if test="${subscriptionInstance?.orgRelations}">
               <h6 class="ui header">Relations</h6>
-              <table class="ui celled striped table">
+              <table class="ui celled la-table table">
                   <tr>
                       <th>Relation</th>
                       <th>To Org</th>
@@ -118,7 +118,7 @@
 
           <g:if test="${subscriptionInstance?.issueEntitlements}">
               <h6 class="ui header">Entitlements</h6>
-              <table class="ui celled striped table">
+              <table class="ui celled la-table table">
                   <tr>
                       <th>Title</th>
                       <th>ISSN</th>
@@ -153,13 +153,13 @@
         <g:form>
           <sec:ifAnyGranted roles="ROLE_ADMIN">
           <g:hiddenField name="id" value="${subscriptionInstance?.id}" />
-          <div class="ui segment form-actions">
+          <div class="ui form-actions">
             <g:link class="ui button" action="edit" id="${subscriptionInstance?.id}">
-              <i class="icon-pencil"></i>
+              <i class="write icon"></i>
               <g:message code="default.button.edit.label" default="Edit" />
             </g:link>
             <button class="ui negative button" type="submit" name="_action_delete">
-              <i class="icon-trash icon-white"></i>
+              <i class="trash alternate icon"></i>
               <g:message code="default.button.delete.label" default="Delete" />
             </button>
           </div>

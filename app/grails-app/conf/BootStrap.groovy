@@ -3,8 +3,8 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SecurityFilterPosition // 2.0
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
 class BootStrap {
 
@@ -14,10 +14,10 @@ class BootStrap {
 
     def init = { servletContext ->
 
-        log.info("SystemId: ${grailsApplication.config.kbplusSystemId}")
+        log.info("SystemId: ${grailsApplication.config.laserSystemId}")
 
-        if (grailsApplication.config.kbplusSystemId != null) {
-            def system_object = SystemObject.findBySysId(grailsApplication.config.kbplusSystemId) ?: new SystemObject(sysId: grailsApplication.config.kbplusSystemId).save(flush: true)
+        if (grailsApplication.config.laserSystemId != null) {
+            def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
         }
 
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
@@ -58,15 +58,19 @@ class BootStrap {
         OrgPermShare.assertPermShare(view_permission, cons_combo)
 
         // Global System Roles
-        def userRole        = Role.findByAuthority('ROLE_USER')     ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-        def editorRole      = Role.findByAuthority('ROLE_EDITOR')   ?: new Role(authority: 'ROLE_EDITOR', roleType: 'global').save(failOnError: true)
-        def adminRole       = Role.findByAuthority('ROLE_ADMIN')    ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
-        def kbplus_editor   = Role.findByAuthority('KBPLUS_EDITOR') ?: new Role(authority: 'KBPLUS_EDITOR', roleType: 'global').save(failOnError: true)
-        def apiRole         = Role.findByAuthority('ROLE_API')      ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
+
+        def yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'global').save(failOnError: true)
+        def adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
+        def dmRole      = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
+        def userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
+        def apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
         def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
         def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
         def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
+
+        def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
+        def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
         def institutionalAdmin = Role.findByAuthority('INST_ADM')
@@ -249,6 +253,12 @@ class BootStrap {
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
 
+        log.debug("createOrganisationProperties ..")
+        createOrganisationConfig()
+
+        log.debug("createSubscriptionProperties ..")
+        createSubscriptionProperties()
+
         log.debug("createLicenseProperties ..")
         createLicenseProperties()
 
@@ -319,63 +329,109 @@ class BootStrap {
         }
     }
 
+    def createOrganisationConfig() {
+        def allDescr = [en: PropertyDefinition.ORG_CONF, de: PropertyDefinition.ORG_CONF]
+        def requiredProps = [
+                [name: [en: "API Key", de: "API Key"],                            descr:allDescr, type:String.toString()],
+                [name: [en: "statslogin", de: "statslogin"],                      descr:allDescr, type:String.toString()],
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredProps)
+    }
+
+    def createSubscriptionProperties() {
+        
+        def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
+        
+        def requiredProps = [
+                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"], descr:allDescr, type:RefdataValue.toString(), cat:'YN']
+
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredProps)
+    }
+    
     def createLicenseProperties() {
 
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredProps = [
-                [name: [en: "Agreement Date"],          descr:allDescr, type:Date.toString()],
-                [name: [en: "Allowed Participants"],    descr:allDescr, type:String.toString()],
-                [name: [en: "Alumni Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Cancellation Allowance"],  descr:allDescr, type:String.toString()],
-                [name: [en: "Change to licensed material"], descr:allDescr, type:String.toString()],
-                [name: [en: "Concurrent Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
-                [name: [en: "Concurrent Users"],        descr:allDescr, type:Integer.toString()],
-                [name: [en: "Correction time"],         descr:allDescr, type:String.toString()],
-                [name: [en: "Enterprise Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "ILL - InterLibraryLoans"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Include In Coursepacks"],  descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Include in VLE"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Invoicing"],               descr:allDescr, type:Date.toString()],
-                [name: [en: "Metadata delivery"],       descr:allDescr, type:String.toString()],
-                [name: [en: "Multi Site Access"],       descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Notice Period"],           descr:allDescr, type:Date.toString()],
-                [name: [en: "New underwriter"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Payment target"],          descr:allDescr, type:Date.toString()],
-                [name: [en: "Place of jurisdiction"],   descr:allDescr, type:String.toString()],
-                [name: [en: "Partners Access"],         descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Post Cancellation Access Entitlement"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Remote Access"],           descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Regional Restriction"],    descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Service regulations"],     descr:allDescr, type:String.toString()],
-                [name: [en: "Signed"],                  descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Usage Statistics"],        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Walk In Access"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Wifi Access"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO']
+                [name: [en: "Agreement Date", de: "Abschlussdatum"],                            descr:allDescr, type:Date.toString()],
+                [name: [en: "Authorized Users", de: "Autorisierte Nutzer"],                     descr:allDescr, type:String.toString()],
+                [name: [en: "Alumni Access"],                                                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Cancellation Allowance", de: "Außerordentliche Kündigung"],        descr:allDescr, type:String.toString()],
+                [name: [en: "Change to licensed material", de: "Änderung am Vertragsgegenstand"], descr:allDescr, type:String.toString()],
+                [name: [en: "Concurrent Access", de: "Concurrent Access"],                      descr:allDescr, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
+                [name: [en: "Concurrent Users", de: "Concurrent Users"],                        descr:allDescr, type:Integer.toString()],
+                [name: [en: "Correction Time", de: "Korrekturfrist bei Vertragsverletzungen"],  descr:allDescr, type:String.toString()],
+                [name: [en: "Enterprise Access"],                                               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "ILL - InterLibraryLoans", de: "Fernleihe"],                        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Include In Coursepacks", de: "Semesterapparat"],                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Include in VLE"],                                                  descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Invoicing", de: "Rechnungsstellung"],                              descr:allDescr, type:Date.toString()],
+                [name: [en: "Metadata delivery"],                                               descr:allDescr, type:String.toString()],
+                [name: [en: "Method of Authentication", de: "Authentifizierungsverfahren"],     descr:allDescr, type:String.toString()],
+                [name: [en: "Multi Site Access"],                                               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Notice Period"],                                                   descr:allDescr, type:Date.toString()],
+                [name: [en: "New Underwriter", de: "Aufnahme neuer Teilnehmer"],                descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Payment target", de: "Zahlungsziel"],                              descr:allDescr, type:Date.toString()],
+                [name: [en: "Place of jurisdiction", de: "Gerichtsstand"],                      descr:allDescr, type:String.toString()],
+                [name: [en: "Partners Access"],                                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Permitted Uses"],                                                  descr:allDescr, type:String.toString()],
+                [name: [en: "Post Cancellation Access Entitlement"],                            descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Regional Restriction", de: "Regionale Einschränkung"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Service regulations", de: "Servicestandards"],                     descr:allDescr, type:String.toString()],
+                [name: [en: "Signed"],                                                          descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO']
+               
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
         def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
 
         def requiredOAProps = [
-                [name: [en: "Open Access"],     descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
-                [name: [en: "Type"],            descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],
-                [name: [en: "Electronically Archivable Version"], descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.eArcVersion'],
-                [name: [en: "embargo period"],  descr: allOADescr, type: Integer.toString()],
-                [name: [en: "Authority"],       descr: allOADescr, type: RefdataValue.toString(), cat:'Authority'],
-                [name: [en: "APC Discount"],    descr: allOADescr, type: String.toString()],
-                [name: [en: "Vouchers Free OA Articles"],   descr: allOADescr, type: String.toString()],
-                [name: [en: "Branding"],        descr: allOADescr, type: String.toString()],
-                [name: [en: "Funder"],          descr: allOADescr, type: String.toString()],
-                [name: [en: "Offsetting"],      descr: allOADescr, type: String.toString()],
-                [name: [en: "Publishing Fee"],  descr: allOADescr, type: String.toString()],
-                [name: [en: "Reading Fee"],     descr: allOADescr, type: String.toString()],
-                [name: [en: "OA First Date"],   descr: allOADescr, type: Date.toString()],
-                [name: [en: "OA Last Date"],    descr: allOADescr, type: Date.toString()]
+                [name: [en: "Open Access", de: "Open Access"],                                                              descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Type", de: "Variante"],                                                                        descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],
+                [name: [en: "Electronically Archivable Version", de: "Archivierbare Version"],                              descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.eArcVersion'],
+                [name: [en: "Embargo Period", de: "Embargo"],                                                               descr: allOADescr, type: Integer.toString()],
+                [name: [en: "Receiving Modalities", de: "Bezugsmodalitäten"],                                               descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.ReceivingModalities', multiple:true],
+                [name: [en: "Authority", de: "Autorität"],                                                                  descr: allOADescr, type: RefdataValue.toString(), cat:'Authority'],
+                [name: [en: "Repository", de: "Repositorium"],                                                              descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Repository', multiple:true],
+                [name: [en: "APC Discount", de: "Sonderkonditionen für Autoren"],                                           descr: allOADescr, type: String.toString()],
+                [name: [en: "Vouchers Free OA Articles", de: "Vouchers"],                                                   descr: allOADescr, type: String.toString()],
+                [name: [en: "Corresponding Author Identification", de: "Autorenidentifikation"],                            descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.CorrespondingAuthorIdentification', multiple:true],
+                [name: [en: "Branding", de: "Branding"],                                                                    descr: allOADescr, type: String.toString()],
+                [name: [en: "Funder", de: "Funder"],                                                                        descr: allOADescr, type: String.toString()],
+                [name: [en: "License to Publish", de: "Publikationslizenz"],                                                descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.LicenseToPublish', multiple:true],
+                [name: [en: "Offsetting", de: "Offsetting Berechnungsmodell"],                                              descr: allOADescr, type: String.toString()],
+                [name: [en: "Publishing Fee", de: "Publishing Fee"],                                                        descr: allOADescr, type: String.toString()],
+                [name: [en: "Reading Fee", de: "Reading Fee"],                                                                  descr: allOADescr, type: String.toString()],
+                [name: [en: "OA First Date", de: "OA Startdatum"],                                                          descr: allOADescr, type: Date.toString()],
+                [name: [en: "OA Last Date", de: "OA Enddatum"],                                                             descr: allOADescr, type: Date.toString()],
+                [name: [en: "OA Note", de: "OA Bemerkung"],                                                                 descr: allOADescr, type: String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
-        def requiredARCProps = []
+        def allArcDescr = [en: PropertyDefinition.LIC_ARC_PROP, de: PropertyDefinition.LIC_ARC_PROP]
+
+        def requiredARCProps = [
+                [name: [en: "Post Cancellation Online Access", de: "Zugriffsrechte: Dauerhaft"],                            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Continuing Access: Payment Note", de: "Zugriffsrechte: Kosten"],                               descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.PaymentNote'],
+                [name: [en: "Continuing Access: Restrictions", de: "Zugriffsrechte: Einschränkungen"],                      descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Continuing Access: Title Transfer", de: "Zugriffsrechte: Titeltransfer"],                      descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.TitleTransferRegulation'],
+                [name: [en: "Archival Copy: Permission", de: "Archivkopie: Recht"],                                         descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Archival Copy Content", de: "Archivkopie Form"],                                               descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.ArchivalCopyContent', multiple:true],
+                [name: [en: "Archival Copy: Cost", de: "Archivkopie: Kosten"],                                              descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.ArchivalCopyCost'],
+                [name: [en: "Archival Copy: Time", de: "Archivkopie: Zeitpunkt"],                                           descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.ArchivalCopyTime'],
+                [name: [en: "Hosting: Permission", de: "Hostingrecht"],                                                     descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
+                [name: [en: "Hosting: Obligation", de: "Hostingpflicht"],                                                   descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting Time", de: "Hostingrecht Zeitpunkt"],                                                  descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.HostingTime', multiple:true],
+                [name: [en: "Hosting: Additonal Agreement Necessary", de: "Hostingrecht: Zusatzvereinbarung notwendig"],    descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
+                [name: [en: "Hosting: Authorized", de: "Hostingrecht: Berechtigte"],                                        descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.Authorized', multiple:true],
+                [name: [en: "Hosting: Restriction", de: "Hostingrecht: Einschränkung"],                                     descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.HostingRestriction', multiple:true],
+                [name: [en: "Hosting: Solution", de: "Hostingrecht: Lösung"],                                               descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.HostingSolution', multiple:true],
+        ]
         createPropertyDefinitionsWithI10nTranslations(requiredARCProps)
     }
 
@@ -384,18 +440,14 @@ class BootStrap {
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
         def requiredOrgProps = [
-                [name: [en: "Org Property 1"], descr: allOrgDescr, type: String.toString()],
-                [name: [en: "Org Property 2"], descr: allOrgDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Org Property 3"], descr: allOrgDescr, type: RefdataValue.toString(), cat: 'OrgSector']
+                [name: [en: "Note", de: "Anmerkung"], descr: allOrgDescr, type: String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
 
         def allPrsDescr = [en: PropertyDefinition.PRS_PROP, de: PropertyDefinition.PRS_PROP]
 
         def requiredPrsProps = [
-                [name: [en: "Person Property 1"], descr: allPrsDescr, type: String.toString()],
-                [name: [en: "Person Property 2"], descr: allPrsDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Person Property 3"], descr: allPrsDescr, type: RefdataValue.toString(), cat: 'Person Role']
+                [name: [en: "Note", de: "Anmerkung"], descr: allPrsDescr, type: String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredPrsProps)
     }
@@ -414,7 +466,11 @@ class BootStrap {
                 }
             }
 
-            prop.type = default_prop.type
+            if (default_prop.multiple) {
+                prop.multipleOccurrence = default_prop.multiple
+            }
+
+            prop.type  = default_prop.type
             prop.descr = default_prop.descr['en']
             prop.softData = false
             prop.save(failOnError: true)
@@ -527,32 +583,45 @@ class BootStrap {
 
         // refdata categories
 
-        RefdataCategory.loc('YN',                   [en: 'Yes/No', de: 'Ja/Nein'])
-        RefdataCategory.loc('YNO',                  [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
-        RefdataCategory.loc('AddressType',          [en: 'Address Type', de: 'Art der Adresse'])
-        RefdataCategory.loc('Cluster Type',         [en: 'Cluster Type', de: 'Cluster Type'])
-        RefdataCategory.loc('Combo Type',           [en: 'Combo Type', de: 'Combo Type'])
-        RefdataCategory.loc('ConcurrentAccess',     [en: 'Concurrent Access', de: 'SimUser'])
-        RefdataCategory.loc('ContactContentType',   [en: 'Type of Contact', de: 'Kontakttyp'])
-        RefdataCategory.loc('ContactType',          [en: 'Contact Type', de: 'Art des Kontaktes'])
-        RefdataCategory.loc('CoreStatus',           [en: 'Core Status', de: 'Kerntitel-Status'])
-        RefdataCategory.loc('Country',              [en: 'Country', de: 'Land'])
-        RefdataCategory.loc('FactType',             [en: 'FactType', de: 'FactType'])
-        RefdataCategory.loc('Federal State',        [en: 'Federal State', de: 'Bundesland'])
-        RefdataCategory.loc('Funder Type',          [en: 'Funder Type', de: 'Trägerschaft'])
-        RefdataCategory.loc('Gender',               [en: 'Gender', de: 'Geschlecht'])
-        RefdataCategory.loc('OrgSector',            [en: 'OrgSector', de: 'Bereich'])
-        RefdataCategory.loc('Library Network',      [en: 'Library Network', de: 'Verbundszugehörigkeit'])
-        RefdataCategory.loc('Library Type',         [en: 'Library Type', de: 'Bibliothekstyp'])
-        RefdataCategory.loc('OrgType',              [en: 'Organisation Type', de: 'Organisationstyp'])
-        RefdataCategory.loc('Person Function',      [en: 'Person Function', de: 'Funktion'])
-        RefdataCategory.loc('Person Contact Type',  [en: 'Person: Contact Type', de: 'Person: Typ des Kontakts'])
-        RefdataCategory.loc('Person Position',      [en: 'Person Position', de: 'Person Position'])
-        RefdataCategory.loc('Person Responsibility',[en: 'Person Responsibility', de: 'Verantwortlich'])
-        RefdataCategory.loc('Subscription Status',  [en: 'Subscription Status', de: 'Subskriptionsstatus'])
-        RefdataCategory.loc('Task Priority',        [en: 'Task Priority', de: 'Aufgabenpriorität'])
-        RefdataCategory.loc('Task Status',          [en: 'Task Status', de: 'Aufgabenstatus'])
-
+        RefdataCategory.loc('YN',                   	                    [en: 'Yes/No', de: 'Ja/Nein'])
+        RefdataCategory.loc('YNO',                  	                    [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
+        RefdataCategory.loc('AddressType',          	                    [en: 'Address Type', de: 'Art der Adresse'])
+        RefdataCategory.loc('Cluster Type',         	                    [en: 'Cluster Type', de: 'Cluster Type'])
+        RefdataCategory.loc('Combo Type',           	                    [en: 'Combo Type', de: 'Combo Type'])
+        RefdataCategory.loc('ConcurrentAccess',     	                    [en: 'Concurrent Access', de: 'SimUser'])
+        RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'])
+        RefdataCategory.loc('ContactType',          	                    [en: 'Contact Type', de: 'Art des Kontaktes'])
+        RefdataCategory.loc('CoreStatus',           	                    [en: 'Core Status', de: 'Kerntitel-Status'])
+        RefdataCategory.loc('Country',              	                    [en: 'Country', de: 'Land'])
+        RefdataCategory.loc('FactType',             	                    [en: 'FactType', de: 'FactType'])
+        RefdataCategory.loc('Federal State',        	                    [en: 'Federal State', de: 'Bundesland'])
+        RefdataCategory.loc('Funder Type',          	                    [en: 'Funder Type', de: 'Trägerschaft'])
+        RefdataCategory.loc('Gender',               	                    [en: 'Gender', de: 'Geschlecht'])
+        RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'])
+        RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundszugehörigkeit'])
+        RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'])
+        RefdataCategory.loc('OrgType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'])
+        RefdataCategory.loc('Person Function',      	                    [en: 'Person Function', de: 'Funktion'])
+        RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Person: Typ des Kontakts'])
+        RefdataCategory.loc('Person Position',      	                    [en: 'Person Position', de: 'Person Position'])
+        RefdataCategory.loc('Person Responsibility',	                    [en: 'Person Responsibility', de: 'Verantwortlich'])
+        RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'])
+        RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'])
+        RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'])
+        RefdataCategory.loc('License.OA.ReceivingModalities',               [en: 'Receiving Modalities', de: 'Bezugsmodalitäten'])
+        RefdataCategory.loc('License.OA.Repository',                        [en: 'Repository', de: 'Repositorium'])
+        RefdataCategory.loc('License.OA.CorrespondingAuthorIdentification', [en: 'Corresponding Author Identification', de: 'Autorenindentifikation'])
+        RefdataCategory.loc('License.OA.LicenseToPublish',                  [en: 'License to Publish', de: 'Publikationslizenz'])
+        RefdataCategory.loc('License.Arc.PaymentNote',                      [en: 'Archive Payment Note', de: 'Zugriffsrechte Kosten'])
+		RefdataCategory.loc('License.Arc.TitletransferRegulation',          [en: 'Titletransfer Regulation', de: 'Titeltransfer Regeln'])
+		RefdataCategory.loc('License.Arc.ArchivalCopyCost',                 [en: 'Archival Copy Cost', de: 'Archivkopie Kosten'])
+		RefdataCategory.loc('License.Arc.ArchivalCopyTime',                 [en: 'Archival Copy Time', de: 'Archivkopie Zeitpunkt'])
+        RefdataCategory.loc('License.Arc.ArchivalCopyContent',              [en: 'Archival Copy Content', de: 'Archivkopie Form'])
+        RefdataCategory.loc('License.Arc.HostingTime',                      [en: 'Hosting Time', de: 'Hostingrecht Zeitpunkt'])
+        RefdataCategory.loc('License.Arc.Authorized',                       [en: 'Hosting Authorized', de: 'Hostingrecht Berechtigte'])
+        RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'])
+        RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'])
+        RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'])
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'])
@@ -568,9 +637,7 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
 
-        RefdataValue.loc('ClusterType', [en: 'ClusterType 1'])
-        RefdataValue.loc('ClusterType', [en: 'ClusterType 1'])
-        RefdataValue.loc('ClusterType', [en: 'ClusterType 2'])
+        RefdataValue.loc('ClusterType', [en: 'Undefined'])
 
         RefdataValue.loc('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
         RefdataValue.loc('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
@@ -594,10 +661,8 @@ class BootStrap {
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'])
         RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'])
 
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1a'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1-JR1a'])
-        RefdataValue.loc('FactType', [en: 'JUSP:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'STATS:JR1'])
+        RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
 
         RefdataValue.loc('Federal State',   [en: 'Baden-Wurttemberg', de: 'Baden-Württemberg'])
         RefdataValue.loc('Federal State',   [en: 'Bavaria', de: 'Bayern'])
@@ -632,6 +697,7 @@ class BootStrap {
 
         RefdataValue.loc('Gender',   [en: 'Female', de: 'Weiblich'])
         RefdataValue.loc('Gender',   [en: 'Male', de: 'Männlich'])
+		RefdataValue.loc('Gender',   [en: 'Third Gender', de: 'Inter/Divers'])
 
         RefdataValue.loc('Library Network',   [en: 'BVB', de: 'BVB'])
         RefdataValue.loc('Library Network',   [en: 'GBV', de: 'GBV'])
@@ -651,17 +717,21 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'])
 
-        RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Bibliothek'])
+        RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'])
         RefdataValue.loc('OrgSector',    [en: 'Publisher', de: 'Verlag'])
 
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
+        RefdataValue.loc('Package Status',                   [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc('Package Status',                   [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc('Package Status',                   [en: 'Retired', de: 'Abgelaufen'])
+
         RefdataValue.loc('Person Contact Type',      [en: 'Personal contact', de: 'Personenkontakt'])
         RefdataValue.loc('Person Contact Type',      [en: 'Functional contact', de: 'Funktionskontakt'])
 
-        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Kontaktperson'])
+        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Allgemeine Kontaktperson'])
 
         RefdataValue.loc('Person Position',     [en: 'Account Manager', de: 'Account Manager'])
         RefdataValue.loc('Person Position',     [en: 'Head Access Services', de: 'Erwerbungsleiter'])
@@ -670,10 +740,10 @@ class BootStrap {
         RefdataValue.loc('Person Position',     [en: 'Sales Support', de: 'Sales Support'])
         RefdataValue.loc('Person Position',     [en: 'Technichal Support', de: 'Technischer Support'])
 
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Lizenzbearbeiter'])
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Vertragsbearbeiter'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor', de: 'Lizenzkontakt'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'])
-        RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor'])
+        RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Gruppenkontakt'])
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'])
 
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'])
@@ -682,7 +752,13 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Beendet'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Negotiation',   de: 'In Verhandlung'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'])
-        RefdataValue.loc('Subscription Status',      [en: 'Under Examination',   de: 'Wird konsortial geprüft'])
+        RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'])
+        RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'])
+		
+		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'])
+		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'])
+		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'])
+		RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'])
 
         RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'])
         RefdataValue.loc('Task Priority',   [en: 'Low', de: 'Niedrig'])
@@ -693,6 +769,74 @@ class BootStrap {
         RefdataValue.loc('Task Status',      [en: 'Open', de: 'Offen'])
         RefdataValue.loc('Task Status',      [en: 'Done', de: 'Erledigt'])
         RefdataValue.loc('Task Status',      [en: 'Deferred', de: 'Zurückgestellt'])
+		
+        RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'By Author', de: 'Über Autor'])
+        RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'On Demand', de: 'Auf Nachfrage'])
+        RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'From Database', de: 'Aus Datenank'])
+        RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'Automatic Delivery', de: 'Automatische Lieferung'])
+        RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'Link by Publisher', de: 'Verlinkung durch Verlag'])
+        
+        RefdataValue.loc('License.OA.Repository',                [en: 'Own Choice', de: 'Nach Wahl'])
+        RefdataValue.loc('License.OA.Repository',                [en: 'Publishers', de: 'Verlagseigenes'])
+        RefdataValue.loc('License.OA.Repository',                [en: 'Subject specific', de: 'Fachspezifisches'])
+        RefdataValue.loc('License.OA.Repository',                [en: 'Website of Author', de: 'Website des Autors'])
+        RefdataValue.loc('License.OA.Repository',                [en: 'Institutional', de: 'Institutionelles'])
+        
+        RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'IP Range', de: 'Über IP-Bereich'])
+        RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'Email Domain', de: 'E-Mail-Domäne'])
+        RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'Research Institute', de: 'Über Institut'])
+        RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'ORCID', de: 'ORCID'])
+        
+        RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY', de: 'CC-BY'])
+        RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY-NC', de: 'CC-BY-NC'])
+        RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY-NC-ND', de: 'CC-BY-NC-ND'])
+        
+        RefdataValue.loc('License.Arc.PaymentNote',       [en: 'No Hosting fee', de: 'Dauerhaft kostenfrei (keine Hosting Fee)'])
+        RefdataValue.loc('License.Arc.PaymentNote',       [en: 'Hosting fee', de: 'Hosting Fee zu zahlen'])
+		
+        RefdataValue.loc('License.Arc.TitletransferRegulation',  [en: 'Existing Regulation', de: 'Regelung vorhanden'])
+        RefdataValue.loc('License.Arc.TitletransferRegulation',  [en: 'Transfer Code of Practice', de: 'Transfer Code of Practice'])
+        RefdataValue.loc('License.Arc.TitletransferRegulation',  [en: 'No Regulation', de: 'Keine Regelung'])
+		
+        RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'Free', de: 'Kostenlos'])
+        RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'With Charge', de: 'Gegen Gebühr'])
+        RefdataValue.loc('License.Arc.ArchivalCopyCost',         [en: 'Self-copied', de: 'Kopie selbst anzufertigen'])
+		
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Licence Start Date', de: 'Mit Vertragsbeginn'])
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'On Request', de: 'Auf Anfrage'])
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Licence End Date', de: 'Mit Vertragsende'])
+        RefdataValue.loc('License.Arc.ArchivalCopyTime',         [en: 'Trigger Event', de: 'Mit Trigger Event'])
+        
+        RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'Data', de: 'Rohdaten'])
+        RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'With Metadata', de: 'Inkl. Metadaten'])
+        RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'With Software', de: 'Inkl. Software'])
+        RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'DRM-free', de: 'Ohne DRM'])
+        
+        RefdataValue.loc('License.Arc.HostingTime',      [en: 'Always', de: 'Immer'])
+        RefdataValue.loc('License.Arc.HostingTime',      [en: 'Exclusive', de: 'Ohne Anbieter'])
+        RefdataValue.loc('License.Arc.HostingTime',      [en: 'From Expiration On', de: 'Ab Vertragsende'])
+        RefdataValue.loc('License.Arc.HostingTime',      [en: 'Predefined time', de: 'Fester Zeitpunkt'])
+        RefdataValue.loc('License.Arc.HostingTime',      [en: 'Trigger Event', de: 'Mit Trigger-Event'])
+        
+        RefdataValue.loc('License.Arc.Authorized',      [en: 'Licensee', de: 'Lizenznehmer'])
+        RefdataValue.loc('License.Arc.Authorized',      [en: 'SSG-Library', de: 'SSG-Bibliothek'])
+        RefdataValue.loc('License.Arc.Authorized',      [en: 'Contractor', de: 'Vertragspartner'])
+        RefdataValue.loc('License.Arc.Authorized',      [en: 'Contractor With Publisher\'s Assent', de: 'Vertragspartner nach Genehmigung durch Anbieter'])
+        
+        RefdataValue.loc('License.Arc.HostingRestriction',      [en: 'File Format', de: 'Dateiformat'])
+        RefdataValue.loc('License.Arc.HostingRestriction',      [en: 'Year', de: 'Jahrgang'])
+        RefdataValue.loc('License.Arc.HostingRestriction',      [en: 'Access Period', de: 'Zugriffsdauer'])
+        RefdataValue.loc('License.Arc.HostingRestriction',      [en: 'Use', de: 'Nutzung'])
+        
+        RefdataValue.loc('License.Arc.HostingSolution',      [en: 'NatHosting PLN', de: 'NatHosting PLN'])
+        RefdataValue.loc('License.Arc.HostingSolution',      [en: 'NatHosting Portico', de: 'NatHosting Portico'])
+        RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Publisher', de: 'Verlag'])
+        RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Own Host', de: 'Eigener Host'])
+        RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Third Party Systems', de: 'Drittsysteme'])
+        RefdataValue.loc('License.Arc.HostingSolution',      [en: 'LOCKSS', de: 'LOCKSS'])
+        RefdataValue.loc('License.Arc.HostingSolution',      [en: 'CLOCKSS', de: 'CLOCKSS'])
+        RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Portico', de: 'Portico'])
+
     }
 
     def setupOnixPlRefdata = {
@@ -738,11 +882,11 @@ class BootStrap {
         // -------------------------------------------------------------------
 
         RefdataCategory.loc('Authority',
-                [en: 'Authority', de: 'Authority'])
+                [en: 'Authority', de: 'Autorität'])
 
-        RefdataValue.loc('Authority', [en: 'Author'])
-        RefdataValue.loc('Authority', [en: 'Institution'])
-        RefdataValue.loc('Authority', [en: 'Author and Institution'])
+        RefdataValue.loc('Authority', [en: 'Author', de: 'Autor'])
+        RefdataValue.loc('Authority', [en: 'Institution', de: 'Institution'])
+        RefdataValue.loc('Authority', [en: 'Author and Institution', de: 'Autor und Institution'])
 
         RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])
@@ -1010,177 +1154,168 @@ No Host Platform URL Content
     def setupCurrencies = {
 
         RefdataCategory.loc('Currency', [en: 'Currency', de: 'Währung'])
-
-        RefdataCategory.lookupOrCreate('Currency','AED - United Arab Emirates Dirham').save()
-        RefdataCategory.lookupOrCreate('Currency','AFN - Afghanistan Afghani').save()
-        RefdataCategory.lookupOrCreate('Currency','ALL - Albania Lek').save()
-        RefdataCategory.lookupOrCreate('Currency','AMD - Armenia Dram').save()
-        RefdataCategory.lookupOrCreate('Currency','ANG - Netherlands Antilles Guilder').save()
-        RefdataCategory.lookupOrCreate('Currency','AOA - Angola Kwanza').save()
-        RefdataCategory.lookupOrCreate('Currency','ARS - Argentina Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','AUD - Australia Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','AWG - Aruba Guilder').save()
-        RefdataCategory.lookupOrCreate('Currency','AZN - Azerbaijan New Manat').save()
-        RefdataCategory.lookupOrCreate('Currency','BAM - Bosnia and Herzegovina Convertible Marka').save()
-        RefdataCategory.lookupOrCreate('Currency','BBD - Barbados Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','BDT - Bangladesh Taka').save()
-        RefdataCategory.lookupOrCreate('Currency','BGN - Bulgaria Lev').save()
-        RefdataCategory.lookupOrCreate('Currency','BHD - Bahrain Dinar').save()
-        RefdataCategory.lookupOrCreate('Currency','BIF - Burundi Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','BMD - Bermuda Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','BND - Brunei Darussalam Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','BOB - Bolivia Boliviano').save()
-        RefdataCategory.lookupOrCreate('Currency','BRL - Brazil Real').save()
-        RefdataCategory.lookupOrCreate('Currency','BSD - Bahamas Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','BTN - Bhutan Ngultrum').save()
-        RefdataCategory.lookupOrCreate('Currency','BWP - Botswana Pula').save()
-        RefdataCategory.lookupOrCreate('Currency','BYR - Belarus Ruble').save()
-        RefdataCategory.lookupOrCreate('Currency','BZD - Belize Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','CAD - Canada Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','CDF - Congo/Kinshasa Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','CHF - Switzerland Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','CLP - Chile Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','CNY - China Yuan Renminbi').save()
-        RefdataCategory.lookupOrCreate('Currency','COP - Colombia Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','CRC - Costa Rica Colon').save()
-        RefdataCategory.lookupOrCreate('Currency','CUC - Cuba Convertible Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','CUP - Cuba Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','CVE - Cape Verde Escudo').save()
-        RefdataCategory.lookupOrCreate('Currency','CZK - Czech Republic Koruna').save()
-        RefdataCategory.lookupOrCreate('Currency','DJF - Djibouti Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','DKK - Denmark Krone').save()
-        RefdataCategory.lookupOrCreate('Currency','DOP - Dominican Republic Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','DZD - Algeria Dinar').save()
-        RefdataCategory.lookupOrCreate('Currency','EGP - Egypt Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','ERN - Eritrea Nakfa').save()
-        RefdataCategory.lookupOrCreate('Currency','ETB - Ethiopia Birr').save()
-        RefdataCategory.lookupOrCreate('Currency','EUR - Euro Member Countries').save()
-        RefdataCategory.lookupOrCreate('Currency','FJD - Fiji Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','FKP - Falkland Islands (Malvinas) Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','GBP - United Kingdom Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','GEL - Georgia Lari').save()
-        RefdataCategory.lookupOrCreate('Currency','GGP - Guernsey Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','GHS - Ghana Cedi').save()
-        RefdataCategory.lookupOrCreate('Currency','GIP - Gibraltar Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','GMD - Gambia Dalasi').save()
-        RefdataCategory.lookupOrCreate('Currency','GNF - Guinea Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','GTQ - Guatemala Quetzal').save()
-        RefdataCategory.lookupOrCreate('Currency','GYD - Guyana Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','HKD - Hong Kong Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','HNL - Honduras Lempira').save()
-        RefdataCategory.lookupOrCreate('Currency','HRK - Croatia Kuna').save()
-        RefdataCategory.lookupOrCreate('Currency','HTG - Haiti Gourde').save()
-        RefdataCategory.lookupOrCreate('Currency','HUF - Hungary Forint').save()
-        RefdataCategory.lookupOrCreate('Currency','IDR - Indonesia Rupiah').save()
-        RefdataCategory.lookupOrCreate('Currency','ILS - Israel Shekel').save()
-        RefdataCategory.lookupOrCreate('Currency','IMP - Isle of Man Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','INR - India Rupee').save()
-        RefdataCategory.lookupOrCreate('Currency','IQD - Iraq Dinar').save()
-        RefdataCategory.lookupOrCreate('Currency','IRR - Iran Rial').save()
-        RefdataCategory.lookupOrCreate('Currency','ISK - Iceland Krona').save()
-        RefdataCategory.lookupOrCreate('Currency','JEP - Jersey Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','JMD - Jamaica Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','JOD - Jordan Dinar').save()
-        RefdataCategory.lookupOrCreate('Currency','JPY - Japan Yen').save()
-        RefdataCategory.lookupOrCreate('Currency','KES - Kenya Shilling').save()
-        RefdataCategory.lookupOrCreate('Currency','KGS - Kyrgyzstan Som').save()
-        RefdataCategory.lookupOrCreate('Currency','KHR - Cambodia Riel').save()
-        RefdataCategory.lookupOrCreate('Currency','KMF - Comoros Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','KPW - Korea (North) Won').save()
-        RefdataCategory.lookupOrCreate('Currency','KRW - Korea (South) Won').save()
-        RefdataCategory.lookupOrCreate('Currency','KWD - Kuwait Dinar').save()
-        RefdataCategory.lookupOrCreate('Currency','KYD - Cayman Islands Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','KZT - Kazakhstan Tenge').save()
-        RefdataCategory.lookupOrCreate('Currency','LAK - Laos Kip').save()
-        RefdataCategory.lookupOrCreate('Currency','LBP - Lebanon Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','LKR - Sri Lanka Rupee').save()
-        RefdataCategory.lookupOrCreate('Currency','LRD - Liberia Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','LSL - Lesotho Loti').save()
-        RefdataCategory.lookupOrCreate('Currency','LYD - Libya Dinar').save()
-        RefdataCategory.lookupOrCreate('Currency','MAD - Morocco Dirham').save()
-        RefdataCategory.lookupOrCreate('Currency','MDL - Moldova Leu').save()
-        RefdataCategory.lookupOrCreate('Currency','MGA - Madagascar Ariary').save()
-        RefdataCategory.lookupOrCreate('Currency','MKD - Macedonia Denar').save()
-        RefdataCategory.lookupOrCreate('Currency','MMK - Myanmar (Burma) Kyat').save()
-        RefdataCategory.lookupOrCreate('Currency','MNT - Mongolia Tughrik').save()
-        RefdataCategory.lookupOrCreate('Currency','MOP - Macau Pataca').save()
-        RefdataCategory.lookupOrCreate('Currency','MRO - Mauritania Ouguiya').save()
-        RefdataCategory.lookupOrCreate('Currency','MUR - Mauritius Rupee').save()
-        RefdataCategory.lookupOrCreate('Currency','MVR - Maldives (Maldive Islands) Rufiyaa').save()
-        RefdataCategory.lookupOrCreate('Currency','MWK - Malawi Kwacha').save()
-        RefdataCategory.lookupOrCreate('Currency','MXN - Mexico Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','MYR - Malaysia Ringgit').save()
-        RefdataCategory.lookupOrCreate('Currency','MZN - Mozambique Metical').save()
-        RefdataCategory.lookupOrCreate('Currency','NAD - Namibia Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','NGN - Nigeria Naira').save()
-        RefdataCategory.lookupOrCreate('Currency','NIO - Nicaragua Cordoba').save()
-        RefdataCategory.lookupOrCreate('Currency','NOK - Norway Krone').save()
-        RefdataCategory.lookupOrCreate('Currency','NPR - Nepal Rupee').save()
-        RefdataCategory.lookupOrCreate('Currency','NZD - New Zealand Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','OMR - Oman Rial').save()
-        RefdataCategory.lookupOrCreate('Currency','PAB - Panama Balboa').save()
-        RefdataCategory.lookupOrCreate('Currency','PEN - Peru Nuevo Sol').save()
-        RefdataCategory.lookupOrCreate('Currency','PGK - Papua New Guinea Kina').save()
-        RefdataCategory.lookupOrCreate('Currency','PHP - Philippines Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','PKR - Pakistan Rupee').save()
-        RefdataCategory.lookupOrCreate('Currency','PLN - Poland Zloty').save()
-        RefdataCategory.lookupOrCreate('Currency','PYG - Paraguay Guarani').save()
-        RefdataCategory.lookupOrCreate('Currency','QAR - Qatar Riyal').save()
-        RefdataCategory.lookupOrCreate('Currency','RON - Romania New Leu').save()
-        RefdataCategory.lookupOrCreate('Currency','RSD - Serbia Dinar').save()
-        RefdataCategory.lookupOrCreate('Currency','RUB - Russia Ruble').save()
-        RefdataCategory.lookupOrCreate('Currency','RWF - Rwanda Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','SAR - Saudi Arabia Riyal').save()
-        RefdataCategory.lookupOrCreate('Currency','SBD - Solomon Islands Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','SCR - Seychelles Rupee').save()
-        RefdataCategory.lookupOrCreate('Currency','SDG - Sudan Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','SEK - Sweden Krona').save()
-        RefdataCategory.lookupOrCreate('Currency','SGD - Singapore Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','SHP - Saint Helena Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','SLL - Sierra Leone Leone').save()
-        RefdataCategory.lookupOrCreate('Currency','SOS - Somalia Shilling').save()
-        RefdataCategory.lookupOrCreate('Currency','SPL* - Seborga Luigino').save()
-        RefdataCategory.lookupOrCreate('Currency','SRD - Suriname Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','STD - São Tomé and Príncipe Dobra').save()
-        RefdataCategory.lookupOrCreate('Currency','SVC - El Salvador Colon').save()
-        RefdataCategory.lookupOrCreate('Currency','SYP - Syria Pound').save()
-        RefdataCategory.lookupOrCreate('Currency','SZL - Swaziland Lilangeni').save()
-        RefdataCategory.lookupOrCreate('Currency','THB - Thailand Baht').save()
-        RefdataCategory.lookupOrCreate('Currency','TJS - Tajikistan Somoni').save()
-        RefdataCategory.lookupOrCreate('Currency','TMT - Turkmenistan Manat').save()
-        RefdataCategory.lookupOrCreate('Currency','TND - Tunisia Dinar').save()
-        RefdataCategory.lookupOrCreate('Currency','TOP - Tonga Pa\'anga').save()
-        RefdataCategory.lookupOrCreate('Currency','TRY - Turkey Lira').save()
-        RefdataCategory.lookupOrCreate('Currency','TTD - Trinidad and Tobago Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','TVD - Tuvalu Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','TWD - Taiwan New Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','TZS - Tanzania Shilling').save()
-        RefdataCategory.lookupOrCreate('Currency','UAH - Ukraine Hryvnia').save()
-        RefdataCategory.lookupOrCreate('Currency','UGX - Uganda Shilling').save()
-        RefdataCategory.lookupOrCreate('Currency','USD - United States Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','UYU - Uruguay Peso').save()
-        RefdataCategory.lookupOrCreate('Currency','UZS - Uzbekistan Som').save()
-        RefdataCategory.lookupOrCreate('Currency','VEF - Venezuela Bolivar').save()
-        RefdataCategory.lookupOrCreate('Currency','VND - Viet Nam Dong').save()
-        RefdataCategory.lookupOrCreate('Currency','VUV - Vanuatu Vatu').save()
-        RefdataCategory.lookupOrCreate('Currency','WST - Samoa Tala').save()
-        RefdataCategory.lookupOrCreate('Currency','XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC').save()
-        RefdataCategory.lookupOrCreate('Currency','XCD - East Caribbean Dollar').save()
-        RefdataCategory.lookupOrCreate('Currency','XDR - International Monetary Fund (IMF) Special Drawing Rights').save()
-        RefdataCategory.lookupOrCreate('Currency','XOF - Communauté Financière Africaine (BCEAO) Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','XPF - Comptoirs Français du Pacifique (CFP) Franc').save()
-        RefdataCategory.lookupOrCreate('Currency','YER - Yemen Rial').save()
-        RefdataCategory.lookupOrCreate('Currency','ZAR - South Africa Rand').save()
-        RefdataCategory.lookupOrCreate('Currency','ZMW - Zambia Kwacha').save()
-        RefdataCategory.lookupOrCreate('Currency','ZWD - Zimbabwe Dollar').save()
-
-    }
-
-    def setupRefdataFromCode = {
-
-        // TODO refactoring .. found in domain classes, controller and services
-
-        RefdataCategory.lookupOrCreate('Document Context Status','Deleted')
-        RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' )
+        
+        RefdataValue.loc('Currency', [key: 'AED',  en:'AED - United Arab Emirates Dirham', de:'AED - United Arab Emirates Dirham']).save()
+        RefdataValue.loc('Currency', [key: 'AFN',  en:'AFN - Afghanistan Afghani', de:'AFN - Afghanistan Afghani']).save()
+        RefdataValue.loc('Currency', [key: 'ALL',  en:'ALL - Albania Lek', de:'ALL - Albania Lek']).save()
+        RefdataValue.loc('Currency', [key: 'AMD',  en:'AMD - Armenia Dram', de:'AMD - Armenia Dram']).save()
+        RefdataValue.loc('Currency', [key: 'ANG',  en:'ANG - Netherlands Antilles Guilder', de:'ANG - Netherlands Antilles Guilder']).save()
+        RefdataValue.loc('Currency', [key: 'AOA',  en:'AOA - Angola Kwanza', de:'AOA - Angola Kwanza']).save()
+        RefdataValue.loc('Currency', [key: 'ARS',  en:'ARS - Argentina Peso', de:'ARS - Argentina Peso']).save()
+        RefdataValue.loc('Currency', [key: 'AUD',  en:'AUD - Australia Dollar', de:'AUD - Australia Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'AWG',  en:'AWG - Aruba Guilder', de:'AWG - Aruba Guilder']).save()
+        RefdataValue.loc('Currency', [key: 'AZN',  en:'AZN - Azerbaijan New Manat', de:'AZN - Azerbaijan New Manat']).save()
+        RefdataValue.loc('Currency', [key: 'BAM',  en:'BAM - Bosnia and Herzegovina Convertible Marka', de:'BAM - Bosnia and Herzegovina Convertible Marka']).save()
+        RefdataValue.loc('Currency', [key: 'BBD',  en:'BBD - Barbados Dollar', de:'BBD - Barbados Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'BDT',  en:'BDT - Bangladesh Taka', de:'BDT - Bangladesh Taka']).save()
+        RefdataValue.loc('Currency', [key: 'BGN',  en:'BGN - Bulgaria Lev', de:'BGN - Bulgaria Lev']).save()
+        RefdataValue.loc('Currency', [key: 'BHD',  en:'BHD - Bahrain Dinar', de:'BHD - Bahrain Dinar']).save()
+        RefdataValue.loc('Currency', [key: 'BIF',  en:'BIF - Burundi Franc', de:'BIF - Burundi Franc']).save()
+        RefdataValue.loc('Currency', [key: 'BMD',  en:'BMD - Bermuda Dollar', de:'BMD - Bermuda Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'BND',  en:'BND - Brunei Darussalam Dollar', de:'BND - Brunei Darussalam Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'BOB',  en:'BOB - Bolivia Boliviano', de:'BOB - Bolivia Boliviano']).save()
+        RefdataValue.loc('Currency', [key: 'BRL',  en:'BRL - Brazil Real', de:'BRL - Brazil Real']).save()
+        RefdataValue.loc('Currency', [key: 'BSD',  en:'BSD - Bahamas Dollar', de:'BSD - Bahamas Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'BTN',  en:'BTN - Bhutan Ngultrum', de:'BTN - Bhutan Ngultrum']).save()
+        RefdataValue.loc('Currency', [key: 'BWP',  en:'BWP - Botswana Pula', de:'BWP - Botswana Pula']).save()
+        RefdataValue.loc('Currency', [key: 'BYR',  en:'BYR - Belarus Ruble', de:'BYR - Belarus Ruble']).save()
+        RefdataValue.loc('Currency', [key: 'BZD',  en:'BZD - Belize Dollar', de:'BZD - Belize Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'CAD',  en:'CAD - Canada Dollar', de:'CAD - Canada Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'CDF',  en:'CDF - Congo/Kinshasa Franc', de:'CDF - Congo/Kinshasa Franc']).save()
+        RefdataValue.loc('Currency', [key: 'CHF',  en:'CHF - Switzerland Franc', de:'CHF - Switzerland Franc']).save()
+        RefdataValue.loc('Currency', [key: 'CLP',  en:'CLP - Chile Peso', de:'CLP - Chile Peso']).save()
+        RefdataValue.loc('Currency', [key: 'CNY',  en:'CNY - China Yuan Renminbi', de:'CNY - China Yuan Renminbi']).save()
+        RefdataValue.loc('Currency', [key: 'COP',  en:'COP - Colombia Peso', de:'COP - Colombia Peso']).save()
+        RefdataValue.loc('Currency', [key: 'CRC',  en:'CRC - Costa Rica Colon', de:'CRC - Costa Rica Colon']).save()
+        RefdataValue.loc('Currency', [key: 'CUC',  en:'CUC - Cuba Convertible Peso', de:'CUC - Cuba Convertible Peso']).save()
+        RefdataValue.loc('Currency', [key: 'CUP',  en:'CUP - Cuba Peso', de:'CUP - Cuba Peso']).save()
+        RefdataValue.loc('Currency', [key: 'CVE',  en:'CVE - Cape Verde Escudo', de:'CVE - Cape Verde Escudo']).save()
+        RefdataValue.loc('Currency', [key: 'CZK',  en:'CZK - Czech Republic Koruna', de:'CZK - Czech Republic Koruna']).save()
+        RefdataValue.loc('Currency', [key: 'DJF',  en:'DJF - Djibouti Franc', de:'DJF - Djibouti Franc']).save()
+        RefdataValue.loc('Currency', [key: 'DKK',  en:'DKK - Denmark Krone', de:'DKK - Denmark Krone']).save()
+        RefdataValue.loc('Currency', [key: 'DOP',  en:'DOP - Dominican Republic Peso', de:'DOP - Dominican Republic Peso']).save()
+        RefdataValue.loc('Currency', [key: 'DZD',  en:'DZD - Algeria Dinar', de:'DZD - Algeria Dinar']).save()
+        RefdataValue.loc('Currency', [key: 'EGP',  en:'EGP - Egypt Pound', de:'EGP - Egypt Pound']).save()
+        RefdataValue.loc('Currency', [key: 'ERN',  en:'ERN - Eritrea Nakfa', de:'ERN - Eritrea Nakfa']).save()
+        RefdataValue.loc('Currency', [key: 'ETB',  en:'ETB - Ethiopia Birr', de:'ETB - Ethiopia Birr']).save()
+        RefdataValue.loc('Currency', [key: 'EUR',  en:'EUR - Euro Member Countries', de:'EUR - Euro Member Countries']).save()
+        RefdataValue.loc('Currency', [key: 'FJD',  en:'FJD - Fiji Dollar', de:'FJD - Fiji Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'FKP',  en:'FKP - Falkland Islands (Malvinas) Pound', de:'FKP - Falkland Islands (Malvinas) Pound']).save()
+        RefdataValue.loc('Currency', [key: 'GBP',  en:'GBP - United Kingdom Pound', de:'GBP - United Kingdom Pound']).save()
+        RefdataValue.loc('Currency', [key: 'GEL',  en:'GEL - Georgia Lari', de:'GEL - Georgia Lari']).save()
+        RefdataValue.loc('Currency', [key: 'GGP',  en:'GGP - Guernsey Pound', de:'GGP - Guernsey Pound']).save()
+        RefdataValue.loc('Currency', [key: 'GHS',  en:'GHS - Ghana Cedi', de:'GHS - Ghana Cedi']).save()
+        RefdataValue.loc('Currency', [key: 'GIP',  en:'GIP - Gibraltar Pound', de:'GIP - Gibraltar Pound']).save()
+        RefdataValue.loc('Currency', [key: 'GMD',  en:'GMD - Gambia Dalasi', de:'GMD - Gambia Dalasi']).save()
+        RefdataValue.loc('Currency', [key: 'GNF',  en:'GNF - Guinea Franc', de:'GNF - Guinea Franc']).save()
+        RefdataValue.loc('Currency', [key: 'GTQ',  en:'GTQ - Guatemala Quetzal', de:'GTQ - Guatemala Quetzal']).save()
+        RefdataValue.loc('Currency', [key: 'GYD',  en:'GYD - Guyana Dollar', de:'GYD - Guyana Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'HKD',  en:'HKD - Hong Kong Dollar', de:'HKD - Hong Kong Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'HNL',  en:'HNL - Honduras Lempira', de:'HNL - Honduras Lempira']).save()
+        RefdataValue.loc('Currency', [key: 'HRK',  en:'HRK - Croatia Kuna', de:'HRK - Croatia Kuna']).save()
+        RefdataValue.loc('Currency', [key: 'HTG',  en:'HTG - Haiti Gourde', de:'HTG - Haiti Gourde']).save()
+        RefdataValue.loc('Currency', [key: 'HUF',  en:'HUF - Hungary Forint', de:'HUF - Hungary Forint']).save()
+        RefdataValue.loc('Currency', [key: 'IDR',  en:'IDR - Indonesia Rupiah', de:'IDR - Indonesia Rupiah']).save()
+        RefdataValue.loc('Currency', [key: 'ILS',  en:'ILS - Israel Shekel', de:'ILS - Israel Shekel']).save()
+        RefdataValue.loc('Currency', [key: 'IMP',  en:'IMP - Isle of Man Pound', de:'IMP - Isle of Man Pound']).save()
+        RefdataValue.loc('Currency', [key: 'INR',  en:'INR - India Rupee', de:'INR - India Rupee']).save()
+        RefdataValue.loc('Currency', [key: 'IQD',  en:'IQD - Iraq Dinar', de:'IQD - Iraq Dinar']).save()
+        RefdataValue.loc('Currency', [key: 'IRR',  en:'IRR - Iran Rial', de:'IRR - Iran Rial']).save()
+        RefdataValue.loc('Currency', [key: 'ISK',  en:'ISK - Iceland Krona', de:'ISK - Iceland Krona']).save()
+        RefdataValue.loc('Currency', [key: 'JEP',  en:'JEP - Jersey Pound', de:'JEP - Jersey Pound']).save()
+        RefdataValue.loc('Currency', [key: 'JMD',  en:'JMD - Jamaica Dollar', de:'JMD - Jamaica Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'JOD',  en:'JOD - Jordan Dinar', de:'JOD - Jordan Dinar']).save()
+        RefdataValue.loc('Currency', [key: 'JPY',  en:'JPY - Japan Yen', de:'JPY - Japan Yen']).save()
+        RefdataValue.loc('Currency', [key: 'KES',  en:'KES - Kenya Shilling', de:'KES - Kenya Shilling']).save()
+        RefdataValue.loc('Currency', [key: 'KGS',  en:'KGS - Kyrgyzstan Som', de:'KGS - Kyrgyzstan Som']).save()
+        RefdataValue.loc('Currency', [key: 'KHR',  en:'KHR - Cambodia Riel', de:'KHR - Cambodia Riel']).save()
+        RefdataValue.loc('Currency', [key: 'KMF',  en:'KMF - Comoros Franc', de:'KMF - Comoros Franc']).save()
+        RefdataValue.loc('Currency', [key: 'KPW',  en:'KPW - Korea (North) Won', de:'KPW - Korea (North) Won']).save()
+        RefdataValue.loc('Currency', [key: 'KRW',  en:'KRW - Korea (South) Won', de:'KRW - Korea (South) Won']).save()
+        RefdataValue.loc('Currency', [key: 'KWD',  en:'KWD - Kuwait Dinar', de:'KWD - Kuwait Dinar']).save()
+        RefdataValue.loc('Currency', [key: 'KYD',  en:'KYD - Cayman Islands Dollar', de:'KYD - Cayman Islands Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'KZT',  en:'KZT - Kazakhstan Tenge', de:'KZT - Kazakhstan Tenge']).save()
+        RefdataValue.loc('Currency', [key: 'LAK',  en:'LAK - Laos Kip', de:'LAK - Laos Kip']).save()
+        RefdataValue.loc('Currency', [key: 'LBP',  en:'LBP - Lebanon Pound', de:'LBP - Lebanon Pound']).save()
+        RefdataValue.loc('Currency', [key: 'LKR',  en:'LKR - Sri Lanka Rupee', de:'LKR - Sri Lanka Rupee']).save()
+        RefdataValue.loc('Currency', [key: 'LRD',  en:'LRD - Liberia Dollar', de:'LRD - Liberia Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'LSL',  en:'LSL - Lesotho Loti', de:'LSL - Lesotho Loti']).save()
+        RefdataValue.loc('Currency', [key: 'LYD',  en:'LYD - Libya Dinar', de:'LYD - Libya Dinar']).save()
+        RefdataValue.loc('Currency', [key: 'MAD',  en:'MAD - Morocco Dirham', de:'MAD - Morocco Dirham']).save()
+        RefdataValue.loc('Currency', [key: 'MDL',  en:'MDL - Moldova Leu', de:'MDL - Moldova Leu']).save()
+        RefdataValue.loc('Currency', [key: 'MGA',  en:'MGA - Madagascar Ariary', de:'MGA - Madagascar Ariary']).save()
+        RefdataValue.loc('Currency', [key: 'MKD',  en:'MKD - Macedonia Denar', de:'MKD - Macedonia Denar']).save()
+        RefdataValue.loc('Currency', [key: 'MMK',  en:'MMK - Myanmar (Burma) Kyat', de:'MMK - Myanmar (Burma) Kyat']).save()
+        RefdataValue.loc('Currency', [key: 'MNT',  en:'MNT - Mongolia Tughrik', de:'MNT - Mongolia Tughrik']).save()
+        RefdataValue.loc('Currency', [key: 'MOP',  en:'MOP - Macau Pataca', de:'MOP - Macau Pataca']).save()
+        RefdataValue.loc('Currency', [key: 'MRO',  en:'MRO - Mauritania Ouguiya', de:'MRO - Mauritania Ouguiya']).save()
+        RefdataValue.loc('Currency', [key: 'MUR',  en:'MUR - Mauritius Rupee', de:'MUR - Mauritius Rupee']).save()
+        RefdataValue.loc('Currency', [key: 'MVR',  en:'MVR - Maldives (Maldive Islands) Rufiyaa', de:'MVR - Maldives (Maldive Islands) Rufiyaa']).save()
+        RefdataValue.loc('Currency', [key: 'MWK',  en:'MWK - Malawi Kwacha', de:'MWK - Malawi Kwacha']).save()
+        RefdataValue.loc('Currency', [key: 'MXN',  en:'MXN - Mexico Peso', de:'MXN - Mexico Peso']).save()
+        RefdataValue.loc('Currency', [key: 'MYR',  en:'MYR - Malaysia Ringgit', de:'MYR - Malaysia Ringgit']).save()
+        RefdataValue.loc('Currency', [key: 'MZN',  en:'MZN - Mozambique Metical', de:'MZN - Mozambique Metical']).save()
+        RefdataValue.loc('Currency', [key: 'NAD',  en:'NAD - Namibia Dollar', de:'NAD - Namibia Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'NGN',  en:'NGN - Nigeria Naira', de:'NGN - Nigeria Naira']).save()
+        RefdataValue.loc('Currency', [key: 'NIO',  en:'NIO - Nicaragua Cordoba', de:'NIO - Nicaragua Cordoba']).save()
+        RefdataValue.loc('Currency', [key: 'NOK',  en:'NOK - Norway Krone', de:'NOK - Norway Krone']).save()
+        RefdataValue.loc('Currency', [key: 'NPR',  en:'NPR - Nepal Rupee', de:'NPR - Nepal Rupee']).save()
+        RefdataValue.loc('Currency', [key: 'NZD',  en:'NZD - New Zealand Dollar', de:'NZD - New Zealand Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'OMR',  en:'OMR - Oman Rial', de:'OMR - Oman Rial']).save()
+        RefdataValue.loc('Currency', [key: 'PAB',  en:'PAB - Panama Balboa', de:'PAB - Panama Balboa']).save()
+        RefdataValue.loc('Currency', [key: 'PEN',  en:'PEN - Peru Nuevo Sol', de:'PEN - Peru Nuevo Sol']).save()
+        RefdataValue.loc('Currency', [key: 'PGK',  en:'PGK - Papua New Guinea Kina', de:'PGK - Papua New Guinea Kina']).save()
+        RefdataValue.loc('Currency', [key: 'PHP',  en:'PHP - Philippines Peso', de:'PHP - Philippines Peso']).save()
+        RefdataValue.loc('Currency', [key: 'PKR',  en:'PKR - Pakistan Rupee', de:'PKR - Pakistan Rupee']).save()
+        RefdataValue.loc('Currency', [key: 'PLN',  en:'PLN - Poland Zloty', de:'PLN - Poland Zloty']).save()
+        RefdataValue.loc('Currency', [key: 'PYG',  en:'PYG - Paraguay Guarani', de:'PYG - Paraguay Guarani']).save()
+        RefdataValue.loc('Currency', [key: 'QAR',  en:'QAR - Qatar Riyal', de:'QAR - Qatar Riyal']).save()
+        RefdataValue.loc('Currency', [key: 'RON',  en:'RON - Romania New Leu', de:'RON - Romania New Leu']).save()
+        RefdataValue.loc('Currency', [key: 'RSD',  en:'RSD - Serbia Dinar', de:'RSD - Serbia Dinar']).save()
+        RefdataValue.loc('Currency', [key: 'RUB',  en:'RUB - Russia Ruble', de:'RUB - Russia Ruble']).save()
+        RefdataValue.loc('Currency', [key: 'RWF',  en:'RWF - Rwanda Franc', de:'RWF - Rwanda Franc']).save()
+        RefdataValue.loc('Currency', [key: 'SAR',  en:'SAR - Saudi Arabia Riyal', de:'SAR - Saudi Arabia Riyal']).save()
+        RefdataValue.loc('Currency', [key: 'SBD',  en:'SBD - Solomon Islands Dollar', de:'SBD - Solomon Islands Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'SCR',  en:'SCR - Seychelles Rupee', de:'SCR - Seychelles Rupee']).save()
+        RefdataValue.loc('Currency', [key: 'SDG',  en:'SDG - Sudan Pound', de:'SDG - Sudan Pound']).save()
+        RefdataValue.loc('Currency', [key: 'SEK',  en:'SEK - Sweden Krona', de:'SEK - Sweden Krona']).save()
+        RefdataValue.loc('Currency', [key: 'SGD',  en:'SGD - Singapore Dollar', de:'SGD - Singapore Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'SHP',  en:'SHP - Saint Helena Pound', de:'SHP - Saint Helena Pound']).save()
+        RefdataValue.loc('Currency', [key: 'SLL',  en:'SLL - Sierra Leone Leone', de:'SLL - Sierra Leone Leone']).save()
+        RefdataValue.loc('Currency', [key: 'SOS',  en:'SOS - Somalia Shilling', de:'SOS - Somalia Shilling']).save()
+        RefdataValue.loc('Currency', [key: 'SPL',  en:'SPL - Seborga Luigino', de:'SPL - Seborga Luigino']).save()
+        RefdataValue.loc('Currency', [key: 'SRD',  en:'SRD - Suriname Dollar', de:'SRD - Suriname Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'STD',  en:'STD - São Tomé and Príncipe Dobra', de:'STD - São Tomé and Príncipe Dobra']).save()
+        RefdataValue.loc('Currency', [key: 'SVC',  en:'SVC - El Salvador Colon', de:'SVC - El Salvador Colon']).save()
+        RefdataValue.loc('Currency', [key: 'SYP',  en:'SYP - Syria Pound', de:'SYP - Syria Pound']).save()
+        RefdataValue.loc('Currency', [key: 'SZL',  en:'SZL - Swaziland Lilangeni', de:'SZL - Swaziland Lilangeni']).save()
+        RefdataValue.loc('Currency', [key: 'THB',  en:'THB - Thailand Baht', de:'THB - Thailand Baht']).save()
+        RefdataValue.loc('Currency', [key: 'TJS',  en:'TJS - Tajikistan Somoni', de:'TJS - Tajikistan Somoni']).save()
+        RefdataValue.loc('Currency', [key: 'TMT',  en:'TMT - Turkmenistan Manat', de:'TMT - Turkmenistan Manat']).save()
+        RefdataValue.loc('Currency', [key: 'TND',  en:'TND - Tunisia Dinar', de:'TND - Tunisia Dinar']).save()
+        RefdataValue.loc('Currency', [key: 'TOP',  en:'TOP - Tonga Pa\'anga', de:'TOP - Tonga Pa\'anga']).save()
+        RefdataValue.loc('Currency', [key: 'TRY',  en:'TRY - Turkey Lira', de:'TRY - Turkey Lira']).save()
+        RefdataValue.loc('Currency', [key: 'TTD',  en:'TTD - Trinidad and Tobago Dollar', de:'TTD - Trinidad and Tobago Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'TVD',  en:'TVD - Tuvalu Dollar', de:'TVD - Tuvalu Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'TWD',  en:'TWD - Taiwan New Dollar', de:'TWD - Taiwan New Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'TZS',  en:'TZS - Tanzania Shilling', de:'TZS - Tanzania Shilling']).save()
+        RefdataValue.loc('Currency', [key: 'UAH',  en:'UAH - Ukraine Hryvnia', de:'UAH - Ukraine Hryvnia']).save()
+        RefdataValue.loc('Currency', [key: 'UGX',  en:'UGX - Uganda Shilling', de:'UGX - Uganda Shilling']).save()
+        RefdataValue.loc('Currency', [key: 'USD',  en:'USD - United States Dollar', de:'USD - United States Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'UYU',  en:'UYU - Uruguay Peso', de:'UYU - Uruguay Peso']).save()
+        RefdataValue.loc('Currency', [key: 'UZS',  en:'UZS - Uzbekistan Som', de:'UZS - Uzbekistan Som']).save()
+        RefdataValue.loc('Currency', [key: 'VEF',  en:'VEF - Venezuela Bolivar', de:'VEF - Venezuela Bolivar']).save()
+        RefdataValue.loc('Currency', [key: 'VND',  en:'VND - Viet Nam Dong', de:'VND - Viet Nam Dong']).save()
+        RefdataValue.loc('Currency', [key: 'VUV',  en:'VUV - Vanuatu Vatu', de:'VUV - Vanuatu Vatu']).save()
+        RefdataValue.loc('Currency', [key: 'WST',  en:'WST - Samoa Tala', de:'WST - Samoa Tala']).save()
+        RefdataValue.loc('Currency', [key: 'XAF',  en:'XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC', de:'XAF - Communauté Financière Africaine (BEAC) CFA Franc BEAC']).save()
+        RefdataValue.loc('Currency', [key: 'XCD',  en:'XCD - East Caribbean Dollar', de:'XCD - East Caribbean Dollar']).save()
+        RefdataValue.loc('Currency', [key: 'XDR',  en:'XDR - International Monetary Fund (IMF) Special Drawing Rights', de:'XDR - International Monetary Fund (IMF) Special Drawing Rights']).save()
+        RefdataValue.loc('Currency', [key: 'XOF',  en:'XOF - Communauté Financière Africaine (BCEAO) Franc', de:'XOF - Communauté Financière Africaine (BCEAO) Franc']).save()
+        RefdataValue.loc('Currency', [key: 'XPF',  en:'XPF - Comptoirs Français du Pacifique (CFP) Franc', de:'XPF - Comptoirs Français du Pacifique (CFP) Franc']).save()
+        RefdataValue.loc('Currency', [key: 'YER',  en:'YER - Yemen Rial', de:'YER - Yemen Rial']).save()
+        RefdataValue.loc('Currency', [key: 'ZAR',  en:'ZAR - South Africa Rand', de:'ZAR - South Africa Rand']).save()
+        RefdataValue.loc('Currency', [key: 'ZMW',  en:'ZMW - Zambia Kwacha', de:'ZMW - Zambia Kwacha']).save()
+        RefdataValue.loc('Currency', [key: 'ZWD',  en:'ZWD - Zimbabwe Dollar', de:'ZWD - Zimbabwe Dollar']).save()
     }
 }

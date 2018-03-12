@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.2.13 - Site
+ * # Semantic UI 2.3.0 - Site
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -439,7 +439,7 @@ $.site.settings = {
   modules: [
     'accordion',
     'api',
-      'calendar',
+    'calendar',
     'checkbox',
     'dimmer',
     'dropdown',

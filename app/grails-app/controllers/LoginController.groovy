@@ -1,8 +1,9 @@
 import grails.converters.JSON
+import org.springframework.security.access.annotation.Secured
 
 import javax.servlet.http.HttpServletResponse
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
@@ -11,10 +12,11 @@ import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.authentication.AbstractProcessingFilter;
+//import org.springframework.security.web.authentication.AbstractProcessingFilter // 2.0
 import org.springframework.security.web.savedrequest.*;
 import java.security.MessageDigest
 
+@Secured('permitAll')
 class LoginController {
 
   def grailsApplication
@@ -101,8 +103,6 @@ class LoginController {
     }
     else {
       log.debug("Redirecting to ${grailsApplication.config.authuri}, context will be ${requestUrl}");
-      // redirect(uri:"http://edina.ac.uk/cgi-bin/Login/kbplus_explorer-dev?context=%3Bjsessionid%3D${request.session.id}");
-      // redirect(uri:"http://edina.ac.uk/cgi-bin/Login/kbplus_explorer-dev?context=${requestUrl}");
       redirect(uri:"${grailsApplication.config.authuri}?context=${requestUrl}");
     }
     log.debug("auth completed");

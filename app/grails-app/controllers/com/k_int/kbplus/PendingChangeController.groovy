@@ -1,35 +1,36 @@
 package com.k_int.kbplus
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PendingChangeController {
 
     def genericOIDService
     def pendingChangeService
     def executorWrapperService
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def accept() {
         log.debug("Accept");
         pendingChangeService.performAccept(params.id, request)
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def reject() {
         log.debug("Reject")
         pendingChangeService.performReject(params.id, request)
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def acceptAll() {
         log.debug("acceptAll - ${params}")
-        def owner = genericOIDService.resolveOID(params.id)
+        def owner = genericOIDService.resolveOID(params.OID)
 
         def changes_to_accept = []
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-        def pendingChanges = owner.pendingChanges.findAll {
+        def pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
         pendingChanges = pendingChanges.collect { it.id }
@@ -43,14 +44,14 @@ class PendingChangeController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def rejectAll() {
         log.debug("rejectAll ${params}")
-        def owner = genericOIDService.resolveOID(params.id)
+        def owner = genericOIDService.resolveOID(params.OID)
 
         def changes_to_reject = []
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-        def pendingChanges = owner.pendingChanges.findAll {
+        def pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
         pendingChanges = pendingChanges.collect { it.id }

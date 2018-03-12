@@ -152,7 +152,7 @@ module.exports = function(callback) {
             components,
             releases
           ;
-          themes = gulp.src('dist/themes/default/**/*', { base: 'dist/' })
+          themes = gulp.src('dist/themes/laser/**/*', { base: 'dist/' })
             .pipe(gulp.dest(outputDirectory))
           ;
           components = gulp.src('dist/components/*', { base: 'dist/' })

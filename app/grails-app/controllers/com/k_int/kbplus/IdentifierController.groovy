@@ -2,9 +2,10 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import org.springframework.dao.DataIntegrityViolationException
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 @Deprecated
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class IdentifierController {
 
 	def springSecurityService
@@ -52,8 +53,6 @@ class IdentifierController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def show() {
-        redirect controller: 'home', action: 'index'
-        return // ----- deprecated
 
         def identifierInstance = Identifier.get(params.id)
         if (!identifierInstance) {

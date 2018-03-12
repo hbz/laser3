@@ -11,23 +11,23 @@
     <semui:breadcrumbs>
         <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
         <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
-        <div class="pull-right">
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
-                    <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
-                </semui:exportDropdownItem>
-                <semui:exportDropdownItem>
-                    <g:link action="show" params="${params+[format:'xml']}">XML</g:link>
-                </semui:exportDropdownItem>
-
-                <g:each in="${transforms}" var="transkey,transval">
-                    <semui:exportDropdownItem>
-                        <g:link action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
-                    </semui:exportDropdownItem>
-                </g:each>
-            </semui:exportDropdown>
-        </div>
     </semui:breadcrumbs>
+    <semui:controlButtons>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
+            </semui:exportDropdownItem>
+
+            <g:each in="${transforms}" var="transkey,transval">
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                </semui:exportDropdownItem>
+            </g:each>
+        </semui:exportDropdown>
+    </semui:controlButtons>
 
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 

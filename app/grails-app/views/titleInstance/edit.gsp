@@ -23,13 +23,13 @@
 						<g:hiddenField name="version" value="${titleInstanceInstance?.version}" />
 						<fieldset>
 							<f:all bean="titleInstanceInstance"/>
-							<div class="ui segment form-actions">
+							<div class="ui form-actions">
 								<button type="submit" class="ui button">
-									<i class="icon-ok icon-white"></i>
+									<i class="checkmark icon"></i>
 									<g:message code="default.button.update.label" default="Update" />
 								</button>
 								<button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
-									<i class="icon-trash icon-white"></i>
+									<i class="trash alternate icon"></i>
 									<g:message code="default.button.delete.label" default="Delete" />
 								</button>
 							</div>

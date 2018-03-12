@@ -8,12 +8,18 @@
   </head>
   <body>
 
-      <h1 class="ui header">${orgInstance.name}</h1>
+    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+
+      <h1 class="ui header">
+        <semui:editableLabel editable="${editable}" />
+        ${orgInstance.name}
+      </h1>
+
       <g:render template="nav" contextPath="." />
 
       <semui:messages data="${flash}" />
 
-      <table  class="ui celled striped table">
+      <table  class="ui celled la-table table">
         <thead>
           <tr>
             <th>${message(code:'user.label', default:'User')}</th>
@@ -44,16 +50,22 @@
             <td>
               <g:message code="cv.membership.status.${userOrg[0].status}" />
             </td>
-            <td>
+            <td class="x">
               <g:if test="${editable}">
-              <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
-                <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui button">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
+                <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
+                  <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
+                    <i class="times icon"></i>
+                  </g:link>
+                </g:if>
+                <g:else>
+                  <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon positive button">
+                    <i class="checkmark icon"></i>
+                  </g:link>
+                </g:else>
+                <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
+                  <i class="trash alternate icon"></i>
+                </g:link>
               </g:if>
-              <g:else>
-                <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui button">${message(code:'default.button.allow.label', default:'Allow')}</g:link>
-              </g:else>
-              <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui button">${message(code:'default.button.delete_link.label', default:'Delete Link')}</g:link>
-            </g:if>
             </td>
           </tr>
         </g:each>

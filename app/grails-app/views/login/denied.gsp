@@ -4,9 +4,11 @@
 </head>
 
 <body>
-<div class='body'>
-  <div>
-	<div class='errors'><g:message code="springSecurity.denied.message" /></div>
-  </div>
-</div>
+    <div class='body'>
+        <div>
+            <div class='errors'>
+                <h3 class="ui header"><g:message code="springSecurity.denied.message" /></h3>
+            </div>
+        </div>
+    </div>
 </body>

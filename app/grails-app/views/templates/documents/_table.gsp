@@ -8,7 +8,7 @@
         </div>
     </g:if>
 
-    <table class="ui celled table license-documents">
+    <table class="ui celled la-table table license-documents">
         <thead>
         <tr>
             <g:if test="${editable}"><th>${message(code:'license.docs.table.select', default:'Select')}</th></g:if>
@@ -33,7 +33,7 @@
                     </td>
                     <td>
                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}">${message(code:'template.documents.download', default:'Download Doc')}</g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
                         </g:if>
                     </td>
                     <td>

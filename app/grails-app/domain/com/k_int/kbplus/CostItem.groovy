@@ -14,11 +14,11 @@ class CostItem {
     Invoice invoice
 
     //Status & Costing Values...
-    RefdataValue costItemStatus    //cost est,actual,etc
-    RefdataValue costItemCategory
-    RefdataValue billingCurrency  //GDP,USD,etc
-    RefdataValue costItemElement
-    RefdataValue taxCode
+    RefdataValue costItemStatus     // RefdataCategory 'CostItemStatus' : cost est,actual,etc
+    RefdataValue costItemCategory   // RefdataCategory 'CostItemCategory'
+    RefdataValue billingCurrency    // GDP,USD,etc
+    RefdataValue costItemElement    // RefdataCategory 'CostItemElement'
+    RefdataValue taxCode            // RefdataCategory 'TaxType'
     Boolean includeInSubscription //include in sub details page
 
     Double costInBillingCurrency   //The actual amount - new cost ex tax
@@ -193,7 +193,11 @@ class CostItem {
 
     @Transient
     static def orderedCurrency() {
-        def all_currencies = RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', 'Currency')
+        //def all_currencies = RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', 'Currency')
+        // restrict only to new refdata values
+        // created in bootstrap.groovy with e.g. [key:'EUR']
+        // TODO: migrate old values to new ones
+        def all_currencies = RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=? and LENGTH(rdv.value) = 3', 'Currency')
         def staticOrder    = grails.util.Holders.config?.financials?.currency?.split("[|]")
 
         if (staticOrder) {
@@ -204,8 +208,8 @@ class CostItem {
             }
         }
 
-        def result = all_currencies.collect {rdv ->
-            [id:rdv.id,text:rdv.value]
+        def result = all_currencies.collect { rdv ->
+            [id: rdv.id, text: rdv.getI10n('value')]
         }
 
         result

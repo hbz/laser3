@@ -6,25 +6,32 @@
     <r:require module='annotations' />
   </head>
 
-  <body>
+    <body>
 
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="admin" action="hardDeletePkgs">Package Delete </g:link> </li>
-      </ul>
+        <semui:breadcrumbs>
+            <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+            <semui:crumb text="Package Delete" class="active"/>
+        </semui:breadcrumbs>
 
-      <semui:messages data="${flash}" />
+        <h1 class="ui header">Package Delete</h1>
 
-          <g:form action="hardDeletePkgs" method="get" params="${params}">
-          <input type="hidden" name="offset" value="${params.offset}"/>
+        <semui:messages data="${flash}" />
 
-          <div class="well form-horizontal">
-            Name: <input name="pkg_name" placeholder="Partial terms accepted" value="${params.pkg_name}"/>
-            <button type="submit" name="search" value="yes">Search</button>
-          </div>
-          </g:form>
+        <semui:filter>
+            <g:form action="hardDeletePkgs" method="get" params="${params}" class="ui form">
+                <input type="hidden" name="offset" value="${params.offset}"/>
 
-        <table class="ui celled striped table">
+                <div class="field">
+                    <label>Name</label>
+                    <input name="pkg_name" placeholder="Partial terms accepted" value="${params.pkg_name}"/>
+                </div>
+                <div class="field">
+                    <button type="submit" name="search" value="yes" class="ui secondary button">Search</button>
+                </div>
+            </g:form>
+        </semui:filter>
+
+        <table class="ui sortable celled la-table table">
           <thead>
             <tr>
               <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />

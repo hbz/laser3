@@ -14,10 +14,9 @@
 
       <semui:messages data="${flash}" />
 
-
     <div class="ui grid">
       <div class="twelve wide column">
-          <table class="ui celled table">
+          <table class="ui celled la-table table">
                 <thead>
                     <tr>
                         <th>Key</th>
@@ -39,29 +38,37 @@
           </table>
         </div><!-- .twelve -->
         <div class="four wide column">
-            <semui:card class="card-grey">
-          <g:form action="newContentItem">
-            <dl>
-              <dt>New Content Item Key</dt>
-              <dd><input name="key" type="text"/></dd>
+            <semui:card>
 
-              <dt>New Content Item Locale (Or blank for none)</dt>
-              <dd><select name="locale">
-                    <option value="">No Locale (Default)</option>
-                    <option value="en_GB">British English</option>
-                    <option value="es">Español</option>
-                    <option value="fr">Français</option>
-                    <option value="it">Italiano</option>
-                    <option value="de">Deutsch</option>
-                    <option value="ja">日本人</option>
-                    <option value="zn-CH">中国的</option>
-                    <option value="en_US">US English</option>
-                  </select></dd>
-              <dt>New Content (Markdown)</dt>
-              <dd><textarea name="content" rows="5"></textarea></dd>
-            </dl>
-            <input type="submit" value="Create" class="ui button"/>
-          </g:form>
+                <g:form action="newContentItem" class="ui form">
+                    <div class="field">
+                        <label>New Content Item Key</label>
+                        <input name="key" type="text"/>
+                    </div>
+
+                      <div class="field">
+                          <label>New Content Item Locale (Or blank for none)</label>
+                            <select name="locale">
+                              <option value="">No Locale (Default)</option>
+                              <option value="en_GB">British English</option>
+                              <option value="es">Español</option>
+                              <option value="fr">Français</option>
+                              <option value="it">Italiano</option>
+                              <option value="de">Deutsch</option>
+                              <option value="ja">日本人</option>
+                              <option value="zn-CH">中国的</option>
+                              <option value="en_US">US English</option>
+                            </select>
+                      </div>
+
+                      <div class="field">
+                        <label>New Content (Markdown)</label>
+                        <textarea name="content" rows="5"></textarea>
+                      </div>
+                      <div class="field">
+                        <input type="submit" value="Create" class="ui button"/>
+                      </div>
+                </g:form>
             </semui:card>
         </div><!-- .four -->
       </div><!-- .grid -->

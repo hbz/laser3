@@ -7,15 +7,13 @@
   </head>
     <body>
         <semui:breadcrumbs>
-            <g:if test="${params.shortcode}">
-                <semui:crumb controller="myInstitutions" action="currentSubscriptions" params="${[shortcode:params.shortcode]}" text="${params.shortcode} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
-            </g:if>
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}" />
             <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"  text="${subscriptionInstance.name}" />
             <semui:crumb class="active" text="${message(code:'subscription.details.addEntitlements.label', default:'Add Entitlements')}" />
         </semui:breadcrumbs>
-
-        <g:render template="actions" />
-
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
         <h1 class="ui header">
             <semui:editableLabel editable="${editable}" />
             <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>

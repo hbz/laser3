@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.2.13 - Table
+ * # Semantic UI 2.3.0 - Table
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -17,16 +17,16 @@
 /* Prototype */
 .ui.table {
   width: 100%;
-  background: #FFFFFF;
+  background: transparent;
   margin: 1em 0em;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: none;
   -webkit-box-shadow: none;
           box-shadow: none;
-  border-radius: 0.28571429rem;
+  border-radius: 0.14285714rem;
   text-align: left;
   color: rgba(0, 0, 0, 0.87);
-  border-collapse: separate;
-  border-spacing: 0px;
+  border-collapse: collapse;
+  border-spacing: 0 0.5rem;
 }
 .ui.table:first-child {
   margin-top: 0em;
@@ -55,7 +55,7 @@
 }
 .ui.table thead th {
   cursor: auto;
-  background: #F9FAFB;
+  background: #f4f8f9;
   text-align: inherit;
   color: rgba(0, 0, 0, 0.87);
   padding: 0.92857143em 0.78571429em;
@@ -63,20 +63,20 @@
   font-style: none;
   font-weight: bold;
   text-transform: none;
-  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+  border-bottom: none;
   border-left: none;
 }
 .ui.table thead tr > th:first-child {
   border-left: none;
 }
 .ui.table thead tr:first-child > th:first-child {
-  border-radius: 0.28571429rem 0em 0em 0em;
+  border-radius: 0.14285714rem 0em 0em 0em;
 }
 .ui.table thead tr:first-child > th:last-child {
-  border-radius: 0em 0.28571429rem 0em 0em;
+  border-radius: 0em 0.14285714rem 0em 0em;
 }
 .ui.table thead tr:first-child > th:only-child {
-  border-radius: 0.28571429rem 0.28571429rem 0em 0em;
+  border-radius: 0.14285714rem 0.14285714rem 0em 0em;
 }
 
 /* Footer */
@@ -86,8 +86,8 @@
 }
 .ui.table tfoot th {
   cursor: auto;
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
-  background: #F9FAFB;
+  border-top: 1px solid #eaeaea;
+  background: #f4f8f9;
   text-align: inherit;
   color: rgba(0, 0, 0, 0.87);
   padding: 0.78571429em 0.78571429em;
@@ -100,13 +100,13 @@
   border-left: none;
 }
 .ui.table tfoot tr:first-child > th:first-child {
-  border-radius: 0em 0em 0em 0.28571429rem;
+  border-radius: 0em 0em 0em 0.14285714rem;
 }
 .ui.table tfoot tr:first-child > th:last-child {
-  border-radius: 0em 0em 0.28571429rem 0em;
+  border-radius: 0em 0em 0.14285714rem 0em;
 }
 .ui.table tfoot tr:first-child > th:only-child {
-  border-radius: 0em 0em 0.28571429rem 0.28571429rem;
+  border-radius: 0em 0em 0.14285714rem 0.14285714rem;
 }
 
 /* Table Row */
@@ -115,6 +115,11 @@
 }
 .ui.table tr:first-child td {
   border-top: none;
+}
+
+/* Repeated tbody */
+.ui.table tbody + tbody tr:first-child td {
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
 }
 
 /* Table Cells */
@@ -221,8 +226,8 @@
   border-right: none;
 }
 .ui.structured.sortable.table thead th {
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
-  border-right: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
+  border-right: 1px solid #eaeaea;
 }
 .ui.structured.basic.table th {
   border-left: none;
@@ -230,8 +235,8 @@
 }
 .ui.structured.celled.table tr th,
 .ui.structured.celled.table tr td {
-  border-left: 1px solid rgba(34, 36, 38, 0.1);
-  border-right: 1px solid rgba(34, 36, 38, 0.1);
+  border-left: 1px dotted rgba(34, 36, 38, 0.1);
+  border-right: 1px dotted rgba(34, 36, 38, 0.1);
 }
 
 /*--------------
@@ -282,13 +287,13 @@
 
 /* Fix 2nd Column */
 .ui.definition.table thead:not(.full-width) th:nth-child(2) {
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
 }
 .ui.definition.table tfoot:not(.full-width) th:nth-child(2) {
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
 }
 .ui.definition.table td:nth-child(2) {
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
 }
 
 
@@ -575,7 +580,7 @@
   margin-bottom: 0em;
   top: 0px;
   margin-top: 1em;
-  border-radius: 0.28571429rem 0.28571429rem 0em 0em;
+  border-radius: 0.14285714rem 0.14285714rem 0em 0em;
 }
 .ui.table[class*="top attached"]:first-child {
   margin-top: 0em;
@@ -589,7 +594,7 @@
   margin-bottom: 1em;
   -webkit-box-shadow: none, none;
           box-shadow: none, none;
-  border-radius: 0em 0em 0.28571429rem 0.28571429rem;
+  border-radius: 0em 0em 0.14285714rem 0.14285714rem;
 }
 .ui[class*="bottom attached"].table:last-child {
   margin-bottom: 0em;
@@ -638,19 +643,19 @@
 
 /* Red */
 .ui.red.table {
-  border-top: 0.2em solid #DB2828;
+  border-top: 0.2em solid #BB1600;
 }
 .ui.inverted.red.table {
-  background-color: #DB2828 !important;
+  background-color: #BB1600 !important;
   color: #FFFFFF !important;
 }
 
 /* Orange */
 .ui.orange.table {
-  border-top: 0.2em solid #F2711C;
+  border-top: 0.2em solid #fa820a;
 }
 .ui.inverted.orange.table {
-  background-color: #F2711C !important;
+  background-color: #fa820a !important;
   color: #FFFFFF !important;
 }
 
@@ -674,10 +679,10 @@
 
 /* Green */
 .ui.green.table {
-  border-top: 0.2em solid #21BA45;
+  border-top: 0.2em solid #98B500;
 }
 .ui.inverted.green.table {
-  background-color: #21BA45 !important;
+  background-color: #98B500 !important;
   color: #FFFFFF !important;
 }
 
@@ -692,10 +697,10 @@
 
 /* Blue */
 .ui.blue.table {
-  border-top: 0.2em solid #2185D0;
+  border-top: 0.2em solid #004678;
 }
 .ui.inverted.blue.table {
-  background-color: #2185D0 !important;
+  background-color: #004678 !important;
   color: #FFFFFF !important;
 }
 
@@ -881,7 +886,7 @@
 .ui.sortable.table thead th {
   cursor: pointer;
   white-space: nowrap;
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
   color: rgba(0, 0, 0, 0.87);
 }
 .ui.sortable.table thead th:first-child {
@@ -1007,7 +1012,7 @@
 
 .ui.basic.table {
   background: transparent;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: 1px solid #eaeaea;
   -webkit-box-shadow: none;
           box-shadow: none;
 }
@@ -1056,7 +1061,7 @@
 
 .ui.celled.table tr th,
 .ui.celled.table tr td {
-  border-left: 1px solid rgba(34, 36, 38, 0.1);
+  border-left: 1px dotted rgba(34, 36, 38, 0.1);
 }
 .ui.celled.table tr th:first-child,
 .ui.celled.table tr td:first-child {
@@ -1126,8 +1131,84 @@
   font-size: 1.1em;
 }
 
+/*--------------
+    Sortable
+---------------*/
 
-/*******************************
-         Site Overrides
-*******************************/
 
+/* change classnames bec. of existing sort function in LAS:eR */
+.ui.sortable.table thead th.sortable:after {
+  content: '\f0dc';
+  color: #767676;
+  display: inline;
+}
+.ui.sortable.table thead th.asc:after {
+  content: '\f0d8';
+  color: #1B1C1D;
+}
+.ui.sortable.table thead th.desc:after {
+  content: '\f0d7';
+  color: #1B1C1D;
+}
+.ui.sortable.table thead th {
+  cursor: default;
+  color: #767676;
+}
+
+/* Hover */
+.ui.sortable.table thead th:hover {
+  background: transparent;
+  color: #767676;
+}
+.ui.sortable.table thead th.sortable:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.ui .table tr td {
+  background-color: white;
+  padding: 20px 0;
+}
+.ui .table tr td,
+.ui .table tr th {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.ui .table tr th {
+  color: gray;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+.ui .table tr th a {
+  display: inline-block;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  color: gray;
+}
+
+/*--------------
+     la-table
+---------------*/
+
+.ui.la-table.table {
+  border-collapse: separate;
+  background-color: transparent;
+}
+.ui.la-table.table tr th,
+.ui.la-table.table tr td {
+  border-top: none;
+}
+
+/*--------------
+     la-rowspan
+---------------*/
+
+.ui.la-rowspan.table {
+  border-collapse: separate;
+  background-color: transparent;
+}
+.ui.la-rowspan.table tr th {
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
+}
+.ui.la-rowspan.table tr td,
+.ui.la-rowspan.table tr:first-child th {
+  border-top: none;
+}

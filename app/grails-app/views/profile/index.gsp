@@ -1,16 +1,18 @@
 <%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
-  </head>
+    <head>
+        <meta name="layout" content="semanticUI"/>
+        <title>${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
+    </head>
 
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb message="profile.bc.profile" class="active"/>
         </semui:breadcrumbs>
+
+        <h1 class="ui header">${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
 
         <semui:messages data="${flash}" />
 
@@ -38,16 +40,16 @@
                             <label>${message(code: 'profile.dash', default:'Default Dashboard')}</label>
 
                             <select name="defaultDash" value="${user.defaultDash?.id}" class="ui fluid dropdown">
+                                <option value=""></option>
                                 <g:each in="${user.authorizedOrgs}" var="o">
                                     <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
                                 </g:each>
                             </select>
                         </div>
 
-                        <div class="alert alert-info" style="width:95%">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
+                        <div class="ui blue message">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
 
                         <div class="field">
-                            <label></label>
                             <button type="submit" class="ui button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
                         </div>
 
@@ -64,17 +66,25 @@
                             ${message(code: 'profile.password.label', default:'Update Password')}
                         </h4>
 
-                        <div class="field">
+                        <div class="field required">
                             <label>${message(code: 'profile.password.current', default:'Current Password')}</label>
-                            <input type="password" name="passwordCurrent" value=""/>
+                            <input type="password" name="passwordCurrent" required class="pw"/>
+                        </div>
+                        <div class="field required">
+                            <label>${message(code: 'profile.password.new', default:'New Password')}</label>
+                            <input type="password" name="passwordNew" required class="pw pwn"/>
+                        </div>
+                        <div class="field required">
+                            <label>${message(code: 'profile.password.new.repeat', default:'New Password (Repeat)')}</label>
+                            <input type="password" name="passwordNew2" required class="pw pwn"/>
                         </div>
                         <div class="field">
-                            <label>${message(code: 'profile.password.new', default:'New Password')}</label>
-                            <input type="text" name="passwordNew" value=""/>
+                            <label>${message(code: 'profile.password.show', default:'Show Passwords')}</label>
+                            <input type="checkbox" name="showPasswords" id="passwordToggler">
                         </div>
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui button">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
+                            <button type="submit" class="ui button" id="passwordSubmit">${message(code: 'profile.password.update.button', default:'Update Password')}</button>
                         </div>
 
                     </g:form>
@@ -146,7 +156,7 @@
                 <h4 class="ui dividing header">
                     ${message(code: 'profile.membership.existing')}
                 </h4>
-                          <table class="ui celled striped table">
+                          <table class="ui celled la-table table">
                                 <thead>
                                       <tr>
                                           <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
@@ -225,7 +235,7 @@
                 </div>
                 <div class="column wide sixteen">
                     <div id="reminders">
-                        <div class="well">
+                        <div class="ui segment">
                             <h2 class="ui header">${message(code: 'profile.reminder.new', default:'Create new Reminders / Notifications')}</h2>
                             <p>${message(code: 'profile.reminder.new.text', default:'Select the condition you are interested about and time period you wished to be notified about said topic.')}</p>
                             <p><i>${message(code: 'profile.reminder.new.email', default:'Ensure your email or other method of contact is a valid means of reaching yourself')}</i></p>
@@ -273,10 +283,10 @@
 
 
                 <div class="column wide sixteen">
-                    <div class="well">
+                    <div class="ui segment">
                         <h2 class="ui header">${message(code: 'profile.reminder.active', default:'Active Reminders')}</h2>
 
-                  <table class="ui celled striped table">
+                  <table class="ui celled la-table table">
                       <thead>
                       <tr>
                           <th><g:message code="reminder.trigger" default="Trigger"/></th>
@@ -321,6 +331,25 @@
 
 <r:script>
     $(document).ready(function () {
+
+        $('#passwordToggler').on('change', function(e) {
+            $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
+        })
+
+        $('#passwordSubmit').on('click', function(e) {
+            e.preventDefault()
+            var pw1 = $('input[name=passwordNew]')
+            var pw2 = $('input[name=passwordNew2]')
+
+            $('input.pwn').parents('div.field').removeClass('error')
+
+            if ( pw1.val() && (pw1.val() == pw2.val()) ) {
+                $(this).parents('form').submit()
+            } else {
+                $('input.pwn').parents('div.field').addClass('error')
+            }
+        })
+
         $("#unit").on('change', function (e) {
             var unit = this.options[e.target.selectedIndex].text;
             var val = $(this).next();

@@ -1,13 +1,14 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
 import org.apache.poi.hssf.usermodel.*
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
-
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageDetailsController {
 
     def springSecurityService
@@ -55,7 +56,7 @@ class PackageDetailsController {
 
       result.editable = true
 
-      def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
+      def paginate_after = params.paginate_after ?: ((2 * result.max)-1)
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
       def deleted_package_status =  RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
@@ -403,8 +404,8 @@ class PackageDetailsController {
       boolean showDeletedTipps=false
 
       result.transforms = grailsApplication.config.packageTransforms
-      
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
         result.editable=true
         showDeletedTipps=true
       }
@@ -422,7 +423,7 @@ class PackageDetailsController {
 
       def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
 
-      result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts desc", [packageInstance, pending_change_pending_status]);
+        result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, changeDoc", [packageInstance, pending_change_pending_status]);
 
       log.debug("Package has ${result.pendingChanges?.size()} pending changes");
 
@@ -496,6 +497,11 @@ class PackageDetailsController {
 
       result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
+      if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), contextOrg)) {
+          result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
+          result.usageMode = (contextOrg.orgType?.value == 'Consortium') ? 'package' : 'institution'
+          result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
+      }
 
       result.packageInstance = packageInstance
       if(executorWrapperService.hasRunningProcess(packageInstance)){
@@ -852,7 +858,7 @@ class PackageDetailsController {
   }
 
   def isEditable(){
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+      if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
           return true
       }
       else {
@@ -901,7 +907,7 @@ class PackageDetailsController {
     def packageInstance = Package.get(params.id)
     boolean showDeletedTipps=false
 
-    if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+      if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
       showDeletedTipps=true
     }
 

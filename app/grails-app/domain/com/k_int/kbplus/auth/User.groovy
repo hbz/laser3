@@ -172,6 +172,16 @@ class User implements Permissions {
         false
     }
 
+    def hasRole(roleName) {
+        def result = false
+        def role = Role.findByAuthority(roleName)
+        if (role) {
+            def ur = UserRole.findByUserAndRole(this, role)
+            result = (ur && roles?.contains(ur))
+        }
+        result
+    }
+
     @Override
     String toString() {
         display + ' (' + id + ')'

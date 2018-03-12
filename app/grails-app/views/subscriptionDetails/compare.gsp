@@ -1,4 +1,6 @@
 <%@ page import ="com.k_int.kbplus.Subscription" %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
 <!doctype html>
 <html>
 	<head>
@@ -27,7 +29,7 @@
 					<g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 					<g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
 
-					<table class="ui celled table">
+					<table class="ui celled la-table table">
 						<thead>
 							<tr>
 								<th></th>
@@ -94,7 +96,7 @@
                                 <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 				<div class="row">
 				<h3 class="ui header">${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
-				<table class="ui celled table">
+				<table class="ui celled la-table table">
 					<thead>
 						<tr>
 							<th>${message(code:'default.compare.overview.value', default:'Value')}</th>
@@ -138,7 +140,7 @@
 					<input type="hidden" name="nochng" value="${params.nochng}"/>
 					<input type="hidden" name="countA" value="${params.countA}"/>
 					<input type="hidden" name="countB" value="${params.countB}"/>
-					 <table class="ui celled table">
+					 <table class="ui celled la-table table">
 						<tr>
 							<td>
 								${message(code:'subscription.compare.filter.title', default:'Filters - Title')}: <input name="filter" value="${params.filter}">
@@ -152,7 +154,7 @@
 				<div class="span6 offset3">
 				<dt class="center">${message(code:'subscription.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 				</div>
-				<table class="ui celled table">
+				<table class="ui celled la-table table">
 					<thead>
 						<tr>
 							<th> ${message(code:'title.label', default:'Title')} </th>
@@ -162,9 +164,9 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td><b>${message(code:'subscription.compare.results.ies.total', default:'Total IEs for query')}</b></td>
-							<td><b>${listACount}</b></td>
-							<td><b>${listBCount}</b></td>
+							<td><strong>${message(code:'subscription.compare.results.ies.total', default:'Total IEs for query')}</strong></td>
+							<td><strong>${listACount}</strong></td>
+							<td><strong>${listBCount}</strong></td>
 						<tr>
 						<g:each in="${comparisonMap}" var="entry">
 							<g:set var="subAIE" value="${entry.value[0]}"/>
@@ -174,7 +176,7 @@
 							<tr>
 								
 								<td>
-								<b><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></b> 
+								<strong><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
 								<g:each in="${currentTitle.ids}" var="id">
@@ -236,7 +238,7 @@
                 	startDate: $("#start"+filter).val(),
                 	endDate: $("#end"+filter).val(),
                 	hideDeleted: 'true',
-                	inst_shortcode: '${params.shortcode}',
+                	inst_shortcode: '${contextService.getOrg()?.shortcode}',
                     q: term , // search term
                     page_limit: 10,
                     baseClass:'com.k_int.kbplus.Subscription'

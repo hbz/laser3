@@ -4,8 +4,9 @@ import com.k_int.kbplus.api.v0.ApiMainService
 import com.k_int.kbplus.auth.*
 import de.laser.domain.Constants
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured // 2.0
 
+@Secured(['permitAll']) // TODO
 class ApiController {
 
     def springSecurityService
@@ -18,7 +19,7 @@ class ApiController {
 
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def index() {
-        log.debug("API");
+        log.debug("API")
 
         def result = [:]
         if(springSecurityService.isLoggedIn()) {
@@ -135,6 +136,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     * Create a CSV containing all JUSP title IDs with the institution they belong to
     */
 
+    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def fetchAllTips() {
 
         def jusp_ti_inst = TitleInstitutionProvider.executeQuery("""
@@ -190,6 +192,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     // If found, return a JSON report of each title for that institution
     // Also accept an optional parameter esn [element set name] with values full of brief[the default]
     // Example:  http://localhost:8080/laser/api/institutionTitles?orgid=jusplogin:shu
+    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def institutionTitles() {
 
         def result = [:]
@@ -243,6 +246,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
      *
      * @return
      */
+    @Secured(['permitAll']) // TODO
     def v0() {
         log.debug("API Call: " + params)
 
@@ -254,6 +258,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         def value   = params.get('v', '')
         def context = params.get('context')
         def format
+
 
         Org contextOrg = null
         User user = (User) request.getAttribute('authorizedApiUser')

@@ -23,13 +23,13 @@
                   <g:hiddenField name="version" value="${orgInstance?.version}" />
                   <fieldset>
                     <f:all bean="orgInstance"/>
-                    <div class="ui segment form-actions">
+                    <div class="ui form-actions">
                       <button type="submit" class="ui button">
-                        <i class="icon-ok icon-white"></i>
+                        <i class="checkmark icon"></i>
                         <g:message code="default.button.update.label" default="Update" />
                       </button>
                       <button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
-                        <i class="icon-trash icon-white"></i>
+                        <i class="trash alternate icon"></i>
                         <g:message code="default.button.delete.label" default="Delete" />
                       </button>
                     </div>
@@ -40,7 +40,8 @@
             </div><!-- .twelve -->
 
             <div class="four wide column">
-                <semui:card text="${entityName}" class="card-grey">
+                <semui:card text="${entityName}">
+                    <div class="content">
                     <ul class="nav nav-list">
                         <li>
                             <g:link class="list" action="list">
@@ -55,6 +56,7 @@
                             </g:link>
                         </li>
                     </ul>
+                    </div>
                 </semui:card>
             </div><!-- .four -->
 

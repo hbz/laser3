@@ -8,13 +8,15 @@
   </head>
   <body>
 
-      <semui:breadcrumbs>
-          <semui:crumb message="myinst.packages" class="active" />
-      </semui:breadcrumbs>
+  <semui:breadcrumbs>
+      <semui:crumb message="myinst.packages" class="active"/>
+  </semui:breadcrumbs>
 
-    <g:render template="actions" />
+  <semui:controlButtons>
+      <g:render template="actions"/>
+  </semui:controlButtons>
 
-    <h1 class="ui header">${message(code:'myinst.packages')}</h1>
+  <h1 class="ui header">${message(code:'myinst.packages')}</h1>
 
     <semui:messages data="${flash}" />
 
@@ -50,7 +52,7 @@
     </semui:filter>
 
         
-        <table class="ui celled striped table">
+        <table class="ui sortable celled la-table table">
             <thead>
                 <tr>
                     <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />

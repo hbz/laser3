@@ -1,4 +1,4 @@
-<div class="ui segment person-details">
+<div class="ui item person-details">
 	<g:if test="${person}">
 
 		<h5 class="ui header">
@@ -24,6 +24,15 @@
 			</g:each>
 		</div>
 
+		<g:if test="${!personRole}">
+			<div class="ui list">
+				<g:each in="${person?.roleLinks}" var="role">
+					<div class="item">
+						<g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
+					</div>
+				</g:each>
+			</div>
+		</g:if>
 	</g:if>
 	<g:if test="${personRole}">
 
@@ -34,7 +43,7 @@
                 ${personRole?.prs?.last_name?.encodeAsHTML()}
             </g:link>
             <g:if test="${personRole?.functionType}">
-                <small> - ${personRole?.functionType}</small>
+                <small> - ${personRole?.functionType?.getI10n('value')}</small>
             </g:if>
         </h5>
 
@@ -51,7 +60,7 @@
                     <g:render template="/templates/cpa/address" model="${[address: address]}"></g:render>
                 </div>
             </g:each>
-			</div>
+		</div>
 
 	</g:if>
 </div>

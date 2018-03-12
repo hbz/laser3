@@ -12,8 +12,8 @@
 
 	<semui:breadcrumbs>
 		<g:if test="${institution}">
-			<semui:crumb controller="myInstitutions" action="dashboard" params="${[shortcode:params.shortcode]}" text="${institution?.name}" />
-			<semui:crumb text="${message(code:'license.current')}" controller="myInstitutions" action="currentLicenses" params="${[shortcode:params.shortcode]}" />
+			<semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+			<semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
 		</g:if>
 		<semui:crumb class="active" message="menu.institutions.comp_lic" />
 	</semui:breadcrumbs>
@@ -26,10 +26,10 @@
 				<g:form id="compare" name="compare" action="compare" method="get">
 					<input type="hidden" name="institution" value="${institution?.id}"/>
 					<div>
-                                                <label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
+						<label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
 
-                                                <input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
-                                                <button type="button" style="margin-top:10px" class="ui positive button" id="addToList" >${message(code:'default.button.add.label', default:'Add')}</button>
+						<input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
+						<button type="button" style="margin-top:10px" class="ui positive button" id="addToList" >${message(code:'default.button.add.label', default:'Add')}</button>
 					</div>
 					
 					<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>

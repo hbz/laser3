@@ -14,9 +14,9 @@
 
     <semui:messages data="${flash}" />
 
-    <div>
-        <h2 class="ui header">Affiliations</h2>
-        <table class="ui celled striped table">
+        <h1 class="ui header">Affiliations</h1>
+
+        <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>Username</th><th>Affiliations</th>
@@ -34,10 +34,6 @@
               </td>
           </g:each>
         </table>
-    </div>
-
-
-
 
   </body>
 </html>

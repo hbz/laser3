@@ -1,16 +1,21 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 import org.apache.log4j.DailyRollingFileAppender
 import org.apache.log4j.RollingFileAppender
 
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
+//localauth = true
+
 // pilot version
 // access via grailsApplication.config.pilotDisableFlag
 pilotDisableFlag = false
+
+// STATS-CONFIG
+//statsApiUrl = 'http://statsServer'
 
 // @NotificationsJob
 // - enable notification
@@ -18,13 +23,17 @@ pilotDisableFlag = false
 //hbzMaster = true
 
 // ES-CONFIG
-aggr_es_cluster  = 'elasticsearch'
-aggr_es_index    = 'kbplus'
-aggr_es_hostname = 'localhost' // localhost
+//aggr_es_cluster	= 'elasticsearch'
+//aggr_es_index		= 'laser'
+//aggr_es_hostname	= 'localhost'
 
 // FEATURE-CONFIG
-localauth = true
+//feature.eBooks = true
+//feature.issnl = true
 feature_finance = true
+//feature.notifications = true
+//globalDataSyncJobActiv = true
+//AdminReminderJobActiv = true
 
 // Database Migration Plugin
 grails.plugin.databasemigration.updateOnStart = false
@@ -360,8 +369,8 @@ grails.mime.types = [
 //grails.urlmapping.cache.maxsize = 1000
 
 // What URL patterns should be processed by the resources plugin
-grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
-grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**']
+grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*', '/rest/*']
+grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/rest/**']
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "none" // none, html, base64
@@ -513,7 +522,8 @@ log4j = {
       'net.sf.ehcache.hibernate',
       'formfields',
       'com.k_int.kbplus.filter',
-      'org.codehaus.groovy.grails.plugins.springsecurity'
+      // 'org.codehaus.groovy.grails.plugins.springsecurity'
+      'grails.plugin.springsecurity' // 2.0
 
 
   debug  'grails.app.controllers',
@@ -533,19 +543,32 @@ log4j = {
 }
 
 // Added by the Spring Security Core plugin:
-grails.gsp.tldScanPattern                                       = 'classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
-grails.plugins.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
-grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
-grails.plugins.springsecurity.userLookup.usernamePropertyName   = 'username'
-grails.plugins.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
-grails.plugins.springsecurity.securityConfigType                = "Annotation"
+grails.gsp.tldScanPattern                                      = 'classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
+grails.plugin.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
+grails.plugin.springsecurity.userLookup.usernamePropertyName   = 'username'
+grails.plugin.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
+grails.plugin.springsecurity.securityConfigType                = "Annotation"
+grails.plugin.springsecurity.successHandler.alwaysUseDefault   = true
+grails.plugin.springsecurity.successHandler.defaultTargetUrl   = '/home/index'
+grails.plugin.springsecurity.password.algorithm                = 'SHA-256' // default: 'bcrypt'
+grails.plugin.springsecurity.password.hash.iterations          = 1
 
-grails.plugins.springsecurity.providerNames = [
+//grails.plugin.springsecurity.
+//grails.plugin.springsecurity.useSessionFixationPrevention      = false // 2.0
+
+grails.plugin.springsecurity.providerNames = [
         'preAuthenticatedAuthenticationProvider',
-        'daoAuthenticationProvider' // ,
-        // 'anonymousAuthenticationProvider',
+        'daoAuthenticationProvider' //,
+        // 'anonymousAuthenticationProvider' //,
         // 'rememberMeAuthenticationProvider'
 ]
+
+grails.plugin.springsecurity.roleHierarchy = '''
+    ROLE_YODA > ROLE_ADMIN
+    ROLE_ADMIN > ROLE_DATAMANAGER
+    ROLE_DATAMANAGER > ROLE_USER
+'''
 
 /*grails.plugins.springsecurity.controllerAnnotations.staticRules = [
   '/monitoring/**': ['ROLE_ADMIN']  // javaMelody ?
@@ -892,10 +915,11 @@ grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (p
 notifications.email.from = 'wincenter@hbz-nrw.de'
 notifications.email.replyTo = 'wincenter@hbz-nrw.de'
 notifications.email.genericTemplate = true //If enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
+systemEmail = 'wincenter@hbz-nrw.de'
 
 //Finance
 grails.plugins.remotepagination.enableBootstrap = true
-financials.currency = "EUR - Euro Member Countries|GBP - United Kingdom Pound|USD - United States Dollar|CHF - Switzerland Franc" //List in priority of order
+financials.currency = "EUR|GBP|USD|CHF" //List in priority of order
 
 defaultOaiConfig = [
   serverName: 'K-Int generic Grails OAI Module :: KBPlus.ac.uk',

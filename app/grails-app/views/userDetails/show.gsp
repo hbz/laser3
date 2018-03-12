@@ -7,13 +7,15 @@
   </head>
   <body>
 
-      <h1 class="ui header">${ui.displayName?:'No username'}</h1>
+    <g:render template="breadcrumb" model="${[ params:params ]}"/>
+
+      <h1 class="ui header">${ui.username} : ${ui.displayName?:'No username'}</h1>
 
       <semui:messages data="${flash}" />
 
       <h3 class="ui header">${message(code:'user.affiliation.plural', default:'Affiliations')}</h3>
 
-      <table class="ui celled table">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
             <th>${message(code:'user.id', default:'Id')}</th>
@@ -36,7 +38,7 @@
 
       <h3 class="ui header">${message(code:'user.role.plural', default:'Roles')}</h3>
 
-      <table class="ui celled table">
+      <table class="ui celled la-table table">
         <thead>
           <tr>
             <th>${message(code:'user.role', default:'Role')}</th>

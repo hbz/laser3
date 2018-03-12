@@ -1,36 +1,43 @@
 <%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
-    <title><g:message code="default.edit.label" args="[entityName]" /></title>
-  </head>
- <body>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
+        <title><g:message code="default.edit.label" args="[entityName]" /></title>
+    </head>
+    <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
+
+    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
     <semui:breadcrumbs>
         <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
         <semui:crumb class="active" text="${packageInstance.name}" />
+    </semui:breadcrumbs>
+
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link action="show" params="${params+[format:'json']}">JSON</g:link>
+                <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
-                <g:link action="show" params="${params+[format:'xml']}">XML</g:link>
+                <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
 
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
-                    <g:link action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                    <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
-    </semui:breadcrumbs>
+    </semui:controlButtons>
 
-    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
-    <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':packageInstance]}"/>
+
+    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
+    </sec:ifAnyGranted>
 
     <g:if test="${params.asAt}"><h1 class="ui header">${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
 
@@ -47,180 +54,194 @@
 
     <g:render template="nav" />
 
-    <sec:ifAnyGranted roles="ROLE_ADMIN,KBPLUS_EDITOR">
-        <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
-    </sec:ifAnyGranted>
+    <semui:meta>
+        <div class="inline-lists">
 
-    <g:if test="${forum_url != null}">
-      <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-    </g:if>
+            <dl>
+                <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
+                <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
+
+                <dt>${message(code: 'package.show.persistent_id')}</dt>
+                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>
+
+                <dt>${message(code: 'package.show.other_ids')}</dt>
+                <dd>
+                    <table class="ui celled la-table la-table-small table">
+                        <thead>
+                        <tr>
+                            <th>${message(code: 'component.id.label')}</th>
+                            <th>${message(code: 'identifier.namespace.label')}</th>
+                            <th>${message(code: 'identifier.label')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${packageInstance.ids}" var="io">
+                            <tr>
+                                <td>${io.id}</td>
+                                <td>${io.identifier.ns.ns}</td>
+                                <g:if test="${io.identifier.value =~ /^http/}">
+                                    <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
+                                </g:if>
+                                <g:else>
+                                    <td>${io.identifier.value}</td>
+                                </g:else>
+                            </tr>
+                        </g:each>
+
+                        </tbody>
+                    </table>
+
+                    <g:if test="${editable}">
+                        <semui:formAddIdentifier owner="${packageInstance}" />
+                    </g:if>
+
+                </dd>
+            </dl>
+
+        </div>
+    </semui:meta>
 
  <semui:messages data="${flash}" />
 
  <semui:errors bean="${packageInstance}" />
 
     <div class="ui grid">
+
         <div class="twelve wide column">
-            <h4 class="ui header">
-              ${message(code: 'package.show.pkg_information')}
-            </h4>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
+                <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code: 'package.show.announcement')}</g:link>
+            </sec:ifAnyGranted>
+
+            <g:if test="${forum_url != null}">
+                <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
+            </g:if>
+        </div>
+
+        <div class="twelve wide column">
             <g:hiddenField name="version" value="${packageInstance?.version}" />
             <fieldset class="inline-lists">
 
-              <dl>
-                <dt>${message(code: 'package.show.pkg_name')}</dt>
-                <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
-              </dl>
-              
-              <dl>
-                <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.kbplusSystemId}/package/${packageInstance?.id}</dd>
-              </dl>
-
-
-              <dl>
-                <dt>${message(code: 'package.show.other_ids')}</dt>
-                <dd>
-                  <table class="ui celled table">
-                    <thead>
-                      <tr>
-                        <th>${message(code: 'component.id.label')}</th>
-                        <th>${message(code: 'identifier.namespace.label')}</th>
-                        <th>${message(code: 'identifier.label')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <g:each in="${packageInstance.ids}" var="io">
-                          <tr>
-                            <td>${io.id}</td>
-                            <td>${io.identifier.ns.ns}</td>
-                            <g:if test="${io.identifier.value =~ /^http/}">
-                              <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
-                            </g:if>
-                            <g:else>
-                              <td>${io.identifier.value}</td>
-                            </g:else>
-                          </tr>
-                      </g:each>
-                     
-                    </tbody>
-                  </table>
-
-                  <g:if test="${editable}">
-
-                      <semui:formAddIdentifier owner="${packageInstance}">
-                      </semui:formAddIdentifier>
-
-                  </g:if>
-
-                </dd>
-              </dl>
-
-            <dl>
-                <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
-                <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
-            </dl>
-
-              <dl>
-                <dt>${message(code: 'license.is_public')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="isPublic" config='YN'/>
-                </dd>
-              </dl> 
-
-              <dl>
-                <dt><g:message code="license" default="License"/></dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="license" config="Licenses"/>
-                </dd>
-              </dl>
-
-              <dl>
-                <dt>${message(code: 'package.show.vendor_url')}</dt>
-                <dd>
-                  <semui:xEditable owner="${packageInstance}" field="vendorURL" />
-                </dd>
-              </dl>
-
                 <dl>
-                  <dt>${message(code: 'package.show.start_date')}</dt>
-                  <dd>
-                    <semui:xEditable owner="${packageInstance}" field="startDate" type="date"/>
-                </dd>
-                </dl>
+                    <dt>${message(code: 'package.show.pkg_name')}</dt>
+                    <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
 
-               <dl>
+                    <dt>${message(code: 'package.show.status')}</dt>
+                    <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
+
+                    <dt>${message(code: 'license.is_public')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="isPublic" config='YN'/>
+                    </dd>
+
+                    <dt><g:message code="license" default="License"/></dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="license" config="Licenses"/>
+                    </dd>
+
+                    <dt>${message(code: 'package.show.vendor_url')}</dt>
+                    <dd>
+                        <semui:xEditable owner="${packageInstance}" field="vendorURL" />
+                    </dd>
+
+                    <dt>${message(code: 'package.show.start_date')}</dt>
+                    <dd>
+                        <semui:xEditable owner="${packageInstance}" field="startDate" type="date"/>
+                    </dd>
+
                     <dt>${message(code: 'package.show.end_date')}</dt>
                     <dd>
                        <semui:xEditable owner="${packageInstance}" field="endDate" type="date"/>
                     </dd>
-               </dl>
 
-
-
-              <dl>
-                <dt>${message(code: 'package.show.orglink')}</dt>
-                <dd><g:render template="orgLinks" 
+                <% /*
+                <dl>
+                    <dt>${message(code: 'package.show.orglink')}</dt>
+                    <dd><g:render template="orgLinks"
                             contextPath="../templates"
                             model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',editmode:editable]}" /></dd>
-              </dl>
+                </dl>
+                */ %>
 
-             <dl>
-                <dt>${message(code: 'package.list_status')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RefdataCategory.PKG_LIST_STAT}"/>
-                </dd>
-             </dl>
+                    <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:packageInstance?.orgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable]}" />
 
-             <dl>
-                <dt>${message(code: 'package.breakable')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="breakable" config="${RefdataCategory.PKG_BREAKABLE}"/>
-                </dd>
-             </dl>
 
-             <dl>
-                <dt>${message(code: 'package.consistent')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>
-                </dd>
-             </dl>
+                    <dt>${message(code: 'package.list_status')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="packageListStatus" config="${RefdataCategory.PKG_LIST_STAT}"/>
+                    </dd>
 
-             <dl>
-                <dt>${message(code: 'package.fixed')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
-                </dd>
-             </dl>
+                    <dt>${message(code: 'package.breakable')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="breakable" config="${RefdataCategory.PKG_BREAKABLE}"/>
+                    </dd>
 
-              <dl>
-                <dt>${message(code: 'package.scope')}</dt>
-                <dd>
-                  <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
-                </dd>
-              </dl>
+                    <dt>${message(code: 'package.consistent')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>
+                    </dd>
 
-          </fieldset>
+                    <dt>${message(code: 'package.fixed')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
+                    </dd>
+
+                    <dt>${message(code: 'package.scope')}</dt>
+                    <dd>
+                        <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
+                    </dd>
+                    <g:if test="${statsWibid && packageIdentifier}">
+                      <dt>Paketnutzung</dt>
+                      <dd>
+                        <laser:statsLink class="ui basic negative"
+                                         base="${grailsApplication.config.statsApiUrl}"
+                                         module="statistics"
+                                         controller="default"
+                                         action="select"
+                                         params="[mode:usageMode,
+                                                  packages:packageInstance.getIdentifierByType('isil').value,
+                                                  institutions:statsWibid
+                                         ]"
+                                         title="Springe zu Statistik im Nationalen Statistikserver">
+                            <i class="chart bar outline icon"></i>
+                        </laser:statsLink>
+                      </dd>
+                    </g:if>
+
+                </dl>
+
+            </fieldset>
         </div><!-- .twelve -->
 
 
         <div class="four wide column">
 
-            <semui:card message="package.show.addToSub" class="card-grey notes">
+            <semui:card message="package.show.addToSub" class="notes">
+                <div class="content">
                 <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
-                  <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}">
-                    <select name="subid">
-                      <g:each in="${subscriptionList}" var="s">
-                        <option value="${s.sub.id}">${s.sub.name ?: "unnamed subscription ${s.sub.id}"} - ${s.org.name}</option>
-                      </g:each>
-                    </select><br/>
-                    ${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}: <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" style="vertical-align:text-bottom;"/><br/>
-                    <input class="ui button" id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
-                  </g:form>
+
+                    <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}" class="ui form">
+
+                        <select class="ui dropdown" name="subid">
+                            <g:each in="${subscriptionList}" var="s">
+                                <option value="${s.sub.id}">${s.sub.name ?: "unnamed subscription ${s.sub.id}"} - ${s.org.name}</option>
+                            </g:each>
+                        </select>
+
+                        <br/>
+                        <br/>
+                        <div class="ui checkbox">
+                            <label>${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}</label>
+                            <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" class="hidden"/>
+                        </div>
+
+                        <input class="ui button" id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
+
+                    </g:form>
                 </g:if>
                 <g:else>
                   ${message(code: 'package.show.no_subs')}
                 </g:else>
+                </div>
             </semui:card>
 
           <g:render template="/templates/tasks/card" model="${[ownobj:packageInstance, owntp:'pkg']}" />
@@ -230,6 +251,8 @@
 
     </div><!-- .grid -->
 
+
+    <% /* TODO: DO NOT REMOVE
 
     <div>
       <br/>
@@ -296,7 +319,7 @@
             <g:hiddenField name="order" value="${params.order}"/>
             <g:hiddenField name="offset" value="${params.offset}"/>
             <g:hiddenField name="max" value="${params.max}"/>
-            <table class="ui celled table">
+            <table class="ui celled la-table table">
             <thead>
             <tr class="no-background">
 
@@ -311,7 +334,7 @@
                     <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
                   </select>
                   <br/>
-                  <table class="ui celled table">
+                  <table class="ui celled la-table table">
                     <tr>
                         <td>
                             <semui:datepicker label="subscription.details.coverageStartDate" name="bulk_start_date" value="${params.bulk_start_date}" />
@@ -480,7 +503,7 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td>
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
-                   <b>${t.title.title}</b>
+                   <strong>${t.title.title}</strong>
                    <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <ul>
@@ -628,6 +651,12 @@
         document.body.style.background = "#fcf8e3";
       });</g:if>
     </r:script>
+    */ %>
 
-  </body>
+    <g:render template="orgLinksModal"
+              contextPath="../templates"
+              model="${[linkType:packageInstance?.class?.name,roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
+
+
+    </body>
 </html>
