@@ -238,20 +238,8 @@ aside.ui.accordion .title:not(.ui) {
     }
 }
 
-body[class*="License"] {
-    .ui.label.la-object {
-        display: inline-flex;
-        background-color: @license;
-        border-color: @license;
-        .icon {
-            &:before {
-                content: "\f24e";
-            }
-        }
-    }
-
-}
-body[class*="license"] {
+body[class*="License"]
+,body[class*="license"]  {
     .ui.label.la-object {
         display: inline-flex;
         background-color: @license;
@@ -264,18 +252,7 @@ body[class*="license"] {
     }
 }
 
-body[class*="Package"] {
-    .ui.label.la-object {
-        display: inline-flex;
-        background-color: @package;
-        border-color: @package;
-        .icon {
-            &:before {
-                content: "\f06b";
-            }
-        }
-    }
-}
+body[class*="Package"],
 body[class*="package"] {
     .ui.label.la-object {
         display: inline-flex;
@@ -288,19 +265,9 @@ body[class*="package"] {
         }
     }
 }
-body[class*="Subscription"] {
-    .ui.label.la-object{
-        display: inline-flex;
-        background-color: @subscription;
-        border-color: @subscription;
-        .icon {
-            &:before {
-                content: "\f07c";
-            }
-        }
-    }
-}
-body[class*="subscription"] {
+
+body[class*="Subscription"],
+body[class*="subscription"]  {
     .ui.label.la-object{
         display: inline-flex;
         background-color: @subscription;
@@ -313,7 +280,20 @@ body[class*="subscription"] {
     }
 }
 
-body[class*="Title"] {
+body[class*="subscription"]  {
+    .ui.label.la-object{
+        display: inline-flex;
+        background-color: @subscription;
+        border-color: @subscription;
+        .icon {
+            &:before {
+                content: "\f07c";
+            }
+        }
+    }
+}
+body[class*="Title"],
+body[class*="title"]  {
     .ui.label.la-object {
         display: inline-flex;
         background-color: @title;
@@ -325,30 +305,8 @@ body[class*="Title"] {
         }
     }
 }
-body[class*="title"] {
-    .ui.label.la-object {
-        display: inline-flex;
-        background-color: @title;
-        border-color: @title;
-        .icon {
-            &:before {
-                content: "\f02d";
-            }
-        }
-    }
-}
-body[class*="Organisation"] {
-    .ui.label.la-object {
-        display: inline-flex;
-        background-color: @organisation;
-        border-color: @organisation;
-        .icon {
-            &:before {
-                content: "\f19c";
-            }
-        }
-    }
-}
+
+body[class*="Organisation"],
 body[class*="organisation"] {
     .ui.label.la-object {
         display: inline-flex;

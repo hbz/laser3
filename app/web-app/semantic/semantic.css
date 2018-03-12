@@ -1032,18 +1032,7 @@ aside.ui.accordion .title:not(.ui) {
   text-align: center!important;
 }
 
-body[class*="License"] .ui.label.la-object {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  background-color: #008C25;
-  border-color: #008C25;
-}
-
-body[class*="License"] .ui.label.la-object .icon:before {
-  content: "\f24e";
-}
-
+body[class*="License"] .ui.label.la-object,
 body[class*="license"] .ui.label.la-object {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
@@ -1052,22 +1041,12 @@ body[class*="license"] .ui.label.la-object {
   border-color: #008C25;
 }
 
+body[class*="License"] .ui.label.la-object .icon:before,
 body[class*="license"] .ui.label.la-object .icon:before {
   content: "\f24e";
 }
 
-body[class*="Package"] .ui.label.la-object {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  background-color: #76007A;
-  border-color: #76007A;
-}
-
-body[class*="Package"] .ui.label.la-object .icon:before {
-  content: "\f06b";
-}
-
+body[class*="Package"] .ui.label.la-object,
 body[class*="package"] .ui.label.la-object {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
@@ -1076,11 +1055,13 @@ body[class*="package"] .ui.label.la-object {
   border-color: #76007A;
 }
 
+body[class*="Package"] .ui.label.la-object .icon:before,
 body[class*="package"] .ui.label.la-object .icon:before {
   content: "\f06b";
 }
 
-body[class*="Subscription"] .ui.label.la-object {
+body[class*="Subscription"] .ui.label.la-object,
+body[class*="subscription"] .ui.label.la-object {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
@@ -1088,7 +1069,8 @@ body[class*="Subscription"] .ui.label.la-object {
   border-color: #fa820a;
 }
 
-body[class*="Subscription"] .ui.label.la-object .icon:before {
+body[class*="Subscription"] .ui.label.la-object .icon:before,
+body[class*="subscription"] .ui.label.la-object .icon:before {
   content: "\f07c";
 }
 
@@ -1104,18 +1086,7 @@ body[class*="subscription"] .ui.label.la-object .icon:before {
   content: "\f07c";
 }
 
-body[class*="Title"] .ui.label.la-object {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  background-color: #004678;
-  border-color: #004678;
-}
-
-body[class*="Title"] .ui.label.la-object .icon:before {
-  content: "\f02d";
-}
-
+body[class*="Title"] .ui.label.la-object,
 body[class*="title"] .ui.label.la-object {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
@@ -1124,30 +1095,21 @@ body[class*="title"] .ui.label.la-object {
   border-color: #004678;
 }
 
+body[class*="Title"] .ui.label.la-object .icon:before,
 body[class*="title"] .ui.label.la-object .icon:before {
   content: "\f02d";
 }
 
-body[class*="Organisation"] .ui.label.la-object {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  background-color: #007070;
-  border-color: #007070;
-}
-
-body[class*="Organisation"] .ui.label.la-object .icon:before {
-  content: "\f19c";
-}
-
+body[class*="Organisation"] .ui.label.la-object,
 body[class*="organisation"] .ui.label.la-object {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  background-color: #007070;
-  border-color: #007070;
+  background-color: #00B5AD;
+  border-color: #00B5AD;
 }
 
+body[class*="Organisation"] .ui.label.la-object .icon:before,
 body[class*="organisation"] .ui.label.la-object .icon:before {
   content: "\f19c";
 }
