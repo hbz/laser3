@@ -189,6 +189,23 @@
                     <dd>
                         <semui:xEditableRefData owner="${packageInstance}" field="packageScope" config="${RefdataCategory.PKG_SCOPE}"/>
                     </dd>
+                    <g:if test="${statsWibid && packageIdentifier}">
+                      <dt>Paketnutzung</dt>
+                      <dd>
+                        <laser:statsLink class="ui basic negative"
+                                         base="${grailsApplication.config.statsApiUrl}"
+                                         module="statistics"
+                                         controller="default"
+                                         action="select"
+                                         params="[mode:usageMode,
+                                                  packages:packageInstance.getIdentifierByType('isil').value,
+                                                  institutions:statsWibid
+                                         ]"
+                                         title="Springe zu Statistik im Nationalen Statistikserver">
+                            <i class="chart bar outline icon"></i>
+                        </laser:statsLink>
+                      </dd>
+                    </g:if>
 
                 </dl>
 

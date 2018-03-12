@@ -179,7 +179,11 @@
                                 Version ${grailsApplication.metadata['app.version']}
                                 <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
                                 // ${grailsApplication.metadata['app.buildDate']}
+
                                 </a>
+                                <div class="item"> Build Datetimestamp: ${grailsApplication.metadata['build.DateTimeStamp']}</div>
+                                <div class="item">  Commit: ${grailsApplication.metadata['repository.revision.number']}</div>
+                                <div class="item"> Branch: ${grailsApplication.metadata['repository.branch']}</div>
                                 <a class="item" href="https://github.com/hbz/laser" target="_blank">${message(code: 'landingpage.footer.3.link1')}</a>
                             </div>
                         </div>
