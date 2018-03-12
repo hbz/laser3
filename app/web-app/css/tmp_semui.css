@@ -141,30 +141,43 @@ TODO: remove and set in semantic css: la-table-small
 
 
 body.yoda_appSecurity .secInfoWrapper span {
+    font-weight: bolder;
     color: white;
+    padding: 0px 5px;
+    color: #FF00FF;
+}
+body.yoda_appSecurity .secInfoWrapper2 span {
+    margin-left: 2px;
+    float: right;
+}
+body.yoda_appSecurity .secInfoWrapper .list .item:hover {
+    background-color: #f5f5f5;
+}
+body.yoda_appSecurity .secInfoWrapper .permitAll {
     padding: 1px 5px;
-    background-color: #d3dae3;
+    color: #fff;
+    background-color: #ff0066;
 }
 body.yoda_appSecurity .secInfoWrapper .IS_AUTHENTICATED_FULLY {
-    background-color: green;
+    color: #228B22;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_YODA {
-    background-color: red;
+    color: crimson;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_ADMIN {
-    background-color: orange;
+    color: orange;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_DATAMANAGER {
-    background-color: purple;
+    color: #8B008B;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_USER {
-    background-color: blue;
+    color: #1E90FF;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR {
-    background-color: purple;
+    color: #8B4513;
 }
-body.yoda_appSecurity .secInfoWrapper .ROLE_PAKET_EDITOR {
-    background-color: purple;
+body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR {
+    color: #8B4513;
 }
 
 

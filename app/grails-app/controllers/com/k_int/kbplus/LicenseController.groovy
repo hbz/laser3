@@ -2,10 +2,10 @@ package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.*
-import org.springframework.security.access.annotation.Secured;
+import grails.plugin.springsecurity.annotation.Secured;
 
 @Deprecated
-@grails.plugin.springsecurity.annotation.Secured(['IS_AUTHENTICATED_FULLY'])
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController {
 
     def springSecurityService

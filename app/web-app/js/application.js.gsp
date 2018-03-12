@@ -148,6 +148,9 @@ r2d2 = {
         $('.metaboxToggle').click(function(){
             $(this).next('.metaboxContent').slideToggle();
         })
+
+        // sticky
+        $('.ui.sticky').sticky({offset: 120})
     }
 }
 

@@ -13,32 +13,68 @@
 
 <h1 class="ui header"><semui:headerIcon />Application Security</h1>
 
-<pre>
-    ROLE_YODA > ROLE_ADMIN > ROLE_DATAMANAGER > ROLE_USER
+<div class="secInfoWrapper">
 
-    ROLE_PACKAGE_EDITOR
-    ROLE_ORG_EDITOR
+    <span class="ROLE_YODA">ROLE_YODA</span> >
+    <span class="ROLE_ADMIN">ROLE_ADMIN</span> >
+    <span class="ROLE_DATAMANAGER">ROLE_DATAMANAGER</span> >
+    <span class="ROLE_USER">ROLE_USER</span> >
+    <span class="IS_AUTHENTICATED_FULLY">IS_AUTHENTICATED_FULLY</span>
 
-    ROLE_API
-    ROLE_API_READER
-    ROLE_API_WRITER
-</pre>
+    <br /><br />
 
-    <div class="secInfoWrapper">
-        <g:each in="${controller}" var="c">
-            <h5 class="ui header">${c.key}</h5>
-                <div class="ui bulleted list">
-                    <g:each in="${c.value}" var="m">
-                        <div class="item">
-                            ${m.key}
-                            <g:each in="${m.value}" var="v">
-                                <span class="${v}">${v}</span>
+    <span class="ROLE_PACKAGE_EDITOR">ROLE_PACKAGE_EDITOR</span> <br />
+    <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span>
+
+    <br /><br />
+
+    <span class="ROLE_API">ROLE_API</span> <br />
+    <span class="ROLE_API_READER">ROLE_API_READER</span> <br />
+    <span class="ROLE_API_WRITER">ROLE_API_WRITER</span>
+
+</div>
+
+<br />
+
+    <div class="ui grid">
+        <div class="twelve wide column">
+
+            <div class="secInfoWrapper secInfoWrapper2">
+                <g:each in="${controller}" var="c">
+
+                    <h5 class="ui header" id="jumpMark_${c.key}">
+                        ${c.key}
+                        <g:each in="${c.value.secured}" var="cSecured">
+                            <span class="${cSecured}">${cSecured}</span> &nbsp;
+                        </g:each>
+                    </h5>
+
+                    <div class="ui segment">
+                        <div class="ui divided list">
+                            <g:each in="${c.value.methods}" var="method">
+                                <div class="item">
+                                    ${method.key}
+                                    <g:each in="${method.value}" var="v">
+                                        <span class="${v}">${v}</span>
+                                    </g:each>
+                                </div>
                             </g:each>
                         </div>
+                    </div>
+                </g:each>
+            </div>
+
+        </div>
+        <div class="four wide column">
+            <div class="ui sticky">
+                <aside>
+                    <g:each in="${controller}" var="c">
+                        <a href="#jumpMark_${c.key}">${c.key.replaceFirst('com.k_int.kbplus.','').replaceAll('Controller', '  ')}</a> |
                     </g:each>
-                </div>
-            </h6>
-        </g:each>
+                    <a href="#jumpMark_top">&uArr;</a>
+                </aside>
+            </div>
+        </div>
     </div>
 
 </body>

@@ -27,7 +27,7 @@ class Role {
     static def refdataFind(params) {
         def result = [];
         def ql = null;
-        ql = Role.findAllByAuthorityIlike("${params.q}%", params)
+        ql = Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params)
 
         if (ql) {
             ql.each { id ->

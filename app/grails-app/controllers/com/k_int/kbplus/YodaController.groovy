@@ -5,6 +5,7 @@ import grails.util.Holders
 import grails.web.Action
 
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
@@ -64,13 +65,16 @@ class YodaController {
             if (controllerClass.name.startsWith('com.k_int.kbplus')) {
                 def mList = [:]
                 controllerClass.methods.each { Method method ->
-                    if (method.getAnnotation(Action)) {
+                    if (method.getAnnotation(Action) && method.getModifiers() == Modifier.PUBLIC) {
                         def aList = method.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value()
                         mList << ["${method.name}": aList]
                     }
                 }
-                def cAnn = controllerClass.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value()
-                cList<< ["${controllerClass.name}": mList.sort{it.key}]
+                cList<< ["${controllerClass.name}": [
+                        'secured': controllerClass.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value(),
+                        'methods': mList.sort{it.key}
+                        ]
+                ]
             }
         }
         result.controller = cList.sort{it.key}

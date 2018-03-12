@@ -27,7 +27,7 @@
     <r:layoutResources/>
 </head>
 
-<body class="${controllerName}_${actionName}">
+<body id="jumpMark_top" class="${controllerName}_${actionName}">
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
