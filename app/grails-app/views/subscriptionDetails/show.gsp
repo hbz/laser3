@@ -75,7 +75,7 @@
             </div>
         </semui:meta>
 
-<semui:messages data="${flash}" />
+        <semui:messages data="${flash}" />
 
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 

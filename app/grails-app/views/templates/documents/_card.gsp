@@ -6,7 +6,6 @@
                 <!--<div class="event">-->
 
                         <div class="summary">
-                            (${docctx.owner.id})
                             <g:link controller="docstore" id="${docctx.owner.uuid}">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
