@@ -184,7 +184,6 @@ class SemanticUiInplaceTagLib {
         if (attrs.type == "date") {
             out << '</div>'
         }
-        out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
     }
 
     private renderObjectValue(value) {
