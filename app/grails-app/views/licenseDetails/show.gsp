@@ -182,7 +182,7 @@
 
 
 
-                        <!--
+                        <%--
                         <dl>
                             <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
                             <dd>
@@ -190,9 +190,9 @@
                                 <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
                             </dd>
                         </dl>
-                        -->
+                        --%>
 
-
+                        <%--
                             <dl>
                                 <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
                                 <dd>
@@ -207,7 +207,7 @@
                                     </ul>
                                 </dd>
                             </dl>
-
+                           --%>
                         <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgLinks, editmode:editable]}" />
 
 
