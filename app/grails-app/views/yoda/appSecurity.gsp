@@ -13,26 +13,43 @@
 
 <h1 class="ui header"><semui:headerIcon />Application Security</h1>
 
+<h3 class="ui header">Global Roles</h3>
+
 <div class="secInfoWrapper">
-
-    <span class="ROLE_YODA">ROLE_YODA</span> >
-    <span class="ROLE_ADMIN">ROLE_ADMIN</span> >
-    <span class="ROLE_DATAMANAGER">ROLE_DATAMANAGER</span> >
-    <span class="ROLE_USER">ROLE_USER</span> >
-    <span class="IS_AUTHENTICATED_FULLY">IS_AUTHENTICATED_FULLY</span>
-
-    <br /><br />
-
-    <span class="ROLE_PACKAGE_EDITOR">ROLE_PACKAGE_EDITOR</span> <br />
-    <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span>
-
-    <br /><br />
-
-    <span class="ROLE_API">ROLE_API</span> <br />
-    <span class="ROLE_API_READER">ROLE_API_READER</span> <br />
-    <span class="ROLE_API_WRITER">ROLE_API_WRITER</span>
-
+    <div class="ui list">
+        <div class="item">
+            <span class="ROLE_YODA">ROLE_YODA</span> &rArr;
+            <span class="ROLE_ADMIN">ROLE_ADMIN</span> &rArr;
+            <span class="ROLE_DATAMANAGER">ROLE_DATAMANAGER</span> &rArr;
+            <span class="ROLE_USER">ROLE_USER</span> &rArr;
+            <span class="IS_AUTHENTICATED_FULLY">IS_AUTHENTICATED_FULLY</span>
+        </div>
+    </div>
+    <div class="ui list">
+        <div class="item">
+            <span class="ROLE_PACKAGE_EDITOR">ROLE_PACKAGE_EDITOR</span> |
+            <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span>
+        </div>
+    </div>
+    <div class="ui list">
+        <div class="item">
+            <span class="ROLE_API">ROLE_API</span> |
+            <span class="ROLE_API_READER">ROLE_API_READER</span> |
+            <span class="ROLE_API_WRITER">ROLE_API_WRITER</span>
+        </div>
+    </div>
 </div>
+
+<h3 class="ui header">Current User Roles ; checked with sec:ifAnyGranted</h3>
+
+<div class="secInfoWrapper">
+    <div class="ui list">
+        <g:each in="${com.k_int.kbplus.auth.Role.findAll()}" var="role">
+            <sec:ifAnyGranted roles="${role.authority}"><div class="item">${role.authority} (${role.roleType})</div></sec:ifAnyGranted>
+        </g:each>
+    </div>
+</div>
+
 
 <br />
 

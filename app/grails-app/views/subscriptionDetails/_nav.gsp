@@ -30,9 +30,9 @@
         <g:link class="item" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">${message(code:'subscription.details.financials.label', default:'Subscription Financials')}</g:link>
     </g:if>
 
-    <g:if test="${user.hasRole('ROLE_ADMIN')}">
+    <sec:ifAnyGranted roles="ROLE_ADMIN">
         <semui:subNavItem controller="subscriptionDetails" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
         <semui:subNavItem controller="subscriptionDetails" action="history" params="${[id:params.id]}" message="license.nav.edit_history" />
         <semui:subNavItem controller="subscriptionDetails" action="permissionInfo" params="${[id:params.id]}" message="default.permissionInfo.label" />
-    </g:if>
+    </sec:ifAnyGranted>
 </semui:subNav>

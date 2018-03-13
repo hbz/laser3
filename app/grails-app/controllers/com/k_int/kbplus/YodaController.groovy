@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.util.Holders
 import grails.web.Action
@@ -10,11 +11,34 @@ import java.lang.reflect.Modifier
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
 
+    def springSecurityService
     def statsSyncService
     def dataloadService
     def globalSourceSyncService
 
     static boolean ftupdate_running = false
+
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    def demo() {
+        def result = [:]
+
+        result.user = springSecurityService.getCurrentUser()
+        result.roles = result.user.roles
+        result.affiliations = result.user.affiliations
+
+        result.check1 = "INST_ADMx: " + result.user.hasAffiliation("INST_ADMx")
+        result.check2 = "INST_ADM: " + result.user.hasAffiliation("INST_ADM")
+        result.check3 = "INST_EDITOR: " + result.user.hasAffiliation("INST_EDITOR")
+        result.check4 = "INST_USER: " + result.user.hasAffiliation("INST_USER")
+        result
+    }
+
+    @DebugAnnotation(test='hasMinimumAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasMinimumAffiliation("INST_USER") })
+    def demo2() {
+        redirect action: 'demo'
+    }
 
     @Secured(['ROLE_YODA'])
     def appConfig() {
@@ -66,8 +90,14 @@ class YodaController {
                 def mList = [:]
                 controllerClass.methods.each { Method method ->
                     if (method.getAnnotation(Action) && method.getModifiers() == Modifier.PUBLIC) {
-                        def aList = method.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value()
-                        mList << ["${method.name}": aList]
+
+                        def da = method.getAnnotation(de.laser.helper.DebugAnnotation)
+                        if (da) {
+                            mList << ["${method.name}": [da.test()]]
+                        }
+                        else {
+                            mList << ["${method.name}": method.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value()]
+                        }
                     }
                 }
                 cList<< ["${controllerClass.name}": [

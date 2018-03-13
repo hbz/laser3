@@ -29,6 +29,8 @@
 
 <body class="${controllerName}_${actionName}">
 
+    <span id="jumpMark_top"></span>
+
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />

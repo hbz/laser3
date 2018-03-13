@@ -173,6 +173,13 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_DATAMANAGER {
 body.yoda_appSecurity .secInfoWrapper .ROLE_USER {
     color: #1E90FF;
 }
+body.yoda_appSecurity .secInfoWrapper .ROLE_API,
+body.yoda_appSecurity .secInfoWrapper .ROLE_API_READER,
+body.yoda_appSecurity .secInfoWrapper .ROLE_API_WRITER,
+body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
+    color: #87CEEB;
+    font-style: italic;
+}
 body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR {
     color: #8B4513;
 }

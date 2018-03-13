@@ -20,7 +20,7 @@
         </g:if>
     </g:if>
 
-    <g:if test="${user.hasRole('ROLE_ADMIN')}">
+    <sec:ifAnyGranted roles="ROLE_ADMIN">
         <semui:subNavItem controller="packageDetails" action="history" params="${[id:params.id]}" message="package.show.nav.history" />
-    </g:if>
+    </sec:ifAnyGranted>
 </semui:subNav>

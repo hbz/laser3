@@ -173,11 +173,50 @@ class User implements Permissions {
     }
 
     def hasRole(roleName) {
+      log.debug("USER.hasRole(): " + roleName)
+
         def result = false
         def role = Role.findByAuthority(roleName)
         if (role) {
             def ur = UserRole.findByUserAndRole(this, role)
             result = (ur && roles?.contains(ur))
+        }
+        result
+    }
+
+    def hasAffiliation(roleName) { // TODO check org
+        log.debug("USER.hasAffiliation(): " + roleName)
+
+        def result = false
+        def role = Role.findByAuthority(roleName)
+        if (role) {
+            def uo = UserOrg.findByUserAndFormalRole(this, role)
+            result = (uo && affiliations?.contains(uo))
+        }
+        result
+    }
+
+    def hasMinimumAffiliation(roleName) { // TODO check org
+        log.debug("USER.hasMinimumAffiliation(): " + roleName)
+
+        def result = false
+        def rolesToCheck = [roleName]
+
+        if (roleName == "INST_USER") {
+            //rolesToCheck << "INST_EDITOR"
+            rolesToCheck << "INST_ADM"
+        }
+        /*else if (roleName == "INST_EDITOR") {
+            rolesToCheck << "INST_ADM"
+        }*/
+
+        rolesToCheck.each{ rot ->
+            println "check " + rot
+            def role = Role.findByAuthority(rot)
+            if (role) {
+                def uo = UserOrg.findByUserAndFormalRole(this, role)
+                result = result | (uo && affiliations?.contains(uo))
+            }
         }
         result
     }
