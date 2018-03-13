@@ -909,7 +909,7 @@ class BootStrap {
 
         RefdataValue.loc('CostItemStatus', [en: 'Estimate', de: 'Schätzung'])
         RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'Commitment'])
-        RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'Actual'])
+        RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'Fest'])
         RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Andere'])
 
         // TODO locCategory
@@ -934,10 +934,10 @@ class BootStrap {
                 [en: 'IE Access Status', de: 'IE Access Status'])
 
         RefdataValue.loc('IE Access Status', [en: 'ERROR - No Subscription Start and/or End Date', de: 'ERROR - No Subscription Start and/or End Date'])
-        RefdataValue.loc('IE Access Status', [en: 'Current', de: 'Current'])
-        RefdataValue.loc('IE Access Status', [en: 'Current(*)', de: 'Current(*)'])
-        RefdataValue.loc('IE Access Status', [en: 'Expected', de: 'Expected'])
-        RefdataValue.loc('IE Access Status', [en: 'Expired', de: 'Expired'])
+        RefdataValue.loc('IE Access Status', [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc('IE Access Status', [en: 'Current(*)', de: 'Aktuell(*)'])
+        RefdataValue.loc('IE Access Status', [en: 'Expected', de: 'Erwartet'])
+        RefdataValue.loc('IE Access Status', [en: 'Expired', de: 'Abgelaufen'])
 
         RefdataCategory.loc('IEMedium',
                 [en: 'IEMedium', de: 'IEMedium'])
@@ -1033,7 +1033,7 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
-        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unknown'])
+        RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unbekannt'])
 
         RefdataCategory.loc('TitleInstancePackagePlatform.DelayedOA',
                 [en: 'TitleInstancePackagePlatform.DelayedOA', de: 'TitleInstancePackagePlatform.DelayedOA'])
