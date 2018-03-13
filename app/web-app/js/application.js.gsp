@@ -133,7 +133,16 @@ r2d2 = {
         });
 
         // dropdowns
-        $('.ui.dropdown').dropdown({duration: 150, transition: 'fade'});
+        $('.ui.dropdown').dropdown({
+            duration: 150,
+            transition: 'fade'
+        })
+        $('.ui.dropdown').on('keydown', function(event) {
+            if(['Escape','Backspace','Delete'].includes(event.key)) {
+                event.preventDefault()
+                $(this).dropdown('clear').dropdown('hide')
+            }
+        })
 
         // accordions
         $('.ui.accordion').accordion()
