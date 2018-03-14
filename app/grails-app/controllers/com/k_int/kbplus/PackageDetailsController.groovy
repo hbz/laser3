@@ -23,7 +23,7 @@ class PackageDetailsController {
   
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'packageDetails', action: 'list', params: params
         return // ----- deprecated
@@ -47,7 +47,7 @@ class PackageDetailsController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -131,7 +131,7 @@ class PackageDetailsController {
       }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def consortia(){
 
       def result = [:]
@@ -198,7 +198,7 @@ class PackageDetailsController {
       redirect controller:'packageDetails', action:'consortia', params: [id:params.id]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def createNewSubscription(org,packageId,genSubName){
       //Initialize default subscription values
       log.debug("Create slave with org ${org} and packageID ${packageId}")
@@ -210,7 +210,7 @@ class PackageDetailsController {
       pkg_to_link.startDate, pkg_to_link.endDate, org, "Subscriber", true, true)
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def create() {
       def user = User.get(springSecurityService.principal.id)
 
@@ -253,7 +253,7 @@ class PackageDetailsController {
       }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def compare(){
         def result = [:]
         result.unionList=[]
@@ -399,7 +399,7 @@ class PackageDetailsController {
        return list
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
       def verystarttime = exportService.printStart("PackageDetails show")
     
@@ -540,7 +540,7 @@ class PackageDetailsController {
     }
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def current() {
     log.debug("current ${params}");
     def result = [:]
@@ -579,7 +579,7 @@ class PackageDetailsController {
     result
   }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def deleteDocuments() {
         def ctxlist = []
 
@@ -599,7 +599,7 @@ class PackageDetailsController {
 
 
 
-  @Secured(['ROLE_USER','IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def documents() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -609,17 +609,17 @@ class PackageDetailsController {
       result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def expected() {
     previous_expected(params,"expected")
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def previous() {
       previous_expected(params,"previous")
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def previous_expected(params,func) {
     log.debug("previous_expected ${params}");
     def result = [:]
@@ -717,7 +717,7 @@ class PackageDetailsController {
     return base_qry
   }
 
-  @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_ADMIN'])
   def uploadTitles() {
     def pkg = Package.get(params.id)
     def upload_mime_type = request.getFile("titleFile")?.contentType
@@ -868,7 +868,7 @@ class PackageDetailsController {
   }
 
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def addToSub() {
     def pkg = Package.get(params.id)
     def sub = Subscription.get(params.subid)
@@ -880,7 +880,7 @@ class PackageDetailsController {
   }
 
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def notes() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -889,7 +889,7 @@ class PackageDetailsController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def tasks() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -902,7 +902,7 @@ class PackageDetailsController {
         result
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def packageBatchUpdate() {
 
     def packageInstance = Package.get(params.id)
@@ -1022,7 +1022,7 @@ class PackageDetailsController {
     redirect(action:'show', params:[id:params.id,sort:params.sort,order:params.order,max:params.max,offset:params.offset]);
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def history() {
     def result = [:]
     def exporting = params.format == 'csv' ? true : false

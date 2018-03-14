@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
@@ -14,7 +15,7 @@ class TitleInstanceController {
     def springSecurityService
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
 		redirect controller: 'titleDetails', action: 'index', params: params
 		return // ----- deprecated
@@ -22,7 +23,7 @@ class TitleInstanceController {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
 		redirect controller: 'titleDetails', action: 'list', params: params
 		return // ----- deprecated
@@ -35,7 +36,8 @@ class TitleInstanceController {
       	result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
 		redirect controller: 'titleDetails', action: 'create', params: params
 		return // ----- deprecated
@@ -57,7 +59,7 @@ class TitleInstanceController {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
 		redirect controller: 'titleDetails', action: 'show', params: params
 		return // ----- deprecated
@@ -72,7 +74,8 @@ class TitleInstanceController {
         [titleInstanceInstance: titleInstanceInstance]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
 		redirect controller: 'titleDetails', action: 'edit', params: params
 		return // ----- deprecated
@@ -120,7 +123,8 @@ class TitleInstanceController {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
 		redirect controller: 'titleDetails', action: 'delete', params: params
 		return // ----- deprecated

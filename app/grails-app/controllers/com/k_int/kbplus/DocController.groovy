@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
@@ -31,7 +32,8 @@ class DocController {
       	result
     }
 
-	@Secured(['ROLE_USER'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -62,7 +64,8 @@ class DocController {
         [docInstance: docInstance]
     }
 
-	@Secured(['ROLE_USER'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
 		switch (request.method) {
 		case 'GET':
@@ -107,7 +110,8 @@ class DocController {
 		}
     }
 
-	@Secured(['ROLE_USER'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         def docInstance = Doc.get(params.id)
         if (!docInstance) {

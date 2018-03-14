@@ -52,7 +52,7 @@ class MyInstitutionController {
             new SimpleDateFormat('yyyy')
     ];
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         // Work out what orgs this user has admin level access to
         def result = [:]
@@ -76,7 +76,7 @@ class MyInstitutionController {
 
         result
     }
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def tipview() {
         log.debug("admin::tipview ${params}")
         def result = [:]
@@ -135,7 +135,7 @@ class MyInstitutionController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     @Deprecated
     def dashboard_OLD() {
         // Work out what orgs this user has admin level access to
@@ -152,7 +152,7 @@ class MyInstitutionController {
     }
 
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def actionLicenses() {
         log.debug("actionLicenses :: ${params}")
         if (params['copy-license']) {
@@ -162,7 +162,7 @@ class MyInstitutionController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def currentLicenses() {
         def result = setResultGenerics()
         result.transforms = grailsApplication.config.licenseTransforms
@@ -325,7 +325,7 @@ class MyInstitutionController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addLicense() {
         def result = setResultGenerics()
 
@@ -381,7 +381,7 @@ class MyInstitutionController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def currentSubscriptions() {
         def result = setResultGenerics()
 
@@ -531,7 +531,7 @@ from Subscription as s where (
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addSubscription() {
         def result = setResultGenerics()
 
@@ -598,7 +598,7 @@ from Subscription as s where (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def emptySubscription() {
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
@@ -629,7 +629,7 @@ from Subscription as s where (
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def processEmptySubscription() {
         log.debug(params)
         def result = setResultGenerics()
@@ -781,7 +781,7 @@ from Subscription as s where (
         result;
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def cleanLicense() {
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
@@ -811,7 +811,7 @@ from Subscription as s where (
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def newLicense(params) {
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
@@ -842,7 +842,7 @@ from Subscription as s where (
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def deleteLicense(params) {
         log.debug("deleteLicense ${params}");
         def result = setResultGenerics()
@@ -881,7 +881,7 @@ from Subscription as s where (
         redirect action: 'currentLicenses'
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def deleteDocuments() {
         def ctxlist = []
 
@@ -899,7 +899,7 @@ from Subscription as s where (
         redirect controller: 'licenseDetails', action: 'show', id: params.licid, fragment: 'docstab'
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def processAddSubscription() {
 
         def user = User.get(springSecurityService.principal.id)
@@ -941,7 +941,7 @@ from Subscription as s where (
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def currentTitles() {
         // define if we're dealing with a HTML request or an Export (i.e. XML or HTML)
         boolean isHtmlOutput = !params.format || params.format.equals("html")
@@ -1298,7 +1298,7 @@ AND EXISTS (
         return qry_map
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def availableLicenses() {
         // def sub = resolveOID(params.elementid);
         // OrgRole.findAllByOrgAndRoleType(result.institution, licensee_role).collect { it.lic }
@@ -1337,7 +1337,7 @@ AND EXISTS (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def actionCurrentSubscriptions() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -1367,7 +1367,7 @@ AND EXISTS (
         redirect action: 'currentSubscriptions'
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def renewalsSearch() {
 
         log.debug("renewalsSearch : ${params}");
@@ -1490,7 +1490,7 @@ AND EXISTS (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def selectPackages() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -2095,7 +2095,7 @@ AND EXISTS (
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def renewalsnoPackageChange() {
         def result = setResultGenerics()
 
@@ -2124,7 +2124,7 @@ AND EXISTS (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def renewalsUpload() {
         def result = setResultGenerics()
 
@@ -2473,7 +2473,7 @@ AND EXISTS (
         parsed_date
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def dashboard() {
         def result = setResultGenerics()
 
@@ -2536,7 +2536,7 @@ AND EXISTS (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def changes() {
         def result = setResultGenerics()
 
@@ -2553,7 +2553,7 @@ AND EXISTS (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def announcements() {
         def result = setResultGenerics()
 
@@ -2571,7 +2571,7 @@ AND EXISTS (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def changeLog() {
         def result = setResultGenerics()
 
@@ -2641,7 +2641,7 @@ AND EXISTS (
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def financeImport() {
       def result = setResultGenerics()
 
@@ -2663,7 +2663,7 @@ AND EXISTS (
       result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def tip() {
       def result = setResultGenerics()
 
@@ -2698,7 +2698,7 @@ AND EXISTS (
       result
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])  
+    @Secured(['ROLE_USER'])  
     def addressbook() {
         def result = setResultGenerics()
         
@@ -2716,7 +2716,7 @@ AND EXISTS (
         result
       }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def tasks() {
         def result = setResultGenerics()
 
@@ -2748,7 +2748,7 @@ AND EXISTS (
      *
      * @return
      */
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def managePrivateProperties() {
         def result = setResultGenerics()
 
@@ -2768,7 +2768,7 @@ AND EXISTS (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def switchContext() {
         def user = User.get(springSecurityService.principal.id)
         def org  = genericOIDService.resolveOID(params.oid)
@@ -2786,7 +2786,7 @@ AND EXISTS (
      * @param params
      * @return
      */
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     private addPrivatePropertyDefinition(params) {
         log.debug("adding private property definition for institution: " + params)
 
@@ -2832,7 +2832,7 @@ AND EXISTS (
      * @param params
      * @return
      */
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     private deletePrivatePropertyDefinition(params) {
         log.debug("delete private property definition for institution: " + params)
 
@@ -2860,7 +2860,7 @@ AND EXISTS (
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def ajaxEmptySubscription() {
 
         def result = setResultGenerics()

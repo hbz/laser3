@@ -12,7 +12,7 @@ class HomeController {
   def ESSearchService
   
  
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         def result = [:]
         log.debug("HomeController::index - ${springSecurityService.principal.id}");
@@ -50,7 +50,7 @@ class HomeController {
         }
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def search() { 
 
     def result = [:]

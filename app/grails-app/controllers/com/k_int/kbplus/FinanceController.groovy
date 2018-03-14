@@ -39,7 +39,7 @@ class FinanceController {
         permissionHelperService.hasUserWithRole(user, org, admin_role)
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
       log.debug("FinanceController::index() ${params}");
 
@@ -185,7 +185,7 @@ class FinanceController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
 
@@ -585,7 +585,7 @@ class FinanceController {
     ]
 
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def newCostItem() {
 
         def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -769,7 +769,7 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def getRecentCostItems() {
         def dateTimeFormat     = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def  institution       = contextService.getOrg()
@@ -801,7 +801,7 @@ class FinanceController {
         render(text: builder.toString(), contentType: "text/json", encoding: "UTF-8")
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def delete() {
         log.debug("FinanceController::delete() ${params}");
 
@@ -858,7 +858,7 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def financialRef() {
         log.debug("Financials :: financialRef - Params: ${params}")
 
@@ -969,7 +969,7 @@ class FinanceController {
         result
     }
 
-    @Secured(['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN'])
     def removeBC() {
         log.debug("Financials :: remove budget code - Params: ${params}")
         def result      = [:]
@@ -1006,7 +1006,7 @@ class FinanceController {
         render result as JSON
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def createCode() {
         def result      = [:]
         def user        = springSecurityService.currentUser

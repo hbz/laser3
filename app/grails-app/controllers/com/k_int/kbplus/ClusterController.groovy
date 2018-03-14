@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 import com.k_int.kbplus.ajax.AjaxHandler
@@ -25,7 +26,8 @@ class ClusterController extends AjaxHandler {
         [clusterInstanceList: Cluster.list(params), clusterInstanceTotal: Cluster.count()]
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -56,7 +58,8 @@ class ClusterController extends AjaxHandler {
         [clusterInstance: clusterInstance]
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
 		switch (request.method) {
 		case 'GET':
@@ -101,7 +104,8 @@ class ClusterController extends AjaxHandler {
 		}
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         def clusterInstance = Cluster.get(params.id)
         if (!clusterInstance) {

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
@@ -16,7 +17,7 @@ class SubscriptionController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'subscriptionDetails', action: 'index', params: params
         return // ----- deprecated
@@ -24,7 +25,7 @@ class SubscriptionController {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         redirect controller: 'subscriptionDetails', action: 'list', params: params
         return // ----- deprecated
@@ -39,7 +40,8 @@ class SubscriptionController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
         redirect controller: 'subscriptionDetails', action: 'create', params: params
         return // ----- deprecated
@@ -61,7 +63,7 @@ class SubscriptionController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
         redirect controller: 'subscriptionDetails', action: 'show', params: params
         return // ----- deprecated
@@ -94,7 +96,8 @@ class SubscriptionController {
         } 
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
         redirect controller: 'subscriptionDetails', action: 'edit', params: params
         return // ----- deprecated
@@ -142,7 +145,8 @@ class SubscriptionController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         def subscriptionInstance = Subscription.get(params.id)
         if (!subscriptionInstance) {

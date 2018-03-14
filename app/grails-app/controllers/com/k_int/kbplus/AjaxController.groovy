@@ -345,7 +345,7 @@ class AjaxController {
   
   def refdataSearch() {
 
-    // log.debug("refdataSearch params: ${params}");
+    //log.debug("refdataSearch params: ${params}");
     
     def result = [:]
     //we call toString in case we got a GString
@@ -379,8 +379,8 @@ class AjaxController {
       }
 
       // log.debug("Params: ${query_params}");
-      // log.debug("Count qry: ${config.countQry}");
-      // log.debug("Row qry: ${config.rowQry}");
+      //log.debug("Count qry: ${config.countQry}");
+      //log.debug("Row qry: ${config.rowQry}");
 
       def cq = Org.executeQuery(config.countQry,query_params);    
 

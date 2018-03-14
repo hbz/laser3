@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 
 import org.springframework.dao.DataIntegrityViolationException
@@ -24,7 +25,8 @@ class AddressController {
         [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
 		switch (request.method) {
 			case 'GET':
@@ -67,7 +69,8 @@ class AddressController {
         ] // TODO
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
         def addressInstance = Address.get(params.id)
         if (! addressInstance) {
@@ -108,8 +111,9 @@ class AddressController {
 			break
 		}
     }
-    
-    @Secured(['ROLE_USER'])
+
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         def addressInstance = Address.get(params.id)
         if (! addressInstance) {

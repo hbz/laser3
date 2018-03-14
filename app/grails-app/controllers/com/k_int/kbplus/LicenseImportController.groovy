@@ -29,7 +29,7 @@ class LicenseImportController {
    * Review the offered import to make sure it is a valid ONIX-PL file.
    * @return
    */
-  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def doImport() {
     // log.debug("Ghost_license" + grails.util.Holders.config.onix_ghost_license);
     // Setup result object
@@ -156,7 +156,7 @@ class LicenseImportController {
    * @throws SAXException
    * @throws IOException
    */
-  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def readOnixMultipartFile(file) throws SAXException, IOException {
     log.debug("Reading uploaded ONIX-PL file ${file?.originalFilename} " +
         "of type ${file?.contentType}")
@@ -186,7 +186,7 @@ class LicenseImportController {
    * @param result
    * @return
    */
-  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def checkForExistingOpl(acceptedFile, license) {
     log.debug("Checking for existing OPL for acceptedFile ${acceptedFile} and license ${license}")
     //def existingOpl = license?.onixplLicense
@@ -208,7 +208,7 @@ class LicenseImportController {
    * @param upload
    * @return a stats object about the import
    */
-  @Secured(['ROLE_DATAMANAGER', 'ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def processImport(upload) {
     // log.debug("processImport(upload) "); upload.each{k,v-> log.debug("  ${k} -> ${v}")}
     //log.debug("Processing imported ONIX-PL document");

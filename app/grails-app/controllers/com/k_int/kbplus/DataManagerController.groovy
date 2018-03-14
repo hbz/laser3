@@ -10,7 +10,7 @@ class DataManagerController {
 
   def springSecurityService 
 
-  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def index() { 
     def result =[:]
     def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
@@ -20,7 +20,7 @@ class DataManagerController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def changeLog() { 
 
     def result =[:]
@@ -297,7 +297,7 @@ class DataManagerController {
     return actors
   }
 
-  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def deletedTitleManagement() {
     def result = [:]
     if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
@@ -323,7 +323,7 @@ class DataManagerController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def expungeDeletedTitles() {
 
     log.debug("expungeDeletedTitles.. Create async task..");
@@ -383,7 +383,7 @@ class DataManagerController {
     redirect(controller:'home')
   }
   
-  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def expungeDeletedTIPPS() {
 
     log.debug("expungeDeletedTIPPS.. Create async task..");

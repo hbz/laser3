@@ -51,7 +51,7 @@ class UploadController {
     [regexp:'[0-9]{4}', format: new SimpleDateFormat('yyyy')]
   ];
 
-  @Secured(['ROLE_DATAMANAGER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_DATAMANAGER'])
   def reviewPackage() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)

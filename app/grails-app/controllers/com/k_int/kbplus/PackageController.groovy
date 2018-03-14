@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
@@ -16,7 +17,7 @@ class PackageController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'packageDetails', action: 'index', params: params
         return // ----- deprecated
@@ -24,7 +25,7 @@ class PackageController {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         redirect controller: 'packageDetails', action: 'list', params: params
         return // ----- deprecated
@@ -39,7 +40,8 @@ class PackageController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
         redirect controller: 'packageDetails', action: 'create', params: params
         return // ----- deprecated
@@ -85,7 +87,7 @@ class PackageController {
       }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
         redirect controller: 'packageDetails', action: 'show', params: params
         return // ----- deprecated
@@ -140,7 +142,8 @@ class PackageController {
         [packageInstance: packageInstance, platforms:platform_list, crosstab:crosstab, titles:title_list]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
         redirect controller: 'packageDetails', action: 'edit', params: params
         return // ----- deprecated
@@ -188,7 +191,8 @@ class PackageController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         redirect controller: 'packageDetails', action: 'delete', params: params
         return // ----- deprecated

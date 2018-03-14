@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 import org.springframework.dao.DataIntegrityViolationException
@@ -25,7 +26,8 @@ class PersonController {
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
 
@@ -72,7 +74,8 @@ class PersonController {
         ] // TODO
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         def personInstance = Person.get(params.id)
@@ -133,7 +136,8 @@ class PersonController {
 		}
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         def personInstance = Person.get(params.id)
         if (! personInstance) {
@@ -285,7 +289,6 @@ class PersonController {
         }
     }
 
-    @Secured(['ROLE_USER'])
     private deletePersonRoles(Person prs){
 
         params?.personRoleDeleteIds?.each{ key, value ->
@@ -297,7 +300,6 @@ class PersonController {
         }
     }
 
-    @Secured(['ROLE_USER'])
     private addPersonRoles(Person prs){
     
         params?.functionType?.each{ key, value ->

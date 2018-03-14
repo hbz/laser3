@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.*
 import grails.plugin.springsecurity.annotation.Secured;
@@ -12,7 +13,7 @@ class LicenseController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'licenseDetails', action: 'show', params: params
         return // ----- deprecated
@@ -20,7 +21,7 @@ class LicenseController {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         redirect controller: 'licenseDetails', action: 'list', params: params
         return // ----- deprecated
@@ -35,7 +36,8 @@ class LicenseController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
         redirect controller: 'licenseDetails', action: 'create', params: params
         return // ----- deprecated
@@ -57,7 +59,7 @@ class LicenseController {
     }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
         redirect controller: 'licenseDetails', action: 'show', params: params
         return // ----- deprecated
@@ -72,7 +74,8 @@ class LicenseController {
         [licenseInstance: licenseInstance]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
         redirect controller: 'licenseDetails', action: 'edit', params: params
         return // ----- deprecated
@@ -120,7 +123,8 @@ class LicenseController {
       }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         redirect controller: 'licenseDetails', action: 'delete', params: params
         return // ----- deprecated

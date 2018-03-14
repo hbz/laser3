@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 
@@ -12,7 +13,7 @@ class IdentifierController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'home', action: 'index'
 		return // ----- deprecated
@@ -20,7 +21,7 @@ class IdentifierController {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def list() {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
@@ -29,7 +30,8 @@ class IdentifierController {
         [identifierInstanceList: Identifier.list(params), identifierInstanceTotal: Identifier.count()]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
@@ -51,7 +53,7 @@ class IdentifierController {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def show() {
 
         def identifierInstance = Identifier.get(params.id)
@@ -64,7 +66,8 @@ class IdentifierController {
         [identifierInstance: identifierInstance]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
@@ -112,7 +115,8 @@ class IdentifierController {
 		}
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated

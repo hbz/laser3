@@ -73,18 +73,25 @@ class BootStrap {
         def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
-        def institutionalAdmin = Role.findByAuthority('INST_ADM')
-        if (! institutionalAdmin) {
-            institutionalAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
+        def instAdmin = Role.findByAuthority('INST_ADM')
+        if (! instAdmin) {
+            instAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
         }
-        ensurePermGrant(institutionalAdmin, edit_permission)
-        ensurePermGrant(institutionalAdmin, view_permission)
+        ensurePermGrant(instAdmin, edit_permission)
+        ensurePermGrant(instAdmin, view_permission)
 
-        def institutionalUser = Role.findByAuthority('INST_USER')
-        if (! institutionalUser) {
-            institutionalUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
+        /*def instEditor = Role.findByAuthority('INST_EDITOR')
+        if (! instEditor) {
+            instEditor = new Role(authority: 'INST_EDITOR', roleType: 'user').save(failOnError: true)
         }
-        ensurePermGrant(institutionalUser, view_permission)
+        ensurePermGrant(instEditor, edit_permission)
+        ensurePermGrant(instEditor, view_permission)*/
+
+        def instUser = Role.findByAuthority('INST_USER')
+        if (! instUser) {
+            instUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
+        }
+        ensurePermGrant(instUser, view_permission)
 
         // Transforms types and formats Refdata
 

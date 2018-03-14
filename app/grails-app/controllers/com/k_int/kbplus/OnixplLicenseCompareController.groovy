@@ -16,13 +16,13 @@ class OnixplLicenseCompareController {
   OnixPLService onixPLService
   OnixPLHelperService onixPLHelperService
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def index() {
     ArrayList<OnixplLicense> oplList = OnixplLicense.list();
     [list: oplList, termList: onixPLService.getTsComparisonPoints()]
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def matrix() {
     
     log.debug("matrix:: selectedLicenses:${params.selectedLicenses}")

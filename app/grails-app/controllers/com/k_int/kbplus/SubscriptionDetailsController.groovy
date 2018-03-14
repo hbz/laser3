@@ -49,7 +49,7 @@ class SubscriptionDetailsController {
 
 
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def index() {
 
     def result = [:]
@@ -249,7 +249,7 @@ class SubscriptionDetailsController {
     }
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def unlinkPackage(){
     log.debug("unlinkPackage :: ${params}")
     def result = [:]
@@ -334,7 +334,7 @@ class SubscriptionDetailsController {
     result.entitlements = result.entitlements.subList(result.offset, (result.offset+result.max).intValue() )
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def compare(){
     def result = [:]
     result.unionList = []
@@ -500,7 +500,7 @@ class SubscriptionDetailsController {
     return base_qry
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def subscriptionBatchUpdate() {
     def subscriptionInstance = Subscription.get(params.id)
     // def formatter = new java.text.SimpleDateFormat("MM/dd/yyyy")
@@ -578,7 +578,7 @@ class SubscriptionDetailsController {
     redirect action: 'index', params:[id:subscriptionInstance?.id,sort:params.sort,order:params.order,offset:params.offset,max:params.max]
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def addEntitlements() {
     log.debug("addEntitlements ..")
     def result = [:]
@@ -655,12 +655,12 @@ class SubscriptionDetailsController {
     result
   }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def previous() {
        previousAndExpected(params,'previous');
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def members() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -681,7 +681,7 @@ class SubscriptionDetailsController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def addMembers() {
         log.debug("addMembers ..")
 
@@ -709,7 +709,7 @@ class SubscriptionDetailsController {
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def processAddMembers() {
         log.debug(params)
 
@@ -774,7 +774,7 @@ class SubscriptionDetailsController {
         redirect controller: 'subscriptionDetails', action: 'show', params:[id: result.subscriptionInstance?.id]
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def deleteMember() {
         log.debug(params)
 
@@ -814,7 +814,7 @@ class SubscriptionDetailsController {
         redirect action: 'members', params: [id: params.id], model: result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def expected() {
         previousAndExpected(params,'expected');
     }
@@ -865,7 +865,7 @@ class SubscriptionDetailsController {
 
         result
     }
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def processAddEntitlements() {
     log.debug("addEntitlements....");
     def result = [:]
@@ -926,7 +926,7 @@ class SubscriptionDetailsController {
     redirect action: 'index', id:result.subscriptionInstance?.id
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def removeEntitlement() {
     log.debug("removeEntitlement....");
     def ie = IssueEntitlement.get(params.ieid)
@@ -936,7 +936,7 @@ class SubscriptionDetailsController {
     redirect action: 'index', id:params.sub
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def notes() {
 
     def result = [:]
@@ -955,7 +955,7 @@ class SubscriptionDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def documents() {
 
     def result = [:]
@@ -975,7 +975,7 @@ class SubscriptionDetailsController {
     result
   }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def tasks() {
 
         def result = [:]
@@ -996,7 +996,7 @@ class SubscriptionDetailsController {
         result
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def renewals() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -1014,7 +1014,7 @@ class SubscriptionDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def deleteDocuments() {
     def ctxlist = []
 
@@ -1032,7 +1032,7 @@ class SubscriptionDetailsController {
     redirect controller: 'subscriptionDetails', action:params.redirectAction, id:params.instanceId
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def permissionInfo() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -1051,7 +1051,7 @@ class SubscriptionDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def launchRenewalsProcess() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -1082,20 +1082,20 @@ class SubscriptionDetailsController {
         }
     }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def acceptChange() {
     processAcceptChange(params, Subscription.get(params.id), genericOIDService)
     redirect controller: 'subscriptionDetails', action:'index',id:params.id
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def rejectChange() {
     processRejectChange(params, Subscription.get(params.id))
     redirect controller: 'subscriptionDetails', action:'index',id:params.id
   }
 
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def possibleLicensesForSubscription() {
     def result = []
 
@@ -1122,7 +1122,7 @@ class SubscriptionDetailsController {
     render result as JSON
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def linkPackage() {
     log.debug("Link package, params: ${params}");
     def result = [:]
@@ -1217,7 +1217,7 @@ class SubscriptionDetailsController {
     result;
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def history() {
     log.debug("subscriptionDetails::history ${params}");
     def result = [:]
@@ -1239,7 +1239,7 @@ class SubscriptionDetailsController {
     result
   }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
   def changes() {
     log.debug("subscriptionDetails::changes ${params}");
     def result = [:]
@@ -1265,7 +1265,7 @@ class SubscriptionDetailsController {
   }
 
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def costPerUse() {
     def result = [:]
 
@@ -1339,7 +1339,7 @@ class SubscriptionDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def show() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)

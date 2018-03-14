@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured // 2.0
@@ -26,7 +27,8 @@ class IssueEntitlementController {
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
     switch (request.method) {
     case 'GET':
@@ -44,7 +46,6 @@ class IssueEntitlementController {
       break
     }
     }
-
 
     @Secured(['ROLE_USER'])
     def show() {
@@ -133,7 +134,8 @@ class IssueEntitlementController {
 
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
     switch (request.method) {
     case 'GET':
@@ -178,7 +180,8 @@ class IssueEntitlementController {
     }
     }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
   def delete() {
     def issueEntitlementInstance = IssueEntitlement.get(params.id)
     if (!issueEntitlementInstance) {

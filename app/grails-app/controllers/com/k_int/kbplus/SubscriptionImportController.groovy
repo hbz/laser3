@@ -25,7 +25,7 @@ class SubscriptionImportController {
     new SimpleDateFormat('yyyy')
   ];
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def generateImportWorksheet() { 
 
     log.debug("renewalsSearch : ${params}");
@@ -473,7 +473,7 @@ class SubscriptionImportController {
     cell.setCellComment(comment);
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def importSubscriptionWorksheet() {
     def result = [:]
     log.debug("importSubscriptionWorksheet :: ${params}")
@@ -616,7 +616,7 @@ class SubscriptionImportController {
     result
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def processSubscriptionImport() {
 
     log.debug("processSubscriptionImport...");

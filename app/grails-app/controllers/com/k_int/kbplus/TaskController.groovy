@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -27,7 +28,8 @@ class TaskController {
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
-    @Secured(['ROLE_USER'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def create() {
         def contextOrg  = contextService.getOrg()
 		def result      = taskService.getPreconditions(contextOrg)
@@ -70,7 +72,8 @@ class TaskController {
         [taskInstance: taskInstance]
     }
 
-    @Secured(['ROLE_USER'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def edit() {
         def contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
@@ -128,7 +131,8 @@ class TaskController {
 		}
     }
 
-    @Secured(['ROLE_USER'])
+	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def delete() {
         def taskInstance = Task.get(params.id)
         if (! taskInstance) {

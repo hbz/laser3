@@ -12,7 +12,7 @@ class LicenseCompareController {
     def permissionHelperService
     def contextService
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def index() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -30,7 +30,7 @@ class LicenseCompareController {
         result.licensee_role  =licensee_role.id
         result
   }
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def compare(){
     log.debug("compare ${params}")
     def result = [:]

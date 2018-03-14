@@ -1,6 +1,7 @@
 package com.k_int.kbplus.auth
 
 import de.laser.domain.Permissions
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 import javax.persistence.Transient
 import com.k_int.kbplus.Org
@@ -9,6 +10,7 @@ import com.k_int.kbplus.RefdataValue
 class User implements Permissions {
 
   transient springSecurityService
+  def contextService
 
   String username
   String display
@@ -87,7 +89,7 @@ class User implements Permissions {
   }
 
   @Transient def getAuthorizedAffiliations() {
-    affiliations.findAll { (it.status == 1) || (it.status==3) }
+    affiliations.findAll { (it.status == UserOrg.STATUS_APPROVED) || (it.status==UserOrg.STATUS_AUTO_APPROVED) }
   }
 
   @Transient def getAuthorizedOrgs() {
@@ -124,8 +126,8 @@ class User implements Permissions {
                 }
               }
               or {
-                eq("status",1)
-                eq("status",3)
+                eq("status",UserOrg.STATUS_APPROVED)
+                eq("status",UserOrg.STATUS_AUTO_APPROVED)
               }
              
       }
@@ -172,8 +174,9 @@ class User implements Permissions {
         false
     }
 
+    /*
     def hasRole(roleName) {
-      log.debug("USER.hasRole(): " + roleName)
+      log.debug("USER.hasRole(): " + roleName) // TODO check roleHierarchy
 
         def result = false
         def role = Role.findByAuthority(roleName)
@@ -182,27 +185,25 @@ class User implements Permissions {
             result = (ur && roles?.contains(ur))
         }
         result
+    } */
+
+    def hasAffiliation(userRoleName) {
+        hasAffiliation(userRoleName, 'ROLE_USER')
     }
 
-    def hasAffiliation(roleName) { // TODO check org
-        log.debug("USER.hasAffiliation(): " + roleName)
+    def hasAffiliation(userRoleName, globalRoleName) {
 
         def result = false
-        def role = Role.findByAuthority(roleName)
-        if (role) {
-            def uo = UserOrg.findByUserAndFormalRole(this, role)
-            result = (uo && affiliations?.contains(uo))
+        def contextOrg = contextService.getOrg()
+        def rolesToCheck = [userRoleName]
+
+        log.debug("USER.hasAffiliation(): ${userRoleName} @ ${contextOrg}")
+
+        if (globalRoleName && ! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+            return false
         }
-        result
-    }
 
-    def hasMinimumAffiliation(roleName) { // TODO check org
-        log.debug("USER.hasMinimumAffiliation(): " + roleName)
-
-        def result = false
-        def rolesToCheck = [roleName]
-
-        if (roleName == "INST_USER") {
+        if (userRoleName == "INST_USER") {
             //rolesToCheck << "INST_EDITOR"
             rolesToCheck << "INST_ADM"
         }
@@ -211,11 +212,10 @@ class User implements Permissions {
         }*/
 
         rolesToCheck.each{ rot ->
-            println "check " + rot
             def role = Role.findByAuthority(rot)
             if (role) {
-                def uo = UserOrg.findByUserAndFormalRole(this, role)
-                result = result | (uo && affiliations?.contains(uo))
+                def uo = UserOrg.findByUserAndOrgAndFormalRole(this, contextOrg, role)
+                result = result || (uo && getAuthorizedAffiliations()?.contains(uo))
             }
         }
         result
