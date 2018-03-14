@@ -6,13 +6,14 @@
 <g:if test="${ OnixPLService.getSingleValue(rth, 'GeneralTermType') }">
   <tr>
     <!-- Header -->
-    <th class="tr-${ (rowCount + 1) } cell-1" ><span class="cell-inner">
+    <td class="tr-${ (rowCount + 1) } cell-1" >
+      <span class="cell-inner">
 
-      <g:if test="${ rth['TermStatus'] }" >
-        ${ OnixPLService.getSingleValue(rth, 'TermStatus') }
-      </g:if>
+      <g:if test="${ rth['TermStatus'] }">${ OnixPLService.getSingleValue(rth, 'TermStatus') }</g:if>
       ${ OnixPLService.getSingleValue(rth, 'GeneralTermType') }
-    </span></th>
+    </span>
+  </td>
+
     <g:each var="heading" in="${headings}" status="colCount">
 
       <g:set var="entry" value="${ row[heading] }" />

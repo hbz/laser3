@@ -11,8 +11,8 @@
   <g:set var="current_user" value="${row_key.substring(1,row_key.indexOf(']'))}"/>
   <g:if test="${active_user != current_user}">
     <tr class="cell-1" style="text-align: left;font-size: 150%;">
-      <th><span class="cell-inner"> ${OnixPLService.getAllValues(rth, 'User', ', ', ' or ')}</span></th>
-   
+      <td><span class="cell-inner"> ${OnixPLService.getAllValues(rth, 'User', ', ', ' or ')}</span></td>
+
       <!-- This is needed or the annotations break -->
     <g:each in="${headings}"> <td></td>  </g:each>
     </tr>
@@ -20,7 +20,7 @@
   </g:if>
   <tr>
     <!-- Header -->
-    <th class="tr-${ (rowCount + 1) } cell-1" ><span class="cell-inner">
+    <td class="tr-${ (rowCount + 1) } cell-1" ><span class="cell-inner">
       <g:if test="${ OnixPLService.getSingleValue(rth, 'UsageType').contains('Supply Copy') }">
 
       </g:if>
@@ -42,7 +42,7 @@
       <g:if test="${rth['UsageRelatedAgent']}">
         to ${ OnixPLService.getSingleValue(rth['UsageRelatedAgent'][0], 'RelatedAgent') } 
       </g:if>
-    </span></th>
+    </span></td>
     <g:each var="heading" in="${headings}" status="colCount">
 
       <g:set var="rth" value="${service.getRowHeadingData(row,heading)}" />

@@ -5,12 +5,10 @@
   <g:if test="${ OnixPLService.getSingleValue(rth, 'PaymentTermType') }">
   <tr>
     <!-- Header -->
-    <th class="tr-${ (rowCount + 1) } cell-1" ><span class="cell-inner">
-    
+    <td class="tr-${ (rowCount + 1) } cell-1" >
+      <span class="cell-inner">${ OnixPLService.getSingleValue(rth, 'PaymentTermType') }</span>
+    </td>
 
-      
-      ${ OnixPLService.getSingleValue(rth, 'PaymentTermType') }
-    </span></th>
     <g:each var="heading" in="${headings}" status="colCount">
       <g:set var="entry" value="${ row[heading] }" />
       <td class="tr-${ (rowCount + 1) } cell-${ colCount + 2 }">

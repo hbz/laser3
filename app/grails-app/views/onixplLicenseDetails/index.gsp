@@ -7,12 +7,10 @@
 </head>
 <body>
 
-    <div>
-        <ul class="breadcrumb">
-            <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-            <li> <g:link controller="licenseDetails" action="show" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
-        </ul>
-    </div>
+    <ul class="breadcrumb">
+        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
+        <li> <g:link controller="licenseDetails" action="show" id="${params.id}">ONIX-PL ${message(code:'license.details')}</g:link> </li>
+    </ul>
 
     <g:if test="${editable}">
         <semui:crumbAsBadge message="default.editable" class="orange" />
@@ -20,16 +18,13 @@
 
     <h1 class="ui header"><semui:headerIcon />ONIX-PL License : ${onixplLicense?.title}</h1>
 
-<div>
-    <div class="row">
-        <div class="span8">
+    <h6 class="ui header">${message(code:'laser', default:'LAS:eR')} ${message(code:'license.information')}</h6>
 
-            <h6 class="ui header">${message(code:'laser', default:'LAS:eR')} ${message(code:'license.information')}</h6>
+    <g:if test="${!onixplLicense}">
+        ${message(code:'onix.cannot.find.license')}
+    </g:if>
 
-            <g:if test="${!onixplLicense}">
-            ${message(code:'onix.cannot.find.license')}
-            </g:if>
-            <g:else>
+    <g:else>
             <div class="inline-lists">
                 <dl>
                     <dt><label class="control-label" for="license">Reference</label></dt>
@@ -41,13 +36,10 @@
                 </dl>
                 </div>
 
-            <h6 class="ui header">ONIX-PL License Properties</h6>
+        <h6 class="ui header">ONIX-PL License Properties</h6>
 
-            
-            </g:else>
-        </div>
-    </div>
-</div>
+    </g:else>
+
 
 </body>
 </html>

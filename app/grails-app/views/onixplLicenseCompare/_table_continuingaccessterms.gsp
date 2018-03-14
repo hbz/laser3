@@ -8,32 +8,21 @@
       <g:if test="${ service.getSingleValue(rth, 'ContinuingAccessTermType') }">
   <tr>
     <!-- Header -->
-    <th class="tr-${ (rowCount + 1) } cell-1" ><span class="cell-inner">
-    
+    <td class="tr-${ (rowCount + 1) } cell-1" >
+      <span class="cell-inner">
+        <g:set var="access_resource" value="${service.getSingleValue(rth['ContinuingAccessTermRelatedResource']?.getAt(0),'RelatedResource') }"/>
+         <g:set var="access_provider" value="${service.getSingleValue(rth['ContinuingAccessTermRelatedAgent']?.getAt(0),'RelatedAgent')}"/>
 
+        ${ service.getSingleValue(rth, 'ContinuingAccessTermType') }
 
-      <g:set var="access_resource" value="${service.getSingleValue(rth['ContinuingAccessTermRelatedResource']?.getAt(0),'RelatedResource') }"/>
-
-      <g:set var="access_provider" value="${service.getSingleValue(rth['ContinuingAccessTermRelatedAgent']?.getAt(0),'RelatedAgent')}"/>
-
-      ${ service.getSingleValue(rth, 'ContinuingAccessTermType') }
-   
-
-      <g:if test="${access_resource}">
-        of ${access_resource} provided by
-      </g:if>
+      <g:if test="${access_resource}"> of ${access_resource} provided by</g:if>
       <g:if test="${access_provider}">
-        <g:if test="${!access_resource}">
-        for
-        </g:if>
-
+        <g:if test="${!access_resource}">for</g:if>
         ${access_provider}
       </g:if>
+        </span>
+      </td>
 
-
-
-
-    </span></th>
     <g:each var="heading" in="${headings}" status="colCount">
       <g:set var="entry" value="${ row[heading] }" />
       <td class="tr-${ (rowCount + 1) } cell-${ colCount + 2 }">

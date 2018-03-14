@@ -5,13 +5,14 @@
 <g:if test="${OnixPLService.getAllValues(rth, 'LicenseGrantType', ', ')}">
   <tr>
     <!-- Header -->
-    <th class="tr-${ (rowCount + 1) } cell-1" ><span class="cell-inner">
-    
-
-      
+    <td class="tr-${ (rowCount + 1) } cell-1" >
+      <span class="cell-inner">
       Grants ${ OnixPLService.getAllValues(rth, 'LicenseGrantType', ', ') } license for
       ${ OnixPLService.getSingleValue(rth, 'LicenseGrantPurpose') }
-    </span></th>
+        </span>
+      </td>
+
+
     <g:each var="heading" in="${headings}" status="colCount">
       <g:set var="entry" value="${ row[heading] }" />
       <td class="tr-${ (rowCount + 1) } cell-${ colCount + 2 }">

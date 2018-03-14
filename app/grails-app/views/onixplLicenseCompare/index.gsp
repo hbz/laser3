@@ -9,17 +9,14 @@
 </head>
 
 <body>
-	<div>
-		<ul class="breadcrumb">
-			<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
-				class="divider">/</span></li>
-			<li>${message(code:'menu.institutions.comp_onix')}</li>
-		</ul>
-	</div>
 
-	<div>
-		<h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
-	</div>
+	<ul class="breadcrumb">
+		<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
+			class="divider">/</span></li>
+		<li>${message(code:'menu.institutions.comp_onix')}</li>
+	</ul>
+
+	<h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
 
 	<div>
 		<div class="row">

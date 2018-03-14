@@ -13,22 +13,22 @@
 		<semui:crumb message="menu.institutions.comp_onix" class="active"/>
 	</semui:breadcrumbs>
 
-	<div>
-		<h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
-	</div>
-	<div>
+	<h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
+
 		<g:if test="${flash.message}">
 			<bootstrap:alert class="alert-info">
 				${flash.message}
 			</bootstrap:alert>
 		</g:if>
-		<g:render template="tables" model="${request.parameterMap}" />
-	</div>
+
+    <g:render template="tables" model="${request.parameterMap}" />
+
+
 	  <r:script language="JavaScript">
 	  	// //we replace cell-inner-undefined with call inner and our new icon
-	  	    $(function(){
-	  	    	$(".onix-pl-undefined").replaceWith("<span title='Not defined by the license' style='height:1em' class='onix-status fa-stack fa-4x'> <i class='fa fa-info-circle fa-stack-1x' style='color:#166fe7;' ></i> <i class='fa fa-ban fa-stack-1x' style='color:#FF0000'></i> </span>")
-	  	    	  // Tooltips.
+	  	  //  $(function(){
+	  	  //  	$(".onix-pl-undefined").replaceWith("<span title='Not defined by the license' style='height:1em' class='onix-status fa-stack fa-4x'> <i class='fa fa-info-circle fa-stack-1x' style='color:#166fe7;' ></i> <i class='fa fa-ban fa-stack-1x' style='color:#FF0000'></i> </span>")
+	  	  //  	  // Tooltips.
 
 		  $('.onix-code, .onix-status').tooltip(
 			  {placement: 'bottom', trigger:'hover', html: true, container: 'body'}
