@@ -319,6 +319,6 @@ class Org extends BaseDomainComponent {
 
     @Override
     String toString() {
-        name + ', ' + sector + ' (' + id + ')'
+        sector ? name + ', ' + sector?.getI10n('value') : "${name}"
     }
 }

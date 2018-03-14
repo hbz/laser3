@@ -220,8 +220,6 @@
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen']}" />
 
-
-
                 <% /*
                <dl>
                     <dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>

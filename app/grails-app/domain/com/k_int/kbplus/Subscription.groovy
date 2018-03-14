@@ -254,7 +254,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
   }
 
   public String toString() {
-    "Subscription ${id} - ${name}".toString();
+      name ? "${name}" : "Subscription ${id}"
   }
 
   // JSON definition of the subscription object

@@ -113,6 +113,8 @@ class YodaController {
 
     @Secured(['ROLE_ADMIN'])
     def appLogfile() {
+        return // TODO
+
         def f = new File("${Holders.config.log_location}")
         return [file: "${f.canonicalPath}"]
     }

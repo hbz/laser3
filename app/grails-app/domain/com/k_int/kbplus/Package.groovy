@@ -269,7 +269,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
   public String toString() {
-    "Package ${name}";
+    name ? "${name}" : "Package ${id}"
   }
 
   @Transient

@@ -281,7 +281,7 @@
                             </div>
 
                             <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
-                            <g:link class="item" controller="yoda" action="appLogfile">App Logfile</g:link>
+                            <%--<g:link class="item" controller="yoda" action="appLogfile">App Logfile</g:link>--%>
 
                             <div class="divider"></div>
 
@@ -397,15 +397,34 @@
 
             <div class="right menu la-advanced-view">
 
+                <g:if test="${(params.mode)}">
+                    <div class="ui checkbox" id="la-advanced">
+                        <g:if test="${params.mode=='advanced'}">
+                            <input tabindex="0" type="checkbox" checked="checked"/>
+                        </g:if>
+                        <g:else>
+                            <input tabindex="0" type="checkbox"/>
+                        </g:else>
+                        <label>${message(code:'profile.advancedView')}</label>
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                            $('#la-advanced').checkbox({
+                                onChecked: function () {
+                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />"
+                                },
+                                onUnchecked: function () {
+                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />"
+                                }
+                            });
+                        })
+                    </script>
 
-
-                <g:if test="${ (params.mode)}">
-
+                    <%--
                             <div class="ui slider item checkbox"  id="la-advanced">
                                 <input type="checkbox" tabindex="0" >
                                 <label>${message(code:'profile.advancedView')}</label>
                             </div>
-
                             <script>
                                 $(document).ready(function() {
 
@@ -433,6 +452,7 @@
 
                                 })
                             </script>
+                        --%>
                 </g:if>
                 <semui:editableLabel editable="${editable}" />
             </div>

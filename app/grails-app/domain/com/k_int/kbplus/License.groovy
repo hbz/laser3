@@ -300,14 +300,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
 
   @Override
   public String toString() {
-    String result
-    if ( reference ) {
-      result = reference
-    }
-    else {
-      result = "- no name -"
-    }
-    return result;
+    reference ? "${reference}" : "License ${id}"
   }
   
   @Override
