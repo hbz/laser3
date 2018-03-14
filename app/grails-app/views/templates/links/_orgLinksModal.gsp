@@ -1,11 +1,8 @@
-<semui:modal id="osel_add_modal" message="template.orgLinksModal">
-
+<semui:modal id="osel_add_modal" text="${tmplText}">
     <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}"/>
         <input type="hidden" name="property" value="${property}"/>
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
-
-        <h3>DEPRECATED</h3>
 
         <div class="field">
             <table id="org_role_tab" class="ui celled la-table la-table-small table">
@@ -19,13 +16,16 @@
             </table>
         </div>
 
-        <div class="field">
+        <input type="hidden" name="orm_orgRole" value="${tmplRole?.id}" />
+        <input type="hidden" name="linkType" value="${linkType}" />
+
+        <%--<div class="field">
             <label class="control-label">${message(code:'template.orgLinksModal.role')}</label>
             <g:set var="varSelectOne" value="${message(code:'default.selectOne.label')}" />
             <g:if test="${linkType}">
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'),linkType)}"
+                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'), linkType)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:if>
@@ -36,9 +36,8 @@
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:else>
-        </div>
+        </div>--%>
     </g:form>
-
 </semui:modal>
 
 <g:javascript>

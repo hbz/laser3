@@ -45,7 +45,7 @@
     <dl>
         <dt></dt>
         <dd>
-            <a class="ui button" data-semui="modal" href="#osel_add_modal" >${message(code:'license.addOrgLink')}</a>
+            <a class="ui button" data-semui="modal" href="#osel_add_modal">${tmplButtonText}</a>
         </dd>
     </dl>
 </g:if>

@@ -191,19 +191,14 @@
                             </dd>
                         </dl>
 
+                        <g:render template="/templates/links/orgLinksAsList"
+                                  model="${[roleLinks:visibleOrgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable, tmplButtonText:'Anbieter hinzufügen']}" />
 
-
-                        <% /*
-                        <dl>
-                            <dt>${message(code: 'package.show.orglink')}</dt>
-                            <dd><g:render template="orgLinks"
-                                    contextPath="../templates"
-                                    model="${[roleLinks:visibleOrgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',editmode:editable]}" /></dd>
-                        </dl>
-                        */ %>
-
-                            <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable]}" />
-
+                        <g:render template="/templates/links/orgLinksModal"
+                              model="${[linkType:packageInstance?.class?.name, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', recip_prop:'pkg',
+                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
+                                        tmplText:'Anbieter hinzufügen'
+                              ]}" />
                     </div>
                 </div>
                 <div class="ui card">
@@ -672,11 +667,6 @@
       });</g:if>
     </r:script>
     */ %>
-
-    <g:render template="orgLinksModal"
-              contextPath="../templates"
-              model="${[linkType:packageInstance?.class?.name,roleLinks:visibleOrgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
-
 
     </body>
 </html>

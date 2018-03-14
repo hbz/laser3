@@ -167,15 +167,12 @@
                             <dl>
                                 <dt>${message(code:'license')}</dt>
                                 <dd>
-                                    <g:if test="${subscriptionInstance.subscriber || subscriptionInstance.consortia}">
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
                                         <g:if test="${subscriptionInstance.owner != null}">
                                             [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
                                                 <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
                                             </g:link>]
                                         </g:if>
-                                    </g:if>
-                                    <g:else>N/A (Subscription offered)</g:else>
                                 </dd>
                             </dl>
                         </div>
@@ -216,7 +213,13 @@
 
 
 
-                            <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgRelations, editmode:editable]}" />
+                    <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgRelations, editmode:editable, tmplButtonText:'Anbieter hinzufügen']}" />
+
+                    <g:render template="/templates/links/orgLinksModal"
+                              model="${[linkType:subscriptionInstance?.class?.name, parent:subscriptionInstance.class.name+':'+subscriptionInstance.id, property:'orgs', recip_prop:'sub',
+                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
+                                        tmplText:'Anbieter hinzufügen']}" />
+
 
 
                 <% /*
@@ -372,9 +375,7 @@
 
 
     <div id="magicArea"></div>
-    <g:render template="orgLinksModal"
-              contextPath="../templates"
-              model="${[linkType:subscriptionInstance?.class?.name,roleLinks:visibleOrgRelations,parent:subscriptionInstance.class.name+':'+subscriptionInstance.id,property:'orgs',recip_prop:'sub']}" />
+
     <r:script language="JavaScript">
 
       function unlinkPackage(pkg_id){

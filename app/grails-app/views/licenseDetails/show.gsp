@@ -135,7 +135,7 @@
                                 <dd>
                                     <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                         <g:each in="${license.subscriptions}" var="sub">
-                                            <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>
+                                            <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link><br/>
                                         </g:each>
                                     </g:if>
                                     <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
@@ -208,8 +208,14 @@
                                 </dd>
                             </dl>
                            --%>
-                        <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgLinks, editmode:editable]}" />
+                        <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgLinks, editmode:editable, tmplButtonText:'Lizenzgeber hinzufügen']}" />
 
+
+                        <g:render template="/templates/links/orgLinksModal"
+                                  model="${[linkType:license?.class?.name, parent:license.class.name+':'+license.id, property:'orgLinks', recip_prop:'lic',
+                                            tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
+                                            tmplText:'Lizenzgeber hinzufügen'
+                                  ]}" />
 
                                 <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
 
@@ -336,10 +342,6 @@
 
             </aside><!-- .four -->
         </div><!-- .grid -->
-
-    <g:render template="orgLinksModal" 
-              contextPath="../templates" 
-              model="${[linkType:license?.class?.name,roleLinks:visibleOrgLinks,parent:license.class.name+':'+license.id,property:'orgLinks',recip_prop:'lic']}" />
 
     <r:script language="JavaScript">
         function changeLink(elem, msg) {
