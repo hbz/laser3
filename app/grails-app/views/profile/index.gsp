@@ -152,39 +152,37 @@
                     </h4>
                 </div>-->
 
-              <div class="column wide sixteen">
-                <h4 class="ui dividing header">
-                    ${message(code: 'profile.membership.existing')}
-                </h4>
-                          <table class="ui celled la-table table">
-                                <thead>
-                                      <tr>
-                                          <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
-                                          <th>${message(code: 'profile.membership.role', default:'Role')}</th>
-                                          <th>${message(code: 'profile.membership.status', default:'Status')}</th>
-                                          <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
-                                          <th>${message(code: 'profile.membership.actions', default:'Actions')}</th>
-                                      </tr>
-                                </thead>
-                                <tbody>
-                                      <g:each in="${user.affiliations}" var="assoc">
-                                            <tr>
-                                                  <td><g:link controller="organisations" action="show" id="${assoc.org.id}">${assoc.org.name}</g:link></td>
-                                                  <td><g:message code="cv.roles.${assoc.formalRole?.authority}"/></td>
-                                                  <td><g:message code="cv.membership.status.${assoc.status}"/></td>
-                                                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${assoc.dateRequested}"/> / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${assoc.dateActioned}"/></td>
-                                                  <td style="vertical-align:middle">
-                                                      <g:if test="${assoc.status != UserOrg.STATUS_CANCELLED}">
-                                                          <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:assoc.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
-                                                      </g:if>
-                                                  </td>
-                                            </tr>
-                                      </g:each>
-                                </tbody>
-                          </table>
-              </div><!--.column-->
+                <div class="column wide sixteen">
+                    <h4 class="ui dividing header">${message(code: 'profile.membership.existing')}</h4>
+                    <table class="ui celled la-table table">
+                        <thead>
+                              <tr>
+                                  <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
+                                  <th>${message(code: 'profile.membership.role', default:'Role')}</th>
+                                  <th>${message(code: 'profile.membership.status', default:'Status')}</th>
+                                  <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
+                                  <th>${message(code: 'profile.membership.actions', default:'Actions')}</th>
+                              </tr>
+                        </thead>
+                        <tbody>
+                              <g:each in="${user.affiliations}" var="assoc">
+                                    <tr>
+                                          <td><g:link controller="organisations" action="show" id="${assoc.org.id}">${assoc.org.name}</g:link></td>
+                                          <td><g:message code="cv.roles.${assoc.formalRole?.authority}"/></td>
+                                          <td><g:message code="cv.membership.status.${assoc.status}"/></td>
+                                          <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${assoc.dateRequested}"/> / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${assoc.dateActioned}"/></td>
+                                          <td style="vertical-align:middle">
+                                              <g:if test="${assoc.status != UserOrg.STATUS_CANCELLED}">
+                                                  <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:assoc.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
+                                              </g:if>
+                                          </td>
+                                    </tr>
+                              </g:each>
+                        </tbody>
+                    </table>
+                </div><!--.column-->
 
-                <div class="column sixteen eight">
+                <div class="column wide sixteen">
                     <div class="ui segment">
                         <h4 class="ui dividing header">
                             ${message(code: 'profile.membership.request')}
@@ -320,7 +318,6 @@
 
                     </div>
                 </div><!-- .column -->
-
 
             </div><!-- .grid -->
         </div><!-- -->
