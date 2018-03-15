@@ -26,7 +26,8 @@ class LicenseDetailsController {
     def contextService
     def addressbookService
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def show() {
       log.debug("licenseDetails: ${params}");
       def result = [:]
@@ -221,7 +222,8 @@ class LicenseDetailsController {
     return subscriptions
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def linkToSubscription(){
     log.debug("linkToSubscription :: ${params}")
     if(params.subscription && params.license){
@@ -234,7 +236,8 @@ class LicenseDetailsController {
 
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def consortia() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -283,8 +286,9 @@ class LicenseDetailsController {
 
     result
   }
-  
-  @Secured(['ROLE_USER'])
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def generateSlaveLicenses(){
     def slaved = RefdataCategory.lookupOrCreate('YN','Yes')
     params.each { p ->
@@ -300,7 +304,8 @@ class LicenseDetailsController {
     redirect controller:'licenseDetails', action:'consortia', params: [id:params.baselicense]
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def links() {
     log.debug("licenseDetails id:${params.id}");
     def result = [:]
@@ -317,7 +322,9 @@ class LicenseDetailsController {
 
     result
   }
-  @Secured(['ROLE_USER'])
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def history() {
     log.debug("licenseDetails::history : ${params}");
 
@@ -353,7 +360,8 @@ class LicenseDetailsController {
   }
 
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def changes() {
     log.debug("licenseDetails::changes : ${params}");
     def result = [:]
@@ -373,7 +381,8 @@ class LicenseDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def notes() {
     log.debug("licenseDetails id:${params.id}");
     def result = [:]
@@ -388,7 +397,8 @@ class LicenseDetailsController {
     result
   }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def tasks() {
         log.debug("licenseDetails id:${params.id}")
 
@@ -405,7 +415,8 @@ class LicenseDetailsController {
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def properties() {
         def result = [:]
 
@@ -443,7 +454,8 @@ class LicenseDetailsController {
         result
     }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def documents() {
     log.debug("licenseDetails id:${params.id}");
     def result = [:]
@@ -457,7 +469,8 @@ class LicenseDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def deleteDocuments() {
     def ctxlist = []
 
@@ -493,19 +506,22 @@ class LicenseDetailsController {
         return true
     }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def acceptChange() {
     processAcceptChange(params, License.get(params.id), genericOIDService)
     redirect controller: 'licenseDetails', action:'show',id:params.id
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def rejectChange() {
     processRejectChange(params, License.get(params.id))
     redirect controller: 'licenseDetails', action:'show',id:params.id
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def permissionInfo() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -515,7 +531,7 @@ class LicenseDetailsController {
     result
   }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
   def create() {
     def result = [:]
@@ -523,7 +539,8 @@ class LicenseDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def processNewTemplateLicense() {
     if ( params.reference && ( ! params.reference.trim().equals('') ) ) {
 
@@ -540,7 +557,8 @@ class LicenseDetailsController {
     }
   }
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def unlinkLicense() {
       log.debug("unlinkLicense :: ${params}")
       License license = License.get(params.license_id);

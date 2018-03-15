@@ -1,7 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import de.laser.helper.DebugAnnotation
+import grails.plugin.springsecurity.annotation.Secured
+
+// 2.0
 import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -27,640 +30,636 @@ class SubscriptionDetailsController {
     def institutionsService
     def ESSearchService
     def executorWrapperService
-    def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
+    def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def permissionHelperService
     def filterService
 
-  private static String INVOICES_FOR_SUB_HQL =
-     'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
+    private static String INVOICES_FOR_SUB_HQL =
+            'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
 
-  private static String USAGE_FOR_SUB_IN_PERIOD =
-    'select f.reportingYear, f.reportingMonth+1, sum(factValue) '+
-    'from Fact as f '+
-    'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:jr1a and exists '+
-    '( select ie.tipp.title from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.title = f.relatedTitle)'+
-    'group by f.reportingYear, f.reportingMonth order by f.reportingYear desc, f.reportingMonth desc';
+    private static String USAGE_FOR_SUB_IN_PERIOD =
+            'select f.reportingYear, f.reportingMonth+1, sum(factValue) ' +
+                    'from Fact as f ' +
+                    'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:jr1a and exists ' +
+                    '( select ie.tipp.title from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.title = f.relatedTitle)' +
+                    'group by f.reportingYear, f.reportingMonth order by f.reportingYear desc, f.reportingMonth desc';
 
-  private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
-    'select sum(factValue) '+
-    'from Fact as f '+
-    'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:jr1a and exists '+
-    '( select ie.tipp.title from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.title = f.relatedTitle)';
-
-
-
-  @Secured(['ROLE_USER'])
-  def index() {
-
-    def result = [:]
-
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.id)
-
-    userAccessCheck( result.subscriptionInstance, result.user, 'view')
-
-    def verystarttime = exportService.printStart("SubscriptionDetails")
-
-    log.debug("subscriptionDetails id:${params.id} format=${response.format}");
-
-    result.transforms = grailsApplication.config.subscriptionTransforms
-
-    result.max = params.max ? Integer.parseInt(params.max) : ( (response.format && response.format != "html" && response.format != "all" ) ? 10000 : result.user.defaultPageSize );
-    result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0;
-
-    log.debug("max = ${result.max}");
-
-    def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-    def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status ]);
-
-    if(result.subscriptionInstance?.isSlaved?.value == "Yes" && pendingChanges){
-      log.debug("Slaved subscription, auto-accept pending changes")
-      def changesDesc = []
-      pendingChanges.each{change ->
-        if(!pendingChangeService.performAccept(change,request)){
-          log.debug("Auto-accepting pending change has failed.")
-        }else{
-          changesDesc.add(PendingChange.get(change).desc)
-        }
-      }
-      flash.message = changesDesc
-    }else{
-      result.pendingChanges = pendingChanges.collect{PendingChange.get(it)}
-    }
+    private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
+            'select sum(factValue) ' +
+                    'from Fact as f ' +
+                    'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:jr1a and exists ' +
+                    '( select ie.tipp.title from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.title = f.relatedTitle)';
 
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def index() {
 
-    // If transformer check user has access to it
-    if(params.transforms && !transformerService.hasTransformId(result.user, params.transforms)) {
-      flash.error = "It looks like you are trying to use an unvalid transformer or one you don't have access to!"
-      params.remove("transforms")
-      params.remove("format")
-      redirect action:'currentTitles', params:params
-    }
+        def result = [:]
 
-    if ( result.subscriptionInstance == null ) {
-      flash.error = "No subscription found -- is it deleted?"
-      redirect controller:'home', action:'index'
-    }
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
 
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.institution = result.subscriptionInstance.subscriber
-    if ( result.institution ) {
-      result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
-    }
+        userAccessCheck(result.subscriptionInstance, result.user, 'view')
 
-    result.editable = result.subscriptionInstance.isEditableBy(result.user)
+        def verystarttime = exportService.printStart("SubscriptionDetails")
 
-    if (params.mode == "advanced"){
-      params.asAt = null
-    }
+        log.debug("subscriptionDetails id:${params.id} format=${response.format}");
 
-    def base_qry = null;
+        result.transforms = grailsApplication.config.subscriptionTransforms
 
-    def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
-    def qry_params = [result.subscriptionInstance]
+        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.defaultPageSize);
+        result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0;
 
-    def date_filter
-    if(params.asAt && params.asAt.length() > 0) {
-      def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
-      date_filter = sdf.parse(params.asAt)
-      result.as_at_date = date_filter;
-      result.editable = false;
-    }else{
-      date_filter = new Date()
-      result.as_at_date = date_filter;
-    }
-    // We dont want this filter to reach SQL query as it will break it.
-    def core_status_filter = params.sort == 'core_status'
-    if(core_status_filter) params.remove('sort');
+        log.debug("max = ${result.max}");
 
-    if ( params.filter ) {
-      base_qry = " from IssueEntitlement as ie where ie.subscription = ? "
-      if ( params.mode != 'advanced' ) {
-        // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-        // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-        // qry_params.add(deleted_ie);
-        base_qry += "and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-        qry_params.add(date_filter);
-        qry_params.add(date_filter);
-      }
-      base_qry += "and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) ) "
-      qry_params.add("%${params.filter.trim().toLowerCase()}%")
-      qry_params.add("%${params.filter}%")
-    }
-    else {
-      base_qry = " from IssueEntitlement as ie where ie.subscription = ? "
-      if ( params.mode != 'advanced' ) {
-        // If we are not in advanced mode, hide IEs that are not current, otherwise filter
+        def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
-        base_qry += " and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-        qry_params.add(date_filter);
-        qry_params.add(date_filter);
-      }
-    }
-
-    base_qry += " and ie.status <> ? "
-    qry_params.add(deleted_ie);
-
-    if ( params.pkgfilter && ( params.pkgfilter != '' ) ) {
-      base_qry += " and ie.tipp.pkg.id = ? "
-      qry_params.add(Long.parseLong(params.pkgfilter));
-    }
-
-    if ( ( params.sort != null ) && ( params.sort.length() > 0 ) ) {
-      base_qry += "order by lower(ie.${params.sort}) ${params.order} "
-    }
-    else {
-      base_qry += "order by lower(ie.tipp.title.title) asc"
-    }
-
-    result.num_sub_rows = IssueEntitlement.executeQuery("select count(ie) "+base_qry, qry_params )[0]
-
-    if(params.format == 'html' || params.format == null){
-      result.entitlements = IssueEntitlement.executeQuery("select ie "+base_qry, qry_params, [max:result.max, offset:result.offset]);
-    }else{
-      result.entitlements = IssueEntitlement.executeQuery("select ie "+base_qry, qry_params);
-    }
-
-    // Now we add back the sort so that the sortable column will recognize asc/desc
-    // Ignore the sorting if we are doing an export
-    if(core_status_filter){
-      params.put('sort','core_status');
-      if(params.format == 'html' || params.format == null)  sortOnCoreStatus(result,params);
-    }
-
-    exportService.printDuration(verystarttime, "Querying")
-
-    log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-    def filename = "subscriptionDetails_${result.subscriptionInstance.identifier}"
-
-
-    if(executorWrapperService.hasRunningProcess(result.subscriptionInstance)){
-      result.processingpc = true
-    }
-    withFormat {
-      html result
-      csv {
-         response.setHeader("Content-disposition", "attachment; filename=\"${result.subscriptionInstance.identifier}.csv\"")
-         response.contentType = "text/csv"
-         def out = response.outputStream
-         def header = ( params.omitHeader == null ) || ( params.omitHeader != 'Y' )
-         exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
-         out.close()
-         exportService.printDuration(verystarttime, "Overall Time")
-      }
-      json {
-          def starttime = exportService.printStart("Building Map")
-          def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
-          exportService.printDuration(starttime, "Building Map")
-
-          starttime = exportService.printStart("Create JSON")
-          def json = map as JSON
-          exportService.printDuration(starttime, "Create JSON")
-
-          if(params.transforms){
-            transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
-          }else{
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-            response.contentType = "application/json"
-            render json
-          }
-          exportService.printDuration(verystarttime, "Overall Time")
-      }
-      xml {
-          def starttime = exportService.printStart("Building XML Doc")
-          def doc = exportService.buildDocXML("Subscriptions")
-          exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
-          exportService.printDuration(starttime, "Building XML Doc")
-
-          if( ( params.transformId ) && ( result.transforms[params.transformId] != null ) ) {
-            String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-            transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-          }else{
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-            response.contentType = "text/xml"
-            starttime = exportService.printStart("Sending XML")
-            exportService.streamOutXML(doc, response.outputStream)
-            exportService.printDuration(starttime, "Sending XML")
-          }
-          exportService.printDuration(verystarttime, "Overall Time")
-      }
-    }
-  }
-
-  @Secured(['ROLE_USER'])
-  def unlinkPackage(){
-    log.debug("unlinkPackage :: ${params}")
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscription = Subscription.get(params.subscription.toLong())
-    result.package = Package.get(params.package.toLong())
-    def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-    def queryParams = [sub:result.subscription,pkg_id:result.package.id]
-
-    if (result.subscription.isEditableBy(result.user) ) {
-      result.editable = true
-      if(params.confirmed){
-      //delete matches
-      IssueEntitlement.withTransaction { status ->
-        removePackagePendingChanges(result.package.id,result.subscription.id,params.confirmed)
-        def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}",queryParams)
-        if(deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)",[delList:deleteIdList]);
-        SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ",[result.package,result.subscription])
-      }
-      }else{
-        def numOfPCs = removePackagePendingChanges(result.package.id,result.subscription.id,params.confirmed)
-
-        def numOfIEs = IssueEntitlement.executeQuery("select count(ie) ${query}",queryParams)[0]
-        def conflict_item_pkg = [name:"Linked Package",details:[['link':createLink(controller:'packageDetails', action: 'show', id:result.package.id), 'text': result.package.name]],action:[actionRequired:false,text:'Link will be removed']]
-        def conflicts_list = [conflict_item_pkg]
-
-        if(numOfIEs > 0){
-          def conflict_item_ie = [name:"Package IEs",details:[['text': 'Number of IEs: '+numOfIEs]],action:[actionRequired:false,text:'IEs will be deleted']]
-          conflicts_list += conflict_item_ie
-        }
-        if(numOfPCs > 0){
-          def conflict_item_pc = [name:"Pending Changes",details:[['text': 'Number of PendingChanges: '+ numOfPCs]],action:[actionRequired:false,text:'Pending Changes will be deleted']]
-          conflicts_list += conflict_item_pc
-        }
-
-        return render(template: "unlinkPackageModal",model:[pkg:result.package,subscription:result.subscription,conflicts_list:conflicts_list])
-      }
-    }else{
-      result.editable = false
-    }
-
-
-    redirect action: 'index', id:params.subscription
-
-  }
-  def removePackagePendingChanges(pkg_id,sub_id,confirmed){
-
-    def tipp_class = TitleInstancePackagePlatform.class.getName()
-    def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
-    def change_doc_query = "from PendingChange pc where pc.subscription.id = ? "
-    def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}",[pkg_id])
-    def pendingChanges = PendingChange.executeQuery("select pc.id, pc.changeDoc ${change_doc_query}",[sub_id])
-
-    def pc_to_delete = []
-    pendingChanges.each{pc->
-      def parsed_change_info = JSON.parse(pc[1])
-      if(parsed_change_info.tippID) {
-        pc_to_delete +=pc[0]
-      }
-      else if(parsed_change_info.changeDoc){
-        def (oid_class,ident) = parsed_change_info.changeDoc.OID.split(":")
-        if(oid_class == tipp_class && tipp_ids.contains(ident.toLong()) ){
-          pc_to_delete += pc[0]
-        }
-      }
-      else{
-        log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${parsed_change_info}")
-      }
-    }
-    if(confirmed && pc_to_delete){
-      log.debug("Deleting Pending Changes: ${pc_to_delete}")
-      def del_pc_query = "delete from PendingChange where id in (:del_list) "
-      PendingChange.executeUpdate(del_pc_query,[del_list:pc_to_delete])
-    }else{
-      return pc_to_delete.size()
-    }
-  }
-
-  def sortOnCoreStatus(result,params){
-    result.entitlements.sort{it.getTIP()?.coreStatus(null)}
-    if(params.order == 'desc') result.entitlements.reverse(true);
-    result.entitlements = result.entitlements.subList(result.offset, (result.offset+result.max).intValue() )
-  }
-
-  @Secured(['ROLE_USER'])
-  def compare(){
-    def result = [:]
-    result.unionList = []
-
-    result.user = User.get(springSecurityService.principal.id)
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize
-    result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-    if(params.subA?.length() > 0 && params.subB?.length() > 0 ){
-      log.debug("Subscriptions submitted for comparison ${params.subA} and ${params.subB}.")
-      log.debug("Dates submited are ${params.dateA} and ${params.dateB}")
-
-      result.subInsts = []
-      result.subDates = []
-
-      def listA
-      def listB
-      try{
-      listA = createCompareList(params.subA ,params.dateA, params, result)
-      listB = createCompareList(params.subB, params.dateB, params, result)
-        if(!params.countA){
-          def countQuery = "select count(elements(sub.issueEntitlements)) from Subscription sub where sub.id = ?"
-          params.countA = Subscription.executeQuery(countQuery, [result.subInsts.get(0).id])
-          params.countB = Subscription.executeQuery(countQuery, [result.subInsts.get(1).id])
-        }
-      }catch(IllegalArgumentException e){
-        request.message = e.getMessage()
-        return
-      }
-
-      result.listACount = listA.size()
-      result.listBCount = listB.size()
-
-      def mapA = listA.collectEntries { [it.tipp.title.title, it] }
-      def mapB = listB.collectEntries { [it.tipp.title.title, it] }
-
-      //FIXME: It should be possible to optimize the following lines
-      def unionList = mapA.keySet().plus(mapB.keySet()).toList()
-      unionList = unionList.unique()
-      result.unionListSize = unionList.size()
-      unionList.sort()
-
-      def filterRules = [params.insrt?true:false, params.dlt?true:false, params.updt?true:false, params.nochng?true:false ]
-      withFormat{
-        html{
-          def toIndex = result.offset+result.max < unionList.size()? result.offset+result.max: unionList.size()
-          result.comparisonMap =
-              institutionsService.generateComparisonMap(unionList,mapA,mapB,result.offset, toIndex.intValue(),filterRules)
-          log.debug("Comparison Map"+result.comparisonMap)
-          result
-        }
-        csv {
-          try{
-          log.debug("Create CSV Response")
-          def comparisonMap =
-          institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(),filterRules)
-          def dateFormatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-
-           response.setHeader("Content-disposition", "attachment; filename=\"subscriptionComparison.csv\"")
-           response.contentType = "text/csv"
-           def out = response.outputStream
-           out.withWriter { writer ->
-            writer.write("${result.subInsts[0].name} on ${params.dateA}, ${result.subInsts[1].name} on ${params.dateB}\n")
-            writer.write('IE Title, pISSN, eISSN, Start Date A, Start Date B, Start Volume A, Start Volume B, Start Issue A, Start Issue B, End Date A, End Date B, End Volume A, End Volume B, End Issue A, End Issue B, Coverage Note A, Coverage Note B, ColorCode\n');
-            log.debug("UnionList size is ${unionList.size}")
-            comparisonMap.each{ title, values ->
-              def ieA = values[0]
-              def ieB = values[1]
-              def colorCode = values[2]
-              def pissn = ieA ? ieA.tipp.title.getIdentifierValue('issn') : ieB.tipp.title.getIdentifierValue('issn');
-              def eissn = ieA ? ieA.tipp.title.getIdentifierValue('eISSN') : ieB.tipp.title.getIdentifierValue('eISSN')
-
-              writer.write("\"${title}\",\"${pissn?:''}\",\"${eissn?:''}\",\"${formatDateOrNull(dateFormatter,ieA?.startDate)}\",\"${formatDateOrNull(dateFormatter,ieB?.startDate)}\",\"${ieA?.startVolume?:''}\",\"${ieB?.startVolume?:''}\",\"${ieA?.startIssue?:''}\",\"${ieB?.startIssue?:''}\",\"${formatDateOrNull(dateFormatter,ieA?.endDate)}\",\"${formatDateOrNull(dateFormatter,ieB?.endDate)}\",\"${ieA?.endVolume?:''}\",\"${ieB?.endVolume?:''}\",\"${ieA?.endIssue?:''}\",\"${ieB?.endIssue?:''}\",\"${ieA?.coverageNote?:''}\",\"${ieB?.coverageNote?:''}\",\"${colorCode}\"\n")
+        if (result.subscriptionInstance?.isSlaved?.value == "Yes" && pendingChanges) {
+            log.debug("Slaved subscription, auto-accept pending changes")
+            def changesDesc = []
+            pendingChanges.each { change ->
+                if (!pendingChangeService.performAccept(change, request)) {
+                    log.debug("Auto-accepting pending change has failed.")
+                } else {
+                    changesDesc.add(PendingChange.get(change).desc)
+                }
             }
-            writer.write("END");
-            writer.flush();
-            writer.close();
-           }
-           out.close()
-
-          }catch(Exception e){
-            log.error("An Exception was thrown here",e)
-          }
+            flash.message = changesDesc
+        } else {
+            result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
         }
-      }
-    }else{
-      def currentDate = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd')).format(new Date())
-      params.dateA = currentDate
-      params.dateB = currentDate
-      params.insrt = "Y"
-      params.dlt = "Y"
-      params.updt = "Y"
 
-      if(contextService.getOrg()){
-        result.institutionName = contextService.getOrg().getName()
-        log.debug("FIND ORG NAME ${result.institutionName}")
-      }
-      flash.message = message(code:'subscription.compare.note', default:"Please select two subscriptions for comparison")
-    }
-    result
-  }
-
-  def formatDateOrNull(formatter, date) {
-      def result;
-      if(date){
-        result = formatter.format(date)
-      }else{
-        result = ''
-      }
-      return result
-    }
-  def createCompareList(sub,dateStr,params, result){
-   def returnVals = [:]
-   def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-   def date = dateStr?sdf.parse(dateStr):new Date()
-   def subId = sub.substring( sub.indexOf(":")+1)
-
-   def subInst = Subscription.get(subId)
-   if(subInst.startDate > date || subInst.endDate < date){
-      def errorMsg = "${subInst.name} start date is: ${sdf.format(subInst.startDate)} and end date is: ${sdf.format(subInst.endDate)}. You have selected to compare it on date ${sdf.format(date)}."
-          throw new IllegalArgumentException(errorMsg)
-   }
-
-   result.subInsts.add(subInst)
-
-   result.subDates.add(sdf.format(date))
-
-   def queryParams = [subInst]
-   def query = generateIEQuery(params,queryParams, true, date)
-
-   def list = IssueEntitlement.executeQuery("select ie "+query,  queryParams);
-   list
-
-  }
-
-  def generateIEQuery(params, qry_params, showDeletedTipps, asAt) {
-
-    def base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
-
-    if ( showDeletedTipps == false ) {
-         base_qry += "and ie.tipp.status.value != 'Deleted' "
-    }
-
-    if ( params.filter ) {
-      base_qry += " and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) )"
-      qry_params.add("%${params.filter.trim().toLowerCase()}%")
-      qry_params.add("%${params.filter}%")
-    }
-
-    if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
-        def d = sdf.parse(params.startsBefore)
-        base_qry += " and ie.startDate <= ?"
-        qry_params.add(d)
-    }
-
-    if ( asAt != null ) {
-        base_qry += " and ( ( ? >= coalesce(ie.tipp.accessStartDate, ie.startDate) ) and ( ( ? <= ie.tipp.accessEndDate ) or ( ie.tipp.accessEndDate is null ) ) ) "
-        qry_params.add(asAt);
-        qry_params.add(asAt);
-    }
-
-    return base_qry
-  }
-
-  @Secured(['ROLE_USER'])
-  def subscriptionBatchUpdate() {
-    def subscriptionInstance = Subscription.get(params.id)
-    // def formatter = new java.text.SimpleDateFormat("MM/dd/yyyy")
-    def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-    def user = User.get(springSecurityService.principal.id)
-
-    userAccessCheck( subscriptionInstance, user, 'edit')
-
-
-    log.debug("subscriptionBatchUpdate ${params}");
-
-    params.each { p ->
-      if ( p.key.startsWith('_bulkflag.') && (p.value=='on'))  {
-        def ie_to_edit = p.key.substring(10);
-
-        def ie = IssueEntitlement.get(ie_to_edit)
-
-        if ( params.bulkOperation == "edit" ) {
-
-          if ( params.bulk_start_date && ( params.bulk_start_date.trim().length() > 0 ) ) {
-            ie.startDate = formatter.parse(params.bulk_start_date)
-          }
-
-          if ( params.bulk_end_date && ( params.bulk_end_date.trim().length() > 0 ) ) {
-            ie.endDate = formatter.parse(params.bulk_end_date)
-          }
-
-          if ( params.bulk_core_start && ( params.bulk_core_start.trim().length() > 0 ) ) {
-            ie.coreStatusStart = formatter.parse(params.bulk_core_start)
-          }
-
-          if ( params.bulk_core_end && ( params.bulk_core_end.trim().length() > 0 ) ) {
-            ie.coreStatusEnd = formatter.parse(params.bulk_core_end)
-          }
-
-          if ( params.bulk_embargo && ( params.bulk_embargo.trim().length() > 0 ) ) {
-            ie.embargo = params.bulk_embargo
-          }
-
-          if ( params.bulk_coreStatus.trim().length() > 0 ) {
-            def selected_refdata = genericOIDService.resolveOID(params.bulk_coreStatus.trim())
-            log.debug("Selected core status is ${selected_refdata}");
-            ie.coreStatus = selected_refdata
-          }
-
-          if ( params.bulk_medium.trim().length() > 0 ) {
-            def selected_refdata = genericOIDService.resolveOID(params.bulk_medium.trim())
-            log.debug("Selected medium is ${selected_refdata}");
-            ie.medium = selected_refdata
-          }
-
-          if ( params.bulk_coverage && (params.bulk_coverage.trim().length() > 0 ) ) {
-            ie.coverageDepth = params.bulk_coverage
-          }
-
-          if ( ie.save(flush:true) ) {
-          }
-          else {
-            log.error("Problem saving ${ie.errors}")
-          }
+        // If transformer check user has access to it
+        if (params.transforms && !transformerService.hasTransformId(result.user, params.transforms)) {
+            flash.error = "It looks like you are trying to use an unvalid transformer or one you don't have access to!"
+            params.remove("transforms")
+            params.remove("format")
+            redirect action: 'currentTitles', params: params
         }
-        else if ( params.bulkOperation == "remove" ) {
-          log.debug("Updating ie ${ie.id} status to deleted");
-          def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
-          ie.status = deleted_ie;
-          if ( ie.save(flush:true) ) {
-          }
-          else {
-            log.error("Problem saving ${ie.errors}")
-          }
+
+        if (result.subscriptionInstance == null) {
+            flash.error = "No subscription found -- is it deleted?"
+            redirect controller: 'home', action: 'index'
         }
-      }
+
+        // result.institution = Org.findByShortcode(params.shortcode)
+        result.institution = result.subscriptionInstance.subscriber
+        if (result.institution) {
+            result.subscriber_shortcode = result.institution.shortcode
+            result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
+        }
+
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        if (params.mode == "advanced") {
+            params.asAt = null
+        }
+
+        def base_qry = null;
+
+        def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+        def qry_params = [result.subscriptionInstance]
+
+        def date_filter
+        if (params.asAt && params.asAt.length() > 0) {
+            def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+            date_filter = sdf.parse(params.asAt)
+            result.as_at_date = date_filter;
+            result.editable = false;
+        } else {
+            date_filter = new Date()
+            result.as_at_date = date_filter;
+        }
+        // We dont want this filter to reach SQL query as it will break it.
+        def core_status_filter = params.sort == 'core_status'
+        if (core_status_filter) params.remove('sort');
+
+        if (params.filter) {
+            base_qry = " from IssueEntitlement as ie where ie.subscription = ? "
+            if (params.mode != 'advanced') {
+                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
+                // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                // qry_params.add(deleted_ie);
+                base_qry += "and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                qry_params.add(date_filter);
+                qry_params.add(date_filter);
+            }
+            base_qry += "and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) ) "
+            qry_params.add("%${params.filter.trim().toLowerCase()}%")
+            qry_params.add("%${params.filter}%")
+        } else {
+            base_qry = " from IssueEntitlement as ie where ie.subscription = ? "
+            if (params.mode != 'advanced') {
+                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
+
+                base_qry += " and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+                qry_params.add(date_filter);
+                qry_params.add(date_filter);
+            }
+        }
+
+        base_qry += " and ie.status <> ? "
+        qry_params.add(deleted_ie);
+
+        if (params.pkgfilter && (params.pkgfilter != '')) {
+            base_qry += " and ie.tipp.pkg.id = ? "
+            qry_params.add(Long.parseLong(params.pkgfilter));
+        }
+
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            base_qry += "order by lower(ie.${params.sort}) ${params.order} "
+        } else {
+            base_qry += "order by lower(ie.tipp.title.title) asc"
+        }
+
+        result.num_sub_rows = IssueEntitlement.executeQuery("select count(ie) " + base_qry, qry_params)[0]
+
+        if (params.format == 'html' || params.format == null) {
+            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset]);
+        } else {
+            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params);
+        }
+
+        // Now we add back the sort so that the sortable column will recognize asc/desc
+        // Ignore the sorting if we are doing an export
+        if (core_status_filter) {
+            params.put('sort', 'core_status');
+            if (params.format == 'html' || params.format == null) sortOnCoreStatus(result, params);
+        }
+
+        exportService.printDuration(verystarttime, "Querying")
+
+        log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
+        def filename = "subscriptionDetails_${result.subscriptionInstance.identifier}"
+
+
+        if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
+            result.processingpc = true
+        }
+        withFormat {
+            html result
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=\"${result.subscriptionInstance.identifier}.csv\"")
+                response.contentType = "text/csv"
+                def out = response.outputStream
+                def header = (params.omitHeader == null) || (params.omitHeader != 'Y')
+                exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
+                out.close()
+                exportService.printDuration(verystarttime, "Overall Time")
+            }
+            json {
+                def starttime = exportService.printStart("Building Map")
+                def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
+                exportService.printDuration(starttime, "Building Map")
+
+                starttime = exportService.printStart("Create JSON")
+                def json = map as JSON
+                exportService.printDuration(starttime, "Create JSON")
+
+                if (params.transforms) {
+                    transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
+                } else {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
+                    response.contentType = "application/json"
+                    render json
+                }
+                exportService.printDuration(verystarttime, "Overall Time")
+            }
+            xml {
+                def starttime = exportService.printStart("Building XML Doc")
+                def doc = exportService.buildDocXML("Subscriptions")
+                exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
+                exportService.printDuration(starttime, "Building XML Doc")
+
+                if ((params.transformId) && (result.transforms[params.transformId] != null)) {
+                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
+                    transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
+                } else {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                    response.contentType = "text/xml"
+                    starttime = exportService.printStart("Sending XML")
+                    exportService.streamOutXML(doc, response.outputStream)
+                    exportService.printDuration(starttime, "Sending XML")
+                }
+                exportService.printDuration(verystarttime, "Overall Time")
+            }
+        }
     }
 
-    redirect action: 'index', params:[id:subscriptionInstance?.id,sort:params.sort,order:params.order,offset:params.offset,max:params.max]
-  }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def unlinkPackage() {
+        log.debug("unlinkPackage :: ${params}")
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscription = Subscription.get(params.subscription.toLong())
+        result.package = Package.get(params.package.toLong())
+        def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+        def queryParams = [sub: result.subscription, pkg_id: result.package.id]
 
-  @Secured(['ROLE_USER'])
-  def addEntitlements() {
-    log.debug("addEntitlements ..")
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.id)
-    result.institution = result.subscriptionInstance.subscriber
+        if (result.subscription.isEditableBy(result.user)) {
+            result.editable = true
+            if (params.confirmed) {
+                //delete matches
+                IssueEntitlement.withTransaction { status ->
+                    removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
+                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
+                    if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
+                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
+                }
+            } else {
+                def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
 
-    userAccessCheck( result.subscriptionInstance, result.user, 'edit')
+                def numOfIEs = IssueEntitlement.executeQuery("select count(ie) ${query}", queryParams)[0]
+                def conflict_item_pkg = [name: "Linked Package", details: [['link': createLink(controller: 'packageDetails', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: 'Link will be removed']]
+                def conflicts_list = [conflict_item_pkg]
 
+                if (numOfIEs > 0) {
+                    def conflict_item_ie = [name: "Package IEs", details: [['text': 'Number of IEs: ' + numOfIEs]], action: [actionRequired: false, text: 'IEs will be deleted']]
+                    conflicts_list += conflict_item_ie
+                }
+                if (numOfPCs > 0) {
+                    def conflict_item_pc = [name: "Pending Changes", details: [['text': 'Number of PendingChanges: ' + numOfPCs]], action: [actionRequired: false, text: 'Pending Changes will be deleted']]
+                    conflicts_list += conflict_item_pc
+                }
 
-    result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize;
-    result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-    result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
-    def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,'Deleted');
-    def ie_deleted = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
-
-    log.debug("filter: \"${params.filter}\"");
-
-    if ( result.subscriptionInstance ) {
-      // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
-      def basequery = null;
-      def qry_params = [result.subscriptionInstance, tipp_deleted, result.subscriptionInstance, ie_deleted]
-
-      if ( params.filter ) {
-        log.debug("Filtering....");
-        basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status != ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status != ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select io from IdentifierOccurrence io where io.ti.id = tipp.title.id and io.identifier.value like ? ) ) ) "
-        qry_params.add("%${params.filter.trim().toLowerCase()}%")
-        qry_params.add("%${params.filter}%")
-      }
-      else {
-        basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status != ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status != ? ) )"
-      }
-
-      if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
-        def d = sdf.parse(params.endsAfter)
-        basequery += " and tipp.endDate >= ?"
-        qry_params.add(d)
-      }
-
-      if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
-        def d = sdf.parse(params.startsBefore)
-        basequery += " and tipp.startDate <= ?"
-        qry_params.add(d)
-      }
+                return render(template: "unlinkPackageModal", model: [pkg: result.package, subscription: result.subscription, conflicts_list: conflicts_list])
+            }
+        } else {
+            result.editable = false
+        }
 
 
-      if ( params.pkgfilter && ( params.pkgfilter != '' ) ) {
-        basequery += " and tipp.pkg.id = ? "
-        qry_params.add(Long.parseLong(params.pkgfilter));
-      }
+        redirect action: 'index', id: params.subscription
 
-
-      if ( ( params.sort != null ) && ( params.sort.length() > 0 ) ) {
-        basequery += " order by tipp.${params.sort} ${params.order} "
-      }
-      else {
-        basequery += " order by tipp.title.title asc "
-      }
-
-      log.debug("Query ${basequery} ${qry_params}");
-
-      result.num_tipp_rows = IssueEntitlement.executeQuery("select count(tipp) "+basequery, qry_params )[0]
-      result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max:result.max, offset:result.offset]);
-    }
-    else {
-      result.num_sub_rows = 0;
-      result.tipps = []
     }
 
-    result
-  }
+    def removePackagePendingChanges(pkg_id, sub_id, confirmed) {
 
-    @Secured(['ROLE_USER'])
+        def tipp_class = TitleInstancePackagePlatform.class.getName()
+        def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
+        def change_doc_query = "from PendingChange pc where pc.subscription.id = ? "
+        def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [pkg_id])
+        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.changeDoc ${change_doc_query}", [sub_id])
+
+        def pc_to_delete = []
+        pendingChanges.each { pc ->
+            def parsed_change_info = JSON.parse(pc[1])
+            if (parsed_change_info.tippID) {
+                pc_to_delete += pc[0]
+            } else if (parsed_change_info.changeDoc) {
+                def (oid_class, ident) = parsed_change_info.changeDoc.OID.split(":")
+                if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
+                    pc_to_delete += pc[0]
+                }
+            } else {
+                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${parsed_change_info}")
+            }
+        }
+        if (confirmed && pc_to_delete) {
+            log.debug("Deleting Pending Changes: ${pc_to_delete}")
+            def del_pc_query = "delete from PendingChange where id in (:del_list) "
+            PendingChange.executeUpdate(del_pc_query, [del_list: pc_to_delete])
+        } else {
+            return pc_to_delete.size()
+        }
+    }
+
+    def sortOnCoreStatus(result, params) {
+        result.entitlements.sort { it.getTIP()?.coreStatus(null) }
+        if (params.order == 'desc') result.entitlements.reverse(true);
+        result.entitlements = result.entitlements.subList(result.offset, (result.offset + result.max).intValue())
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def compare() {
+        def result = [:]
+        result.unionList = []
+
+        result.user = User.get(springSecurityService.principal.id)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        if (params.subA?.length() > 0 && params.subB?.length() > 0) {
+            log.debug("Subscriptions submitted for comparison ${params.subA} and ${params.subB}.")
+            log.debug("Dates submited are ${params.dateA} and ${params.dateB}")
+
+            result.subInsts = []
+            result.subDates = []
+
+            def listA
+            def listB
+            try {
+                listA = createCompareList(params.subA, params.dateA, params, result)
+                listB = createCompareList(params.subB, params.dateB, params, result)
+                if (!params.countA) {
+                    def countQuery = "select count(elements(sub.issueEntitlements)) from Subscription sub where sub.id = ?"
+                    params.countA = Subscription.executeQuery(countQuery, [result.subInsts.get(0).id])
+                    params.countB = Subscription.executeQuery(countQuery, [result.subInsts.get(1).id])
+                }
+            } catch (IllegalArgumentException e) {
+                request.message = e.getMessage()
+                return
+            }
+
+            result.listACount = listA.size()
+            result.listBCount = listB.size()
+
+            def mapA = listA.collectEntries { [it.tipp.title.title, it] }
+            def mapB = listB.collectEntries { [it.tipp.title.title, it] }
+
+            //FIXME: It should be possible to optimize the following lines
+            def unionList = mapA.keySet().plus(mapB.keySet()).toList()
+            unionList = unionList.unique()
+            result.unionListSize = unionList.size()
+            unionList.sort()
+
+            def filterRules = [params.insrt ? true : false, params.dlt ? true : false, params.updt ? true : false, params.nochng ? true : false]
+            withFormat {
+                html {
+                    def toIndex = result.offset + result.max < unionList.size() ? result.offset + result.max : unionList.size()
+                    result.comparisonMap =
+                            institutionsService.generateComparisonMap(unionList, mapA, mapB, result.offset, toIndex.intValue(), filterRules)
+                    log.debug("Comparison Map" + result.comparisonMap)
+                    result
+                }
+                csv {
+                    try {
+                        log.debug("Create CSV Response")
+                        def comparisonMap =
+                                institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules)
+                        def dateFormatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+
+                        response.setHeader("Content-disposition", "attachment; filename=\"subscriptionComparison.csv\"")
+                        response.contentType = "text/csv"
+                        def out = response.outputStream
+                        out.withWriter { writer ->
+                            writer.write("${result.subInsts[0].name} on ${params.dateA}, ${result.subInsts[1].name} on ${params.dateB}\n")
+                            writer.write('IE Title, pISSN, eISSN, Start Date A, Start Date B, Start Volume A, Start Volume B, Start Issue A, Start Issue B, End Date A, End Date B, End Volume A, End Volume B, End Issue A, End Issue B, Coverage Note A, Coverage Note B, ColorCode\n');
+                            log.debug("UnionList size is ${unionList.size}")
+                            comparisonMap.each { title, values ->
+                                def ieA = values[0]
+                                def ieB = values[1]
+                                def colorCode = values[2]
+                                def pissn = ieA ? ieA.tipp.title.getIdentifierValue('issn') : ieB.tipp.title.getIdentifierValue('issn');
+                                def eissn = ieA ? ieA.tipp.title.getIdentifierValue('eISSN') : ieB.tipp.title.getIdentifierValue('eISSN')
+
+                                writer.write("\"${title}\",\"${pissn ?: ''}\",\"${eissn ?: ''}\",\"${formatDateOrNull(dateFormatter, ieA?.startDate)}\",\"${formatDateOrNull(dateFormatter, ieB?.startDate)}\",\"${ieA?.startVolume ?: ''}\",\"${ieB?.startVolume ?: ''}\",\"${ieA?.startIssue ?: ''}\",\"${ieB?.startIssue ?: ''}\",\"${formatDateOrNull(dateFormatter, ieA?.endDate)}\",\"${formatDateOrNull(dateFormatter, ieB?.endDate)}\",\"${ieA?.endVolume ?: ''}\",\"${ieB?.endVolume ?: ''}\",\"${ieA?.endIssue ?: ''}\",\"${ieB?.endIssue ?: ''}\",\"${ieA?.coverageNote ?: ''}\",\"${ieB?.coverageNote ?: ''}\",\"${colorCode}\"\n")
+                            }
+                            writer.write("END");
+                            writer.flush();
+                            writer.close();
+                        }
+                        out.close()
+
+                    } catch (Exception e) {
+                        log.error("An Exception was thrown here", e)
+                    }
+                }
+            }
+        } else {
+            def currentDate = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')).format(new Date())
+            params.dateA = currentDate
+            params.dateB = currentDate
+            params.insrt = "Y"
+            params.dlt = "Y"
+            params.updt = "Y"
+
+            if (contextService.getOrg()) {
+                result.institutionName = contextService.getOrg().getName()
+                log.debug("FIND ORG NAME ${result.institutionName}")
+            }
+            flash.message = message(code: 'subscription.compare.note', default: "Please select two subscriptions for comparison")
+        }
+        result
+    }
+
+    def formatDateOrNull(formatter, date) {
+        def result;
+        if (date) {
+            result = formatter.format(date)
+        } else {
+            result = ''
+        }
+        return result
+    }
+
+    def createCompareList(sub, dateStr, params, result) {
+        def returnVals = [:]
+        def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        def date = dateStr ? sdf.parse(dateStr) : new Date()
+        def subId = sub.substring(sub.indexOf(":") + 1)
+
+        def subInst = Subscription.get(subId)
+        if (subInst.startDate > date || subInst.endDate < date) {
+            def errorMsg = "${subInst.name} start date is: ${sdf.format(subInst.startDate)} and end date is: ${sdf.format(subInst.endDate)}. You have selected to compare it on date ${sdf.format(date)}."
+            throw new IllegalArgumentException(errorMsg)
+        }
+
+        result.subInsts.add(subInst)
+
+        result.subDates.add(sdf.format(date))
+
+        def queryParams = [subInst]
+        def query = generateIEQuery(params, queryParams, true, date)
+
+        def list = IssueEntitlement.executeQuery("select ie " + query, queryParams);
+        list
+
+    }
+
+    def generateIEQuery(params, qry_params, showDeletedTipps, asAt) {
+
+        def base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
+
+        if (showDeletedTipps == false) {
+            base_qry += "and ie.tipp.status.value != 'Deleted' "
+        }
+
+        if (params.filter) {
+            base_qry += " and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) )"
+            qry_params.add("%${params.filter.trim().toLowerCase()}%")
+            qry_params.add("%${params.filter}%")
+        }
+
+        if (params.startsBefore && params.startsBefore.length() > 0) {
+            def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+            def d = sdf.parse(params.startsBefore)
+            base_qry += " and ie.startDate <= ?"
+            qry_params.add(d)
+        }
+
+        if (asAt != null) {
+            base_qry += " and ( ( ? >= coalesce(ie.tipp.accessStartDate, ie.startDate) ) and ( ( ? <= ie.tipp.accessEndDate ) or ( ie.tipp.accessEndDate is null ) ) ) "
+            qry_params.add(asAt);
+            qry_params.add(asAt);
+        }
+
+        return base_qry
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def subscriptionBatchUpdate() {
+        def subscriptionInstance = Subscription.get(params.id)
+        // def formatter = new java.text.SimpleDateFormat("MM/dd/yyyy")
+        def formatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        def user = User.get(springSecurityService.principal.id)
+
+        userAccessCheck(subscriptionInstance, user, 'edit')
+
+
+        log.debug("subscriptionBatchUpdate ${params}");
+
+        params.each { p ->
+            if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
+                def ie_to_edit = p.key.substring(10);
+
+                def ie = IssueEntitlement.get(ie_to_edit)
+
+                if (params.bulkOperation == "edit") {
+
+                    if (params.bulk_start_date && (params.bulk_start_date.trim().length() > 0)) {
+                        ie.startDate = formatter.parse(params.bulk_start_date)
+                    }
+
+                    if (params.bulk_end_date && (params.bulk_end_date.trim().length() > 0)) {
+                        ie.endDate = formatter.parse(params.bulk_end_date)
+                    }
+
+                    if (params.bulk_core_start && (params.bulk_core_start.trim().length() > 0)) {
+                        ie.coreStatusStart = formatter.parse(params.bulk_core_start)
+                    }
+
+                    if (params.bulk_core_end && (params.bulk_core_end.trim().length() > 0)) {
+                        ie.coreStatusEnd = formatter.parse(params.bulk_core_end)
+                    }
+
+                    if (params.bulk_embargo && (params.bulk_embargo.trim().length() > 0)) {
+                        ie.embargo = params.bulk_embargo
+                    }
+
+                    if (params.bulk_coreStatus.trim().length() > 0) {
+                        def selected_refdata = genericOIDService.resolveOID(params.bulk_coreStatus.trim())
+                        log.debug("Selected core status is ${selected_refdata}");
+                        ie.coreStatus = selected_refdata
+                    }
+
+                    if (params.bulk_medium.trim().length() > 0) {
+                        def selected_refdata = genericOIDService.resolveOID(params.bulk_medium.trim())
+                        log.debug("Selected medium is ${selected_refdata}");
+                        ie.medium = selected_refdata
+                    }
+
+                    if (params.bulk_coverage && (params.bulk_coverage.trim().length() > 0)) {
+                        ie.coverageDepth = params.bulk_coverage
+                    }
+
+                    if (ie.save(flush: true)) {
+                    } else {
+                        log.error("Problem saving ${ie.errors}")
+                    }
+                } else if (params.bulkOperation == "remove") {
+                    log.debug("Updating ie ${ie.id} status to deleted");
+                    def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+                    ie.status = deleted_ie;
+                    if (ie.save(flush: true)) {
+                    } else {
+                        log.error("Problem saving ${ie.errors}")
+                    }
+                }
+            }
+        }
+
+        redirect action: 'index', params: [id: subscriptionInstance?.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def addEntitlements() {
+        log.debug("addEntitlements ..")
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
+
+        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
+
+
+        result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
+        def ie_deleted = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+
+        log.debug("filter: \"${params.filter}\"");
+
+        if (result.subscriptionInstance) {
+            // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
+            def basequery = null;
+            def qry_params = [result.subscriptionInstance, tipp_deleted, result.subscriptionInstance, ie_deleted]
+
+            if (params.filter) {
+                log.debug("Filtering....");
+                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status != ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status != ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select io from IdentifierOccurrence io where io.ti.id = tipp.title.id and io.identifier.value like ? ) ) ) "
+                qry_params.add("%${params.filter.trim().toLowerCase()}%")
+                qry_params.add("%${params.filter}%")
+            } else {
+                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status != ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status != ? ) )"
+            }
+
+            if (params.endsAfter && params.endsAfter.length() > 0) {
+                def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+                def d = sdf.parse(params.endsAfter)
+                basequery += " and tipp.endDate >= ?"
+                qry_params.add(d)
+            }
+
+            if (params.startsBefore && params.startsBefore.length() > 0) {
+                def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+                def d = sdf.parse(params.startsBefore)
+                basequery += " and tipp.startDate <= ?"
+                qry_params.add(d)
+            }
+
+
+            if (params.pkgfilter && (params.pkgfilter != '')) {
+                basequery += " and tipp.pkg.id = ? "
+                qry_params.add(Long.parseLong(params.pkgfilter));
+            }
+
+
+            if ((params.sort != null) && (params.sort.length() > 0)) {
+                basequery += " order by tipp.${params.sort} ${params.order} "
+            } else {
+                basequery += " order by tipp.title.title asc "
+            }
+
+            log.debug("Query ${basequery} ${qry_params}");
+
+            result.num_tipp_rows = IssueEntitlement.executeQuery("select count(tipp) " + basequery, qry_params)[0]
+            result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset]);
+        } else {
+            result.num_sub_rows = 0;
+            result.tipps = []
+        }
+
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def previous() {
-       previousAndExpected(params,'previous');
+        previousAndExpected(params, 'previous');
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def members() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -669,8 +668,7 @@ class SubscriptionDetailsController {
 
         if (params.showDeleted == 'Y') {
             result.subscriptionChildren = Subscription.findAllByInstanceOf(result.subscriptionInstance)
-        }
-        else {
+        } else {
             result.subscriptionChildren = Subscription.executeQuery(
                     "select sub from Subscription as sub where sub.instanceOf = ? and sub.status.value != 'Deleted'",
                     [result.subscriptionInstance]
@@ -681,7 +679,8 @@ class SubscriptionDetailsController {
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def addMembers() {
         log.debug("addMembers ..")
 
@@ -692,24 +691,25 @@ class SubscriptionDetailsController {
         userAccessCheck(result.subscriptionInstance, result.user, 'edit')
 
         result.institution = result.subscriptionInstance.subscriber
-        if(result.institution?.orgType?.value == 'Consortium') {
+        if (result.institution?.orgType?.value == 'Consortium') {
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.cons_members_disabled = []
-            result.cons_members.each{ it ->
+            result.cons_members.each { it ->
                 if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                         [result.subscriptionInstance, it.id])
                 ) {
                     result.cons_members_disabled << it
                 }
             }
-       }
+        }
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def processAddMembers() {
         log.debug(params)
 
@@ -721,9 +721,9 @@ class SubscriptionDetailsController {
 
         result.institution = result.subscriptionInstance.subscriber
 
-        def orgType   = RefdataValue.get(params.asOrgType)
+        def orgType = RefdataValue.get(params.asOrgType)
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
-        def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
 
         if (permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')) {
@@ -771,10 +771,11 @@ class SubscriptionDetailsController {
                 }
             }
         }
-        redirect controller: 'subscriptionDetails', action: 'show', params:[id: result.subscriptionInstance?.id]
+        redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def deleteMember() {
         log.debug(params)
 
@@ -794,19 +795,17 @@ class SubscriptionDetailsController {
         if (delSubscription.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
 
-            if (! derived_subs) {
-                if( delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution ) {
+            if (!derived_subs) {
+                if (delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution) {
                     OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
 
                     delSubscription.status = deletedStatus
                     delSubscription.save(flush: true)
                 }
+            } else {
+                flash.error = message(code: 'myinst.actionCurrentSubscriptions.error', default: 'Unable to delete - The selected license has attached subscriptions')
             }
-            else {
-                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
-            }
-        }
-        else {
+        } else {
             log.warn("${result.user} attempted to delete subscription ${delSubscription} without perms")
             flash.message = message(code: 'subscription.delete.norights')
         }
@@ -814,12 +813,13 @@ class SubscriptionDetailsController {
         redirect action: 'members', params: [id: params.id], model: result
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def expected() {
-        previousAndExpected(params,'expected');
+        previousAndExpected(params, 'expected');
     }
 
-    def previousAndExpected (params, screen){
+    def previousAndExpected(params, screen) {
         log.debug("previousAndExpected ${params}");
         def result = [:]
 
@@ -833,7 +833,7 @@ class SubscriptionDetailsController {
         result.subscriptionInstance = subscriptionInstance
         result.institution = result.subscriptionInstance.subscriber
 
-        userAccessCheck( result.subscriptionInstance, result.user, 'view')
+        userAccessCheck(result.subscriptionInstance, result.user, 'view')
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
@@ -841,141 +841,146 @@ class SubscriptionDetailsController {
         params.max = result.max
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[offset:0]
+        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
         def qry_params = [subscriptionInstance]
-        def date_filter =  new Date();
+        def date_filter = new Date();
 
         def base_qry = "from IssueEntitlement as ie where ie.subscription = ? "
         base_qry += "and ie.status.value != 'Deleted' "
-        if ( date_filter != null ) {
-            if(screen.equals('previous')) {
+        if (date_filter != null) {
+            if (screen.equals('previous')) {
                 base_qry += " and ( ie.accessEndDate <= ? ) "
-            }else{
+            } else {
                 base_qry += " and (ie.accessStartDate > ? )"
             }
             qry_params.add(date_filter);
         }
 
         log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-        result.titlesList = IssueEntitlement.executeQuery("select ie "+base_qry, qry_params, limits);
-        result.num_ie_rows = IssueEntitlement.executeQuery("select count(ie) "+base_qry, qry_params )[0]
+        result.titlesList = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, limits);
+        result.num_ie_rows = IssueEntitlement.executeQuery("select count(ie) " + base_qry, qry_params)[0]
 
         result.lastie = result.offset + result.max > result.num_ie_rows ? result.num_ie_rows : result.offset + result.max;
 
         result
     }
-  @Secured(['ROLE_USER'])
-  def processAddEntitlements() {
-    log.debug("addEntitlements....");
-    def result = [:]
 
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.siid)
-    result.institution = result.subscriptionInstance?.subscriber
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def processAddEntitlements() {
+        log.debug("addEntitlements....");
+        def result = [:]
 
-    userAccessCheck( result.subscriptionInstance, result.user, 'edit')
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.siid)
+        result.institution = result.subscriptionInstance?.subscriber
+
+        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
 
 
-    if ( result.subscriptionInstance ) {
-      params.each { p ->
-        if (p.key.startsWith('_bulkflag.') ) {
-          def tipp_id = p.key.substring(10);
-          // def ie = IssueEntitlement.get(ie_to_edit)
-          def tipp = TitleInstancePackagePlatform.get(tipp_id)
+        if (result.subscriptionInstance) {
+            params.each { p ->
+                if (p.key.startsWith('_bulkflag.')) {
+                    def tipp_id = p.key.substring(10);
+                    // def ie = IssueEntitlement.get(ie_to_edit)
+                    def tipp = TitleInstancePackagePlatform.get(tipp_id)
 
-          if ( tipp == null ) {
-            log.error("Unable to tipp ${tipp_id}");
-            flash.error("Unable to tipp ${tipp_id}");
-          }
-          else {
-            def ie_current = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Current');
+                    if (tipp == null) {
+                        log.error("Unable to tipp ${tipp_id}");
+                        flash.error("Unable to tipp ${tipp_id}");
+                    } else {
+                        def ie_current = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Current');
 
-            def new_ie = new IssueEntitlement(status: ie_current,
-                                              subscription: result.subscriptionInstance,
-                                              tipp: tipp,
-                                              accessStartDate: tipp.accessStartDate,
-                                              accessEndDate: tipp.accessEndDate,
-                                              startDate:tipp.startDate,
-                                              startVolume:tipp.startVolume,
-                                              startIssue:tipp.startIssue,
-                                              endDate:tipp.endDate,
-                                              endVolume:tipp.endVolume,
-                                              endIssue:tipp.endIssue,
-                                              embargo:tipp.embargo,
-                                              coverageDepth:tipp.coverageDepth,
-                                              coverageNote:tipp.coverageNote,
-                                              ieReason:'Manually Added by User')
-            if ( new_ie.save(flush:true) ) {
-              log.debug("Added tipp ${tipp_id} to sub ${params.siid}");
+                        def new_ie = new IssueEntitlement(status: ie_current,
+                                subscription: result.subscriptionInstance,
+                                tipp: tipp,
+                                accessStartDate: tipp.accessStartDate,
+                                accessEndDate: tipp.accessEndDate,
+                                startDate: tipp.startDate,
+                                startVolume: tipp.startVolume,
+                                startIssue: tipp.startIssue,
+                                endDate: tipp.endDate,
+                                endVolume: tipp.endVolume,
+                                endIssue: tipp.endIssue,
+                                embargo: tipp.embargo,
+                                coverageDepth: tipp.coverageDepth,
+                                coverageNote: tipp.coverageNote,
+                                ieReason: 'Manually Added by User')
+                        if (new_ie.save(flush: true)) {
+                            log.debug("Added tipp ${tipp_id} to sub ${params.siid}");
+                        } else {
+                            new_ie.errors.each { e ->
+                                log.error(e);
+                            }
+                            flash.error = new_ie.errors
+                        }
+                    }
+                }
             }
-            else {
-              new_ie.errors.each { e ->
-                log.error(e);
-              }
-              flash.error = new_ie.errors
-            }
-          }
+        } else {
+            log.error("Unable to locate subscription instance");
         }
-      }
-    }
-    else {
-      log.error("Unable to locate subscription instance");
+
+        redirect action: 'index', id: result.subscriptionInstance?.id
     }
 
-    redirect action: 'index', id:result.subscriptionInstance?.id
-  }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def removeEntitlement() {
+        log.debug("removeEntitlement....");
+        def ie = IssueEntitlement.get(params.ieid)
+        def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+        ie.status = deleted_ie;
 
-  @Secured(['ROLE_USER'])
-  def removeEntitlement() {
-    log.debug("removeEntitlement....");
-    def ie = IssueEntitlement.get(params.ieid)
-    def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
-    ie.status = deleted_ie;
-
-    redirect action: 'index', id:params.sub
-  }
-
-  @Secured(['ROLE_USER'])
-  def notes() {
-
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.id)
-    result.institution = result.subscriptionInstance.subscriber
-
-    if ( result.institution ) {
-      result.subscriber_shortcode = result.institution.shortcode
+        redirect action: 'index', id: params.sub
     }
 
-    userAccessCheck( result.subscriptionInstance, result.user, 'view')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def notes() {
 
-    result.editable = result.subscriptionInstance.isEditableBy(result.user)
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
 
-    result
-  }
+        if (result.institution) {
+            result.subscriber_shortcode = result.institution.shortcode
+        }
 
-  @Secured(['ROLE_USER'])
-  def documents() {
+        userAccessCheck(result.subscriptionInstance, result.user, 'view')
 
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.id)
-    result.institution = result.subscriptionInstance.subscriber
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
-    userAccessCheck( result.subscriptionInstance, result.user, 'view')
-
-
-    if ( result.institution ) {
-      result.subscriber_shortcode = result.institution.shortcode
+        result
     }
 
-    result.editable = result.subscriptionInstance.isEditableBy(result.user)
+    we
 
-    result
-  }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def documents() {
 
-    @Secured(['ROLE_USER'])
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
+
+        userAccessCheck(result.subscriptionInstance, result.user, 'view')
+
+
+        if (result.institution) {
+            result.subscriber_shortcode = result.institution.shortcode
+        }
+
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def tasks() {
 
         def result = [:]
@@ -983,11 +988,11 @@ class SubscriptionDetailsController {
         result.subscriptionInstance = Subscription.get(params.id)
         result.institution = result.subscriptionInstance.subscriber
 
-        if ( result.institution ) {
-          result.subscriber_shortcode = result.institution.shortcode
+        if (result.institution) {
+            result.subscriber_shortcode = result.institution.shortcode
         }
 
-        userAccessCheck( result.subscriptionInstance, result.user, 'view')
+        userAccessCheck(result.subscriptionInstance, result.user, 'view')
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance)
@@ -996,441 +1001,446 @@ class SubscriptionDetailsController {
         result
     }
 
-  @Secured(['ROLE_USER'])
-  def renewals() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.id)
-    result.institution = result.subscriptionInstance.subscriber
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def renewals() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
 
-    userAccessCheck( result.subscriptionInstance, result.user, 'view')
+        userAccessCheck(result.subscriptionInstance, result.user, 'view')
 
-    if ( result.institution ) {
-      result.subscriber_shortcode = result.institution.shortcode
+        if (result.institution) {
+            result.subscriber_shortcode = result.institution.shortcode
+        }
+
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        result
     }
 
-    result.editable = result.subscriptionInstance.isEditableBy(result.user)
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def deleteDocuments() {
+        def ctxlist = []
 
-    result
-  }
+        log.debug("deleteDocuments ${params}");
 
-  @Secured(['ROLE_USER'])
-  def deleteDocuments() {
-    def ctxlist = []
+        params.each { p ->
+            if (p.key.startsWith('_deleteflag.')) {
+                def docctx_to_delete = p.key.substring(12);
+                log.debug("Looking up docctx ${docctx_to_delete} for delete");
+                def docctx = DocContext.get(docctx_to_delete)
+                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status', 'Deleted');
+            }
+        }
 
-    log.debug("deleteDocuments ${params}");
-
-    params.each { p ->
-      if (p.key.startsWith('_deleteflag.') ) {
-        def docctx_to_delete = p.key.substring(12);
-        log.debug("Looking up docctx ${docctx_to_delete} for delete");
-        def docctx = DocContext.get(docctx_to_delete)
-        docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted');
-      }
+        redirect controller: 'subscriptionDetails', action: params.redirectAction, id: params.instanceId
     }
 
-    redirect controller: 'subscriptionDetails', action:params.redirectAction, id:params.instanceId
-  }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def permissionInfo() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
 
-  @Secured(['ROLE_USER'])
-  def permissionInfo() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.id)
-    result.institution = result.subscriptionInstance.subscriber
-   
-    userAccessCheck( result.subscriptionInstance, result.user, 'view')
+        userAccessCheck(result.subscriptionInstance, result.user, 'view')
 
-    result.editable = result.subscriptionInstance.isEditableBy(result.user)
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
-    // if ( ! result.subscriptionInstance.hasPerm("view",result.user) ) {
-    //   render status: 401
-    //   return
-    // }
+        // if ( ! result.subscriptionInstance.hasPerm("view",result.user) ) {
+        //   render status: 401
+        //   return
+        // }
 
-    result
-  }
-
-  @Secured(['ROLE_USER'])
-  def launchRenewalsProcess() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.id)
-    result.institution = result.subscriptionInstance.subscriber
-
-    def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
-
-    log.debug("Clear basket....");
-    shopping_basket.items?.clear();
-    shopping_basket.save(flush: true)
-
-    def oid = "com.k_int.kbplus.Subscription:${params.id}"
-    shopping_basket.addIfNotPresent(oid)
-    Subscription.get(params.id).packages.each {
-      oid = "com.k_int.kbplus.Package:${it.pkg.id}"
-      shopping_basket.addIfNotPresent(oid)
+        result
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def launchRenewalsProcess() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
 
-    redirect controller:'myInstitution', action:'renewalsSearch'
-  }
+        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
+
+        log.debug("Clear basket....");
+        shopping_basket.items?.clear();
+        shopping_basket.save(flush: true)
+
+        def oid = "com.k_int.kbplus.Subscription:${params.id}"
+        shopping_basket.addIfNotPresent(oid)
+        Subscription.get(params.id).packages.each {
+            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
+            shopping_basket.addIfNotPresent(oid)
+        }
+
+
+        redirect controller: 'myInstitution', action: 'renewalsSearch'
+    }
 
     def userAccessCheck(sub, user, role_str) {
-        if ((sub == null || user == null ) || (! sub.hasPerm(role_str, user))) {
+        if ((sub == null || user == null) || (!sub.hasPerm(role_str, user))) {
             response.sendError(401);
             return
         }
     }
 
-  @Secured(['ROLE_USER'])
-  def acceptChange() {
-    processAcceptChange(params, Subscription.get(params.id), genericOIDService)
-    redirect controller: 'subscriptionDetails', action:'index',id:params.id
-  }
-
-  @Secured(['ROLE_USER'])
-  def rejectChange() {
-    processRejectChange(params, Subscription.get(params.id))
-    redirect controller: 'subscriptionDetails', action:'index',id:params.id
-  }
-
-
-  @Secured(['ROLE_USER'])
-  def possibleLicensesForSubscription() {
-    def result = []
-
-    def subscription = genericOIDService.resolveOID(params.oid)
-    def subscriber = subscription.getSubscriber();
-    def consortia = subscription.getConsortia();
-
-    result.add([value:'', text:'None']);
-
-    if ( subscriber || consortia ) {
-
-      def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role','Licensee');
-      def template_license_type = RefdataCategory.lookupOrCreate('License Type','Template');
-
-      def qry_params = [(subscriber ?: consortia), licensee_role]
-
-      def qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted' order by l.reference"
-
-      def license_list = License.executeQuery(qry, qry_params);
-      license_list.each { l ->
-        result.add([value:"${l.class.name}:${l.id}",text:l.reference ?: "No reference - license ${l.id}"]);
-      }
-    }
-    render result as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def linkPackage() {
-    log.debug("Link package, params: ${params}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance = Subscription.get(params.id)
-    result.institution = result.subscriptionInstance.subscriber
-
-    userAccessCheck( result.subscriptionInstance, result.user, 'edit')
-
-
-    if ( params.addType && ( params.addType != '' ) ) {
-      def pkg_to_link = Package.get(params.addId)
-      def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ",[result.subscriptionInstance])
-      log.debug("Add package ${params.addType} to subscription ${params}");
-
-      if ( params.addType == 'With' ) {
-        pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-        sub_instances.each {
-          pkg_to_link.addToSubscription(it, true)
-        }
-
-        redirect action:'index', id:params.id
-      }
-      else if ( params.addType == 'Without' ) {
-        pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-        sub_instances.each {
-          pkg_to_link.addToSubscription(it, false)
-        }
-
-        redirect action:'addEntitlements', id:params.id
-      }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def acceptChange() {
+        processAcceptChange(params, Subscription.get(params.id), genericOIDService)
+        redirect controller: 'subscriptionDetails', action: 'index', id: params.id
     }
 
-    result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
-    if ( result.subscriptionInstance.packages ) {
-      result.pkgs = []
-      result.subscriptionInstance.packages.each { sp ->
-        result.pkgs.add(sp.pkg.id)
-      }
-    }
-
-    if ( result.institution ) {
-      result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
-    }
-    log.debug("Going for ES")
-    params.rectype = "Package"
-    result.putAll(ESSearchService.search(params))
-
-    result
-  }
-
-  def buildRenewalsQuery(params) {
-    log.debug("BuildQuery...");
-
-    StringWriter sw = new StringWriter()
-
-    // sw.write("subtype:'Subscription Offered'")
-    sw.write("rectype:'Package'")
-
-    renewals_reversemap.each { mapping ->
-
-      // log.debug("testing ${mapping.key}");
-
-      if ( params[mapping.key] != null ) {
-        if ( params[mapping.key].class == java.util.ArrayList) {
-          params[mapping.key].each { p ->
-                sw.write(" AND ")
-                sw.write(mapping.value)
-                sw.write(":")
-                sw.write("\"${p}\"")
-          }
-        }
-        else {
-          // Only add the param if it's length is > 0 or we end up with really ugly URLs
-          // II : Changed to only do this if the value is NOT an *
-          if ( params[mapping.key].length() > 0 && ! ( params[mapping.key].equalsIgnoreCase('*') ) ) {
-            sw.write(" AND ")
-            sw.write(mapping.value)
-            sw.write(":")
-            sw.write("\"${params[mapping.key]}\"")
-          }
-        }
-      }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def rejectChange() {
+        processRejectChange(params, Subscription.get(params.id))
+        redirect controller: 'subscriptionDetails', action: 'index', id: params.id
     }
 
 
-    def result = sw.toString();
-    result;
-  }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def possibleLicensesForSubscription() {
+        def result = []
 
-  @Secured(['ROLE_USER'])
-  def history() {
-    log.debug("subscriptionDetails::history ${params}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscription = Subscription.get(params.id)
-    result.institution = result.subscription.subscriber
+        def subscription = genericOIDService.resolveOID(params.oid)
+        def subscriber = subscription.getSubscriber();
+        def consortia = subscription.getConsortia();
 
-    userAccessCheck( result.subscription, result.user, 'view')
+        result.add([value: '', text: 'None']);
 
-    result.editable = result.subscription.isEditableBy(result.user)
+        if (subscriber || consortia) {
 
-    result.max = params.max ?: result.user.defaultPageSize;
-    result.offset = params.offset ?: 0;
+            def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+            def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
 
-    def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
-    result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max:result.max, offset:result.offset]);
-    result.historyLinesTotal = AuditLogEvent.executeQuery("select count(e.id) from AuditLogEvent as e where className=? and persistedObjectId=?",qry_params)[0];
+            def qry_params = [(subscriber ?: consortia), licensee_role]
 
-    result
-  }
+            def qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted' order by l.reference"
 
-    @Secured(['ROLE_USER'])
-  def changes() {
-    log.debug("subscriptionDetails::changes ${params}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscription = Subscription.get(params.id)
-
-    result.institution = result.subscription.subscriber
-
-    userAccessCheck( result.subscription, result.user, 'view')
-
-    result.editable = result.subscription.isEditableBy(result.user)
-
-    result.max = params.max ?: result.user.defaultPageSize;
-    result.offset = params.offset ?: 0;
-
-    def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
-
-    result.todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? order by ts desc", [result.subscription], [max:result.max, offset:result.offset]);
-
-    result.todoHistoryLinesTotal = PendingChange.executeQuery("select count(pc) from PendingChange as pc where subscription=?", result.subscription)[0];
-
-    result
-  }
-
-
-  @Secured(['ROLE_USER'])
-  def costPerUse() {
-    def result = [:]
-
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscription = Subscription.get(params.id)
-    result.subscriptionInstance = Subscription.get(params.id) // TODO: for generic template _breadcumb
-
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.institution = result.subscription.subscriber
-    if ( result.institution ) {
-      result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
-    }
-
-    if ( !result.subscription.hasPerm("view", result.user) ) {
-      response.sendError(401);
-      return
-    }
-
-    result.editable = result.subscription.isEditableBy(result.user)
-
-    // Get a unique list of invoices
-    // select inv, sum(cost) from costItem as ci where ci.sub = x
-    log.debug("Get all invoices for sub ${result.subscription}");
-    result.costItems = []
-    CostItem.executeQuery(INVOICES_FOR_SUB_HQL,[sub:result.subscription]).each {
-
-      log.debug(it);
-
-      def cost_row = [invoice:it[0],total:it[2]]
-
-      cost_row.total_cost_for_sub = it[2];
-
-
-      if ( it && ( it[3]?.startDate ) && ( it[3]?.endDate ) ) {
-
-        log.debug("Total costs for sub : ${cost_row.total_cost_for_sub} period will be ${it[3]?.startDate} to ${it[3]?.endDate}");
-
-        def usage_str = Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD,[
-                                                                         start:it[3].startDate, 
-                                                                         end:it[3].endDate, 
-                                                                         sub:result.subscription, 
-                                                                         jr1a:'STATS:JR1' ])[0]
-
-        if ( usage_str && usage_str.trim().length() > 0 ) {
-          cost_row.total_usage_for_sub = Double.parseDouble(usage_str);
-          if ( cost_row.total_usage_for_sub > 0 ) {
-            cost_row.overall_cost_per_use = cost_row.total_cost_for_sub / cost_row.total_usage_for_sub;
-          }
-          else {
-            cost_row.overall_cost_per_use = 0;
-          }
-        }
-        else {
-          cost_row.total_usage_for_sub = Double.parseDouble('0');
-          cost_row.overall_cost_per_use = cost_row.total_usage_for_sub
-        }
-
-
-        // Work out what cost items appear under this subscription in the period given
-        cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD,[start:it[3].startDate, end:it[3].endDate, sub:result.subscription, jr1a:'STATS:JR1' ])
-
-        result.costItems.add(cost_row);
-      }
-      else {
-        log.error("Invoice ${it} had no start or end date");
-      }
-    }
-
-
-    result
-  }
-
-  @Secured(['ROLE_USER'])
-  def show() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.subscriptionInstance =  Subscription.get(params.id) 
-    
-    userAccessCheck( result.subscriptionInstance, result.user, 'view')
-
-    result.institution = contextService.getOrg()
-    if( ! result.institution ) {
-      result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
-    }
-    if ( result.institution ) {
-      result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
-    }
-
-    result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
-    // tasks
-    def contextOrg  = contextService.getOrg()
-    result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-    def preCon      = taskService.getPreconditions(contextOrg)
-    result << preCon
-
-    // restrict visible for templates/links/orgLinksAsList
-    result.visibleOrgRelations = result.subscriptionInstance.orgRelations
-      def restrict = OrgRole.findWhere(
-              sub: result.subscriptionInstance,
-              org: contextService.getOrg(),
-              roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role ')
-      )
-      result.visibleOrgRelations.remove(restrict)
-
-    // -- private properties
-
-    result.authorizedOrgs = result.user?.authorizedOrgs
-    result.contextOrg     = contextService.getOrg()
-
-    // create mandatory OrgPrivateProperties if not existing
-
-    def mandatories = []
-    result.user?.authorizedOrgs?.each{ org ->
-        def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, org)
-        if (ppd){
-            mandatories << ppd
-        }
-    }
-    mandatories.flatten().each{ pd ->
-        if (! SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
-            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
-
-            if (newProp.hasErrors()) {
-                log.error(newProp.errors)
-            } else {
-                log.debug("New subscription private property created via mandatory: " + newProp.type.name)
+            def license_list = License.executeQuery(qry, qry_params);
+            license_list.each { l ->
+                result.add([value: "${l.class.name}:${l.id}", text: l.reference ?: "No reference - license ${l.id}"]);
             }
         }
+        render result as JSON
     }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def linkPackage() {
+        log.debug("Link package, params: ${params}");
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.institution = result.subscriptionInstance.subscriber
+
+        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
+
+
+        if (params.addType && (params.addType != '')) {
+            def pkg_to_link = Package.get(params.addId)
+            def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+            log.debug("Add package ${params.addType} to subscription ${params}");
+
+            if (params.addType == 'With') {
+                pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                sub_instances.each {
+                    pkg_to_link.addToSubscription(it, true)
+                }
+
+                redirect action: 'index', id: params.id
+            } else if (params.addType == 'Without') {
+                pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+                sub_instances.each {
+                    pkg_to_link.addToSubscription(it, false)
+                }
+
+                redirect action: 'addEntitlements', id: params.id
+            }
+        }
+
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        if (result.subscriptionInstance.packages) {
+            result.pkgs = []
+            result.subscriptionInstance.packages.each { sp ->
+                result.pkgs.add(sp.pkg.id)
+            }
+        }
+
+        if (result.institution) {
+            result.subscriber_shortcode = result.institution.shortcode
+            result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
+        }
+        log.debug("Going for ES")
+        params.rectype = "Package"
+        result.putAll(ESSearchService.search(params))
+
+        result
+    }
+
+    def buildRenewalsQuery(params) {
+        log.debug("BuildQuery...");
+
+        StringWriter sw = new StringWriter()
+
+        // sw.write("subtype:'Subscription Offered'")
+        sw.write("rectype:'Package'")
+
+        renewals_reversemap.each { mapping ->
+
+            // log.debug("testing ${mapping.key}");
+
+            if (params[mapping.key] != null) {
+                if (params[mapping.key].class == java.util.ArrayList) {
+                    params[mapping.key].each { p ->
+                        sw.write(" AND ")
+                        sw.write(mapping.value)
+                        sw.write(":")
+                        sw.write("\"${p}\"")
+                    }
+                } else {
+                    // Only add the param if it's length is > 0 or we end up with really ugly URLs
+                    // II : Changed to only do this if the value is NOT an *
+                    if (params[mapping.key].length() > 0 && !(params[mapping.key].equalsIgnoreCase('*'))) {
+                        sw.write(" AND ")
+                        sw.write(mapping.value)
+                        sw.write(":")
+                        sw.write("\"${params[mapping.key]}\"")
+                    }
+                }
+            }
+        }
+
+
+        def result = sw.toString();
+        result;
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def history() {
+        log.debug("subscriptionDetails::history ${params}");
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscription = Subscription.get(params.id)
+        result.institution = result.subscription.subscriber
+
+        userAccessCheck(result.subscription, result.user, 'view')
+
+        result.editable = result.subscription.isEditableBy(result.user)
+
+        result.max = params.max ?: result.user.defaultPageSize;
+        result.offset = params.offset ?: 0;
+
+        def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
+        result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
+        result.historyLinesTotal = AuditLogEvent.executeQuery("select count(e.id) from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params)[0];
+
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def changes() {
+        log.debug("subscriptionDetails::changes ${params}");
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscription = Subscription.get(params.id)
+
+        result.institution = result.subscription.subscriber
+
+        userAccessCheck(result.subscription, result.user, 'view')
+
+        result.editable = result.subscription.isEditableBy(result.user)
+
+        result.max = params.max ?: result.user.defaultPageSize;
+        result.offset = params.offset ?: 0;
+
+        def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
+
+        result.todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? order by ts desc", [result.subscription], [max: result.max, offset: result.offset]);
+
+        result.todoHistoryLinesTotal = PendingChange.executeQuery("select count(pc) from PendingChange as pc where subscription=?", result.subscription)[0];
+
+        result
+    }
+
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def costPerUse() {
+        def result = [:]
+
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscription = Subscription.get(params.id)
+        result.subscriptionInstance = Subscription.get(params.id) // TODO: for generic template _breadcumb
+
+        // result.institution = Org.findByShortcode(params.shortcode)
+        result.institution = result.subscription.subscriber
+        if (result.institution) {
+            result.subscriber_shortcode = result.institution.shortcode
+            result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
+        }
+
+        if (!result.subscription.hasPerm("view", result.user)) {
+            response.sendError(401);
+            return
+        }
+
+        result.editable = result.subscription.isEditableBy(result.user)
+
+        // Get a unique list of invoices
+        // select inv, sum(cost) from costItem as ci where ci.sub = x
+        log.debug("Get all invoices for sub ${result.subscription}");
+        result.costItems = []
+        CostItem.executeQuery(INVOICES_FOR_SUB_HQL, [sub: result.subscription]).each {
+
+            log.debug(it);
+
+            def cost_row = [invoice: it[0], total: it[2]]
+
+            cost_row.total_cost_for_sub = it[2];
+
+
+            if (it && (it[3]?.startDate) && (it[3]?.endDate)) {
+
+                log.debug("Total costs for sub : ${cost_row.total_cost_for_sub} period will be ${it[3]?.startDate} to ${it[3]?.endDate}");
+
+                def usage_str = Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
+                        start: it[3].startDate,
+                        end  : it[3].endDate,
+                        sub  : result.subscription,
+                        jr1a : 'STATS:JR1'])[0]
+
+                if (usage_str && usage_str.trim().length() > 0) {
+                    cost_row.total_usage_for_sub = Double.parseDouble(usage_str);
+                    if (cost_row.total_usage_for_sub > 0) {
+                        cost_row.overall_cost_per_use = cost_row.total_cost_for_sub / cost_row.total_usage_for_sub;
+                    } else {
+                        cost_row.overall_cost_per_use = 0;
+                    }
+                } else {
+                    cost_row.total_usage_for_sub = Double.parseDouble('0');
+                    cost_row.overall_cost_per_use = cost_row.total_usage_for_sub
+                }
+
+                // Work out what cost items appear under this subscription in the period given
+                cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD, [start: it[3].startDate, end: it[3].endDate, sub: result.subscription, jr1a: 'STATS:JR1'])
+
+                result.costItems.add(cost_row);
+            } else {
+                log.error("Invoice ${it} had no start or end date");
+            }
+        }
+
+
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    def show() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+
+        userAccessCheck(result.subscriptionInstance, result.user, 'view')
+
+        result.institution = contextService.getOrg()
+        if (!result.institution) {
+            result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
+        }
+        if (result.institution) {
+            result.subscriber_shortcode = result.institution.shortcode
+            result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+        }
+
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        // tasks
+        def contextOrg = contextService.getOrg()
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
+        def preCon = taskService.getPreconditions(contextOrg)
+        result << preCon
+
+        // restrict visible for templates/links/orgLinksAsList
+        result.visibleOrgRelations = result.subscriptionInstance.orgRelations
+        def restrict = OrgRole.findWhere(
+                sub: result.subscriptionInstance,
+                org: contextService.getOrg(),
+                roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role ')
+        )
+        result.visibleOrgRelations.remove(restrict)
 
         // -- private properties
 
-        result.modalPrsLinkRole    = RefdataValue.findByValue('Specific subscription editor')
+        result.authorizedOrgs = result.user?.authorizedOrgs
+        result.contextOrg = contextService.getOrg()
+
+        // create mandatory OrgPrivateProperties if not existing
+
+        def mandatories = []
+        result.user?.authorizedOrgs?.each { org ->
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, org)
+            if (ppd) {
+                mandatories << ppd
+            }
+        }
+        mandatories.flatten().each { pd ->
+            if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+
+                if (newProp.hasErrors()) {
+                    log.error(newProp.errors)
+                } else {
+                    log.debug("New subscription private property created via mandatory: " + newProp.type.name)
+                }
+            }
+        }
+
+        // -- private properties
+
+        result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
         result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, result.subscriptionInstance.orgRelations)
 
         result.subscriptionInstance.orgRelations.each { or ->
             or.org.prsLinks.each { pl ->
                 if (pl.prs?.isPublic?.value != 'No') {
-                    if (! result.modalVisiblePersons.contains(pl.prs)) {
+                    if (!result.modalVisiblePersons.contains(pl.prs)) {
                         result.modalVisiblePersons << pl.prs
                     }
                 }
             }
         }
 
-          result.visiblePrsLinks = []
+        result.visiblePrsLinks = []
 
-          result.subscriptionInstance.prsLinks.each { pl ->
-              if (! result.visiblePrsLinks.contains(pl.prs)) {
-                  if (pl.prs.isPublic?.value != 'No') {
-                      result.visiblePrsLinks << pl
-                  }
-                  else {
-                      // nasty lazy loading fix
-                      result.user.authorizedOrgs.each{ ao ->
-                          if (ao.getId() == pl.prs.tenant.getId()) {
-                              result.visiblePrsLinks << pl
-                          }
-                      }
-                  }
-              }
-          }
+        result.subscriptionInstance.prsLinks.each { pl ->
+            if (!result.visiblePrsLinks.contains(pl.prs)) {
+                if (pl.prs.isPublic?.value != 'No') {
+                    result.visiblePrsLinks << pl
+                } else {
+                    // nasty lazy loading fix
+                    result.user.authorizedOrgs.each { ao ->
+                        if (ao.getId() == pl.prs.tenant.getId()) {
+                            result.visiblePrsLinks << pl
+                        }
+                    }
+                }
+            }
+        }
 
         result
     }

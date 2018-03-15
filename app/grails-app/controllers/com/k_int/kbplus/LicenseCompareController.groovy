@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.User
 
@@ -12,7 +13,8 @@ class LicenseCompareController {
     def permissionHelperService
     def contextService
 
-  @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def index() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -30,7 +32,9 @@ class LicenseCompareController {
         result.licensee_role  =licensee_role.id
         result
   }
-  @Secured(['ROLE_USER'])
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
   def compare(){
     log.debug("compare ${params}")
     def result = [:]

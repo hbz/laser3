@@ -76,6 +76,7 @@ class UploadController {
   /**
   * Ingest a package
   */
+    @Secured(['ROLE_DATAMANAGER'])
   def processUploadSO(upload) {
 
     def new_pkg_id = null
@@ -258,6 +259,7 @@ class UploadController {
     upload.new_pkg_id = new_pkg_id
   }
 
+    @Secured(['ROLE_DATAMANAGER'])
   def lookupOrCreateTitleInstance(identifiers,title,publisher,tipp) {
     // log.debug("lookupOrCreateTitleInstance ${identifiers}, ${title}, ${publisher}");
     def result = null;
@@ -313,6 +315,7 @@ class UploadController {
     return false
   }
 
+    @Secured(['ROLE_DATAMANAGER'])
   def readSubscriptionOfferedCSV(request) {
 
     def result = [:]
