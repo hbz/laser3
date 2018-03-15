@@ -26,6 +26,7 @@
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
         <semui:crumb class="active" text="${message(code:'menu.institutions.finance')}" />
     </g:else>
+
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -44,6 +45,11 @@
     </semui:exportDropdown>
 
 
+    <g:if test="${editable}">
+        <semui:actionsDropdown>
+            <semui:actionsDropdownItem controller="myInstitution" action="financeImport"  message="financials.action.financeImport" />
+        </semui:actionsDropdown>
+    </g:if>
 </semui:controlButtons>
 
 
