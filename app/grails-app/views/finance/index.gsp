@@ -16,48 +16,36 @@
 <g:set var="yn"               scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','YN')}"/>
 <g:set var="currency"         scope="page" value="${com.k_int.kbplus.CostItem.orderedCurrency()}"/>
 
+<semui:breadcrumbs>
+    <g:if test="${inSubMode}">
+        <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
+        <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
+        <semui:crumb class="active"  message="${fixedSubscription?.name}" />
+    </g:if>
+    <g:else>
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
+        <semui:crumb class="active" text="${message(code:'menu.institutions.finance')}" />
+    </g:else>
+</semui:breadcrumbs>
 
-    <semui:breadcrumbs>
+<semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
+        </semui:exportDropdownItem>
+        <!--
+        <semui:exportDropdownItem>
+            <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <a data-mode="code" class="disabled export" style="cursor: pointer">CSV Costs by Code</a>
+        </semui:exportDropdownItem>
+        -->
+    </semui:exportDropdown>
 
-            <g:if test="${inSubMode}">
-                <li>
-                    <g:link controller="subscriptionDetails" action="index" params="${[sub:fixedSubscription?.id]}" id="${fixedSubscription?.id}">
-                        ${fixedSubscription?.name}
-                    </g:link>
-                    <span class="divider">/</span>
-                </li>
-                <g:link mapping="subfinance" controller="myInstitutions" action="finance" params="${[sub:fixedSubscription?.id]}">
-                    ${institution.name} Finance <i>(Subscription Mode)</i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="myInstitution" action="finance">${institution.name} Finance</g:link>
-            </g:else>
-        <g:if test="${editable}">
-            <semui:crumbAsBadge message="default.editable" class="orange" />
 
-            <a href="${createLink(controller: 'myInstitution', action: 'financeImport')}" class="ui button">Finance Import</a>
-        </g:if>
-        <li class="pull-left"><a class="badge badge-info" onclick="quickHelpInfo()">?</a>&nbsp;</li>
-    </semui:breadcrumbs>
-    <semui:controlButtons>
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
-            </semui:exportDropdownItem>
-            <!--
-            <semui:exportDropdownItem>
-                <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
-                <a data-mode="code" class="disabled export" style="cursor: pointer">CSV Costs by Code</a>
-            </semui:exportDropdownItem>
-            -->
-        </semui:exportDropdown>
-    </semui:controlButtons>
+</semui:controlButtons>
 
-<br/>
-<br/>
 
     <div style="padding-left: 2%" hidden="hidden" class="loadingData">
         <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
