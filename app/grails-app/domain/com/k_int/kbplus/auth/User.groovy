@@ -199,7 +199,7 @@ class User implements Permissions {
 
         log.debug("USER.hasAffiliation(): ${userRoleName} @ ${contextOrg}")
 
-        if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+        if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
             return false
         }
 
