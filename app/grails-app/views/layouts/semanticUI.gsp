@@ -1,5 +1,6 @@
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -86,7 +87,7 @@
                 <g:if test="${contextOrg}">
                     <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
-                            ${message(code:'menu.institutions.titlesAndPackages')}
+                            ${message(code:'menu.public')}
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
@@ -94,11 +95,11 @@
                                 <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
                                 <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
 
-                                <div class="divider"></div>
+                                <%--<div class="divider"></div>
 
                                 <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
                                 <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
-
+                                --%>
                                 <div class="divider"></div>
 
                                 <g:if test="${grailsApplication.config.feature.eBooks}">
@@ -118,47 +119,67 @@
 
                     <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
-                            ${message(code:'menu.institutions.subs')}
+                            ${message(code:'menu.my')}
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
+
                                 <g:link class="item" controller="myInstitution" action="currentSubscriptions">${message(code:'menu.institutions.mySubs')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
 
-                                <sec:ifAnyGranted roles="INST_USER">
-                                    <div class="divider"></div>
+                                <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
 
+
+                                <div class="divider"></div>
+
+                                <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
                                     <g:link class="item" controller="myInstitution" action="emptySubscription">${message(code:'menu.institutions.emptySubscription')}</g:link>
-
-                                    <div class="divider"></div>
-                                </sec:ifAnyGranted>
+                                </g:if>
+                                <g:else>
+                                    <div class="item disabled">${message(code:'menu.institutions.emptySubscription')}</div>
+                                </g:else>
 
                                 <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
 
-                            %{--<g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>--}%
-                            %{--<g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>--}%
+                                <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
+                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
+                                <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
+                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
+
+                                <g:link class="item" controller="licenseCompare" action="index">${message(code:'menu.institutions.comp_lic')}</g:link>
+
+                                <%--
+                                <div class="divider"></div>
+                                <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
+
+                                <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
+                                <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
 
                                 <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
                                 <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
-                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>
+                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
                             </div>
                         </div>
                     </sec:ifLoggedIn>
 
-                    <sec:ifLoggedIn>
-                        <div class="ui simple dropdown item">
-                            ${message(code:'menu.institutions.lic')}
-                            <i class="dropdown icon"></i>
+                    <%--<sec:ifLoggedIn>
+                   <div class="ui simple dropdown item">
+                       ${message(code:'menu.institutions.lic')}
+                       <i class="dropdown icon"></i>
 
-                            <div class="menu">
-                                <g:link class="item" controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
+                       <div class="menu">
+                           <g:link class="item" controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
 
-                                <div class="divider"></div>
+                           <%--
+                           <div class="divider"></div>
 
-                                <g:link class="item" controller="licenseCompare" action="index">${message(code:'menu.institutions.comp_lic')}</g:link>
+                           <g:link class="item" controller="licenseCompare" action="index">${message(code:'menu.institutions.comp_lic')}</g:link>
+
                             </div>
                         </div>
-                    </sec:ifLoggedIn>
+                    </sec:ifLoggedIn>--%>
 
                     <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
@@ -173,7 +194,13 @@
                                 <g:link class="item" controller="myInstitution" action="changes">${message(code:'menu.institutions.todo')}</g:link>
 
                                 <g:link class="item" controller="myInstitution" action="addressbook">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="managePrivateProperties">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link>
+
+                                <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_USER")}">
+                                    <g:link class="item" controller="myInstitution" action="managePrivateProperties">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <div class="item disabled">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</div>
+                                </g:else>
 
                                 <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
 
