@@ -40,8 +40,8 @@ class SubscriptionController {
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def create() {
         redirect controller: 'subscriptionDetails', action: 'create', params: params
         return // ----- deprecated
@@ -96,8 +96,8 @@ class SubscriptionController {
         } 
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def edit() {
         redirect controller: 'subscriptionDetails', action: 'edit', params: params
         return // ----- deprecated
@@ -145,8 +145,8 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def delete() {
         def subscriptionInstance = Subscription.get(params.id)
         if (!subscriptionInstance) {

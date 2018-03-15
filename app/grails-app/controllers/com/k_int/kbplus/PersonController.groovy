@@ -26,8 +26,8 @@ class PersonController {
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def create() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
 
@@ -74,8 +74,8 @@ class PersonController {
         ] // TODO
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def edit() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         def personInstance = Person.get(params.id)
@@ -136,8 +136,8 @@ class PersonController {
 		}
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def delete() {
         def personInstance = Person.get(params.id)
         if (! personInstance) {

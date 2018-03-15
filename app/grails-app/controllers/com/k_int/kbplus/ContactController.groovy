@@ -25,8 +25,8 @@ class ContactController {
         [contactInstanceList: Contact.list(params), contactInstanceTotal: Contact.count()]
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -68,8 +68,8 @@ class ContactController {
 		] // TODO
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def edit() {
         def contactInstance = Contact.get(params.id)
         if (! contactInstance) {
@@ -111,8 +111,8 @@ class ContactController {
 		}
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def delete() {
         def contactInstance = Contact.get(params.id)
         if (! contactInstance) {

@@ -18,8 +18,8 @@ class YodaController {
 
     static boolean ftupdate_running = false
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def demo() {
         def result = [:]
 
@@ -90,23 +90,32 @@ class YodaController {
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
-
             if (controllerClass.name.startsWith('com.k_int.kbplus')) {
                 def mList = [:]
+
                 controllerClass.methods.each { Method method ->
                     if (method.getAnnotation(Action) && method.getModifiers() == Modifier.PUBLIC) {
+                        def mKey = "${method.name}"
+                        if (method.getAnnotation(Deprecated)) {
+                            mKey = "${method.name} <em>*</em>"
+                        }
 
-                        def da = method.getAnnotation(de.laser.helper.DebugAnnotation)
+                        def da = method.getAnnotation(DebugAnnotation)
                         if (da) {
-                            mList << ["${method.name}": [da.test()]]
+                            mList << ["${mKey}": [da.test()]]
                         }
                         else {
-                            mList << ["${method.name}": method.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value()]
+                            mList << ["${mKey}": method.getAnnotation(Secured)?.value()]
                         }
                     }
                 }
-                cList<< ["${controllerClass.name}": [
-                        'secured': controllerClass.getAnnotation(grails.plugin.springsecurity.annotation.Secured)?.value(),
+
+                def cKey = "${controllerClass.name}"
+                if (controllerClass.getAnnotation(Deprecated)) {
+                    cKey ="${controllerClass.name} <em>*</em>"
+                }
+                cList<< ["${cKey}": [
+                        'secured': controllerClass.getAnnotation(Secured)?.value(),
                         'methods': mList.sort{it.key}
                         ]
                 ]

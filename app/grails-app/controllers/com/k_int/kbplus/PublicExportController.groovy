@@ -17,7 +17,7 @@ class PublicExportController {
   def transformerService
 
   @Deprecated
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def index() { 
     def result = [:]
     params.max = 30
@@ -47,7 +47,7 @@ class PublicExportController {
   }
 
   @Deprecated
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def so() {
     log.debug("subscriptionDetails id:${params.id} format=${response.format}");
     def result = [:]
@@ -167,7 +167,7 @@ class PublicExportController {
   }
 
   @Deprecated
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def pkg() {
     log.debug("package export id:${params.id} format=${response.format}");
     def result = [:]
@@ -301,7 +301,7 @@ class PublicExportController {
   }
 
   @Deprecated
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+  @Secured(['ROLE_USER'])
   def idx() {
     def base_qry = " from Package as p order by p.name asc"
     def qry_params = []

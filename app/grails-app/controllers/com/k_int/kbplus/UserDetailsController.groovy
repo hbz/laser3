@@ -62,7 +62,7 @@ class UserDetailsController {
       result
     }
 
-    @Secured(['ROLE_YODA','ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     def edit() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)

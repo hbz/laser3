@@ -199,17 +199,17 @@ class User implements Permissions {
 
         log.debug("USER.hasAffiliation(): ${userRoleName} @ ${contextOrg}")
 
-        if (globalRoleName && ! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+        if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
             return false
         }
 
         if (userRoleName == "INST_USER") {
-            //rolesToCheck << "INST_EDITOR"
+            rolesToCheck << "INST_EDITOR"
             rolesToCheck << "INST_ADM"
         }
-        /*else if (roleName == "INST_EDITOR") {
+        else if (userRoleName == "INST_EDITOR") {
             rolesToCheck << "INST_ADM"
-        }*/
+        }
 
         rolesToCheck.each{ rot ->
             def role = Role.findByAuthority(rot)

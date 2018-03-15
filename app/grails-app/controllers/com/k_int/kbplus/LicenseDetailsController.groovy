@@ -515,8 +515,8 @@ class LicenseDetailsController {
     result
   }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
   def create() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)

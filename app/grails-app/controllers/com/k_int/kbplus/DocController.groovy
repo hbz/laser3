@@ -32,8 +32,8 @@ class DocController {
       	result
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -64,8 +64,8 @@ class DocController {
         [docInstance: docInstance]
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def edit() {
 		switch (request.method) {
 		case 'GET':
@@ -110,8 +110,8 @@ class DocController {
 		}
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def delete() {
         def docInstance = Doc.get(params.id)
         if (!docInstance) {

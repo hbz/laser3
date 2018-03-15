@@ -73,6 +73,7 @@ class BootStrap {
         def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
+
         def instAdmin = Role.findByAuthority('INST_ADM')
         if (! instAdmin) {
             instAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
@@ -80,12 +81,12 @@ class BootStrap {
         ensurePermGrant(instAdmin, edit_permission)
         ensurePermGrant(instAdmin, view_permission)
 
-        /*def instEditor = Role.findByAuthority('INST_EDITOR')
+        def instEditor = Role.findByAuthority('INST_EDITOR')
         if (! instEditor) {
             instEditor = new Role(authority: 'INST_EDITOR', roleType: 'user').save(failOnError: true)
         }
         ensurePermGrant(instEditor, edit_permission)
-        ensurePermGrant(instEditor, view_permission)*/
+        ensurePermGrant(instEditor, view_permission)
 
         def instUser = Role.findByAuthority('INST_USER')
         if (! instUser) {

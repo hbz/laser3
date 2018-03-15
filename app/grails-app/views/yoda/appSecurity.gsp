@@ -40,18 +40,19 @@
     </div>
 </div>
 
-<h3 class="ui header">Current User Roles ; checked with sec:ifAnyGranted</h3>
+<h3 class="ui header">User Roles</h3>
 
 <div class="secInfoWrapper">
     <div class="ui list">
-        <g:each in="${com.k_int.kbplus.auth.Role.findAll()}" var="role">
-            <sec:ifAnyGranted roles="${role.authority}"><div class="item">${role.authority} (${role.roleType})</div></sec:ifAnyGranted>
-        </g:each>
+        <div class="item">
+            <span>INST_ADMIN</span> &rArr;
+            <span>INST_EDITOR</span> &rArr;
+            <span>INST_USER</span> (implizit Prüfung auf <span class="ROLE_USER">ROLE_USER</span>)
+        </div>
     </div>
 </div>
 
-
-<br />
+<h3 class="ui header">Controller Annotations</h3>
 
     <div class="ui grid">
         <div class="twelve wide column">

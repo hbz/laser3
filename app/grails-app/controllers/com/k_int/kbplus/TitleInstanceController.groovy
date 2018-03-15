@@ -36,8 +36,8 @@ class TitleInstanceController {
       	result
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def create() {
 		redirect controller: 'titleDetails', action: 'create', params: params
 		return // ----- deprecated
@@ -74,8 +74,8 @@ class TitleInstanceController {
         [titleInstanceInstance: titleInstanceInstance]
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def edit() {
 		redirect controller: 'titleDetails', action: 'edit', params: params
 		return // ----- deprecated
@@ -123,8 +123,8 @@ class TitleInstanceController {
 		}
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_ADM")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def delete() {
 		redirect controller: 'titleDetails', action: 'delete', params: params
 		return // ----- deprecated

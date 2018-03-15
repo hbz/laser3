@@ -38,8 +38,8 @@ class TitleInstancePackagePlatformController {
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def create() {
         redirect controller: 'tipp', action: 'create', params: params
         return // ----- deprecated
@@ -76,8 +76,8 @@ class TitleInstancePackagePlatformController {
         [titleInstancePackagePlatformInstance: titleInstancePackagePlatformInstance]
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def edit() {
         redirect controller: 'tipp', action: 'edit', params: params
         return // ----- deprecated
@@ -125,8 +125,8 @@ class TitleInstancePackagePlatformController {
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
     def delete() {
         redirect controller: 'tipp', action: 'delete', params: params
         return // ----- deprecated
