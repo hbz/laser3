@@ -125,8 +125,8 @@ class SemanticUiTagLib {
 
         if (attrs.editable) {
 
-            out << '<div class="ui grey circular horizontal label"  style="width: 20px!important; margin-right:0; margin-left: 3rem; border: none!important;">'
-            out << '<i class="write icon" style="margin-right:0"></i>'
+            out << '<div class="ui green circular horizontal label"  style="margin-right:0; margin-left: 1rem;" data-tooltip="' + message(code:'statusbar.editable.tooltip') + '"  data-position="bottom right" data-variation="tiny">'
+            out << '<i class="write  icon" style="margin-right:0"></i>'
             out << '</div>'
         }
     }
