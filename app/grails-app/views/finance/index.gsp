@@ -26,7 +26,6 @@
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
         <semui:crumb class="active" text="${message(code:'menu.institutions.finance')}" />
     </g:else>
-
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -34,24 +33,30 @@
         <semui:exportDropdownItem>
             <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
         </semui:exportDropdownItem>
-        <!--
+        <%--
         <semui:exportDropdownItem>
             <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <a data-mode="code" class="disabled export" style="cursor: pointer">CSV Costs by Code</a>
         </semui:exportDropdownItem>
-        -->
+        --%>
     </semui:exportDropdown>
-
 
     <g:if test="${editable}">
         <semui:actionsDropdown>
-            <semui:actionsDropdownItem controller="myInstitution" action="financeImport"  message="financials.action.financeImport" />
+            <semui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />
         </semui:actionsDropdown>
     </g:if>
 </semui:controlButtons>
 
+<g:if test="${fixedSubscription}">
+    <h1 class="ui header"><semui:headerIcon />${fixedSubscription}</h1>
+    <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:fixedSubscription, params:(params << [id:fixedSubscription.id])]}"/> <%-- mapping="subfinance" params="${[sub:params.id]} --%>
+</g:if>
+<g:else>
+    <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
+</g:else>
 
     <div style="padding-left: 2%" hidden="hidden" class="loadingData">
         <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
