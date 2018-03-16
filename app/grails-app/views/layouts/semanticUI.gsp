@@ -471,21 +471,10 @@
                         ;
                     };
 
-
                     // attach ready event
                     $(document)
                         .ready(LaToggle.advanced.button.ready)
                     ;
-
-
-                    $('#la-advanced').checkbox({
-                        onChecked: function () {
-                            window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />"
-                        },
-                        onUnchecked: function () {
-                            window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />"
-                        }
-                    });
                 </script>
                 </g:if>
                 <semui:editableLabel editable="${editable}" />
