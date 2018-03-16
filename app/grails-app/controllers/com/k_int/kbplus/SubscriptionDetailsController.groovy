@@ -956,8 +956,6 @@ class SubscriptionDetailsController {
         result
     }
 
-    we
-
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def documents() {
