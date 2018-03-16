@@ -29,7 +29,7 @@
     <button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
     <button class="ui button pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
 </g:if>
-<h1 class="ui header"><semui:headerIcon />${institution.name} Cost Items</h1>
+
 <g:form id="filterView" class="ui form" action="index" method="post">
     <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
         <table id="costTable" class="ui striped celled la-rowspan table table-tworow">

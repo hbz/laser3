@@ -199,10 +199,22 @@ class User implements Permissions {
 
         log.debug("USER.hasAffiliation(): ${userRoleName} @ ${contextOrg}")
 
-        if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-            return false
+        // TODO:
+
+        if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA")) {
+            return true // may the force be with you
+        }
+        if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+            return true // may the force be with you
         }
 
+        if (globalRoleName && ! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+            return false // min restriction
+        }
+
+        // TODO:
+
+        // sym. role hierarchy
         if (userRoleName == "INST_USER") {
             rolesToCheck << "INST_EDITOR"
             rolesToCheck << "INST_ADM"

@@ -69,7 +69,7 @@
 
         <div class="four fields">
 
-            <% /*
+<%--
             <!-- 2-1 -->
             <div class="field disabled fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
@@ -106,7 +106,7 @@
                 <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
             </div>
 
-            */ %>
+           --%>
         </div>
 
         <div class="two fields">
