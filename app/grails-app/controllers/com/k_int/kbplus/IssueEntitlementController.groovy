@@ -16,12 +16,14 @@ class IssueEntitlementController {
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
    def springSecurityService
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
@@ -47,7 +49,8 @@ class IssueEntitlementController {
     }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def show() {
       def result = [:]
 

@@ -268,6 +268,7 @@ class DataManagerController {
     }
   }
 
+    @Secured(['ROLE_DATAMANAGER'])
   def getActorNameList(params) {
     def actors = []
     //def filterActors = params.findAll{it.key.startsWith("change_actor_")}
@@ -323,7 +324,7 @@ class DataManagerController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+    @Secured(['ROLE_ADMIN'])
   def expungeDeletedTitles() {
 
     log.debug("expungeDeletedTitles.. Create async task..");
@@ -382,8 +383,8 @@ class DataManagerController {
 
     redirect(controller:'home')
   }
-  
-  @Secured(['ROLE_DATAMANAGER'])
+
+    @Secured(['ROLE_ADMIN'])
   def expungeDeletedTIPPS() {
 
     log.debug("expungeDeletedTIPPS.. Create async task..");

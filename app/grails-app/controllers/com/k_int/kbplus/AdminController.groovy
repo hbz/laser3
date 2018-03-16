@@ -262,6 +262,7 @@ class AdminController {
     result
   }
 
+    @Secured(['ROLE_ADMIN'])
   def copyUserRoles(usrMrg, usrKeep){
     def mergeRoles = usrMrg.getAuthorities()
     def mergeAffil = usrMrg.getAuthorizedAffiliations()
@@ -714,6 +715,7 @@ class AdminController {
         [hasStarted: hasStarted]
     }
 
+    @Secured(['ROLE_ADMIN'])
     def performUploadISSNL(r) {
         def ctr = 0;
         def start_time = System.currentTimeMillis()
@@ -791,7 +793,7 @@ class AdminController {
     propertyInstanceMap.get().clear()
   }
 
-  @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
   def financeImport() {
     def result = [:];
     if (request.method == 'POST'){
