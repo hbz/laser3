@@ -124,30 +124,31 @@
 
                             <div class="menu">
 
-                                <g:link class="item" controller="myInstitution" action="currentSubscriptions">${message(code:'menu.institutions.mySubs')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
+                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.institutions.mySubs" />
 
-                                <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
+                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.institutions.myLics" />
 
+                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
+
+                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />
 
                                 <div class="divider"></div>
 
-                                <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
-                                    <g:link class="item" controller="myInstitution" action="emptySubscription">${message(code:'menu.institutions.emptySubscription')}</g:link>
-                                </g:if>
-                                <g:else>
-                                    <div class="item disabled">${message(code:'menu.institutions.emptySubscription')}</div>
-                                </g:else>
+                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                                <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
+                                <semui:mainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.institutions.comp_sub" />
 
                                 <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
                                 <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
 
-                                <g:link class="item" controller="licenseCompare" action="index">${message(code:'menu.institutions.comp_lic')}</g:link>
+                                <div class="divider"></div>
+
+                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="cleanLicense" message="license.add.blank" />
+
+                                <semui:mainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
+
 
                                 <%--
                                 <div class="divider"></div>
@@ -195,18 +196,14 @@
 
                                 <g:link class="item" controller="myInstitution" action="addressbook">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
 
-                                <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_USER")}">
-                                    <g:link class="item" controller="myInstitution" action="managePrivateProperties">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</g:link>
-                                </g:if>
-                                <g:else>
-                                    <div class="item disabled">${message(code:'menu.institutions.manage_props', default:'Manage Property Rules')}</div>
-                                </g:else>
+                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 
                                 <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
 
                                 <g:if test="${grailsApplication.config.feature_finance}">
                                     <g:link class="item" controller="myInstitution" action="finance">${message(code:'menu.institutions.finance')}</g:link>
-                                    <g:link class="item" controller="myInstitution" action="financeImport">${message(code:'menu.institutions.financeImport')}</g:link>
+
+                                    <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
                                 </g:if>
 
                             </div>

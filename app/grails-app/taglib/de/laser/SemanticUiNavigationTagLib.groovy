@@ -39,7 +39,7 @@ class SemanticUiNavigationTagLib {
                     controller: attrs.controller,
                     action: attrs.action,
                     params: attrs.params,
-                    class: 'section ' + attrs.class,
+                    class: 'section' + (attrs.class ? " ${attrs.class}" : ''),
                     id: attrs.id
             )
         }
@@ -209,5 +209,29 @@ class SemanticUiNavigationTagLib {
 
         out << '</div>'
         out << '</div><!--.pagination-->'
+    }
+
+
+    // <semui:mainNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" affiliation="INST_EDITOR" />
+
+
+    def mainNavItem = { attrs, body ->
+
+        def lbText    = attrs.text ? attrs.text : ''
+        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
+
+        if (attrs.affiliation && springSecurityService.getCurrentUser()?.hasAffiliation(attrs.affiliation)) {
+            out << g.link(linkBody,
+                    controller: attrs.controller,
+                    action: attrs.action,
+                    params: attrs.params,
+                    class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
+                    id: attrs.id
+            )
+        }
+        else {
+            out << '<div class="item disabled">' + linkBody + '</div>'
+        }
     }
 }

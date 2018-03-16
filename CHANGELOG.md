@@ -8,7 +8,7 @@
 - improved passwort management in profile
 - added admin reminder service
 - introduced yoda
-- reworked system roles
+- reworked system and user roles
 - reworked renewals
 - reworked cost items bulk import
 - reworked markup and stylesheets

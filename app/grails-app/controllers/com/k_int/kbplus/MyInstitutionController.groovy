@@ -34,6 +34,7 @@ class MyInstitutionController {
     def contextService
     def taskService
     def filterService
+    def accessService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
@@ -566,7 +567,7 @@ from Subscription as s where (
             return;
         }
 
-        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = result.user?.hasAffiliation('INST_ADM')
 
         def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 
