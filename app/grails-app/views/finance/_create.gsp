@@ -153,7 +153,7 @@
                     <textarea name="newDescription" placeholder="New Item Description" id="newCostItemDescription"/></textarea>
                 </div>
             </div><!-- .column -->
-        
+
             <div class="four wide column">
                 <div class="field">
                     <label>Reference/Codes</label>

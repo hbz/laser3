@@ -5,7 +5,7 @@
 
 <g:if test="${recentlyUpdated}">
 
-    <table class="ui celled la-table table" id="recentUpdatesTable" data-resultsTo="${to}" data-resultsFrom="${from}">
+    <table class="ui celled la-table la-table-small table" id="recentUpdatesTable" data-resultsTo="${to}" data-resultsFrom="${from}">
         <thead>
             <tr>
                 <th>Cost#</th>

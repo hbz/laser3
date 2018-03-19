@@ -58,6 +58,22 @@
     <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
 </g:else>
 
+<div class="ui grid">
+    <div class="column">
+        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentDialog" id="showHideRecent">Recent Costs</button>
+
+        <g:if test="${editable}">
+            <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
+            <button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_create_modal" id="addNew">Add New Cost</button>
+        </g:if>
+        <g:if test="${editable}">
+            <div id="CreateTemplateWrapper" class="wrapper"><!-- modal dialog -->
+                <g:render template="createModal" />
+            </div>
+        </g:if>
+    </div>
+</div>
+
     <div style="padding-left: 2%" hidden="hidden" class="loadingData">
         <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
     </div>
@@ -100,12 +116,6 @@
                 <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
             </div>
 
-            <g:if test="${editable}">
-                <div id="CreateTemplateWrapper" class="wrapper">
-                    <g:render template="create" />
-                </div>
-            </g:if>
-
             <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
 
         </div><!-- .sixteen -->
@@ -127,8 +137,6 @@
                 delCheckboxes:'.bulkcheck',
                 delBatch:'#BatchSelectedBtn',
                 paginateData:'#paginateInfo',
-                advFilterBtn:'#advancedFilter',
-                advFilterOpts:'#advancedFilterOpt',
                 filterModSelect2a:'.modifiedReferenceTypedown.refData',
                 filterModSelect2b:'.modifiedReferenceTypedown.refObj',
                 filterSubscription:'#subscriptionFilter',
@@ -676,10 +684,6 @@
 
             $(document).ajaxStart(startLoadAnimation);
             $(document).ajaxStop(stopLoadAnimation);
-
-            s.mybody.on("click","#advancedFilter", function() {
-              $( "#advSearchRow" ).slideToggle("fast");
-            });
 
             s.misc.inSubMode = "${inSubMode}" == "true";
             console.log('In subscription only mode',s.misc.inSubMode);
