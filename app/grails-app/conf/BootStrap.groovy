@@ -726,10 +726,11 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'])
 
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'])
-        RefdataValue.loc('OrgSector',    [en: 'Publisher', de: 'Verlag'])
+        RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Comercial', de: 'Comercial'])
 
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
+        RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Anbieter'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
         RefdataValue.loc('Package Status',                   [en: 'Deleted', de: 'Gelöscht'])

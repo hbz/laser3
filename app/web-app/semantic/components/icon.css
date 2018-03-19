@@ -221,27 +221,27 @@ i.inverted.icon {
 
 /* Red */
 i.red.icon {
-  color: #DB2828 !important;
+  color: #BB1600 !important;
 }
 i.inverted.red.icon {
   color: #FF695E !important;
 }
 i.inverted.bordered.red.icon,
 i.inverted.circular.red.icon {
-  background-color: #DB2828 !important;
+  background-color: #BB1600 !important;
   color: #FFFFFF !important;
 }
 
 /* Orange */
 i.orange.icon {
-  color: #F2711C !important;
+  color: #fa820a !important;
 }
 i.inverted.orange.icon {
-  color: #FF851B !important;
+  color: #F95E1B !important;
 }
 i.inverted.bordered.orange.icon,
 i.inverted.circular.orange.icon {
-  background-color: #F2711C !important;
+  background-color: #fa820a !important;
   color: #FFFFFF !important;
 }
 
@@ -273,14 +273,14 @@ i.inverted.circular.olive.icon {
 
 /* Green */
 i.green.icon {
-  color: #21BA45 !important;
+  color: #98B500 !important;
 }
 i.inverted.green.icon {
   color: #2ECC40 !important;
 }
 i.inverted.bordered.green.icon,
 i.inverted.circular.green.icon {
-  background-color: #21BA45 !important;
+  background-color: #98B500 !important;
   color: #FFFFFF !important;
 }
 
@@ -289,7 +289,7 @@ i.teal.icon {
   color: #00B5AD !important;
 }
 i.inverted.teal.icon {
-  color: #6DFFFF !important;
+  color: #4192B0 !important;
 }
 i.inverted.bordered.teal.icon,
 i.inverted.circular.teal.icon {
@@ -299,27 +299,27 @@ i.inverted.circular.teal.icon {
 
 /* Blue */
 i.blue.icon {
-  color: #2185D0 !important;
+  color: #004678 !important;
 }
 i.inverted.blue.icon {
-  color: #54C8FF !important;
+  color: #39a1f2 !important;
 }
 i.inverted.bordered.blue.icon,
 i.inverted.circular.blue.icon {
-  background-color: #2185D0 !important;
+  background-color: #004678 !important;
   color: #FFFFFF !important;
 }
 
 /* Violet */
 i.violet.icon {
-  color: #6435C9 !important;
+  color: #76007A !important;
 }
 i.inverted.violet.icon {
   color: #A291FB !important;
 }
 i.inverted.bordered.violet.icon,
 i.inverted.circular.violet.icon {
-  background-color: #6435C9 !important;
+  background-color: #76007A !important;
   color: #FFFFFF !important;
 }
 

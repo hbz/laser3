@@ -410,63 +410,59 @@
             <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
 
             <div class="right menu la-advanced-view">
-
                 <g:if test="${(params.mode)}">
-                    <div class="ui checkbox" id="la-advanced">
-                        <g:if test="${params.mode=='advanced'}">
-                            <input tabindex="0" type="checkbox" checked="checked"/>
-                        </g:if>
-                        <g:else>
-                            <input tabindex="0" type="checkbox"/>
-                        </g:else>
-                        <label>${message(code:'profile.advancedView')}</label>
+                    <div class="ui  buttons">
+
+                            <g:if test="${params.mode=='advanced'}">
+                                <div class="ui label toggle button"  data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"  data-position="bottom right" data-variation="tiny">
+                                    <i class="icon green eye"></i>
+                            </g:if>
+                            <g:else>
+                                <div class="ui label toggle button"  data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}"  data-position="bottom right" data-variation="tiny">
+                                    <i class="icon eye slash "></i>
+                            </g:else>
+                        </div>
                     </div>
-                    <script>
-                        $(document).ready(function() {
-                            $('#la-advanced').checkbox({
-                                onChecked: function () {
-                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />"
-                                },
-                                onUnchecked: function () {
-                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />"
+
+
+                <script>
+                    LaToggle = {};
+                    LaToggle.advanced = {};
+                    LaToggle.advanced.button = {};
+
+                    // ready event
+                    LaToggle.advanced.button.ready = function() {
+
+                        // selector cache
+                        var
+                            $buttons = $('.ui.buttons .button'),
+                            $toggle  = $('.main .ui.toggle.button'),
+                            $button  = $('.ui.button').not($buttons).not($toggle),
+                            // alias
+                            handler = {
+                                activate: function() {
+                                    $icon = $(this).find('.icon');
+                                    if ($icon.hasClass("slash")) {
+                                        $icon.removeClass("slash");
+                                        window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
+                                    }
+                                     else {
+                                        $icon.addClass("slash");
+                                        window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
+                                    }
                                 }
-                            });
-                        })
-                    </script>
+                            }
+                        ;
+                        $buttons
+                            .on('click', handler.activate)
+                        ;
+                    };
 
-                    <%--
-                            <div class="ui slider item checkbox"  id="la-advanced">
-                                <input type="checkbox" tabindex="0" >
-                                <label>${message(code:'profile.advancedView')}</label>
-                            </div>
-                            <script>
-                                $(document).ready(function() {
-
-                                    <% if (params.mode=='advanced') { %>
-                                        $('#la-advanced').addClass('checked')
-                                    <% } %>
-                                    $('#la-advanced').checkbox(
-                                        <% if (params.mode=='basic') { %> 'uncheck' <% } %>
-                                        <% if (params.mode=='advanced') { %> 'check' <% } %>
-                                        )
-                                        .checkbox({
-
-                                             onChecked: function () {
-                                                 window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />"
-
-                                            },
-                                            onUnchecked: function () {
-                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />"
-                                            }
-
-
-                                            });
-
-
-
-                                })
-                            </script>
-                        --%>
+                    // attach ready event
+                    $(document)
+                        .ready(LaToggle.advanced.button.ready)
+                    ;
+                </script>
                 </g:if>
                 <semui:editableLabel editable="${editable}" />
             </div>
