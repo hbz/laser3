@@ -34,7 +34,7 @@ class FinanceController {
             return true
     }
 
-    boolean isFinanceAuthorised(Org org, User user) {
+    private boolean isFinanceAuthorised(Org org, User user) {
 
         permissionHelperService.hasUserWithRole(user, org, admin_role)
     }

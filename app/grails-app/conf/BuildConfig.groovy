@@ -130,6 +130,8 @@ grails.project.dependency.resolution = {
         // compile 'cglib:cglib:2.2.2'
         compile "com.lowagie:itext:2.1.7"
 
+        compile group: 'org.codehaus.groovy', name: 'groovy-ant', version: '2.4.14'
+
     }
 
     plugins {

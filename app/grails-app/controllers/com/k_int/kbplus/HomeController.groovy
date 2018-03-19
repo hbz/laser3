@@ -59,7 +59,8 @@ class HomeController {
     params.max = result.user.defaultPageSize
 
     if (springSecurityService.isLoggedIn()) {
-      result =  ESSearchService.search(params)     
+        params.sort = "name"
+        result = ESSearchService.search(params)
     }  
     withFormat {
       html {
@@ -80,7 +81,7 @@ class HomeController {
     }
   }
 
-  def renderRSSResponse(results) {
+    private def renderRSSResponse(results) {
 
     def output_elements = buildOutputElements(results.hits)
 
@@ -108,7 +109,7 @@ class HomeController {
   }
 
 
-  def renderATOMResponse(results,hpp) {
+    private def renderATOMResponse(results, hpp) {
 
     def writer = new StringWriter()
     def xml = new MarkupBuilder(writer)
@@ -143,7 +144,7 @@ class HomeController {
     render(contentType:'application/xtom+xml', text: writer.toString())
   }
 
-  def buildOutputElements(searchresults) {
+    private def buildOutputElements(searchresults) {
     // Result is an array of result elements
     def result = []
 

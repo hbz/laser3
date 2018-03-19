@@ -8,7 +8,7 @@ import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import java.text.SimpleDateFormat
 
-@Secured(['IS_AUTHENTICATED_FULLY'])
+@Secured(['IS_AUTHENTICATED_FULLY', 'ROLE_DATAMANAGER'])
 class JuspController {
 
   def index() {

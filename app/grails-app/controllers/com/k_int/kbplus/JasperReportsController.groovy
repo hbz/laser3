@@ -16,7 +16,7 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader
 import net.sf.jasperreports.engine.*
 import net.sf.jasperreports.export.Exporter
 
-@Secured(['IS_AUTHENTICATED_FULLY'])
+@Secured(['IS_AUTHENTICATED_FULLY', 'ROLE_DATAMANAGER'])
 class JasperReportsController {
 def dataSource
 

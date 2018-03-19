@@ -61,8 +61,7 @@ class PublicController {
     result
   }
 
-    @Secured(['ROLE_USER'])
-  def checkUserAccessToOrg(user,org,org_access){
+  private def checkUserAccessToOrg(user, org, org_access) {
     def hasAccess = false
     def org_access_rights = org_access?.getValue() ? org_access.getValue().split(",") : []
     org_access_rights = org_access_rights.collect{it.toLowerCase()}
@@ -83,8 +82,8 @@ class PublicController {
     return hasAccess
   }
 
-    @Secured(['ROLE_USER'])
-  def generateIELicenseMap(ies,result){
+
+  private def generateIELicenseMap(ies, result) {
     log.debug("generateIELicenseMap")
     def comparisonMap = [:]
     def licIEMap = new TreeMap()
@@ -116,8 +115,7 @@ class PublicController {
     log.debug("Processed: "+result)
   }
 
-    @Secured(['ROLE_USER'])
-  def retrieveIssueEntitlements(ti,org,result){
+  private def retrieveIssueEntitlements(ti, org, result) {
     log.debug("retrieveIssueEntitlements")
     def issueEntitlements = []
     def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');

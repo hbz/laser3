@@ -1573,7 +1573,7 @@ AND EXISTS (
         result
     }
 
-    def buildRenewalsQuery(params) {
+    private def buildRenewalsQuery(params) {
         log.debug("BuildQuery...");
 
         StringWriter sw = new StringWriter()

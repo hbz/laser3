@@ -101,18 +101,22 @@ r2d2 = {
                 }
             }
         });
-        /* todo remove @spotlight
+
         $('.dlpopover').popover({html:true,
                                 placement:'left',
-                                title:'search',
+                                title:'${message(code: "spotlight.search")}',
                                 trigger:'click',
           template:
-      '<div class="popover" style="width: 600px;"><div></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>',
+      '<div class="popover" style="width: 600px; top: 10%"><div></div>
+
+    <div class="popover-inner"><h3 class="popover-title"></h3>
+
+        <div class="popover-content"></div></div></div>',
                                 'max-width':600,
                                 content:function() {
                                 return getContent();}
         });
-        */
+
     },
 
     semuiStuff : function() {
@@ -167,7 +171,7 @@ $(document).ready(function() {
     r2d2.go()
 })
 
-/*
+
 function getContent() {
     return $.ajax({
         type: "GET",
@@ -176,4 +180,4 @@ function getContent() {
         async: false
     }).responseText;
 }
-*/
+

@@ -4,6 +4,7 @@ import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PublicLicenseController {
+	@Secured(['ROLE_USER'])
 	def index(){
 		def result = [:]
 
@@ -23,6 +24,7 @@ class PublicLicenseController {
 		result
 	}
 
+	@Secured(['ROLE_USER'])
 	def show(){
 		def result = [:]
 
