@@ -1,6 +1,6 @@
-<!-- _create.gsp -->
+<!-- _createModal.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<semui:form>
+<semui:modal id="costItem_create_modal" text="${tmplText}">
     <form class="ui form" id="createCost">
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
 
@@ -175,6 +175,6 @@
 
         </div><!-- .grid -->
     </form>
-</semui:form>
+</semui:modal>
 
-<!-- _create.gsp -->
+<!-- _createModal.gsp -->

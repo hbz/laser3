@@ -1,3 +1,4 @@
+<!-- _help.gsp -->
 <table id="help" class="ui table" hidden="hidden">
     <thead>
         <tr>
@@ -32,3 +33,4 @@
     </tr>
     </tbody>
 </table>
+<!-- _help.gsp -->

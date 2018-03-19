@@ -66,6 +66,20 @@
 					</dl>
 				</div>
 
+				<sec:ifAnyGranted roles="ROLE_YODA">
+					<h3 class="ui header">ROLE_YODA</h3>
+					<div class="inline-lists">
+						<dl>
+							<dt><g:message code="address.prs.label" default="Prs" /></dt>
+							<dd>TODO: SELECT PERSON</dd>
+
+
+							<dt><g:message code="address.org.label" default="Org" /></dt>
+							<dd>TODO: SELECT ORG</dd>
+						</dl>
+					</div>
+				</sec:ifAnyGranted>
+
 				<g:if test="${editable}">
 					<g:form>
 						<g:hiddenField name="id" value="${addressInstance?.id}" />

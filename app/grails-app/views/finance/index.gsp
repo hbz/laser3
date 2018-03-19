@@ -58,58 +58,69 @@
     <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
 </g:else>
 
+<div class="ui grid">
+    <div class="column">
+        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentDialog" id="showHideRecent">Recent Costs</button>
+
+        <g:if test="${editable}">
+            <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
+            <button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_create_modal" id="addNew">Add New Cost</button>
+        </g:if>
+        <g:if test="${editable}">
+            <div id="CreateTemplateWrapper" class="wrapper"><!-- modal dialog -->
+                <g:render template="createModal" />
+            </div>
+        </g:if>
+    </div>
+</div>
+
     <div style="padding-left: 2%" hidden="hidden" class="loadingData">
         <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
     </div>
 
-    <div class="ui grid">
-        <div class="sixteen wide column">
-
-    <div id="recentModalWrapper" class="wrapper">
-        <div class="modal hide" id="recentDialog">
+    <div id="recentModalWrapper" class="wrapper"><!-- modal dialog -->
+        <div class="ui modal hide" id="recentDialog">
             <div class="modal-header">
-                <button class="close" data-dismiss="modal">×</button>
                 <h3 class="ui header">Recently Updated Cost Items</h3>
             </div>
             <div class="modal-body">
                 <div id="recent">
-                    <g:render template="recentlyAdded"></g:render>
+                    <g:render template="recentlyAdded" />
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="userError" hidden="">
-        <table class="ui celled la-table table">
-            <thead>
-            <tr><th>Problem/Update</th>
-                <th>Info</th></tr>
-            </thead>
-            <tbody><tr></tr></tbody>
-        </table>
-    </div>
+    <div class="ui grid">
+        <div class="sixteen wide column">
 
-    <div id="filterTemplateWrapper" class="wrapper">
-        <div id="filterTemplate">
-            <g:render template="filter"></g:render>
-        </div>
-    </div>
+            <div id="userError" hidden="">
+                <table class="ui celled la-table table">
+                    <thead>
+                    <tr><th>Problem/Update</th>
+                        <th>Info</th></tr>
+                    </thead>
+                    <tbody><tr></tr></tbody>
+                </table>
+            </div>
 
-    <br/><br/><br/><br/><br/>
+            <div id="filterTemplateWrapper" class="wrapper">
+                <div id="filterTemplate">
+                    <g:render template="filter" />
+                </div>
+            </div>
 
-    <div style="padding-left: 2%" hidden="hidden" class="loadingData">
-        <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
-    </div>
-    <g:if test="${editable}">
-        <div id="CreateTemplateWrapper" class="wrapper">
-            <g:render template="create"></g:render>
-        </div>
-    </g:if>
+            <br/><br/><br/><br/><br/>
 
-    <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
+            <div style="padding-left: 2%" hidden="hidden" class="loadingData">
+                <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
+            </div>
 
-    </div><!-- .sixteen -->
-</div><!-- .grid -->
+            <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
+
+        </div><!-- .sixteen -->
+    </div><!-- .grid -->
+
 <r:script type="text/javascript">
 
      //todo use AJAX promises
@@ -126,8 +137,6 @@
                 delCheckboxes:'.bulkcheck',
                 delBatch:'#BatchSelectedBtn',
                 paginateData:'#paginateInfo',
-                advFilterBtn:'#advancedFilter',
-                advFilterOpts:'#advancedFilterOpt',
                 filterModSelect2a:'.modifiedReferenceTypedown.refData',
                 filterModSelect2b:'.modifiedReferenceTypedown.refObj',
                 filterSubscription:'#subscriptionFilter',
@@ -675,10 +684,6 @@
 
             $(document).ajaxStart(startLoadAnimation);
             $(document).ajaxStop(stopLoadAnimation);
-
-            s.mybody.on("click","#advancedFilter", function() {
-              $( "#advSearchRow" ).slideToggle("fast");
-            });
 
             s.misc.inSubMode = "${inSubMode}" == "true";
             console.log('In subscription only mode',s.misc.inSubMode);

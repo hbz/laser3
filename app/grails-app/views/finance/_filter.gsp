@@ -1,3 +1,4 @@
+<!-- _filter.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 %{--AJAX rendered messages--}%
 <g:if test="${info}">
@@ -24,70 +25,191 @@
 %{--Basic static help text--}%
 <g:render template="help" />
 
-<button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
-<g:if test="${editable}">
-    <button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
-    <button class="ui button pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
-</g:if>
+<semui:filter>
+    <g:form id="filterView" class="ui form" action="index" method="post">
+        <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
 
-<g:form id="filterView" class="ui form" action="index" method="post">
-    <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+        <div class="three fields">
+            <div class="field">
+                <label for="adv_codes">Budgetcode</label>
+                <input id="adv_codes" name="adv_codes" />
+            </div>
+            <div class="field">
+                <label for="adv_costItemCategory">Kategorie</label>
+                <g:select id="adv_costItemCategory"
+                          name="adv_costItemCategory"
+                          from="${costItemCategory}"
+                          optionKey="id"
+                          noSelection="${['':'No Category']}"/>
+            </div>
+            <div class="field">
+                <label>Package</label>
+                <input type="text" name="packageFilter" class="filterUpdated" id="packageFilter" value="${params.packageFilter}" />
+            </div>
+        </div><!-- row1 -->
+
+        <div class="three fields">
+            <div class="field">
+                <label>Rechnungsnr.</label><!-- invoice -->
+                <input type="text" name="invoiceNumberFilter"
+                       class="filterUpdated"
+                       id="filterInvoiceNumber" value="${params.invoiceNumberFilter}" />
+            </div>
+
+            <div class="field">
+                <label for="adv_costItemStatus">Status</label>
+                <g:select id="adv_costItemStatus"
+                          name="adv_costItemStatus"
+                          from="${costItemStatus}"
+                          optionKey="id"
+                          noSelection="${['':'No Status']}"/>
+            </div>
+
+            <div class="field">
+                <label>Subscription</label>
+                <g:if test="${inSubMode == true}">
+                    <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
+                           data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}"  />
+                </g:if>
+                <g:else>
+                    <input type="text" name="subscriptionFilter" data-filterMode="" id="subscriptionFilter" value="${params.subscriptionFilter}" />
+                </g:else>
+                <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
+            </div>
+        </div><!-- row2 -->
+
+        <div class="three fields">
+
+            <div class="field">
+                <label>Bestellnummer</label>
+                <input type="text" name="orderNumberFilter"
+                       class="filterUpdated"
+                       id="filterOrderNumber"  value="${params.orderNumberFilter}" data-type="select"/>
+            </div>
+
+            <div class="field">
+                <label>Steuer</label>
+                <input type="text" value="placeholder" />
+            </div>
+
+            <div class="field">
+                <label for="adv_ie">Issue Entitlement</label>
+                <input id="adv_ie" name="adv_ie" class="input-large"/>
+            </div>
+        </div><!-- row3 -->
+
+        <div class="three fields">
+            <div class="field">
+            </div>
+            <div class="field">
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <%--<span ${wildcard && filterMode=='ON'? hidden="hidden" : ''}>
+                        (${g.message(code: 'financials.help.wildcard')} : <g:checkBox name="wildcard" title="${g.message(code: 'financials.wildcard.title')}" type="checkbox" value="${wildcard}"></g:checkBox> )
+                    </span>--%>
+                    <input type="hidden" name="wildcard" value="on" />
+                    <label>&nbsp;</label>
+                    <div id="filtering" class="btn-group" data-toggle="buttons-radio">
+                        <g:if test="${filterMode=='OFF'}">
+                            <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui button"></g:select>
+                        </g:if>
+                        <g:hiddenField type="hidden" name="resetMode" value="${params.resetMode}"></g:hiddenField>
+                        <%--<g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>--%>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui secondary button" value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
+                </div>
+            </div>
+        </div><!-- row4 -->
+
+        <%-- advanced legacy filter fields here --%>
+        <%-- advanced legacy filter fields here --%>
+        <%-- advanced legacy filter fields here --%>
+
+        <div class="three fields">
+            <div class="two fields">
+                <div class="field">
+                    <label for="adv_datePaid">Date Paid</label>
+                    <select name="_adv_datePaidType" class="input-mini"  id="adv_datePaidType">
+                        <option value="">N/A</option>
+                        <option value="eq">==</option>
+                        <option value="gt">&gt;</option>
+                        <option value="gt">&lt;</option>
+                    </select>
+                </div>
+                <semui:datepicker label="financials.datePaid" name="newDate" placeholder ="financials.datePaid" value="${params.newDate}" />
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="two fields">
+                <div class="field">
+                    <label for="adv_amount">Local Amount </label>
+                    <select name="_adv_amountType" class="input-mini"  id="adv_amountType">
+                        <option value="">N/A</option>
+                        <option value="eq">==</option>
+                        <option value="gt">&gt;</option>
+                        <option value="gt">&lt;</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <input id="adv_amount" name="adv_amount" type="number" step="0.01" />
+                </div>
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="two fields">
+                <semui:datepicker label ="datamanager.changeLog.from_date" name="newStartDate" placeholder ="default.date.label" />
+                <semui:datepicker label ="datamanager.changeLog.to_date" name="newEndDate" placeholder ="default.date.label" value ="${params.endDate}" />
+            </div>
+
+            <div class="field">
+                <label for="adv_ref">Cost Reference</label>
+                <input id="adv_ref" name="adv_ref" />
+            </div>
+        </div>
+
+    </g:form>
+
         <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
+
             <thead>
                 <tr>
-                    <th rowspan="2" style="vertical-align: top; cursor: pointer;"><a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*</th>
-                    <th><a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>* <br/>
-                        <input autofocus="true" type="text" name="invoiceNumberFilter"
-                               class="input-medium required-indicator filterUpdated"
-                               id="filterInvoiceNumber" value="${params.invoiceNumberFilter}"/>
+                    <th rowspan="2" style="vertical-align: top; cursor: pointer;">
+                        <a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*
                     </th>
-                    <th><a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
-                        <input type="text" name="orderNumberFilter"
-                               class="input-medium required-indicator filterUpdated"
-                               id="filterOrderNumber"  value="${params.orderNumberFilter}" data-type="select"/>
+                    <th>
+                        <a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>*
                     </th>
-                    <th><a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*<br/>
-                        <g:if test="${inSubMode == true}">
-                            <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
-                                   data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}" class="input-medium required-indicator" style="width:250px;"  /> <br/>
-                        </g:if>
-                        <g:else>
-                            <input data-filterMode="" class="input-medium required-indicator" style="width:250px;" name="subscriptionFilter" id="subscriptionFilter" value="${params.subscriptionFilter}" /> <br/>
-                        </g:else>
-                        <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
+                    <th>
+                       <a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
                     </th>
-                    <th> <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>* <br/>
-                        <input class="input-medium required-indicator filterUpdated" style="width:250px;" name="packageFilter" id="packageFilter" value="${params.packageFilter}"/> <br/>
+                    <th>
+                        <a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*
+                    </th>
+                    <th>
+                        <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>*
                     </th>
                     <th style="vertical-align: top">IE</th>
-                    <th rowspan="2" style="vertical-align: top; text-align: center">Filter
-                        <span ${wildcard && filterMode=='ON'? hidden="hidden" : ''}>
-                            (${g.message(code: 'financials.help.wildcard')} : <g:checkBox name="wildcard" title="${g.message(code: 'financials.wildcard.title')}" type="checkbox" value="${wildcard}"></g:checkBox> )
-                        </span>
-                        <br/>
-                        <div id="filtering" class="btn-group" data-toggle="buttons-radio">
-                            <g:if test="${filterMode=='OFF'}">
-                                <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui button"></g:select><br/><br/>
-                            </g:if>
-                            <g:hiddenField type="hidden" name="resetMode" value="${params.resetMode}"></g:hiddenField>
-                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
 
-                        </div>
-                        <br />
-                        %{-- Advanced search options, todo complete... --}%
-                        <a style="cursor: pointer;" ${filterMode=="ON"?"hidden='hidden'":''} id="advancedFilter" data-toggle="#">More filter options</a>
-                    </th>
 
-                %{--If has editable rights, allow delete column to be shown--}%
+                <%-- {--If has editable rights, allow delete column to be shown--}%
                     <g:if test="${editable}">
                         <th rowspan="2" colspan="1" style="vertical-align: top;">Delete
                             <br/><br/> <input title="${g.message(code: 'financials.deleteall.title')}" id="selectAll" type="checkbox" value=""/>
                         </th>
-                    </g:if>
+                    </g:if> --%>
                 </tr>
                 %{--End of table row one of headers--}%
 
+
                 <tr style="width: 100%;">
+                    <th></th>
                     <th>
                         <a style="color: #990100; vertical-align: top; cursor: pointer;" data-order="datePaid" class="sortable ${order=="datePaid"? "sorted ${sort}":''}">Date Paid</a>*<br/><br/>
 
@@ -110,74 +232,6 @@
             </thead>
             <tbody>
 
-            %{--Advanced row section... done like so to avoid use of existing headers--}%
-            <tr hidden="hidden" id="advSearchRow" style="height: 100px;">
-                <td colspan="8">
-                    <div>
-                        <ul class="inline">
-                            <li>
-                                <label for="adv_ref">Cost Reference</label>
-                                <input id="adv_ref" name="adv_ref" class="input-medium"/>
-                            </li>
-                            <li>
-                                <label for="adv_codes">Codes</label>
-                                <input id="adv_codes" name="adv_codes" class="input-medium"/>
-                            </li>
-                            <li>
-                                <div class="fields">
-                                    <semui:datepicker label ="datamanager.changeLog.from_date" name="newStartDate" placeholder ="default.date.label" >
-                                    </semui:datepicker>
-                                    <semui:datepicker label ="datamanager.changeLog.to_date" name="newEndDate" placeholder ="default.date.label" value ="${params.endDate}">
-                                    </semui:datepicker>
-                                </div>
-                            </li>
-                            <li>
-                                <label for="adv_costItemStatus">Cost Status</label>
-                                <g:select id="adv_costItemStatus"
-                                          name="adv_costItemStatus"
-                                          from="${costItemStatus}"
-                                          optionKey="id"
-                                          noSelection="${['':'No Status']}"/>
-                            </li>
-                            <li>
-                                <label for="adv_costItemCategory">Cost Category</label>
-                                <g:select id="adv_costItemCategory"
-                                          name="adv_costItemCategory"
-                                          from="${costItemCategory}"
-                                          optionKey="id"
-                                          noSelection="${['':'No Category']}"/>
-                            </li>
-                            <li>
-                                <label for="adv_amount">Local Amount </label>
-                                <select name="_adv_amountType" class="input-mini"  id="adv_amountType">
-                                    <option value="">N/A</option>
-                                    <option value="eq">==</option>
-                                    <option value="gt">&gt;</option>
-                                    <option value="gt">&lt;</option>
-                                </select>
-                                <input  id="adv_amount" name="adv_amount" type="number" class="input-small" step="0.01" /> </br>
-                            </li>
-                            <li>
-                                <label for="adv_datePaid">Date Paid</label>
-                                <select name="_adv_datePaidType" class="input-mini"  id="adv_datePaidType">
-                                    <option value="">N/A</option>
-                                    <option value="eq">==</option>
-                                    <option value="gt">&gt;</option>
-                                    <option value="gt">&lt;</option>
-                                </select>
-
-                                <semui:datepicker label="financials.datePaid" name="newDate" placeholder ="financials.datePaid" value="${params.newDate}" >
-                                </semui:datepicker>
-                            </li>
-                            <li>
-                                <label for="adv_ie">Issue Entitlement</label>
-                                <input id="adv_ie" name="adv_ie" class="input-large"/>
-                            </li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-
             %{--blank row--}%
             <tr><td colspan="10">&nbsp;</td></tr>
 
@@ -191,7 +245,8 @@
             </g:else>
             </tbody>
         </table>
-</g:form>
+
+</semui:filter>
 
 <div id="paginationWrapper" class="pagination">
     <div id="paginateInfo" hidden="true" data-offset="${offset!=null?offset:params.offset}" data-max="${max!=null?max:params.max}"
@@ -201,9 +256,9 @@
          data-invoiceNumberFilter="${params.invoiceNumberFilter}" data-orderNumberFilter="${params.orderNumberFilter}" data-packageFilter="${params.packageFilter}">
     </div>
 
-
     <util:remotePaginate title="${g.message(code: 'financials.pagination.title')}"
           onFailure="errorHandling(textStatus,'Pagination',errorThrown)" onComplete="Finance.rebind();Finance.scrollTo(null,'#costTable');" update="filterTemplate"
           offset='0'  total="${cost_item_count}"  max="20" pageSizes="[10, 20, 50, 100, 200]" alwaysShowPageSizes="true" controller="finance" action="index"
            params="${params+["filterMode": "${filterMode}", "sort":"${sort}", "order":"${order}", "format":"frag", "inSubMode":"${inSubMode}", "sub":"${fixedSubscription?.id}"]}" />
 </div>
+<!-- _filter.gsp -->
