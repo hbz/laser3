@@ -492,7 +492,7 @@ class BootStrap {
         if (! SitePage.findAll()) {
             def home    = new SitePage(alias: "Home",    action: "index",       controller: "home").save()
             def profile = new SitePage(alias: "Profile", action: "index",       controller: "profile").save()
-            def pages   = new SitePage(alias: "Pages",   action: "managePages", controller: "spotlight").save()
+            //def pages   = new SitePage(alias: "Pages",   action: "managePages", controller: "spotlight").save()
 
             dataloadService.updateSiteMapping()
         }

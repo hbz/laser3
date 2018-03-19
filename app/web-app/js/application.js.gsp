@@ -102,21 +102,17 @@ r2d2 = {
             }
         });
 
-        $('.dlpopover').popover({html:true,
-                                placement:'left',
-                                title:'${message(code: "spotlight.search")}',
-                                trigger:'click',
-          template:
-      '<div class="popover" style="width: 600px; top: 10%"><div></div>
-
-    <div class="popover-inner"><h3 class="popover-title"></h3>
-
-        <div class="popover-content"></div></div></div>',
-                                'max-width':600,
-                                content:function() {
-                                return getContent();}
+        $('.dlpopover').popover({
+            html:true,
+            placement:'left',
+            title:'${message(code: "spotlight.search")}',
+            trigger:'click',
+            template:'<div class="popover" style="width: 600px; top: 10%"><div></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>',
+            'max-width':600,
+            content:function() {
+                return r2d2.spotlightGetContent();
+            }
         });
-
     },
 
     semuiStuff : function() {
@@ -164,20 +160,19 @@ r2d2 = {
 
         // sticky
         $('.ui.sticky').sticky({offset: 120})
+    },
+
+    spotlightGetContent : function() {
+        return $.ajax({
+            type: "GET",
+            url: "<g:createLink controller='spotlight' action='index'/>",
+            cache: false,
+            async: false
+        }).responseText;
     }
 }
 
 $(document).ready(function() {
     r2d2.go()
 })
-
-
-function getContent() {
-    return $.ajax({
-        type: "GET",
-        url: "<g:createLink controller='spotlight' action='index'/>",
-        cache: false,
-        async: false
-    }).responseText;
-}
 
