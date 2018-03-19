@@ -1,3 +1,4 @@
+<!-- _filter.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 %{--AJAX rendered messages--}%
 <g:if test="${info}">
@@ -24,29 +25,116 @@
 %{--Basic static help text--}%
 <g:render template="help" />
 
-<button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
+<button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}"  href="#recentDialog" id="showHideRecent">Recent Costs</button>
+
 <g:if test="${editable}">
-    <button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>
+    <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
     <button class="ui button pull-right" type="submit" title="${g.message(code: 'financials.addNew.title')}" data-offset="#createCost" id="addNew">Add New Cost</button>
 </g:if>
+
+<semui:filter>
+    <g:form id="filterViewNEW" class="ui form" action="index" method="post">
+        <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+        <div class="three fields">
+            <div class="field">
+                <label for="adv_codes">Budgetcode</label>
+                <input id="adv_codes" name="adv_codes" class="input-medium"/>
+            </div>
+            <div class="field">
+                <label for="adv_costItemCategory">Kategorie</label>
+                <g:select id="adv_costItemCategory"
+                          name="adv_costItemCategory"
+                          from="${costItemCategory}"
+                          optionKey="id"
+                          noSelection="${['':'No Category']}"/>
+            </div>
+            <div class="field">
+                <label>Package</label>
+                <input type="text" name="packageFilter" class="input-medium filterUpdated" id="packageFilter" value="${params.packageFilter}" />
+            </div>
+        </div><!-- row1 -->
+
+        <div class="three fields">
+            <div class="field">
+                <label>Rechnungsnr.</label><!-- invoice -->
+                <input type="text" name="invoiceNumberFilter"
+                       class="input-medium filterUpdated"
+                       id="filterInvoiceNumber" value="${params.invoiceNumberFilter}" />
+            </div>
+
+            <div class="field">
+                <label for="adv_costItemStatus">Status</label>
+                <g:select id="adv_costItemStatus"
+                          name="adv_costItemStatus"
+                          from="${costItemStatus}"
+                          optionKey="id"
+                          noSelection="${['':'No Status']}"/>
+            </div>
+
+            <div class="field">
+                <label>Subscription</label>
+                <g:if test="${inSubMode == true}">
+                    <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
+                           data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}" class="input-mediumr" />
+                </g:if>
+                <g:else>
+                    <input type="text" name="subscriptionFilter" data-filterMode="" class="input-medium"  id="subscriptionFilter" value="${params.subscriptionFilter}" />
+                </g:else>
+                <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
+            </div>
+        </div><!-- row2 -->
+
+        <div class="three fields">
+
+            <div class="field">
+                <label>Bestellnummer</label>
+                <input type="text" name="orderNumberFilter"
+                       class="input-medium filterUpdated"
+                       id="filterOrderNumber"  value="${params.orderNumberFilter}" data-type="select"/>
+            </div>
+
+            <div class="field">
+                <label>Steuer</label>
+                <input type="text" value="placeholder" />
+            </div>
+
+            <div class="field">
+                <label for="adv_ie">Issue Entitlement</label>
+                <input id="adv_ie" name="adv_ie" class="input-large"/>
+            </div>
+        </div><!-- row3 -->
+
+        <div class="three fields">
+            <div class="field">
+            </div>
+            <div class="field">
+            </div>
+            <div class="field">
+                <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui secondary button" value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
+            </div>
+        </div><!-- row4 -->
+    </g:form>
+</semui:filter>
+
 
 <g:form id="filterView" class="ui form" action="index" method="post">
     <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
         <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
+
             <thead>
                 <tr>
-                    <th rowspan="2" style="vertical-align: top; cursor: pointer;"><a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*</th>
-                    <th><a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>* <br/>
+                    <%--<th rowspan="2" style="vertical-align: top; cursor: pointer;"><a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*</th>--%>
+                    <%--<th><a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>* <br/>
                         <input autofocus="true" type="text" name="invoiceNumberFilter"
                                class="input-medium required-indicator filterUpdated"
                                id="filterInvoiceNumber" value="${params.invoiceNumberFilter}"/>
-                    </th>
-                    <th><a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
+                    </th>--%>
+                   <%--<th><a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
                         <input type="text" name="orderNumberFilter"
                                class="input-medium required-indicator filterUpdated"
                                id="filterOrderNumber"  value="${params.orderNumberFilter}" data-type="select"/>
-                    </th>
-                    <th><a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*<br/>
+                    </th>--%>
+                    <%--<th><a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*<br/>
                         <g:if test="${inSubMode == true}">
                             <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
                                    data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}" class="input-medium required-indicator" style="width:250px;"  /> <br/>
@@ -55,10 +143,10 @@
                             <input data-filterMode="" class="input-medium required-indicator" style="width:250px;" name="subscriptionFilter" id="subscriptionFilter" value="${params.subscriptionFilter}" /> <br/>
                         </g:else>
                         <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
-                    </th>
-                    <th> <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>* <br/>
+                    </th>--%>
+                   <%--<th> <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>* <br/>
                         <input class="input-medium required-indicator filterUpdated" style="width:250px;" name="packageFilter" id="packageFilter" value="${params.packageFilter}"/> <br/>
-                    </th>
+                    </th>--%>
                     <th style="vertical-align: top">IE</th>
                     <th rowspan="2" style="vertical-align: top; text-align: center">Filter
                         <span ${wildcard && filterMode=='ON'? hidden="hidden" : ''}>
@@ -70,7 +158,7 @@
                                 <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui button"></g:select><br/><br/>
                             </g:if>
                             <g:hiddenField type="hidden" name="resetMode" value="${params.resetMode}"></g:hiddenField>
-                            <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
+                            <%--<g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui button"  value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>--%>
 
                         </div>
                         <br />
@@ -119,10 +207,10 @@
                                 <label for="adv_ref">Cost Reference</label>
                                 <input id="adv_ref" name="adv_ref" class="input-medium"/>
                             </li>
-                            <li>
+                            <%--<li>
                                 <label for="adv_codes">Codes</label>
                                 <input id="adv_codes" name="adv_codes" class="input-medium"/>
-                            </li>
+                            </li>--%>
                             <li>
                                 <div class="fields">
                                     <semui:datepicker label ="datamanager.changeLog.from_date" name="newStartDate" placeholder ="default.date.label" >
@@ -131,22 +219,22 @@
                                     </semui:datepicker>
                                 </div>
                             </li>
-                            <li>
+                            <%--<li>
                                 <label for="adv_costItemStatus">Cost Status</label>
                                 <g:select id="adv_costItemStatus"
                                           name="adv_costItemStatus"
                                           from="${costItemStatus}"
                                           optionKey="id"
                                           noSelection="${['':'No Status']}"/>
-                            </li>
-                            <li>
+                            </li>--%>
+                            <%--<li>
                                 <label for="adv_costItemCategory">Cost Category</label>
                                 <g:select id="adv_costItemCategory"
                                           name="adv_costItemCategory"
                                           from="${costItemCategory}"
                                           optionKey="id"
                                           noSelection="${['':'No Category']}"/>
-                            </li>
+                            </li>--%>
                             <li>
                                 <label for="adv_amount">Local Amount </label>
                                 <select name="_adv_amountType" class="input-mini"  id="adv_amountType">
@@ -166,13 +254,12 @@
                                     <option value="gt">&lt;</option>
                                 </select>
 
-                                <semui:datepicker label="financials.datePaid" name="newDate" placeholder ="financials.datePaid" value="${params.newDate}" >
-                                </semui:datepicker>
+                                <semui:datepicker label="financials.datePaid" name="newDate" placeholder ="financials.datePaid" value="${params.newDate}" />
                             </li>
-                            <li>
+                            <%--<li>
                                 <label for="adv_ie">Issue Entitlement</label>
                                 <input id="adv_ie" name="adv_ie" class="input-large"/>
-                            </li>
+                            </li>--%>
                         </ul>
                     </div>
                 </td>
@@ -193,6 +280,7 @@
         </table>
 </g:form>
 
+
 <div id="paginationWrapper" class="pagination">
     <div id="paginateInfo" hidden="true" data-offset="${offset!=null?offset:params.offset}" data-max="${max!=null?max:params.max}"
          data-wildcard="${wildcard!=null?wildcard:params.wildcard}" data-insubmode="${inSubMode}" data-sub="${fixedSubscription?.id}"
@@ -201,9 +289,9 @@
          data-invoiceNumberFilter="${params.invoiceNumberFilter}" data-orderNumberFilter="${params.orderNumberFilter}" data-packageFilter="${params.packageFilter}">
     </div>
 
-
     <util:remotePaginate title="${g.message(code: 'financials.pagination.title')}"
           onFailure="errorHandling(textStatus,'Pagination',errorThrown)" onComplete="Finance.rebind();Finance.scrollTo(null,'#costTable');" update="filterTemplate"
           offset='0'  total="${cost_item_count}"  max="20" pageSizes="[10, 20, 50, 100, 200]" alwaysShowPageSizes="true" controller="finance" action="index"
            params="${params+["filterMode": "${filterMode}", "sort":"${sort}", "order":"${order}", "format":"frag", "inSubMode":"${inSubMode}", "sub":"${fixedSubscription?.id}"]}" />
 </div>
+<!-- _filter.gsp -->

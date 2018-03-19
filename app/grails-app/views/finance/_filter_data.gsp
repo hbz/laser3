@@ -1,3 +1,4 @@
+<!-- _filter_data.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 %{--Two rows of data per CostItem--}%
 
@@ -41,9 +42,11 @@
                         data-defaultValue="${ci?.issueEntitlement?.tipp?.title?.title}" data-ownerid="${ci.id}"
                         data-owner="${ci.class.name}" baseClass="com.k_int.kbplus.IssueEntitlement"/>
         </td>
+        <%--
         <g:if test="${editable}">
             <td rowspan="2"> <input type="checkbox" value="${ci.id}" class="bulkcheck"/> </td>
         </g:if>
+        --%>
     </tr>
     <tr id="bulkdelete-b${ci.id}">
         <td>
@@ -102,3 +105,4 @@
         </td>
     </tr>
 </g:each>
+<!-- _filter_data.gsp -->
