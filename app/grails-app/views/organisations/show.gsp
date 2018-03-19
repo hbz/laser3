@@ -192,13 +192,19 @@
                                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
                                             <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
                                         </g:if>
+                                        <g:if test="${pl?.responsibilityType?.value && pl?.prs?.isPublic?.value!='No'}">
+                                            <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+                                        </g:if>
                                     </g:each>
                                 </div>
                                 <g:if test="${editable}">
-                                    <g:link controller="person" action="create" class="ui button"
-                                            params="['tenant.id': contextOrg?.id, 'org.id': orgInstance.id, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes').id ]" >
-                                        ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
-                                    </g:link>
+                                    <g:if test="${editable}">
+                                        <input class="ui button"
+                                               value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                                               data-semui="modal"
+                                               href="#personFormModal" />
+                                    </g:if>
+                                    <g:render template="/person/formModal" model="['tenant': contextOrg, 'org': orgInstance, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes')]"/>
                                 </g:if>
                             </dd>
                         </dl>

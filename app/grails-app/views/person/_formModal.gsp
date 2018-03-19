@@ -11,7 +11,6 @@
                 <div class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
                     <label for="first_name">
                         <g:message code="person.first_name.label" default="Firstname" />
-                        <span class="required-indicator">*</span>
                     </label>
                     <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
                 </div>
@@ -33,7 +32,6 @@
                 <div class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
                     <label for="last_name">
                         <g:message code="person.last_name.label" default="Lastname" />
-                        <span class="required-indicator">*</span>
                     </label>
                     <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
 
@@ -42,7 +40,6 @@
                 <div class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
                     <label for="gender">
                         <g:message code="person.gender.label" default="Gender" />
-
                     </label>
                     <laser:select id="gender" name="gender"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
@@ -91,16 +88,20 @@
                 <div class="field wide twelve fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
                     <label for="tenant">
                         <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
-                        <span class="required-indicator">*</span>
                     </label>
-                    <g:select id="tenant" name="tenant.id" from="${cService.getMemberships()}"
-                              optionKey="id" value="${cService.getOrg()?.id}" />
+                    <g:if test="${cService.getOrg()}">
+                        ${cService.getOrg().name}
+                        <input type="hidden" name="tenant.id" value="${cService.getOrg().id}" />
+                    </g:if>
+                    <g:else>
+                        <g:select id="tenant" name="tenant.id" from="${cService.getMemberships()}"
+                                  optionKey="id" value="${cService.getOrg()?.id}" />
+                    </g:else>
                 </div>
 
                 <div class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
                     <label for="isPublic">
                         <g:message code="person.isPublic.label" default="IsPublic" />
-                        <span class="required-indicator">*</span>
                     </label>
                     <% /*
                     <laser:select id="isPublic" name="isPublic"
