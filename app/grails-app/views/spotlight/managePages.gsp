@@ -10,8 +10,6 @@
     <semui:breadcrumbs>
         <semui:crumb  message="spotlight.addSpotlightPage" class="active"/>
     </semui:breadcrumbs>
-
-
    <div>
 
     <g:if test="${flash.error}">
@@ -53,13 +51,17 @@
               
               </tbody>
           </table>
-
+      <hr>
+      <h4>${message(code: "spotlight.addSpotlightPage")}</h4>
       <g:form action="managePages" method="POST">
-        <label>Controller: </label><input type="text" name="newCtrl"/>
-        <label>Action: </label><input type="text" name="newAction"/>
-        <label>Alias: </label><input type="text" name="newAlias"/>
-        <label></label><input type="submit" value="Add New Page" class="ui button"/>
+          <table class="ui celled la-table table">
+              <tr><td><label>Controller:</label></td><td><input type="text" name="newCtrl"/></td></tr>
+              <tr><td><label>Action:</label></td><td><input type="text" name="newAction"/></td></tr>
+              <tr><td><label>Alias:</label></td><td><input type="text" name="newAlias"/></td></tr>
+              <tr><td></td><td><input type="submit" value="Add New Page" class="ui button"/></td></tr>
+          </table>
       </g:form>
+      <hr>
       </div>
     </div>
       <r:script language="JavaScript">

@@ -45,7 +45,7 @@
 <div class="secInfoWrapper">
     <div class="ui list">
         <div class="item">
-            <span>INST_ADMIN</span> &rArr;
+            <span>INST_ADM</span> &rArr;
             <span>INST_EDITOR</span> &rArr;
             <span>INST_USER</span> (implizit Prüfung auf <span class="ROLE_USER">ROLE_USER</span>)
         </div>
@@ -71,7 +71,10 @@
                         <div class="ui divided list">
                             <g:each in="${c.value.methods}" var="method">
                                 <div class="item">
-                                    ${method.key}
+                                    <% def controllerName = c.key.substring(17)
+                                    controllerName = controllerName.split('Controller') %>
+                                    <g:link controller="${controllerName[0]}"
+                                            action="${method.key}">${method.key}</g:link>
                                     <g:each in="${method.value}" var="v">
                                         <span class="${v}">${v}</span>
                                     </g:each>

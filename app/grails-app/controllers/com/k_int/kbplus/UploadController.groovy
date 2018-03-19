@@ -76,8 +76,8 @@ class UploadController {
   /**
   * Ingest a package
   */
-    @Secured(['ROLE_DATAMANAGER'])
-  def processUploadSO(upload) {
+
+  private def processUploadSO(upload) {
 
     def new_pkg_id = null
     log.debug("Content provider value is ${upload.soProvider.value}");
@@ -259,8 +259,8 @@ class UploadController {
     upload.new_pkg_id = new_pkg_id
   }
 
-    @Secured(['ROLE_DATAMANAGER'])
-  def lookupOrCreateTitleInstance(identifiers,title,publisher,tipp) {
+
+  private def lookupOrCreateTitleInstance(identifiers, title, publisher, tipp) {
     // log.debug("lookupOrCreateTitleInstance ${identifiers}, ${title}, ${publisher}");
     def result = null;
     try {
@@ -315,8 +315,7 @@ class UploadController {
     return false
   }
 
-    @Secured(['ROLE_DATAMANAGER'])
-  def readSubscriptionOfferedCSV(request) {
+  private def readSubscriptionOfferedCSV(request) {
 
     def result = [:]
     result.processFile=true
@@ -387,7 +386,7 @@ class UploadController {
     return result;
   }
 
-  def readTippRow(cols, nl) {
+  private def readTippRow(cols, nl) {
     def result = [:]
 
     result.messages = []
@@ -436,7 +435,7 @@ class UploadController {
     return result;
   }
 
-  def processCsvLine(csv_line, field_name, col_num,result_map, parseAs, defval, isMandatory) {
+  private def processCsvLine(csv_line, field_name, col_num, result_map, parseAs, defval, isMandatory) {
     log.debug("  processCsvLine ${csv_line} ${field_name} ${col_num}... mandatory=${isMandatory}");
     def result = [:]
     result.messages = []
@@ -490,7 +489,7 @@ class UploadController {
     }
   }
 
-  def validateTipps(upload) {
+  private def validateTipps(upload) {
 
     def id_list = []
 
@@ -619,7 +618,7 @@ class UploadController {
     return true;
   }
 
-  def validISSN(issn_string) {
+  private def validISSN(issn_string) {
     def result = true;
     if ( ( issn_string ) && ( issn_string.trim() != '' ) ) {
       // Check issn_string matches regexp "[0-9]{4}-[0-9]{3}[0-9X]"
@@ -633,7 +632,7 @@ class UploadController {
     return result;
   }
 
-  def validISBN(isbn_string) {
+  private def validISBN(isbn_string) {
     def result = true;
     if ( ( isbn_string ) && ( isbn_string.trim() != '' ) ) {
       // Check issn_string matches regexp "[0-9]{4}-[0-9]{3}[0-9X]"
@@ -647,7 +646,7 @@ class UploadController {
     return result;
   }
 
-  def generateAndValidatePackageIdentifier(upload) {
+  private def generateAndValidatePackageIdentifier(upload) {
 
     if ( upload.soProvider?.value && upload.soPackageIdentifier?.value ) {
       upload.normPkgIdentifier = "${upload.soProvider.value?.trim()}:${upload.soPackageIdentifier.value?.trim()}"
@@ -679,7 +678,7 @@ class UploadController {
     return true
   }
 
-  def validateConsortia(upload) {
+  private def validateConsortia(upload) {
   if ( ( upload.consortium ) && ( upload.consortium.value ) ) {
     upload.consortiumOrg = Org.findByName(upload.consortium.value)
     if ( upload.consortiumOrg == null ) {
@@ -690,7 +689,7 @@ class UploadController {
   return true
   }
 
-  def validateColumnHeadings(upload) {
+  private def validateColumnHeadings(upload) {
     def cols_so_far = []
     int col = 0;
     upload.soHeaderLine.each { p ->
@@ -707,7 +706,7 @@ class UploadController {
     }
   }
 
-  def findTitleIdentifierIntersection(idlist) {
+  private def findTitleIdentifierIntersection(idlist) {
     def matched_title_ids = []
     def identifiers_to_check = ["eissn", "issn", "doi", "isbn"]
     idlist.each { id ->
@@ -736,7 +735,7 @@ class UploadController {
     return matched_title_ids;
   }
 
-  def checkTitleFingerprintMatch(matched_title_id, title_from_import_file, tipp, upload) {
+  private def checkTitleFingerprintMatch(matched_title_id, title_from_import_file, tipp, upload) {
     // log.debug("checkTitleFingerprintMatch ${matched_title_id}, ${title_from_import_file}");
     def title_instance = TitleInstance.get(matched_title_id)
     def generated_key_title = TitleInstance.generateKeyTitle(title_from_import_file)
@@ -748,7 +747,7 @@ class UploadController {
     }
   }
 
-  def incrementStatsCounter(result, counter) {
+  private def incrementStatsCounter(result, counter) {
     if ( result.stats == null ) {
       result.stats = [:]
     }

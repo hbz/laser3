@@ -159,8 +159,7 @@ class ProfileController {
         redirect(action: "index")
     }
 
-  @Secured(['ROLE_USER'])
-  def addTransforms() {
+    private def addTransforms() {
 
     def user = User.get(springSecurityService.principal.id)
     def transforms = Transforms.findById(params.transformId)
@@ -183,9 +182,9 @@ class ProfileController {
 
     redirect(action: "index")
   }
-  
-  @Secured(['ROLE_USER'])
-  def removeTransforms() {
+
+
+    private def removeTransforms() {
     def user = User.get(springSecurityService.principal.id)
     def transforms = Transforms.findById(params.transformId)
     

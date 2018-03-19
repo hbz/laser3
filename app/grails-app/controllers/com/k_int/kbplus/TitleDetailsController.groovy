@@ -162,7 +162,7 @@ class TitleDetailsController {
     result
   }
 
-  def reusedIdentifiers(title){
+    private def reusedIdentifiers(title) {
     // Test for identifiers that are used accross multiple titles
     def duplicates = [:]
     def identifiers = title.ids.collect{it.identifier}

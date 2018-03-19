@@ -115,7 +115,7 @@ class SubscriptionImportController {
     render (view:'packageSearch', model:result);
   }
 
-  def materialiseFolder(f) {
+  private def materialiseFolder(f) {
     def result = []
     f.each {
       def item_to_add = genericOIDService.resolveOID(it.referencedOid)
@@ -129,7 +129,7 @@ class SubscriptionImportController {
     result
   }
 
-  def generate(plist, inst) {
+  private def generate(plist, inst) {
     try {
       def m = generateMatrix(plist)
       exportWorkbook(m, inst);
@@ -140,7 +140,7 @@ class SubscriptionImportController {
     }
   }
 
-  def generateMatrix(plist) {
+  private def generateMatrix(plist) {
 
     def titleMap = [:]
     def subscriptionMap = [:]
@@ -239,7 +239,7 @@ class SubscriptionImportController {
     return final_result
   }
 
-  def exportWorkbook(m, inst) {
+  private def exportWorkbook(m, inst) {
     try {
       log.debug("export workbook");
   
@@ -454,7 +454,7 @@ class SubscriptionImportController {
     }
   }
 
-  def addCellComment(row, cell, comment_text, drawing, factory) {
+  private def addCellComment(row, cell, comment_text, drawing, factory) {
 
     // When the comment box is visible, have it show in a 1x3 space
     ClientAnchor anchor = factory.createClientAnchor();

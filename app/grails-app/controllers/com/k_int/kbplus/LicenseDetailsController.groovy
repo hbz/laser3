@@ -203,7 +203,7 @@ class LicenseDetailsController {
     }
   }
 
-  def getAvailableSubscriptions(license,user){
+    private def getAvailableSubscriptions(license, user) {
     def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
       orgRole.roleType?.value == "Licensee"
     }?.collect{  permissionHelperService.hasUserWithRole(user, it.org, 'INST_ADM') ? it.org : null  }

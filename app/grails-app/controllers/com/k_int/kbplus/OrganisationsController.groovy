@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured // 2.0
 import com.k_int.kbplus.auth.*;
@@ -231,8 +232,9 @@ class OrganisationsController {
         result.authorizedOrgs = result.user?.authorizedOrgs
         result
     }
-    
-    @Secured(['ROLE_USER'])
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def users() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -392,7 +394,8 @@ class OrganisationsController {
         }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def revokeRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -404,7 +407,8 @@ class OrganisationsController {
       redirect action: 'users', id: params.id
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def enableRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -435,7 +439,8 @@ class OrganisationsController {
       }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
     def deleteRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
