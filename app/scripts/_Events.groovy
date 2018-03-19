@@ -23,7 +23,7 @@ eventCompileStart = { kind ->
 
 eventCreateWarStart = { warName, stagingDir ->
 
-  println "\nStart add additional properties]\n"
+  println "\n[Start add additional properties for war file]\n"
     def buildDateTimeStamp = LocalDateTime.now()
 
     def RevisionNumber = ant.antProject.properties."environment.GIT_COMMIT"?: ant.antProject.properties."environment.SVN_REVISION"
@@ -87,6 +87,6 @@ eventCreateWarStart = { warName, stagingDir ->
 //    writeProperties(properties, "${stagingDir}/WEB-INF/classes/application.properties")
 
 
-    println "\nStart add additional properties:\n DateTimeStamp:${buildDateTimeStamp}, RevisionNumber: ${RevisionNumber}, Checkedout Branch:${CheckedOutBranch}\n"
+    println "\n[End add additional properties for war file:\n DateTimeStamp:${buildDateTimeStamp}, RevisionNumber: ${RevisionNumber}, Checkedout Branch:${CheckedOutBranch}]\n"
 
   }
