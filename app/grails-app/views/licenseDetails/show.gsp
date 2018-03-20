@@ -6,7 +6,7 @@
   <head>
     <meta name="layout" content="semanticUI"/>
      <g:javascript src="properties.js"/>
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="license" default="License"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="license" default="License"/></title>
   </head>
 
     <body>

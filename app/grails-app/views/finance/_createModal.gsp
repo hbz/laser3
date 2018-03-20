@@ -1,6 +1,6 @@
 <!-- _createModal.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<semui:modal id="costItem_create_modal" text="${tmplText}">
+<semui:modal id="costItem_create_modal" text="${message(code:'financials.addNewCost')}">
     <g:form class="ui form" id="createCost" url="[controller:'finance', action:'newCostItem']">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
@@ -20,7 +20,7 @@
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>Budgetcode</label>
+                    <label>${message(code:'financials.budgetCode')}</label>
                     <input type="text" class="select2" placeholder="New code or lookup code" name="newBudgetCode" id="newBudgetCode" />
                 </div><!-- .field -->
 
@@ -38,30 +38,31 @@
 
             <div class="four wide column">
                 <div class="field">
-                    <label>Kategorie</label>
-                    <g:select name="newCostItemCategory"
+                    <label>${message(code:'financials.costItemCategory')}</label>
+                    <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}"
                           id="newCostItemCategory"
                           from="${costItemCategory}"
                           optionKey="id"
-                          title="${g.message(code: 'financials.addNew.costCategory')}"
-                          noSelection="${['':'No Category']}"/>
+                          optionValue="value"
+                          noSelection="${['':'']}"/>
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>Komponente</label>
-                    <g:select name="newCostItemElement"
+                    <label>${message(code:'financials.costItemElement')}</label>
+                    <laser:select name="newCostItemElement"
                               from="${costItemElement}"
                               optionKey="id"
-                              noSelection="${['':'No Element']}"/>
+                              optionValue="value"
+                              noSelection="${['':'']}"/>
                 </div><!-- .field -->
 
                 <div class="field">
                     <label>Steuerbar</label>
-                    <g:select name="newCostTaxType"
+                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}"
                               from="${taxType}"
                               optionKey="id"
-                              title="${g.message(code: 'financials.addNew.taxCateogry')}"
-                              noSelection="${['':'No Tax Type']}"/>
+                              optionValue="value"
+                              noSelection="${['':'']}"/>
                 </div><!-- .field -->
             </div><!-- .column -->
 
@@ -78,39 +79,38 @@
 
                 <div class="two fields">
                     <div class="field">
-                        <label>Rechnungsbetrag</label>
+                        <label>${message(code:'financials.invoice_total')}</label>
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" value="1" step="0.01"/> <br/>
                     </div>
                     <div class="field">
                         <label>&nbsp;</label>
-                        <g:select name="newCostCurrency"
+                        <g:select name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
-                                  title="${g.message(code: 'financials.addNew.currencyType')}"
                                   optionValue="text"/>
                     </div>
-                </div><!-- .field -->
+                </div><!-- .fields -->
             </div><!-- .column -->
 
             <div class="four wide column">
                 <div class="field">
-                    <label>Status</label>
-                    <g:select name="newCostItemStatus"
+                    <label>${message(code:'financials.costItemStatus')}</label>
+                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}"
                               id="newCostItemStatus"
                               from="${costItemStatus}"
                               optionKey="id"
-                              title="${g.message(code: 'financials.addNew.costState')}"
-                              noSelection="${['':'No Status']}"/>
+                              optionValue="value"
+                              noSelection="${['':'']}"/>
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>Rechnungsnr.</label>
+                    <label>${message(code:'financials.invoice_number')}</label>
                     <input type="text" name="newInvoiceNumber" class="input-medium"
                            placeholder="New item invoice #" id="newInvoiceNumber" value="${params.newInvoiceNumber}"/>
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>Bestellnummer</label>
+                    <label>${message(code:'financials.order_number')}</label>
                     <input type="text" name="newOrderNumber" class="input-medium"
                            placeholder="New Order #" id="newOrderNumber" value="${params.newOrderNumber}"/>
                 </div><!-- .field -->
@@ -118,7 +118,7 @@
 
             <div class="four wide column">
                 <div class="field">
-                    <label>Subscription</label>
+                    <label>${message(code:'subscription.label')}</label>
                     <input ${inSubMode ? "disabled='disabled' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
                             name="newSubscription" class="input-xlarge select2" placeholder="New Subscription" id="newSubscription"
                             value="${inSubMode ? fixedSubscription?.name : params.newSubscription}" data-subfilter=""/>
@@ -128,7 +128,7 @@
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>Package</label>
+                    <label>${message(code:'package.label')}</label>
                     <g:if test="${inSubMode}">
                         <input class="select2 input-xlarge"  data-subFilter="${fixedSubscription?.id}" data-disableReset="true" name="newPackage" id="newPackage" />
                     </g:if>
@@ -138,7 +138,7 @@
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>Issue Entitlement</label>
+                    <label>${message(code:'issueEntitlement.label')}</label>
                     <g:if test="${inSubMode}">
                         <input name="newIe"  data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="input-large select2" id="newIE" value="${params.newIe}">
                     </g:if>
@@ -150,7 +150,7 @@
 
             <div class="eight wide column">
                 <div class="field">
-                    <label>Beschreibung</label>
+                    <label>${message(code:'default.description.label')}</label>
                     <textarea name="newDescription" placeholder="New Item Description" id="newCostItemDescription"/></textarea>
                 </div>
             </div><!-- .column -->

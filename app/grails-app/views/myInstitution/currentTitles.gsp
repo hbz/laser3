@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} - ${institution.name} - ${message(code:'myinst.currentTitles.label')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.currentTitles.label')}</title>
     
     <style>
       .filtering-dropdown-menu {max-height: 400px; overflow: hidden; overflow-y: auto;}

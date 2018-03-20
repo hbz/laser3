@@ -162,11 +162,12 @@ r2d2 = {
         $('.ui.sticky').sticky({offset: 120});
 
         // sticky table header
-        $('table').floatThead({
+        $('.table').floatThead({
               position: 'fixed',
               top: 78,
               zIndex: 70
         });
+        $('.modal .table').floatThead('destroy');
     },
 
     spotlightGetContent : function() {

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code: 'title.plural')} - ${message(code: 'default.button.search.label')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.all_titles')}</title>
   </head>
   <body>
 
@@ -22,7 +22,7 @@
           </div>
           <div class="field">
             <label for="filter" class="control-label">${message(code: 'title.search_in')}</label>
-            <g:select id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
+            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
           <div class="field">
               <label>&nbsp;</label>

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: Financial Information</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Financial Information</title>
 </head>
 <body>
 %{--<r:require modules="finance" />--}%
@@ -62,11 +62,11 @@
 
 <div class="ui grid">
     <div class="column">
-        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentDialog" id="showHideRecent">Recent Costs</button>
+        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentDialog" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
 
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
-            <button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_create_modal" id="addNew">Add New Cost</button>
+            <button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_create_modal" id="addNew">${message(code:'financials.addNewCost')}</button>
         </g:if>
         <g:if test="${editable}">
             <div id="CreateTemplateWrapper" class="wrapper"><!-- modal dialog -->
@@ -116,7 +116,7 @@
                 <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
             </div>
 
-            <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">Back to top</button>
+            <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">${message(code:'financials.backToTop')}</button>
 
         </div><!-- .sixteen -->
     </div><!-- .grid -->

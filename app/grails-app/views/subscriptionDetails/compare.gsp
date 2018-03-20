@@ -6,17 +6,17 @@
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'subscription.label', default: 'Subscription')}"/>
-		<title><g:message code="default.edit.label" args="[entityName]"/></title>
+		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</title>
 	</head>
 
     <body>
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
         <g:if test="${institutionName}">
-            <h2 class="ui header"> ${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
+            <h2 class="ui header">${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
         </g:if>
         <g:else>
-            <h2 class="ui header"> ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
+            <h2 class="ui header">${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
         </g:else>
 
         <semui:messages data="${flash}" />

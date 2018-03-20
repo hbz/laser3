@@ -38,28 +38,29 @@
             <div class="four wide column">
                 <div class="field">
                     <label>Kategorie</label>
-                    <g:select name="newCostItemCategory"
+                    <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}"
                           id="newCostItemCategory"
                           from="${costItemCategory}"
                           optionKey="id"
-                          title="${g.message(code: 'financials.addNew.costCategory')}"
+                          optionValue="value"
                           noSelection="${['':'No Category']}"/>
                 </div><!-- .field -->
 
                 <div class="field">
                     <label>Komponente</label>
-                    <g:select name="newCostItemElement"
+                    <laser:select name="newCostItemElement"
                               from="${costItemElement}"
                               optionKey="id"
+                              optionValue="value"
                               noSelection="${['':'No Element']}"/>
                 </div><!-- .field -->
 
                 <div class="field">
                     <label>Steuerbar</label>
-                    <g:select name="newCostTaxType"
+                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}"
                               from="${taxType}"
                               optionKey="id"
-                              title="${g.message(code: 'financials.addNew.taxCateogry')}"
+                              optionValue="value"
                               noSelection="${['':'No Tax Type']}"/>
                 </div><!-- .field -->
             </div><!-- .column -->
