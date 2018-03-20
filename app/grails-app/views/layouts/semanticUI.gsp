@@ -31,12 +31,22 @@
 
 <body class="${controllerName}_${actionName}">
 
-
     <span id="jumpMark_top"></span>
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
+
+    <g:if test="${'LAS:eR-Dev' == grailsApplication.config.laserSystemId}">
+        <div class="ui green label la-server-label">
+            DEV-System
+        </div>
+    </g:if><%-- debug --%>
+    <g:if test="${'LAS:eR-QA/Stage' == grailsApplication.config.laserSystemId}">
+        <div class="ui red label la-server-label">
+            QA-System
+        </div>
+    </g:if><%-- debug --%>
 
     <div class="ui fixed inverted menu">
         <div class="ui container">
@@ -484,11 +494,8 @@
                 </div>
             </g:if>
         </sec:ifLoggedIn>
-        <div class="ui big label red la-server-label sticky">
-            QA-System
-        </div>
-        <div class="ui main container">
 
+        <div class="ui main container">
             <g:layoutBody/>
         </div><!-- .main -->
 
