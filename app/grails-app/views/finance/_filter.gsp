@@ -31,42 +31,44 @@
 
         <div class="three fields">
             <div class="field">
-                <label for="adv_codes">Budgetcode</label>
+                <label for="adv_codes">${message(code:'financials.budgetCode')}</label>
                 <input id="adv_codes" name="adv_codes" />
             </div>
             <div class="field">
-                <label for="adv_costItemCategory">Kategorie</label>
-                <g:select id="adv_costItemCategory"
+                <label for="adv_costItemCategory">${message(code:'financials.costItemCategory')}</label>
+                <laser:select id="adv_costItemCategory"
                           name="adv_costItemCategory"
                           from="${costItemCategory}"
                           optionKey="id"
-                          noSelection="${['':'No Category']}"/>
+                          optionValue="value"
+                          noSelection="${['':'Alle ..']}"/>
             </div>
             <div class="field required">
-                <label>Package</label>
+                <label>${message(code:'package.label')}</label>
                 <input type="text" name="packageFilter" class="filterUpdated" id="packageFilter" value="${params.packageFilter}" />
             </div>
         </div><!-- row1 -->
 
         <div class="three fields">
             <div class="field required">
-                <label>Rechnungsnr.</label><!-- invoice -->
+                <label>${message(code:'financials.invoice_number')}</label><!-- invoice -->
                 <input type="text" name="invoiceNumberFilter"
                        class="filterUpdated"
                        id="filterInvoiceNumber" value="${params.invoiceNumberFilter}" />
             </div>
 
             <div class="field">
-                <label for="adv_costItemStatus">Status</label>
-                <g:select id="adv_costItemStatus"
+                <label for="adv_costItemStatus">${message(code:'financials.costItemStatus')}</label>
+                <laser:select id="adv_costItemStatus"
                           name="adv_costItemStatus"
                           from="${costItemStatus}"
                           optionKey="id"
-                          noSelection="${['':'No Status']}"/>
+                          optionValue="value"
+                          noSelection="${['':'Alle ..']}"/>
             </div>
 
             <div class="field required">
-                <label>Subscription</label>
+                <label>${message(code:'subscription.label')}</label>
                 <g:if test="${inSubMode == true}">
                     <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
                            data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}"  />
@@ -81,7 +83,7 @@
         <div class="three fields">
 
             <div class="field required">
-                <label>Bestellnummer</label>
+                <label>${message(code:'financials.order_number')}</label>
                 <input type="text" name="orderNumberFilter"
                        class="filterUpdated"
                        id="filterOrderNumber"  value="${params.orderNumberFilter}" data-type="select"/>
@@ -89,11 +91,15 @@
 
             <div class="field">
                 <label>Steuer</label>
-                <input type="text" value="placeholder" />
+                <laser:select id="todo-123" name="todo-123"
+                          from="${taxType}"
+                          optionKey="id"
+                          optionValue="value"
+                          noSelection="${['':'Alle ..']}"/>
             </div>
 
             <div class="field">
-                <label for="adv_ie">Issue Entitlement</label>
+                <label for="adv_ie">${message(code:'issueEntitlement.label')}</label>
                 <input id="adv_ie" name="adv_ie" class="input-large"/>
             </div>
         </div><!-- row3 -->
@@ -186,18 +192,18 @@
                         <a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*
                     </th>
                     <th>
-                        <a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">Invoice#</a>*
+                        <a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">${message(code:'financials.invoice_number')}</a>*
                     </th>
                     <th>
-                       <a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">Order#</a>*<br/>
+                       <a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">${message(code:'financials.order_number')}</a>*<br/>
                     </th>
                     <th>
-                        <a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">Subscription</a>*
+                        <a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">${message(code:'subscription.label')}</a>*
                     </th>
                     <th>
-                        <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">Package</a>*
+                        <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">${message(code:'package.label')}</a>*
                     </th>
-                    <th style="vertical-align: top">IE</th>
+                    <th style="vertical-align: top">${message(code:'issueEntitlement.label')}</th>
 
 
                 <%-- {--If has editable rights, allow delete column to be shown--}%
