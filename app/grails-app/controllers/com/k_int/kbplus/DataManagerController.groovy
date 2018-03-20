@@ -268,8 +268,7 @@ class DataManagerController {
     }
   }
 
-    @Secured(['ROLE_DATAMANAGER'])
-  def getActorNameList(params) {
+  private def getActorNameList(params) {
     def actors = []
     //def filterActors = params.findAll{it.key.startsWith("change_actor_")}
     def filterActors = params.change_actors

@@ -241,7 +241,7 @@ class AdminController {
                flash.error = "An error occured before rights transfer was complete."
              }
            }else{
-            flash.error = "Please select'user to keep' and 'user to merge' from the dropdown."
+               flash.error = "Please select 'user to keep' and 'user to merge' from the dropdown."
            }
            break
          default:
@@ -270,7 +270,8 @@ class AdminController {
     def currentAffil = usrKeep.getAuthorizedAffiliations()
 
     mergeRoles.each{ role ->
-      if(!currentRoles.contains(role)){
+
+        if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
         UserRole.create(usrKeep,role)
       }
     }

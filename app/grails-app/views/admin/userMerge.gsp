@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Admin::User Merge</title>
+      <title>${message(code: 'laser', default: 'LAS:eR')} Admin: User Merge</title>
   </head>
 
   <body>

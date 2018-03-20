@@ -232,7 +232,6 @@ class DataloadService {
                 result.startYear = "${c.get(Calendar.YEAR)}"
                 result.startYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH))+1}"
             }
-
             sub.packages.each { sp ->
                 def pgkinfo = [:]
                 if ( sp.pkg != null ) {
@@ -267,16 +266,17 @@ class DataloadService {
 
         SitePage.findAll().each{ site ->
             def result = [:]
-            result._id = site.id.toString()
             result.alias = site.alias
             result.action = site.action
             result.controller = site.controller
             result.rectype = site.rectype
 
-            def future = esclient.index {
+            def recid = site.globalUID.toString()
+
+            def future = esclient.indexAsync {
                 index es_index
-                type site.class.name
-                id result._id
+                type "SitePage"
+                id recid
                 source result
             }
         }

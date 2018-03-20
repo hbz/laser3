@@ -28,16 +28,17 @@ class AnnouncementController {
     @Secured(['ROLE_DATAMANAGER'])
     def createAnnouncement() {
         def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        flash.message = message(code: 'announcement.created', default: "Announcement Created")
-        def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
+        if (params.annTxt) {
+            result.user = User.get(springSecurityService.principal.id)
+            flash.message = message(code: 'announcement.created', default: "Announcement Created")
+            def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
 
-        def new_announcement = new Doc(title: params.subjectTxt,
-                content: params.annTxt,
-                user: result.user,
-                type: announcement_type,
-                contentType: Doc.CONTENT_TYPE_STRING).save(flush: true)
-
+            def new_announcement = new Doc(title: params.subjectTxt,
+                    content: params.annTxt,
+                    user: result.user,
+                    type: announcement_type,
+                    contentType: Doc.CONTENT_TYPE_STRING).save(flush: true)
+        }
         redirect(action: 'index')
     }
 

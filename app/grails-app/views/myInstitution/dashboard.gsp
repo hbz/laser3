@@ -139,7 +139,7 @@
                         <i class="warning circle icon"></i>
                     </div>
                     <div class="message">
-                        <g:set var="ann_nws" value="${ra.title.replaceAll(' ','')}" />
+                        <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
                         <p>
                             <strong>${message(code:"announcement.${ann_nws}", default:"${ra.title}")}</strong>
                         </p>

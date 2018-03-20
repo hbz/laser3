@@ -185,6 +185,8 @@ class PackageDetailsController {
            
       result
     }
+
+    @Secured(['ROLE_USER'])
     def generateSlaveSubscriptions(){
       params.each { p ->
         if(p.key.startsWith("_create.")){
@@ -198,8 +200,8 @@ class PackageDetailsController {
       redirect controller:'packageDetails', action:'consortia', params: [id:params.id]
     }
 
-    @Secured(['ROLE_USER'])
-    def createNewSubscription(org,packageId,genSubName){
+
+    private def createNewSubscription(org, packageId, genSubName) {
       //Initialize default subscription values
       log.debug("Create slave with org ${org} and packageID ${packageId}")
 
@@ -358,7 +360,8 @@ class PackageDetailsController {
         }
       
     }
-    def formatDateOrNull(formatter, date) {
+
+    private def formatDateOrNull(formatter, date) {
       def result;
       if(date){
         result = formatter.format(date)
@@ -368,7 +371,7 @@ class PackageDetailsController {
       return result
     }
 
-    def createCompareList(pkg,dateStr,params, result){
+    private def createCompareList(pkg, dateStr, params, result) {
        def returnVals = [:]
        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
        def date = dateStr ? sdf.parse(dateStr) : new Date()
@@ -666,9 +669,8 @@ class PackageDetailsController {
     result
   }
 
- 
 
-  def generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt) {
+    private def generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt) {
 
     def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
 
@@ -734,7 +736,7 @@ class PackageDetailsController {
     redirect action:'show', id:params.id
   }
 
-  def attemptXLSLoad(pkg,stream) {
+    private def attemptXLSLoad(pkg, stream) {
     log.debug("attemptXLSLoad");
     HSSFWorkbook wb = new HSSFWorkbook(stream);
     HSSFSheet hssfSheet = wb.getSheetAt(0);
@@ -742,12 +744,12 @@ class PackageDetailsController {
     attemptv1XLSLoad(pkg,hssfSheet);
   }
 
-  def attemptCSVLoad(pkg,stream) {
+    private def attemptCSVLoad(pkg, stream) {
     log.debug("attemptCSVLoad");
     attemptv1CSVLoad(pkg,stream);
   }
 
-  def attemptv1XLSLoad(pkg,hssfSheet) {
+    private def attemptv1XLSLoad(pkg, hssfSheet) {
 
     log.debug("attemptv1XLSLoad");
     def extracted = [:]
@@ -795,13 +797,13 @@ class PackageDetailsController {
     processExractedData(pkg,extracted);
   }
 
-  def attemptv1CSVLoad(pkg,stream) {
+    private def attemptv1CSVLoad(pkg, stream) {
     log.debug("attemptv1CSVLoad");
     def extracted = [:]
     processExractedData(pkg,extracted);
   }
 
-  def processExractedData(pkg, extracted_data) {
+    private def processExractedData(pkg, extracted_data) {
     log.debug("processExractedData...");
     List old_title_list = [ [title: [id:667]], [title:[id:553]], [title:[id:19]] ]
     List new_title_list = [ [title: [id:19]], [title:[id:554]], [title:[id:667]] ]
@@ -809,7 +811,7 @@ class PackageDetailsController {
     reconcile(old_title_list, new_title_list);
   }
 
-  def reconcile(old_title_list, new_title_list) {
+    private def reconcile(old_title_list, new_title_list) {
     def title_list_comparator = new com.k_int.kbplus.utils.TitleComparator()
     Collections.sort(old_title_list, title_list_comparator)
     Collections.sort(new_title_list, title_list_comparator)

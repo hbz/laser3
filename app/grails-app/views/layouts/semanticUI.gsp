@@ -221,6 +221,8 @@
 
                         <div class="menu">
                             <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
+                            <g:link class="item" controller="dataManager"
+                                    action="deletedTitleManagement">${message(code: 'datamanager.deletedTitleManagement.label', default: 'Deleted Title management')}</g:link>
 
                             <div class="divider"></div>
 
@@ -365,21 +367,9 @@
                 </sec:ifAnyGranted>
             </sec:ifLoggedIn>
 
-<% /* TODO
-            <sec:ifLoggedIn>
-                <div class="right menu">
-                    <div class="item">
-                        <div class="ui icon input">
-                            <input placeholder="Search .." type="text">
-                            <i class="search link icon"></i>
-                        </div>
-                    </div>
-                    <a class="item dlpopover" href="#"><i class="icon-search icon-white"></i></a>
-                </div>
-            </sec:ifLoggedIn>
- */ %>
             <div class="right menu">
                 <sec:ifLoggedIn>
+                    <a class="item dlpopover" href="#"><i class="icon-search icon-white"></i></a>
                     <g:if test="${user}">
                         <div class="ui simple dropdown item la-noBorder">
                             ${user.displayName}

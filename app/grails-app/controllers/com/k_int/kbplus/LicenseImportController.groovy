@@ -156,8 +156,8 @@ class LicenseImportController {
    * @throws SAXException
    * @throws IOException
    */
-  @Secured(['ROLE_DATAMANAGER'])
-  def readOnixMultipartFile(file) throws SAXException, IOException {
+
+    private def readOnixMultipartFile(file) throws SAXException, IOException {
     log.debug("Reading uploaded ONIX-PL file ${file?.originalFilename} " +
         "of type ${file?.contentType}")
     def onix_parse_result = [:]
@@ -186,8 +186,8 @@ class LicenseImportController {
    * @param result
    * @return
    */
-  @Secured(['ROLE_DATAMANAGER'])
-  def checkForExistingOpl(acceptedFile, license) {
+
+    private def checkForExistingOpl(acceptedFile, license) {
     log.debug("Checking for existing OPL for acceptedFile ${acceptedFile} and license ${license}")
     //def existingOpl = license?.onixplLicense
     def existingOpl
@@ -331,7 +331,7 @@ class LicenseImportController {
    * @param doc an uploaded Doc
    * @return an OnixplLicense, or null
    */
-  def recordOnixplLicense(doc, title) {
+    private def recordOnixplLicense(doc, title) {
     def opl = null;
     try {
       opl = new OnixplLicense(

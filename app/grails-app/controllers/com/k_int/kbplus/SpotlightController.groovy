@@ -15,12 +15,12 @@ class SpotlightController {
 
   def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
 
-
+    @Secured(['ROLE_USER'])
   def index() { 
     log.debug("spotlight::index");
   }
 
-  @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_YODA'])
   def managePages(){
     def result = [:]
     result.user = springSecurityService.getCurrentUser()
@@ -59,9 +59,12 @@ class SpotlightController {
     result
 
   }
-  def updateSiteES(){
+
+    private def updateSiteES() {
       dataloadService.updateSiteMapping()
   }
+
+    @Secured(['ROLE_USER'])
   def search() { 
     log.debug("spotlight::search");
     def result = [:]
@@ -69,8 +72,8 @@ class SpotlightController {
     def query = params.query
     result.user = springSecurityService.getCurrentUser()
     params.max = result.user.defaultPageSize ?: 15
-   
-    if(! query){
+
+        if (!query) {
       return result
     }
 
@@ -137,7 +140,7 @@ class SpotlightController {
     result
   }
 
-  def getAvailableOrgs(orgs){
+    private def getAvailableOrgs(orgs) {
     def orgsWithConsortia = []
     for (org in orgs) {
       if(org.outgoingCombos){
@@ -158,7 +161,7 @@ class SpotlightController {
     return orgsWithConsortia
   }
 
-  def getActionLinks(q) {
+    private def getActionLinks(q) {
     def result = []
     result = allActions
     return result;

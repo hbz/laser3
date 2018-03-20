@@ -296,7 +296,7 @@ class SubscriptionDetailsController {
 
     }
 
-    def removePackagePendingChanges(pkg_id, sub_id, confirmed) {
+    private def removePackagePendingChanges(pkg_id, sub_id, confirmed) {
 
         def tipp_class = TitleInstancePackagePlatform.class.getName()
         def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
@@ -327,7 +327,7 @@ class SubscriptionDetailsController {
         }
     }
 
-    def sortOnCoreStatus(result, params) {
+    private def sortOnCoreStatus(result, params) {
         result.entitlements.sort { it.getTIP()?.coreStatus(null) }
         if (params.order == 'desc') result.entitlements.reverse(true);
         result.entitlements = result.entitlements.subList(result.offset, (result.offset + result.max).intValue())
@@ -471,7 +471,7 @@ class SubscriptionDetailsController {
 
     }
 
-    def generateIEQuery(params, qry_params, showDeletedTipps, asAt) {
+    private def generateIEQuery(params, qry_params, showDeletedTipps, asAt) {
 
         def base_qry = "from IssueEntitlement as ie where ie.subscription = ? and ie.tipp.title.status.value != 'Deleted' "
 
@@ -819,7 +819,7 @@ class SubscriptionDetailsController {
         previousAndExpected(params, 'expected');
     }
 
-    def previousAndExpected(params, screen) {
+    private def previousAndExpected(params, screen) {
         log.debug("previousAndExpected ${params}");
         def result = [:]
 
@@ -956,6 +956,7 @@ class SubscriptionDetailsController {
         result
     }
 
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
     def documents() {
@@ -1082,7 +1083,7 @@ class SubscriptionDetailsController {
         redirect controller: 'myInstitution', action: 'renewalsSearch'
     }
 
-    def userAccessCheck(sub, user, role_str) {
+    private def userAccessCheck(sub, user, role_str) {
         if ((sub == null || user == null) || (!sub.hasPerm(role_str, user))) {
             response.sendError(401);
             return
