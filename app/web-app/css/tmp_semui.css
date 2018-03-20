@@ -196,3 +196,8 @@ body.myInstitution_dashboard .ui.tab .item .header {
 body.myInstitution_dashboard .ui.tab .item span {
     line-height: 1.3rem;
 }
+
+/* label what server */
+.la-server-label {
+
+}
