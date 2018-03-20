@@ -8,9 +8,11 @@
             <dd>
                 <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
                 <g:if test="${editmode}">
-                    [<g:link controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
-                    <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                </g:link>]
+                    <div class="ui mini icon buttons">
+                        <g:link class="ui button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                            <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                        </g:link>
+                    </div>
                 </g:if>
                 <div class="ui list">
                     <g:each in="${Person.getByOrgAndFunction(role.org, 'General contact person')}" var="gcp">

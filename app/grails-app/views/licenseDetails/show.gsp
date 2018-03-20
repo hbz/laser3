@@ -163,9 +163,13 @@
                                         <g:if test="${license.onixplLicense}">
                                             <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
                                             <g:if test="${editable}">
-                                                ( <g:link controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
-                                                <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                                            </g:link> )
+                                                (
+                                                <div class="ui mini icon buttons">
+                                                    <g:link class="ui button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
+                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                    </g:link>
+                                                </div>
+                                                )
                                             </g:if>
                                         </g:if>
                                         <g:else>

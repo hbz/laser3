@@ -30,10 +30,12 @@
                     </div>
                 </div>
                 <g:if test="${editable}">
-                    [<g:link controller="ajax" action="delPrsRole" id="${pr.id}"
+                    <div class="ui mini icon buttons">
+                        <g:link class="ui button" controller="ajax" action="delPrsRole" id="${pr.id}"
                             onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
-                            <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                    </g:link>]
+                            <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                        </g:link>
+                    </div>
                     <br />
                 </g:if>
             </g:if>
