@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: Financial Information</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Financial Information</title>
 </head>
 <body>
 %{--<r:require modules="finance" />--}%

@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI" />
-        <title>${message(code:'laser', default:'LAS:eR')} - ${institution.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</title>
     </head>
     <body>
 
@@ -14,7 +14,6 @@
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
         </semui:breadcrumbs>
-
 
         <semui:controlButtons>
                 <g:render template="actions" />
