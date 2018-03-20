@@ -9,6 +9,7 @@
 - added admin reminder service
 - introduced yoda
 - reworked system and user roles
+- ractivated spotlight search
 - reworked renewals
 - reworked cost items bulk import
 - reworked markup and stylesheets
