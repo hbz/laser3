@@ -25258,7 +25258,7 @@ Floated Menu / Item
 
 .ui.menu.la-contextBar {
   top: 40px;
-  z-index: 1;
+  z-index: 3000;
   background-color: #d3dae3;
 }
 
@@ -27214,7 +27214,7 @@ Floated Menu / Item
 
 .ui.la-table.table {
   border-collapse: separate;
-  background-color: transparent;
+  background-color: #f4f8f9;
 }
 
 .ui.la-table.table tr th,
@@ -27226,18 +27226,53 @@ Floated Menu / Item
      la-rowspan
 ---------------*/
 
-.ui.la-rowspan.table {
+/*
+.ui.la-rowspan.table{
   border-collapse: separate;
   background-color: transparent;
 }
 
 .ui.la-rowspan.table tr th {
+  border-top:1px solid @internalBorderColor;
+}
+.ui.la-rowspan.table tr td,
+.ui.la-rowspan.table tr:first-child th {
+  border-top:none;
+}
+*/
+
+/*--------------
+     la-rowspan
+---------------*/
+
+.ui.la-rowspan.table {
+  border-collapse: collapse;
+  background-color: #f4f8f9;
+}
+
+.ui.la-rowspan.table > tr th {
   border-top: 1px solid rgba(34, 36, 38, 0.1);
 }
 
-.ui.la-rowspan.table tr td,
-.ui.la-rowspan.table tr:first-child th {
+.ui.la-rowspan.table > tr td,
+.ui.la-rowspan.table > tr:first-child th {
   border-top: none;
+}
+
+.ui.la-rowspan.table > tbody > tr:nth-child(even) {
+  border-top: 1px dotted rgba(34, 36, 38, 0.1);
+}
+
+.ui.la-rowspan.table > tbody > tr:nth-child(odd) {
+  border-top: 15px solid #f4f8f9;
+}
+
+/*--------------
+     calendar
+---------------*/
+
+.calendar .ui.table.day tr td {
+  border-top: 1px dotted rgba(34, 36, 38, 0.1);
 }
 /*!
  * # Semantic UI 2.3.0 - Ad
