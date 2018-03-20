@@ -164,8 +164,8 @@ r2d2 = {
         // sticky table header
         $('table').floatThead({
               position: 'fixed',
-              top: 78
-              //zIndex: 0
+              top: 78,
+              zIndex: 70
         });
     },
 
