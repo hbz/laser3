@@ -31,6 +31,7 @@
 
 <body class="${controllerName}_${actionName}">
 
+
     <span id="jumpMark_top"></span>
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
@@ -483,7 +484,9 @@
                 </div>
             </g:if>
         </sec:ifLoggedIn>
-
+        <div class="ui big label red la-server-label sticky">
+            QA-System
+        </div>
         <div class="ui main container">
 
             <g:layoutBody/>
