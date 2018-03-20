@@ -64,7 +64,11 @@
 ---------------*/
 .ui.la-table.table{
   border-collapse: separate;
-  background-color: @simulateTransparncy;
+  background-color: @simulateTransparency;
+}
+.metaboxContent .ui.la-table.table{
+  border-collapse: separate;
+  background-color: transparent;
 }
 
 .ui.la-table.table tr th,
@@ -93,7 +97,7 @@
 ---------------*/
 .ui.la-rowspan.table{
   border-collapse: collapse;
-  background-color: @simulateTransparncy;
+  background-color: @simulateTransparency;
 }
 
 .ui.la-rowspan.table>tr th {
@@ -107,7 +111,7 @@
   border-top: 1px dotted @internalBorderColor;
 }
 .ui.la-rowspan.table>tbody>tr:nth-child(odd) {
-  border-top: 15px solid @simulateTransparncy;
+  border-top: 15px solid @simulateTransparency;
 }
 
 /*--------------
