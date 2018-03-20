@@ -111,7 +111,7 @@
 
           <h3 class="ui header">${message(code:'title.edit.orglink')}</h3>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-table table ">
               <thead>
                 <tr>
                   <th>${message(code:'title.edit.component_id.label')}</th>
@@ -211,7 +211,7 @@
               </table>
 
             <g:form id="${params.id}" controller="titleDetails" action="batchUpdate" class="ui form">
-              <table class="ui celled la-rowspan table">
+              <table class="ui celled la-rowspan table" >
                   <thead>
                     <tr>
                       <th rowspan="2"></th>
