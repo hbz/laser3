@@ -13,6 +13,7 @@ class PropertyDefinitionController {
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     def springSecurityService
+    def accessService
 
     @Secured(['ROLE_USER'])
     def list() {
@@ -20,7 +21,7 @@ class PropertyDefinitionController {
         return // ----- deprecated
 
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
-        [propDefInstanceList: PropertyDefinition.list(params), propertyDefinitionTotal: PropertyDefinition.count(), editable:isEditable()]
+        [propDefInstanceList: PropertyDefinition.list(params), propertyDefinitionTotal: PropertyDefinition.count(), editable:false]
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -39,7 +40,7 @@ class PropertyDefinitionController {
                     redirect action: 'list'
                     return
                 }
-                [propDefInstance: propDefInstance,editable:isEditable()]
+                [propDefInstance: propDefInstance,editable:false]
                 break ;
             case 'POST':
                 def propDefInstance = PropertyDefinition.get(params.id)
@@ -55,7 +56,7 @@ class PropertyDefinitionController {
                         propDefInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
                                 [message(code: 'propertyDefinition.label', default: 'PropertyDefinition')] as Object[],
                                 "Another user has updated this PropertyDefinition while you were editing")
-                        render view: 'edit', model: [propDefInstance: propDefInstance]
+                        render view: 'edit', model: [propDefInstance: propDefInstance, editable:false]
                         return
                     }
                 }
@@ -135,11 +136,4 @@ class PropertyDefinitionController {
             redirect action: 'edit', id: params.id
         }
     }
-  
-   def isEditable(){
-    if ( SpringSecurityUtils.ifNotGranted('ROLE_ADMIN') ) {
-        return false
-    }
-    return true
-  }
 }

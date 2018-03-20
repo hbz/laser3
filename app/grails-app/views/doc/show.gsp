@@ -8,126 +8,108 @@
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div class="row-fluid">
-			
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li>
-							<g:link class="create" action="create">
-								<i class="icon-plus"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span9">
 
+		<h1 class="ui header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
 
-					<h1 class="ui header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
+		<semui:messages data="${flash}" />
 
+			<div class="ui grid">
+				<div class="twelve wide column">
 
-				<semui:messages data="${flash}" />
+                    <div class="inline-lists">
 
-				<dl>
+						<dl>
 				
-					<g:if test="${docInstance?.status}">
-						<dt><g:message code="doc.status.label" default="Status" /></dt>
-						
-							<dd><g:link controller="refdataValue" action="show" id="${docInstance?.status?.id}">${docInstance?.status?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.type}">
-						<dt><g:message code="doc.type.label" default="Type" /></dt>
-						
-							<dd><g:link controller="refdataValue" action="show" id="${docInstance?.type?.id}">${docInstance?.type?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.alert}">
-						<dt><g:message code="doc.alert.label" default="Alert" /></dt>
-						
-							<dd><g:link controller="alert" action="show" id="${docInstance?.alert?.id}">${docInstance?.alert?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.content}">
-						<dt><g:message code="doc.content.label" default="Content" /></dt>
-						
-							<dd><g:fieldValue bean="${docInstance}" field="content"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.uuid}">
-						<dt><g:message code="doc.uuid.label" default="Uuid" /></dt>
-						
-							<dd><g:fieldValue bean="${docInstance}" field="uuid"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.contentType}">
-						<dt><g:message code="doc.contentType.label" default="Content Type" /></dt>
-						
-							<dd><g:fieldValue bean="${docInstance}" field="contentType"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.title}">
-						<dt><g:message code="doc.title.label" default="Title" /></dt>
-						
-							<dd><g:fieldValue bean="${docInstance}" field="title"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.filename}">
-						<dt><g:message code="doc.filename.label" default="Filename" /></dt>
-						
-							<dd><g:fieldValue bean="${docInstance}" field="filename"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.dateCreated}">
-						<dt><g:message code="doc.dateCreated.label" default="Date Created" /></dt>
-						
-							<dd><g:formatDate date="${docInstance?.dateCreated}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${docInstance?.lastUpdated}">
-						<dt><g:message code="doc.lastUpdated.label" default="Last Updated" /></dt>
-						
-							<dd><g:formatDate date="${docInstance?.lastUpdated}" /></dd>
-						
-					</g:if>
-				
-				</dl>
+                        <g:if test="${docInstance?.status}">
+                            <dt><g:message code="doc.status.label" default="Status" /></dt>
 
-				<g:form>
-					<g:hiddenField name="id" value="${docInstance?.id}" />
-					<div class="ui form-actions">
-						<g:link class="ui button" action="edit" id="${docInstance?.id}">
-							<i class="write icon"></i>
-							<g:message code="default.button.edit.label" default="Edit" />
-						</g:link>
-						<button class="ui negative button" type="submit" name="_action_delete">
-							<i class="trash alternate icon"></i>
-							<g:message code="default.button.delete.label" default="Delete" />
-						</button>
-					</div>
-				</g:form>
+                                <dd><g:link controller="refdataValue" action="show" id="${docInstance?.status?.id}">${docInstance?.status?.encodeAsHTML()}</g:link></dd>
 
-			</div>
+                        </g:if>
 
-		</div>
+                        <g:if test="${docInstance?.type}">
+                            <dt><g:message code="doc.type.label" default="Type" /></dt>
+
+                                <dd><g:link controller="refdataValue" action="show" id="${docInstance?.type?.id}">${docInstance?.type?.encodeAsHTML()}</g:link></dd>
+
+                        </g:if>
+
+                        <g:if test="${docInstance?.alert}">
+                            <dt><g:message code="doc.alert.label" default="Alert" /></dt>
+
+                                <dd><g:link controller="alert" action="show" id="${docInstance?.alert?.id}">${docInstance?.alert?.encodeAsHTML()}</g:link></dd>
+
+                        </g:if>
+
+                        <g:if test="${docInstance?.content}">
+                            <dt><g:message code="doc.content.label" default="Content" /></dt>
+
+                                <dd><g:fieldValue bean="${docInstance}" field="content"/></dd>
+
+                        </g:if>
+
+                        <g:if test="${docInstance?.uuid}">
+                            <dt><g:message code="doc.uuid.label" default="Uuid" /></dt>
+
+                                <dd><g:fieldValue bean="${docInstance}" field="uuid"/></dd>
+
+                        </g:if>
+
+                        <g:if test="${docInstance?.contentType}">
+                            <dt><g:message code="doc.contentType.label" default="Content Type" /></dt>
+
+                                <dd><g:fieldValue bean="${docInstance}" field="contentType"/></dd>
+
+                        </g:if>
+
+                        <g:if test="${docInstance?.title}">
+                            <dt><g:message code="doc.title.label" default="Title" /></dt>
+
+                                <dd><g:fieldValue bean="${docInstance}" field="title"/></dd>
+
+                        </g:if>
+
+                        <g:if test="${docInstance?.filename}">
+                            <dt><g:message code="doc.filename.label" default="Filename" /></dt>
+
+                                <dd><g:fieldValue bean="${docInstance}" field="filename"/></dd>
+
+                        </g:if>
+
+                        <g:if test="${docInstance?.dateCreated}">
+                            <dt><g:message code="doc.dateCreated.label" default="Date Created" /></dt>
+
+                                <dd><g:formatDate date="${docInstance?.dateCreated}" /></dd>
+
+                        </g:if>
+
+                        <g:if test="${docInstance?.lastUpdated}">
+                            <dt><g:message code="doc.lastUpdated.label" default="Last Updated" /></dt>
+
+                                <dd><g:formatDate date="${docInstance?.lastUpdated}" /></dd>
+
+                        </g:if>
+
+                    </dl>
+                    </div>
+
+                    <g:if test="${editable}">
+                        <g:form>
+                            <g:hiddenField name="id" value="${docInstance?.id}" />
+                            <div class="ui form-actions">
+                                <g:link class="ui button" action="edit" id="${docInstance?.id}">
+                                    <i class="write icon"></i>
+                                    <g:message code="default.button.edit.label" default="Edit" />
+                                </g:link>
+                                <button class="ui negative button" type="submit" name="_action_delete">
+                                    <i class="trash alternate icon"></i>
+                                    <g:message code="default.button.delete.label" default="Delete" />
+                                </button>
+                            </div>
+                        </g:form>
+                    </g:if>
+
+		        </div>
+		    </div>
 	</body>
 </html>

@@ -26,6 +26,7 @@
     <tmpl:/layouts/favicon />
 
     <r:layoutResources/>
+
 </head>
 
 <body class="${controllerName}_${actionName}">
@@ -35,6 +36,17 @@
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
+
+    <g:if test="${'LAS:eR-Dev' == grailsApplication.config.laserSystemId}">
+        <div class="ui green label la-server-label">
+            DEV-System
+        </div>
+    </g:if><%-- debug --%>
+    <g:if test="${'LAS:eR-QA/Stage' == grailsApplication.config.laserSystemId}">
+        <div class="ui red label la-server-label">
+            QA-System
+        </div>
+    </g:if><%-- debug --%>
 
     <div class="ui fixed inverted menu">
         <div class="ui container">
@@ -484,7 +496,6 @@
         </sec:ifLoggedIn>
 
         <div class="ui main container">
-
             <g:layoutBody/>
         </div><!-- .main -->
 

@@ -62,6 +62,7 @@ modules = {
         resource url:'semantic_heave/select2.min.js'         // updated stuff // new version 3.5.4
 
         resource url:'js/application.js.gsp'
+        resource url:'js/floatThead.min.js'
     }
 
     swaggerApi {
@@ -73,4 +74,5 @@ modules = {
         resource url:'vendor/swagger-ui/swagger-ui-standalone-preset.js'
         resource url:'vendor/cryptoJS-v3.1.2/rollups/hmac-sha256.js'
     }
+
 }

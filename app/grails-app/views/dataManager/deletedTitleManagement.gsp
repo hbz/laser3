@@ -12,14 +12,9 @@
       <semui:crumb text="${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title management')}" class="active"/>
     </semui:breadcrumbs>
 
+    <h1 class="ui header">${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title Management')} : ${titleInstanceTotal} ${message(code:'datamanager.deletedTitleManagement.del_titles', default:'Deleted Titles')}</h1>
 
-  <semui:messages data="${flash}" />
-
-    <div>
-      <h2 class="ui header">${message(code:'datamanager.deletedTitleManagement.label', default:'Deleted Title Management')} : ${titleInstanceTotal} ${message(code:'datamanager.deletedTitleManagement.del_titles', default:'Deleted Titles')}</h2>
-    </div>
-
-    <div>
+    <semui:messages data="${flash}" />
 
       <table class="ui sortable celled la-table table">
         <thead>
@@ -39,9 +34,6 @@
 
 
         <semui:paginate  action="deletedTitleManagement" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${titleInstanceTotal}" />
-
-    </div>
-
 
   </body>
 </html>

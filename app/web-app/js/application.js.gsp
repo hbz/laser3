@@ -159,7 +159,14 @@ r2d2 = {
         })
 
         // sticky
-        $('.ui.sticky').sticky({offset: 120})
+        $('.ui.sticky').sticky({offset: 120});
+
+        // sticky table header
+        $('table').floatThead({
+              position: 'fixed',
+              top: 78,
+              zIndex: 70
+        });
     },
 
     spotlightGetContent : function() {

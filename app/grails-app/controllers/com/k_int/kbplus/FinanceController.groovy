@@ -741,7 +741,9 @@ class FinanceController {
       }
 
       params.remove("Add")
-      render ([newCostItem:newCostItem.id, error:result.error]) as JSON
+      // render ([newCostItem:newCostItem.id, error:result.error]) as JSON
+
+        redirect(uri: request.getHeader('referer') )
     }
 
     private def createBudgetCodes(CostItem costItem, String budgetcodes, Org budgetOwner)
