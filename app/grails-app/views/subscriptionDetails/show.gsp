@@ -155,9 +155,9 @@
 
                                         <g:if test="${editable}">
 
-                                            <div class="ui mini basic icon buttons">
-                                                <button class="ui button" onclick="unlinkPackage(${sp.pkg.id})" data-tooltip="${message(code:'default.button.unlink.label')}" data-position="right center" data-variation="tiny">
-                                                    <i class="times icon red"></i>
+                                            <div class="ui mini icon buttons">
+                                                <button class="ui button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                    <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                                                 </button>
                                             </div>
                                             <br />

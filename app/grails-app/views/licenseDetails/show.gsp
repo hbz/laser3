@@ -164,9 +164,9 @@
                                             <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
                                             <g:if test="${editable}">
                                                 (
-                                                <div class="ui mini basic icon buttons">
-                                                    <g:link data-tooltip="${message(code:'default.button.unlink.label')}" data-position="right center" data-variation="tiny" class="ui button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
-                                                        <i class="times icon red"></i>
+                                                <div class="ui mini icon buttons">
+                                                    <g:link class="ui button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
+                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>
                                                 )
