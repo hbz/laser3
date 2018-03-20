@@ -154,9 +154,12 @@
                                         </g:if>
 
                                         <g:if test="${editable}">
-                                            [<a href="" onclick="unlinkPackage(${sp.pkg.id})">
-                                                <i class="unlinkify icon red"></i> ${message(code:'default.button.unlink.label')}
-                                            </a>]
+
+                                            <div class="ui mini icon buttons">
+                                                <button class="ui button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                    <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                </button>
+                                            </div>
                                             <br />
                                         </g:if>
 
