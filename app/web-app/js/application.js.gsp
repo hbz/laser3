@@ -159,7 +159,13 @@ r2d2 = {
         })
 
         // sticky
-        $('.ui.sticky').sticky({offset: 120})
+        $('.ui.sticky').sticky({offset: 120});
+
+        $('table').floatThead({
+              position: 'fixed',
+              top: 78
+              //zIndex: 0
+        });
     }
 }
 

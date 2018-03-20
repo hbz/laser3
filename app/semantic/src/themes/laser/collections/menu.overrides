@@ -22,7 +22,7 @@
 // Light Grey Sub Menu
 .ui.menu.la-contextBar {
   top: 40px;
-  z-index:1;
+  z-index:3000;
   background-color: #d3dae3;
   .la-context-org {
     font-size: 0.87em;

@@ -254,6 +254,7 @@
 
 @functionalObjects  :   #d3dae3;/* Click an find out more */
 @showWhatsChosen    :   #9bacc0; /* You can Click me but you can also see what was Chosen */
+@simulateTransparncy: #f4f8f9; /* sometimes transparence is not working  */
 
 @laSideCards        : lighten(@orange, 47);
 

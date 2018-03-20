@@ -26,6 +26,7 @@
     <tmpl:/layouts/favicon />
 
     <r:layoutResources/>
+
 </head>
 
 <body class="${controllerName}_${actionName}">

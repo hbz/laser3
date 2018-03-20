@@ -64,7 +64,7 @@
 ---------------*/
 .ui.la-table.table{
   border-collapse: separate;
-  background-color: transparent;
+  background-color: @simulateTransparncy;
 }
 
 .ui.la-table.table tr th,
@@ -74,6 +74,7 @@
 /*--------------
      la-rowspan
 ---------------*/
+/*
 .ui.la-rowspan.table{
   border-collapse: separate;
   background-color: transparent;
@@ -86,5 +87,34 @@
 .ui.la-rowspan.table tr:first-child th {
   border-top:none;
 }
+*/
+/*--------------
+     la-rowspan
+---------------*/
+.ui.la-rowspan.table{
+  border-collapse: collapse;
+  background-color: @simulateTransparncy;
+}
 
+.ui.la-rowspan.table>tr th {
+  border-top:1px solid @internalBorderColor;
+}
+.ui.la-rowspan.table>tr td,
+.ui.la-rowspan.table>tr:first-child th {
+  border-top:none;
+}
+.ui.la-rowspan.table>tbody>tr:nth-child(even) {
+  border-top: 1px dotted @internalBorderColor;
+}
+.ui.la-rowspan.table>tbody>tr:nth-child(odd) {
+  border-top: 15px solid @simulateTransparncy;
+}
+
+/*--------------
+     calendar
+---------------*/
+
+.calendar .ui.table.day tr td {
+  border-top: 1px dotted @internalBorderColor;
+}
 
