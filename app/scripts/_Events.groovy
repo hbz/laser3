@@ -48,7 +48,7 @@ eventCreateWarStart = { warName, stagingDir ->
 
     RevisionNumber = RevisionNumber?: 'UNKNOWN'
 
-    def CheckedOutBranch = ant.antProject.properties."environment.GIT_LOCAL_BRANCH"?:ant.antProject.properties."environment.SVN_URL"
+    def CheckedOutBranch = ant.antProject.properties."environment.GIT_BRANCH"?:ant.antProject.properties."environment.SVN_URL"
 
     if (!CheckedOutBranch) {
       try {
