@@ -82,128 +82,129 @@
             </div>
         </div>
 
-        <div class="field">
-            <div class="two fields">
+        <g:if test="${cService.getOrg()}">
+            <input type="hidden" name="tenant.id" value="${cService.getOrg().id}" />
+            <input id="isPublic" name="isPublic" type="hidden" value="${isPublic?.id}" />
+        </g:if>
+        <g:else>
+            <div class="field">
+                <div class="two fields">
 
-                <div class="field wide twelve fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
-                    <label for="tenant">
-                        <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
-                    </label>
-                    <g:if test="${cService.getOrg()}">
-                        ${cService.getOrg().name}
-                        <input type="hidden" name="tenant.id" value="${cService.getOrg().id}" />
-                    </g:if>
-                    <g:else>
-                        <g:select id="tenant" name="tenant.id" from="${cService.getMemberships()}"
-                                  optionKey="id" value="${cService.getOrg()?.id}" />
-                    </g:else>
-                </div>
+                    <div class="field wide twelve fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
+                        <label for="tenant">
+                            <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
+                        </label>
+                        <g:select id="tenant" name="tenant.id" from="${cService.getMemberships()}" optionKey="id" value="${cService.getOrg()?.id}" />
+                    </div>
 
-                <div class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
-                    <label for="isPublic">
-                        <g:message code="person.isPublic.label" default="IsPublic" />
-                    </label>
-                    <% /*
-                    <laser:select id="isPublic" name="isPublic"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${isPublic?.id}" />
-                    */ %>
-                    ${isPublic.getI10n('value')}
-                    <input id="isPublic" name="isPublic" type="hidden" value="${isPublic?.id}" />
+                    <div class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
+                        <label for="isPublic">
+                            <g:message code="person.isPublic.label" default="IsPublic" />
+                        </label>
+                        ${isPublic.getI10n('value')}
+                        <input id="isPublic" name="isPublic" type="hidden" value="${isPublic?.id}" />
+                    </div>
                 </div>
             </div>
-        </div>
+            <hr />
+        </g:else>
 
         <div id="person-role-manager">
 
-            <div class="ui segment person-role-function-manager">
+            <g:if test="${! tmplHideFunctions}">
                 <h4 class="ui header"><g:message code="person.functions.label" default="Functions" /></h4>
+                <div class="ui segment person-role-function-manager">
 
-                <div class="field">
-                    <div class="two fields">
-                        <div class="field wide ten">
-                            <laser:select class="values"
-                                          name="ignore-functionType-selector"
-                                          from="${PersonRole.getAllRefdataValues('Person Function')}"
-                                          optionKey="id"
-                                          optionValue="value" />
+                    <div class="workspace">
+                        <h5 class="ui header">
+                            <g:message code="default.button.create_new.label" default="Adding"/>
+                        </h5>
+                        <div class="field">
+                            <div class="two fields">
+                                <div class="field wide ten">
+                                    <laser:select class="values"
+                                                  name="ignore-functionType-selector"
+                                                  from="${PersonRole.getAllRefdataValues('Person Function')}"
+                                                  optionKey="id"
+                                                  optionValue="value" />
+                                </div>
+                                <div class="field wide six">
+                                    <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="field wide six">
-                            <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
-                        </div>
+
+                        <div class="adding"></div>
+                        <h5 class="ui header" data-attr="removeIfEmpty">
+                            <g:message code="default.button.delete.label" default="Delete"/>
+                        </h5>
+                        <div class="existing" data-attr="removeIfEmpty"></div>
                     </div>
                 </div>
+                <script>
+                    $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=func').done(function(data){
+                        $('.person-role-function-manager .workspace .existing').append(data);
+                        if(data == 'No Data found.') {
+                            $('.person-role-function-manager .workspace [data-attr=removeIfEmpty]').remove()
+                        }
+                    });
+                    $('.person-role-function-manager .add-person-role').click(function(){
+                        var tt = $('.person-role-function-manager .values').val()
 
-                <div class="workspace">
-                    <h5 class="ui header">
-                        <g:message code="default.button.create_new.label" default="Adding"/>
-                    </h5>
-                    <div class="adding"></div>
-                    <h5 class="ui header">
-                        <g:message code="default.button.delete.label" default="Delete"/>
-                    </h5>
-                    <div class="existing"></div>
-                </div>
-            </div>
+                        $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=func&roleTypeId=' + tt + '&org=${org?.id}').done(function(data){
+                            $('.person-role-function-manager .workspace .adding').append(data);
+                        });
+                    })
+                </script>
+            </g:if>
 
-
-            <div class="ui segment person-role-responsibility-manager">
+            <g:if test="${! tmplHideResponsibilities}">
                 <h4 class="ui header"><g:message code="person.responsibilites.label" default="Responsibilites" /></h4>
 
-                <div class="field">
-                    <div class="two fields">
-                        <div class="field wide ten">
-                            <laser:select class="values"
-                                          name="ignore-responsibilityType-selector"
-                                          from="${PersonRole.getAllRefdataValues('Person Responsibility')}"
-                                          optionKey="id"
-                                          optionValue="value" />
+                <div class="ui segment person-role-responsibility-manager">
+
+                    <div class="workspace">
+                        <h5 class="ui header">
+                            <g:message code="default.button.create_new.label" default="Adding"/>
+                        </h5>
+                        <div class="field">
+                            <div class="two fields">
+                                <div class="field wide ten">
+                                    <laser:select class="values"
+                                                  name="ignore-responsibilityType-selector"
+                                                  from="${PersonRole.getAllRefdataValues('Person Responsibility')}"
+                                                  optionKey="id"
+                                                  optionValue="value" />
+                                </div>
+                                <div class="field wide six">
+                                    <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="field wide six">
-                            <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
-                        </div>
+
+                        <div class="adding"></div>
+                        <h5 class="ui header" data-attr="removeIfEmpty">
+                            <g:message code="default.button.delete.label" default="Delete"/>
+                        </h5>
+                        <div class="existing" data-attr="removeIfEmpty"></div>
                     </div>
                 </div>
-
-                <div class="workspace">
-                    <h5 class="ui header">
-                        <g:message code="default.button.create_new.label" default="Adding"/>
-                    </h5>
-                    <div class="adding"></div>
-                    <h5 class="ui header">
-                        <g:message code="default.button.delete.label" default="Delete"/>
-                    </h5>
-                    <div class="existing"></div>
-                </div>
-            </div>
-
-            <script>
-                $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=func').done(function(data){
-                    $('.person-role-function-manager .workspace .existing').append(data);
-                });
-                $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=resp').done(function(data){
-                    $('.person-role-responsibility-manager .workspace .existing').append(data);
-                });
-
-
-                $('.person-role-function-manager .add-person-role').click(function(){
-                    var tt = $('.person-role-function-manager .values').val()
-
-                    $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=func&roleTypeId=' + tt + '&org=${org?.id}').done(function(data){
-                        $('.person-role-function-manager .workspace .adding').append(data);
+                <script>
+                    $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=resp').done(function(data){
+                        $('.person-role-responsibility-manager .workspace .existing').append(data);
+                        if(data == 'No Data found.') {
+                            $('.person-role-responsibility-manager .workspace [data-attr=removeIfEmpty]').remove()
+                        }
                     });
-                })
+                    $('.person-role-responsibility-manager .add-person-role').click(function(){
+                        var tt = $('.person-role-responsibility-manager .values').val()
 
-                $('.person-role-responsibility-manager .add-person-role').click(function(){
-                    var tt = $('.person-role-responsibility-manager .values').val()
-
-                    $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=resp&roleTypeId=' + tt + '&org=${org?.id}').done(function(data){
-                        $('.person-role-responsibility-manager .workspace .adding').append(data);
-                    });
-                })
-            </script>
+                        $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=resp&roleTypeId=' + tt + '&org=${org?.id}').done(function(data){
+                            $('.person-role-responsibility-manager .workspace .adding').append(data);
+                        });
+                    })
+                </script>
+            </g:if>
 
         </div>
 

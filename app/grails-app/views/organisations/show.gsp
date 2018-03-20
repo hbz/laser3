@@ -185,26 +185,26 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
+                            <dt><g:message code="org.prsLinks.label" default="Kontaktpersonen" /></dt>
                             <dd>
                                 <div class="ui relaxed list">
                                     <g:each in="${orgInstance?.prsLinks}" var="pl">
                                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
                                             <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
                                         </g:if>
-                                        <g:if test="${pl?.responsibilityType?.value && pl?.prs?.isPublic?.value!='No'}">
-                                            <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
-                                        </g:if>
                                     </g:each>
                                 </div>
                                 <g:if test="${editable}">
-                                    <g:if test="${editable}">
-                                        <input class="ui button"
-                                               value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
-                                               data-semui="modal"
-                                               href="#personFormModal" />
-                                    </g:if>
-                                    <g:render template="/person/formModal" model="['tenant': contextOrg, 'org': orgInstance, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes')]"/>
+                                    <input class="ui button"
+                                           value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                                           data-semui="modal"
+                                           href="#personFormModal" />
+
+                                    <g:render template="/person/formModal"
+                                              model="['tenant': contextOrg,
+                                                      'org': orgInstance,
+                                                      'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                      'tmplHideResponsibilities': true]"/>
                                 </g:if>
                             </dd>
                         </dl>

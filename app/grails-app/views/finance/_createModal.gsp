@@ -1,7 +1,8 @@
 <!-- _createModal.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <semui:modal id="costItem_create_modal" text="${tmplText}">
-    <form class="ui form" id="createCost">
+    <g:form class="ui form" id="createCost" url="[controller:'finance', action:'newCostItem']">
+
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
 
         <div class="ui grid">
@@ -161,7 +162,8 @@
                 </div>
             </div><!-- .column -->
 
-            <div class="twelve wide column">
+
+            <%-- <div class="twelve wide column">
                 <div class="field">
                     <label>&nbsp;</label>
                     <g:submitToRemote data-action="create" onSuccess="Finance.updateResults('create');Finance.clearCreate()"
@@ -171,10 +173,10 @@
                                       class="ui button">
                     </g:submitToRemote>
                 </div>
-            </div><!-- .column -->
+            </div><!-- .column --> --%>
 
         </div><!-- .grid -->
-    </form>
+    </g:form>
 </semui:modal>
 
 <!-- _createModal.gsp -->

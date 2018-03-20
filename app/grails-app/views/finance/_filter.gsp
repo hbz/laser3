@@ -42,14 +42,14 @@
                           optionKey="id"
                           noSelection="${['':'No Category']}"/>
             </div>
-            <div class="field">
+            <div class="field required">
                 <label>Package</label>
                 <input type="text" name="packageFilter" class="filterUpdated" id="packageFilter" value="${params.packageFilter}" />
             </div>
         </div><!-- row1 -->
 
         <div class="three fields">
-            <div class="field">
+            <div class="field required">
                 <label>Rechnungsnr.</label><!-- invoice -->
                 <input type="text" name="invoiceNumberFilter"
                        class="filterUpdated"
@@ -65,7 +65,7 @@
                           noSelection="${['':'No Status']}"/>
             </div>
 
-            <div class="field">
+            <div class="field required">
                 <label>Subscription</label>
                 <g:if test="${inSubMode == true}">
                     <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
@@ -80,7 +80,7 @@
 
         <div class="three fields">
 
-            <div class="field">
+            <div class="field required">
                 <label>Bestellnummer</label>
                 <input type="text" name="orderNumberFilter"
                        class="filterUpdated"
@@ -129,6 +129,7 @@
         <%-- advanced legacy filter fields here --%>
         <%-- advanced legacy filter fields here --%>
 
+        <%--
         <div class="three fields">
             <div class="two fields">
                 <div class="field">
@@ -173,6 +174,7 @@
                 <input id="adv_ref" name="adv_ref" />
             </div>
         </div>
+        --%>
 
     </g:form>
 

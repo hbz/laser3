@@ -58,6 +58,8 @@
     <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
 </g:else>
 
+<h3 class="ui header">SEITE IN ARBEIT ..</h3>
+
 <div class="ui grid">
     <div class="column">
         <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentDialog" id="showHideRecent">Recent Costs</button>
@@ -109,8 +111,6 @@
                     <g:render template="filter" />
                 </div>
             </div>
-
-            <br/><br/><br/><br/><br/>
 
             <div style="padding-left: 2%" hidden="hidden" class="loadingData">
                 <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
