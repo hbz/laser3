@@ -380,7 +380,14 @@
 
             <div class="right menu">
                 <sec:ifLoggedIn>
-                    <a class="item dlpopover" href="#"><i class="icon-search icon-white"></i></a>
+                    <div id="mainSearch" class="ui search">
+                        <div class="ui icon input">
+                            <input class="prompt" placeholder="Suche nach .." type="text">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+
                     <g:if test="${user}">
                         <div class="ui simple dropdown item la-noBorder">
                             ${user.displayName}
@@ -423,15 +430,14 @@
 
             <div class="right menu la-advanced-view">
                 <g:if test="${(params.mode)}">
-                    <div class="ui  buttons">
-
+                    <div class="ui buttons">
                             <g:if test="${params.mode=='advanced'}">
-                                <div class="ui label toggle button"  data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"  data-position="bottom right" data-variation="tiny">
+                                <div class="ui label toggle button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                     <i class="icon green eye"></i>
                             </g:if>
                             <g:else>
-                                <div class="ui label toggle button"  data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}"  data-position="bottom right" data-variation="tiny">
-                                    <i class="icon eye slash "></i>
+                                <div class="ui label toggle button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                    <i class="icon eye slash"></i>
                             </g:else>
                         </div>
                     </div>

@@ -206,3 +206,17 @@ body.myInstitution_dashboard .ui.tab .item span {
     margin: 0 !important;
     border-radius: 0 !important;
 }
+
+/* mainSearch */
+
+#mainSearch {
+}
+#mainSearch .prompt {
+    padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+    border-radius: 0;
+    color: #555;
+}
+#mainSearch .input {
+    height: 60%;
+    top: 20%;
+}
