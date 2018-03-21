@@ -168,6 +168,7 @@ r2d2 = {
               zIndex: 70
         });
         $('.modal .table').floatThead('destroy');
+        $('.metaboxContent .table').floatThead('destroy');
     },
 
     spotlightGetContent : function() {

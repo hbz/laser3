@@ -27217,6 +27217,11 @@ Floated Menu / Item
   background-color: #f4f8f9;
 }
 
+.metaboxContent .ui.la-table.table {
+  border-collapse: separate;
+  background-color: transparent;
+}
+
 .ui.la-table.table tr th,
 .ui.la-table.table tr td {
   border-top: none;
