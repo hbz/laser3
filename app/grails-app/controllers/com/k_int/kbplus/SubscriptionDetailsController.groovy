@@ -30,7 +30,7 @@ class SubscriptionDetailsController {
     def institutionsService
     def ESSearchService
     def executorWrapperService
-    def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
+    def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
     def permissionHelperService
     def filterService
 
@@ -104,12 +104,13 @@ class SubscriptionDetailsController {
             redirect controller: 'home', action: 'index'
         }
 
-        // result.institution = Org.findByShortcode(params.shortcode)
-        result.institution = result.subscriptionInstance.subscriber
-        if (result.institution) {
-            result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
-        }
+    // result.institution = Org.findByShortcode(params.shortcode)
+    result.institution = result.subscriptionInstance.subscriber
+    if ( result.institution ) {
+      result.subscriber_shortcode = result.institution.shortcode
+      result.institutional_usage_identifier =
+              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+    }
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
@@ -309,12 +310,14 @@ class SubscriptionDetailsController {
             def parsed_change_info = JSON.parse(pc[1])
             if (parsed_change_info.tippID) {
                 pc_to_delete += pc[0]
-            } else if (parsed_change_info.changeDoc) {
+            }
+            else if (parsed_change_info.changeDoc) {
                 def (oid_class, ident) = parsed_change_info.changeDoc.OID.split(":")
                 if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
                     pc_to_delete += pc[0]
                 }
-            } else {
+            }
+            else {
                 log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${parsed_change_info}")
             }
         }
@@ -322,7 +325,8 @@ class SubscriptionDetailsController {
             log.debug("Deleting Pending Changes: ${pc_to_delete}")
             def del_pc_query = "delete from PendingChange where id in (:del_list) "
             PendingChange.executeUpdate(del_pc_query, [del_list: pc_to_delete])
-        } else {
+        }
+        else {
             return pc_to_delete.size()
         }
     }
@@ -668,7 +672,8 @@ class SubscriptionDetailsController {
 
         if (params.showDeleted == 'Y') {
             result.subscriptionChildren = Subscription.findAllByInstanceOf(result.subscriptionInstance)
-        } else {
+        }
+        else {
             result.subscriptionChildren = Subscription.executeQuery(
                     "select sub from Subscription as sub where sub.instanceOf = ? and sub.status.value != 'Deleted'",
                     [result.subscriptionInstance]
@@ -721,9 +726,9 @@ class SubscriptionDetailsController {
 
         result.institution = result.subscriptionInstance.subscriber
 
-        def orgType = RefdataValue.get(params.asOrgType)
+        def orgType   = RefdataValue.get(params.asOrgType)
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
 
         if (permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')) {
@@ -1114,7 +1119,7 @@ class SubscriptionDetailsController {
         def subscriber = subscription.getSubscriber();
         def consortia = subscription.getConsortia();
 
-        result.add([value: '', text: 'None']);
+    result.add([value:'', text:'None']);
 
         if (subscriber || consortia) {
 
@@ -1157,9 +1162,10 @@ class SubscriptionDetailsController {
                     pkg_to_link.addToSubscription(it, true)
                 }
 
-                redirect action: 'index', id: params.id
-            } else if (params.addType == 'Without') {
-                pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+        redirect action:'index', id:params.id
+      }
+      else if ( params.addType == 'Without' ) {
+        pkg_to_link.addToSubscription(result.subscriptionInstance, false)
 
                 sub_instances.each {
                     pkg_to_link.addToSubscription(it, false)
@@ -1178,13 +1184,14 @@ class SubscriptionDetailsController {
             }
         }
 
-        if (result.institution) {
-            result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
-        }
-        log.debug("Going for ES")
-        params.rectype = "Package"
-        result.putAll(ESSearchService.search(params))
+    if (result.institution) {
+      result.subscriber_shortcode = result.institution.shortcode
+      result.institutional_usage_identifier =
+        OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+    }
+    log.debug("Going for ES")
+    params.rectype = "Package"
+    result.putAll(ESSearchService.search(params))
 
         result
     }
@@ -1286,12 +1293,13 @@ class SubscriptionDetailsController {
         result.subscription = Subscription.get(params.id)
         result.subscriptionInstance = Subscription.get(params.id) // TODO: for generic template _breadcumb
 
-        // result.institution = Org.findByShortcode(params.shortcode)
-        result.institution = result.subscription.subscriber
-        if (result.institution) {
-            result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = result.institution.getIdentifierByType('STATS');
-        }
+    // result.institution = Org.findByShortcode(params.shortcode)
+    result.institution = result.subscription.subscriber
+    if ( result.institution ) {
+      result.subscriber_shortcode = result.institution.shortcode
+      result.institutional_usage_identifier =
+              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+    }
 
         if (!result.subscription.hasPerm("view", result.user)) {
             response.sendError(401);
@@ -1327,23 +1335,25 @@ class SubscriptionDetailsController {
                     cost_row.total_usage_for_sub = Double.parseDouble(usage_str);
                     if (cost_row.total_usage_for_sub > 0) {
                         cost_row.overall_cost_per_use = cost_row.total_cost_for_sub / cost_row.total_usage_for_sub;
-                    } else {
+                    }
+                    else {
                         cost_row.overall_cost_per_use = 0;
                     }
-                } else {
+                }
+                else {
                     cost_row.total_usage_for_sub = Double.parseDouble('0');
                     cost_row.overall_cost_per_use = cost_row.total_usage_for_sub
                 }
 
                 // Work out what cost items appear under this subscription in the period given
-                cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD, [start: it[3].startDate, end: it[3].endDate, sub: result.subscription, jr1a: 'STATS:JR1'])
-
+                cost_row.usage = Fact.executeQuery(USAGE_FOR_SUB_IN_PERIOD,[start:it[3].startDate, end:it[3].endDate, sub:result.subscription, jr1a:'STATS:JR1' ])
+                cost_row.billingCurrency = it[3].billingCurrency.value.take(3)
                 result.costItems.add(cost_row);
-            } else {
+              }
+              else {
                 log.error("Invoice ${it} had no start or end date");
+              }
             }
-        }
-
 
         result
     }
@@ -1363,16 +1373,17 @@ class SubscriptionDetailsController {
         }
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = result.institution.getIdentifierByType('JUSP');
+            result.institutional_usage_identifier =
+                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
         }
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
-        // tasks
-        def contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-        def preCon = taskService.getPreconditions(contextOrg)
-        result << preCon
+    // tasks
+    def contextOrg  = contextService.getOrg()
+    result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
+    def preCon      = taskService.getPreconditions(contextOrg)
+    result << preCon
 
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgRelations = result.subscriptionInstance.orgRelations
@@ -1401,13 +1412,13 @@ class SubscriptionDetailsController {
             if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
                 def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
-                } else {
-                    log.debug("New subscription private property created via mandatory: " + newProp.type.name)
-                }
+            if (newProp.hasErrors()) {
+                log.error(newProp.errors)
+            } else {
+                log.debug("New subscription private property created via mandatory: " + newProp.type.name)
             }
         }
+    }
 
         // -- private properties
 
@@ -1426,20 +1437,21 @@ class SubscriptionDetailsController {
 
         result.visiblePrsLinks = []
 
-        result.subscriptionInstance.prsLinks.each { pl ->
-            if (!result.visiblePrsLinks.contains(pl.prs)) {
-                if (pl.prs.isPublic?.value != 'No') {
-                    result.visiblePrsLinks << pl
-                } else {
-                    // nasty lazy loading fix
-                    result.user.authorizedOrgs.each { ao ->
-                        if (ao.getId() == pl.prs.tenant.getId()) {
-                            result.visiblePrsLinks << pl
-                        }
-                    }
-                }
-            }
-        }
+          result.subscriptionInstance.prsLinks.each { pl ->
+              if (! result.visiblePrsLinks.contains(pl.prs)) {
+                  if (pl.prs.isPublic?.value != 'No') {
+                      result.visiblePrsLinks << pl
+                  }
+                  else {
+                      // nasty lazy loading fix
+                      result.user.authorizedOrgs.each{ ao ->
+                          if (ao.getId() == pl.prs.tenant.getId()) {
+                              result.visiblePrsLinks << pl
+                          }
+                      }
+                  }
+              }
+          }
 
         result
     }

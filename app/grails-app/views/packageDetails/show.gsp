@@ -34,13 +34,11 @@
         <g:render template="actions" />
     </semui:controlButtons>
 
-
-
     <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
     </sec:ifAnyGranted>
 
-
+    <g:if test="${params.asAt}"><h1 class="ui header"><semui:headerIcon />${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
 
       <h1 class="ui header"><semui:headerIcon />
         <g:if test="${params.asAt}">${message(code:'package.show.asAt', args:[params.asAt])}</g:if>
@@ -222,6 +220,27 @@
                                 <semui:xEditableRefData owner="${packageInstance}" field="fixed" config="${RefdataCategory.PKG_FIXED}"/>
                             </dd>
                         </dl>
+
+                        <g:if test="${statsWibid && packageIdentifier}">
+                            <dl>
+                               <dt>Paketnutzung</dt>
+                               <dd>
+                                    <laser:statsLink class="ui basic negative"
+                                                     base="${grailsApplication.config.statsApiUrl}"
+                                                     module="statistics"
+                                                     controller="default"
+                                                     action="select"
+                                                     params="[mode:usageMode,
+                                                              packages:packageInstance.getIdentifierByType('isil').value,
+                                                              institutions:statsWibid
+                                                     ]"
+                                                     title="Springe zu Statistik im Nationalen Statistikserver">
+                                        <i class="chart bar outline icon"></i>
+                                    </laser:statsLink>
+                                </dd>
+                            </dl>
+                        </g:if>
+
                     </div>
                 </div>
             </div>

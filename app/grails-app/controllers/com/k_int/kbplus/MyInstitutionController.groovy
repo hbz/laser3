@@ -536,6 +536,11 @@ from Subscription as s where (
             [(it.getI10n('name')) : it.type + "&&" + it.refdataCategory]
         }
 
+        if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)) {
+            result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
+            result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
+        }
+
         withFormat {
             html result
         }

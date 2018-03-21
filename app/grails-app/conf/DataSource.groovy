@@ -19,9 +19,9 @@ environments {
             dialect = org.hibernate.dialect.MySQL5Dialect
             username = "laser"
             password = "laser"
-            url = "jdbc:mysql://localhost/laserDev?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
+            url = "jdbc:mysql://localhost/laser?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
-            // logSql = true
+            // logSql = truei
             // formatSql = true
             properties {
                 maxActive = -1
