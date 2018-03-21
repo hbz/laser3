@@ -240,8 +240,6 @@
             </thead>
             <tbody>
 
-            %{--blank row--}%
-            <tr><td colspan="10">&nbsp;</td></tr>
 
             %{--Empty result set--}%
             <g:if test="${cost_item_count==0}">
