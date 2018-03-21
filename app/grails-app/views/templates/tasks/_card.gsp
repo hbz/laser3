@@ -19,5 +19,3 @@
 </semui:card>
 
 <g:render template="/templates/tasks/modal" />
-
-<div class="modal hide fade" id="modalTasks"></div>

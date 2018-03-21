@@ -129,7 +129,7 @@ r2d2 = {
                 onVisible: function(){
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 }
-            }).modal('show')
+            }).modal({centered: false}).modal('show')
         });
 
         // dropdowns

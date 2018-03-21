@@ -44,5 +44,3 @@
 </semui:card>
 
 <g:render template="/templates/notes/modal" />
-
-<div class="modal hide fade" id="modalComments"></div>

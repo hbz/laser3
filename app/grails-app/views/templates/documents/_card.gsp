@@ -27,5 +27,5 @@
     </g:each>
 </semui:card>
 
-<g:render template="/templates/documents/modal"  />
+<g:render template="/templates/documents/modal" />
 
