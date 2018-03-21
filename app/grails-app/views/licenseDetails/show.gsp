@@ -138,7 +138,22 @@
                                             <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link><br/>
                                         </g:each>
                                     </g:if>
-                                    <g:else>${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}</g:else>
+                                    <g:else>
+                                        ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
+                                    </g:else>
+
+                                    <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
+                                        <input type="hidden" name="license" value="${license.id}"/>
+                                        <div class="two fields">
+                                            <div class="field">
+                                                <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
+                                            </div>
+                                            <div class="field">
+                                                <input type="submit" class="ui button" value="${message(code:'default.button.link.label', default:'Link')}"/>
+                                            </div>
+                                        </div>
+                                    </g:form>
+
                                 </dd>
                             </dl>
                             <!--
@@ -151,7 +166,9 @@
                                             <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
                                         </g:each>
                                     </g:if>
-                                    <g:else>${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}</g:else>
+                                    <g:else>
+                                        ${message(code:'license.noLinkedPackages', default:'No currently linked packages.')}
+                                    </g:else>
                                 </dd>
                             </dl>
                             -->
@@ -184,8 +201,6 @@
                     <div class="ui card">
                         <div class="content">
 
-
-
                         <%--
                         <dl>
                             <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
@@ -213,7 +228,6 @@
                             </dl>
                            --%>
                         <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgLinks, editmode:editable, tmplButtonText:'Lizenzgeber hinzufügen']}" />
-
 
                         <g:render template="/templates/links/orgLinksModal"
                                   model="${[linkType:license?.class?.name, parent:license.class.name+':'+license.id, property:'orgLinks', recip_prop:'lic',
@@ -303,12 +317,12 @@
             </div><!-- .twelve -->
 
             <aside class="four wide column">
+            <%--
                 <semui:card message="license.actions">
-
                     <div class="ui form content">
 
                         <g:if test="${canCopyOrgs}">
-                            <%--
+
                             <div class="field">
                                 <label for="orgShortcode">${message(code:'license.copyLicensefor', default:'Copy license for')}:</label>
 
@@ -316,7 +330,7 @@
                             </div>
 
                             <g:link name="copyLicenseBtn" controller="myInstitution" action="actionLicenses" params="${[shortcode:'replaceme', baselicense:license.id, 'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
-                            --%>
+
                             <br />
 
                             <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
@@ -339,6 +353,7 @@
                         </g:else>
                     </div>
                 </semui:card>
+                --%>
 
                 <g:render template="/templates/tasks/card" model="${[ownobj:license, owntp:'license']}" />
                 <g:render template="/templates/documents/card" model="${[ownobj:license, owntp:'license']}" />

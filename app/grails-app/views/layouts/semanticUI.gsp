@@ -38,12 +38,12 @@
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
 
     <g:if test="${'LAS:eR-Dev' == grailsApplication.config.laserSystemId}">
-        <div class="ui green label la-server-label">
+        <div class="ui green label big la-server-label">
             DEV-System
         </div>
     </g:if><%-- debug --%>
     <g:if test="${'LAS:eR-QA/Stage' == grailsApplication.config.laserSystemId}">
-        <div class="ui red label la-server-label">
+        <div class="ui red label big la-server-label">
             QA-System
         </div>
     </g:if><%-- debug --%>
