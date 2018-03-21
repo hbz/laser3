@@ -175,6 +175,10 @@
                                                 <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
                                             </g:link>]
                                         </g:if>
+
+                                        <br/><br/>
+                                        <g:link  controller="myInstitution" class="ui button" action="cleanLicense">${message(code:'license.add.blank')}
+                                        </g:link>
                                 </dd>
                             </dl>
                         </div>

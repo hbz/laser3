@@ -221,6 +221,7 @@ aside .ui.card {
 
 aside.ui.segment {
   background: #fffaf5;
+  z-index: 8;
 }
 .ui.accordion .title .dropdown.icon.la-dropdown-accordion {
   float: right;
