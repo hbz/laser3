@@ -153,8 +153,9 @@
               <tr>
                 <td>
                   <g:link controller="titleDetails" action="show" id="${ti.id}"><strong>${ti.title}</strong></g:link>
-                  <br/> 
-                  <g:link controller="public" action="journalLicenses" params="${['journal':'kb:'+ti.id,'org':institution.id]}">${message(code:'myinst.currentTitles.check_license_terms', default:'Check current license terms')}</g:link>
+                    <%--<br/>
+                    <g:link controller="public" action="journalLicenses" params="${['journal':'kb:'+ti.id,'org':institution.id]}">${message(code:'myinst.currentTitles.check_license_terms', default:'Check current license terms')}</g:link>
+                    --%>
                 </td>
                 <td style="white-space:nowrap">${ti.getIdentifierValue('ISSN')}</td>
                 <td style="white-space:nowrap">${ti.getIdentifierValue('eISSN')}</td>

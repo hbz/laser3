@@ -7,7 +7,7 @@ class PublicController {
 
     def springSecurityService
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_YODA'])
   def journalLicenses(){
     log.debug("journalLicenses :: ${params}")
     def result = [:]
