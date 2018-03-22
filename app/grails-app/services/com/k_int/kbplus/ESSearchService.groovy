@@ -150,18 +150,23 @@ class ESSearchService{
       if ( params[mapping.key] != null ) {
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ");
-          sw.write(" ( ( ( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" )) OR ( ")
+          sw.write(" ( ( ( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" )) ")
 
-          params[mapping.key].each { p ->  
+          params[mapping.key].each { p ->
+                 if(p == params[mapping.key].last())
+                 {
+                   sw.write(" OR ( ")
+                 }
                 sw.write(mapping.value)
                 sw.write(":")
                 sw.write("\"${p}\"")
                 if(p == params[mapping.key].last()) {
-                  sw.write(" ) ) ")
+                  sw.write(" ) ")
                 }else{
                   sw.write(" OR ")
                 }
           }
+          sw.write(" ) ")
         }
         else {
           // Only add the param if it's length is > 0 or we end up with really ugly URLs
