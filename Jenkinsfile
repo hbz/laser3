@@ -2,8 +2,6 @@
 
 def deploy_server
 
-properties([parameters([choice(choices: ['DEV', 'QA', 'PROD'], description: '', name: 'SERVER')]), [$class: 'ThrottleJobProperty', categories: [], limitOneJobWithMatchingParams: false, maxConcurrentPerNode: 0, maxConcurrentTotal: 0, paramsToUseForLimit: '', throttleEnabled: false, throttleOption: 'project']])
-
 pipeline {
     agent any
 
@@ -15,12 +13,12 @@ pipeline {
                     sh 'grails refresh-dependencies --non-interactive'
                     sh 'grails war --non-interactive ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war'
                 }
-                echo 'Building..'
+                echo 'Building..${SERVER_DEV}'
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
+                echo 'Testing..${SERVER_DEV}'
             }
         }
         stage('Deploy') {
@@ -31,17 +29,17 @@ pipeline {
                 if(deploy_server == "DEV")
                 {
                     sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                                    echo 'Deploying....'
+                                    echo 'Deploying on ${SERVER_DEV}....'
                 }
                 elsif(deploy_server == "QA")
                 {
                     sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                                    echo 'Deploying....'
+                                    echo 'Deploying on ${SERVER_QA}....'
                 }
                 elsif(deploy_server == "PROD")
                 {
                     sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                                    echo 'Deploying....'
+                                    echo 'Deploying on ${SERVER_PROD}....'
                 }
             }
         }
