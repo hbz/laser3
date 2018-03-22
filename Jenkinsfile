@@ -14,17 +14,16 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Testing..${env.SERVER_PROD}'
+                echo 'Testing..'+ env.SERVER_PROD
             }
         }
         stage('Deploy') {
             steps {
                 input message: 'On which server do you want deploy?', ok: 'Deploy!',
-                                                         parameters: [choice(name: 'DEPLOY_SERVER', choices: ['DEV','QA','PROD'], description: 'Which Server?')]
-
+                                                         parameters: [choice(name: 'DEPLOY_SERVER', choices: ['DEV','QA','PROD'], description: '')]
 
                     sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                    echo 'Deploying on ${params.DEPLOY_SERVER}....'
+                    echo 'Deploying on ' + params.DEPLOY_SERVER + '....'
 
             }
         }
