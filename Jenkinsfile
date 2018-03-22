@@ -9,21 +9,21 @@ pipeline {
                     sh 'grails refresh-dependencies --non-interactive'
                     sh 'grails war --non-interactive ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war'
                 }
-                echo 'Building..${SERVER_DEV}'
+                echo 'Building..'
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'+ env.SERVER_PROD
+                echo 'Testing..'
             }
         }
         stage('Deploy') {
             steps {
                 input message: 'On which server do you want deploy?', ok: 'Deploy!',
-                                                         parameters: [choice(name: 'DEPLOY_SERVER', choices: ['DEV','QA','PROD'], description: '')]
+                                                         parameters: [choice(name: 'DEPLOY', choices: ['dev', 'qa', 'prod'], description: '')]
 
                     sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                    echo 'Deploying on ' + params.DEPLOY_SERVER + '....'
+                    echo 'Deploying on ' + params.DEPLOY + '....'
 
             }
         }
