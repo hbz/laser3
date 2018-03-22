@@ -19,9 +19,10 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                input('OK to continue?')
+                env.Deploy_Server = input message: 'On which Server you want to deploy', ok: 'Deploy!',
+                                            parameters: [choice(name: 'Server', choices: 'DEV\nQA\nPROD', description: '')]
                 sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                echo 'Deploying....'
+                echo 'Deploying....${env.Deploy_Server}'
             }
         }
         stage('Post-Build'){
@@ -43,7 +44,7 @@ pipeline {
             }
             failure {
                 echo 'I failed :('
-                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de',
+                mail to: 'moetez.djebeniani@hbz-nrw.de',
                              subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                              body: "Something is wrong with ${env.BUILD_URL}"
                  cleanWs()
