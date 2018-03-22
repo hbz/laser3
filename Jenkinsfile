@@ -28,7 +28,7 @@ pipeline {
 
 
                     sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                                    echo 'Deploying on ${'SERVER_'+params.DEPLOY_SERVER}....'
+                    echo 'Deploying on ${'SERVER_'+params.DEPLOY_SERVER}....'
 
             }
         }
