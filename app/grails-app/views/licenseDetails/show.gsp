@@ -135,14 +135,27 @@
                                 <dd>
                                     <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                         <g:each in="${license.subscriptions}" var="sub">
-                                            <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link><br/>
+                                            <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link>
+
+                                            <g:if test="${editable}">
+                                                <div class="ui mini icon buttons">
+                                                    <g:link class="ui disabled button" controller="todo" action="todo" id="todo" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                    </g:link>
+                                                </div>
+                                            </g:if>
+
+                                            <br/>
                                         </g:each>
                                     </g:if>
                                     <g:else>
                                         ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
                                     </g:else>
 
+                                    <br />
+
                                     <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
+                                        <br />
                                         <input type="hidden" name="license" value="${license.id}"/>
                                         <div class="two fields">
                                             <div class="field">
