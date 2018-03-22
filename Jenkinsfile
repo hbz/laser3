@@ -24,7 +24,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 deploy_server = input message: 'On which server do you want deploy?', ok: 'Deploy!',
-                                                         parameters: [choice(name: 'DEPLOY_SERVER', choices: 'DEV\QA\PROD', description: 'Which Server?')]
+                                                         parameters: [choice(name: 'DEPLOY_SERVER', choices: ['DEV','QA','PROD'], description: 'Which Server?')]
 
                 if(deploy_server == "DEV")
                 {
