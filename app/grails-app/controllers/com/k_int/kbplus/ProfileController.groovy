@@ -15,13 +15,20 @@ class ProfileController {
     def springSecurityService
     def passwordEncoder
 
-  @Secured(['ROLE_USER'])
-  def index() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.editable = true
-    result
-  }
+    @Secured(['ROLE_USER'])
+    def index() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.editable = true
+        result
+    }
+
+    @Secured(['ROLE_USER'])
+    def help() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result
+    }
 
     @Secured(['ROLE_USER'])
     def processJoinRequest() {
