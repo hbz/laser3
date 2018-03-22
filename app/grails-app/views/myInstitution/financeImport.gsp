@@ -22,7 +22,7 @@
           <a href="${resource(dir: 'rest/docs', file: 'bulk_load_cost_item_records_template_01.csv')}" download="template_bulk_load_cost_item_records.csv">
             <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
           </a>
-         <table class="ui celled striped table">
+         <table class="ui celled striped table la-table">
            <thead>
              <tr>
                 <%-- <th>tsv column name</th>
@@ -76,7 +76,7 @@
 
 
       <g:if test="${loaderResult}">
-        <table class="ui celled striped table">
+        <table class="ui celled striped table la-table">
           <thead>
             <tr>
               <th></th>
