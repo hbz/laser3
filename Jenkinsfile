@@ -18,29 +18,18 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Testing..${SERVER_DEV}'
+                echo 'Testing..${env.SERVER_PROD}'
             }
         }
         stage('Deploy') {
             steps {
-                deploy_server = input message: 'On which server do you want deploy?', ok: 'Deploy!',
+                input message: 'On which server do you want deploy?', ok: 'Deploy!',
                                                          parameters: [choice(name: 'DEPLOY_SERVER', choices: ['DEV','QA','PROD'], description: 'Which Server?')]
 
-                if(deploy_server == "DEV")
-                {
+
                     sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                                    echo 'Deploying on ${SERVER_DEV}....'
-                }
-                elsif(deploy_server == "QA")
-                {
-                    sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                                    echo 'Deploying on ${SERVER_QA}....'
-                }
-                elsif(deploy_server == "PROD")
-                {
-                    sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                                    echo 'Deploying on ${SERVER_PROD}....'
-                }
+                                    echo 'Deploying on ${'SERVER_'+params.DEPLOY_SERVER}....'
+
             }
         }
         stage('Post-Build'){
