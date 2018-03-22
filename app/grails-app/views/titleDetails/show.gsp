@@ -6,7 +6,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'titleInstance.label', default: 'Title Instance')}"/>
-    <title><g:message code="default.edit.label" args="[entityName]"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.edit.label" args="[entityName]"/></title>
 </head>
   <body>
 
@@ -183,7 +183,7 @@
             </g:if>
 
             <h3 class="ui header">${message(code:'title.edit.tipp')}</h3>
-
+<% /*
               <table class="ui celled la-table table">
                   <thead>
                   <tr>
@@ -209,6 +209,7 @@
                   </g:each>
                   </tbody>
               </table>
+*/ %>
 
             <g:form id="${params.id}" controller="titleDetails" action="batchUpdate" class="ui form">
               <table class="ui celled la-rowspan table" >
@@ -228,7 +229,7 @@
                 <g:if test="${editable}">
                   <tr>
                     <td rowspan="2"><input type="checkbox" name="checkall" onClick="javascript:$('.bulkcheck').attr('checked', true);"/></td>
-                    <td colspan="2"><button class="ui button" type="submit" value="Go" name="BatchEdit">${message(code:'title.edit.tipp.clear')}</button></td>
+                    <td colspan="2"><button class="ui button" type="submit" value="Go" name="BatchEdit">${message(code:'default.button.apply_batch.label')}</button></td>
                     <td>
 
                         <semui:datepicker label="title.show.history.date" name="bulk_start_date" value="${params.bulk_start_date}" />
@@ -295,7 +296,12 @@
                   <tr>
                     <td rowspan="2"><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td>
                     <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
-                    <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
+                    <td>
+                        <div class="la-flexbox">
+                            <i class="icon gift scale la-list-icon"></i>
+                            <g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link>
+                        </div>
+                    </td>
   
                     <td>${message(code:'title.show.history.date')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/><br/>
                     ${message(code:'tipp.volume')}: ${t.startVolume}<br/>

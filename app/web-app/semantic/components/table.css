@@ -1235,7 +1235,8 @@
 .ui.la-rowspan.table > tr:first-child th {
   border-top: none;
 }
-.ui.la-rowspan.table > tbody > tr:nth-child(even) {
+.ui.la-rowspan.table > tbody > tr:nth-child(even) td,
+.ui.la-rowspan.table > thead > tr:nth-child(even) th {
   border-top: 1px dotted rgba(34, 36, 38, 0.1);
 }
 .ui.la-rowspan.table > tbody > tr:nth-child(odd) {

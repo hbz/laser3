@@ -153,7 +153,7 @@ r2d2 = {
         $('.table').floatThead({
               position: 'fixed',
               top: 78,
-              zIndex: 70
+              zIndex: 1
         });
         $('.modal .table').floatThead('destroy');
         $('.metaboxContent .table').floatThead('destroy');
