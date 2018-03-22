@@ -1,3 +1,9 @@
+
+
+def deploy_server
+
+properties([parameters([choice(choices: ['DEV', 'QA', 'PROD'], description: '', name: 'SERVER')]), [$class: 'ThrottleJobProperty', categories: [], limitOneJobWithMatchingParams: false, maxConcurrentPerNode: 0, maxConcurrentTotal: 0, paramsToUseForLimit: '', throttleEnabled: false, throttleOption: 'project']])
+
 pipeline {
     agent any
 
@@ -19,9 +25,24 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                input('OK to continue?')
-                sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                echo 'Deploying....'
+                deploy_server = input message: 'On which server do you want deploy?', ok: 'Deploy!',
+                                                         parameters: [choice(name: 'DEPLOY_SERVER', choices: 'DEV\QA\PROD', description: 'Which Server?')]
+
+                if(deploy_server == "DEV")
+                {
+                    sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
+                                    echo 'Deploying....'
+                }
+                elsif(deploy_server == "QA")
+                {
+                    sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
+                                    echo 'Deploying....'
+                }
+                elsif(deploy_server == "PROD")
+                {
+                    sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
+                                    echo 'Deploying....'
+                }
             }
         }
         stage('Post-Build'){
