@@ -43,9 +43,9 @@ class FilterService {
         }
 
         if (query.size() > 0) {
-            query = "from Org o where " + query.join(" and ") + " order by o.name"
+            query = "from Org o where " + query.join(" and ") + " order by LOWER(o.name) asc"
         } else {
-            query = "from Org o order by o.name"
+            query = "from Org o order by LOWER(o.name) asc"
         }
 
         result.query = query
@@ -88,9 +88,9 @@ class FilterService {
         queryParams << 'Consortium'
 
         if (query.size() > 0) {
-            query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? order by o.name"
+            query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? order by LOWER(o.name) asc"
         } else {
-            query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = ? and c.type.value = ? order by o.name"
+            query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = ? and c.type.value = ? order by LOWER(o.name) asc"
         }
 
         result.query = query
