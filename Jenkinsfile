@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 pipeline {
     agent any
 
@@ -19,10 +21,22 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                env.Deploy_Server = input message: 'On which Server you want to deploy', ok: 'Deploy!',
-                                            parameters: [choice(name: 'Server', choices: 'DEV\nQA\nPROD', description: '')]
-                sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                echo 'Deploying....${env.Deploy_Server}'
+
+            script{
+                    env.SERVERDELOPY = input message: 'On which Server you want to deploy', ok: 'Deploy!',
+                                            parameters: [choice(name: 'Server to deploy', choices: "${SERVER_DEV}\n${SERVER_QA}\n${SERVER_PROD}", description: '')]
+                    echo "Server Set to: ${SERVERDELOPY}"
+                    echo "Deploying on ${SERVERDELOPY}...."
+                }
+
+                input('OK to continue?')
+
+                sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'
+                writeFile file: "${WORKSPACE}/job.batch", text: "put /{WORKSPACE}/ROOT.war\n quit"
+
+                sh 'sftp -b ${WORKSPACE}/job.batch -i ${TOMCAT_HOME_PATH}/.ssh/id_rsa ${SERVERDELOPY}:${TOMCAT_HOME_PATH}/default/'
+
+
             }
         }
         stage('Post-Build'){
@@ -47,7 +61,6 @@ pipeline {
                 mail to: 'moetez.djebeniani@hbz-nrw.de',
                              subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                              body: "Something is wrong with ${env.BUILD_URL}"
-                 cleanWs()
             }
             changed {
                 echo 'Things were different before...'
