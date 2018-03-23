@@ -30,11 +30,14 @@ pipeline {
                 }
 
                 input('OK to continue?')
-
-                sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'
-                writeFile file: "${WORKSPACE}/job.batch", text: "put /{WORKSPACE}/ROOT.war\n quit"
-
-                sh 'sftp -b ${WORKSPACE}/job.batch -i ${TOMCAT_HOME_PATH}/.ssh/id_rsa ${SERVERDELOPY}:${TOMCAT_HOME_PATH}/default/'
+                if(SERVERDELOPY == SERVER_DEV){
+                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/ROOT.war'
+                }
+                }else{
+                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'
+                        writeFile file: "${WORKSPACE}/job.batch", text: "put /{WORKSPACE}/ROOT.war\n quit"
+                        sh 'sftp -b ${WORKSPACE}/job.batch -i ${TOMCAT_HOME_PATH}/.ssh/id_rsa ${SERVERDELOPY}:${TOMCAT_HOME_PATH}/default/webapps/'
+                }
 
 
             }
