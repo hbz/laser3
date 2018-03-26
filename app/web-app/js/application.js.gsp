@@ -158,12 +158,57 @@ r2d2 = {
         $('.modal .table').floatThead('destroy');
         $('.metaboxContent .table').floatThead('destroy');
 
+
+
+
         $('.ui.search').search({
+            type: 'category',
+            searchFields   : [
+                'title'
+            ],
             apiSettings: {
-                url: "<g:createLink controller="spotlight" action='search'/>/?query={query}"
+                onResponse: function(elasticResponse) {
+                    var
+                        response = {
+                            results : {}
+                        }
+                    ;
+                    // translate Elasticsearch API response to work with semantic ui search
+                    $.each(elasticResponse.results, function(index, item) {
+
+                        var
+                           category   = item.category || 'Unknown',
+                            maxResults = 15
+                        ;
+                        if(index >= maxResults) {
+                            return false;
+                        }
+
+
+                        // create new object category
+                        if(response.results[category] === undefined) {
+                            response.results[category] = {
+                                name    : category,
+                                results : []
+                            };
+                        }
+                        // add result to category
+                        response.results[category].results.push({
+                            title       : item.title,
+                            url         : item.url
+                        });
+                    });
+                    return response;
+
+                },
+
+                url: "<g:createLink controller='spotlight' action='search'/>/?query={query}"
             },
+
             minCharacters: 3
+
         });
+
     }
 }
 
