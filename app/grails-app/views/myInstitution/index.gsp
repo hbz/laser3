@@ -9,6 +9,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+    <semui:crumb text="${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}" class="active" />
 </semui:breadcrumbs>
 
 <div>

@@ -61,6 +61,7 @@ class MyInstitutionController {
     def index() {
         // Work out what orgs this user has admin level access to
         def result = [:]
+        result.institution  = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         def currentOrg = contextService.getOrg()
         log.debug("index for user with id ${springSecurityService.principal.id} :: ${result.user}");
@@ -2942,7 +2943,8 @@ AND EXISTS (
         log.debug("actionMembershipRequestOrg");
         def req = UserOrg.get(params.req);
         def user = User.get(springSecurityService.principal.id)
-        if ( req != null ) {
+        def currentOrg = contextService.getOrg()
+        if ( req != null && req.org == currentOrg) {
             switch(params.act) {
                 case 'approve':
                     req.status = UserOrg.STATUS_APPROVED
