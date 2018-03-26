@@ -188,11 +188,17 @@ class User implements Permissions {
     } */
 
     def hasAffiliation(userRoleName) {
-        hasAffiliation(userRoleName, 'ROLE_USER')
+        hasAffiliationAND(userRoleName, 'ROLE_USER')
     }
 
-    def hasAffiliation(userRoleName, globalRoleName) {
+    def hasAffiliationAND(userRoleName, globalRoleName) {
+        affiliationCheck(userRoleName, globalRoleName, 'AND')
+    }
+    def hasAffiliationOR(userRoleName, globalRoleName) {
+        affiliationCheck(userRoleName, globalRoleName, 'OR')
+    }
 
+    private def affiliationCheck(userRoleName, globalRoleName, mode) {
         def result = false
         def contextOrg = contextService.getOrg()
         def rolesToCheck = [userRoleName]
@@ -208,8 +214,17 @@ class User implements Permissions {
             return true // may the force be with you
         }
 
-        if (globalRoleName && ! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-            return false // min restriction
+        if (globalRoleName) {
+            if (mode == 'AND') {
+                if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+                    return false // min restriction fail
+                }
+            }
+            else if (mode == 'OR') {
+                if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+                    return true // min level granted
+                }
+            }
         }
 
         // TODO:

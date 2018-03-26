@@ -2530,7 +2530,7 @@ AND EXISTS (
         }
 
         result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
-        result.editable = true // TODO: for tasks only
+        result.editable = result.user?.hasAffiliation('INST_EDITOR')
 
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
         getTodoForInst(result)
@@ -2584,8 +2584,8 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def changes() {
         def result = setResultGenerics()
 
@@ -2602,8 +2602,8 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def announcements() {
         def result = setResultGenerics()
 
@@ -2621,8 +2621,8 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def changeLog() {
         def result = setResultGenerics()
 
@@ -2692,8 +2692,8 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def financeImport() {
       def result = setResultGenerics()
 
@@ -2770,8 +2770,8 @@ AND EXISTS (
         result
       }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def tasks() {
         def result = setResultGenerics()
 
@@ -2801,8 +2801,8 @@ AND EXISTS (
     /**
      * Display and manage PrivateProperties for this institution
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def managePrivateProperties() {
         def result = setResultGenerics()
 
@@ -2818,8 +2818,7 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_USER'])
     def switchContext() {
         def user = User.get(springSecurityService.principal.id)
         def org  = genericOIDService.resolveOID(params.oid)

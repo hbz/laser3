@@ -160,7 +160,7 @@ r2d2 = {
 
         $('.ui.search').search({
             apiSettings: {
-                url: "<g:createLink controller="spotlight" action='search'/>/?query={query}"
+                url: "<g:createLink controller='spotlight' action='search'/>/?query={query}"
             },
             minCharacters: 3
         });
