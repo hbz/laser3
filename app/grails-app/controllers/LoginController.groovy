@@ -3,7 +3,7 @@ import org.springframework.security.access.annotation.Secured
 
 import javax.servlet.http.HttpServletResponse
 
-import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
@@ -12,7 +12,7 @@ import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-//import org.springframework.security.web.authentication.AbstractProcessingFilter // 2.0
+//import org.springframework.security.web.authentication.AbstractProcessingFilter
 import org.springframework.security.web.savedrequest.*;
 import java.security.MessageDigest
 

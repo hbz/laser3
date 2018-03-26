@@ -17,11 +17,11 @@
 <div class="ui styled accordion">
     <div class="active title">
         <i class="dropdown icon"></i>
-        Die Icons werden nicht richtig angezeigt
+        Symbole, Schriften oder Farben werden nicht richtig dargestellt
     </div>
     <div class="active content">
         <div class="ui relaxed divided list">
-            <p>Bitte den Browser Cache in den Einstellungen Ihres Browsers löschen:</p>
+            <p>Vermutlich greift Ihr Browser noch auf veraltete Dateien aus seinem Cache zu. Bitte leeren Sie den Speicher in den Einstellungen Ihres Webbrowsers:</p>
             <div class="item">
                 <i class="large internet explorer middle aligned icon"></i>
                 <div class="content">

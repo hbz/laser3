@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
 import grails.converters.*
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import org.apache.log4j.*
 import java.text.SimpleDateFormat
 import com.k_int.kbplus.*;
-import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleDetailsController {

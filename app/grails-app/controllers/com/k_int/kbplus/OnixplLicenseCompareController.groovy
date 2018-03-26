@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import grails.converters.JSON
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import grails.util.GrailsNameUtils
 
 import com.k_int.kbplus.onixpl.OnixPLHelperService

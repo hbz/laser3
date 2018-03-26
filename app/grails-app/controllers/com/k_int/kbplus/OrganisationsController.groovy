@@ -2,9 +2,9 @@ package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
-import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
+import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -234,7 +234,7 @@ class OrganisationsController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def users() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -395,7 +395,7 @@ class OrganisationsController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def revokeRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -408,7 +408,7 @@ class OrganisationsController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def enableRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -440,7 +440,7 @@ class OrganisationsController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def deleteRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)

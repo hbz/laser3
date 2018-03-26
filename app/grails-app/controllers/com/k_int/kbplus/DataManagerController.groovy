@@ -1,9 +1,9 @@
 package com.k_int.kbplus
 
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import com.k_int.kbplus.auth.User
-import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController {
