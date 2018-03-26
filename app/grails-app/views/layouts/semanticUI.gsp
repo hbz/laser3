@@ -196,24 +196,25 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="myInstitution" action="dashboard">${message(code:'menu.institutions.dash')}</g:link>
+                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
+
                                 <g:link class="item" controller="organisations" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                                <g:link class="item" controller="myInstitution" action="tasks">${message(code:'menu.institutions.tasks')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="changes">${message(code:'menu.institutions.todo')}</g:link>
+                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="tasks" message="menu.institutions.tasks" />
 
-                                <g:link class="item" controller="myInstitution" action="addressbook">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
+                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changes" message="menu.institutions.todo" />
+
+                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
 
                                 <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 
-                                <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
+                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />
 
                                 <g:if test="${grailsApplication.config.feature_finance}">
-                                    <g:link class="item" controller="myInstitution" action="finance">${message(code:'menu.institutions.finance')}</g:link>
+                                    <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
 
                                     <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
                                 </g:if>
-
                             </div>
                         </div>
                     </sec:ifLoggedIn>
@@ -376,7 +377,7 @@
 
             <div class="right menu">
                 <sec:ifLoggedIn>
-                    <div id="mainSearch" class="ui search">
+                    <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
                             <input class="prompt" placeholder="Suche nach .." type="text">
                             <i class="search icon"></i>
