@@ -75,7 +75,7 @@
         <aside class="four wide column">
             <semui:card>
                 <div class="content">
-                    <input class="ui button" value="${message(code:'propertyDefinition.create_new.label')}"
+                    <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
                            data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
                 </div>
             </semui:card>
