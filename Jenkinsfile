@@ -52,9 +52,25 @@ pipeline {
     post {
             success {
                 echo 'I succeeeded!'
-                mail to: 'moetez.djebeniani@hbz-nrw.de',
-                                             subject: "Succeeeded Pipeline: ${currentBuild.fullDisplayName}",
-                                             body: "All Right: ${env.BUILD_URL}"
+                script{
+                      if(currentBuild.changeSets){
+                        def changeLog = "Change Log:\n\n\n"
+                        echo 'Change Log'
+                        def changeLogSets = currentBuild.changeSets
+                                for (int i = 0; i < changeLogSets.size(); i++) {
+                                        def entries = changeLogSets[i].items
+                                        for (int j = 0; j < entries.length; j++) {
+                                            def entry = entries[j]
+                                            echo "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}"
+                                            changeLog += "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}\n"
+                                        }
+                                    }
+                                }
+                    }
+
+                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, rupp@hbz-nrw.de',
+                                             subject: "Succeeded Deploy on Server ${SERVERDELOPY}: ${currentBuild.fullDisplayName}",
+                                             body: "Succeeded Deploy on Server ${SERVERDELOPY}\n All Right: ${env.BUILD_URL}"
                 cleanWs()
             }
             unstable {
@@ -62,9 +78,9 @@ pipeline {
             }
             failure {
                 echo 'I failed :('
-                mail to: 'moetez.djebeniani@hbz-nrw.de',
-                             subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-                             body: "Something is wrong with ${env.BUILD_URL}"
+                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de ',
+                             subject: "Failed Deploy on Server ${SERVERDELOPY}: ${currentBuild.fullDisplayName}",
+                             body: "Failed Deploy on Server ${SERVERDELOPY}\n Something is wrong with ${env.BUILD_URL}"
             }
             changed {
                 echo 'Things were different before...'
