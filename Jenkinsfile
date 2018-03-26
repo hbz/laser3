@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 pipeline {
     agent any
 
@@ -19,9 +21,26 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+
+            script{
+                    env.SERVERDELOPY = input message: 'On which Server you want to deploy', ok: 'Deploy!',
+                                            parameters: [choice(name: 'Server to deploy', choices: "${SERVER_DEV}\n${SERVER_QA}\n${SERVER_PROD}", description: '')]
+                    echo "Server Set to: ${SERVERDELOPY}"
+                    echo "Deploying on ${SERVERDELOPY}...."
+                }
+
                 input('OK to continue?')
-                sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                echo 'Deploying....'
+                script{
+                    if(SERVERDELOPY == SERVER_DEV){
+                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/ROOT.war'
+
+                    }else{
+                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'
+                        writeFile file: "${WORKSPACE}/job.batch", text: "put /{WORKSPACE}/ROOT.war\n quit"
+                        sh 'sftp -b ${WORKSPACE}/job.batch -i ${TOMCAT_HOME_PATH}/.ssh/id_rsa ${SERVERDELOPY}:${TOMCAT_HOME_PATH}/default/webapps/'
+                    }
+                }
+
             }
         }
         stage('Post-Build'){
@@ -43,10 +62,9 @@ pipeline {
             }
             failure {
                 echo 'I failed :('
-                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de',
+                mail to: 'moetez.djebeniani@hbz-nrw.de',
                              subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                              body: "Something is wrong with ${env.BUILD_URL}"
-                 cleanWs()
             }
             changed {
                 echo 'Things were different before...'
