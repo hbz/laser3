@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 
 import javax.servlet.http.HttpServletResponse
 
@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
-// import org.springframework.security.web.authentication.AbstractProcessingFilter // 2.0
+// import org.springframework.security.web.authentication.AbstractProcessingFilter
 import org.springframework.security.web.savedrequest.*;
 
 

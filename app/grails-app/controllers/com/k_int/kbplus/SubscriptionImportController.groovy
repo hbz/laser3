@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.hssf.usermodel.*;

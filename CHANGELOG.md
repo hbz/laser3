@@ -1,4 +1,12 @@
 
+0.4.1
+
+- reworked finance views
+- added help/faq page
+- bugfix: session timout causes null pointer on security closure
+- bugfix: elastic search usage without org context
+- bugfix: alphabetically order for query results
+
 0.4
 
 - removed url parameter: shortcode

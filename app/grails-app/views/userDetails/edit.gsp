@@ -25,7 +25,7 @@
 
             <sec:ifAnyGranted roles="ROLE_YODA">
                 <h3 class="ui header">Enabled</h3>
-                <p><semui:xEditable owner="${user}" field="enabled"/></p>
+                <p><semui:xEditable owner="${ui}" field="enabled"/></p>
             </sec:ifAnyGranted>
 
           <h3 class="ui header">

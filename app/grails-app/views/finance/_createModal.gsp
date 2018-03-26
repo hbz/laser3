@@ -21,7 +21,7 @@
 
                 <div class="field">
                     <label>${message(code:'financials.budgetCode')}</label>
-                    <input type="text" class="select2" placeholder="New code or lookup code" name="newBudgetCode" id="newBudgetCode" />
+                    <input type="text" class="select2 la-full-width" placeholder="New code or lookup code" name="newBudgetCode" id="newBudgetCode" />
                 </div><!-- .field -->
 
             </div><!-- .column -->
@@ -120,7 +120,7 @@
                 <div class="field">
                     <label>${message(code:'subscription.label')}</label>
                     <input ${inSubMode ? "disabled='disabled' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
-                            name="newSubscription" class="input-xlarge select2" placeholder="New Subscription" id="newSubscription"
+                            name="newSubscription" class="la-full-width select2" placeholder="New Subscription" id="newSubscription"
                             value="${inSubMode ? fixedSubscription?.name : params.newSubscription}" data-subfilter=""/>
                     <g:if test="${inSubMode}">
                         <g:hiddenField data-subfilter="" name="newSubscription" value="${fixedSubscription?.class.getName()}:${fixedSubscription?.id}"></g:hiddenField>
@@ -130,20 +130,20 @@
                 <div class="field">
                     <label>${message(code:'package.label')}</label>
                     <g:if test="${inSubMode}">
-                        <input class="select2 input-xlarge"  data-subFilter="${fixedSubscription?.id}" data-disableReset="true" name="newPackage" id="newPackage" />
+                        <input class="select2 la-full-width"  data-subFilter="${fixedSubscription?.id}" data-disableReset="true" name="newPackage" id="newPackage" />
                     </g:if>
                     <g:else>
-                        <input class="select2 input-xlarge" disabled='disabled' data-subFilter="" data-disableReset="true" name="newPackage" id="newPackage" />
+                        <input class="select2 la-full-width" disabled='disabled' data-subFilter="" data-disableReset="true" name="newPackage" id="newPackage" />
                     </g:else>
                 </div><!-- .field -->
 
                 <div class="field">
                     <label>${message(code:'issueEntitlement.label')}</label>
                     <g:if test="${inSubMode}">
-                        <input name="newIe"  data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="input-large select2" id="newIE" value="${params.newIe}">
+                        <input name="newIe"  data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="la-full-width select2" id="newIE" value="${params.newIe}">
                     </g:if>
                     <g:else>
-                        <input name="newIe" disabled='disabled' data-subFilter="" data-disableReset="true" class="input-large select2" id="newIE" value="${params.newIe}">
+                        <input name="newIe" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width select2" id="newIE" value="${params.newIe}">
                     </g:else>
                 </div><!-- .field -->
             </div><!-- .column -->

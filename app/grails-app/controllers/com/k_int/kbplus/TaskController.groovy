@@ -29,7 +29,7 @@ class TaskController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         def contextOrg  = contextService.getOrg()
 		def result      = taskService.getPreconditions(contextOrg)
@@ -73,7 +73,7 @@ class TaskController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         def contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
@@ -132,7 +132,7 @@ class TaskController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         def taskInstance = Task.get(params.id)
         if (! taskInstance) {

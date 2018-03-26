@@ -1,7 +1,7 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
-import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.log4j.DailyRollingFileAppender
 import org.apache.log4j.RollingFileAppender
 
@@ -9,7 +9,6 @@ grails.project.groupId  = appName // change this to alter the default package na
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
 //localauth = true
-
 // pilot version
 // access via grailsApplication.config.pilotDisableFlag
 pilotDisableFlag = false

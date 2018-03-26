@@ -121,10 +121,6 @@
 
                                 <g:link class="item" controller="packageDetails" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
                                 <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
-
-                                <div class="divider"></div>
-
-                                <a class="item" href="${message(code:'laser.help.href')}">${message(code:'menu.institutions.help')}</a>
                             </div>
                         </div>
                     </sec:ifLoggedIn>
@@ -410,6 +406,11 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
+
+                                <g:link class="item" controller="profile" action="help">${message(code:'menu.institutions.help')}</g:link>
+
+                                <div class="divider"></div>
+
                                 <g:link class="item" controller="logout">${message(code:'menu.user.logout')}</g:link>
                             </div>
                         </div>

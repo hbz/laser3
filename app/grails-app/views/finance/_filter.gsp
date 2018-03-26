@@ -32,7 +32,7 @@
         <div class="three fields">
             <div class="field">
                 <label for="adv_codes">${message(code:'financials.budgetCode')}</label>
-                <input id="adv_codes" name="adv_codes" />
+                <input id="adv_codes" name="adv_codes" type="text"/>
             </div>
             <div class="field">
                 <label for="adv_costItemCategory">${message(code:'financials.costItemCategory')}</label>
@@ -45,7 +45,7 @@
             </div>
             <div class="field required">
                 <label>${message(code:'package.label')}</label>
-                <input type="text" name="packageFilter" class="filterUpdated" id="packageFilter" value="${params.packageFilter}" />
+                <input type="text" name="packageFilter" class="filterUpdated la-full-width" id="packageFilter" value="${params.packageFilter}" />
             </div>
         </div><!-- row1 -->
 
@@ -70,11 +70,11 @@
             <div class="field required">
                 <label>${message(code:'subscription.label')}</label>
                 <g:if test="${inSubMode == true}">
-                    <input name="subscriptionFilter" id="subscriptionFilter" value="${fixedSubscription?.name}" disabled="disabled"
+                    <input name="subscriptionFilter" id="subscriptionFilter" class="la-full-width" value="${fixedSubscription?.name}" disabled="disabled"
                            data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}"  />
                 </g:if>
                 <g:else>
-                    <input type="text" name="subscriptionFilter" data-filterMode="" id="subscriptionFilter" value="${params.subscriptionFilter}" />
+                    <input type="text" name="subscriptionFilter" class="la-full-width" data-filterMode="" id="subscriptionFilter" value="${params.subscriptionFilter}" />
                 </g:else>
                 <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
             </div>
@@ -100,7 +100,7 @@
 
             <div class="field">
                 <label for="adv_ie">${message(code:'issueEntitlement.label')}</label>
-                <input id="adv_ie" name="adv_ie" class="input-large"/>
+                <input id="adv_ie" name="adv_ie" class="input-large" type="text"/>
             </div>
         </div><!-- row3 -->
 

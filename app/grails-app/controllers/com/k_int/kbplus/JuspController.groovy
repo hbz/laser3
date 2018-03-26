@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil

@@ -1,7 +1,7 @@
 package com.k_int.oai
 
 import grails.converters.*
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.gokb.cred.*
 import groovy.xml.MarkupBuilder

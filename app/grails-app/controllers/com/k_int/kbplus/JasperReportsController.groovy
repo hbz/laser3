@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import net.sf.jasperreports.engine.JasperCompileManager
 import net.sf.jasperreports.engine.JasperReport
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import org.jasper.JasperExportFormat
 import javax.servlet.http.HttpSession
 import net.sf.jasperreports.engine.JasperPrint
