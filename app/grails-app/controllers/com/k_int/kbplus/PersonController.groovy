@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
-import grails.plugin.springsecurity.annotation.Secured // 2.0
-import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
+import grails.plugin.springsecurity.annotation.Secured
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.*
@@ -27,7 +27,7 @@ class PersonController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
 
@@ -75,7 +75,7 @@ class PersonController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         def personInstance = Person.get(params.id)
@@ -137,7 +137,7 @@ class PersonController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         def personInstance = Person.get(params.id)
         if (! personInstance) {

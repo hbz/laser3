@@ -220,3 +220,9 @@ body.myInstitution_dashboard .ui.tab .item span {
     height: 60%;
     top: 20%;
 }
+
+/* select2 helper @ finance */
+
+.la-full-width {
+    width: 100%;
+}

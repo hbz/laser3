@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import grails.converters.*
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 
 import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*

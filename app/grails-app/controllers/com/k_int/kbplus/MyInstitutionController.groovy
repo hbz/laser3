@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
@@ -55,7 +55,7 @@ class MyInstitutionController {
     ];
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
         // Work out what orgs this user has admin level access to
         def result = [:]
@@ -81,7 +81,7 @@ class MyInstitutionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tipview() {
         log.debug("admin::tipview ${params}")
         def result = [:]
@@ -141,7 +141,7 @@ class MyInstitutionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Deprecated
     def dashboard_OLD() {
         // Work out what orgs this user has admin level access to
@@ -158,7 +158,7 @@ class MyInstitutionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionLicenses() {
         log.debug("actionLicenses :: ${params}")
         if (params['copy-license']) {
@@ -169,7 +169,7 @@ class MyInstitutionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentLicenses() {
         def result = setResultGenerics()
         result.transforms = grailsApplication.config.licenseTransforms
@@ -334,7 +334,7 @@ class MyInstitutionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addLicense() {
         def result = setResultGenerics()
 
@@ -391,7 +391,7 @@ class MyInstitutionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
         def result = setResultGenerics()
 
@@ -520,9 +520,10 @@ from Subscription as s where (
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += " order by ${params.sort} ${params.order}"
+
+            base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
-            base_qry += " order by s.name asc"
+            base_qry += " order by LOWER(s.name) asc"
         }
 
         log.debug("query: ${base_qry} && params: ${qry_params}")
@@ -547,7 +548,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addSubscription() {
         def result = setResultGenerics()
 
@@ -615,7 +616,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def emptySubscription() {
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
@@ -647,7 +648,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processEmptySubscription() {
         log.debug(params)
         def result = setResultGenerics()
@@ -801,7 +802,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def cleanLicense() {
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
@@ -832,7 +833,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newLicense(params) {
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
@@ -864,7 +865,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteLicense(params) {
         log.debug("deleteLicense ${params}");
         def result = setResultGenerics()
@@ -904,7 +905,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteDocuments() {
         def ctxlist = []
 
@@ -923,7 +924,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processAddSubscription() {
 
         def user = User.get(springSecurityService.principal.id)
@@ -966,7 +967,7 @@ from Subscription as s where (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentTitles() {
         // define if we're dealing with a HTML request or an Export (i.e. XML or HTML)
         boolean isHtmlOutput = !params.format || params.format.equals("html")
@@ -1324,7 +1325,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def availableLicenses() {
         // def sub = resolveOID(params.elementid);
         // OrgRole.findAllByOrgAndRoleType(result.institution, licensee_role).collect { it.lic }
@@ -1364,7 +1365,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionCurrentSubscriptions() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -1395,7 +1396,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewalsSearch() {
 
         log.debug("renewalsSearch : ${params}");
@@ -1519,7 +1520,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def selectPackages() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -1617,7 +1618,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def materialiseFolder(f) {
         def result = []
         f.each {
@@ -1632,7 +1633,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def generate(plist, inst) {
         try {
             def m = generateMatrix(plist, inst)
@@ -1645,7 +1646,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def generateMatrix(plist, inst) {
 
         def titleMap = [:]
@@ -1832,7 +1833,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportWorkbook(m, inst) {
         try {
             log.debug("export workbook");
@@ -2133,7 +2134,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewalsnoPackageChange() {
         def result = setResultGenerics()
 
@@ -2163,7 +2164,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def renewalsUpload() {
         def result = setResultGenerics()
 
@@ -2197,7 +2198,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processRenewalUpload(input_stream, upload_filename, result) {
         int SO_START_COL = 22
         int SO_START_ROW = 7
@@ -2318,7 +2319,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def extractEntitlement(pkg, title_id) {
         def result = pkg.tipps.find { e -> e.title?.id == title_id }
         if (result == null) {
@@ -2328,7 +2329,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processRenewal() {
         log.debug("-> renewalsUpload params: ${params}");
         def result = setResultGenerics()
@@ -2518,7 +2519,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def dashboard() {
         def result = setResultGenerics()
 
@@ -2556,7 +2557,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getTodoForInst(result){
         def lic_del = RefdataCategory.lookupOrCreate('License Status', 'Deleted');
         def sub_del = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted');
@@ -2584,7 +2585,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
         def result = setResultGenerics()
 
@@ -2602,7 +2603,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def announcements() {
         def result = setResultGenerics()
 
@@ -2621,7 +2622,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changeLog() {
         def result = setResultGenerics()
 
@@ -2692,7 +2693,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def financeImport() {
       def result = setResultGenerics()
 
@@ -2715,7 +2716,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tip() {
       def result = setResultGenerics()
 
@@ -2751,7 +2752,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addressbook() {
         def result = setResultGenerics()
         
@@ -2770,7 +2771,7 @@ AND EXISTS (
       }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {
         def result = setResultGenerics()
 
@@ -2801,7 +2802,7 @@ AND EXISTS (
      * Display and manage PrivateProperties for this institution
      */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def managePrivateProperties() {
         def result = setResultGenerics()
 
@@ -2818,7 +2819,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def switchContext() {
         def user = User.get(springSecurityService.principal.id)
         def org  = genericOIDService.resolveOID(params.oid)
@@ -2911,7 +2912,7 @@ AND EXISTS (
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def ajaxEmptySubscription() {
 
         def result = setResultGenerics()

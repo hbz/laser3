@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 pipeline {
     agent any
 
@@ -19,11 +21,25 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                input message: 'On which server do you want deploy?', ok: 'Deploy!',
-                                                         parameters: [choice(name: 'DEPLOY', choices: ['dev', 'qa', 'prod'], description: '')]
 
-                    sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/../../../default/webapps/ROOT.war'
-                    echo 'Deploying on ' + params.DEPLOY + '....'
+            script{
+                    env.SERVERDELOPY = input message: 'On which Server you want to deploy', ok: 'Deploy!',
+                                            parameters: [choice(name: 'Server to deploy', choices: "${SERVER_DEV}\n${SERVER_QA}\n${SERVER_PROD}", description: '')]
+                    echo "Server Set to: ${SERVERDELOPY}"
+                    echo "Deploying on ${SERVERDELOPY}...."
+                }
+
+                input('OK to continue?')
+                script{
+                    if(SERVERDELOPY == SERVER_DEV){
+                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/ROOT.war'
+
+                    }else{
+                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'
+                        writeFile file: "${WORKSPACE}/job.batch", text: "put /${WORKSPACE}/ROOT.war\n quit"
+                        sh 'sftp -b ${WORKSPACE}/job.batch -i ${TOMCAT_HOME_PATH}/.ssh/id_rsa ${SERVERDELOPY}:${TOMCAT_HOME_PATH}/default/webapps/'
+                    }
+                }
 
             }
         }
@@ -36,9 +52,25 @@ pipeline {
     post {
             success {
                 echo 'I succeeeded!'
-                mail to: 'moetez.djebeniani@hbz-nrw.de',
-                                             subject: "Succeeeded Pipeline: ${currentBuild.fullDisplayName}",
-                                             body: "All Right: ${env.BUILD_URL}"
+                script{
+                      if(currentBuild.changeSets){
+                        def changeLog = "Change Log:\n\n\n"
+                        echo 'Change Log'
+                        def changeLogSets = currentBuild.changeSets
+                                for (int i = 0; i < changeLogSets.size(); i++) {
+                                        def entries = changeLogSets[i].items
+                                        for (int j = 0; j < entries.length; j++) {
+                                            def entry = entries[j]
+                                            echo "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}"
+                                            changeLog += "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}\n"
+                                        }
+                                    }
+                                }
+                    }
+
+                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, rupp@hbz-nrw.de',
+                                             subject: "Succeeded Deploy on Server ${SERVERDELOPY}: ${currentBuild.fullDisplayName}",
+                                             body: "Succeeded Deploy on Server ${SERVERDELOPY}\n All Right: ${env.BUILD_URL}"
                 cleanWs()
             }
             unstable {
@@ -46,10 +78,9 @@ pipeline {
             }
             failure {
                 echo 'I failed :('
-                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de',
-                             subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-                             body: "Something is wrong with ${env.BUILD_URL}"
-                 cleanWs()
+                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de ',
+                             subject: "Failed Deploy on Server ${SERVERDELOPY}: ${currentBuild.fullDisplayName}",
+                             body: "Failed Deploy on Server ${SERVERDELOPY}\n Something is wrong with ${env.BUILD_URL}"
             }
             changed {
                 echo 'Things were different before...'

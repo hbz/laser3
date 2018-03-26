@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
-import grails.plugin.springsecurity.annotation.Secured // 2.0
+import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
 
@@ -19,7 +19,7 @@ class YodaController {
     static boolean ftupdate_running = false
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def demo() {
         def result = [:]
 
@@ -35,12 +35,12 @@ class YodaController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def demo2() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliation("INST_USER", "ROLE_XY")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser().hasAffiliation("INST_USER", "ROLE_XY") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER", "ROLE_XY") })
     def demo3() {
         redirect action: 'demo'
     }
