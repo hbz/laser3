@@ -380,7 +380,7 @@
 
             <div class="right menu">
                 <sec:ifLoggedIn>
-                    <div id="mainSearch" class="ui search">
+                    <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
                             <input class="prompt" placeholder="Suche nach .." type="text">
                             <i class="search icon"></i>
