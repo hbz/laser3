@@ -320,3 +320,14 @@ body[class*="organisation"] {
         }
     }
 }
+
+/* Button on Subscription Site */
+.la-forward-back {
+    padding-left: 1rem;
+    a {
+        color: @black;
+        &:hover {
+            color: @grey;
+        }
+    }
+}

@@ -26,6 +26,21 @@
 
            <h1 class="ui header"><semui:headerIcon />
                <semui:xEditable owner="${subscriptionInstance}" field="name" />
+            <span class="la-forward-back">
+               <a href="#">
+                   <i class="chevron left icon"></i>
+               </a>
+               <a href="#">
+                   <i class="chevron right icon"></i>
+               </a>
+           </span>
+
+
+
+
+
+
+
            </h1>
 
         <g:render template="nav" />
