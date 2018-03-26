@@ -70,6 +70,7 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         params.max = params.max ?: result.user?.getDefaultPageSize()
 
+
         def fsq = filterService.getOrgQuery(params)
 
         result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
