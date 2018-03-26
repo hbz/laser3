@@ -510,3 +510,14 @@ body[class*="Organisation"] .ui.label.la-object .icon:before,
 body[class*="organisation"] .ui.label.la-object .icon:before {
   content: "\f19c";
 }
+
+/* Button on Subscription Site */
+.la-forward-back {
+  padding-left: 1rem;
+}
+.la-forward-back a {
+  color: #1B1C1D;
+}
+.la-forward-back a:hover {
+  color: #767676;
+}
