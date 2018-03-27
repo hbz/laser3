@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.UserOrg
 import de.laser.ContextService
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
@@ -2590,8 +2591,8 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
         def result = setResultGenerics()
 
@@ -2608,8 +2609,8 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def announcements() {
         def result = setResultGenerics()
 
@@ -2771,13 +2772,13 @@ AND EXISTS (
             }
         }
         result.visiblePersons = visiblePersons
-        result.editable = result.user.affiliations?.size() > 0
+        result.editable = accessService.checkUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result
       }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {
         def result = setResultGenerics()
 
@@ -2798,7 +2799,8 @@ AND EXISTS (
         def query = filterService.getTaskQuery(params, sdFormat)
         result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, taskService.WITHOUT_TENANT_ONLY)
-        result.editable = true // TODO check roles !!!
+
+        result.editable = accessService.checkUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         log.debug(result.taskInstanceList)
         result

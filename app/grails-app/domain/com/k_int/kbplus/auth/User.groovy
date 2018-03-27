@@ -192,18 +192,21 @@ class User implements Permissions {
     }
 
     def hasAffiliationAND(userRoleName, globalRoleName) {
-        affiliationCheck(userRoleName, globalRoleName, 'AND')
+        affiliationCheck(userRoleName, globalRoleName, 'AND', contextService.getOrg())
     }
     def hasAffiliationOR(userRoleName, globalRoleName) {
-        affiliationCheck(userRoleName, globalRoleName, 'OR')
+        affiliationCheck(userRoleName, globalRoleName, 'OR', contextService.getOrg())
     }
 
-    private def affiliationCheck(userRoleName, globalRoleName, mode) {
+    def hasAffiliationForOrg(userRoleName, orgToCheck) {
+        affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
+    }
+
+    private def affiliationCheck(userRoleName, globalRoleName, mode, orgToCheck) {
         def result = false
-        def contextOrg = contextService.getOrg()
         def rolesToCheck = [userRoleName]
 
-        log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${contextOrg}")
+        log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck}")
 
         // TODO:
 
@@ -214,16 +217,14 @@ class User implements Permissions {
             return true // may the force be with you
         }
 
-        if (globalRoleName) {
-            if (mode == 'AND') {
-                if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-                    return false // min restriction fail
-                }
+        if (mode == 'AND') {
+            if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+                return false // min restriction fail
             }
-            else if (mode == 'OR') {
-                if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-                    return true // min level granted
-                }
+        }
+        else if (mode == 'OR') {
+            if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+                return true // min level granted
             }
         }
 
@@ -241,7 +242,7 @@ class User implements Permissions {
         rolesToCheck.each{ rot ->
             def role = Role.findByAuthority(rot)
             if (role) {
-                def uo = UserOrg.findByUserAndOrgAndFormalRole(this, contextOrg, role)
+                def uo = UserOrg.findByUserAndOrgAndFormalRole(this, orgToCheck, role)
                 result = result || (uo && getAuthorizedAffiliations()?.contains(uo))
             }
         }

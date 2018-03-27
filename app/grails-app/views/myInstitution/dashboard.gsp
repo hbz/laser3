@@ -31,29 +31,29 @@
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        %{--<div class="item">--}%
-                        %{--<g:link controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals', default:'Generate Renewals Worksheet')}</g:link>--}%
-                        %{--</div>--}%
-                        %{--<div class="item">--}%
-                        %{--<g:link controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew', default:'Import Renewals')}</g:link>--}%
-                        %{--</div>--}%
-                        <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changes" message="myinst.todo.label" />
-
-                        <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="announcements" message="announcement.plural" />
+                        <div class="item">
+                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.todo.label', default: 'To Do')}</g:link>
+                        </div>
+                        <div class="item">
+                            <g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
+                        </div>
 
                         <g:if test="${grailsApplication.config.feature_finance}">
-                            <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                         </g:if>
                     </div>
                 </div>
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="tasks" message="task.plural" />
+                        <div class="item">
+                            <g:link controller="myInstitution" action="tasks">${message(code:'task.plural', default:'Tasks')}</g:link>
+                        </div>
+                        <div class="item">
+                            <g:link controller="myInstitution" action="addressbook">${message(code:'menu.institutions.addressbook')}</g:link>
+                        </div>
 
-                        <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
-
-                        <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                        <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
@@ -85,34 +85,32 @@
                 </div>
             </g:if>
 
-            <g:if test="${editable}">
-                <div class="ui relaxed divided list">
-                    <g:each in="${todos}" var="todo">
-                        <div class="item">
-                            <div class="icon">
-                                <i class="alarm outline icon"></i>
-                                <span class="badge badge-warning">${todo.num_changes}</span>
-                            </div>
-                            <div class="message">
-                                <p>
-                                    <g:if test="${todo.item_with_changes instanceof com.k_int.kbplus.Subscription}">
-                                        <g:link controller="subscriptionDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
-                                    </g:if>
-                                    <g:else>
-                                        <g:link controller="licenseDetails" action="show" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
-                                    </g:else>
-                                </p>
-                                <p>
-                                    ${message(code:'myinst.change_from', default:'Changes between')}
-                                    <g:formatDate date="${todo.earliest}" formatName="default.date.format"/>
-                                    ${message(code:'myinst.change_to', default:'and')}
-                                    <g:formatDate date="${todo.latest}" formatName="default.date.format"/>
-                                </p>
-                            </div>
+            <div class="ui relaxed divided list">
+                <g:each in="${todos}" var="todo">
+                    <div class="item">
+                        <div class="icon">
+                            <i class="alarm outline icon"></i>
+                            <span class="badge badge-warning">${todo.num_changes}</span>
                         </div>
-                    </g:each>
-                </div>
-            </g:if>
+                        <div class="message">
+                            <p>
+                                <g:if test="${todo.item_with_changes instanceof com.k_int.kbplus.Subscription}">
+                                    <g:link controller="subscriptionDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="licenseDetails" action="show" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
+                                </g:else>
+                            </p>
+                            <p>
+                                ${message(code:'myinst.change_from', default:'Changes between')}
+                                <g:formatDate date="${todo.earliest}" formatName="default.date.format"/>
+                                ${message(code:'myinst.change_to', default:'and')}
+                                <g:formatDate date="${todo.latest}" formatName="default.date.format"/>
+                            </p>
+                        </div>
+                    </div>
+                </g:each>
+            </div>
         </div>
 
         <div class="ui bottom attached tab segment" data-tab="second">
@@ -122,31 +120,29 @@
                 </div>
             </g:if>
 
-            <g:if test="${editable}">
-                <div class="ui relaxed divided list">
-                    <g:each in="${recentAnnouncements}" var="ra">
-                        <div class="item">
-                            <div class="icon">
-                                <i class="warning circle icon"></i>
-                            </div>
-                            <div class="message">
-                                <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
-                                <p>
-                                    <strong>${message(code:"announcement.${ann_nws}", default:"${ra.title}")}</strong>
-                                </p>
-                                <div class="widget-content">${ra.content}</div>
-                                <p>
-                                    ${message(code:'myinst.ann.posted_by', default:'Posted by')}
-                                    <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>
-                                    <br/>
-                                    ${message(code:'myinst.ann.posted_on', default:'on')}
-                                    <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/>
-                                </p>
-                            </div>
+            <div class="ui relaxed divided list">
+                <g:each in="${recentAnnouncements}" var="ra">
+                    <div class="item">
+                        <div class="icon">
+                            <i class="warning circle icon"></i>
                         </div>
-                    </g:each>
-                </div>
-            </g:if>
+                        <div class="message">
+                            <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
+                            <p>
+                                <strong>${message(code:"announcement.${ann_nws}", default:"${ra.title}")}</strong>
+                            </p>
+                            <div class="widget-content">${ra.content}</div>
+                            <p>
+                                ${message(code:'myinst.ann.posted_by', default:'Posted by')}
+                                <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>
+                                <br/>
+                                ${message(code:'myinst.ann.posted_on', default:'on')}
+                                <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/>
+                            </p>
+                        </div>
+                    </div>
+                </g:each>
+            </div>
         </div>
 
         <div class="ui bottom attached active tab segment" data-tab="third">
@@ -156,38 +152,36 @@
                 </div>
             </g:if>
 
-            <g:if test="${editable}">
-                <div class="ui relaxed divided list">
-                    <g:each in="${tasks}" var="tsk">
-                        <div class="item">
-                            <div class="content">
-                                <div class="header">
-                                    <g:link controller="task" action="show" params="${[id:tsk.id]}">${tsk.title}</g:link>
-                                </div>
-                                <div class="description">
-                                    <g:if test="${tsk.description}">
-                                        <span><em>${tsk.description}</em></span> <br />
-                                    </g:if>
-                                    <span>
-                                        <strong>Betrifft:</strong>
-                                        <g:each in="${tsk.getObjects()}" var="tskObj">
-                                            <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
-                                        </g:each>
-                                    </span>
-                                    <br />
-                                    <span>
-                                        <strong>Fällig:</strong>
-                                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
-                                        &nbsp; / &nbsp;
-                                        <strong>Status:</strong>
-                                        <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
-                                    </span>
-                                </div>
+            <div class="ui relaxed divided list">
+                <g:each in="${tasks}" var="tsk">
+                    <div class="item">
+                        <div class="content">
+                            <div class="header">
+                                <g:link controller="task" action="show" params="${[id:tsk.id]}">${tsk.title}</g:link>
+                            </div>
+                            <div class="description">
+                                <g:if test="${tsk.description}">
+                                    <span><em>${tsk.description}</em></span> <br />
+                                </g:if>
+                                <span>
+                                    <strong>Betrifft:</strong>
+                                    <g:each in="${tsk.getObjects()}" var="tskObj">
+                                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                    </g:each>
+                                </span>
+                                <br />
+                                <span>
+                                    <strong>Fällig:</strong>
+                                    <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
+                                    &nbsp; / &nbsp;
+                                    <strong>Status:</strong>
+                                    <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
+                                </span>
                             </div>
                         </div>
-                    </g:each>
-                </div>
-            </g:if>
+                    </div>
+                </g:each>
+            </div>
         </div>
 
         <g:render template="/templates/tasks/modal" />
