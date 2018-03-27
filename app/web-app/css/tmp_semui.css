@@ -232,3 +232,12 @@ body.myInstitution_dashboard .ui.tab .item span {
 .ui .la-forward-back i.icon {
     margin: 0 !important;
 }
+
+/* la-bulk-header */
+
+.ui table.la-bulk-header thead {
+    background: white;
+}
+.ui table.la-bulk-header thead tr td {
+    line-height: 1rem;
+}

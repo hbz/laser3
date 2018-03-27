@@ -156,7 +156,7 @@ r2d2 = {
               zIndex: 1
         });
         $('.modal .table').floatThead('destroy');
-        $('.metaboxContent .table').floatThead('destroy');
+        $('.table.ignore-floatThead').floatThead('destroy');
 
         $('.ui.search').search({
             type: 'category',
@@ -167,8 +167,7 @@ r2d2 = {
                 onResponse: function(elasticResponse) {
                     var response = {
                             results : {}
-                        }
-                        ;
+                        };
                     // translate Elasticsearch API response to work with semantic ui search
                     $.each(elasticResponse.results, function(index, item) {
 

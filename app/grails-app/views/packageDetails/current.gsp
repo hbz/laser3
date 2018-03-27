@@ -80,10 +80,12 @@
             </g:form>
         </semui:filter>
 
-          <table class="ui celled la-table table">
-            <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
+        <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
+
+          <table class="ui celled la-table table ignore-floatThead la-bulk-header">
+
             <thead>
-            <tr class="no-background">
+            <tr>
 
               <th>
                 <g:if test="${editable}"><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
@@ -127,20 +129,26 @@
                 </g:if>
               </th>
             </tr>
-            <tr>
-              <th>&nbsp;</th>
-              <th>&nbsp;</th>
-              <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-              <th style="">${message(code:'tipp.platform', default:'Platform')}</th>
-              <th style="">${message(code:'identifier.plural', default:'Identifiers')}</th>
-              <th style="">${message(code:'tipp.coverage_start', default:'Coverage Start')}</th>
-              <th style="">${message(code:'tipp.coverage_end', default:'Coverage End')}</th>
-              <th style="">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-            </tr>
-
 
             </thead>
-            <tbody>
+                <tbody></tbody>
+          </table>
+
+            <table class="ui celled la-table table">
+                <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                        <th style="">${message(code:'tipp.platform', default:'Platform')}</th>
+                        <th style="">${message(code:'identifier.plural', default:'Identifiers')}</th>
+                        <th style="">${message(code:'tipp.coverage_start', default:'Coverage Start')}</th>
+                        <th style="">${message(code:'tipp.coverage_end', default:'Coverage End')}</th>
+                        <th style="">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+
             <g:set var="counter" value="${offset+1}" />
             <g:each in="${titlesList}" var="t">
               <g:set var="hasCoverageNote" value="${t.coverageNote?.length() > 0}" />
@@ -201,9 +209,12 @@
               </g:if>
 
             </g:each>
-            </tbody>
-            </g:form>
-          </table>
+
+                </tbody>
+
+            </table>
+
+        </g:form>
           </dd>
         </dl>
 
