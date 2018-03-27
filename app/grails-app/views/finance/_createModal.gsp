@@ -1,30 +1,93 @@
 <!-- _createModal.gsp -->
+<style>
+    .fields {
+        background: #fffaf5;
+        border: 1px solid grey;
+    }
+</style>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <semui:modal id="costItem_create_modal" text="${message(code:'financials.addNewCost')}">
-    <g:form class="ui form" id="createCost" url="[controller:'finance', action:'newCostItem']">
+    <g:form class="ui small form" id="createCost" url="[controller:'finance', action:'newCostItem']">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
 
-        <div class="ui grid">
+        <!-- div class="ui grid" -->
+            <div class="two fields">
+                <div class="field">
+                    <div class="field">
+                        <label>${message(code:'financials.newCosts.description')}</label>
+                        <input type="text" value="placeholder" />
+                    </div><!-- .field -->
+                    <div class="field">
+                        <label>${message(code:'financials.budgetCode')}</label>
+                        <input type="text" class="select2 la-full-width" placeholder="New code or lookup code" name="newBudgetCode" id="newBudgetCode" />
+                    </div><!-- .field -->
+                </div>
+                <div class="field">
+                    <div class="field">
+                        <label>${message(code:'financials.newCosts.UID')}</label>
+                        <input type="text" value="placeholder" />
+                    </div><!-- .field -->
+                    <div class="field">
+                        <label>${message(code:'financials.costItemStatus')}</label>
+                        <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                                      id="newCostItemStatus"
+                                      from="${costItemStatus}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"/>
+                    </div><!-- .field -->
+                </div>
+            </div><!-- two fields -->
 
-            <div class="four wide column">
+            <div class="three fields">
+                <div class="field">
+                    <label>${g.message(code:'financials.newCosts.amount')}</label>
+                    <div class="field">
+                        <div class="field">
+                            <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
+                            <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" name="newCostInBillingCurrency" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" value="1" step="0.01"/> <br/>
+                        </div><!-- .field -->
+                        <div class="field">
+                            <label>Umrechnungsfaktor</label>
+                            <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc" name="newCostCurrencyRate" placeholder="Exchange Rate" id="newCostCurrencyRate" value="1" step="0.01" /> <br/>
+                        </div><!-- .field -->
+                        <div class="two fields">
+                            <div class="field">
+                                <label>${message(code:'financials.invoice_total')}</label>
+                                <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" value="1" step="0.01"/> <br/>
+                            </div>
+                            <div class="field">
+                                <label>&nbsp;</label>
+                                <g:select name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
+                                          from="${currency}"
+                                          optionKey="id"
+                                          optionValue="text"/>
+                            </div>
+                        </div><!-- fields -->
+                    </div>
+                </div> <!-- 1/3 field -->
+
 
                 <div class="field">
-                    <label>Bezeichnung</label>
-                    <input type="text" value="placeholder" />
-                </div><!-- .field -->
+
+                    <div class="field">
+
+                    </div>
+
+                </div> <!-- 2/3 field -->
+
 
                 <div class="field">
-                    <label>UID</label>
-                    <input type="text" value="placeholder" />
-                </div><!-- .field -->
 
-                <div class="field">
-                    <label>${message(code:'financials.budgetCode')}</label>
-                    <input type="text" class="select2 la-full-width" placeholder="New code or lookup code" name="newBudgetCode" id="newBudgetCode" />
-                </div><!-- .field -->
+                    <div class="field">
 
-            </div><!-- .column -->
+                    </div>
+
+                </div> <!-- 3/3 field -->
+
+            </div><!-- three fields -->
+
 
             <div class="four wide column">
 
@@ -66,42 +129,9 @@
                 </div><!-- .field -->
             </div><!-- .column -->
 
-            <div class="four wide column">
-                <div class="field">
-                    <label>Wert (in Euro)</label>
-                    <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" name="newCostInBillingCurrency" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" value="1" step="0.01"/> <br/>
-                </div><!-- .field -->
-
-                <div class="field">
-                    <label>Umrechnungsfaktor</label>
-                    <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc" name="newCostCurrencyRate" placeholder="Exchange Rate" id="newCostCurrencyRate" value="1" step="0.01" /> <br/>
-                </div><!-- .field -->
-
-                <div class="two fields">
-                    <div class="field">
-                        <label>${message(code:'financials.invoice_total')}</label>
-                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" value="1" step="0.01"/> <br/>
-                    </div>
-                    <div class="field">
-                        <label>&nbsp;</label>
-                        <g:select name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
-                                  from="${currency}"
-                                  optionKey="id"
-                                  optionValue="text"/>
-                    </div>
-                </div><!-- .fields -->
-            </div><!-- .column -->
 
             <div class="four wide column">
-                <div class="field">
-                    <label>${message(code:'financials.costItemStatus')}</label>
-                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
-                              id="newCostItemStatus"
-                              from="${costItemStatus}"
-                              optionKey="id"
-                              optionValue="value"
-                              noSelection="${['':'']}"/>
-                </div><!-- .field -->
+
 
                 <div class="field">
                     <label>${message(code:'financials.invoice_number')}</label>
@@ -175,7 +205,7 @@
                 </div>
             </div><!-- .column --> --%>
 
-        </div><!-- .grid -->
+        <!-- /div --><!-- .grid -->
     </g:form>
 </semui:modal>
 
