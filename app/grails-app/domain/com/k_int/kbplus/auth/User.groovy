@@ -203,7 +203,7 @@ class User implements Permissions {
         def contextOrg = contextService.getOrg()
         def rolesToCheck = [userRoleName]
 
-        //log.debug("USER.hasAffiliation(): ${userRoleName} @ ${contextOrg}")
+        log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${contextOrg}")
 
         // TODO:
 

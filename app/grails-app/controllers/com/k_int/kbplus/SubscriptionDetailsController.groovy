@@ -31,7 +31,7 @@ class SubscriptionDetailsController {
     def ESSearchService
     def executorWrapperService
     def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
-    def permissionHelperService
+    def accessService
     def filterService
 
     private static String INVOICES_FOR_SUB_HQL =
@@ -731,7 +731,7 @@ class SubscriptionDetailsController {
         def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
 
-        if (permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')) {
+        if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
 
             if (orgType?.value == 'Consortium') {
                 def cons_members = []

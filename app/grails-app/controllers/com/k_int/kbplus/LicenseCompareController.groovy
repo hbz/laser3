@@ -10,7 +10,7 @@ class LicenseCompareController {
     static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
     def springSecurityService
     def exportService
-    def permissionHelperService
+    def accessService
     def contextService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -21,7 +21,7 @@ class LicenseCompareController {
         //result.institution = Org.findByShortcode(params.shortcode)
         result.institution = contextService.getOrg()
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
             response.sendError(401)
             return;

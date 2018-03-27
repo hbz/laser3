@@ -11,7 +11,7 @@ import com.k_int.properties.*
 class OrganisationsController {
 
     def springSecurityService
-    def permissionHelperService
+    def accessService
     def contextService
     def addressbookService
     def filterService
@@ -32,7 +32,7 @@ class OrganisationsController {
         result.editable = true
       }
       else {
-        result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
+        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM')
       }
         // TODO: deactived
       /*
@@ -117,7 +117,7 @@ class OrganisationsController {
         result.editable = true
       }
       else {
-        result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
+        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM')
       }
 
 
@@ -199,7 +199,7 @@ class OrganisationsController {
             result.editable = true
         }
         else {
-            result.editable = permissionHelperService.hasUserWithRole((User)result.user, orgInstance, 'INST_ADM')
+            result.editable = accessService.checkUserOrgRole((User)result.user, orgInstance, 'INST_ADM')
         }
 
         if (!orgInstance) {
@@ -242,7 +242,7 @@ class OrganisationsController {
       def orgInstance = Org.get(params.id)
 	  
       
-      if ( permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM') ) {
+      if ( accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM') ) {
         result.editable = true
       }
       def tracked_roles = ["ROLE_ADMIN":"KB+ Administrator"]
@@ -401,7 +401,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if (permissionHelperService.hasUserWithRole(result.user, uo.org, 'INST_ADM') ) {
+      if (accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_REJECTED
         uo.save()
       }
@@ -414,7 +414,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( permissionHelperService.hasUserWithRole(result.user, uo.org, 'INST_ADM') ) {
+      if ( accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_APPROVED
         uo.save();
       }
@@ -446,7 +446,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( permissionHelperService.hasUserWithRole(result.user, uo.org, 'INST_ADM') ) {
+      if ( accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.delete();
       }
       redirect action: 'users', id: params.id

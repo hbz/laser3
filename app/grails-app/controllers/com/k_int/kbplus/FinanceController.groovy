@@ -15,7 +15,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 class FinanceController {
 
     def springSecurityService
-    def permissionHelperService
+    def accessService
     def contextService
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
@@ -37,7 +37,7 @@ class FinanceController {
 
     private boolean isFinanceAuthorised(Org org, User user) {
 
-        permissionHelperService.hasUserWithRole(user, org, admin_role)
+        accessService.checkUserOrgRole(user, org, admin_role)
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -110,7 +110,7 @@ class FinanceController {
      */
     private def setupQueryData(result, params, user) {
         //Setup params
-        result.editable    =  permissionHelperService.hasUserWithRole(user, result.institution, admin_role)
+        result.editable    =  accessService.checkUserOrgRole(user, result.institution, admin_role)
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.filterMode  =  params.filterMode?: "OFF"
         result.info        =  [] as List

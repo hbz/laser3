@@ -30,11 +30,10 @@ class MyInstitutionController {
     def institutionsService
     def docstoreService
     def tsvSuperlifterService
-    def permissionHelperService
+    def accessService
     def contextService
     def taskService
     def filterService
-    def accessService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
@@ -95,7 +94,7 @@ class MyInstitutionController {
         def (tip_property, property_field) = (params.sort ?: 'title-title').split("-")
         def list_order = params.order ?: 'asc'
 
-        if (current_inst && ! permissionHelperService.checkUserIsMember(result.user, current_inst)) {
+        if (current_inst && ! accessService.checkUserIsMember(result.user, current_inst)) {
             flash.error = message(code:'myinst.error.noMember', args:[current_inst.name]);
             response.sendError(401)
             return;
@@ -136,7 +135,7 @@ class MyInstitutionController {
 
         result.tips = results
         result.institution = current_inst
-        result.editable = permissionHelperService.hasUserWithRole(result.user, current_inst, 'INST_ADM')
+        result.editable = accessService.checkUserOrgRole(result.user, current_inst, 'INST_ADM')
         result
     }
 
@@ -174,13 +173,13 @@ class MyInstitutionController {
         def result = setResultGenerics()
         result.transforms = grailsApplication.config.licenseTransforms
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
 
-        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -341,13 +340,13 @@ class MyInstitutionController {
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
 
-        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def qparams = [template_license_type]
@@ -441,13 +440,13 @@ class MyInstitutionController {
         }
         */
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
             response.sendError(401)
             return;
         }
 
-        result.editable = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
         def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
@@ -566,7 +565,7 @@ from Subscription as s where (
         }
 
         // if ( ! permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM') ) {
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
             response.sendError(401)
             result.is_inst_admin = false;
@@ -621,7 +620,7 @@ from Subscription as s where (
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
         
-        result.editable = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
@@ -666,7 +665,7 @@ from Subscription as s where (
           orgRole = role_sub
         }
 
-        if (permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')) {
+        if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
             def startDate = sdf.parse(params.valid_from)
@@ -807,7 +806,7 @@ from Subscription as s where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        if (! permissionHelperService.hasUserWithRole(user, org, 'INST_ADM')) {
+        if (! accessService.checkUserOrgRole(user, org, 'INST_ADM')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -838,7 +837,7 @@ from Subscription as s where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        if (! permissionHelperService.hasUserWithRole(user, org, 'INST_ADM')) {
+        if (! accessService.checkUserOrgRole(user, org, 'INST_ADM')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -870,7 +869,7 @@ from Subscription as s where (
         log.debug("deleteLicense ${params}");
         def result = setResultGenerics()
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
@@ -930,7 +929,7 @@ from Subscription as s where (
         def user = User.get(springSecurityService.principal.id)
         def institution = contextService.getOrg()
 
-        if (! permissionHelperService.checkUserIsMember(user, institution)) {
+        if (! accessService.checkUserIsMember(user, institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
@@ -989,7 +988,7 @@ from Subscription as s where (
         
         log.debug("Viable Org-IDs are: ${viableOrgs}, active Inst is: ${result.institution.id}")
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
@@ -1012,7 +1011,7 @@ from Subscription as s where (
         }
         
         // Set is_inst_admin
-        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         // Set offset and max
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
@@ -1334,7 +1333,7 @@ AND EXISTS (
         def user = User.get(springSecurityService.principal.id)
         def institution = contextService.getOrg()
 
-        if (! permissionHelperService.checkUserIsMember(user, institution)) {
+        if (! accessService.checkUserIsMember(user, institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
@@ -1411,7 +1410,7 @@ AND EXISTS (
         result.institution = contextService.getOrg()
         result.user = springSecurityService.getCurrentUser()
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[(result?.institution?.name?: message(code:'myinst.error.noMember.ph', default:'the selected institution'))]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
@@ -2138,11 +2137,11 @@ AND EXISTS (
     def renewalsnoPackageChange() {
         def result = setResultGenerics()
 
-        if (!permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (!accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
             response.sendError(401)
             return;
-        } else if (!permissionHelperService.hasUserWithRole(result.user, result.institution, "INST_ADM")) {
+        } else if (!accessService.checkUserOrgRole(result.user, result.institution, "INST_ADM")) {
             flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2168,11 +2167,11 @@ AND EXISTS (
     def renewalsUpload() {
         def result = setResultGenerics()
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
-        } else if (! permissionHelperService.hasUserWithRole(result.user, result.institution, "INST_ADM")) {
+        } else if (! accessService.checkUserOrgRole(result.user, result.institution, "INST_ADM")) {
             flash.error = message(code:'myinst.renewalUpload.error.noAdmin', default:'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2334,7 +2333,7 @@ AND EXISTS (
         log.debug("-> renewalsUpload params: ${params}");
         def result = setResultGenerics()
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
@@ -2523,13 +2522,13 @@ AND EXISTS (
     def dashboard() {
         def result = setResultGenerics()
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(401)
             return;
         }
 
-        result.is_inst_admin = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable = result.user?.hasAffiliation('INST_EDITOR')
 
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
@@ -2589,7 +2588,7 @@ AND EXISTS (
     def changes() {
         def result = setResultGenerics()
 
-        if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
             response.sendError(401)
             return;
@@ -2697,7 +2696,7 @@ AND EXISTS (
     def financeImport() {
       def result = setResultGenerics()
 
-      if (! permissionHelperService.checkUserIsMember(result.user, result.institution)) {
+      if (! accessService.checkUserIsMember(result.user, result.institution)) {
           flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
           response.sendError(401)
           return;
@@ -2917,7 +2916,7 @@ AND EXISTS (
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
 
-        result.editable = permissionHelperService.hasUserWithRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
         if (result.editable) {
 
             if(result.orgType?.value == 'Consortium') {
