@@ -69,8 +69,8 @@ pipeline {
                     }
 
                 mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, rupp@hbz-nrw.de',
-                                             subject: "Succeeded Deploy on Server ${SERVERDELOPY}: ${currentBuild.fullDisplayName}",
-                                             body: "Succeeded Deploy on Server ${SERVERDELOPY}\n All Right: ${env.BUILD_URL}"
+                                                             subject: "Succeeded Deploy on Server ${SERVERDELOPY}: ${currentBuild.fullDisplayName}",
+                                                             body: "Succeeded Deploy on Server ${SERVERDELOPY}  \nAll Right: ${env.BUILD_URL} \n\n\n${changeLog}"
                 cleanWs()
             }
             unstable {
