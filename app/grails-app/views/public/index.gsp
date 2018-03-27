@@ -72,11 +72,13 @@
                     </div>
 
                     <span class="ui basic blue left pointing  label la-eye-catcher-txt">
-                        ${message(code: 'landingpage.news.1')}
-                        <a target="_blank" href="https://terminplaner2.dfn.de/foodle/Webinartermin-Vorstellung-LAS-eR-Pilotversion-5a5c6">
-                        ${message(code: 'landingpage.news.2')}
-                        </a>
-                        ${message(code: 'landingpage.news.3')}
+                        <b>LAS:eR-Webinar-Folien online</b>
+                        <br><br>
+                        In insgesamt sieben Webinaren zwischen Mitte und Ende März 2018 hat das LAS:eR-Projektteam über 250 Teilnehmern aus Informationseinrichtungen in Deutschland die LAS:eR Pilotversion und die Rahmenbedingungen des Pilotbetriebs vorgestellt, der ab Mai 2018 mit ausgewählten Bibliotheken starten wird.
+                    <br><br>
+                        Wenn auch Sie Interesse haben, das Projekt als Pilotanwender zu unterstützen, melden Sie sich noch bis zum 06. April 2018 an <a href="mailto:laser@hbz-nrw.de">laser@hbz-nrw.de</a>. Alle Informationen zum Nachlesen finden Sie in den <a href="https://wiki1.hbz-nrw.de/download/attachments/282198029/laser_webinar_vortrag.pdf?version=1&modificationDate=1522130342844" target="_blank">bereits online verfügbaren Webinar-Folien</a>.
+                    <br><br>
+                        Eine Aufbereitung der Rückfragen in Form einer FAQ-Sammlung und eine Aufzeichnung des Webinar-Vortrags folgen.
                     </span>
                 </div>
 
