@@ -206,6 +206,8 @@
 
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
 
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" />
+
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />
@@ -275,7 +277,7 @@
 
                         <div class="menu">
                             <g:link class="item" controller="admin" action="manageAffiliationRequests">
-                                Manage Affiliation Requests
+                                ${message(code: "menu.institutions.affiliation_requests")}
                                 <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0, [sort:'dateRequested']).size()}" />
                                 <g:if test="${newAffiliationRequests > 0}">
                                     <div class="ui floating red circular label">${newAffiliationRequests}</div>

@@ -70,15 +70,10 @@ class MyInstitutionController {
           result.userAlerts = alertsService.getAllVisibleAlerts(result.user);
           //result.staticAlerts = alertsService.getStaticAlerts(request);
 
-            // List all pending requests...
-            result.pendingRequestsOrg = UserOrg.findAllByStatusAndOrg(0, currentOrg, [sort:'dateRequested'])
-
-
           if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
               redirect controller: 'profile', action: 'index'
           } else {
           }
-
         }
         else {
           log.error("Failed to find user in database");
@@ -164,6 +159,18 @@ class MyInstitutionController {
         result
     }
 
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def manageAffiliationRequests() {
+        def result = [:]
+        result.institution        = contextService.getOrg()
+        result.user               = User.get(springSecurityService.principal.id)
+        result.editable           = true // inherit
+        result.pendingRequestsOrg = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, contextService.getOrg(), [sort:'dateRequested'])
+
+        result
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionLicenses() {
@@ -180,12 +187,6 @@ class MyInstitutionController {
     def currentLicenses() {
         def result = setResultGenerics()
         result.transforms = grailsApplication.config.licenseTransforms
-
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
 
         result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
@@ -447,12 +448,6 @@ class MyInstitutionController {
 
         }
         */
-
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
 
         result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
@@ -995,12 +990,6 @@ from Subscription as s where (
         viableOrgs.add(result.institution.id)
         
         log.debug("Viable Org-IDs are: ${viableOrgs}, active Inst is: ${result.institution.id}")
-
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
 
         // Set Date Restriction
         def date_restriction = null;

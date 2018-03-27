@@ -6,61 +6,10 @@
 </head>
 
 <body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb text="${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}" class="active" />
-</semui:breadcrumbs>
-
-<div>
-    <hr>
-
-    <g:if test="${pendingRequestsOrg.size() > 0}">
-
-        <h3 class="ui header">${message(code: "PendingAffiliationRequest")}</h3>
-
-        <table class="ui celled la-table table">
-
-            <thead>
-            <tr>
-                <th>${message(code: "profile.user")}</th>
-                <th>${message(code: "profile.display")}</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>${message(code: "profile.membership.date2")}</th>
-                <th>${message(code: "profile.membership.actions")}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${pendingRequestsOrg}" var="req">
-                <tr>
-                    <td>${req.user.username}</td>
-                    <td>${req.user.displayName}</td>
-                    <td>${req.user.email}</td>
-                    <td><g:message code="cv.roles.${req.formalRole?.authority}"/></td>
-                    <td><g:message code="cv.membership.status.${req.status}"/></td>
-                    <td><g:formatDate format="dd MMMM yyyy" date="${req.dateRequested}"/></td>
-                    <td class="x">
-                        <g:link action="actionAffiliationRequestOrg"
-                                params="${[req: req.id, act: 'approve']}" class="ui icon positive button">
-                            <i class="checkmark icon"></i>
-                        </g:link>
-                        <g:link action="actionAffiliationRequestOrg"
-                                params="${[req: req.id, act: 'deny']}" class="ui icon negative button">
-                            <i class="times icon"></i>
-                        </g:link>
-                    </td>
-                </tr>
-            </g:each>
-            </tbody>
-        </table>
-
-    </g:if><g:else>
-    <h3 class="ui header">${message(code: "NoPendingAffiliationRequest")}</h3>
-    </g:else>
-    <hr>
-
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+        <semui:crumb text="${message(code:'myinstadmin.title', default:'Institutional Admin Dash')}" class="active" />
+    </semui:breadcrumbs>
 
     <table class="ui celled la-table table">
         <tr>
