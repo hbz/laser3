@@ -36,7 +36,8 @@
             </div>
             <div class="field">
                 <label for="adv_costItemCategory">${message(code:'financials.costItemCategory')}</label>
-                <laser:select id="adv_costItemCategory"
+
+                <laser:select id="adv_costItemCategory" class="ui dropdown"
                           name="adv_costItemCategory"
                           from="${costItemCategory}"
                           optionKey="id"
@@ -52,14 +53,16 @@
         <div class="three fields">
             <div class="field required">
                 <label>${message(code:'financials.invoice_number')}</label><!-- invoice -->
-                <input type="text" name="invoiceNumberFilter"
-                       class="filterUpdated"
-                       id="filterInvoiceNumber" value="${params.invoiceNumberFilter}" />
+                <div class="ui dropdown selection" tabindex="0">
+                    <input type="text" name="invoiceNumberFilter"
+                           class="filterUpdated"
+                           id="filterInvoiceNumber" value="${params.invoiceNumberFilter}" />
+                </div>
             </div>
 
             <div class="field">
                 <label for="adv_costItemStatus">${message(code:'financials.costItemStatus')}</label>
-                <laser:select id="adv_costItemStatus"
+                <laser:select id="adv_costItemStatus" class="ui dropdown"
                           name="adv_costItemStatus"
                           from="${costItemStatus}"
                           optionKey="id"
@@ -91,7 +94,7 @@
 
             <div class="field">
                 <label>Steuer</label>
-                <laser:select id="todo-123" name="todo-123"
+                <laser:select id="todo-123" name="todo-123" class="ui dropdown"
                           from="${taxType}"
                           optionKey="id"
                           optionValue="value"

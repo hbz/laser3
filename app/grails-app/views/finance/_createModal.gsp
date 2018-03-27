@@ -39,7 +39,7 @@
             <div class="four wide column">
                 <div class="field">
                     <label>${message(code:'financials.costItemCategory')}</label>
-                    <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}"
+                    <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
                           id="newCostItemCategory"
                           from="${costItemCategory}"
                           optionKey="id"
@@ -49,7 +49,7 @@
 
                 <div class="field">
                     <label>${message(code:'financials.costItemElement')}</label>
-                    <laser:select name="newCostItemElement"
+                    <laser:select name="newCostItemElement" class="ui dropdown"
                               from="${costItemElement}"
                               optionKey="id"
                               optionValue="value"
@@ -58,7 +58,7 @@
 
                 <div class="field">
                     <label>Steuerbar</label>
-                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}"
+                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
                               from="${taxType}"
                               optionKey="id"
                               optionValue="value"
@@ -95,7 +95,7 @@
             <div class="four wide column">
                 <div class="field">
                     <label>${message(code:'financials.costItemStatus')}</label>
-                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}"
+                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
                               id="newCostItemStatus"
                               from="${costItemStatus}"
                               optionKey="id"
