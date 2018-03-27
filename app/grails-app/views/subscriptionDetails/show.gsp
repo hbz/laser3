@@ -61,7 +61,7 @@
                         <g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel>
                     </dt>
                     <dd>
-                        <table class="ui celled la-table table">
+                        <table class="ui celled la-table table ignore-floatThead">
                             <thead>
                             <tr>
                                 <th>${message(code:'default.authority.label', default:'Authority')}</th>

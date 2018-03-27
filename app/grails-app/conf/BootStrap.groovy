@@ -730,15 +730,15 @@ class BootStrap {
 
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
-        RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Anbieter'])
+        RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Verlag'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
-        RefdataValue.loc('Package Status',                   [en: 'Deleted', de: 'Gelöscht'])
-        RefdataValue.loc('Package Status',                   [en: 'Current', de: 'Aktuell'])
-        RefdataValue.loc('Package Status',                   [en: 'Retired', de: 'Abgelaufen'])
+        RefdataValue.loc('Package Status',      [en: 'Deleted', de: 'Gelöscht'])
+        RefdataValue.loc('Package Status',      [en: 'Current', de: 'Aktuell'])
+        RefdataValue.loc('Package Status',      [en: 'Retired', de: 'Abgelaufen'])
 
-        RefdataValue.loc('Person Contact Type',      [en: 'Personal contact', de: 'Personenkontakt'])
-        RefdataValue.loc('Person Contact Type',      [en: 'Functional contact', de: 'Funktionskontakt'])
+        RefdataValue.loc('Person Contact Type', [en: 'Personal contact', de: 'Personenkontakt'])
+        RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'])
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Allgemeine Kontaktperson'])
 

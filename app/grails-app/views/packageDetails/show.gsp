@@ -65,7 +65,7 @@
 
                 <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
-                    <table class="ui celled la-table la-table-small table">
+                    <table class="ui celled la-table la-table-small table ignore-floatThead">
                         <thead>
                         <tr>
                             <th>${message(code: 'component.id.label')}</th>
