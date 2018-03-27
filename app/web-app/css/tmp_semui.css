@@ -226,3 +226,9 @@ body.myInstitution_dashboard .ui.tab .item span {
 .la-full-width {
     width: 100%;
 }
+
+/* la-forward-back */
+
+.ui .la-forward-back i.icon {
+    margin: 0 !important;
+}

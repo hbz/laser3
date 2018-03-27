@@ -1379,6 +1379,9 @@ class SubscriptionDetailsController {
 
         result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+
     // tasks
     def contextOrg  = contextService.getOrg()
     result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
