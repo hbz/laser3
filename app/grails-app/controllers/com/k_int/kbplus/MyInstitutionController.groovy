@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import de.laser.ContextService
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -53,17 +55,22 @@ class MyInstitutionController {
             new SimpleDateFormat('yyyy')
     ];
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def index() {
         // Work out what orgs this user has admin level access to
         def result = [:]
+        result.institution  = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
+        def currentOrg = contextService.getOrg()
         log.debug("index for user with id ${springSecurityService.principal.id} :: ${result.user}");
 
         if ( result.user ) {
           result.userAlerts = alertsService.getAllVisibleAlerts(result.user);
-          result.staticAlerts = alertsService.getStaticAlerts(request);
+          //result.staticAlerts = alertsService.getStaticAlerts(request);
+
+            // List all pending requests...
+            result.pendingRequestsOrg = UserOrg.findAllByStatusAndOrg(0, currentOrg, [sort:'dateRequested'])
 
 
           if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
@@ -2927,5 +2934,33 @@ AND EXISTS (
             result
         }
         render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true])
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def actionAffiliationRequestOrg() {
+        log.debug("actionMembershipRequestOrg");
+        def req = UserOrg.get(params.req);
+        def user = User.get(springSecurityService.principal.id)
+        def currentOrg = contextService.getOrg()
+        if ( req != null && req.org == currentOrg) {
+            switch(params.act) {
+                case 'approve':
+                    req.status = UserOrg.STATUS_APPROVED
+                    break;
+                case 'deny':
+                    req.status = UserOrg.STATUS_REJECTED
+                    break;
+                default:
+                    log.error("FLASH UNKNOWN CODE");
+                    break;
+            }
+            req.dateActioned = System.currentTimeMillis();
+            req.save(flush:true);
+        }
+        else {
+            log.error("FLASH");
+        }
+        redirect(action: "index")
     }
 }
