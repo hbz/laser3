@@ -54,7 +54,7 @@ pipeline {
                 echo 'I succeeeded!'
                 script{
                       if(currentBuild.changeSets){
-                        def changeLog = "Change Log:\n\n\n"
+                        env.changeLog = "Change Log:\n\n\n"
                         echo 'Change Log'
                         def changeLogSets = currentBuild.changeSets
                                 for (int i = 0; i < changeLogSets.size(); i++) {
@@ -62,7 +62,7 @@ pipeline {
                                         for (int j = 0; j < entries.length; j++) {
                                             def entry = entries[j]
                                             echo "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}"
-                                            changeLog += "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}\n"
+                                            env.changeLog += "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}\n"
                                         }
                                     }
                                 }
