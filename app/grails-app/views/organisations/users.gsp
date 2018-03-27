@@ -33,9 +33,14 @@
 
         <g:each in="${users}" var="userOrg">
           <tr>
-            <td><g:link controller="userDetails" action="edit" id="${userOrg[0].user.id}">${userOrg[0].user.displayName} ${userOrg[0].user.defaultDash?.name?"(${userOrg[0].user.defaultDash.name})":""}</g:link></td>
             <td>
-            ${userOrg[0].user.email}
+                <g:link controller="userDetails" action="edit" id="${userOrg[0].user.id}">
+                    ${userOrg[0].user.displayName}
+                    ${userOrg[0].user.defaultDash?.name?"<br />${userOrg[0].user.defaultDash.name}":""}
+                </g:link>
+            </td>
+            <td>
+                ${userOrg[0].user.email}
             </td>
             <td>
               <g:if test="${userOrg[1]}">

@@ -86,6 +86,9 @@ class AccessService {
     }
 
     // copied from Org
+    //
+    // NO ROLE HIERARCHY !!!
+    //
     boolean checkUserOrgRole(user, org, role) {
 
         if (! user || ! org) {
@@ -101,5 +104,35 @@ class AccessService {
         }
 
         false
+    }
+
+    boolean checkMinUserOrgRole(user, org, role) {
+
+        if (! user || ! org) {
+            return false
+        }
+        if (role instanceof String) {
+            role = Role.findByAuthority(role)
+        }
+
+        def rolesToCheck = [role]
+        def result = false
+
+        // sym. role hierarchy
+        if (role.authority == "INST_USER") {
+            rolesToCheck << Role.findByAuthority("INST_EDITOR")
+            rolesToCheck << Role.findByAuthority("INST_ADM")
+        }
+        else if (role.authority == "INST_EDITOR") {
+            rolesToCheck << Role.findByAuthority("INST_ADM")
+        }
+
+        rolesToCheck.each{ rot ->
+            def userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, org, rot)
+            if (userOrg && (userOrg.status == UserOrg.STATUS_APPROVED || userOrg.status == UserOrg.STATUS_AUTO_APPROVED)) {
+                result = true
+            }
+        }
+        result
     }
 }
