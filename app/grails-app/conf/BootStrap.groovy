@@ -1044,6 +1044,13 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unbekannt'])
 
+        RefdataCategory.loc(RefdataCategory.TI_TYPE,
+                [en: RefdataCategory.TI_TYPE, de: RefdataCategory.TI_TYPE])
+
+        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal'])
+        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])
+        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de:'Database'])
+
         RefdataCategory.loc('TitleInstancePackagePlatform.DelayedOA',
                 [en: 'TitleInstancePackagePlatform.DelayedOA', de: 'TitleInstancePackagePlatform.DelayedOA'])
 

@@ -280,7 +280,6 @@ class GlobalSourceSyncService {
         grt.save()
 
           //Update INDEX ES
-          dataloadService.updateSiteMapping();
           dataloadService.updateFTIndexes();
       }
     }
@@ -580,7 +579,8 @@ class GlobalSourceSyncService {
       def newtip = [
               title      : [
                       name       : tip.title.name.text(),
-                      identifiers: []
+                      identifiers: [],
+                      titleType: tip.mediumByTypClass.text()
               ],
               status     : tip.status?.text() ?: 'Current',
               titleId    : tip.title.'@id'.text(),
@@ -591,7 +591,8 @@ class GlobalSourceSyncService {
               identifiers: [],
               tippId     : tip.'@id'.text(),
               accessStart: tip.access.'@start'.text(),
-              accessEnd  : tip.access.'@end'.text()
+              accessEnd  : tip.access.'@end'.text(),
+              medium     : tip.medium.text()
       ];
 
       tip.coverage.each { cov ->

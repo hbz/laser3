@@ -150,16 +150,18 @@ class ESSearchService{
       if ( params[mapping.key] != null ) {
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ");
-          sw.write(" ( ( ( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" )) ")
+          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" )) ")
 
           params[mapping.key].each { p ->
-                 if(p == params[mapping.key].last())
+                 if(p == params[mapping.key].first())
                  {
                    sw.write(" OR ( ")
                  }
+                sw.write(" ( ")
                 sw.write(mapping.value)
                 sw.write(":")
                 sw.write("\"${p}\"")
+                sw.write(" ) ")
                 if(p == params[mapping.key].last()) {
                   sw.write(" ) ")
                 }else{

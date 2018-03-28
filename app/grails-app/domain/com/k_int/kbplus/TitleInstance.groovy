@@ -192,10 +192,10 @@ class TitleInstance extends BaseDomainComponent {
   }
 
   static def lookupOrCreate(candidate_identifiers, title) {
-    lookupOrCreate(candidate_identifiers, title, false)
+    lookupOrCreate(candidate_identifiers, title, false, false)
   }
 
-  static def lookupOrCreate(candidate_identifiers, title, enrich) {
+  static def lookupOrCreate(candidate_identifiers, title, enrich, type) {
     def result = null;
     def origin_uri = null
     def skip_creation = false
@@ -331,8 +331,10 @@ class TitleInstance extends BaseDomainComponent {
 
     if (!valid_match && !skip_creation) {
       static_logger.debug("No valid match - creating new title");
-      def ti_status = RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Current")
-      result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
+      def ti_status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+      //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
+      result = ((type=='BookInstance') ? new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
+              (type=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) : new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
       result.save(flush:true, failOnError: true);
 
       result.ids=[]
@@ -422,7 +424,9 @@ class TitleInstance extends BaseDomainComponent {
     }
 
     if (!result) {
-      result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString());
+      //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString());
+      result = ((title.type=='Serial') ? new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString()) :
+                (title.type=='Database' ? new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString()) : new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString())))
 
       result.ids=[]
       ids.each {
