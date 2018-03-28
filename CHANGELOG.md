@@ -6,7 +6,7 @@
 - added affiliation management for inst admins
 - added security access service
 - secured myInstitution controller
-- reworked landing page
+- reworked landing page and logo
 
 0.4.1
 
