@@ -289,7 +289,7 @@ class GlobalSourceSyncService {
       println("new tipp: ${tipp}");
       println("identifiers: ${tipp.title.identifiers}");
 
-      def title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name)
+      def title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name, tipp.title.titleType)
       println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
 
       def plat_instance = Platform.lookupOrCreatePlatform([name:tipp.platform]);
