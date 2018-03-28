@@ -26,7 +26,7 @@ r2d2 = {
                     }
                     else {
                         // TODO
-                        alert('Please report this error: ' + gspDateFormat + ' for semui-datepicker unsupported')
+                        alert('Please report this error: ' + gspDateFormat + ' for semui-datepicker unsupported');
                     }
                 }
             }
@@ -38,11 +38,11 @@ r2d2 = {
         r2d2.legacyStuff()
         r2d2.semuiStuff()
 
-        console.log("r2d2 / locale: " + gspLocale + " > " + gspDateFormat)
+        console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
     },
 
     legacyStuff : function() {
-        console.log("r2d2.legacyStuff()")
+        console.log("r2d2.legacyStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
@@ -107,57 +107,46 @@ r2d2 = {
         console.log("r2d2.semuiStuff()")
 
         // close semui:messages alerts
-        $(".close.icon").click(function(){
+        $(".close.icon").click(function() {
             $(this).parent().hide();
         });
 
+        // datepicker
+        $('.datepicker').calendar(r2d2.configs.datepicker);
+
         // modal opener
-        $("*[data-semui=modal]").click(function(){
+        $("*[data-semui=modal]").click(function() {
             $($(this).attr('href') + '.ui.modal').modal({
-                onVisible: function(){
+                onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 }
-            }).modal({centered: false}).modal('show')
+            }).modal('show')
         });
 
         // dropdowns
         $('.ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade'
-        })
+        });
         $('.ui.dropdown').on('keydown', function(event) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
-                event.preventDefault()
-                $(this).dropdown('clear').dropdown('hide')
+                event.preventDefault();
+                $(this).dropdown('clear').dropdown('hide');
             }
-        })
+        });
 
         // accordions
-        $('.ui.accordion').accordion()
+        $('.ui.accordion').accordion();
 
         // checkboxes
         $('.ui.checkbox').not('#la-advanced').checkbox();
 
-        // datepicker
-        $('.datepicker').calendar(r2d2.configs.datepicker);
-
         // metaboxes
-        $('.metaboxToggle').click(function(){
+        $('.metaboxToggle').click(function() {
             $(this).next('.metaboxContent').slideToggle();
         })
 
-        // sticky
-        $('.ui.sticky').sticky({offset: 120});
-
-        // sticky table header
-        $('.table').floatThead({
-              position: 'fixed',
-              top: 78,
-              zIndex: 1
-        });
-        $('.modal .table').floatThead('destroy');
-        $('.table.ignore-floatThead').floatThead('destroy');
-
+        // spotlight
         $('.ui.search').search({
             type: 'category',
             searchFields   : [
@@ -165,15 +154,14 @@ r2d2 = {
             ],
             apiSettings: {
                 onResponse: function(elasticResponse) {
-                    var response = {
-                            results : {}
-                        };
+                    var response = { results : {} };
+
                     // translate Elasticsearch API response to work with semantic ui search
                     $.each(elasticResponse.results, function(index, item) {
 
-                        var category   = item.category || 'Unknown',
-                            maxResults = 15
-                        ;
+                        var category   = item.category || 'Unknown';
+                        var maxResults = 15;
+
                         if(index >= maxResults) {
                             return false;
                         }
@@ -196,6 +184,18 @@ r2d2 = {
             },
             minCharacters: 3
         });
+
+        // stickies
+        $('.ui.sticky').sticky({offset: 120});
+
+        // sticky table header
+        $('.table').floatThead({
+              position: 'fixed',
+              top: 78,
+              zIndex: 1
+        });
+        $('.modal .table').floatThead('destroy');
+        $('.table.ignore-floatThead').floatThead('destroy');
     }
 }
 
