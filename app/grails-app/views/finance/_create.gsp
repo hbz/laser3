@@ -38,7 +38,7 @@
             <div class="four wide column">
                 <div class="field">
                     <label>Kategorie</label>
-                    <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
+                    <laser:select class="ui dropdown" name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}"
                           id="newCostItemCategory"
                           from="${costItemCategory}"
                           optionKey="id"
@@ -48,7 +48,7 @@
 
                 <div class="field">
                     <label>Komponente</label>
-                    <laser:select name="newCostItemElement" class="ui dropdown"
+                    <laser:select class="ui dropdown" name="newCostItemElement"
                               from="${costItemElement}"
                               optionKey="id"
                               optionValue="value"
@@ -57,7 +57,7 @@
 
                 <div class="field">
                     <label>Steuerbar</label>
-                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
+                    <laser:select class="ui dropdown" name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}"
                               from="${taxType}"
                               optionKey="id"
                               optionValue="value"

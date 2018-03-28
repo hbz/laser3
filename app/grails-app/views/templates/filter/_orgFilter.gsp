@@ -7,7 +7,7 @@
         <div class="fields">
             <div class="field">
                 <label>${message(code: 'org.orgType.label')}</label>
-                <laser:select name="orgType" class="ui dropdown"
+                <laser:select class="ui dropdown" name="orgType"
                               from="${RefdataCategory.getAllRefdataValues('OrgType')}"
                               optionKey="id"
                               optionValue="value"
@@ -16,7 +16,7 @@
             </div>
             <div class="field">
                 <label>${message(code: 'org.sector.label')}</label>
-                <laser:select name="orgSector" class="ui dropdown"
+                <laser:select class="ui dropdown" name="orgSector"
                               from="${RefdataCategory.getAllRefdataValues('OrgSector')}"
                               optionKey="id"
                               optionValue="value"
@@ -25,7 +25,7 @@
             </div>
             <div class="field">
                 <label>${message(code: 'org.federalState.label')}</label>
-                <laser:select name="federalState" class="ui dropdown"
+                <laser:select class="ui dropdown" name="federalState"
                               from="${RefdataCategory.getAllRefdataValues('Federal State')}"
                               optionKey="id"
                               optionValue="value"
@@ -34,7 +34,7 @@
             </div>
             <div class="field">
                 <label>${message(code: 'org.libraryNetwork.label')}</label>
-                <laser:select name="libraryNetwork" class="ui dropdown"
+                <laser:select class="ui dropdown" name="libraryNetwork"
                               from="${RefdataCategory.getAllRefdataValues('Library Network')}"
                               optionKey="id"
                               optionValue="value"
@@ -43,7 +43,7 @@
             </div>
             <div class="field">
                 <label>${message(code: 'org.libraryType.label')}</label>
-                <laser:select name="libraryType" class="ui dropdown"
+                <laser:select class="ui dropdown" name="libraryType"
                               from="${RefdataCategory.getAllRefdataValues('Library Type')}"
                               optionKey="id"
                               optionValue="value"

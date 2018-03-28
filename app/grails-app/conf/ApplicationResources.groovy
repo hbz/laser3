@@ -3,32 +3,33 @@ modules = {
     annotations {
         dependsOn 'semanticUI'
 
-        resource url:'js/summernote.min.js'
+        resource url:'js/libs/summernote.min.js'
         resource url:'css/summernote.css'
         resource url:'css/summernote-bs2.css'
-        resource url:'js/annotations.js'
-        resource url:'css/annotations.css'
+
+        resource url:'js/legacy.annotations.js'
+        resource url:'css/legacy.annotations.css'
     }
 
     treeSelects {
         dependsOn 'jquery'
 
         resource url:'css/jstree-themes/default/style.min.css'
-        resource url:'js/jstree.min.js'
-        resource url:'js/tree-selects.js'
+        resource url:'js/libs/jstree.min.js'
+
+        resource url:'js/legacy.tree-selects.js'
     }
 
     onixMatrix {
         dependsOn 'semanticUI'
 
-        resource url:'css/onix.css'
-        resource url:'js/onix.js'
+        resource url:'css/legacy.onix.css'
+        resource url:'js/legacy.onix.js'
     }
 
     deprecatedCSS {
         resource url:'css/datatables.css'
-        //resource url:'css/bootstrap-editable.css'
-        resource url:'css/select2.css'
+        //resource url:'css/select2.css'
         resource url:"css/instances/deprecated.css" // legacy
 
         resource url:'js/tmp_semui.js'   // only tmp
@@ -43,26 +44,25 @@ modules = {
         // legacy CRAP ..
         // legacy CRAP ..
 
-        resource url:'semantic_heave/jquery-editable.css'               // updated stuff
-        resource url:'semantic_heave/jquery.poshytip.js'                // updated stuff
-        resource url:'semantic_heave/jquery-editable-poshytip.min.js'   // updated stuff
+        resource url:'semantic-restoration/jquery-editable.css'               // updated stuff
+        resource url:'semantic-restoration/jquery.poshytip.js'                // updated stuff
+        resource url:'semantic-restoration/jquery-editable-poshytip.min.js'   // updated stuff
 
-        resource url:'js/moment-with-locales.min.js'
-        //resource url:'js/inline-content.js'
-        resource url:'js/moment.min.js'
+        resource url:'js/libs/moment-with-locales.min.js'
+        resource url:'js/libs/moment.min.js'
 
-        resource url:'js/datatables.min.js'                 // updated stuff // new version 1.10.16
+        resource url:'js/libs/datatables.min.js'            // updated stuff // new version 1.10.16
+        resource url:'js/libs/jquery.floatThead.min.js'     // new stuff
 
-        resource url:'semantic/semantic.min.js'     // new stuff
-        resource url:'semantic/semantic.min.css'    // new stuff
+        resource url:'semantic/semantic.min.js'         // new stuff
+        resource url:'semantic/semantic.min.css'        // new stuff
 
-        resource url:'semantic_heave/jquery.readmore.min.js' // new stuff
+        resource url:'semantic-restoration/jquery.readmore.min.js' // new stuff
 
-        resource url:'semantic_heave/select2.css'            // updated stuff // new version 3.5.4
-        resource url:'semantic_heave/select2.min.js'         // updated stuff // new version 3.5.4
+        resource url:'semantic-restoration/select2.css'            // updated stuff // new version 3.5.4
+        resource url:'semantic-restoration/select2.min.js'         // updated stuff // new version 3.5.4
 
         resource url:'js/application.js.gsp'
-        resource url:'js/floatThead.min.js'
     }
 
     swaggerApi {
@@ -74,5 +74,4 @@ modules = {
         resource url:'vendor/swagger-ui/swagger-ui-standalone-preset.js'
         resource url:'vendor/cryptoJS-v3.1.2/rollups/hmac-sha256.js'
     }
-
 }
