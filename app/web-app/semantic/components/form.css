@@ -1081,3 +1081,24 @@
   text-align: right;
   margin-top: 1.2rem;
 }
+.ui.form .fields .field {
+  margin: 0em 0em 1em;
+}
+.ui.form .fields .field.la-modal-fieldset-no-margin {
+  background: #fffaf5;
+  padding: 10px;
+}
+.ui.form .fields .field.la-modal-fieldset-no-margin .field {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.ui.form .fields .field.la-modal-fieldset-margin {
+  margin-left: 10px;
+  margin-right: 10px;
+  background: #fffaf5;
+  padding: 10px;
+}
+.ui.form .fields .field.la-modal-fieldset-margin .field {
+  padding-left: 10px;
+  padding-right: 10px;
+}
