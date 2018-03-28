@@ -1,4 +1,13 @@
 
+0.4.2
+
+- added prev/next subscription navigation
+- improved spotlight search
+- added affiliation management for inst admins
+- added security access service
+- secured myInstitution controller
+- reworked landing page
+
 0.4.1
 
 - reworked finance views

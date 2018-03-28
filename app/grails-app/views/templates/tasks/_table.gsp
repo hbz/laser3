@@ -6,20 +6,14 @@
             <thead>
             <tr>
                 <th>${message(code: 'task.title.label', default: 'Title')}</th>
-
                 <th>${message(code: 'task.endDate.label', default: 'End Date')}</th>
-
                 <th>${message(code: 'task.status.label', default: 'Status')}</th>
-
                 <th>
                     ${message(code: 'task.responsibleOrg.label', default: 'responsibleOrg')} <br />
                     ${message(code: 'task.responsibleUser.label', default: 'responsibleUser')}
                 </th>
-
                 <th>${message(code: 'task.creator.label', default: 'Creator')}</th>
-
                 <th>${message(code: 'task.createDate.label', default: 'Create Date')}</th>
-
                 <th></th>
             </tr>
             </thead>
@@ -44,9 +38,11 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
 
                     <td class="x">
-                        <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon button">
-                            <i class="write icon"></i>
-                        </g:link>
+                        <g:if test="${editable}">
+                            <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon button">
+                                <i class="write icon"></i>
+                            </g:link>
+                        </g:if>
                     </td>
                 </tr>
             </g:each>

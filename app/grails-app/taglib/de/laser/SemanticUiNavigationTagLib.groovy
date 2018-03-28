@@ -60,40 +60,6 @@ class SemanticUiNavigationTagLib {
         out << '<div class="ui horizontal label ' + attrs.class + '">' + lbMessage + '</div>'
     }
 
-    // <semui:subNav actionName="${actionName}">
-    //     <semui:subNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" />
-    // </semui:subNav>
-
-    def subNav = { attrs, body ->
-
-        out << '<div class="ui secondary pointing menu">'
-        out <<   body()
-        out << '</div>'
-    }
-
-    def subNavItem = { attrs, body ->
-
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
-        def linkBody  = (text && message) ? text + " - " + message : text + message
-        def aClass    = 'item'
-        if (this.pageScope.variables?.actionName == attrs.action) {
-            aClass = 'item active'
-        }
-        if (attrs.controller) {
-            out << g.link(linkBody,
-                    class: aClass,
-                    controller: attrs.controller,
-                    action: attrs.action,
-                    params: attrs.params
-            )
-        }
-        else {
-            out << linkBody
-        }
-    }
-
-
     //<semui:paginate .. />
     // copied from twitter.bootstrap.scaffolding.PaginationTagLib
 
@@ -215,7 +181,7 @@ class SemanticUiNavigationTagLib {
     // <semui:mainNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" affiliation="INST_EDITOR" />
 
 
-    def mainNavItem = { attrs, body ->
+    def securedMainNavItem = { attrs, body ->
 
         def lbText    = attrs.text ? attrs.text : ''
         def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''

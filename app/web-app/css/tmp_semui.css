@@ -226,3 +226,31 @@ body.myInstitution_dashboard .ui.tab .item span {
 .la-full-width {
     width: 100%;
 }
+
+/* la-forward-back */
+
+.ui .la-forward-back i.icon {
+    margin: 0 !important;
+}
+
+/* la-bulk-header */
+
+.ui table.la-bulk-header thead {
+    background: white;
+}
+.ui table.la-bulk-header thead tr td {
+    line-height: 1rem;
+}
+
+/* hotfix aside.metaboxContent */
+
+aside.metaboxContent {
+    position: absolute !important;
+    width: inherit;
+    margin: 0 !important;
+}
+aside.metaboxContent + .metaboxContent-spacer {
+    height: 64px;
+    margin: 1rem 0;
+    padding: 1em 0;
+}

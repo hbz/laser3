@@ -188,16 +188,25 @@ class User implements Permissions {
     } */
 
     def hasAffiliation(userRoleName) {
-        hasAffiliation(userRoleName, 'ROLE_USER')
+        hasAffiliationAND(userRoleName, 'ROLE_USER')
     }
 
-    def hasAffiliation(userRoleName, globalRoleName) {
+    def hasAffiliationAND(userRoleName, globalRoleName) {
+        affiliationCheck(userRoleName, globalRoleName, 'AND', contextService.getOrg())
+    }
+    def hasAffiliationOR(userRoleName, globalRoleName) {
+        affiliationCheck(userRoleName, globalRoleName, 'OR', contextService.getOrg())
+    }
 
+    def hasAffiliationForOrg(userRoleName, orgToCheck) {
+        affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
+    }
+
+    private def affiliationCheck(userRoleName, globalRoleName, mode, orgToCheck) {
         def result = false
-        def contextOrg = contextService.getOrg()
         def rolesToCheck = [userRoleName]
 
-        //log.debug("USER.hasAffiliation(): ${userRoleName} @ ${contextOrg}")
+        log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck}")
 
         // TODO:
 
@@ -208,8 +217,15 @@ class User implements Permissions {
             return true // may the force be with you
         }
 
-        if (globalRoleName && ! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-            return false // min restriction
+        if (mode == 'AND') {
+            if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+                return false // min restriction fail
+            }
+        }
+        else if (mode == 'OR') {
+            if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+                return true // min level granted
+            }
         }
 
         // TODO:
@@ -226,7 +242,7 @@ class User implements Permissions {
         rolesToCheck.each{ rot ->
             def role = Role.findByAuthority(rot)
             if (role) {
-                def uo = UserOrg.findByUserAndOrgAndFormalRole(this, contextOrg, role)
+                def uo = UserOrg.findByUserAndOrgAndFormalRole(this, orgToCheck, role)
                 result = result || (uo && getAuthorizedAffiliations()?.contains(uo))
             }
         }

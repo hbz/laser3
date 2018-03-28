@@ -2038,15 +2038,14 @@ Floated Menu / Item
 .ui.massive.vertical.menu {
   width: 25rem;
 }
+.ui.menu .item.la-logo-item {
+  padding-left: 0;
+}
 .ui.menu .item > img.logo {
   width: 100px;
 }
 .ui.menu.la-menu .item {
   font-weight: 700;
-}
-.ui.menu.la-menu .item.la-logoItem {
-  
-/* background-color: white; */
 }
 .ui.menu.la-menu .item:first-child {
   border-left-width: 0!important;
@@ -2055,7 +2054,7 @@ Floated Menu / Item
   width: 0;
 }
 .ui.menu.la-contextBar {
-  top: 40px;
+  top: 50px;
   z-index: 90;
   background-color: #d3dae3;
 }

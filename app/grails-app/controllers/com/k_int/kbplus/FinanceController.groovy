@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.helper.DebugAnnotation
 import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -14,7 +15,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 class FinanceController {
 
     def springSecurityService
-    def permissionHelperService
+    def accessService
     def contextService
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
@@ -36,10 +37,11 @@ class FinanceController {
 
     private boolean isFinanceAuthorised(Org org, User user) {
 
-        permissionHelperService.hasUserWithRole(user, org, admin_role)
+        accessService.checkUserOrgRole(user, org, admin_role)
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def index() {
       log.debug("FinanceController::index() ${params}");
 
@@ -108,7 +110,7 @@ class FinanceController {
      */
     private def setupQueryData(result, params, user) {
         //Setup params
-        result.editable    =  permissionHelperService.hasUserWithRole(user, result.institution, admin_role)
+        result.editable    =  accessService.checkUserOrgRole(user, result.institution, admin_role)
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.filterMode  =  params.filterMode?: "OFF"
         result.info        =  [] as List

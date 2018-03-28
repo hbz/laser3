@@ -49,7 +49,12 @@
                   <td>${af.org.name}</td>
                   <td>${af.formalRole?.authority}</td>
                   <td>${message(code:"cv.membership.status.${af.status}")}</td>
-                  <td><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ui.class.name}:${ui.id}",contextProperty:"affiliations",targetOid:"${af.class.name}:${af.id}"]}'>${message(code:'default.delete.label', args:[message(code:'user.affiliation', default:'Affiliation')], default:'Delete Affiliation')}</g:link></td>
+                  <td class="x">
+                      <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ui.class.name}:${ui.id}",contextProperty:"affiliations",targetOid:"${af.class.name}:${af.id}"]}'
+                              class="ui icon negative button">
+                          <i class="trash alternate icon"></i>
+                      </g:link>
+                  </td>
                 </tr>
               </g:each>
             </tbody>
@@ -68,7 +73,11 @@
               <g:each in="${ui.roles}" var="rl">
                 <tr>
                   <td>${rl.role.authority}</td>
-                  <td><g:link controller="ajax" action="removeUserRole" params='${[user:"${ui.class.name}:${ui.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'>${message(code:'default.delete.label', args:[message(code:'user.role', default: 'Role')], default:'Delete Role')}</g:link></td>
+                  <td class="x">
+                      <g:link controller="ajax" action="removeUserRole" params='${[user:"${ui.class.name}:${ui.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
+                              class="ui icon negative button">
+                          <i class="trash alternate icon"></i>
+                      </g:link></td>
                 </tr>
               </g:each>
             </tbody>

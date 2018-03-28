@@ -39,9 +39,14 @@ class YodaController {
     def demo2() {
         redirect action: 'demo'
     }
-    @DebugAnnotation(test='hasAffiliation("INST_USER", "ROLE_XY")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER", "ROLE_XY") })
+    @DebugAnnotation(test='hasAffiliationOR("INST_USER", "ROLE_XY")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliationOR("INST_USER", "ROLE_XY") })
     def demo3() {
+        redirect action: 'demo'
+    }
+    @DebugAnnotation(test='hasAffiliationAND("INST_USER", "ROLE_XY")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliationAND("INST_USER", "ROLE_XY") })
+    def demo4() {
         redirect action: 'demo'
     }
 

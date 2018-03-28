@@ -22,7 +22,7 @@ class LicenseDetailsController {
     def institutionsService
     def pendingChangeService
     def executorWrapperService
-    def permissionHelperService
+    def accessService
     def contextService
     def addressbookService
 
@@ -206,7 +206,7 @@ class LicenseDetailsController {
     private def getAvailableSubscriptions(license, user) {
     def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
       orgRole.roleType?.value == "Licensee"
-    }?.collect{  permissionHelperService.hasUserWithRole(user, it.org, 'INST_ADM') ? it.org : null  }
+    }?.collect{  accessService.checkUserOrgRole(user, it.org, 'INST_ADM') ? it.org : null  }
 
     def subscriptions = null
     if(licenseInstitutions){
@@ -248,7 +248,7 @@ class LicenseDetailsController {
     if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
         isAdmin = true;
     }else{
-       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && permissionHelperService.hasUserWithRole(result.user, it.org, 'INST_ADM') }
+       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkUserOrgRole(result.user, it.org, 'INST_ADM') }
     }
     if( !isAdmin && (result.license.licenseType != "Template" || hasAccess == null)) {
       flash.error = message(code:'license.consortia.access.error')

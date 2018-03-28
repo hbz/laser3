@@ -1114,6 +1114,20 @@ body[class*="Organisation"] .ui.label.la-object .icon:before,
 body[class*="organisation"] .ui.label.la-object .icon:before {
   content: "\f19c";
 }
+
+/* Button on Subscription Site */
+
+.la-forward-back {
+  padding-left: 1rem;
+}
+
+.la-forward-back a {
+  color: #1B1C1D;
+}
+
+.la-forward-back a:hover {
+  color: #767676;
+}
 /*!
  * # Semantic UI 2.3.0 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -25237,16 +25251,16 @@ Floated Menu / Item
   width: 25rem;
 }
 
+.ui.menu .item.la-logo-item {
+  padding-left: 0;
+}
+
 .ui.menu .item > img.logo {
   width: 100px;
 }
 
 .ui.menu.la-menu .item {
   font-weight: 700;
-}
-
-.ui.menu.la-menu .item.la-logoItem {
-  /* background-color: white; */
 }
 
 .ui.menu.la-menu .item:first-child {
@@ -25258,7 +25272,7 @@ Floated Menu / Item
 }
 
 .ui.menu.la-contextBar {
-  top: 40px;
+  top: 50px;
   z-index: 90;
   background-color: #d3dae3;
 }

@@ -50,8 +50,10 @@
 
     <div class="ui fixed inverted menu">
         <div class="ui container">
-            <g:link controller="home" action="index" class="header item">LAS:eR</g:link>
-            <%-- <img class="logo" src="${resource(dir: 'images', file: 'laser-logo.png')}" alt="laser-logo" width="100" height="26"/> --%>
+            <g:link controller="home" action="index" class="header item la-logo-item">
+                <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
+            </g:link>
+
             <sec:ifLoggedIn>
                 <g:if test="${false}">
                 <div class="ui simple dropdown item">
@@ -132,19 +134,19 @@
 
                             <div class="menu">
 
-                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.institutions.mySubs" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.institutions.mySubs" />
 
-                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.institutions.myLics" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.institutions.myLics" />
 
-                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
-                                <semui:mainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />
 
                                 <div class="divider"></div>
 
-                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                                <semui:mainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.institutions.comp_sub" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.institutions.comp_sub" />
 
                                 <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                         params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
@@ -153,9 +155,9 @@
 
                                 <div class="divider"></div>
 
-                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="cleanLicense" message="license.add.blank" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="cleanLicense" message="license.add.blank" />
 
-                                <semui:mainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
 
 
                                 <%--
@@ -196,24 +198,27 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="myInstitution" action="dashboard">${message(code:'menu.institutions.dash')}</g:link>
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
+
                                 <g:link class="item" controller="organisations" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                                <g:link class="item" controller="myInstitution" action="tasks">${message(code:'menu.institutions.tasks')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="changes">${message(code:'menu.institutions.todo')}</g:link>
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tasks" message="menu.institutions.tasks" />
 
-                                <g:link class="item" controller="myInstitution" action="addressbook">${message(code:'menu.institutions.addressbook', default:'Addressbook')}</g:link>
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
-                                <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
 
-                                <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" />
+
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />
 
                                 <g:if test="${grailsApplication.config.feature_finance}">
-                                    <g:link class="item" controller="myInstitution" action="finance">${message(code:'menu.institutions.finance')}</g:link>
+                                    <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
 
-                                    <semui:mainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+                                    <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
                                 </g:if>
-
                             </div>
                         </div>
                     </sec:ifLoggedIn>
@@ -274,7 +279,7 @@
 
                         <div class="menu">
                             <g:link class="item" controller="admin" action="manageAffiliationRequests">
-                                Manage Affiliation Requests
+                                ${message(code: "menu.institutions.affiliation_requests")}
                                 <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0, [sort:'dateRequested']).size()}" />
                                 <g:if test="${newAffiliationRequests > 0}">
                                     <div class="ui floating red circular label">${newAffiliationRequests}</div>
