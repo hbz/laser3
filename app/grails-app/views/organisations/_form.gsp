@@ -82,7 +82,7 @@
 		<g:message code="org.sector.label" default="Sector" />
 	</label>
 	<laser:select id="sector" name="sector.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector')}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.sector?.id}" class="many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.sector?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
 <% /*
@@ -115,7 +115,7 @@
 		<g:message code="org.orgType.label" default="Org Type" />
 	</label>
 	<laser:select id="orgType" name="orgType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
-			  optionKey="id" optionValue="value"  value="${orgInstance?.orgType?.id}" class="many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value"  value="${orgInstance?.orgType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
 <%--
@@ -141,7 +141,7 @@
 		<g:message code="org.country.label" default="Country" />
 	</label>
 	<laser:select id="country" name="country.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country')}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'federalState', 'error')} ">
@@ -149,7 +149,7 @@
 		<g:message code="org.federalState.label" default="Federal State" />
 	</label>
 	<laser:select id="federalState" name="federalState.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Federal State')}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.federalState?.id}" class="many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.federalState?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryNetwork', 'error')} ">
@@ -157,7 +157,7 @@
 		<g:message code="org.libraryNetwork.label" default="Library Network" />
 	</label>
 	<laser:select id="libraryNetwork" name="libraryNetwork.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Library Network')}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.libraryNetwork?.id}" class="many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.libraryNetwork?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'funderType', 'error')} ">
@@ -165,7 +165,7 @@
 		<g:message code="org.funderType.label" default="Funder Type" />
 	</label>
 	<laser:select id="funderType" name="funderType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Funder Type')}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.funderType?.id}" class="many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.funderType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryType', 'error')} ">
@@ -173,7 +173,7 @@
 		<g:message code="org.libraryType.label" default="Library Type" />
 	</label>
 	<laser:select id="libraryType" name="libraryType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Library Type')}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
 <% /*

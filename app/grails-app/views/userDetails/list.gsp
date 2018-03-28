@@ -27,7 +27,8 @@
                         </div>
                         <div class="field">
                             <label>Role</label>
-                            <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" value="authority "optionKey="id" optionValue="authority" name="authority" />
+                            <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}"
+                                      value="authority" optionKey="id" optionValue="authority" name="authority" />
                         </div>
                         <div class="field">
                             <label>&nbsp;</label>
