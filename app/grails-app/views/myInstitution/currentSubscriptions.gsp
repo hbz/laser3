@@ -58,7 +58,7 @@
             <!-- TMP -->
             <div class="field fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
-                <laser:select name="status" class="ui dropdown"
+                <laser:select class="ui dropdown" name="status"
                               from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
                               optionKey="id"
                               optionValue="value"
