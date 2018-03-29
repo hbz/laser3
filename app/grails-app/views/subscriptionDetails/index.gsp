@@ -184,6 +184,7 @@
 <!--                  ISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('ISSN') ?: ' - '}</strong>,
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
                    ${message(code:'default.access.label', default:'Access')}: ${ie.availabilityStatus?.getI10n('value')}<br/>
+                    ${message(code:'title.type.label')}: ${ie.tipp?.title.type.getI10n('value')}<br/>
                    ${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}<br/>
                    ${message(code:'tipp.platform', default:'Platform')}: ${ie.tipp?.platform.name ?: message(code:'default.unknown')}
                    <g:if test="${ie.availabilityStatus?.value=='Expected'}">

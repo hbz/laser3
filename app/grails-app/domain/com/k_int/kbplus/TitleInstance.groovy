@@ -195,6 +195,10 @@ class TitleInstance extends BaseDomainComponent {
     lookupOrCreate(candidate_identifiers, title, false, null)
   }
 
+  static def lookupOrCreate(candidate_identifiers, title, titletyp) {
+        lookupOrCreate(candidate_identifiers, title, false, titletyp)
+    }
+
   static def lookupOrCreate(candidate_identifiers, title, enrich, titletyp) {
     def result = null;
     def origin_uri = null

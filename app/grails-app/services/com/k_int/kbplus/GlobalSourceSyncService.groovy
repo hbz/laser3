@@ -198,15 +198,15 @@ class GlobalSourceSyncService {
 
     log.debug("Reconciling new Package!")
 
-    def scope = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_SCOPE,(newpkg?.scope)?:'Unknown');
-    def listStatus = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_LIST_STAT,(newpkg?.listStatus)?:'Unknown');
-    def breakable = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_BREAKABLE,(newpkg?.breakable)?:'Unknown');
-    def consistent = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_CONSISTENT,(newpkg?.consistent)?:'Unknown');
-    def fixed = RefdataCategory.lookupOrCreate(RefdataCategory.PKG_FIXED,(newpkg?.fixed)?:'Unknown');
-    def paymentType = RefdataCategory.lookupOrCreate('Package.PaymentType',(newpkg?.paymentType)?:'Unknown');
-    def global = RefdataCategory.lookupOrCreate('Package.Global',(newpkg?.global)?:'Unknown');
-    def isPublic = RefdataCategory.lookupOrCreate('YN','Yes');
-    def ref_pprovider = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider')
+    def scope = RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: (newpkg?.scope)?:'Unknown']);
+    def listStatus = RefdataValue.loc(RefdataCategory.PKG_LIST_STAT, [en: (newpkg?.listStatus)?:'Unknown']);
+    def breakable = RefdataValue.loc(RefdataCategory.PKG_BREAKABLE, [en: (newpkg?.breakable)?:'Unknown']);
+    def consistent = RefdataValue.loc(RefdataCategory.PKG_CONSISTENT, [en: (newpkg?.consistent)?:'Unknown']);
+    def fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed)?:'Unknown']);
+    def paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE,[en: (newpkg?.paymentType)?:'Unknown']);
+    def global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL,[en: (newpkg?.global)?:'Unknown']);
+    def isPublic = RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'])
+    def ref_pprovider = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
 
     // Firstly, make sure that there is a package for this record
     if ( grt.localOid != null ) {
@@ -270,7 +270,7 @@ class GlobalSourceSyncService {
 
         if ( newpkg.packageProvider ) {
 
-          def orgRole = RefdataCategory.lookupOrCreate('Organisational Role', 'Content Provider')
+          def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
           def provider = Org.lookupOrCreate(newpkg.packageProvider , null , null, [:], null)
 
           OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
