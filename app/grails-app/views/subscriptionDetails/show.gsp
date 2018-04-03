@@ -272,6 +272,7 @@
                         </div>
                     </div>
 
+                <g:render template="/templates/debug/orgRoles" model="[debug: subscriptionInstance.orgRelations]" />
 
                 <g:if test="${subscriptionInstance.costItems}">
 

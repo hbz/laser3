@@ -54,13 +54,17 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-
         def result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
 
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
+        if(! accessService.isOrgSubscriber(contextService.getOrg(), result.subscriptionInstance)) {
+            response.sendError(401);
+            return
+        }
+
+        //userAccessCheck(result.subscriptionInstance, result.user, 'view')
 
         def verystarttime = exportService.printStart("SubscriptionDetails")
 
@@ -97,11 +101,6 @@ class SubscriptionDetailsController {
             params.remove("transforms")
             params.remove("format")
             redirect action: 'currentTitles', params: params
-        }
-
-        if (result.subscriptionInstance == null) {
-            flash.error = "No subscription found -- is it deleted?"
-            redirect controller: 'home', action: 'index'
         }
 
     // result.institution = Org.findByShortcode(params.shortcode)
@@ -990,6 +989,12 @@ class SubscriptionDetailsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
+
+        if(! accessService.isOrgSubscriber(contextService.getOrg(), result.subscriptionInstance)) {
+            response.sendError(401);
+            return
+        }
+
         result.institution = result.subscriptionInstance.subscriber
 
         if (result.institution) {
@@ -1365,7 +1370,12 @@ class SubscriptionDetailsController {
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
 
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
+        if(! accessService.isOrgSubscriber(contextService.getOrg(), result.subscriptionInstance)) {
+            response.sendError(401);
+            return
+        }
+
+        //userAccessCheck(result.subscriptionInstance, result.user, 'view')
 
         result.institution = contextService.getOrg()
         if (!result.institution) {
@@ -1382,20 +1392,19 @@ class SubscriptionDetailsController {
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
         result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
 
-    // tasks
-    def contextOrg  = contextService.getOrg()
-    result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-    def preCon      = taskService.getPreconditions(contextOrg)
-    result << preCon
+        // tasks
+        def contextOrg  = contextService.getOrg()
+        result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
+        def preCon      = taskService.getPreconditions(contextOrg)
+        result << preCon
 
         // restrict visible for templates/links/orgLinksAsList
-        result.visibleOrgRelations = result.subscriptionInstance.orgRelations
-        def restrict = OrgRole.findWhere(
-                sub: result.subscriptionInstance,
-                org: contextService.getOrg(),
-                roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role ')
-        )
-        result.visibleOrgRelations.remove(restrict)
+        result.visibleOrgRelations = []
+        result.subscriptionInstance.orgRelations?.each { or ->
+            if (! (or.org == contextService.getOrg() && or.roleType.value == "Subscriber")) {
+                result.visibleOrgRelations << or
+            }
+        }
 
         // -- private properties
 

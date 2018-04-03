@@ -6,6 +6,7 @@ import com.k_int.kbplus.Contact
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Person
 import com.k_int.kbplus.Platform
@@ -72,6 +73,11 @@ class AccessService {
 
     def isEditable(TitleInstancePackagePlatform tipp) {
 
+    }
+
+    boolean isOrgSubscriber(Org org, Subscription sub) {
+
+        OrgRole.findByOrgAndSub(org, sub) // TODO
     }
 
     // copied from FinanceController, LicenseCompareController, MyInstitutionsController
