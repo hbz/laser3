@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.ContextService
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -2527,6 +2526,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def dashboard() {
+
         def result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {

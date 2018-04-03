@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.goai.OaiClient
+import de.laser.oai.OaiClientLaser
+
 import java.text.SimpleDateFormat
 import org.springframework.transaction.annotation.*
 
@@ -14,7 +16,7 @@ import org.springframework.transaction.annotation.*
 class GlobalSourceSyncService {
 
 
-    def dataloadService
+  def dataloadService
   public static boolean running = false;
   def genericOIDService
   def executorService
@@ -36,7 +38,7 @@ class GlobalSourceSyncService {
 
     if (newtitle.status == 'Current') {
       title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
-    } else if (newtitle.status == 'Current') {
+    } else if (newtitle.status == 'Retired') {
       title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Retired', de: 'im Ruhestand'])
     }
 
@@ -50,9 +52,9 @@ class GlobalSourceSyncService {
       newtitle.publishers.each { pub ->
 //         def publisher_identifiers = pub.identifiers
         def publisher_identifiers = []
-        def orgSector = RefdataCategory.lookupOrCreate('OrgSector', 'Publisher')
+        def orgSector = RefdataValue.loc('OrgSector',  [en: 'Publisher', de: 'Veröffentlicher']);
         def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null)
-        def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');
+        def pub_role = RefdataValue.loc('Organisational Role',  [en: 'Publisher', de: 'Veröffentlicher']);
         def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         def start_date
         def end_date
@@ -289,8 +291,17 @@ class GlobalSourceSyncService {
       println("new tipp: ${tipp}");
       println("identifiers: ${tipp.title.identifiers}");
 
+
+
       def title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name, tipp.title.titleType)
       println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
+      def origin_uri = null
+      tipp.title.identifiers.each { i ->
+        if (i.namespace.toLowerCase() == 'uri') {
+          origin_uri = i.value
+        }
+      }
+      updatedTitleafterPackageReconcile(grt, origin_uri, title_instance)
 
       def plat_instance = Platform.lookupOrCreatePlatform([name:tipp.platform]);
       def tipp_status_str = tipp.status ? tipp.status.capitalize():'Current'
@@ -498,10 +509,10 @@ class GlobalSourceSyncService {
   def testTitleCompliance = { json_record ->
     log.debug("testTitleCompliance:: ${json_record}");
 
-    def result = RefdataCategory.lookupOrCreate("YNO","No")
+    def result = RefdataValue.loc('YNO',  [en: 'No', de: 'Nein'])
 
     if ( json_record.identifiers?.size() > 0 ) {
-      result = RefdataCategory.lookupOrCreate("YNO","Yes")
+      result = RefdataValue.loc('YNO',  [en: 'Yes', de: 'Ja'])
     }
 
     result
@@ -538,10 +549,10 @@ class GlobalSourceSyncService {
     }
 
     if ( error ) {
-      result = RefdataCategory.lookupOrCreate("YNO","No")
+      result = RefdataValue.loc('YNO',  [en: 'No', de: 'Nein'])
     }
     else {
-      result = RefdataCategory.lookupOrCreate("YNO","Yes")
+      result = RefdataValue.loc('YNO',  [en: 'Yes', de: 'Ja'])
     }
 
     result
@@ -616,7 +627,7 @@ class GlobalSourceSyncService {
 
       newtip.identifiers.add([namespace:'uri',value:newtip.tippId]);
 
-      log.debug("Harmonise identifiers");
+      //log.debug("Harmonise identifiers");
       //harmoniseTitleIdentifiers(newtip);
 
       result.parsed_rec.tipps.add(newtip)
@@ -966,19 +977,127 @@ class GlobalSourceSyncService {
 
     return result
   }
-  //NICHT FERTIG
-  def updatedTitelafterPackageReconcile(grt) {
-    def sync_job = GlobalRecordSource.get(GlobalRecordInfo.get(grt.owner).source.id)
-    def oai_client = new OaiClient(host: sync_job.uri)
-    oai_client.getChangesSince(null, sync_job.fullPrefix) { rec ->
 
-      def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
+  def updatedTitleafterPackageReconcile = { grt, title_id, local_id ->
+    //rectype = 2 = Title
+    def cfg = rectypes[2]
 
-      def kbplus_compliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
+    def uri = GlobalRecordSource.get( GlobalRecordInfo.get(grt.owner.id).source.id).uri
 
+    uri = uri.replaceAll("packages", "")
+
+    println(uri)
+
+    if(title_id == null)
+    {
+      return
     }
 
-  }
+    def oai = new OaiClientLaser()
+    def titlerecord = oai.getRecordTitle(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
 
+    def titleinfo = titleConv(titlerecord.metadata, null)
+
+    println("TitleRecord:" + titleinfo)
+
+    def kbplus_compliant = testTitleCompliance(titleinfo.parsed_rec)
+
+    if (kbplus_compliant?.value == 'No') {
+      log.debug("Skip record - not KBPlus compliant");
+    } else {
+
+              def title_instance = genericOIDService.resolveOID(local_id)
+
+              if (title_instance == null) {
+                log.debug("Failed to resolve ${local_id} - Exiting");
+                return
+              }
+
+              title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+
+              if (titleinfo.status == 'Current') {
+                title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+              } else if (titleinfo.status == 'Retired') {
+                title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+              }
+
+              titleinfo.identifiers.each {
+                log.debug("Checking title has ${it.namespace}:${it.value}");
+                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
+              }
+              title_instance.save(flush: true);
+
+              if (titleinfo.publishers != null) {
+                titleinfo.publishers.each { pub ->
+        //         def publisher_identifiers = pub.identifiers
+                  def publisher_identifiers = []
+                  def orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
+                  def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null)
+                  def pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
+                  def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                  def start_date
+                  def end_date
+
+                  if (pub.startDate) {
+                    start_date = sdf.parse(pub.startDate);
+                  }
+                  if (pub.endDate) {
+                    end_date = sdf.parse(pub.endDate);
+                  }
+
+                  log.debug("Asserting ${publisher} ${title_instance} ${pub_role}");
+                  OrgRole.assertOrgTitleLink(publisher, title_instance, pub_role, (pub.startDate ? start_date : null), (pub.endDate ? end_date : null))
+                }
+              }
+
+              // Title history!!
+              titleinfo.history.each { historyEvent ->
+                log.debug("Processing title history event");
+                // See if we already have a reference
+                def fromset = []
+                def toset = []
+
+                historyEvent.from.each { he ->
+                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title)
+                  fromset.add(participant)
+                }
+
+                historyEvent.to.each { he ->
+                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title)
+                  toset.add(participant)
+                }
+
+                // Now - See if we can find a title history event for data and these particiapnts.
+                // Title History Events are IMMUTABLE - so we delete them rather than updating them.
+                def base_query = "select the from TitleHistoryEvent as the where the.eventDate = ? "
+                // Need to parse date...
+                def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                def query_params = [(((historyEvent.date != null) && (historyEvent.date.trim().length() > 0)) ? sdf.parse(historyEvent.date) : null)]
+
+                fromset.each {
+                  base_query += "and exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
+                  query_params.add(it)
+                }
+                toset.each {
+                  base_query += "and exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
+                  query_params.add(it)
+                }
+
+                def existing_title_history_event = TitleHistoryEvent.executeQuery(base_query, query_params);
+                log.debug("Result of title history event lookup : ${existing_title_history_event}");
+
+                if (existing_title_history_event.size() == 0) {
+                  log.debug("Create new history event");
+                  def he = new TitleHistoryEvent(eventDate: query_params[0]).save(flush: true)
+                  fromset.each {
+                    new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save(flush: true)
+                  }
+                  toset.each {
+                    new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save(flush: true)
+                  }
+                }
+              }
+            }
+  }
 
 }
