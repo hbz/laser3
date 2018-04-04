@@ -528,7 +528,7 @@ from Subscription as s where (
             base_qry += " order by LOWER(s.name) asc"
         }
 
-        log.debug("query: ${base_qry} && params: ${qry_params}")
+        //log.debug("query: ${base_qry} && params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);

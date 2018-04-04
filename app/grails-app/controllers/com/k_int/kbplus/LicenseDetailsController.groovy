@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.AccessService
 import de.laser.helper.DebugAnnotation
 import grails.converters.*
 import com.k_int.kbplus.auth.*;
@@ -28,21 +29,18 @@ class LicenseDetailsController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def show() {
-      log.debug("licenseDetails: ${params}");
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      // result.institution = Org.findByShortcode(params.shortcode)
-      result.license = License.get(params.id)
-      result.transforms = grailsApplication.config.licenseTransforms
+    def show() {
+        log.debug("licenseDetails: ${params}");
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-      userAccessCheck(result.license, result.user, 'view')
+      result.transforms = grailsApplication.config.licenseTransforms
 
       //used for showing/hiding the License Actions menus
       def admin_role = Role.findAllByAuthority("INST_ADM")
       result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)", [user: result.user, role: admin_role, status: [1, 3]])
-
-      result.editable = result.license.isEditableBy(result.user)
 
       def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
@@ -236,11 +234,12 @@ class LicenseDetailsController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def consortia() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.license = License.get(params.id)
-   
+    def consortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
     def hasAccess
     def isAdmin
     if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
@@ -253,8 +252,6 @@ class LicenseDetailsController {
       response.sendError(401) 
       return
     }
-
-    result.editable = result.license.isEditableBy(result.user)
 
     log.debug("consortia(${params.id}) - ${result.license}")
     def consortia = result.license?.orgLinks?.find{
@@ -304,35 +301,26 @@ class LicenseDetailsController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def links() {
-    log.debug("licenseDetails id:${params.id}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.license = License.get(params.id)
+    def links() {
+        log.debug("licenseDetails id:${params.id}");
 
-    result.editable = result.license.isEditableBy(result.user)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-    if ( ! result.license.hasPerm("view",result.user) ) {
-      response.sendError(401);
-      return
+        result
     }
-
-    result
-  }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def history() {
-    log.debug("licenseDetails::history : ${params}");
+    def history() {
+        log.debug("licenseDetails::history : ${params}");
 
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.license = License.get(params.id)
-
-    userAccessCheck(result.license,result.user,'view')
-
-    result.editable = result.license.isEditableBy(result.user)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
     result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -360,15 +348,13 @@ class LicenseDetailsController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def changes() {
-    log.debug("licenseDetails::changes : ${params}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.license = License.get(params.id)
+    def changes() {
+        log.debug("licenseDetails::changes : ${params}");
 
-    userAccessCheck(result.license,result.user,'view')
-
-    result.editable = result.license.isEditableBy(result.user)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
     result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
     result.offset = params.offset ?: 0;
@@ -377,35 +363,30 @@ class LicenseDetailsController {
 
     result.todoHistoryLinesTotal = PendingChange.executeQuery("select count(pc) from PendingChange as pc where pc.license=? order by pc.ts desc", [result.license])[0];
     result
-  }
+    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def notes() {
-    log.debug("licenseDetails id:${params.id}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.license = License.get(params.id)
+    def notes() {
+        log.debug("licenseDetails id:${params.id}");
 
-    userAccessCheck(result.license,result.user,'view')
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-    result.editable = result.license.isEditableBy(result.user)
-
-    result
-  }
+        result
+    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {
         log.debug("licenseDetails id:${params.id}")
 
-        def result = [:]
-        result.user     = User.get(springSecurityService.principal.id)
-        result.license  = License.get(params.id)
-
-        userAccessCheck(result.license,result.user,'view') // TODO
-        result.editable = result.license.isEditableBy(result.user) // TODO
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
         log.debug(result.taskInstanceList)
@@ -416,31 +397,26 @@ class LicenseDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def properties() {
-        def result = [:]
-
         log.debug("licenseDetails id: ${params.id}");
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-        def user    = User.get(springSecurityService.principal.id)
-        result.user = user
-        result.authorizedOrgs = user?.authorizedOrgs
-
-        def licenseInstance = License.get(params.id)
-        result.license      = licenseInstance
-
-        result.editable = result.license.isEditableBy(result.user)
+        result.authorizedOrgs = result.user?.authorizedOrgs
 
         // create mandatory LicensePrivateProperties if not existing
 
         def mandatories = []
-        user?.authorizedOrgs?.each{ org ->
+        result.user?.authorizedOrgs?.each{ org ->
             def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
             if (ppd) {
                 mandatories << ppd
             }
         }
         mandatories.flatten().each{ pd ->
-            if (! LicensePrivateProperty.findWhere(owner: licenseInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, licenseInstance, pd)
+            if (! LicensePrivateProperty.findWhere(owner: result.licenseInstance, type: pd)) {
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.licenseInstance, pd)
 
                 if (newProp.hasErrors()) {
                     log.error(newProp.errors)
@@ -454,18 +430,16 @@ class LicenseDetailsController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def documents() {
-    log.debug("licenseDetails id:${params.id}");
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.license = License.get(params.id)
+    def documents() {
+        log.debug("licenseDetails id:${params.id}");
 
-    userAccessCheck(result.license,result.user,'view')
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-    result.editable = result.license.isEditableBy(result.user)
-
-    result
-  }
+        result
+    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -492,6 +466,7 @@ class LicenseDetailsController {
     redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId, fragment:'docstab'
   }
 
+    @Deprecated
     def userAccessCheck(license, user, role_str) {
         if ((license == null || user == null ) || (! license?.hasPerm(role_str, user))) {
             log.debug("return 401....");
@@ -520,14 +495,14 @@ class LicenseDetailsController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def permissionInfo() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    result.license = License.get(params.id)
-    userAccessCheck(result.license,result.user,'view')
+    def permissionInfo() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-    result
-  }
+        result
+    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
@@ -594,4 +569,28 @@ class LicenseDetailsController {
       }
       redirect(action: 'show', id: license.id);
   }
+
+    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.license = License.get(params.id)
+        result.licenseInstance = License.get(params.id)
+
+        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
+            if (! result.subscriptionInstance.isVisibleBy(result.user)) {
+                log.debug( "--- NOT VISIBLE ---")
+                return null
+            }
+        }
+        result.editable = result.license.isEditableBy(result.user)
+
+        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+            if (! result.editable) {
+                log.debug( "--- NOT EDITABLE ---")
+                return null
+            }
+        }
+
+        result
+    }
 }
