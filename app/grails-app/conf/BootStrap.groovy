@@ -595,6 +595,7 @@ class BootStrap {
         RefdataCategory.loc('YNO',                  	                    [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
         RefdataCategory.loc('AddressType',          	                    [en: 'Address Type', de: 'Art der Adresse'])
         RefdataCategory.loc('Cluster Type',         	                    [en: 'Cluster Type', de: 'Cluster Type'])
+        RefdataCategory.loc('CreatorType',         	                    [en: 'Creator Type', de: 'Creator Type'])
         RefdataCategory.loc('Combo Type',           	                    [en: 'Combo Type', de: 'Combo Type'])
         RefdataCategory.loc('ConcurrentAccess',     	                    [en: 'Concurrent Access', de: 'SimUser'])
         RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'])
