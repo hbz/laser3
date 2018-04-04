@@ -5,6 +5,15 @@ r2d2 = {
 
         datepicker : {
             type: 'date',
+            onChange: function(date, text, mode) {
+                if (!text) {
+                    $(this).removeClass("la-calendar-selected");
+                } else {
+                    if( ! $(this).hasClass("la-calendar-selected") ) {
+                        $(this).addClass("la-calendar-selected")
+                    }
+                }
+            },
             firstDayOfWeek: 1,
             monthFirst: false,
             formatter: {
@@ -30,6 +39,7 @@ r2d2 = {
                     }
                 }
             }
+
         }
     },
 
@@ -196,6 +206,15 @@ r2d2 = {
         });
         $('.modal .table').floatThead('destroy');
         $('.table.ignore-floatThead').floatThead('destroy');
+
+        // FILTER SELECT FUNCTION - INPUT LOADING
+        $(".la-filter input[type=text]").each(function() {
+            $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+        });
+        //  FILTER SELECT FUNCTION - IINPUT  CHANGE
+        $(".la-filter input[type=text]").change(function() {
+            $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+        });
     }
 }
 

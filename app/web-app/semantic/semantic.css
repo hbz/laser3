@@ -20658,6 +20658,14 @@ ol.ui.horizontal.list li:before,
   text-align: right;
   margin-top: 1.2rem;
 }
+
+.la-filter-selected {
+  background: red!important;
+}
+
+.la-calendar-selected input {
+  background: blue!important;
+}
 /*!
  * # Semantic UI 2.3.0 - Grid
  * http://github.com/semantic-org/semantic-ui/

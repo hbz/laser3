@@ -1081,3 +1081,9 @@
   text-align: right;
   margin-top: 1.2rem;
 }
+.la-filter-selected {
+  background: red!important;
+}
+.la-calendar-selected input {
+  background: blue!important;
+}
