@@ -291,8 +291,6 @@ class GlobalSourceSyncService {
       println("new tipp: ${tipp}");
       println("identifiers: ${tipp.title.identifiers}");
 
-
-
       def title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name, tipp.title.titleType)
       println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
       def origin_uri = null
@@ -424,27 +422,6 @@ class GlobalSourceSyncService {
             change_doc.put("hostPlatformURL", tipp.url)
 
           }
-
-//          change_doc = [
-//                  startDate      : tipp.coverage[0].startDate,
-//                  startVolume    : tipp.coverage[0].startVolume,
-//                  startIssue     : tipp.coverage[0].startIssue,
-//                  endDate        : tipp.coverage[0].endDate,
-//                  endVolume      : tipp.coverage[0].endVolume,
-//                  endIssue       : tipp.coverage[0].endIssue,
-//                  embargo        : tipp.coverage[0].embargo,
-//                  coverageDepth  : tipp.coverage[0].coverageDepth,
-//                  coverageNote   : tipp.coverage[0].coverageNote,
-//                  status         : TippStatus,
-//                  accessStartDate: tipp.accessStart,
-//                  accessEndDate  : tipp.accessEnd,
-//                  // option:null,
-//                  // delayedOA:null,
-//                  // hybridOA:null,
-//                  // statusReason:null,
-//                  // payment:null,
-//                  hostPlatformURL: tipp.url
-//          ]
 
         }
         if (change_doc) {
@@ -982,11 +959,9 @@ class GlobalSourceSyncService {
     //rectype = 2 = Title
     def cfg = rectypes[2]
 
-    def uri = GlobalRecordSource.get( GlobalRecordInfo.get(grt.owner.id).source.id).uri
+    def uri = GlobalRecordSource.get(GlobalRecordInfo.get(grt.owner.id).source.id).uri
 
     uri = uri.replaceAll("packages", "")
-
-    println(uri)
 
     if(title_id == null)
     {
@@ -996,6 +971,10 @@ class GlobalSourceSyncService {
     def oai = new OaiClientLaser()
     def titlerecord = oai.getRecordTitle(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
 
+    if(titlerecord == null)
+    {
+      return
+    }
     def titleinfo = titleConv(titlerecord.metadata, null)
 
     println("TitleRecord:" + titleinfo)
@@ -1029,7 +1008,7 @@ class GlobalSourceSyncService {
 
               if (titleinfo.publishers != null) {
                 titleinfo.publishers.each { pub ->
-        //         def publisher_identifiers = pub.identifiers
+
                   def publisher_identifiers = []
                   def orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
                   def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null)
