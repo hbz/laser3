@@ -97,7 +97,7 @@
                     </td>
                 </g:if>
                 <g:else>
-                    <td><g:link action=" newCleanTracker" controller="globalDataSync" id="${item.id}"
+                    <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}"
                                 class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link><hr>
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui positive button">${message(code: 'globalDataSync.track_merge')}</g:link>
