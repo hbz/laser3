@@ -89,7 +89,7 @@
                     <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}"
                                 class="ui negative button"
                                 onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted', default: 'Are you sure?')}')">
-                        ${message(code: 'globalDataSync.track_new')}</g:link>
+                        ${message(code: 'globalDataSync.track_new')}</g:link><hr>
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui negative button"
                             onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted', default: 'Are you sure?')}')">
@@ -98,7 +98,7 @@
                 </g:if>
                 <g:else>
                     <td><g:link action=" newCleanTracker" controller="globalDataSync" id="${item.id}"
-                                class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link>
+                                class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link><hr>
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui positive button">${message(code: 'globalDataSync.track_merge')}</g:link>
                     </td>

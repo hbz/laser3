@@ -647,6 +647,9 @@ class BootStrap {
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])
 
+        RefdataValue.loc('CreatorType', [en: 'Author', de: 'Author'])
+        RefdataValue.loc('CreatorType', [en: 'Editor', de: 'Editor'])
+
         RefdataValue.loc('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
         RefdataValue.loc('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
         RefdataValue.loc('ConcurrentAccess',     [en: 'No limit', de: 'Ohne Begrenzung'])

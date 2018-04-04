@@ -46,7 +46,8 @@ class TitleInstance extends BaseDomainComponent {
                     ids:    IdentifierOccurrence,
                     orgs:   OrgRole,
                     historyEvents: TitleHistoryEventParticipant,
-                    prsLinks: PersonRole
+                    prsLinks: PersonRole,
+                    creators: CreatorTitle
                     ]
 
   static mapping = {
@@ -72,6 +73,7 @@ class TitleInstance extends BaseDomainComponent {
         normTitle(nullable:true, blank:false,maxSize:2048);
         sortTitle(nullable:true, blank:false,maxSize:2048);
         keyTitle(nullable:true, blank:false,maxSize:2048);
+        creators(nullable:true, blank:false);
     }
 
   String getIdentifierValue(idtype) {
