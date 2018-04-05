@@ -47,8 +47,6 @@
 
                     <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplDisableOrgs: cons_members_disabled]" />
 
-                    <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
-
                     <div class="ui field">
                         <div class="ui checkbox">
                             <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
