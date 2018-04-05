@@ -19,7 +19,7 @@
     </thead>
     <tbody>
     <g:each in="${orgList}" var="org">
-        <g:if test="${tmplDisableOrgs && (org in tmplDisableOrgs)}">
+        <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
             <tr class="disabled">
         </g:if>
         <g:else>
@@ -31,7 +31,7 @@
                 </td>
             </g:if>
             <td>
-                <g:if test="${tmplDisableOrgs && (org in tmplDisableOrgs)}">
+                <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                     <g:if test="${org.shortname}">
                         ${fieldValue(bean: org, field: "shortname")}
                     </g:if>
@@ -67,10 +67,10 @@
     <script language="JavaScript">
         $('#orgListToggler').click(function() {
             if($(this).prop('checked')) {
-                $("input[name=selectedOrgs]").prop('checked', true)
+                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
             }
             else {
-                $("input[name=selectedOrgs]").prop('checked', false)
+                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
         })
     </script>

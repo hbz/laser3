@@ -2795,6 +2795,35 @@ AND EXISTS (
         result
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def addConsortiaMembers() {
+        def result = setResultGenerics()
+
+        def fsq = filterService.getOrgQuery(params)
+        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        result.consortiaMemberIds = []
+        Combo.findAllWhere(
+                toOrg: result.institution,
+                type:    RefdataValue.findByValue('Consortium')
+        ).each { cmb ->
+            result.consortiaMemberIds << cmb.fromOrg.id
+        }
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def manageConsortia() {
+        def result = setResultGenerics()
+
+        def fsq = filterService.getOrgComboQuery(params, result.institution)
+        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        result
+    }
+
     /**
      * Display and manage PrivateProperties for this institution
      */

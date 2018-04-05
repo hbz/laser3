@@ -13,10 +13,9 @@
                 <semui:crumb class="active" text="${message(code:'subscription.details.addMembers.label', default:'Add Members')}" />
             </semui:breadcrumbs>
             <semui:controlButtons>
-                        <g:render template="actions" />
+                <g:render template="actions" />
             </semui:controlButtons>
             <h1 class="ui header"><semui:headerIcon />
-
                 <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
             </h1>
 
@@ -45,7 +44,7 @@
                                   value="${com.k_int.kbplus.RefdataValue.findByValue('Under Consideration')?.id}" />
                     </div>
 
-                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplDisableOrgs: cons_members_disabled]" />
+                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplDisableOrgIds: cons_members_disabled]" />
 
                     <div class="ui field">
                         <div class="ui checkbox">
