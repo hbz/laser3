@@ -13,15 +13,22 @@
                         <label>${message(code:'financials.newCosts.description')}</label>
                         <input type="text" value="${message(code:'financials.newCosts.description')}" />
                     </div><!-- .field -->
-                    <div class="field">
-                        <label>${message(code:'financials.budgetCode')}</label>
-                        <input type="text" class="select2 la-full-width" placeholder="${message(code:'financials.budgetCode')}" name="newBudgetCode" id="newBudgetCode" />
-                    </div><!-- .field -->
+                    <div class="two fields">
+                        <div class="field">
+                            <label>${message(code:'financials.budgetCode')}</label>
+                            <input type="text" class="select2 la-full-width" placeholder="${message(code:'financials.budgetCode')}" name="newBudgetCode" id="newBudgetCode" />
+                        </div><!-- .field -->
+
+                        <div class="field">
+                            <label>Reference/Codes</label>
+                            <input type="text" name="newReference" placeholder="New Item Reference" id="newCostItemReference" value="${params.newReference}"/>
+                        </div>
+                    </div>
                 </div>
                 <div class="field">
-                    <div class="field">
+                    <div class="field ">
                         <label>${message(code:'financials.newCosts.UID')}</label>
-                        <input type="text" value="${message(code:'financials.newCosts.UID')}" />
+                        <input type="text" readonly value="${message(code:'financials.newCosts.UID')}" />
                     </div><!-- .field -->
                     <div class="field">
                         <label>${message(code:'financials.costItemStatus')}</label>
@@ -171,19 +178,6 @@
 
         </div><!-- three fields -->
 
-
-
-
-            <div class="four wide column">
-
-            </div><!-- .column -->
-
-            <div class="eight wide column">
-                <div class="field">
-                    <label>${message(code:'default.description.label')}</label>
-                    <textarea name="newDescription" placeholder="${message(code:'default.description.label')}" id="newCostItemDescription"/></textarea>
-                </div>
-            </div><!-- .column -->
 
 
 
