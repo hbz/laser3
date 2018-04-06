@@ -16,7 +16,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
     def contextService
 
   RefdataValue status
-  RefdataValue type
+  RefdataValue type         // RefdataCatagory 'Subscription Type'
 
   String name
   String identifier

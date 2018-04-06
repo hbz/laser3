@@ -419,7 +419,7 @@ class MyInstitutionController {
                     sub: sub,
                     roleType: RefdataValue.getByValueAndCategory('Provider','Organisational Role')
             )
-            if (provider) {
+            if (provider && ! result.orgList.contains(provider.org)) {
                 result.orgList << provider.org
             }
         }
@@ -689,13 +689,17 @@ from Subscription as s where (
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
         
         def orgRole = null
+        def subType = null
         
         log.debug("found orgType ${result.orgType}")
         
-        if(result.orgType?.value == 'Consortium'){
-          orgRole = role_cons
-        }else{
-          orgRole = role_sub
+        if(result.orgType?.value == 'Consortium') {
+            orgRole = role_cons
+            subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
+        }
+        else {
+            orgRole = role_sub
+            subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
 
         if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
@@ -705,7 +709,8 @@ from Subscription as s where (
             def endDate = sdf.parse(params.valid_to)
 
 
-            def new_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
+            def new_sub = new Subscription(
+                    type: subType,
                     status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
                     name: params.newEmptySubName,
                     startDate: startDate,
@@ -740,7 +745,9 @@ from Subscription as s where (
                         log.debug("Generating seperate slaved instances for consortia members")
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
 
-                        def cons_sub = new Subscription(type: RefdataValue.findByValue("Subscription Taken"),
+                        def cons_sub = new Subscription(
+                                            // type: RefdataValue.findByValue("Subscription Taken"),
+                                          type: subType,
                                           status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
                                           name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,

@@ -139,10 +139,16 @@
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                             </dl>
                             <dl>
-
                                 <dt>${message(code:'subscription.details.type', default:'Type')}</dt>
-                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' /></dd>
-
+                                <dd>
+                                    <%-- TODO: subscribers may not edit type, but admins and yoda --%>
+                                    <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
+                                        ${subscriptionInstance.type?.getI10n('value')}
+                                    </g:if>
+                                    <g:else>
+                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' />
+                                    </g:else>
+                                </dd>
                             </dl>
                         </div>
                     </div>
