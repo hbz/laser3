@@ -20,28 +20,29 @@
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
-      <g:if test="${params.asAt}">
-          <h1 class="ui header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])} </h1>
-      </g:if>
 
-           <h1 class="ui header"><semui:headerIcon />
-               <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        <g:if test="${params.asAt}">
+            <h1 class="ui header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
+        </g:if>
+
+        <h1 class="ui header"><semui:headerIcon />
+            <semui:xEditable owner="${subscriptionInstance}" field="name" />
+
             <span class="la-forward-back">
-               <a href="#">
-                   <i class="chevron left icon"></i>
-               </a>
-               <a href="#">
-                   <i class="chevron right icon"></i>
-               </a>
+                <g:if test="${navPrevSubscription}">
+                    <g:link controller="subscriptionDetails" action="show" params="[id:navPrevSubscription.id]"><i class="chevron left icon"></i></g:link>
+                </g:if>
+                <g:else>
+                    <i class="chevron left icon disabled"></i>
+                </g:else>
+                <g:if test="${navNextSubscription}">
+                    <g:link controller="subscriptionDetails" action="show" params="[id:navNextSubscription.id]"><i class="chevron right icon"></i></g:link>
+                </g:if>
+                <g:else>
+                    <i class="chevron right icon disabled"></i>
+                </g:else>
            </span>
-
-
-
-
-
-
-
-           </h1>
+        </h1>
 
         <g:render template="nav" />
 
@@ -60,7 +61,7 @@
                         <g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel>
                     </dt>
                     <dd>
-                        <table class="ui celled la-table table">
+                        <table class="ui celled la-table table ignore-floatThead">
                             <thead>
                             <tr>
                                 <th>${message(code:'default.authority.label', default:'Authority')}</th>
@@ -97,8 +98,6 @@
     <div id="collapseableSubDetails" class="ui grid">
         <div class="twelve wide column">
 
-            <!--<h4 class="ui header">${message(code:'subscription.information.label', default:'Subscription Information')}</h4>-->
-
             <div class="la-inline-lists">
                 <div class="ui two cards">
                     <div class="ui card la-time-card">
@@ -131,8 +130,6 @@
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                             </dl>
 
-
-
                         </div>
                     </div>
                     <div class="ui card">
@@ -151,15 +148,12 @@
                     </div>
                 </div>
 
-
-
                 <div class="ui card">
                         <div class="content">
                             <dl>
                                 <dt>${message(code:'subscription.packages.label')}</dt>
                                 <dd>
                                     <g:each in="${subscriptionInstance.packages}" var="sp">
-
 
                                         <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
@@ -278,6 +272,7 @@
                         </div>
                     </div>
 
+                <g:render template="/templates/debug/orgRoles" model="[debug: subscriptionInstance.orgRelations]" />
 
                 <g:if test="${subscriptionInstance.costItems}">
 

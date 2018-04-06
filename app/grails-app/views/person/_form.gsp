@@ -32,7 +32,7 @@
         <g:message code="person.gender.label" default="Gender" />
 
     </label>
-    <laser:select id="gender" name="gender" class="ui dropdown"
+    <laser:select class="ui dropdown" id="gender" name="gender"
                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
                   optionKey="id"
                   optionValue="value"
@@ -45,7 +45,7 @@
         <g:message code="person.roleType.label" default="Person Position" />
 
     </label>
-    <laser:select id="roleType" name="roleType" class="ui dropdown"
+    <laser:select class="ui dropdown" id="roleType" name="roleType"
                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Position')}"
                   optionKey="id"
                   optionValue="value"
@@ -58,7 +58,7 @@
         <g:message code="person.contactType.label" default="Person Contact Type" />
 
     </label>
-    <laser:select id="contactType" name="contactType" class="ui dropdown"
+    <laser:select class="ui dropdown" id="contactType" name="contactType"
                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
                   optionKey="id"
                   optionValue="value"
@@ -109,7 +109,7 @@
         <g:message code="person.isPublic.label" default="IsPublic" />
         <span class="required-indicator">*</span>
     </label>
-    <laser:select id="isPublic" name="isPublic" class="ui dropdown"
+    <laser:select class="ui dropdown" id="isPublic" name="isPublic"
                   from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
                   optionKey="id"
                   optionValue="value"

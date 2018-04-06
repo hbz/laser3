@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.UserOrg
 import de.laser.ContextService
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
@@ -69,15 +70,10 @@ class MyInstitutionController {
           result.userAlerts = alertsService.getAllVisibleAlerts(result.user);
           //result.staticAlerts = alertsService.getStaticAlerts(request);
 
-            // List all pending requests...
-            result.pendingRequestsOrg = UserOrg.findAllByStatusAndOrg(0, currentOrg, [sort:'dateRequested'])
-
-
           if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
               redirect controller: 'profile', action: 'index'
           } else {
           }
-
         }
         else {
           log.error("Failed to find user in database");
@@ -163,6 +159,18 @@ class MyInstitutionController {
         result
     }
 
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def manageAffiliationRequests() {
+        def result = [:]
+        result.institution        = contextService.getOrg()
+        result.user               = User.get(springSecurityService.principal.id)
+        result.editable           = true // inherit
+        result.pendingRequestsOrg = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, contextService.getOrg(), [sort:'dateRequested'])
+
+        result
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionLicenses() {
@@ -179,12 +187,6 @@ class MyInstitutionController {
     def currentLicenses() {
         def result = setResultGenerics()
         result.transforms = grailsApplication.config.licenseTransforms
-
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
 
         result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
@@ -398,6 +400,36 @@ class MyInstitutionController {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def currentProviders() {
+        def result = setResultGenerics()
+
+        def role_sub = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
+        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+
+        def mySubs = Subscription.executeQuery( """
+            select s from Subscription as s join s.orgRelations as ogr where 
+                ( s.status.value != 'Deleted' ) and
+                ( s = ogr.sub and ogr.org = :subOrg ) and
+                ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubConsortia) )
+        """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubConsortia: role_sub_consortia])
+
+        result.orgList = []
+        mySubs.each { sub ->
+            def provider = OrgRole.findWhere(
+                    sub: sub,
+                    roleType: RefdataValue.getByValueAndCategory('Provider','Organisational Role')
+            )
+            if (provider) {
+                result.orgList << provider.org
+            }
+        }
+
+        result.test = mySubs
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
         def result = setResultGenerics()
 
@@ -447,16 +479,10 @@ class MyInstitutionController {
         }
         */
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.currentSubscriptions.no_permission', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
-
         result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-        def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        def role_sub = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
+        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
         def roleTypes = [role_sub, role_sub_consortia]
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
@@ -532,7 +558,7 @@ from Subscription as s where (
             base_qry += " order by LOWER(s.name) asc"
         }
 
-        log.debug("query: ${base_qry} && params: ${qry_params}")
+        //log.debug("query: ${base_qry} && params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
@@ -994,12 +1020,6 @@ from Subscription as s where (
         viableOrgs.add(result.institution.id)
         
         log.debug("Viable Org-IDs are: ${viableOrgs}, active Inst is: ${result.institution.id}")
-
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
 
         // Set Date Restriction
         def date_restriction = null;
@@ -2365,7 +2385,7 @@ AND EXISTS (
                 name: old_subname ?: "Unset: Generated by import",
                 startDate: sub_startDate,
                 endDate: sub_endDate,
-                instanceOf: old_subOID ?: null,
+                previousSubscription: old_subOID ?: null,
                 type: RefdataValue.findByValue('Subscription Taken'))
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
@@ -2591,8 +2611,8 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
         def result = setResultGenerics()
 
@@ -2609,8 +2629,8 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def announcements() {
         def result = setResultGenerics()
 
@@ -2772,13 +2792,13 @@ AND EXISTS (
             }
         }
         result.visiblePersons = visiblePersons
-        result.editable = result.user.affiliations?.size() > 0
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result
       }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {
         def result = setResultGenerics()
 
@@ -2799,9 +2819,68 @@ AND EXISTS (
         def query = filterService.getTaskQuery(params, sdFormat)
         result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, taskService.WITHOUT_TENANT_ONLY)
-        result.editable = true // TODO check roles !!!
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         log.debug(result.taskInstanceList)
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def addConsortiaMembers() {
+        def result = setResultGenerics()
+
+        if (params.selectedOrgs) {
+            log.debug('adding orgs to consortia')
+
+            params.list('selectedOrgs').each { soId ->
+                Map map = [
+                        toOrg: result.institution,
+                        fromOrg: Org.findById( Long.parseLong(soId)),
+                        type: RefdataValue.findByValue('Consortium')
+                ]
+                if (! Combo.findWhere(map)) {
+                    def cmb = new Combo(map)
+                    cmb.save()
+                }
+            }
+        }
+
+        def fsq = filterService.getOrgQuery(params)
+        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        result.consortiaMemberIds = []
+        Combo.findAllWhere(
+                toOrg: result.institution,
+                type:    RefdataValue.findByValue('Consortium')
+        ).each { cmb ->
+            result.consortiaMemberIds << cmb.fromOrg.id
+        }
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def manageConsortia() {
+        def result = setResultGenerics()
+
+        if (params.selectedOrgs) {
+            log.debug('remove orgs from consortia')
+
+            params.list('selectedOrgs').each { soId ->
+                def cmb = Combo.findWhere(
+                        toOrg: result.institution,
+                        fromOrg: Org.findById( Long.parseLong(soId)),
+                        type: RefdataValue.findByValue('Consortium')
+                )
+                cmb.delete()
+            }
+        }
+
+        def fsq = filterService.getOrgComboQuery(params, result.institution)
+        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
         result
     }
 

@@ -36,7 +36,7 @@
             </div>
             <div class="field">
                 <label for="adv_costItemCategory">${message(code:'financials.costItemCategory')}</label>
-                <laser:select id="adv_costItemCategory"
+                <laser:select class="ui dropdown" id="adv_costItemCategory"
                           name="adv_costItemCategory"
                           from="${costItemCategory}"
                           optionKey="id"
@@ -59,7 +59,7 @@
 
             <div class="field">
                 <label for="adv_costItemStatus">${message(code:'financials.costItemStatus')}</label>
-                <laser:select id="adv_costItemStatus"
+                <laser:select class="ui dropdown" id="adv_costItemStatus"
                           name="adv_costItemStatus"
                           from="${costItemStatus}"
                           optionKey="id"
@@ -91,7 +91,7 @@
 
             <div class="field">
                 <label>Steuer</label>
-                <laser:select id="todo-123" name="todo-123"
+                <laser:select class="ui dropdown" id="todo-123" name="todo-123"
                           from="${taxType}"
                           optionKey="id"
                           optionValue="value"

@@ -25,37 +25,32 @@ import="com.k_int.kbplus.RefdataCategory"
 
         <semui:messages data="${flash}" />
 
-        <div>
-            <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')} ..</p>
+        <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')} ..</p>
 
-            <div>
-                <g:if test="${editable}">
-                    <input class="ui button"
-                        value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
-                        data-semui="modal"
-                        href="#personFormModal" />
-                </g:if>
+        <g:if test="${editable}">
+            <input class="ui button"
+                value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                data-semui="modal"
+                href="#personFormModal" />
+        </g:if>
 
-                <g:render template="/person/formModal" model="['org': institution, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
+        <g:render template="/person/formModal" model="['org': institution, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
+
+        <g:if test="${visiblePersons}">
+            <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
+
+            <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
+
+            <% /*
+            <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
+            <div class="ui relaxed list">
+
+                <g:each in="${visiblePersons}" var="p">
+                    <g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
+                </g:each>
             </div>
-
-            <g:if test="${visiblePersons}">
-                <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
-
-                <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
-
-                <% /*
-                <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
-                <div class="ui relaxed list">
-
-                    <g:each in="${visiblePersons}" var="p">
-                        <g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
-                    </g:each>
-                </div>
-                */ %>
-            </g:if>
-
-        </div>
+            */ %>
+        </g:if>
 
   </body>
 </html>

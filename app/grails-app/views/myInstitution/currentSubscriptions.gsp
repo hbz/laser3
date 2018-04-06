@@ -16,8 +16,9 @@
         </semui:breadcrumbs>
 
         <semui:controlButtons>
-                <g:render template="actions" />
+            <g:render template="actions" />
         </semui:controlButtons>
+
         <semui:messages data="${flash}"/>
 
         <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
@@ -57,7 +58,7 @@
             <!-- TMP -->
             <div class="field fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
-                <laser:select name="status" class="ui dropdown"
+                <laser:select class="ui dropdown" name="status"
                               from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
                               optionKey="id"
                               optionValue="value"
@@ -245,16 +246,16 @@
                     <td>
                         ${s.type?.getI10n('value')}
                     </td>
-                    <g:if test="${params.orgRole == 'Subscriber'}">
-                        <td>${s.consortia?.name}</td>
-                    </g:if>
-                    <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                        <td>
-                            <g:each in="${s.allSubscribers}" var="subscriber">
-                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link>
+                    <td>
+                        <g:if test="${params.orgRole == 'Subscriber'}">
+                            ${s.getConsortia()?.name}
+                        </g:if>
+                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                            <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
+                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link> <br />
                             </g:each>
-                        </td>
-                    </g:if>
+                        </g:if>
+                    </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 

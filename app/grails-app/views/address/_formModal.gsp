@@ -58,7 +58,7 @@
                     <label for="state">
                         <g:message code="address.state.label" default="State" />
                     </label>
-                    <laser:select id="state" name="state.id"
+                    <laser:select class="ui dropdown" id="state" name="state.id"
                                   from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Federal State'))}"
                                   optionKey="id"
                                   optionValue="value"
@@ -70,7 +70,7 @@
                     <label for="country">
                         <g:message code="address.country.label" default="Country" />
                     </label>
-                    <laser:select id="country" name="country.id"
+                    <laser:select class="ui dropdown" id="country" name="country.id"
                                   from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Country'))}"
                                   optionKey="id"
                                   optionValue="value"
@@ -84,7 +84,7 @@
             <label for="type">
                 <g:message code="address.type.label" default="Type" />
             </label>
-            <laser:select id="type" name="type.id"
+            <laser:select class="ui dropdown" id="type" name="type.id"
                 from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
                 optionKey="id"
                 optionValue="value"

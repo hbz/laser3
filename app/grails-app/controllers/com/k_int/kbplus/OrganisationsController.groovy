@@ -22,18 +22,16 @@ class OrganisationsController {
     def index() {
         redirect action: 'list', params: params
     }
-    @Secured(['ROLE_USER'])
-    def config() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      def orgInstance = Org.get(params.id)
 
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
-        result.editable = true
-      }
-      else {
-        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM')
-      }
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def config() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.id)
+
+        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
         // TODO: deactived
       /*
       if(! orgInstance.customProperties){
@@ -54,7 +52,7 @@ class OrganisationsController {
       }
       */
 
-      if (!orgInstance) {
+      if (! orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
         redirect action: 'list'
         return
@@ -63,13 +61,13 @@ class OrganisationsController {
       result.orgInstance = orgInstance
       result
     }
+
     @Secured(['ROLE_USER'])
     def list() {
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         params.max = params.max ?: result.user?.getDefaultPageSize()
-
 
         def fsq = filterService.getOrgQuery(params)
 
@@ -109,17 +107,11 @@ class OrganisationsController {
 
     @Secured(['ROLE_USER'])
     def show() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      def orgInstance = Org.get(params.id)
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.id)
 
-      if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
-        result.editable = true
-      }
-      else {
-        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM')
-      }
-
+        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -195,12 +187,7 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        if (SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')) {
-            result.editable = true
-        }
-        else {
-            result.editable = accessService.checkUserOrgRole((User)result.user, orgInstance, 'INST_ADM')
-        }
+        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -234,17 +221,15 @@ class OrganisationsController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def users() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      def orgInstance = Org.get(params.id)
-	  
-      
-      if ( accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM') ) {
-        result.editable = true
-      }
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.id)
+
+        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
       def tracked_roles = ["ROLE_ADMIN":"KB+ Administrator"]
 
       if (!orgInstance) {
@@ -270,127 +255,28 @@ class OrganisationsController {
       result
     }
 
-    /* TODO remove, because redirected to show
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def info() {
-
-      def result = [:]
-
-      result.user = User.get(springSecurityService.principal.id)
-
-      def orgInstance = Org.get(params.id)
-      if (!orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-        redirect action: 'info'
-        return
-      }
-
-      result.orgInstance=orgInstance
-      
-      def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
-      def sorted_links = [:]
-      def offsets = [:]
-      
-      link_vals.each { lv ->
-        def param_offset = 0
-        
-        if(lv.id){
-          def cur_param = "rdvl_${String.valueOf(lv.id)}"
-          
-          if(params[cur_param]){ 
-            param_offset = params[cur_param]
-            result[cur_param] = param_offset
-          }
-          
-          def link_type_count = OrgRole.executeQuery("select count(*) from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id])
-          def link_type_results = OrgRole.executeQuery("select orgr from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id],[offset:param_offset,max:10])
-          
-          if(link_type_results){
-            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
-          }
-        }else{
-          log.debug("Could not read Refdata: ${lv}")
-        }
-      }
-      
-      result.sorted_links = sorted_links
-      
-      result
-    }
-    */
-
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def edit() {
         redirect controller: 'organisations', action: 'show', params: params
         return
-
-        /*
-        switch (request.method) {
-        case 'GET':
-              def orgInstance = Org.get(params.id)
-              if (!orgInstance) {
-                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-                  redirect action: 'list'
-                  return
-              }
-
-              [orgInstance: orgInstance, editable:true]
-          break
-        case 'POST':
-              def orgInstance = Org.get(params.id)
-              if (!orgInstance) {
-                  flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-                  redirect action: 'list'
-                  return
-              }
-
-              if (params.version) {
-                  def version = params.version.toLong()
-                  if (orgInstance.version > version) {
-                      orgInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                                [message(code: 'org.label', default: 'Org')] as Object[],
-                                "Another user has updated this Org while you were editing")
-                      render view: 'edit', model: [orgInstance: orgInstance]
-                      return
-                  }
-              }
-
-              if (params.fromOrg){
-                addOrgCombo(Org.get(params.fromOrg), Org.get(params.toOrg))
-                render view: 'edit', model: [orgInstance: orgInstance]
-                return
-              }
-
-              orgInstance.properties = params
-
-              if (!orgInstance.save(flush: true)) {
-                  render view: 'edit', model: [orgInstance: orgInstance, editable:true]
-                  return
-              }
-
-              flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
-              redirect action: 'show', id: orgInstance.id
-          break
-        }
-        */
     }
 
     @Secured(['ROLE_ADMIN'])
     def delete() {
         def orgInstance = Org.get(params.id)
         if (!orgInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             orgInstance.delete(flush: true)
-      flash.message = message(code: 'default.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
             redirect action: 'show', id: params.id
         }
     }
@@ -452,11 +338,12 @@ class OrganisationsController {
       redirect action: 'users', id: params.id
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addressbook() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.editable = result.user.affiliations?.size() > 0
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
       
         def orgInstance = Org.get(params.id)
         if (! orgInstance) {

@@ -1,14 +1,16 @@
 
 .ui.menu{
-  .item>img.logo {
-    width: 100px;
+  .item {
+    &.la-logo-item {
+      padding-left: 0;
+    }
+    &>img.logo {
+      width: 100px;
+    }
   }
   &.la-menu {
     .item {
       font-weight: 700;
-      &.la-logoItem {
-        /* background-color: white; */
-      }
     }
     .item:first-child {
       border-left-width: 0!important;
@@ -22,7 +24,7 @@
 }
 // Light Grey Sub Menu
 .ui.menu.la-contextBar {
-  top: 40px;
+  top: 50px;
   z-index:90;
   background-color: #d3dae3;
   .la-context-org {

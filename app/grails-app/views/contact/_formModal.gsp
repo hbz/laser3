@@ -12,7 +12,7 @@
                     <label for="contentType">
                         <g:message code="contact.contentType.label" default="ContentType" />
                     </label>
-                    <laser:select id="contentType" name="contentType.id"
+                    <laser:select class="ui dropdown" id="contentType" name="contentType.id"
                         from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactContentType')}"
                         optionKey="id"
                         optionValue="value"
@@ -24,7 +24,7 @@
                     <label for="type">
                         <g:message code="contact.type.label" default="Type" />
                     </label>
-                    <laser:select id="type" name="type.id"
+                    <laser:select class="ui dropdown" id="type" name="type.id"
                                   from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
                                   optionKey="id"
                                   optionValue="value"

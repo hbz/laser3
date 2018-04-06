@@ -153,20 +153,21 @@ class ESSearchService{
           sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" )) ")
 
           params[mapping.key].each { p ->
-                 if(p == params[mapping.key].first())
-                 {
-                   sw.write(" OR ( ")
-                 }
-                sw.write(" ( ")
-                sw.write(mapping.value)
-                sw.write(":")
-                sw.write("\"${p}\"")
-                sw.write(" ) ")
-                if(p == params[mapping.key].last()) {
-                  sw.write(" ) ")
-                }else{
-                  sw.write(" OR ")
-                }
+            if(p == params[mapping.key].first())
+            {
+              sw.write(" OR ( ")
+            }
+            sw.write(" ( ")
+            sw.write(mapping.value)
+            sw.write(":")
+            sw.write("\"${p}\"")
+            sw.write(" ) ")
+            if(p == params[mapping.key].last()) {
+              sw.write(" ) ")
+            }else{
+              sw.write(" OR ")
+            }
+
           }
           sw.write(" ) ")
         }

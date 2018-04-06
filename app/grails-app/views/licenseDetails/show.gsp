@@ -36,7 +36,7 @@
                         <g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel>
                     </dt>
                     <dd>
-                        <table class="ui celled la-table la-table-small table">
+                        <table class="ui celled la-table la-table-small table ignore-floatThead">
                             <thead>
                             <tr>
                                 <th>${message(code:'default.authority.label', default:'Authority')}</th>
@@ -255,6 +255,9 @@
 
                         </div>
                     </div>
+
+                    <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
+
                     <div class="ui card la-dl-no-table">
                         <div class="content">
                             <h5 class="ui header">${message(code:'license.properties')}</h5>

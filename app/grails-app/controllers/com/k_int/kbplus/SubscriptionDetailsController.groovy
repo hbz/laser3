@@ -1,7 +1,9 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.AccessService
 import de.laser.helper.DebugAnnotation
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
 // 2.0
@@ -54,13 +56,10 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-
-        def result = [:]
-
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         def verystarttime = exportService.printStart("SubscriptionDetails")
 
@@ -99,20 +98,11 @@ class SubscriptionDetailsController {
             redirect action: 'currentTitles', params: params
         }
 
-        if (result.subscriptionInstance == null) {
-            flash.error = "No subscription found -- is it deleted?"
-            redirect controller: 'home', action: 'index'
-        }
-
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.institution = result.subscriptionInstance.subscriber
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
       result.institutional_usage_identifier =
               OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
     }
-
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
         if (params.mode == "advanced") {
             params.asAt = null
@@ -515,7 +505,6 @@ class SubscriptionDetailsController {
 
         userAccessCheck(subscriptionInstance, user, 'edit')
 
-
         log.debug("subscriptionBatchUpdate ${params}");
 
         params.each { p ->
@@ -585,18 +574,14 @@ class SubscriptionDetailsController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addEntitlements() {
         log.debug("addEntitlements ..")
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
 
-        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
-
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize;
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
         def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
         def ie_deleted = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
@@ -665,10 +650,10 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         if (params.showDeleted == 'Y') {
             result.subscriptionChildren = Subscription.findAllByInstanceOf(result.subscriptionInstance)
@@ -679,8 +664,6 @@ class SubscriptionDetailsController {
                     [result.subscriptionInstance]
             )
         }
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
         result
     }
 
@@ -689,13 +672,11 @@ class SubscriptionDetailsController {
     def addMembers() {
         log.debug("addMembers ..")
 
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
-
-        result.institution = result.subscriptionInstance.subscriber
         if (result.institution?.orgType?.value == 'Consortium') {
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
@@ -704,12 +685,11 @@ class SubscriptionDetailsController {
                 if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                         [result.subscriptionInstance, it.id])
                 ) {
-                    result.cons_members_disabled << it
+                    result.cons_members_disabled << it.id
                 }
             }
         }
 
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
         result
     }
 
@@ -718,13 +698,11 @@ class SubscriptionDetailsController {
     def processAddMembers() {
         log.debug(params)
 
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
-
-        result.institution = result.subscriptionInstance.subscriber
 
         def orgType   = RefdataValue.get(params.asOrgType)
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
@@ -784,16 +762,13 @@ class SubscriptionDetailsController {
     def deleteMember() {
         log.debug(params)
 
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.getSubscriber()
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         def delSubscription = Subscription.get(params.basesubscription)
         def delInstitution = delSubscription.getSubscriber()
-
-        userAccessCheck(delSubscription, result.user, 'edit')
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
         def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
 
@@ -826,21 +801,17 @@ class SubscriptionDetailsController {
 
     private def previousAndExpected(params, screen) {
         log.debug("previousAndExpected ${params}");
-        def result = [:]
 
-        result.user = User.get(springSecurityService.principal.id)
-        def subscriptionInstance = Subscription.get(params.id)
-        if (!subscriptionInstance) {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        if (! result.subscriptionInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label', default: 'Subscription'), params.id])
             redirect action: 'list'
             return
         }
-        result.subscriptionInstance = subscriptionInstance
-        result.institution = result.subscriptionInstance.subscriber
-
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
-
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
         result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize
         params.max = result.max
@@ -848,7 +819,7 @@ class SubscriptionDetailsController {
 
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
-        def qry_params = [subscriptionInstance]
+        def qry_params = [result.subscriptionInstance]
         def date_filter = new Date();
 
         def base_qry = "from IssueEntitlement as ie where ie.subscription = ? "
@@ -882,7 +853,6 @@ class SubscriptionDetailsController {
         result.institution = result.subscriptionInstance?.subscriber
 
         userAccessCheck(result.subscriptionInstance, result.user, 'edit')
-
 
         if (result.subscriptionInstance) {
             params.each { p ->
@@ -944,20 +914,14 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def notes() {
-
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
-
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
         result
     }
 
@@ -965,40 +929,28 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def documents() {
-
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
-
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
-
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
         result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {
-
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance)
 
         log.debug(result.taskInstanceList)
@@ -1008,19 +960,14 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewals() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
-
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
         result
     }
 
@@ -1046,19 +993,10 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def permissionInfo() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
-
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
-
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
-
-        // if ( ! result.subscriptionInstance.hasPerm("view",result.user) ) {
-        //   render status: 401
-        //   return
-        // }
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         result
     }
@@ -1084,10 +1022,10 @@ class SubscriptionDetailsController {
             shopping_basket.addIfNotPresent(oid)
         }
 
-
         redirect controller: 'myInstitution', action: 'renewalsSearch'
     }
 
+    @Deprecated
     private def userAccessCheck(sub, user, role_str) {
         if ((sub == null || user == null) || (!sub.hasPerm(role_str, user))) {
             response.sendError(401);
@@ -1142,13 +1080,11 @@ class SubscriptionDetailsController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def linkPackage() {
         log.debug("Link package, params: ${params}");
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
 
-        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
-
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         if (params.addType && (params.addType != '')) {
             def pkg_to_link = Package.get(params.addId)
@@ -1174,8 +1110,6 @@ class SubscriptionDetailsController {
                 redirect action: 'addEntitlements', id: params.id
             }
         }
-
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
 
         if (result.subscriptionInstance.packages) {
             result.pkgs = []
@@ -1237,15 +1171,10 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def history() {
-        log.debug("subscriptionDetails::history ${params}");
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscription = Subscription.get(params.id)
-        result.institution = result.subscription.subscriber
-
-        userAccessCheck(result.subscription, result.user, 'view')
-
-        result.editable = result.subscription.isEditableBy(result.user)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         result.max = params.max ?: result.user.defaultPageSize;
         result.offset = params.offset ?: 0;
@@ -1260,16 +1189,10 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        log.debug("subscriptionDetails::changes ${params}");
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscription = Subscription.get(params.id)
-
-        result.institution = result.subscription.subscriber
-
-        userAccessCheck(result.subscription, result.user, 'view')
-
-        result.editable = result.subscription.isEditableBy(result.user)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         result.max = params.max ?: result.user.defaultPageSize;
         result.offset = params.offset ?: 0;
@@ -1287,26 +1210,16 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def costPerUse() {
-        def result = [:]
-
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscription = Subscription.get(params.id)
-        result.subscriptionInstance = Subscription.get(params.id) // TODO: for generic template _breadcumb
-
-    // result.institution = Org.findByShortcode(params.shortcode)
-    result.institution = result.subscription.subscriber
-    if ( result.institution ) {
-      result.subscriber_shortcode = result.institution.shortcode
-      result.institutional_usage_identifier =
-              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
-    }
-
-        if (!result.subscription.hasPerm("view", result.user)) {
-            response.sendError(401);
-            return
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
         }
 
-        result.editable = result.subscription.isEditableBy(result.user)
+        if ( result.institution ) {
+          result.subscriber_shortcode = result.institution.shortcode
+          result.institutional_usage_identifier =
+                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+        }
 
         // Get a unique list of invoices
         // select inv, sum(cost) from costItem as ci where ci.sub = x
@@ -1319,7 +1232,6 @@ class SubscriptionDetailsController {
             def cost_row = [invoice: it[0], total: it[2]]
 
             cost_row.total_cost_for_sub = it[2];
-
 
             if (it && (it[3]?.startDate) && (it[3]?.endDate)) {
 
@@ -1361,38 +1273,36 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-
-        userAccessCheck(result.subscriptionInstance, result.user, 'view')
-
-        result.institution = contextService.getOrg()
-        if (!result.institution) {
-            result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
         }
+
+        //if (!result.institution) {
+        //    result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
+        //}
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
             result.institutional_usage_identifier =
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
         }
 
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
 
-    // tasks
-    def contextOrg  = contextService.getOrg()
-    result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-    def preCon      = taskService.getPreconditions(contextOrg)
-    result << preCon
+        // tasks
+        def contextOrg  = contextService.getOrg()
+        result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
+        def preCon      = taskService.getPreconditions(contextOrg)
+        result << preCon
 
         // restrict visible for templates/links/orgLinksAsList
-        result.visibleOrgRelations = result.subscriptionInstance.orgRelations
-        def restrict = OrgRole.findWhere(
-                sub: result.subscriptionInstance,
-                org: contextService.getOrg(),
-                roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role ')
-        )
-        result.visibleOrgRelations.remove(restrict)
+        result.visibleOrgRelations = []
+        result.subscriptionInstance.orgRelations?.each { or ->
+            if (! (or.org == contextService.getOrg() && or.roleType.value == "Subscriber")) {
+                result.visibleOrgRelations << or
+            }
+        }
 
         // -- private properties
 
@@ -1452,6 +1362,31 @@ class SubscriptionDetailsController {
                   }
               }
           }
+
+        result
+    }
+
+    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
+        def result                  = [:]
+        result.user                 = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.subscription         = Subscription.get(params.id)
+        result.institution          = result.subscription.subscriber
+
+        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
+            if (! result.subscriptionInstance.isVisibleBy(result.user)) {
+                log.debug( "--- NOT VISIBLE ---")
+                return null
+            }
+        }
+        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+
+        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+            if (! result.editable) {
+                log.debug( "--- NOT EDITABLE ---")
+                return null
+            }
+        }
 
         result
     }

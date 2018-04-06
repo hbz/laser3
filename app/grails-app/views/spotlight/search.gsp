@@ -6,49 +6,49 @@
             result << [
                 "title": "${hit.getSource().alias}",
                 "url":   g.createLink(controller:"${hit.getSource().controller}", action:"${hit.getSource().action}"),
-                "category": "Action"
+                "category": "${message(code: 'spotlight.action')}"
             ]
         }
         else if (hit.getSource().rectype == 'License') {
             result << [
                 "title": "${hit.getSource().name}",
                 "url":   g.createLink(controller:"licenseDetails", action:"show", id:"${hit.getSource().dbId}"),
-                "category": "License"
+                "category": "${message(code: 'spotlight.license')}"
             ]
         }
         else if (hit.getSource().rectype == 'Organisation') {
             result << [
                 "title": "${hit.getSource().name}",
                 "url":   g.createLink(controller:"organisations", action:"show", id="${hit.getSource().dbId}"),
-                "category": "Organisation"
+                "category": "${message(code: 'spotlight.organisation')}"
             ]
         }
         else if (hit.getSource().rectype == 'Package') {
             result << [
                 "title": "${hit.getSource().name}",
                 "url":   g.createLink(controller:"packageDetails", action:"show", id:"${hit.getSource().dbId}"),
-                "category": "Package"
+                "category": "${message(code: 'spotlight.package')}"
             ]
         }
         else if (hit.getSource().rectype == 'Platform') {
             result << [
                 "title": "${hit.getSource().name}",
                 "url":   g.createLink(controller:"platform", action:"show", id:"${hit.getSource().dbId}"),
-                "category": "Platform"
+                "category": "${message(code: 'spotlight.platform')}"
             ]
         }
         else if (hit.getSource().rectype == 'Subscription') {
             result << [
                 "title": "${hit.getSource().name}",
                 "url":   g.createLink(controller:"subscriptionDetails", action:"show", id:"${hit.getSource().dbId}"),
-                "category": "Subscription"
+                "category": "${message(code: 'spotlight.subscription')}"
             ]
         }
         else if (hit.getSource().rectype == 'TitleInstance') {
             result << [
                 "title": "${hit.getSource().title}",
                 "url":   g.createLink(controller:"titleDetails", action:"show", id:"${hit.getSource().dbId}"),
-                "category": "Title"
+                "category": "${message(code: 'spotlight.title')}"
             ]
         }
     }

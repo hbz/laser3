@@ -9,12 +9,12 @@
 
       <semui:breadcrumbs>
           <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-          <semui:crumb text="Manage Affiliation Requests" class="active"/>
+          <semui:crumb message="menu.institutions.affiliation_requests" class="active"/>
       </semui:breadcrumbs>
 
       <semui:messages data="${flash}" />
 
-        <h2 class="ui header">Manage Pending Membership Requests</h2>
+        <h2 class="ui header">${message(code: "menu.institutions.affiliation_requests")}</h2>
 
         <table class="ui celled la-table table">
             <thead>

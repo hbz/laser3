@@ -1,4 +1,21 @@
 
+0.4.3
+
+- added rudimentary consortia member management
+- added view for current subscription providers
+- bugfix: modal dialog datepickers were broken 
+- bugfix: adding subscriber to subscription was broken
+- bugfix: current subscription list shows no subscriber info
+
+0.4.2
+
+- added prev/next subscription navigation
+- improved spotlight search
+- added affiliation management for inst admins
+- added security access service
+- secured myInstitution controller
+- reworked landing page and logo
+
 0.4.1
 
 - reworked finance views

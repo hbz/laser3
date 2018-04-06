@@ -29,14 +29,6 @@
 
   <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
 
-    <!--<semui:subNav actionName="${actionName}">
-        <semui:subNavItem controller="myInstitution" action="currentLicenses" message="license.current" />
-        <semui:subNavItem controller="myInstitution" action="addLicense" message="license.copy" />
-        <g:if test="${is_inst_admin}">
-            <semui:subNavItem controller="myInstitution" action="cleanLicense" message="license.add.blank" />
-        </g:if>
-    </semui:subNav>-->
-
     <semui:filter class="license-searches">
         <form class="ui form">
             <div class="fields">
@@ -102,21 +94,23 @@
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
-                    <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon positive button">
-                        <i class="copy icon"></i></g:link>
-                    <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
+                    <g:if test="${editable}">
+                        <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon positive button">
+                            <i class="copy icon"></i>
+                        </g:link>
+                        <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
                             params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
-                        <i class="trash alternate icon"></i></g:link>
+                            <i class="trash alternate icon"></i>
+                        </g:link>
+                    </g:if>
                   </td>
                 </tr>
               </g:each>
             </tbody>
           </table>
         </div>
-       
 
           <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
-
 
     <r:script type="text/javascript">
 

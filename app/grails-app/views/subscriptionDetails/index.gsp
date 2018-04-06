@@ -108,9 +108,8 @@
               <g:hiddenField name="offset" value="${params.offset}"/>
               <g:hiddenField name="max" value="${params.max}"/>
 
-          <table  class="ui sortable celled la-table table">
+          <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
             <thead>
-
                 <tr>
                   <th rowspan="2"></th>
                   <th rowspan="2">#</th>
@@ -121,48 +120,47 @@
                   <th rowspan="2">${message(code:'default.actions.label', default:'Actions')}</th>
                 </tr>
 
-            <tr>
-              <th>${message(code:'subscription.details.access_dates', default:'Access Dates')}</th>
-              <g:sortableColumn params="${params}" property="endDate" title="${message(code:'subscription.details.endDate', default:'Latest Date')}" />
-              <th> ${message(code:'subscription.details.core_medium', default:'Core Medium')} </th>
-            </tr>
+                <tr>
+                  <th>${message(code:'subscription.details.access_dates', default:'Access Dates')}</th>
+                  <g:sortableColumn params="${params}" property="endDate" title="${message(code:'subscription.details.endDate', default:'Latest Date')}" />
+                  <th> ${message(code:'subscription.details.core_medium', default:'Core Medium')} </th>
+                </tr>
 
-            <tr class="no-background">  
-              <g:if test="${editable}">
-              
+                <tr>
+                    <g:if test="${editable}">
 
-              <th style="vertical-align:middle;">
-                <input type="checkbox" name="chkall" onClick="javascript:selectAll();"/>
-              </th>
+                      <th style="vertical-align:middle;">
+                        <input type="checkbox" name="chkall" onClick="javascript:selectAll();"/>
+                      </th>
 
-              <th colspan="2">
-                <g:set var="selected_label" value="${message(code:'default.selected.label')}" />
-                
-                  <select id="bulkOperationSelect" name="bulkOperation">
-                    <option value="edit">${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</option>
-                    <option value="remove">${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</option>
-                  </select>
+                      <th colspan="2">
+                        <g:set var="selected_label" value="${message(code:'default.selected.label')}" />
 
-                  <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="ui button"/>
-              </th>
+                          <select id="bulkOperationSelect" name="bulkOperation">
+                            <option value="edit">${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</option>
+                            <option value="remove">${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</option>
+                          </select>
 
-              <th>
-                  <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="IEMedium"/>
-              </th>
+                          <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="ui button"/>
+                      </th>
 
-              <th> <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>  <br/>
-                   <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
-              </th>
-              <th>
-                <g:simpleHiddenRefdata id="bulk_coreStatus" name="bulk_coreStatus" refdataCategory="CoreStatus"/> <br/>
-              </th>
-              </g:if>
-               <g:else>
-               <th colspan="7">  </th>
-              </g:else>
-              <th></th>
-            </tr>
-         </thead>
+                      <th>
+                          <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="IEMedium"/>
+                      </th>
+
+                      <th> <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>  <br/>
+                           <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
+                      </th>
+                      <th>
+                        <g:simpleHiddenRefdata id="bulk_coreStatus" name="bulk_coreStatus" refdataCategory="CoreStatus"/> <br/>
+                      </th>
+                    </g:if>
+                    <g:else>
+                        <th colspan="7">  </th>
+                    </g:else>
+                    <th></th>
+                </tr>
+            </thead>
          <tbody>
 
           <g:if test="${entitlements}">

@@ -174,18 +174,13 @@ class SemanticUiTagLib {
 
     def meta = { attrs, body ->
 
-        //out << '<div class="ui styled fluid accordion">'
-        //out <<   '<div class="title">'
-        //out <<     '<i class="dropdown icon"></i> Identifikatoren anzeigen'
-        //out <<   '</div>'
-        //out <<   '<div class="content">'
         out << '<aside class="ui segment metaboxContent accordion">'
-        out << '<div class="title"> <i class="dropdown icon la-dropdown-accordion"></i>Identifikatoren anzeigen</div>'
-        out <<  '<div class="content">'
+        out <<   '<div class="title"> <i class="dropdown icon la-dropdown-accordion"></i>Identifikatoren anzeigen</div>'
+        out <<   '<div class="content">'
         out <<      body()
-        out << '</div>'
+        out <<   '</div>'
         out << '</aside>'
-        //out << '</div>'
+        out << '<div class="metaboxContent-spacer"></div>'
     }
 
     //<semui:filter> CONTENT <semui:filter>

@@ -41,7 +41,7 @@
                     <label for="gender">
                         <g:message code="person.gender.label" default="Gender" />
                     </label>
-                    <laser:select id="gender" name="gender"
+                    <laser:select class="ui dropdown" id="gender" name="gender"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
                                   optionKey="id"
                                   optionValue="value"
@@ -59,7 +59,7 @@
                         <g:message code="person.roleType.label" default="Person Position" />
 
                     </label>
-                    <laser:select id="roleType" name="roleType"
+                    <laser:select class="ui dropdown" id="roleType" name="roleType"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Position')}"
                                   optionKey="id"
                                   optionValue="value"
@@ -72,7 +72,7 @@
                         <g:message code="person.contactType.label" default="Person Contact Type" />
 
                     </label>
-                    <laser:select id="contactType" name="contactType"
+                    <laser:select class="ui dropdown" id="contactType" name="contactType"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
                                   optionKey="id"
                                   optionValue="value"
@@ -122,7 +122,7 @@
                         <div class="field">
                             <div class="two fields">
                                 <div class="field wide ten">
-                                    <laser:select class="values"
+                                    <laser:select class="ui dropdown values"
                                                   name="ignore-functionType-selector"
                                                   from="${PersonRole.getAllRefdataValues('Person Function')}"
                                                   optionKey="id"
@@ -170,7 +170,7 @@
                         <div class="field">
                             <div class="two fields">
                                 <div class="field wide ten">
-                                    <laser:select class="values"
+                                    <laser:select class="ui dropdown values"
                                                   name="ignore-responsibilityType-selector"
                                                   from="${PersonRole.getAllRefdataValues('Person Responsibility')}"
                                                   optionKey="id"
