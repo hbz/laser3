@@ -42,7 +42,7 @@
           </table>
           </dd>
         </dl>
-          <input type="submit" class="ui button" onclick="toggleAlert()"/>
+          <input type="submit" class="ui button" onclick="toggleAlert()" value="${message(code: "globalDataSync.startTrackButton")}">
       </div>
 </g:form>
 
