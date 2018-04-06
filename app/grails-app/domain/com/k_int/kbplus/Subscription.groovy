@@ -10,8 +10,10 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
-  @Transient
-  def grailsApplication
+    @Transient
+    def grailsApplication
+    @Transient
+    def contextService
 
   RefdataValue status
   RefdataValue type
@@ -164,22 +166,67 @@ class Subscription extends BaseDomainComponent implements Permissions {
         result
     }
 
+    def getDerivedSubscribers() {
+        def result = []
+        def subscr = RefdataValue.findByValue('Subscriber')
+
+        Subscription.findAllByInstanceOf(this).each { s ->
+            def ors = OrgRole.findAllWhere( roleType: subscr, sub: s )
+            ors.each { or ->
+                result << or.org
+            }
+        }
+        result
+    }
+
     def isEditableBy(user) {
-        hasPerm("edit", user)
+        hasPerm('edit', user)
+    }
+
+    def isVisibleBy(user) {
+        hasPerm('view', user)
     }
 
     def hasPerm(perm, user) {
         if (perm == 'view' && this.isPublic?.value == 'Yes') {
             return true
         }
+        def adm = Role.findByAuthority('ROLE_ADMIN')
+        def yda = Role.findByAuthority('ROLE_YODA')
 
-        // If user is a member of admin role, they can do anything.
-        def admin_role = Role.findByAuthority('ROLE_ADMIN')
-        if (admin_role && user.getAuthorities().contains(admin_role)) {
+        if (user.getAuthorities().contains(adm) || user.getAuthorities().contains(yda)) {
             return true
         }
 
-        return checkPermissions(perm, user)
+        return checkPermissionsNew(perm, user)
+    }
+
+    def checkPermissionsNew(perm, user) {
+
+        def principles = user.listPrincipalsGrantingPermission(perm) // UserOrgs with perm
+
+        log.debug("The target list of principles : ${principles}")
+
+        Set object_orgs = new HashSet()
+
+        OrgRole.findAllBySubAndOrg(this, contextService.getOrg()).each { or ->
+            def perm_exists = false
+            or.roleType?.sharedPermissions.each { sp ->
+                if (sp.perm.code == perm)
+                    perm_exists = true
+            }
+            if (perm_exists) {
+                log.debug("Looks like org ${or.org} has perm ${perm} shared with it .. so add to list")
+                object_orgs.add("${or.org.id}:${perm}")
+            }
+        }
+
+        log.debug("After analysis, the following relevant org_permissions were located ${object_orgs}, user has the following orgs for that perm ${principles}")
+
+        def intersection = principles.retainAll(object_orgs)
+        log.debug("intersection is ${principles}")
+
+        return (principles.size() > 0)
     }
 
   def checkPermissions(perm, user) {
@@ -331,7 +378,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
     if(params.accessibleToUser){
       for(int i=0;i<results.size();i++){
-        if(! results.get(i).checkPermissions("view",User.get(params.accessibleToUser))){
+        if(! results.get(i).checkPermissionsNew("view",User.get(params.accessibleToUser))){
           results.remove(i)
         }
       }

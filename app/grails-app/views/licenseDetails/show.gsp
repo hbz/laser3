@@ -255,6 +255,9 @@
 
                         </div>
                     </div>
+
+                    <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
+
                     <div class="ui card la-dl-no-table">
                         <div class="content">
                             <h5 class="ui header">${message(code:'license.properties')}</h5>
