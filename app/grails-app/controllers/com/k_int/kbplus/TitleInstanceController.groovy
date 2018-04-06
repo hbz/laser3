@@ -42,7 +42,8 @@ class TitleInstanceController {
 		redirect controller: 'titleDetails', action: 'create', params: params
 		return // ----- deprecated
 
-		switch (request.method) {
+		// TODO: First change TitleIstance Concept by Moe
+		/*switch (request.method) {
 		case 'GET':
         	[titleInstanceInstance: new TitleInstance(params)]
 			break
@@ -56,7 +57,7 @@ class TitleInstanceController {
 			flash.message = message(code: 'default.created.message', args: [message(code: 'titleInstance.label', default: 'TitleInstance'), titleInstanceInstance.id])
 	        redirect action: 'show', id: titleInstanceInstance.id
 			break
-		}
+		}*/
     }
 
     @Secured(['ROLE_USER'])

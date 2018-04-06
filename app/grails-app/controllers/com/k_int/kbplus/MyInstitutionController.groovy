@@ -2547,6 +2547,7 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def dashboard() {
+
         def result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {

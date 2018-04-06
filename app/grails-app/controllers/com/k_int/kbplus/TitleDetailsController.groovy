@@ -2,7 +2,8 @@ package com.k_int.kbplus
 
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
+import jdk.nashorn.internal.scripts.JO;
 import org.apache.log4j.*
 import java.text.SimpleDateFormat
 import com.k_int.kbplus.*;
@@ -118,14 +119,19 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_ADMIN'])
+  @Secured(['ROLE_DATAMANAGER'])
   def createTitle() {
     log.debug("Create new title for ${params.title}");
-    def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString())
+    //def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString()
+    def ti_status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+    def new_title =  ((params.typ=='Ebook') ? new BookInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
+              (params.typ=='Database' ? new DatabaseInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) : new JournalInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
 
     if ( new_title.save(flush:true) ) {
-      log.debug("New title id is ${new_title.id}");
-      redirect ( action:'edit', id:new_title.id);
+        new_title.impId = new_title.globalUID
+        new_title.save(flush:true)
+        log.debug("New title id is ${new_title.id}");
+        redirect ( action:'edit', id:new_title.id);
     }
     else {
       log.error("Problem creating title: ${new_title.errors}");

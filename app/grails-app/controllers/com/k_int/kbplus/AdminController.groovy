@@ -534,7 +534,7 @@ class AdminController {
         redirect(action:'titleMerge',params:[titleIdToDeprecate:params.titleIdToDeprecate, correctTitleId:params.correctTitleId])
       }
 
-      result.title_to_deprecate.status = RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Deleted")
+      result.title_to_deprecate.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
       result.title_to_deprecate.save(flush:true);
     }
     result

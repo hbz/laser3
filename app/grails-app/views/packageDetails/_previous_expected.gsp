@@ -75,6 +75,7 @@
                    <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
+                    <span>${message(code:'title.type.label')}: ${t.tile.type.getI10n('value')}</span>
                    <g:if test="${params.action == 'previous'}">
                     <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>

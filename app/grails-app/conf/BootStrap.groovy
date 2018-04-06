@@ -612,6 +612,7 @@ class BootStrap {
         RefdataCategory.loc('YNO',                  	                    [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
         RefdataCategory.loc('AddressType',          	                    [en: 'Address Type', de: 'Art der Adresse'])
         RefdataCategory.loc('Cluster Type',         	                    [en: 'Cluster Type', de: 'Cluster Type'])
+        RefdataCategory.loc('CreatorType',         	                    [en: 'Creator Type', de: 'Creator Type'])
         RefdataCategory.loc('Combo Type',           	                    [en: 'Combo Type', de: 'Combo Type'])
         RefdataCategory.loc('ConcurrentAccess',     	                    [en: 'Concurrent Access', de: 'SimUser'])
         RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'])
@@ -663,6 +664,9 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])
+
+        RefdataValue.loc('CreatorType', [en: 'Author', de: 'Author'])
+        RefdataValue.loc('CreatorType', [en: 'Editor', de: 'Editor'])
 
         RefdataValue.loc('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
         RefdataValue.loc('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
@@ -1060,6 +1064,13 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'In Progress', de:'In Bearbeitung'])
         RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Unknown', de: 'Unbekannt'])
+
+        RefdataCategory.loc(RefdataCategory.TI_TYPE,
+                [en: RefdataCategory.TI_TYPE, de: RefdataCategory.TI_TYPE])
+
+        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal'])
+        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])
+        RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de:'Database'])
 
         RefdataCategory.loc('TitleInstancePackagePlatform.DelayedOA',
                 [en: 'TitleInstancePackagePlatform.DelayedOA', de: 'TitleInstancePackagePlatform.DelayedOA'])
