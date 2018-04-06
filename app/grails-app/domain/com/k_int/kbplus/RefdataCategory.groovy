@@ -28,6 +28,12 @@ class RefdataCategory extends I10nTranslatableAbstract {
     public static final LIC_TYPE = 'License Type'
     @Transient
     public static final TIPP_STATUS = 'TIPP Status'
+    @Transient
+    public static final TI_TYPE = 'Title Type'
+    @Transient
+    public static final PKG_PAYMENTTYPE = 'Package Payment Type'
+    @Transient
+    public static final PKG_GLOBAL = 'Package Global'
 
     String desc
 
