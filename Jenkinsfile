@@ -53,6 +53,7 @@ pipeline {
             success {
                 echo 'I succeeeded!'
                 script{
+                        env.changeLog = "No Changes"
                       if(currentBuild.changeSets){
                         env.changeLog = "Change Log:\n\n\n"
                         echo 'Change Log'
