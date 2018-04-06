@@ -65,9 +65,6 @@ class GlobalDataSyncController {
       ins.close()
       result.tippcount.add(rec_info.tipps.size())
     }
-
-
-
     result
   }
 
@@ -103,6 +100,11 @@ class GlobalDataSyncController {
   @Secured(['ROLE_DATAMANAGER'])
   def buildMergeTracker() {
     log.debug("params:"+params)
+    if(!params.localPkg)
+    {
+      flash.error = message(code: 'globalDataSync.noselectedPackage')
+      redirect(action:'selectLocalPackage', params:[id:params.id])
+    }
     def result = [:]
     result.type='existing'
     result.item = GlobalRecordInfo.get(params.id)

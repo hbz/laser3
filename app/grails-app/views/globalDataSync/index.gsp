@@ -41,7 +41,7 @@
     <g:form action="index" method="get" class="ui form">
         <div class="fields">
             <div class="field">
-                <label>${message(code: 'package.type.label')}</label>
+                <label>${message(code: 'package.type.change')}</label>
             </div>
 
             <div class="field">
@@ -61,9 +61,8 @@
         <thead>
         <tr>
             <g:sortableColumn property="identifier" title="${message(code: 'package.identifier.label')}"/>
-            <g:sortableColumn property="name" title="${message(code: 'package.name.label')}"/>
-            <g:sortableColumn property="desc" title="${message(code: 'package.description.label')}"/>
-            %{--<g:sortableColumn property="source.name" title="${message(code: 'package.source.label')}"/>--}%
+            <th>${message(code: 'package.name.slash.description')}</th>
+            <g:sortableColumn property="source.name" title="${message(code: 'package.source.label')}"/>
             <g:sortableColumn property="kbplusCompliant" title="${message(code: 'package.kbplusCompliant.label')}"/>
             <g:sortableColumn property="globalRecordInfoStatus"
                               title="${message(code: 'package.globalRecordInfoStatus.label')}"/>
@@ -78,8 +77,7 @@
                     <g:message code="globalDataSync.updated.brackets"
                                args="[formatDate(date: item.ts, format: 'dd.MM.yyyy HH:mm')]"/></td>
                 <td><a href="${item.source.baseUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "name")}</a>
-                </td>
-                <td><a href="${item.source.baseUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "desc")}</a>
+                <hr><a href="${item.source.baseUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "desc")}</a>
                 </td>
                 <td><a href="${item.source.uri}?verb=getRecord&amp;identifier=${item.identifier}&amp;metadataPrefix=${item.source.fullPrefix}">
                     ${item.source.name}</a></td>
@@ -91,7 +89,7 @@
                     <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}"
                                 class="ui negative button"
                                 onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted', default: 'Are you sure?')}')">
-                        ${message(code: 'globalDataSync.track_new')}</g:link>
+                        ${message(code: 'globalDataSync.track_new')}</g:link><hr>
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui negative button"
                             onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted', default: 'Are you sure?')}')">
@@ -99,8 +97,8 @@
                     </td>
                 </g:if>
                 <g:else>
-                    <td><g:link action=" newCleanTracker" controller="globalDataSync" id="${item.id}"
-                                class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link>
+                    <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}"
+                                class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link><hr>
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui positive button">${message(code: 'globalDataSync.track_merge')}</g:link>
                     </td>

@@ -167,6 +167,7 @@ class ESSearchService{
             }else{
               sw.write(" OR ")
             }
+
           }
           sw.write(" ) ")
         }

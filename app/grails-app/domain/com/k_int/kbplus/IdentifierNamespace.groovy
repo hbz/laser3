@@ -14,6 +14,9 @@ class IdentifierNamespace {
     public static final NS_PACKAGE      = "com.k_int.kbplus.Package"
     @Transient
     public static final NS_TITLE        = "com.k_int.kbplus.TitleInstance"
+    @Transient
+    public static final NS_CREATOR        = "com.k_int.kbplus.Creator"
+
 
     @Transient
     final static String[] AVAILABLE_NSTYPES = [
@@ -21,7 +24,8 @@ class IdentifierNamespace {
             NS_LICENSE,
             NS_SUBSCRIPTION,
             NS_PACKAGE,
-            NS_TITLE
+            NS_TITLE,
+            NS_CREATOR
     ]
 
     String ns

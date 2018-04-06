@@ -120,6 +120,7 @@ class DataloadService {
                 result.rectype = 'Title'
                 result.sortTitle = ti.sortTitle
                 result.status = ti.status?.value
+                result.typTitle = ti.type?.value
                 result.title = ti.title
                 result.visible = ['Public']
             }

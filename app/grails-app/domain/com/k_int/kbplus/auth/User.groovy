@@ -167,7 +167,11 @@ class User implements Permissions {
   }
 
     def isEditableBy(user) {
-        hasPerm("edit", user)
+        hasPerm('edit', user)
+    }
+
+    def isVisibleBy(user) {
+        hasPerm('view', user)
     }
 
     def hasPerm(perm, user) {
@@ -206,7 +210,7 @@ class User implements Permissions {
         def result = false
         def rolesToCheck = [userRoleName]
 
-        log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck}")
+        //log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck}")
 
         // TODO:
 

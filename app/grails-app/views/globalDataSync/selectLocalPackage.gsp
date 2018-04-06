@@ -8,22 +8,22 @@
   <body>
 
 
-        <h1 class="ui header"><semui:headerIcon />Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
+        <h1 class="ui header"><semui:headerIcon /><g:message code="globalDataSync.newTracker" args="[item.name,item.identifier,item.source.name]" /></h1>
 
       <semui:messages data="${flash}" />
 
 
-    <div class="container well">
-      <h1 class="ui header"><semui:headerIcon />Select local package</h1>
-      <p>....to be updated by this remote package tracker</p>
+    <div class="ui segment">
+      <h1 class="ui header"><g:message code="globalDataSync.selectlocalPackage"/></h1>
+      %{--<p>....to be updated by this remote package tracker</p>--}%
       <g:form action="buildMergeTracker" id="${params.id}" method="get">
         <input type="hidden" name="synctype" value="existing"/>
         <fieldset>
           <dl>
-            <dt>Local Package To Sync with Remote Package</dt>
+            <dt><g:message code="globalDataSync.localPackagetoSync" args="[item.name]"/></dt>
             <dd><g:simpleReferenceTypedown name="localPkg" baseClass="com.k_int.kbplus.Package" style="width:550px;"/></dd>
           </dl>
-          <input type="submit"/>
+          <input type="submit" class="ui button"/>
         </fieldset>
       </g:form>
     </div>
