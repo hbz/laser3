@@ -23,18 +23,16 @@
     <semui:messages data="${flash}" />
 
     <semui:filter>
-        <g:form action="addConsortiaMembers" method="get" params="[id:params.id]" class="ui form">
-            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}" />
+        <g:form action="addConsortiaMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter" />
         </g:form>
     </semui:filter>
 
-    <g:form action="addConsortiaMembers" params="${[id:params.id]}" controller="myInstitution" method="post" class="ui form">
-
+    <g:form action="addConsortiaMembers" controller="myInstitution" method="post" class="ui form">
         <g:render template="/templates/filter/orgFilterTable" model="[orgList: availableOrgs, tmplShowCheckbox: true, tmplDisableOrgIds: consortiaMemberIds]" />
 
-        <%--<br/>
-        <input type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}" />--%>
+        <br/>
+        <input type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}" />
     </g:form>
 
   </body>

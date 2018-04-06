@@ -2800,6 +2800,22 @@ AND EXISTS (
     def addConsortiaMembers() {
         def result = setResultGenerics()
 
+        if (params.selectedOrgs) {
+            log.debug('adding orgs to consortia')
+
+            params.list('selectedOrgs').each { soId ->
+                Map map = [
+                        toOrg: result.institution,
+                        fromOrg: Org.findById( Long.parseLong(soId)),
+                        type: RefdataValue.findByValue('Consortium')
+                ]
+                if (! Combo.findWhere(map)) {
+                    def cmb = new Combo(map)
+                    cmb.save()
+                }
+            }
+        }
+
         def fsq = filterService.getOrgQuery(params)
         result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
@@ -2817,6 +2833,19 @@ AND EXISTS (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageConsortia() {
         def result = setResultGenerics()
+
+        if (params.selectedOrgs) {
+            log.debug('remove orgs from consortia')
+
+            params.list('selectedOrgs').each { soId ->
+                def cmb = Combo.findWhere(
+                        toOrg: result.institution,
+                        fromOrg: Org.findById( Long.parseLong(soId)),
+                        type: RefdataValue.findByValue('Consortium')
+                )
+                cmb.delete()
+            }
+        }
 
         def fsq = filterService.getOrgComboQuery(params, result.institution)
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)

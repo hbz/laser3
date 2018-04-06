@@ -1,7 +1,7 @@
 
 0.4.3
 
-- added consortia member management
+- added rudimentary consortia member management
 - bugfix: modal dialog datepickers were broken 
 - bugfix: adding subscriber to subscription was broken
 - bugfix: current subscription list shows no subscriber info

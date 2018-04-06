@@ -40,7 +40,7 @@
                     </g:else>
                 </g:if>
                 <g:else>
-                    <g:link action="show" id="${org.id}">
+                    <g:link controller="organisations" action="show" id="${org.id}">
                         <g:if test="${org.shortname}">
                             ${fieldValue(bean: org, field: "shortname")}
                         </g:if>
