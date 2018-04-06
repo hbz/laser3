@@ -38,3 +38,7 @@
       padding-right: 15px;
     }
 }
+.ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
+.ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field{
+  margin-bottom: 1em;
+}
