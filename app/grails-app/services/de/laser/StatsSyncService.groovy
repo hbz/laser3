@@ -262,6 +262,10 @@ class StatsSyncService {
 
     private Boolean responseHasUsageData(xml, titleId) {
         // TODO maybe better check for usage first
+        // What if we get a 3030 Exception? We return false here and do not store facts for the queried period.
+        // Do we need to handle the 3031 Exceptions and kind of flag periods which are mentioned in the XML data element?
+        // Or store 0 values for 3030 Exceptions, which allows us to mark missing/errorneous months, but would increase
+        // the number of facts significantly
         if (xml.Exception.isEmpty() == false && xml.Exception.Number != '3031') {
             log.debug('SUSHI Exception Number ' + xml.Exception.Number + ' : ' + xml.Exception.Message)
             return false

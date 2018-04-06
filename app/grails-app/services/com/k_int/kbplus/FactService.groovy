@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import org.hibernate.criterion.CriteriaSpecification
+
 class FactService {
 
   static transactional = false;
@@ -176,6 +178,118 @@ class FactService {
     result
   }
 
+  def generateUsageDataForLicense(title_id, org_id, supplier_id, license) {
+    def result = [:]
+
+    if (title_id != null &&
+        org_id != null &&
+        supplier_id != null) {
+
+      Calendar cal = Calendar.getInstance()
+      cal.setTimeInMillis(license.startDate.getTime())
+      def (firstLicenseMonth, firstLicenseYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
+      cal.setTimeInMillis(license.endDate.getTime())
+      def (lastLicenseMonth, lastLicenseYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
+
+      def factList = getUsageFacts(org_id, supplier_id, title_id, license)
+
+      def y_axis_labels = factList.factType.value.unique(false).sort()
+      def x_axis_labels = (firstLicenseYear..lastLicenseYear).toList()
+
+      addFactsForLicensePeriodWithoutUsage(x_axis_labels,factList)
+
+      result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
+
+      if (firstLicenseMonth > 1) {
+        def firstYearIndex = x_axis_labels.indexOf(x_axis_labels.first())
+        x_axis_labels[firstYearIndex] = "${firstLicenseMonth}-12/${firstLicenseYear}"
+      }
+      if (lastLicenseMonth < 12) {
+        def lastYearIndex = x_axis_labels.indexOf(x_axis_labels.last())
+        x_axis_labels[lastYearIndex] = "1-${lastLicenseMonth}/${lastLicenseYear}"
+      }
+
+      result.x_axis_labels = x_axis_labels
+      result.y_axis_labels = y_axis_labels
+    }
+
+    result
+  }
+
+  private def generateUsageMDList(factList, firstAxis, secondAxis) {
+    def usage = new long[firstAxis.size()][secondAxis.size()]
+    factList.each { f ->
+      def x_label = f.get('reportingYear').intValue()
+      def y_label = f.get('factType')
+      usage[firstAxis.indexOf(y_label)][secondAxis.indexOf(x_label)] += Long.parseLong(f.get('factValue'))
+    }
+    usage
+  }
+
+  /**
+   * @param title_id
+   * @param org_id
+   * @param supplier_id
+   * @param license if given use license start/end as filter
+   * @return ArrayList List of Fact Maps
+   */
+  private def getUsageFacts(org_id, supplier_id, title_id=null, license=null) {
+    Fact.createCriteria().list {
+      createAlias('factType', 'ft')
+      resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
+      projections {
+        sum('factValue', 'factValue') // aliases needed for resultTransformer
+        groupProperty('reportingYear', 'reportingYear')
+        groupProperty('reportingMonth', 'reportingMonth')
+        groupProperty('factType', 'factType')
+      }
+      if (license) {
+        ge('factFrom', license.startDate)
+        le('factTo', license.endDate)
+      }
+      if (title_id) {
+        eq('relatedTitle.id', title_id)
+      }
+      eq('supplier.id', supplier_id)
+      eq('inst.id', org_id)
+      order('reportingYear', 'desc')
+      order('reportingMonth', 'desc')
+      order('ft.value', 'desc')
+    }
+  }
+
+  private def addFactsForLicensePeriodWithoutUsage(licenseYears, factList) {
+    def usageYears = factList.reportingYear.unique(false).sort()
+    def licenseYearsWithoutUsage = licenseYears - usageYears
+
+    if (! licenseYearsWithoutUsage.isEmpty()) {
+      licenseYearsWithoutUsage.each { year ->
+        licenseYears.each { ft ->
+          def newMapElement = [reportingYear:(year),factValue:'0',factType:(ft)]
+          factList.add(newMapElement)
+        }
+      }
+      factList.sort { a,b-> b.reportingYear <=> a.reportingYear }
+    }
+  }
+
+  def generateUsageData(org_id, supplier_id, title_id=null) {
+    def result = [:]
+
+    if (org_id != null &&
+        supplier_id != null) {
+
+      def factList = getUsageFacts(org_id, supplier_id, title_id)
+      def y_axis_labels = factList.factType.value.unique(false).sort()
+      def x_axis_labels = factList.reportingYear.unique(false).sort()*.intValue()
+
+      result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
+      result.x_axis_labels = x_axis_labels
+      result.y_axis_labels = y_axis_labels
+    }
+    result
+  }
+
   def generateExpandableMonthlyUsageGrid(title_id, org_id, supplier_id) {
 
     def result=[:]
@@ -185,12 +299,12 @@ class FactService {
          supplier_id != null ) {
 
       def q = "select sum(f.factValue),f.reportingYear,f.reportingMonth,f.factType from Fact as f where f.relatedTitle.id=? and f.supplier.id=? and f.inst.id=? group by f.factType, f.reportingYear, f.reportingMonth order by f.reportingYear desc,f.reportingMonth desc,f.factType.value desc"
-      def l1 = Fact.executeQuery(q,[title_id, supplier_id, org_id])
+      def factList = Fact.executeQuery(q,[title_id, supplier_id, org_id])
 
       def y_axis_labels = []
       def x_axis_labels = []
 
-      l1.each { f ->
+      factList.each { f ->
         def y_label = "${f[1]}-${String.format('%02d',f[2])}"
         def x_label = f[3].value
         if ( ! y_axis_labels.contains(y_label) ) {
@@ -210,7 +324,7 @@ class FactService {
 
       result.usage = new long[y_axis_labels.size()][x_axis_labels.size()]
 
-      l1.each { f ->
+      factList.each { f ->
         def y_label = "${f[1]}-${String.format('%02d',f[2])}"
         def x_label = f[3].value
         result.usage[y_axis_labels.indexOf(y_label)][x_axis_labels.indexOf(x_label)] += Long.parseLong(f[0])

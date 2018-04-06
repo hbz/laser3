@@ -35,6 +35,7 @@ class SubscriptionDetailsController {
     def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
     def accessService
     def filterService
+    def factService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -1411,6 +1412,24 @@ AND l.status.value != 'Deleted' order by l.reference
                   }
               }
           }
+        // usage
+        def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
+        if (suppliers) {
+          if (suppliers.size() > 1) {
+            log.debug('Found different content providers, cannot show usage')
+          } else  {
+            def supplier_id = suppliers[0]
+            result.institutional_usage_identifier =
+                OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+            if (result.institutional_usage_identifier) {
+              def fsresult = factService.generateUsageData(result.institution.id, supplier_id)
+              result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
+              result.usage = fsresult?.usage
+              result.x_axis_labels = fsresult?.x_axis_labels
+              result.y_axis_labels = fsresult?.y_axis_labels
+            }
+          }
+        }
 
         result
     }

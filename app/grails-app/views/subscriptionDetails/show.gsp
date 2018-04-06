@@ -356,6 +356,39 @@
                     </div>
                 </g:if>
 
+            <g:if test="${subscriptionInstance.costItems}">
+
+                <div class="ui card la-dl-no-table">
+                    <div class="content">
+                        <dl>
+                            <dt>${message(code:'default.usage.label')}</dt>
+                            <dd>
+                                <table class="ui celled la-table table">
+                                    <thead>
+                                    <tr>
+                                        <th>${message(code: 'tipp.show.usage.reportType')}</th>
+                                        <g:each in="${x_axis_labels}" var="l">
+                                            <th>${l}</th>
+                                        </g:each>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <g:set var="counter" value="${0}"/>
+                                    <g:each in="${usage}" var="v">
+                                        <tr>
+                                            <td>${y_axis_labels[counter++]}</td>
+                                            <g:each in="${v}" var="v2">
+                                                <td>${v2}</td>
+                                            </g:each>
+                                        </tr>
+                                    </g:each>
+                                    </tbody>
+                                </table>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </g:if>
                 <div class="ui card la-dl-no-table">
                     <div class="content">
                         <h5 class="ui header">${message(code:'subscription.properties')}</h5>

@@ -74,8 +74,8 @@ class IssueEntitlementController {
       if ( title_id != null &&
            org != null &&
            supplier_id != null ) {
-
-          def fsresult = factService.generateExpandableMonthlyUsageGrid(title_id, org.id, supplier_id)
+          def fsresult = factService.generateUsageData(org.id, supplier_id, title_id)
+          def fsLicenseResult = factService.generateUsageDataForLicense(title_id, org.id, supplier_id, result.issueEntitlementInstance.subscription)
           result.institutional_usage_identifier =
                   OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), org)
           //def jusp_login = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('jusplogin')?.value
@@ -89,6 +89,10 @@ class IssueEntitlementController {
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels
+
+              result.lusage = fsLicenseResult?.usage
+              result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+              result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
           }
       }
 
