@@ -110,7 +110,7 @@
   background: #FFFFFF;
   border: 1px solid #eaeaea;
   color: rgba(0, 0, 0, 0.87);
-  border-radius: 0.14285714rem;
+  border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;
   -webkit-transition: color 0.1s ease, border-color 0.1s ease;
@@ -127,7 +127,7 @@
   border: 1px solid #eaeaea;
   outline: none;
   color: rgba(0, 0, 0, 0.87);
-  border-radius: 0.14285714rem;
+  border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;
   -webkit-transition: color 0.1s ease, border-color 0.1s ease;
@@ -164,7 +164,7 @@
   width: 100%;
   background: #FFFFFF;
   border: 1px solid #eaeaea;
-  border-radius: 0.14285714rem;
+  border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;
   padding: 0.62em 1em;
@@ -370,7 +370,7 @@
 .ui.form input[type="url"]:focus {
   color: rgba(0, 0, 0, 0.95);
   border-color: #85B7D9;
-  border-radius: 0.14285714rem;
+  border-radius: 0;
   background: #FFFFFF;
   -webkit-box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
           box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
@@ -378,7 +378,7 @@
 .ui.form textarea:focus {
   color: rgba(0, 0, 0, 0.95);
   border-color: #85B7D9;
-  border-radius: 0.14285714rem;
+  border-radius: 0;
   background: #FFFFFF;
   -webkit-box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
           box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
@@ -1080,6 +1080,35 @@
 .ui.form .fields .field.la-filter-search {
   text-align: right;
   margin-top: 1.2rem;
+}
+.ui.form .fields .field {
+  margin: 0em 0em 1em;
+}
+.ui.form .fields .field.la-modal-fieldset-no-margin {
+  background: #fffaf5;
+  padding: 15px;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+}
+.ui.form .fields .field.la-modal-fieldset-no-margin .field {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.ui.form .fields .field.la-modal-fieldset-margin {
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+  background: #fffaf5;
+  padding: 15px;
+}
+.ui.form .fields .field.la-modal-fieldset-margin .field {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
+.ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field {
+  margin-bottom: 1em;
 }
 .la-filter-selected {
   background: #d3dae3!important;

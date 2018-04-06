@@ -323,7 +323,7 @@
 
             //sub pkg
             $(s.ft.filterSubPkg).select2({
-                placeholder: "Type sub pkg name...",
+                placeholder: "${message(code:'financials.newCosts.enterpkgName')}",
                 minimumInputLength: 1,
                 global: false,
                 ajax: {
@@ -507,12 +507,12 @@
                 var reqSize = reqFields.length;
                 for (var i = 0; i < reqSize; i++) {
                  var reqVal = $(reqFields[i]).val();
-                 if( reqVal=="" || reqVal==null || $.trim(reqVal).length==0) 
+                 if( reqVal=="" || reqVal==null || $.trim(reqVal).length==0)
                  {
                        counter++;
-                 } 
+                 }
                  else {
-                     console.log('Valid req field entered', reqFields[i]); 
+                     console.log('Valid req field entered', reqFields[i]);
                  }
                 }
 
@@ -719,7 +719,7 @@
             }
 
             $(s.ct.newSubPkg).select2({
-                placeholder: "Type sub pkg name...",
+                placeholder: "${message(code:'financials.newCosts.enterpkgName')}",
                 minimumInputLength: 1,
                 global: false,
                 ajax: {
@@ -1167,7 +1167,7 @@
                 var billed   = $('#newCostInBillingCurrency');
                 var exchange = $('#newCostCurrencyRate');
                 var local    = $('#newCostInLocalCurrency');
-                
+
                 var billedAmount   = billed.val().length > 0? (parseFloat(billed.val()).toFixed(2)) : 0.00;
                 var exchangeAmount = exchange.val().length > 0? (parseFloat(exchange.val()).toFixed(2)) : 1.00;
                 var localAmount    = local.val().length > 0? (parseFloat(local.val()).toFixed(2)) : 0.00;
@@ -1191,7 +1191,7 @@
                 var exportMode   = $(this).data('mode');
                 var paginateData = $('#paginateInfo').data();
                 var totalResults = parseInt(paginateData.total);
-            
+
                 var data  = {
                     shortcode: "${contextService.getOrg()?.shortcode}",
                     filterMode: paginateData.filtermode,
@@ -1204,7 +1204,7 @@
                     format: 'csv',
                     csvMode: exportMode
                 };
-                
+
                 if(paginateData.filtermode == "ON")
                 {
                     $.extend(data, {
