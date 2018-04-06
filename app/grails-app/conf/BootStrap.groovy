@@ -212,6 +212,9 @@ class BootStrap {
         log.debug("initializeDefaultSettings ..")
         initializeDefaultSettings()
 
+        log.debug("setIdentifierNamespace ..")
+        setIdentifierNamespace()
+
         log.debug("Init completed ..")
     }
 
@@ -1354,5 +1357,27 @@ No Host Platform URL Content
         RefdataValue.loc('Currency', [key: 'ZAR',  en:'ZAR - South Africa Rand', de:'ZAR - South Africa Rand']).save()
         RefdataValue.loc('Currency', [key: 'ZMW',  en:'ZMW - Zambia Kwacha', de:'ZMW - Zambia Kwacha']).save()
         RefdataValue.loc('Currency', [key: 'ZWD',  en:'ZWD - Zimbabwe Dollar', de:'ZWD - Zimbabwe Dollar']).save()
+    }
+
+    def setIdentifierNamespace() {
+
+        def namespaces = [
+                            [ns: "GND", typ: "com.k_int.kbplus.Creator"],
+                            [ns: "ISIL"],
+                            [ns: "uri"],
+                            [ns: "zdb"],
+                            [ns: "zdb_ppn"],
+                            [ns: "VIAF"],
+                            [ns: "issn"],
+                            [ns: "eissn"]
+        ]
+
+        namespaces.each { namespaceproperties ->
+            def namespace = namespaceproperties["ns"]
+            def typ = namespaceproperties["typ"]?:null
+            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ).save(flush: true);
+
+        }
+
     }
 }

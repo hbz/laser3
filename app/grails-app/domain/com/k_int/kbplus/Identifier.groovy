@@ -37,7 +37,7 @@ class Identifier {
     value = value?.trim()
     ns = ns?.trim()
     // println ("lookupOrCreateCanonicalIdentifier(${ns},${value})");
-    def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns.toLowerCase()).save(flush:true);
+    def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save(flush:true);
     Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save(flush:true);
   }
 

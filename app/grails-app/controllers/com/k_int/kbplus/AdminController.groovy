@@ -812,7 +812,13 @@ class AdminController {
       case 'GET':
         break
       case 'POST':
-        if (!identifierNamespaceInstance.save(flush: true)) {
+        if (IdentifierNamespace.findByNsIlike(params.ns) || !identifierNamespaceInstance.save(flush: true)) {
+
+          if(IdentifierNamespace.findByNsIlike(params.ns))
+          {
+            flash.error = message(code: 'identifier.namespace.exist', default: 'IdentifierNamespace exist', args:[params.ns])
+            break
+          }
           return
         }
         else {
