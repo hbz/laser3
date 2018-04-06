@@ -5,6 +5,15 @@ r2d2 = {
 
         datepicker : {
             type: 'date',
+            onChange: function(date, text, mode) {
+                if (!text) {
+                    $(this).removeClass("la-calendar-selected");
+                } else {
+                    if( ! $(this).hasClass("la-calendar-selected") ) {
+                        $(this).addClass("la-calendar-selected")
+                    }
+                }
+            },
             firstDayOfWeek: 1,
             monthFirst: false,
             formatter: {
@@ -30,6 +39,7 @@ r2d2 = {
                     }
                 }
             }
+
         }
     },
 
@@ -128,12 +138,20 @@ r2d2 = {
             duration: 150,
             transition: 'fade'
         });
+
         $('.ui.dropdown').on('keydown', function(event) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
                 event.preventDefault();
-                $(this).dropdown('clear').dropdown('hide');
+                $(this).dropdown('clear').dropdown('hide').removeClass("la-filter-dropdown-selected");
             }
         });
+
+        // SEM UI DROPDOWN CHANGE
+        $(".ui.dropdown").change(function() {
+            ($(this).hasClass("default")) ? $(this).removeClass("la-filter-dropdown-selected") : $(this).addClass("la-filter-dropdown-selected");
+        });
+
+        $(".ui.dropdown > select > option[selected=selected]").parents('.ui.dropdown').addClass('la-filter-dropdown-selected');
 
         // accordions
         $('.ui.accordion').accordion();
@@ -196,6 +214,15 @@ r2d2 = {
         });
         $('.modal .table').floatThead('destroy');
         $('.table.ignore-floatThead').floatThead('destroy');
+
+        // FILTER SELECT FUNCTION - INPUT LOADING
+        $(".la-filter input[type=text]").each(function() {
+            $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+        });
+        //  FILTER SELECT FUNCTION - INPUT  CHANGE
+        $(".la-filter input[type=text]").change(function() {
+            $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+        });
     }
 }
 

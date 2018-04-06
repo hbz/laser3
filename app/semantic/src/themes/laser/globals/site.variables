@@ -40,7 +40,7 @@
    for explanation of @px variables
 */
 @relativeBorderRadius: @relative2px;
-@absoluteBorderRadius: @2px;
+@absoluteBorderRadius: 0;
 
 @defaultBorderRadius: @absoluteBorderRadius;
 

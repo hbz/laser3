@@ -59,8 +59,10 @@ modules = {
 
         resource url:'semantic-restoration/jquery.readmore.min.js' // new stuff
 
-        resource url:'semantic-restoration/select2.css'            // updated stuff // new version 3.5.4
-        resource url:'semantic-restoration/select2.min.js'         // updated stuff // new version 3.5.4
+        //resource url:'css/select2.css'            // updated stuff // new version 3.5.4
+        resource url:'css/select2-laser.css'     // overwrite to look more like semantic ui
+        resource url:'js/select2.min.js'         // updated stuff // new version 3.5.4
+
 
         resource url:'js/application.js.gsp'
     }
