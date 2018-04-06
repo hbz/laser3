@@ -16,8 +16,13 @@ import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class AccessService {
+
+    static final CHECK_VIEW = 'CHECK_VIEW'
+    static final CHECK_EDIT = 'CHECK_EDIT'
+    static final CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
 
     def grailsApplication
     def springSecurityService
@@ -25,59 +30,6 @@ class AccessService {
     def test() {
         // org context
         //ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR")
-    }
-
-    def isEditable(Address adr) {
-
-    }
-
-    def isEditable(Combo cmb) {
-
-    }
-
-    def isEditable(Contact con) {
-
-    }
-
-    def isEditable(Doc doc) {
-
-    }
-
-    def isEditable(License lic) {
-
-    }
-
-    def isEditable(Org org) {
-
-    }
-
-    def isEditable(Package pkg) {
-
-    }
-
-    def isEditable(Person prs) {
-
-    }
-
-    def isEditable(Platform plt) {
-
-    }
-
-    def isEditable(Subscription sub) {
-
-    }
-
-    def isEditable(TitleInstance title) {
-
-    }
-
-    def isEditable(TitleInstancePackagePlatform tipp) {
-
-    }
-
-    boolean isOrgSubscriber(Org org, Subscription sub) {
-
-        OrgRole.findByOrgAndSub(org, sub) // TODO
     }
 
     // copied from FinanceController, LicenseCompareController, MyInstitutionsController

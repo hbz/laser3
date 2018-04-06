@@ -2,7 +2,7 @@
 
     <div class="ui red segment">
         <h4 class="ui red header">
-            <i class="user secret icon"></i> DEBUG-INFORMATION
+            <i class="bug icon"></i> DEBUG-INFORMATION
         </h4>
 
         <table class="ui celled la-table la-table-small table">

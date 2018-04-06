@@ -26,3 +26,11 @@
         <semui:actionsDropdownItem controller="myInstitution" action="addLicense" message="license.copy" />
     </semui:actionsDropdown>
 </g:if>
+
+<g:if test="${actionName in ['manageConsortia', 'addConsortiaMembers']}">
+    <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
+        <semui:actionsDropdown>
+            <semui:actionsDropdownItem controller="myInstitution" action="addConsortiaMembers" message="menu.institutions.add_consortia_members" />
+        </semui:actionsDropdown>
+    </g:if>
+</g:if>

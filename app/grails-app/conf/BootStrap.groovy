@@ -23,76 +23,12 @@ class BootStrap {
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
         def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
-
-        // Permissions
-        def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
-        def view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
-
+        
         log.debug("setupRefdata ..")
         setupRefdata()
 
-        // TODO locCategory
-        def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'])
-        def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'])
-
-        def cons_combo          = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'])
-
-        def or_licensee_role    = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
-        def or_subscriber_role  = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
-        def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia'])
-
-        // assertPermShare
-        OrgPermShare.assertPermShare(view_permission, or_licensee_role)
-        OrgPermShare.assertPermShare(edit_permission, or_licensee_role)
-        OrgPermShare.assertPermShare(view_permission, or_subscriber_role)
-        OrgPermShare.assertPermShare(edit_permission, or_subscriber_role)
-        OrgPermShare.assertPermShare(view_permission, or_sc_role)
-        OrgPermShare.assertPermShare(edit_permission, or_sc_role)
-        // TODO
-        OrgPermShare.assertPermShare(view_permission, cl_owner_role)
-        OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
-        // TODO
-        OrgPermShare.assertPermShare(view_permission, cl_member_role)
-        OrgPermShare.assertPermShare(edit_permission, cl_member_role)
-
-        OrgPermShare.assertPermShare(view_permission, cons_combo)
-
-        // Global System Roles
-
-        def yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
-        def adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
-        def dmRole      = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
-        def userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-        def apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
-
-        def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
-        def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
-        def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
-
-        def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
-        def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
-
-        // Institutional Roles
-
-        def instAdmin = Role.findByAuthority('INST_ADM')
-        if (! instAdmin) {
-            instAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
-        }
-        ensurePermGrant(instAdmin, edit_permission)
-        ensurePermGrant(instAdmin, view_permission)
-
-        def instEditor = Role.findByAuthority('INST_EDITOR')
-        if (! instEditor) {
-            instEditor = new Role(authority: 'INST_EDITOR', roleType: 'user').save(failOnError: true)
-        }
-        ensurePermGrant(instEditor, edit_permission)
-        ensurePermGrant(instEditor, view_permission)
-
-        def instUser = Role.findByAuthority('INST_USER')
-        if (! instUser) {
-            instUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
-        }
-        ensurePermGrant(instUser, view_permission)
+        log.debug("setupRolesAndPermissions ..")
+        setupRolesAndPermissions()
 
         // Transforms types and formats Refdata
 
@@ -282,7 +218,88 @@ class BootStrap {
     def destroy = {
     }
 
+    def setupRolesAndPermissions = {
+
+        // Permissions
+
+        def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
+        def view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
+
+        // Roles
+
+        def or_licensee_role      = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
+        def or_licensee_cons_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Consortial', en: 'Consortial licensee', de: 'Konsortiallizenznehmer'])
+
+        OrgPermShare.assertPermShare(view_permission, or_licensee_role)
+        OrgPermShare.assertPermShare(edit_permission, or_licensee_role)
+
+        OrgPermShare.assertPermShare(view_permission, or_licensee_cons_role)
+
+        def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia'])
+        def or_subscr_role      = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
+        def or_subscr_cons_role = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'])
+
+        OrgPermShare.assertPermShare(view_permission, or_sc_role)
+        OrgPermShare.assertPermShare(edit_permission, or_sc_role)
+
+        OrgPermShare.assertPermShare(view_permission, or_subscr_role)
+        OrgPermShare.assertPermShare(edit_permission, or_subscr_role)
+
+        OrgPermShare.assertPermShare(view_permission, or_subscr_cons_role)
+
+        def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'])
+        def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'])
+
+        def cons_combo          = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'])
+
+        OrgPermShare.assertPermShare(view_permission, cl_owner_role)
+        OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
+
+        OrgPermShare.assertPermShare(view_permission, cl_member_role)
+        OrgPermShare.assertPermShare(edit_permission, cl_member_role)
+
+        OrgPermShare.assertPermShare(view_permission, cons_combo)
+
+        // Global System Roles
+
+        def yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
+        def adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
+        def dmRole      = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
+        def userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
+        def apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
+
+        def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
+        def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
+        def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
+
+        def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
+        def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
+
+        // Institutional Roles
+
+        def instAdmin = Role.findByAuthority('INST_ADM')
+        if (! instAdmin) {
+            instAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
+        }
+        ensurePermGrant(instAdmin, edit_permission)
+        ensurePermGrant(instAdmin, view_permission)
+
+        def instEditor = Role.findByAuthority('INST_EDITOR')
+        if (! instEditor) {
+            instEditor = new Role(authority: 'INST_EDITOR', roleType: 'user').save(failOnError: true)
+        }
+        ensurePermGrant(instEditor, edit_permission)
+        ensurePermGrant(instEditor, view_permission)
+
+        def instUser = Role.findByAuthority('INST_USER')
+        if (! instUser) {
+            instUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
+        }
+        ensurePermGrant(instUser, view_permission)
+    }
+
     def initializeDefaultSettings(){
+
         def admObj = SystemAdmin.list()
         if (! admObj) {
             log.debug("No SystemAdmin object found, creating new")
