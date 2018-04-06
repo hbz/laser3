@@ -210,9 +210,10 @@ public class PackageIngestService {
 
     upload.new_pkg_id = new_pkg_id
   }
-    
+  //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
   def lookupOrCreateTitleInstance(identifiers,title,publisher) {
     // log.debug("lookupOrCreateTitleInstance ${identifiers}, ${title}, ${publisher}");
+    //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
     def result = TitleInstance.lookupOrCreateViaIdMap(identifiers, title);
     if ( !result.getPublisher() ) {
       def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');

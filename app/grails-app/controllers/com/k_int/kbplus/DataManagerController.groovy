@@ -311,7 +311,7 @@ class DataManagerController {
     def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-    def deleted_title_status =  RefdataCategory.lookupOrCreate( RefdataCategory.TI_STATUS, 'Deleted' );
+    def deleted_title_status =  RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
     def qry_params = [deleted_title_status]
 
     def base_qry = " from TitleInstance as t where ( t.status = ? )"

@@ -51,11 +51,15 @@
                 <bootstrap:alert class="alert-info">
                   ${message(code:'title.findTitleMatches.match', args:[params.proposedTitle])}
                 </bootstrap:alert>
-                <g:link controller="titleDetails" action="createTitle" class="ui negative button" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui negative button" params="${[title:params.proposedTitle, typ: 'Journal']}">${message(code:'title.findTitleMatches.create_for_journal', default:'Create New Journal Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui negative button" params="${[title:params.proposedTitle, typ: 'Ebook']}">${message(code:'title.findTitleMatches.create_for_ebook', default:'Create New eBook Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui negative button" params="${[title:params.proposedTitle, typ: 'Database']}">${message(code:'title.findTitleMatches.create_for_database', default:'Create New Database Title for')} <em>"${params.proposedTitle}"</em></g:link>
               </g:if>
               <g:else>
                 <bootstrap:alert class="alert-info">${message(code:'title.findTitleMatches.no_match', args:[params.proposedTitle])}</bootstrap:alert>
-                <g:link controller="titleDetails" action="createTitle" class="ui positive button" params="${[title:params.proposedTitle]}">${message(code:'title.findTitleMatches.create_for', default:'Create New Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui positive button" params="${[title:params.proposedTitle, typ: 'Journal']}">${message(code:'title.findTitleMatches.create_for_journal', default:'Create New Journal Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui positive button" params="${[title:params.proposedTitle, typ: 'Ebook']}">${message(code:'title.findTitleMatches.create_for_ebook', default:'Create New eBook Title for')} <em>"${params.proposedTitle}"</em></g:link>
+                <g:link controller="titleDetails" action="createTitle" class="ui positive button" params="${[title:params.proposedTitle, typ: 'Database']}">${message(code:'title.findTitleMatches.create_for_database', default:'Create New Database Title for')} <em>"${params.proposedTitle}"</em></g:link>
               </g:else>
 
 

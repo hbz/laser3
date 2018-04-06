@@ -14,8 +14,11 @@ class IdentifierOccurrence {
             pkg:    Package,
             sub:    Subscription,
             ti:     TitleInstance,
-            tipp:   TitleInstancePackagePlatform
+            tipp:   TitleInstancePackagePlatform,
+            cre:   Creator
     ]
+
+
 
     static mapping = {
         id  column:'io_id'
@@ -26,6 +29,8 @@ class IdentifierOccurrence {
         sub     column:'io_sub_fk'
         ti      column:'io_ti_fk'
         tipp    column:'io_tipp_fk'
+        cre    column:'io_cre_fk'
+
   }
 
   static constraints = {
@@ -35,6 +40,8 @@ class IdentifierOccurrence {
         sub     (nullable:true)
         ti      (nullable:true)
         tipp    (nullable:true)
+        cre     (nullable:true)
+
   }
 
     /**
@@ -47,6 +54,7 @@ class IdentifierOccurrence {
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
         ti   = owner instanceof TitleInstance ? owner : ti
+        cre  = owner instanceof Creator ? owner : cre
     }
 
     static getAttributeName(def object) {
@@ -58,12 +66,13 @@ class IdentifierOccurrence {
         name = object instanceof Subscription ?                 'sub' :  name
         name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
         name = object instanceof TitleInstance ?                'ti' :   name
+        name = object instanceof Creator ?                'cre' :   name
 
         name
     }
 
     String toString() {
-        "IdentifierOccurrence(${id} - lic:${lic}, org:${org}, pkg:${pkg}, sub:${sub}, ti:${ti}, tipp:${tipp}"
+        "IdentifierOccurrence(${id} - lic:${lic}, org:${org}, pkg:${pkg}, sub:${sub}, ti:${ti}, tipp:${tipp}, cre:${cre})"
     }
 
   @Transient

@@ -56,6 +56,7 @@
                     <thead>
                       <tr>
                       <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />
+                      <g:sortableColumn property="typTitle" title="${message(code: 'title.type.label')}" params="${params}" />
                       <g:sortableColumn property="publisher" style="white-space:nowrap" title="${message(code: 'title.publisher.label', default: 'Publisher')}" params="${params}" />
                       <th style="white-space:nowrap"><g:message code="title.identifiers.label" /></th>
                       </tr>
@@ -65,6 +66,9 @@
                         <tr>
                           <td>
                             <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link>
+                          </td>
+                          <td>
+                            ${hit.getSource().typTitle}
                           </td>
                           <td>
                             ${hit.getSource().publisher?:''}

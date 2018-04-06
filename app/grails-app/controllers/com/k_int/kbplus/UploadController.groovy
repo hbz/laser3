@@ -259,11 +259,12 @@ class UploadController {
     upload.new_pkg_id = new_pkg_id
   }
 
-
+  //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
   private def lookupOrCreateTitleInstance(identifiers, title, publisher, tipp) {
     // log.debug("lookupOrCreateTitleInstance ${identifiers}, ${title}, ${publisher}");
     def result = null;
     try {
+      //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
       result = TitleInstance.lookupOrCreateViaIdMap(identifiers, title);
       if ( !result.getPublisher() ) {
         def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');

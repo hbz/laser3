@@ -1169,5 +1169,15 @@ class AjaxController {
     // log.debug("Result of render: ${value} : ${result}");
     result;
   }
+    @Secured(['ROLE_DATAMANAGER'])
+    def addCreatorToTitle() {
+        def creatorTitleInstance = new CreatorTitle(role: params.role.id, creator: params.creator.id, title: params.title.id)
+        if (! creatorTitleInstance.save(flush: true)) {
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
 
 }

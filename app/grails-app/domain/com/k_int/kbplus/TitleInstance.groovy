@@ -46,7 +46,8 @@ class TitleInstance extends BaseDomainComponent {
                     ids:    IdentifierOccurrence,
                     orgs:   OrgRole,
                     historyEvents: TitleHistoryEventParticipant,
-                    prsLinks: PersonRole
+                    prsLinks: PersonRole,
+                    creators: CreatorTitle
                     ]
 
   static mapping = {
@@ -72,6 +73,7 @@ class TitleInstance extends BaseDomainComponent {
         normTitle(nullable:true, blank:false,maxSize:2048);
         sortTitle(nullable:true, blank:false,maxSize:2048);
         keyTitle(nullable:true, blank:false,maxSize:2048);
+        creators(nullable:true, blank:false);
     }
 
   String getIdentifierValue(idtype) {
@@ -192,10 +194,14 @@ class TitleInstance extends BaseDomainComponent {
   }
 
   static def lookupOrCreate(candidate_identifiers, title) {
-    lookupOrCreate(candidate_identifiers, title, false)
+    lookupOrCreate(candidate_identifiers, title, false, null)
   }
 
-  static def lookupOrCreate(candidate_identifiers, title, enrich) {
+  static def lookupOrCreate(candidate_identifiers, title, titletyp) {
+        lookupOrCreate(candidate_identifiers, title, false, titletyp)
+    }
+
+  static def lookupOrCreate(candidate_identifiers, title, enrich, titletyp) {
     def result = null;
     def origin_uri = null
     def skip_creation = false
@@ -331,8 +337,10 @@ class TitleInstance extends BaseDomainComponent {
 
     if (!valid_match && !skip_creation) {
       static_logger.debug("No valid match - creating new title");
-      def ti_status = RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Current")
-      result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
+      def ti_status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+      //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
+      result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
+              (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) : new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
       result.save(flush:true, failOnError: true);
 
       result.ids=[]
@@ -385,6 +393,7 @@ class TitleInstance extends BaseDomainComponent {
    *  or one matching any of the identifiers
    *  - assumes all identifiers to be unique -
    */
+    //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
   static def lookupOrCreateViaIdMap(candidate_identifiers, title) {
     def result = null;
     def ids = []
@@ -422,7 +431,10 @@ class TitleInstance extends BaseDomainComponent {
     }
 
     if (!result) {
-      result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString());
+        //TODO: Konzept überdenken wegen imId.
+      //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString());
+      result = ((title.type=='Serial') ? new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal'])) :
+                (title.type=='Database' ? new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) : new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString(), type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Book', de: 'Book']))))
 
       result.ids=[]
       ids.each {
