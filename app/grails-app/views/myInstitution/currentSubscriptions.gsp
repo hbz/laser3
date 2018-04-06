@@ -246,16 +246,16 @@
                     <td>
                         ${s.type?.getI10n('value')}
                     </td>
-                    <g:if test="${params.orgRole == 'Subscriber'}">
-                        <td>${s.consortia?.name}</td>
-                    </g:if>
-                    <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                        <td>
-                            <g:each in="${s.allSubscribers}" var="subscriber">
-                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link>
+                    <td>
+                        <g:if test="${params.orgRole == 'Subscriber'}">
+                            ${s.getConsortia()?.name}
+                        </g:if>
+                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                            <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
+                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link> <br />
                             </g:each>
-                        </td>
-                    </g:if>
+                        </g:if>
+                    </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 

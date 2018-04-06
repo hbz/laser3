@@ -685,7 +685,7 @@ class SubscriptionDetailsController {
                 if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                         [result.subscriptionInstance, it.id])
                 ) {
-                    result.cons_members_disabled << it
+                    result.cons_members_disabled << it.id
                 }
             }
         }

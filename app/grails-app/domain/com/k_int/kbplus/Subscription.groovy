@@ -166,6 +166,19 @@ class Subscription extends BaseDomainComponent implements Permissions {
         result
     }
 
+    def getDerivedSubscribers() {
+        def result = []
+        def subscr = RefdataValue.findByValue('Subscriber')
+
+        Subscription.findAllByInstanceOf(this).each { s ->
+            def ors = OrgRole.findAllWhere( roleType: subscr, sub: s )
+            ors.each { or ->
+                result << or.org
+            }
+        }
+        result
+    }
+
     def isEditableBy(user) {
         hasPerm('edit', user)
     }

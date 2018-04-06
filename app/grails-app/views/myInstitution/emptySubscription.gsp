@@ -72,7 +72,7 @@
                 </div>
 
                 <div class="ui checkbox">
-                    <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
+                    <input class="hidden" type="checkbox" checked="checked" readonly="readonly">
                     <label>${message(code:'myinst.emptySubscription.seperate_subs', default:'Generate seperate Subscriptions for all Consortia Members')}</label>
                 </div>
 
