@@ -400,6 +400,36 @@ class MyInstitutionController {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def currentProviders() {
+        def result = setResultGenerics()
+
+        def role_sub = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
+        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+
+        def mySubs = Subscription.executeQuery( """
+            select s from Subscription as s join s.orgRelations as ogr where 
+                ( s.status.value != 'Deleted' ) and
+                ( s = ogr.sub and ogr.org = :subOrg ) and
+                ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubConsortia) )
+        """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubConsortia: role_sub_consortia])
+
+        result.orgList = []
+        mySubs.each { sub ->
+            def provider = OrgRole.findWhere(
+                    sub: sub,
+                    roleType: RefdataValue.getByValueAndCategory('Provider','Organisational Role')
+            )
+            if (provider) {
+                result.orgList << provider.org
+            }
+        }
+
+        result.test = mySubs
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
         def result = setResultGenerics()
 
@@ -451,8 +481,8 @@ class MyInstitutionController {
 
         result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-        def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        def role_sub = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
+        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
         def roleTypes = [role_sub, role_sub_consortia]
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
