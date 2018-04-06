@@ -12,3 +12,15 @@
   text-align: right;
   margin-top: 1.2rem;
 }
+
+// Filter Selected
+
+.la-filter-selected {
+  background:  #d3dae3!important;
+}
+.la-calendar-selected input {
+  background: #d3dae3!important;
+}
+.la-filter-dropdown-selected {
+  background: #d3dae3!important;
+}
