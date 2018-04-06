@@ -36,9 +36,12 @@ class SemanticUiIdentifierTagLib {
         out <<       '<label></label>'
         out <<       '<select name="namespace" id="' + namespaceSelector + '" class="ui search dropdown" />'
 
-        IdentifierNamespace.where{(nsType == attrs.owner.class.name) || (nsType == null)}.list(sort:'ns').each{ ns ->
-            out <<     '<option value="' + ns.ns + '">' + ns.ns + '</option>'
-        }
+        IdentifierNamespace.where{(nsType == attrs.owner.class.name) || (nsType == null)}
+                .list(sort:'ns')
+                .sort { a,b -> a.ns.compareToIgnoreCase b.ns }
+                .each{ ns ->
+                    out << '<option value="' + ns.ns + '">' + ns.ns + '</option>'
+                }
         out <<       '</select>'
         out <<     '</div>'
 
