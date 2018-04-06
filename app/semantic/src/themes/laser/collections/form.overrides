@@ -21,3 +21,6 @@
 .la-calendar-selected input {
   background: blue!important;
 }
+.orange {
+  background: orange!important;
+}

@@ -20666,6 +20666,10 @@ ol.ui.horizontal.list li:before,
 .la-calendar-selected input {
   background: blue!important;
 }
+
+.orange {
+  background: orange!important;
+}
 /*!
  * # Semantic UI 2.3.0 - Grid
  * http://github.com/semantic-org/semantic-ui/
