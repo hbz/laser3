@@ -15,6 +15,7 @@ class SemanticUiIdentifierTagLib {
         def formUrl = g.createLink(controller:'ajax', action:'addToCollection')
         def context = "${(attrs.owner).class.name}:${(attrs.owner).id}"
         def recip   = IdentifierOccurrence.getAttributeName(attrs.owner)
+        def onlyNameSpace = attrs.onlyoneNamespace
 
         def cssClass   = attrs.class ? " ${attrs.class}" : ""
         def buttonText = attrs.buttonText ? attrs.buttonText : message(code:'identifier.select.add')
@@ -36,12 +37,13 @@ class SemanticUiIdentifierTagLib {
         out <<       '<label></label>'
         out <<       '<select name="namespace" id="' + namespaceSelector + '" class="ui search dropdown" />'
 
-        IdentifierNamespace.where{(nsType == attrs.owner.class.name) || (nsType == null)}
+        def wherequere = onlyNameSpace ? "ns == '${onlyNameSpace}'" : '(nsType == '+attrs.owner.class.name+' || nsType == null)'
+        IdentifierNamespace.where{(nsType == attrs.owner.class.name || nsType == null)}
                 .list(sort:'ns')
                 .sort { a,b -> a.ns.compareToIgnoreCase b.ns }
                 .each{ ns ->
-                    out << '<option value="' + ns.ns + '">' + ns.ns + '</option>'
-                }
+                    out <<     '<option value="' + ns.ns + '">' + ns.ns + '</option>'
+        }
         out <<       '</select>'
         out <<     '</div>'
 

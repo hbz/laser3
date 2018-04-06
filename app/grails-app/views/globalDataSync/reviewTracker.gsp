@@ -8,7 +8,7 @@
   <body>
 
 
-        <h1 class="ui header"><semui:headerIcon />Track ${item.name}(${item.identifier}) from ${item.source.name}</h1>
+        <h1 class="ui header"><semui:headerIcon /><g:message code="globalDataSync.newTracker" args="[item.name,item.identifier,item.source.name]" /></h1>
         <semui:messages data="${flash}" />
 
     <g:form action="createTracker" controller="globalDataSync" id="${params.id}">
@@ -16,33 +16,33 @@
       <input type="hidden" name="localPkg" value="${params.localPkg}"/>
       <input type="hidden" name="synctype" value="${type}"/>
 
-      <div class="container well">
-        <h1 class="ui header"><semui:headerIcon />Review Tracker</h1>
+      <div class="ui segment">
+        <h1 class="ui header"><semui:headerIcon /><g:message code="globalDataSync.reviewTracker"/></h1>
         <g:if test="${type=='new'}">
-          <p>This tracker will create a new local package for "${item.name}" from "${item.source.name}". Set the new package name below.</p>
+          <p><g:message code="globalDataSync.reviewTrackerinfo" args="[item.name,item.source.name]" /></p>
           <dl>
-            <dt>New Package Name</dt>
+            <dt><g:message code="globalDataSync.newPackageName" /></dt>
             <dd><input type="text" name="newPackageName" value="${item.name}" class="input-xxlarge"/></dd>
           </dl>
         </g:if>
         <g:else>
-          <p>This tracker will synchronize package "<strong><em>${item.name}</em></strong>" from "<strong><em>${item.source.name}</em></strong>" with the existing local package <strong><em>${localPkg.name}</em></strong> </p>
+          <g:message code="globalDataSync.notnewTracker" args="[item.name,item.source.name,localPkg.name]"/>
         </g:else>
 
         <dl>
-          <td>Auto accept the following changes</dt>
+          <dt><g:message code="globalDataSync.acceptChanges" /></dt>
           <dd>
           <table class="ui table">
             <tr>
-              <td><input type="Checkbox" name="autoAcceptTippAddition"/>TIPP Addition</td>
-              <td><input type="Checkbox" name="autoAcceptTippUpdate"/>TIPP Update</td>
-              <td><input type="Checkbox" name="autoAcceptTippDelete"/>TIPP Delete</td>
-              <td><input type="Checkbox" name="autoAcceptPackageChange"/>Package Changes</td>
+              <td><input type="Checkbox" name="autoAcceptTippAddition" disabled/> TIPP Addition</td>
+              <td><input type="Checkbox" name="autoAcceptTippUpdate" disabled/> TIPP Update</td>
+              <td><input type="Checkbox" name="autoAcceptTippDelete" disabled/> TIPP Delete</td>
+              <td><input type="Checkbox" name="autoAcceptPackageChange" disabled/> Package Changes</td>
             </tr>
           </table>
           </dd>
         </dl>
-          <input type="submit" onclick="toggleAlert()"/>
+          <input type="submit" class="ui button" onclick="toggleAlert()" value="${message(code: "globalDataSync.startTrackButton")}">
       </div>
 </g:form>
 
@@ -50,10 +50,10 @@
         <i class="notched circle loading icon"></i>
         <div class="content">
             <div class="header">
-                Ihre Anfrage ist in Bearbeitung.
+              <g:message code="globalDataSync.requestProcessing" />
             </div>
-            <p>Bitte haben sie einen Moment Geduld</p>
-            <p>Die Verarbeitung kann einige Minuten dauern</p>
+              <g:message code="globalDataSync.requestProcessingInfo" />
+
         </div>
     </div>
 
@@ -63,36 +63,33 @@
         }
     </script>
 
-    <div class="container well">
-      <h1 class="ui header"><semui:headerIcon />Package Sync Impact</h1>
+    <div class="ui segment">
+      <h1 class="ui header"><semui:headerIcon /><g:message code="globalDataSync.packageSyncImpact" /></h1>
       <table class="ui celled la-table table">
         <tr>
-          <th>
             <g:if test="${type=='new'}">
-              No current package
             </g:if>
             <g:else>
-              ${localPkg.name} as now
+              <th><g:message code="globalDataSync.localPackage" args="[localPkg.name]"/></th>
             </g:else>
-          </th>
-          <th>Action</th>
+          <th><g:message code="globalDataSync.actions.label" /></th>
           <th>
             <g:if test="${type=='new'}">
-              New Package After Processing
+              <g:message code="globalDataSync.newPackageafterProc"/>
             </g:if>
             <g:else>
-              ${localPkg.name} after sync
+              <g:message code="globalDataSync.localPackageafterSync" args="[localPkg.name]"/>
             </g:else>
           </th>
         </tr>
         <g:each in="${impact}" var="i">
           <tr>
-            <td width="47%">
               <g:if test="${i.action=='i'}">
               </g:if>
               <g:else>
+                <td width="47%">
                 <g:if test="${i.action=='-'}">
-                  <strong><em>${i.tipp?.title?.name}</em></strong> (<g:each in="${i.tipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                  <strong><em>${i.tipp?.title?.name}</em></strong> <br>(<g:each in="${i.tipp?.title?.identifiers}" var="id"><strong>${id.namespace}</strong>: ${id.value} </g:each>) <br/>
                   <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                     <g:each in="${i.tipp.coverage}" var="c">
@@ -104,7 +101,7 @@
                   </table>
                 </g:if>
                 <g:else>
-                  <strong><em>${i.oldtipp?.title?.name}</em></strong> (<g:each in="${i.oldtipp?.title?.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                  <strong><em>${i.oldtipp?.title?.name}</em></strong> <br>(<g:each in="${i.oldtipp?.title?.identifiers}" var="id"><strong>${id.namespace}</strong>: ${id.value} </g:each>) <br/>
                   <table class="ui table">
                     <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                     <g:each in="${i.oldtipp.coverage}" var="c">
@@ -115,15 +112,29 @@
                     </g:each>
                   </table>
                 </g:else>
+                </td>
               </g:else>
+
+            <td width="6%"><g:if test="${i.action=='i'}">
+                          <div class="ui green message"><g:message code="globalDataSync.insert"/></div>
+                            </g:if>
+                            <g:elseif test="${i.action=='d'}">
+                              <div class="ui red message"><g:message code="globalDataSync.remove"/></div>
+                            </g:elseif>
+                            <g:elseif test="${i.action=='u'}">
+                              <div class="ui blue message"><g:message code="globalDataSync.update"/></div>
+                            </g:elseif>
+                            <g:elseif test="${i.action=='-'}">
+                              <div class="ui yellow message"><g:message code="globalDataSync.unchange"/></div>
+                            </g:elseif>
+                            <g:else>${i.action}</g:else>
             </td>
-            <td width="6%">${i.action}</td>
             <td width="47%">
               <g:if test="${i.action=='d'}">
-                <strong><em>Removed</em></strong>
+                <strong><em><g:message code="globalDataSync.remove"/></em></strong>
               </g:if>
               <g:else>
-                <strong><em>${i.tipp?.title?.name}</em></strong> (<g:each in="${i.tipp.title.identifiers}" var="id">${id.namespace}:${id.value} </g:each>) <br/>
+                <strong><em>${i.tipp?.title?.name}</em></strong> <br>(<g:each in="${i.tipp.title.identifiers}" var="id"><strong>${id.namespace}</strong>: ${id.value} </g:each>) <br/>
                 <table class="ui table">
                   <tr><th></th><th>Volume</th><th>Issue</th><th>Date</th></tr>
                   <g:each in="${i.tipp.coverage}" var="c">

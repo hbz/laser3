@@ -534,7 +534,7 @@ class AdminController {
         redirect(action:'titleMerge',params:[titleIdToDeprecate:params.titleIdToDeprecate, correctTitleId:params.correctTitleId])
       }
 
-      result.title_to_deprecate.status = RefdataCategory.lookupOrCreate(RefdataCategory.TI_STATUS, "Deleted")
+      result.title_to_deprecate.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
       result.title_to_deprecate.save(flush:true);
     }
     result
@@ -812,7 +812,13 @@ class AdminController {
       case 'GET':
         break
       case 'POST':
-        if (!identifierNamespaceInstance.save(flush: true)) {
+        if (IdentifierNamespace.findByNsIlike(params.ns) || !identifierNamespaceInstance.save(flush: true)) {
+
+          if(IdentifierNamespace.findByNsIlike(params.ns))
+          {
+            flash.error = message(code: 'identifier.namespace.exist', default: 'IdentifierNamespace exist', args:[params.ns])
+            break
+          }
           return
         }
         else {

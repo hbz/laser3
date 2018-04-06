@@ -113,7 +113,7 @@
                   <label>${message(code:'default.search.text', default:'Search text')}</label>
                   <input type="hidden" name="sort" value="${params.sort}">
                   <input type="hidden" name="order" value="${params.order}">
-                  <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
+                  <input type="text" name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
               </div>
               <div class="field">
                   <semui:datepicker label="myinst.currentTitles.subs_valid_on" name="validOn" value="${validOn}" />
@@ -152,7 +152,7 @@
             <g:each in="${titles}" var="ti">
               <tr>
                 <td>
-                  <g:link controller="titleDetails" action="show" id="${ti.id}"><strong>${ti.title}</strong></g:link>
+                  <g:link controller="titleDetails" action="show" id="${ti.id}"><strong>${ti.title}</strong></g:link>(${message(code:'title.type.label')}: ${ti.type.getI10n('value')})
                     <%--<br/>
                     <g:link controller="public" action="journalLicenses" params="${['journal':'kb:'+ti.id,'org':institution.id]}">${message(code:'myinst.currentTitles.check_license_terms', default:'Check current license terms')}</g:link>
                     --%>
