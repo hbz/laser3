@@ -46,4 +46,15 @@
 							<td>${fieldValue(bean: creatorTitleInstance, field: "role")}</td>
 						
 							<td>${fieldValue(bean: creatorTitleInstance, field: "title")}</td>
-						
+							<td class="link">
+								<g:link action="show" id="${creatorTitleInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
+								<g:link action="edit" id="${creatorTitleInstance.id}" class="ui tiny button">${message('code':'default.button.edit.label')}</g:link>
+							</td>
+						</tr>
+					</g:each>
+					</tbody>
+				</table>
+
+<semui:paginate total="${creatorTitleInstanceTotal}" />
+	</body>
+</html>
