@@ -20660,15 +20660,15 @@ ol.ui.horizontal.list li:before,
 }
 
 .la-filter-selected {
-  background: red!important;
+  background: #9bacc0 !important;
 }
 
 .la-calendar-selected input {
-  background: blue!important;
+  background: #9bacc0 !important;
 }
 
-.orange {
-  background: orange!important;
+.la-filter-dropdown-selected {
+  background: #9bacc0 !important;
 }
 /*!
  * # Semantic UI 2.3.0 - Grid

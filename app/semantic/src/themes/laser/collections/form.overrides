@@ -16,11 +16,11 @@
 // Filter Selected
 
 .la-filter-selected {
-  background: red!important;
+  background: @laFilterChosen!important;
 }
 .la-calendar-selected input {
-  background: blue!important;
+  background: @laFilterChosen!important;
 }
-.orange {
-  background: orange!important;
+.la-filter-dropdown-selected {
+  background:@laFilterChosen!important;
 }

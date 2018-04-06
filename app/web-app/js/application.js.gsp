@@ -142,16 +142,16 @@ r2d2 = {
         $('.ui.dropdown').on('keydown', function(event) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
                 event.preventDefault();
-                $(this).dropdown('clear').dropdown('hide').removeClass("orange");
+                $(this).dropdown('clear').dropdown('hide').removeClass("la-filter-dropdown-selected");
             }
         });
 
         // SEM UI DROPDOWN CHANGE
         $(".ui.dropdown").change(function() {
-            ($(this).hasClass("default")) ? $(this).removeClass("orange") : $(this).addClass("orange");
+            ($(this).hasClass("default")) ? $(this).removeClass("la-filter-dropdown-selected") : $(this).addClass("la-filter-dropdown-selected");
         });
 
-        $(".ui.dropdown > select > option[selected=selected]").parents('.ui.dropdown').addClass('orange');
+        $(".ui.dropdown > select > option[selected=selected]").parents('.ui.dropdown').addClass('la-filter-dropdown-selected');
 
         // accordions
         $('.ui.accordion').accordion();

@@ -113,7 +113,7 @@
                   <label>${message(code:'default.search.text', default:'Search text')}</label>
                   <input type="hidden" name="sort" value="${params.sort}">
                   <input type="hidden" name="order" value="${params.order}">
-                  <input name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
+                  <input type="text" name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
               </div>
               <div class="field">
                   <semui:datepicker label="myinst.currentTitles.subs_valid_on" name="validOn" value="${validOn}" />
