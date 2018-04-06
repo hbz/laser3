@@ -356,14 +356,15 @@
                     </div>
                 </g:if>
 
-            <g:if test="${subscriptionInstance.costItems}">
-
+            <g:if test="${usage}">
                 <div class="ui card la-dl-no-table">
                     <div class="content">
-                        <dl>
-                            <dt>${message(code:'subscription.details.costPerUse.header')}</dt>
-                            <dd><g:formatNumber number="${totalCostPerUse}" type="currency" currencyCode="${currencyCode}" maxFractionDigits="2" minFractionDigits="2" roundingMode="HALF_UP"/></dd>
-                        </dl>
+                    <g:if test="${subscriptionInstance.costItems}">
+                            <dl>
+                                <dt>${message(code:'subscription.details.costPerUse.header')}</dt>
+                                <dd><g:formatNumber number="${totalCostPerUse}" type="currency" currencyCode="${currencyCode}" maxFractionDigits="2" minFractionDigits="2" roundingMode="HALF_UP"/></dd>
+                            </dl>
+                    </g:if>
                         <dl>
                             <dt>${message(code:'default.usage.label')}</dt>
                             <dd>

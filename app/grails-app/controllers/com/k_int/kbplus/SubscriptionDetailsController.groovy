@@ -1425,26 +1425,27 @@ AND l.status.value != 'Deleted' order by l.reference
                 OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
             if (result.institutional_usage_identifier) {
 
-              // TODO can there be different currency codes? We would have to handle that somehow.
-              def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost from CostItem co ' +
+                // TODO can there be different currency codes? We would have to handle that somehow.
+                def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost from CostItem co ' +
                     'where co.sub=:sub'
-              def totalCostRow = CostItem.executeQuery(query, [sub: result.subscriptionInstance]).first()
-              def totalUsageForLicense = factService.totalUsageForSub(result.subscriptionInstance, 'STATS:JR1')
-              def totalCostPerUse = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
-              result.totalCostPerUse = totalCostPerUse
-              result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                def totalCostRow = CostItem.executeQuery(query, [sub: result.subscriptionInstance]).first()
 
-              def fsresult = factService.generateUsageData(result.institution.id, supplier_id)
-              def fsLicenseResult = factService.generateUsageDataForLicense(
-                  result.institution.id, supplier_id, result.subscriptionInstance)
-              result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
-              result.usage = fsresult?.usage
-              result.x_axis_labels = fsresult?.x_axis_labels
-              result.y_axis_labels = fsresult?.y_axis_labels
+                    def totalUsageForLicense = factService.totalUsageForSub(result.subscriptionInstance, 'STATS:JR1')
+                if (totalCostRow[0]) {
+                    def totalCostPerUse = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
+                    result.totalCostPerUse = totalCostPerUse
+                    result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                }
+                def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
+                def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
+                result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
+                result.usage = fsresult?.usage
+                result.x_axis_labels = fsresult?.x_axis_labels
+                result.y_axis_labels = fsresult?.y_axis_labels
 
-              result.lusage = fsLicenseResult?.usage
-              result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
-              result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                result.lusage = fsLicenseResult?.usage
+                result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+                result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
             }
           }
         }

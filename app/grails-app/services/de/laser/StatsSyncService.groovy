@@ -187,7 +187,7 @@ class StatsSyncService {
                                         fact.reportingMonth=cal.get(Calendar.MONTH)+1
                                         fact.type = statsReport.toString()
                                         fact.value = value.text()
-                                        fact.uid = "${titleId}:${platform}:${customer}:${key}:${reportValues[1]}"
+                                        fact.uid = "${titleId}:${platform}:${customer}:${key}:${report}"
                                         fact.title = title_inst
                                         fact.supplier = supplier_inst
                                         fact.inst = org_inst

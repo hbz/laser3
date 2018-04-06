@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import org.hibernate.criterion.CriteriaSpecification
-import org.hibernate.transform.Transformers
 
 class FactService {
 
@@ -188,35 +187,36 @@ class FactService {
     result
   }
 
-  def generateUsageDataForLicense(org_id, supplier_id, license, title_id=null) {
+  def generateUsageDataForSubscriptionPeriod(org_id, supplier_id, subscription, title_id=null) {
     def result = [:]
 
     if (org_id != null &&
         supplier_id != null) {
 
       Calendar cal = Calendar.getInstance()
-      cal.setTimeInMillis(license.startDate.getTime())
-      def (firstLicenseMonth, firstLicenseYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
-      cal.setTimeInMillis(license.endDate.getTime())
-      def (lastLicenseMonth, lastLicenseYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
+      cal.setTimeInMillis(subscription.startDate.getTime())
+      def (firstSubscriptionMonth, firstSubscriptionYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
+      cal.setTimeInMillis(subscription.endDate.getTime())
+      def (lastSubscriptionMonth, lastSubscriptionYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
 
-      //def factList = getUsageFacts(org_id, supplier_id, title_id, license)
-      def factList = getTotalUsageFactsForSub(org_id,supplier_id,title_id,license)
-
+      def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id, true)
+      if (factList.size == 0){
+        return result
+      }
       def y_axis_labels = factList.factType.value.unique(false).sort()
-      def x_axis_labels = (firstLicenseYear..lastLicenseYear).toList()
+      def x_axis_labels = (firstSubscriptionYear..lastSubscriptionYear).toList()
 
-      addFactsForLicensePeriodWithoutUsage(x_axis_labels,factList)
+      addFactsForSubscriptionPeriodWithoutUsage(x_axis_labels,factList)
 
       result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
 
-      if (firstLicenseMonth > 1) {
+      if (firstSubscriptionMonth > 1) {
         def firstYearIndex = x_axis_labels.indexOf(x_axis_labels.first())
-        x_axis_labels[firstYearIndex] = "${firstLicenseMonth}-12/${firstLicenseYear}"
+        x_axis_labels[firstYearIndex] = "${firstSubscriptionMonth}-12/${firstSubscriptionYear}"
       }
-      if (lastLicenseMonth < 12) {
+      if (lastSubscriptionMonth < 12) {
         def lastYearIndex = x_axis_labels.indexOf(x_axis_labels.last())
-        x_axis_labels[lastYearIndex] = "1-${lastLicenseMonth}/${lastLicenseYear}"
+        x_axis_labels[lastYearIndex] = "1-${lastSubscriptionMonth}/${lastSubscriptionYear}"
       }
 
       result.x_axis_labels = x_axis_labels
@@ -236,12 +236,12 @@ class FactService {
     usage
   }
 
-  private def getTotalUsageFactsForSub(org_id, supplier_id, title_id=null, sub=null)  {
+  private def getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
     def params = [:]
     def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType' +
         ' from Fact as f' +
         ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
-        if (sub) {
+        if (restrictToSubscriptionPeriod) {
           hql += ' and f.factFrom >= :start and f.factTo <= :end'
           params['start'] = sub.startDate
           params['end'] = sub.endDate
@@ -308,7 +308,7 @@ class FactService {
     }
   }
 
-  private def addFactsForLicensePeriodWithoutUsage(licenseYears, factList) {
+  private def addFactsForSubscriptionPeriodWithoutUsage(licenseYears, factList) {
     def usageYears = factList.reportingYear.unique(false).sort()
     def licenseYearsWithoutUsage = licenseYears - usageYears
 
@@ -323,14 +323,14 @@ class FactService {
     }
   }
 
-  def generateUsageData(org_id, supplier_id, title_id=null) {
+  def generateUsageData(org_id, supplier_id, subscription, title_id=null) {
     def result = [:]
 
     if (org_id != null &&
         supplier_id != null) {
 
       //def factList = getUsageFacts(org_id, supplier_id, title_id)
-      def factList = getTotalUsageFactsForSub(org_id, supplier_id, title_id)
+      def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id)
       def y_axis_labels = factList.factType.value.unique(false).sort()
       def x_axis_labels = factList.reportingYear.unique(false).sort()*.intValue()
 
