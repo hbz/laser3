@@ -56,8 +56,7 @@
                         <dt><g:message code="creator.gnd_id.label" default="Gndid"/></dt>
                         <dd><g:if test="${editable}">
                             <semui:formAddIdentifier owner="${creatorInstance}" uniqueCheck="yes" onlyoneNamespace="GND"
-                                                     uniqueWarningText="${message(code: 'subscription.details.details.duplicate.warn')}">
-                                ${message(code: 'identifier.select.text', args: ['JC:66454'])}
+                                                     uniqueWarningText="${message(code: 'creator.gnd_id.duplicate.warn')}">
                             </semui:formAddIdentifier>
                         </g:if>
 
@@ -74,11 +73,11 @@
 
                         <dt><g:message code="creator.title.label" default="Title"/></dt>
 
-                        <dd><g:each in="${creatorInstance.title}" var="t">
+                        <dd><g:each in="${creatorInstance?.title}" var="t">
                             <dl>
                                 <dd>
                                     <g:link controller="TitleDetails" action="show"
-                                            id="${t.title.id}">${t?.title.title}</g:link>
+                                            id="${t?.title.id}">${t?.title.title}</g:link>
                                 </dd>
                             </dl>
                         </g:each>
