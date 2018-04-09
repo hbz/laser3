@@ -426,7 +426,7 @@ class BootStrap {
                 [name: [en: "Fair use clause indicator", de: "Hinweis auf Klausel über die 'faire Nutzung'"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "All rights reserved indicator", de: "Hinweis auf 'Alle Rechte vorbehalten'"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Data protection override", de: "Datenschutz aufgehoben"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Citation requirement detail", de: "Details der Zitier-Regeln"],    descr:allDescr, type:Sring.toString()],
+                [name: [en: "Citation requirement detail", de: "Details der Zitier-Regeln"],    descr:allDescr, type:String.toString()],
                 [name: [en: "Digitial copy", de: "Digitalkopie"],                               descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
                 //[name: [en: "Digitial copy term note", de: "Digitalkopie Bedingungen"],         descr:allDescr, type:String.toString()],
                 [name: [en: "Print copy", de: "Druckkopie"],                                    descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
