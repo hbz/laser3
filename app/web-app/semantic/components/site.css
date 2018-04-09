@@ -426,18 +426,27 @@ aside.ui.accordion .title:not(.ui) {
       -ms-flex-align: center;
           align-items: center;
 }
-.ui.label.la-object {
+.ui.label.la-object,
+.ui.label.la-object-journal,
+.ui.label.la-object-database,
+.ui.label.la-object-ebook {
   display: none;
   color: white;
   min-width: 16px!important;
   min-height: 16px!important;
 }
-.ui.label.la-object .icon {
+.ui.label.la-object .icon,
+.ui.label.la-object-journal .icon,
+.ui.label.la-object-database .icon,
+.ui.label.la-object-ebook .icon {
   margin-right: 0!important;
   width: 22px!important;
   text-align: center!important;
 }
-.ui.label.la-object .icon:before {
+.ui.label.la-object .icon:before,
+.ui.label.la-object-journal .icon:before,
+.ui.label.la-object-database .icon:before,
+.ui.label.la-object-ebook .icon:before {
   text-align: center!important;
 }
 body[class*="License"] .ui.label.la-object,
@@ -509,6 +518,36 @@ body[class*="organisation"] .ui.label.la-object {
 body[class*="Organisation"] .ui.label.la-object .icon:before,
 body[class*="organisation"] .ui.label.la-object .icon:before {
   content: "\f19c";
+}
+.ui.label.la-object-journal {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #004678;
+  border-color: #004678;
+}
+.ui.label.la-object-journal .icon:before {
+  content: "\f1ea";
+}
+.ui.label.la-object-database {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #004678;
+  border-color: #004678;
+}
+.ui.label.la-object-database .icon:before {
+  content: "\f1c0";
+}
+.ui.label.la-object-ebook {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  background-color: #004678;
+  border-color: #004678;
+}
+.ui.label.la-object-ebook .icon:before {
+  content: "\f3fa";
 }
 
 /* Button on Subscription Site */

@@ -120,6 +120,25 @@ class SemanticUiTagLib {
             out << '<i class="icon"></i>'
             out << '</div>'
     }
+    def headerTitleIcon = { attrs, body ->
+
+        switch(attrs.type) {
+            case 'Journal':
+                out << '<div class="ui la-object-journal circular label" style="margin-left:0; margin-right: 5px!important; ">'
+                break
+            case 'Database':
+                out << '<div class="ui la-object-database circular label" style="margin-left:0; margin-right: 5px!important; ">'
+                break
+            case 'EBook':
+                out << '<div class="ui la-object-ebook circular label" style="margin-left:0; margin-right: 5px!important; ">'
+                break
+            default:
+                out << '<div class="ui la-object circular label" style="margin-left:0; margin-right: 5px!important; ">'
+                break
+        }
+        out << '<i class="icon"></i>'
+        out << '</div>'
+    }
 
     def editableLabel = { attrs, body ->
 

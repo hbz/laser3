@@ -15,7 +15,7 @@
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
 
-        <h1 class="ui header"><semui:headerIcon />
+        <h1 class="ui header"><semui:headerTitleIcon type="${ti.type.('value')}"/>
 
             <% /*
             <g:if test="${editable}"><span id="titleEdit"
@@ -90,6 +90,7 @@
               <h3 class="ui header">${message(code:'default.status.label')}:
                 <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/>
                 <br>${message(code:'title.type.label')}: ${ti.type.getI10n('value')}
+                  <br>${ti.type.('value')}
               </h3>
 
             </div><!-- .eight -->
