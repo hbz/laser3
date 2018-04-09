@@ -866,6 +866,12 @@ from Subscription as s where (
             } else {
                 log.error("Problem saving org links to license ${org.errors}");
             }
+            if(params.sub) {
+                def subInstance = Subscription.get(params.sub)
+                subInstance.owner = licenseInstance
+                subInstance.save(flush: true)
+            }
+
             flash.message = message(code: 'license.created.message')
             redirect controller: 'licenseDetails', action: 'show', params: params, id: licenseInstance.id
         }

@@ -266,7 +266,7 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="globalDataSync" action="index">${message(code:'menu.datamanager.global_data_sync')}</g:link>
+                            <g:link class="item" controller="globalDataSync" action="index" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.datamanager.global_data_sync')}</g:link>
 
                             <div class="divider"></div>
 
@@ -304,24 +304,24 @@
 
                                     <div class="divider"></div>
 
-                                    <g:link class="item" controller="yoda" action="globalSync">Start Global Data Sync</g:link>
+                                    <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
                                     <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
 
                                     <div class="divider"></div>
 
-                                    <g:link class="item" controller="yoda" action="fullReset">Run Full ES Index Reset</g:link>
-                                    <g:link class="item" controller="yoda" action="esIndexUpdate">Start ES Index Update</g:link>
+                                    <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
+                                    <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
                                     <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
 
                                     <div class="divider"></div>
 
-                                    <g:link class="item" controller="admin" action="triggerHousekeeping">Trigger Housekeeping</g:link>
-                                    <g:link class="item" controller="admin" action="initiateCoreMigration">Initiate Core Migration</g:link>
+                                    <g:link class="item" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">Trigger Housekeeping</g:link>
+                                    <g:link class="item" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">Initiate Core Migration</g:link>
                                     <g:if test="${grailsApplication.config.feature.issnl}">
                                         <g:link class="item" controller="admin" action="uploadIssnL">Upload ISSN to ISSN-L File</g:link>
                                     </g:if>
-                                    <g:link class="item" controller="admin" action="dataCleanse">Run Data Cleaning (Nominal Platforms)</g:link>
-                                    <g:link class="item" controller="admin" action="titleAugment">Run Data Cleaning (Title Augment)</g:link>
+                                    <g:link class="item" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</g:link>
+                                    <g:link class="item" controller="admin" action="titleAugment" onclick="return confirm('${message(code:'confirm.start.DataCleaningTitleAugment')}')">Run Data Cleaning (Title Augment)</g:link>
                                 </div>
                             </div>
 
@@ -334,7 +334,7 @@
                             <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
                             <g:link class="item" controller="admin" action="allNotes">All Notes</g:link>
                             <g:link class="item" controller="userDetails" action="list">User Details</g:link>
-                            <g:link class="item" controller="admin" action="statsSync">Run Stats Sync</g:link>
+                            <g:link class="item" controller="admin" action="statsSync" onclick="return confirm('${message(code:'confirm.start.StatsSync')}')">Run Stats Sync</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
@@ -344,8 +344,8 @@
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('You are about to permanently delete all titles with a status of ‘Deleted’. This will also delete any TIPPs and IEs that are attached to this title. Only click OK if you are absolutely sure you wish to proceed')">Expunge Deleted Titles</g:link>
-                                    <g:link class="item" controller="dataManager" onclick="return confirm('This will only delete TIPPs that are not attached to current IEs.')" action="expungeDeletedTIPPS">Expunge Deleted TIPPS</g:link>
+                                    <g:link class="item" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('${message(code:'confirm.expunge.deleted.titles')}')">Expunge Deleted Titles</g:link>
+                                    <g:link class="item" controller="dataManager" onclick="return confirm('${message(code:'confirm.expunge.deleted.tipps')}')" action="expungeDeletedTIPPS">Expunge Deleted TIPPS</g:link>
                                     <g:link class="item" controller="admin" action="titleMerge">Title Merge</g:link>
                                     <g:link class="item" controller="admin" action="tippTransfer">TIPP Transfer</g:link>
                                     <g:link class="item" controller="admin" action="ieTransfer">IE Transfer</g:link>
@@ -378,7 +378,7 @@
                             <div class="divider"></div>
 
                             <g:link class="item" controller="stats" action="statsHome">Statistics</g:link>
-                            <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>
+                           %{-- <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>--}%
 
                         </div>
                     </div>

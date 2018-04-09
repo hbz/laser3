@@ -59,7 +59,7 @@
                     <label for="status">
                         <g:message code="task.status.label" default="Status" />
                     </label>
-                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionValue="value" optionKey="id" required="" value="${taskInstance?.status?.id}" class="many-to-one"/>
+                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionValue="value" optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}" class="many-to-one"/>
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate" placeholder="default.date.label" value="${taskInstance?.endDate}" required="true" bean="${taskInstance}" />
@@ -73,7 +73,7 @@
                     <label for="responsibleOrg">
                         <g:message code="task.responsibleOrg.label" default="Responsible Org" />
                     </label>
-                    <g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id}" class="many-to-one" noSelection="['null': '']"/>
+                    <g:select id="responsibleOrg" name="responsibleOrg.id" from="${validResponsibleOrgs}" optionKey="id" value="${taskInstance?.responsibleOrg?.id ?: contextOrg}" class="many-to-one" />
                 </div>
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
                     <label for="responsibleUser">
@@ -94,7 +94,7 @@
                     <g:select id="creator" name="creator.id" from="${taskCreator}" optionKey="id" optionValue="display" required="" value="${taskInstance?.creator?.id}" class="many-to-one"/>
                 </div>
 
-                <semui:datepicker label="task.createDate.label" name="createDate" placeholder="default.date.label" value="${taskInstance?.createDate}" required="true" bean="${taskInstance}"  />
+                <semui:datepicker label="task.createDate.label" name="createDate" placeholder="default.date.label" value="${new Date().format( 'yyyy-dd-MM' )}" required="true" bean="${taskInstance}"  />
             </div>
         </div>
 

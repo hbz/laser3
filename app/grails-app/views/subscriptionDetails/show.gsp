@@ -192,8 +192,10 @@
                                         </g:if>
 
                                         <br/><br/>
-                                        <g:link  controller="myInstitution" class="ui button" action="cleanLicense">${message(code:'license.add.blank')}
+                                        <g:if test="${subscriptionInstance.owner == null}">
+                                        <g:link  controller="myInstitution" class="ui button" action="cleanLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}
                                         </g:link>
+                                        </g:if>
                                 </dd>
                             </dl>
                         </div>
