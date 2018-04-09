@@ -1135,3 +1135,6 @@ i.search.icon.open {
 input#spotlightSearch[type="search"] {
   display: none;
 }
+.ui.input > input#spotlightSearch:focus {
+  border-color: #DCDDDE;
+}
