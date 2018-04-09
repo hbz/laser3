@@ -443,29 +443,33 @@ class LicenseDetailsController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-  def deleteDocuments() {
-    def ctxlist = []
+    def deleteDocuments() {
+        log.debug("deleteDocuments ${params}");
 
-    log.debug("deleteDocuments ${params}");
+        params.id = params.instanceId // TODO refactoring frontend instanceId -> id
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-    def user = User.get(springSecurityService.principal.id)
-    def l = License.get(params.instanceId);
+        //def user = User.get(springSecurityService.principal.id)
+        //def l = License.get(params.instanceId);
+        //userAccessCheck(l,user,'edit')
 
-    userAccessCheck(l,user,'edit')
+        params.each { p ->
+            if (p.key.startsWith('_deleteflag.') ) {
+                def docctx_to_delete = p.key.substring(12);
+                log.debug("Looking up docctx ${docctx_to_delete} for delete");
+                def docctx = DocContext.get(docctx_to_delete)
+                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted');
+                docctx.save(flush:true);
+            }
+        }
 
-    params.each { p ->
-      if (p.key.startsWith('_deleteflag.') ) {
-        def docctx_to_delete = p.key.substring(12);
-        log.debug("Looking up docctx ${docctx_to_delete} for delete");
-        def docctx = DocContext.get(docctx_to_delete)
-        docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted');
-        docctx.save(flush:true);
-      }
+        redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId, fragment:'docstab'
     }
 
-    redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId, fragment:'docstab'
-  }
-
+    /*
     @Deprecated
     def userAccessCheck(license, user, role_str) {
         if ((license == null || user == null ) || (! license?.hasPerm(role_str, user))) {
@@ -478,6 +482,7 @@ class LicenseDetailsController {
         }
         return true
     }
+    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
