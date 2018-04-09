@@ -498,12 +498,18 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
-        def subscriptionInstance = Subscription.get(params.id)
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+
         // def formatter = new java.text.SimpleDateFormat("MM/dd/yyyy")
         def formatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
-        def user = User.get(springSecurityService.principal.id)
 
-        userAccessCheck(subscriptionInstance, user, 'edit')
+        // def subscriptionInstance = Subscription.get(params.id)
+        // def user = User.get(springSecurityService.principal.id)
+        // userAccessCheck(subscriptionInstance, user, 'edit')
 
         log.debug("subscriptionBatchUpdate ${params}");
 
@@ -567,7 +573,7 @@ class SubscriptionDetailsController {
             }
         }
 
-        redirect action: 'index', params: [id: subscriptionInstance?.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
+        redirect action: 'index', params: [id: result.subscriptionInstance?.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -702,7 +708,6 @@ class SubscriptionDetailsController {
         if (!result) {
             response.sendError(401); return
         }
-
 
         def orgType   = RefdataValue.get(params.asOrgType)
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
@@ -846,13 +851,17 @@ class SubscriptionDetailsController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processAddEntitlements() {
         log.debug("addEntitlements....");
-        def result = [:]
 
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.siid)
-        result.institution = result.subscriptionInstance?.subscriber
+        params.id = params.siid // TODO refactoring frontend siid -> id
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
 
-        userAccessCheck(result.subscriptionInstance, result.user, 'edit')
+        //result.user = User.get(springSecurityService.principal.id)
+        //result.subscriptionInstance = Subscription.get(params.siid)
+        //result.institution = result.subscriptionInstance?.subscriber
+        //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
 
         if (result.subscriptionInstance) {
             params.each { p ->
@@ -1025,6 +1034,7 @@ class SubscriptionDetailsController {
         redirect controller: 'myInstitution', action: 'renewalsSearch'
     }
 
+    /*
     @Deprecated
     private def userAccessCheck(sub, user, role_str) {
         if ((sub == null || user == null) || (!sub.hasPerm(role_str, user))) {
@@ -1032,6 +1042,7 @@ class SubscriptionDetailsController {
             return
         }
     }
+    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
