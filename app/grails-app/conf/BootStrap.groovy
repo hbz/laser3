@@ -383,36 +383,94 @@ class BootStrap {
 
         def requiredProps = [
                 [name: [en: "Agreement Date", de: "Abschlussdatum"],                            descr:allDescr, type:Date.toString()],
-                [name: [en: "Authorized Users", de: "Autorisierte Nutzer"],                     descr:allDescr, type:String.toString()],
+                //[name: [en: "Authorized Users", de: "Autorisierte Nutzer"],                     descr:allDescr, type:String.toString()],
                 [name: [en: "Alumni Access"],                                                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Cancellation Allowance", de: "Außerordentliche Kündigung"],        descr:allDescr, type:String.toString()],
+                //[name: [en: "Cancellation Allowance", de: "Außerordentliche Kündigung"],        descr:allDescr, type:String.toString()],
                 [name: [en: "Change to licensed material", de: "Änderung am Vertragsgegenstand"], descr:allDescr, type:String.toString()],
                 [name: [en: "Concurrent Access", de: "Concurrent Access"],                      descr:allDescr, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
                 [name: [en: "Concurrent Users", de: "Concurrent Users"],                        descr:allDescr, type:Integer.toString()],
-                [name: [en: "Correction Time", de: "Korrekturfrist bei Vertragsverletzungen"],  descr:allDescr, type:String.toString()],
+                //[name: [en: "Correction Time", de: "Korrekturfrist bei Vertragsverletzungen"],  descr:allDescr, type:String.toString()],
                 [name: [en: "Enterprise Access"],                                               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "ILL - InterLibraryLoans", de: "Fernleihe"],                        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Include In Coursepacks", de: "Semesterapparat"],                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                //[name: [en: "ILL - InterLibraryLoans", de: "Fernleihe"],                        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                //[name: [en: "Include In Coursepacks", de: "Semesterapparat"],                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Include in VLE"],                                                  descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Invoicing", de: "Rechnungsstellung"],                              descr:allDescr, type:Date.toString()],
                 [name: [en: "Metadata delivery"],                                               descr:allDescr, type:String.toString()],
                 [name: [en: "Method of Authentication", de: "Authentifizierungsverfahren"],     descr:allDescr, type:String.toString()],
                 [name: [en: "Multi Site Access"],                                               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Notice Period"],                                                   descr:allDescr, type:Date.toString()],
+                //[name: [en: "Notice Period"],                                                   descr:allDescr, type:Date.toString()],
                 [name: [en: "New Underwriter", de: "Aufnahme neuer Teilnehmer"],                descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Payment target", de: "Zahlungsziel"],                              descr:allDescr, type:Date.toString()],
-                [name: [en: "Place of jurisdiction", de: "Gerichtsstand"],                      descr:allDescr, type:String.toString()],
+                // [name: [en: "Place of jurisdiction", de: "Gerichtsstand"],                      descr:allDescr, type:String.toString()],
                 [name: [en: "Partners Access"],                                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Permitted Uses"],                                                  descr:allDescr, type:String.toString()],
                 [name: [en: "Post Cancellation Access Entitlement"],                            descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                //[name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Regional Restriction", de: "Regionale Einschränkung"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Service regulations", de: "Servicestandards"],                     descr:allDescr, type:String.toString()],
                 [name: [en: "Signed"],                                                          descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
                 [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO']
-               
+                //[name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                
+                // New Properties by FAK / Verde Review
+                [name: [en: "General Terms note", de: "Allgemeine Bedingungen"],                    descr:allDescr, type:String.toString()],
+                [name: [en: "User restriction note", de: "Benutzungsbeschränkungen"],               descr:allDescr, type:String.toString()],
+                [name: [en: "Authorized user definition", de: "Definition für berechtigte Nutzer"], descr:allDescr, type:String.toString()],
+                [name: [en: "Local authorized user defintion", de: "Lokale Definition für berechtigte Nutzer"],      descr:allDescr, type:String.toString()],
+                [name: [en: "ILL print or fax", de: "Fernleihe per Papier oder Fax"],           descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                [name: [en: "ILL secure electronic transmission", de: "Fernleihe über sichere elektonische Übermittlung"], descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                [name: [en: "ILL electronic", de: "Fernleihe elektronisch"],                    descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                [name: [en: "ILL record keeping required", de: "Fernleihdatensatz muss gespeichert werden"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                //[name: [en: "ILL term note", de: "Fernleihbedingungen"],                        descr:allDescr, type:String.toString()],
+                [name: [en: "Fair use clause indicator", de: "Hinweis auf Klausel über die 'faire Nutzung'"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "All rights reserved indicator", de: "Hinweis auf 'Alle Rechte vorbehalten'"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Data protection override", de: "Datenschutz aufgehoben"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Citation requirement detail", de: "Details der Zitier-Regeln"],    descr:allDescr, type:Sring.toString()],
+                [name: [en: "Digitial copy", de: "Digitalkopie"],                               descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                //[name: [en: "Digitial copy term note", de: "Digitalkopie Bedingungen"],         descr:allDescr, type:String.toString()],
+                [name: [en: "Print copy", de: "Druckkopie"],                                    descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                //[name: [en: "Print copy term note", de: "Druckkopie Bedingungen"],              descr:allDescr, type:String.toString()],
+                [name: [en: "Scholarly sharing", de: "Weitergabe im Rahmen der Lehre"],         descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                //[name: [en: "Scholarly sharing term note", de: "Weitergabe im Rahmen der Lehre Bedingungen"], descr:allDescr, type:String.toString()],
+                [name: [en: "Distance Education", de: "Fernstudium"],                           descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                //[name: [en: "Distance Education term note", de: "Fernstudium Bedingungen"],     descr:allDescr, type:String.toString()],
+                [name: [en: "Course reserve print", de: "Seminarapparat gedruckt"],             descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                [name: [en: "Course reserve electronic/cached", de: "Seminarapparat elektronisch"], descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                //[name: [en: "Course reserve term note", de: "Seminarapparat Bedingungen"],      descr:allDescr, type:String.toString()],
+                [name: [en: "Electronic link", de: "Elektronischer Link"],                      descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                //[name: [en: "Electronic link term note", de: "Elektronischer Link Bedingungen"], descr:allDescr, type:String.toString()],
+                [name: [en: "Course pack print", de: "Skripte gedruckt"],                       descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                [name: [en: "Course pack electronic", de: "Skripte elektronisch"],              descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                //[name: [en: "Course pack term note", de: "Skripte Bedingungen"],                descr:allDescr, type:String.toString()],
+                [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Walk-in Access", de: "Vor-Ort-Nutzung"],                           descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
+                //[name: [en: "Walk-in term note", de: "Vor-Ort-Nutzung Bedingungen"],            descr:allDescr, type:String.toString()],
+                [name: [en: "Completeness of content clause", de: "Klausel zur Vollständigkeit der Inhalte"], descr:allDescr, type:RefdataValue.toString(), cat:'Existence'],
+                [name: [en: "Concurrency with print version", de: "Gleichzeitigkeit mit Druckversion"], descr:allDescr, type:RefdataValue.toString(), cat:'Existence'],
+                [name: [en: "User information confidentiality", de: "Vertraulichkeit der Nutzerdaten"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Clickwrap modification", de: "Clickthrough"],                        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Indemnification by licensor", de: "Entschädigung durch den Lizenzgeber"], descr:allDescr, type:RefdataValue.toString(), cat:'Indemnification'],
+                [name: [en: "Indemnification by licensor indicator", de: "Entschädigung durch den Lizenzgeber Anzeiger"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Confidentiality of agreement", de: "Vertraulichkeit der Vereinbarung"], descr:allDescr, type:RefdataValue.toString(), cat:'Confidentiality'],
+                //[name: [en: "Confidentiality note", de: "Vertraulichkeit der Vereinbarung Anmerkung"], descr:allDescr, type:String.toString()],
+                [name: [en: "Governing law", de: "Anzuwendendes Recht"],                        descr:allDescr, type:String.toString()],
+                [name: [en: "Governing jurisdiction", de: "Gerichtsstand"],                     descr:allDescr, type:String.toString()],
+                [name: [en: "Applicable copyright law", de: "Maßgebliches Urheberrechtsgesetz"], descr:allDescr, type:String.toString()],
+                [name: [en: "Cure period for breach", de: "Zeitraum der Behebung bei Vertragsbruch"], descr:allDescr, type:String.toString()],
+                [name: [en: "Content warranty", de: "Gewährleistung über den Inhalt"],          descr:allDescr, type:String.toString()],
+                [name: [en: "Performance warranty", de: "Gewährleistung einer Systemleistung/Performanz"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Uptime guarantee", de: "Gewährleistung einer verfügbaren Betriebszeit"], descr:allDescr, type:String.toString()],
+                [name: [en: "Maintenance window", de: "Wartungsfenster"],                       descr:allDescr, type:String.toString()],
+                [name: [en: "Licensee termination right", de: "Kündigungsrecht des Lizenznehmers"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Licensee termination condition", de: "Kündigungsrecht des Lizenznehmers Voraussetzung"], descr:allDescr, type:RefdataValue.toString(), cat:'Termination Condition'],
+                [name: [en: "Licensee termination notice period", de: "Kündigungsfrist des Lizenznehmers"], descr:allDescr, type:String.toString()],
+                [name: [en: "Licensor termination right", de: "Kündigungsrecht des Lizenzgebers"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Licensor termination condition", de: "Kündigungsrecht des Lizenzgebers Voraussetzung"], descr:allDescr, type:RefdataValue.toString(), cat:'Termination Condition'],
+                [name: [en: "Licensor termination notice period", de: "Kündigungsfrist des Lizenzgebers"], descr:allDescr, type:String.toString()],
+                //[name: [en: "Termination right note", de: "Kündigungsrecht Hinweise"], descr:allDescr, type:String.toString()],
+                [name: [en: "Termination requirement note", de: "Kündigungsrecht besondere Anforderung"], descr:allDescr, type:String.toString()]
+            
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
@@ -613,9 +671,14 @@ class BootStrap {
 
         RefdataCategory.loc('YN',                   	                    [en: 'Yes/No', de: 'Ja/Nein'])
         RefdataCategory.loc('YNO',                  	                    [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'])
+        RefdataCategory.loc('Permissions',                                  [en: 'Permissions', de: 'Berechtigungen'])
+        RefdataCategory.loc('Existence',                                    [en: 'Existence', de: 'Vorliegen'])
+        RefdataCategory.loc('Indemnification',                              [en: 'Indemnification Choice', de: 'Entschädigung Auswahl'])
+        RefdataCategory.loc('Confidentiality',                              [en: 'Confidentiality Choice', de: 'Vertraulichkeit Auswahl'])
+        RefdataCategory.loc('Termination Condition',                        [en: 'Termination Condition', de: 'Kündigung Voraussetzung'])
         RefdataCategory.loc('AddressType',          	                    [en: 'Address Type', de: 'Art der Adresse'])
         RefdataCategory.loc('Cluster Type',         	                    [en: 'Cluster Type', de: 'Cluster Type'])
-        RefdataCategory.loc('CreatorType',         	                    [en: 'Creator Type', de: 'Creator Type'])
+        RefdataCategory.loc('CreatorType',         	                        [en: 'Creator Type', de: 'Creator Type'])
         RefdataCategory.loc('Combo Type',           	                    [en: 'Combo Type', de: 'Combo Type'])
         RefdataCategory.loc('ConcurrentAccess',     	                    [en: 'Concurrent Access', de: 'SimUser'])
         RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'])
@@ -661,6 +724,33 @@ class BootStrap {
         RefdataValue.loc('YNO',  [en: 'Not applicable', de: 'Nicht zutreffend'])
         RefdataValue.loc('YNO',  [en: 'Unknown', de: 'Unbekannt'])
         RefdataValue.loc('YNO',  [en: 'Other', de: 'Andere'])
+        
+        RefdataValue.loc('Permissions',  [en: 'Permitted (explicit)', de: 'Ausdrücklich erlaubt'])
+        RefdataValue.loc('Permissions',  [en: 'Permitted (interpreted)', de: 'Vermutlich erlaubt'])
+        RefdataValue.loc('Permissions',  [en: 'Prohibited (explicit)', de: 'Ausdrücklich verboten'])
+        RefdataValue.loc('Permissions',  [en: 'Prohibited (interpreted)', de: 'Vermutlich verboten'])
+        RefdataValue.loc('Permissions',  [en: 'Silent', de: 'Stillschweigend'])
+        RefdataValue.loc('Permissions',  [en: 'Not applicable', de: 'Nicht zutreffend'])
+        RefdataValue.loc('Permissions',  [en: 'Unknown', de: 'Unbekannt'])
+        
+        RefdataValue.loc('Existence',   [en: 'Existent', de: 'Bestehend'])
+        RefdataValue.loc('Existence',   [en: 'Nonexistend', de: 'Fehlend'])
+        
+        RefdataValue.loc('Indemnification',  [en: 'General', de: 'Generell'])
+        RefdataValue.loc('Indemnification',  [en: 'Intellectual Property Only', de: 'Nur geistiges Eigentum'])
+        RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unbekannt'])
+        
+        RefdataValue.loc('Confidentiality',  [en: 'All', de: 'Alles'])
+        RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'])
+        RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'])
+        RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'])
+        RefdataValue.loc('Confidentiality',  [en: 'Unknown', de: 'Unbekannt'])
+        
+        RefdataValue.loc('Termination Condition',  [en: 'At will', de: 'Nach Belieben'])
+        RefdataValue.loc('Termination Condition',  [en: 'Breach by Licensor/Licensee', de: 'Wegen Verstoß des Vertragspartners'])
+        RefdataValue.loc('Termination Condition',  [en: 'Other', de: 'Andere Gründe'])
+        RefdataValue.loc('Termination Condition',  [en: 'Unknown', de: 'Unbekannt'])
 
         RefdataValue.loc('AddressType', [en: 'Postal address', de: 'Postanschrift'])
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
@@ -668,8 +758,8 @@ class BootStrap {
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])
 
-        RefdataValue.loc('CreatorType', [en: 'Author', de: 'Author'])
-        RefdataValue.loc('CreatorType', [en: 'Editor', de: 'Editor'])
+        RefdataValue.loc('CreatorType', [en: 'Author', de: 'Autor'])
+        RefdataValue.loc('CreatorType', [en: 'Editor', de: 'Herausgeber'])
 
         RefdataValue.loc('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'])
         RefdataValue.loc('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'])
@@ -750,7 +840,7 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'])
 
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'])
-        RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Comercial', de: 'Comercial'])
+        RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Commercial', de: 'Kommerziell'])
 
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
