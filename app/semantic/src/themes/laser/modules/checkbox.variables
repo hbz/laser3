@@ -1,20 +1,20 @@
 /* Checkbox */
 @checkboxActiveBackground: @laFilterChosen;
 @checkboxActiveBorderColor: @laFilterChosen;
-@checkboxActiveCheckColor: @white;
+@checkboxActiveCheckColor:  @laFilterChosen;
 
 @checkboxActiveFocusBackground:@laFilterChosen;
 @checkboxActiveFocusBorderColor: @laFilterChosen;
-@checkboxActiveFocusCheckColor: @white;
+@checkboxActiveFocusCheckColor: @laFilterChosen;
 
 @checkboxTransition: none;
 
 /* Radio */
-@radioActiveBackground: @white;
+@radioActiveBackground: @laFilterChosen;
 @radioActiveBorderColor: @laFilterChosen;
 @radioActiveBulletColor: @laFilterChosen;
 
-@radioActiveFocusBackground: @white;
+@radioActiveFocusBackground : @laFilterChosen;
 @radioActiveFocusBorderColor: @laFilterChosen;
 @radioActiveFocusBulletColor: @laFilterChosen;
 
