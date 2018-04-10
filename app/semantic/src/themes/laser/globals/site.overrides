@@ -222,7 +222,10 @@ aside.ui.accordion .title:not(.ui) {
 .la-advanced-view{
     align-items: center;
 }
-.ui.label.la-object {
+.ui.label.la-object,
+.ui.label.la-object-journal,
+.ui.label.la-object-database,
+.ui.label.la-object-ebook {
     display: none;
     color: white;
     min-width: 16px!important;
@@ -320,6 +323,37 @@ body[class*="organisation"] {
         }
     }
 }
+.ui.label.la-object-journal {
+    display: inline-flex;
+    background-color: @title;
+    border-color: @title;
+    .icon {
+        &:before {
+            content: "\f1ea";
+        }
+    }
+}
+.ui.label.la-object-database {
+    display: inline-flex;
+    background-color: @title;
+    border-color: @title;
+    .icon {
+        &:before {
+            content: "\f1c0";
+        }
+    }
+}
+.ui.label.la-object-ebook {
+    display: inline-flex;
+    background-color: @title;
+    border-color: @title;
+    .icon {
+        &:before {
+            content: "\f3fa";
+        }
+    }
+}
+
 
 /* Button on Subscription Site */
 .la-forward-back {

@@ -202,6 +202,14 @@ r2d2 = {
             },
             minCharacters: 3
         });
+        $('#btn-search').on('click', function(e) {
+
+            e.preventDefault();
+
+            $('#spotlightSearch').animate({width: 'toggle'}).focus();
+            $(this).toggleClass('open');
+
+        });
 
         // stickies
         $('.ui.sticky').sticky({offset: 120});

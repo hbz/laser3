@@ -92,7 +92,7 @@
 --------------------*/
 
 /* Used on inputs, textarea etc */
-@focusedFormBorderColor: #85B7D9;
+@focusedFormBorderColor: #85b7d9;
 
 /* Used on dropdowns, other larger blocks */
 @focusedFormMutedBorderColor: #96C8DA;
@@ -253,13 +253,14 @@
 /*---  Colors for Site Elements---*/
 
 @functionalObjects  :   #d3dae3;/* Click an find out more */
-@showWhatsChosen    :   #9bacc0; /* You can Click me but you can also see what was Chosen */
+@showWhatsChosen    :   #d3dae3; /* You can Click me but you can also see what was Chosen */
 @simulateTransparency: #f4f8f9; /* sometimes transparence is not working  */
 
 @laSideCards        : lighten(@orange, 47);
 
 @laFilterBackground : lighten(@functionalObjects,6);
 @laFilterChosen     : @showWhatsChosen;
+
 
 /*---  Light Colors  ---*/
 @lightRed         : #FF695E;

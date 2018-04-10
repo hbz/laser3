@@ -46,11 +46,34 @@
 // Filter Selected
 
 .la-filter-selected {
-  background:  #d3dae3!important;
+  background:  @laFilterChosen!important;
 }
 .la-calendar-selected input {
-  background: #d3dae3!important;
+  background: @laFilterChosen!important;
 }
 .la-filter-dropdown-selected {
-  background: #d3dae3!important;
+  background: @laFilterChosen!important;
+}
+
+// Search Form Spothlight
+
+.ui.icon.input > i.icon#btn-search:not(.link){
+  pointer-events: auto;
+}
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+i.search.icon {
+  color: white;
+}
+i.search.icon.open {
+  color:black;
+}
+input#spotlightSearch[type="search"] {
+  display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
 }
