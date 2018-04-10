@@ -389,8 +389,8 @@
                 <sec:ifLoggedIn>
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
-                            <input class="prompt" placeholder="Suche nach .." type="text">
-                            <i class="search icon"></i>
+                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .." type="text">
+                            <i id="btn-search"  class="search icon"></i>
                         </div>
                         <div class="results"></div>
                     </div>
