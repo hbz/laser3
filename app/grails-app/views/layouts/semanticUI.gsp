@@ -266,7 +266,7 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="globalDataSync" action="index" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.datamanager.global_data_sync')}</g:link>
+                            <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
 
                             <div class="divider"></div>
 

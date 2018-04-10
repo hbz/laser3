@@ -93,7 +93,7 @@
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui negative button"
                             onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted', default: 'Are you sure?')}')">
-                        ${message(code: 'globalDataSync.track_merge')}></g:link>
+                        ${message(code: 'globalDataSync.track_merge')}</g:link>
                     </td>
                 </g:if>
                 <g:else>
