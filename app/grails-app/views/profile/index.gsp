@@ -27,6 +27,11 @@
                 </h4>
 
                 <div class="field">
+                    <label>${message(code: 'profile.username', default:'User Name')}</label>
+                    <input type="text" readonly="readonly" value="${user.username}"/>
+                </div>
+
+                <div class="field">
                     <label>${message(code: 'profile.display', default:'Display Name')}</label>
                     <input type="text" name="userDispName" value="${user.display}"/>
                 </div>
@@ -47,7 +52,9 @@
                     </select>
                 </div>
 
-                <div class="ui blue message">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
+                <%--
+                    <div class="ui blue message">${message(code: 'profile.requests.text', default:'Please note, membership requests may be slow to process if you do not set a meaningful display name and email address. Please ensure these are set correctly before requesting institutional memberships')}</div>
+                --%>
 
                 <div class="field">
                     <button type="submit" class="ui button">${message(code: 'profile.update.button', default:'Update Profile')}</button>
