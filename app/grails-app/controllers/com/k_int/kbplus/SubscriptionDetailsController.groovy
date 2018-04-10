@@ -1090,7 +1090,17 @@ class SubscriptionDetailsController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def linkPackage() {
-        log.debug("Link package, params: ${params}");
+        log.debug("Link package, params: ${params} ");
+
+        //Wenn die Subsc schon ein Anbieter hat. Soll nur Pakete von diesem Anbieter angezeigt werden als erstes
+        if(params.size() == 3) {
+            def subInstance = Subscription.get(params.id)
+                    subInstance.orgRelations?.each { or ->
+           if (or.roleType.value == "Provider") {
+                params.put("cpname", or.org.name)
+                }
+            }
+        }
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
