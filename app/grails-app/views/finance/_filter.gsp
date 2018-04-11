@@ -45,9 +45,17 @@
                           noSelection="${['':'Alle ..']}"/>
             </div>
             <div class="field required">
-                <label>${message(code:'package.label')}</label>
-                <input type="text" name="packageFilter" class="filterUpdated la-full-width" id="packageFilter" value="${params.packageFilter}" />
+                <label>${message(code:'subscription.label')}</label>
+                <g:if test="${inSubMode == true}">
+                    <input name="subscriptionFilter" id="subscriptionFilter" class="la-full-width" value="${fixedSubscription?.name}" disabled="disabled"
+                           data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}"  />
+                </g:if>
+                <g:else>
+                    <input type="text" name="subscriptionFilter" class="la-full-width" data-filterMode="" id="subscriptionFilter" value="${params.subscriptionFilter}" />
+                </g:else>
+                <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
             </div>
+
         </div><!-- row1 -->
 
         <div class="three fields">
@@ -69,18 +77,11 @@
                           optionValue="value"
                           noSelection="${['':'Alle ..']}"/>
             </div>
-
             <div class="field required">
-                <label>${message(code:'subscription.label')}</label>
-                <g:if test="${inSubMode == true}">
-                    <input name="subscriptionFilter" id="subscriptionFilter" class="la-full-width" value="${fixedSubscription?.name}" disabled="disabled"
-                           data-filterMode="${fixedSubscription.class.name}:${fixedSubscription.id}"  />
-                </g:if>
-                <g:else>
-                    <input type="text" name="subscriptionFilter" class="la-full-width" data-filterMode="" id="subscriptionFilter" value="${params.subscriptionFilter}" />
-                </g:else>
-                <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
+                <label>${message(code:'package.label')}</label>
+                <input type="text" name="packageFilter" class="filterUpdated la-full-width" id="packageFilter" value="${params.packageFilter}" />
             </div>
+
         </div><!-- row2 -->
 
         <div class="three fields">
