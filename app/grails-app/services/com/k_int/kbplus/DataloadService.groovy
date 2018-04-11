@@ -211,8 +211,8 @@ class DataloadService {
             result._id = sub.globalUID
             result.dbId = sub.id
             result.guid = sub.globalUID ?:''
-            //TODO: Überarbeiten availableToOrgs
-            result.availableToOrgs = sub.orgRelations.find{it.roleType?.value == "Subscriber" || it.roleType?.value == "Subscription Consortia" }?.org?.id
+
+            result.availableToOrgs = sub.orgRelations.find{it.roleType?.value in ["Subscriber", "Subscriber_Consortial", "Subscription Consortia"] }?.org?.id
             result.consortiaId = sub.getConsortia()?.id
             result.consortiaName = sub.getConsortia()?.name
             result.name = sub.name

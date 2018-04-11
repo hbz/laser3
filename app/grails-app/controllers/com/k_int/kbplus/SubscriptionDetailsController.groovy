@@ -711,7 +711,7 @@ class SubscriptionDetailsController {
 
         def orgType   = RefdataValue.get(params.asOrgType)
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
-        def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
 
         if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
@@ -731,7 +731,7 @@ class SubscriptionDetailsController {
 
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
                         def cons_sub = new Subscription(
-                                type: RefdataValue.findByValue("Subscription Taken"),
+                                type: RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type'),
                                 status: subStatus,
                                 name: result.subscriptionInstance.name + " (${postfix})",
                                 startDate: result.subscriptionInstance.startDate,
@@ -744,7 +744,9 @@ class SubscriptionDetailsController {
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
                                 owner: result.subscriptionInstance.owner
-                        ).save()
+                        )
+
+                        cons_sub.save()
 
                         if (cons_sub) {
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
@@ -1320,7 +1322,7 @@ class SubscriptionDetailsController {
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgRelations = []
         result.subscriptionInstance.orgRelations?.each { or ->
-            if (! (or.org == contextService.getOrg() && or.roleType.value == "Subscriber")) {
+            if (! (or.org == contextService.getOrg() && or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                 result.visibleOrgRelations << or
             }
         }

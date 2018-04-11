@@ -13,7 +13,7 @@ import org.apache.http.*
 import org.apache.http.protocol.*
 import java.text.SimpleDateFormat
 
-
+@Deprecated
 class JuspSyncService {
 
   static transactional = false
@@ -37,6 +37,8 @@ class JuspSyncService {
   static boolean running = false;
 
   def synchronized doSync() {
+    return; // Deprecated
+
     log.debug("JuspSyncService::doSync ${this.hashCode()}");
 
     if ( this.running == true ) {
@@ -61,6 +63,7 @@ class JuspSyncService {
   }
 
   def internalDoSync() {
+    return; // Deprecated
 
     def ftp = null
     try {
@@ -132,6 +135,7 @@ class JuspSyncService {
   }
 
   def processTriple(a,b,c,d,most_recent_closed_period) {
+    return; // Deprecated
 
     def jusp_api = grails.util.Holders.config.JuspApiUrl
 
@@ -247,6 +251,8 @@ class JuspSyncService {
 
 
   def cleanUpGorm() {
+    return; // Deprecated
+
     // log.debug("Clean up GORM");
     def session = sessionFactory.currentSession
     session.flush()
@@ -255,6 +261,8 @@ class JuspSyncService {
   }
 
   public static synchronized void incrementActivityHistogram() {
+    return; // Deprecated
+
     def sdf = new SimpleDateFormat('yyyy/MM/dd HH:mm')
     def col_identifier = sdf.format(new Date())
 
