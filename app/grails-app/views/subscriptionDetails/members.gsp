@@ -91,10 +91,10 @@
                         </g:each>
                     </td>
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" field="${sub.startDate}"/>
+                        <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/>
                     </td>
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" field="${sub.endDate}"/>
+                        <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/>
                     </td>
                     <td>
                         ${sub.status.getI10n('value')}
@@ -115,6 +115,8 @@
             </g:each>
         </tbody>
     </table>
+
+    <g:link controller="subscriptionDetails" action="addMembers"  params="${[id:params.id]}" target="_blank"><input type="button" class="ui button" value="${message(code:'subscription.details.addMembers.label')}" /></g:link>
 
 </body>
 </html>

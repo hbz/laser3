@@ -109,6 +109,15 @@
                             <dl>
                                 <dt>${message(code:'subscription.endDate.label', default:'End Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
+
+                                <g:if test="${subscriptionInstance.instanceOf}">
+
+                                    <dt>${message(code:'subscription.isInstanceOfSub.label')}</dt>
+                                    <dd>
+                                        <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
+                                    </dd>
+
+                                </g:if>
                             </dl>
                             <% /*
                             <dl>
@@ -120,6 +129,7 @@
                                 <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                             </dl>
+
                         </div>
                     </div>
                     <div class="ui card">
@@ -139,14 +149,6 @@
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' />
                                     </g:else>
                                 </dd>
-                            </dl>
-                            <dl>
-                                <g:if test="${subscriptionInstance.instanceOf}">
-                                    <dt>${message(code:'subscription.isInstanceOfSub.label')}</dt>
-                                    <dd>
-                                        <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
-                                    </dd>
-                                </g:if>
                             </dl>
                         </div>
                     </div>
@@ -189,11 +191,10 @@
                                             </g:link>]
                                         </g:if>
 
-                                        <g:if test="${editable}">
-                                            <g:if test="${subscriptionInstance.owner == null}">
-                                                <br/><br/>
-                                                <g:link  controller="myInstitution" class="ui button" action="cleanLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}</g:link>
-                                            </g:if>
+                                        <br/><br/>
+                                        <g:if test="${subscriptionInstance.owner == null}">
+                                        <g:link  controller="myInstitution" class="ui button" action="cleanLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}
+                                        </g:link>
                                         </g:if>
                                 </dd>
                             </dl>

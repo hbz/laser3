@@ -867,7 +867,7 @@ from Subscription as s where (
                 log.error("Problem saving org links to license ${org.errors}");
             }
             if(params.sub) {
-                def subInstance = Subscription.get(params.sub)
+                def subInstance = Subscription.get(params.owner)
                 subInstance.owner = licenseInstance
                 subInstance.save(flush: true)
             }

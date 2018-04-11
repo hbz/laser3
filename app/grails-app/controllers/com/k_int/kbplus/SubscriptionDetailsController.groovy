@@ -729,9 +729,14 @@ class SubscriptionDetailsController {
                     if (params.generateSlavedSubs == "Y") {
                         log.debug("Generating seperate slaved instances for consortia members")
 
+                        def takePackage = params."selectedPackage_${cm.get(0).id}"
+                        def takeIE = params."selectedIssueEntitlement_${cm.get(0).id}"
+
+                        log.debug("Moe Package:${takePackage} IE:${takeIE}")
+
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
                         def cons_sub = new Subscription(
-                                type: RefdataValue.findByValue("Subscription Taken"),
+                                type: result.subscriptionInstance.type?:"",
                                 status: subStatus,
                                 name: result.subscriptionInstance.name + " (${postfix})",
                                 startDate: result.subscriptionInstance.startDate,
@@ -746,6 +751,25 @@ class SubscriptionDetailsController {
                                 owner: result.subscriptionInstance.owner
                         ).save()
 
+                            if(takePackage || takeIE)
+                            {
+                                result.subscriptionInstance.packages.each { sub_pkg ->
+                                    def pkg_to_link = sub_pkg.pkg
+                                    //def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                                    if (takeIE) {
+                                        pkg_to_link.addToSubscription(cons_sub, true)
+                                        /*sub_instances.each {
+                                            pkg_to_link.addToSubscription(it, true)
+                                        }*/
+                                    } else if (takePackage) {
+                                        pkg_to_link.addToSubscription(cons_sub, false)
+                                        /*sub_instances.each {
+                                            pkg_to_link.addToSubscription(it, false)
+                                        }*/
+                                    }
+                                }
+                            }
+
                         if (cons_sub) {
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_cons).save()
@@ -757,9 +781,14 @@ class SubscriptionDetailsController {
                         flash.error = cons_sub.errors
                     }
                 }
+                redirect controller: 'subscriptionDetails', action: 'members', params: [id: result.subscriptionInstance?.id]
             }
+            else {
+                redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
+            }
+        }else {
+            redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
         }
-        redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
