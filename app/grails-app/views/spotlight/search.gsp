@@ -44,11 +44,13 @@
                 "category": "${message(code: 'spotlight.subscription')}"
             ]
         }
-        else if (hit.getSource().rectype == 'TitleInstance') {
+        else if (hit.getSource().rectype == 'Title') {
             result << [
                 "title": "${hit.getSource().title}",
                 "url":   g.createLink(controller:"titleDetails", action:"show", id:"${hit.getSource().dbId}"),
-                "category": "${message(code: 'spotlight.title')}"
+                "category": (hit.getSource().typTitle == 'Journal') ? "${message(code: 'spotlight.journaltitle')}" :
+                                (hit.getSource().typTitle == 'Database') ? "${message(code: 'spotlight.databasetitle')}" :
+                                        (hit.getSource().typTitle == 'EBook') ? "${message(code: 'spotlight.ebooktitle')}" : "${message(code: 'spotlight.title')}"
             ]
         }
     }

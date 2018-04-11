@@ -180,8 +180,8 @@ class DataloadService {
             result._id = lic.globalUID
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
-
-            result.availableToOrgs = lic.orgLinks.find{it.roleType?.value == "Licensee"}?.org?.id
+            //TODO: Überarbeiten availableToOrgs
+            result.availableToOrgs = lic.orgLinks.find{it.roleType?.value == "Licensee" || it.roleType?.value == "Licensing Consortium"}?.org?.id
             result.name = lic.reference
             result.rectype = 'License'
             result.status = lic.status?.value
@@ -211,8 +211,8 @@ class DataloadService {
             result._id = sub.globalUID
             result.dbId = sub.id
             result.guid = sub.globalUID ?:''
-
-            result.availableToOrgs = sub.orgRelations.find{it.roleType?.value == "Subscriber" }?.org?.id
+            //TODO: Überarbeiten availableToOrgs
+            result.availableToOrgs = sub.orgRelations.find{it.roleType?.value == "Subscriber" || it.roleType?.value == "Subscription Consortia" }?.org?.id
             result.consortiaId = sub.getConsortia()?.id
             result.consortiaName = sub.getConsortia()?.name
             result.name = sub.name
