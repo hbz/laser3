@@ -209,7 +209,12 @@ class LicenseDetailsController {
       def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
       def date_restriction =  new Date(System.currentTimeMillis())
 
-      def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org in (:orgs) ) ) ) AND ( s.status.value != 'Deleted' ) AND (s.owner = null) "
+      def base_qry = """
+from Subscription as s where 
+  ( ( exists ( select o from s.orgRelations as o where (o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial') and o.org in (:orgs) ) ) ) 
+  AND ( s.status.value != 'Deleted' ) 
+  AND (s.owner = null) 
+"""
       def qry_params = [orgs:licenseInstitutions]
       base_qry += " and s.startDate <= (:start) and s.endDate >= (:start) "
       qry_params.putAll([start:date_restriction])
@@ -582,7 +587,7 @@ class LicenseDetailsController {
         result.licenseInstance = License.get(params.id)
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.subscriptionInstance.isVisibleBy(result.user)) {
+            if (! result.licenseInstance.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
                 return null
             }
