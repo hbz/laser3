@@ -45,6 +45,7 @@
                           noSelection="${['':'Alle ..']}"/>
             </div>
             <div class="field required">
+
                 <label>${message(code:'subscription.label')}</label>
                 <g:if test="${inSubMode == true}">
                     <input name="subscriptionFilter" id="subscriptionFilter" class="la-full-width" value="${fixedSubscription?.name}" disabled="disabled"
@@ -53,6 +54,7 @@
                 <g:else>
                     <input type="text" name="subscriptionFilter" class="la-full-width" data-filterMode="" id="subscriptionFilter" value="${params.subscriptionFilter}" />
                 </g:else>
+
                 <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
             </div>
 
@@ -187,6 +189,32 @@
         --%>
 
     </g:form>
+    <table id="" class="ui striped celled la-rowspan table table-tworow">
+        <thead>
+            <tr>
+                <th>Preis in EUR</th>
+                <th>Kategorie</th>
+                <th>Komponente</th>
+                <th>Status</th>
+                <th>Bezeichnung</th>
+                <th>Datum von</th>
+                <th>Datum bis</th>
+                <th>Aktionen</th>
+            </tr>
+        <tbody>
+
+
+        %{--Empty result set--}%
+        <g:if test="${cost_item_count==0}">
+            <tr><td colspan="8" style="text-align:center">&nbsp;<br/><g:if test="${msg}">${msg}</g:if><g:else>No Cost Items Found</g:else><br/>&nbsp;</td></tr>
+        </g:if>
+        <g:else>
+        %{--Two rows of data per CostItem, separated for readability--}%
+            <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
+        </g:else>
+        </tbody>
+
+    </table>
 
         <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
 
@@ -251,7 +279,7 @@
             </g:if>
             <g:else>
             %{--Two rows of data per CostItem, separated for readability--}%
-                <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
+                <g:render template="filter_data-kint" model="[editable: editable, cost_items: cost_items]"></g:render>
             </g:else>
             </tbody>
         </table>
