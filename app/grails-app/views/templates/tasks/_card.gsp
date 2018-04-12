@@ -1,4 +1,8 @@
-<semui:card message="task.plural" class="notes" href="#modalCreateTask" editable="${editable}">
+<% def accService = grailsApplication.mainContext.getBean("accessService") %>
+<!-- OVERWRITE editable for INST_EDITOR (precondition: Subscriber_Consortial): ${accService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')} -->
+<g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}" />
+
+<semui:card message="task.plural" class="notes" href="#modalCreateTask" editable="${overwriteEditable}">
     <g:each in="${tasks}" var="tsk">
         <div class="ui small feed content">
             <!--<div class="event">-->

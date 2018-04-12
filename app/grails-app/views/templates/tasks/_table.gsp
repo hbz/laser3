@@ -1,3 +1,8 @@
+<% def accService = grailsApplication.mainContext.getBean("accessService") %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<!-- OVERWRITE editable for INST_EDITOR (precondition: Subscriber_Consortial): ${accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+<g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
+
 <div class="ui grid">
 
     <div class="sixteen wide column">
@@ -25,7 +30,7 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.endDate}"/></td>
 
                     <td>
-                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" />
+                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
                     </td>
 
                     <td>
@@ -38,7 +43,7 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
 
                     <td class="x">
-                        <g:if test="${editable}">
+                        <g:if test="${overwriteEditable}">
                             <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon button">
                                 <i class="write icon"></i>
                             </g:link>

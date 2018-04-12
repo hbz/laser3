@@ -19,7 +19,8 @@ class SemanticUiInplaceTagLib {
 
         // TODO: data-type="combodate" data-value="1984-05-15" data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY" data-template="D / MMM / YYYY"
 
-        boolean editable = request.getAttribute('editable')
+        boolean editable = (request.getAttribute('editable') || attrs.overwriteEditable)
+
         if (editable == true) {
 
             def oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
@@ -117,7 +118,7 @@ class SemanticUiInplaceTagLib {
 
     def xEditableRefData = { attrs, body ->
         try {
-            boolean editable = request.getAttribute('editable')
+            boolean editable = (request.getAttribute('editable') || attrs.overwriteEditable)
 
             if ( editable == true ) {
 
