@@ -188,7 +188,7 @@
                                 <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
                                 <!-- (${grailsApplication.metadata['build.DateTimeStamp']}) -->
 
-                                <div class="item">Build: ${grailsApplication.metadata['app.buildDate']}</div>
+                                <div class="item">Last Build on: ${grailsApplication.metadata['app.buildDate']}</div>
                                 <g:if test="${grailsApplication.metadata['repository.revision.number']}">
                                     <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.branch']}">
                                         @GitHub: ${grailsApplication.metadata['repository.branch']}
@@ -201,7 +201,7 @@
 
                 <div class="ui center aligned segment inverted">
                     <p>
-                        © 2017 Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
+                        © 2018 Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
                     </p>
                 </div>
             </div>
