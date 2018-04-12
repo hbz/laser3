@@ -11,6 +11,7 @@
 
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+        <semui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageConsortia"/>
         <semui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </semui:breadcrumbs>
 

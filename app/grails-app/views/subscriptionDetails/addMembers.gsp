@@ -44,7 +44,7 @@
                                   value="${com.k_int.kbplus.RefdataValue.findByValue('Under Consideration')?.id}" />
                     </div>
 
-                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplDisableOrgIds: cons_members_disabled]" />
+                    <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplDisableOrgIds: cons_members_disabled, tmplShowOption: true, subInstance: subscriptionInstance]" />
 
                     <div class="ui field">
                         <div class="ui checkbox">
@@ -56,6 +56,7 @@
                     <br/>
                     <input type="submit" class="ui button" value="${message(code:'default.button.create.label', default:'Create')}" />
                 </g:form>
+                <g:link controller="myInstitution" action="addConsortiaMembers" target="_blank"><input type="button" class="ui button" value="${message(code:'menu.institutions.add_consortia_members')}" /></g:link>
             </g:if>
 
   </body>
