@@ -91,7 +91,7 @@ class LicenseDetailsController {
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgLinks = []
         result.license.orgLinks?.each { or ->
-            if (! (or.org == contextService.getOrg() && or.roleType.value == "Licensee")) {
+            if (! (or.org == contextService.getOrg() && or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
                 result.visibleOrgLinks << or
             }
         }
@@ -200,9 +200,9 @@ class LicenseDetailsController {
   }
 
     private def getAvailableSubscriptions(license, user) {
-    def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
-      orgRole.roleType?.value == "Licensee"
-    }?.collect{  accessService.checkUserOrgRole(user, it.org, 'INST_ADM') ? it.org : null  }
+        def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
+          orgRole.roleType?.value in ["Licensee", "Licensee_Consortial"]
+        }?.collect{  accessService.checkUserOrgRole(user, it.org, 'INST_ADM') ? it.org : null  }
 
     def subscriptions = null
     if(licenseInstitutions){
@@ -237,9 +237,13 @@ from Subscription as s where
 
   }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def consortia() {
+        redirect controller: 'licenseDetails', action: 'show', params: params
+        return
+
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -287,9 +291,13 @@ from Subscription as s where
     result
   }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def generateSlaveLicenses(){
+        redirect controller: 'packageDetails', action: 'show', params: params
+        return
+
     def slaved = RefdataCategory.lookupOrCreate('YN','Yes')
     params.each { p ->
         if(p.key.startsWith("_create.")){

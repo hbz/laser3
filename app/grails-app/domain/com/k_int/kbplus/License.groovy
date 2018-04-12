@@ -142,7 +142,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
   def getLicensee() {
     def result = null;
     orgLinks.each { or ->
-      if ( or?.roleType?.value=='Licensee' )
+      if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
         result = or.org;
     }
     result

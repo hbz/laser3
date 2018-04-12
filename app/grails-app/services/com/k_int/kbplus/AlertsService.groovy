@@ -101,19 +101,24 @@ class AlertsService {
 
       // For each institution, iterate through all licenses attached to that institution
       def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role','Licensee');
-      OrgRole.findAllByOrgAndRoleType(ua.org, licensee_role).each { or ->
-        def notes = []
-        if ( or.lic?.status?.value!='Deleted' ) {
-          // license under question is in or.lic - See if there are any notes attached to that license that this user can see
-          // Alert is globally visible or the alert 
-          or.lic.documents.each { lic_doc_ctx ->
-            if ( ( lic_doc_ctx.alert ) && ( alertIsVisible(user, lic_doc_ctx))) {
-              notes.add(lic_doc_ctx)
+      def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role','Licensee_Consortial');
+
+      OrgRole.findAllByOrg(ua.org).each { or ->
+
+        if (or.roleType in [licensee_role, licensee_cons_role]) {
+          def notes = []
+          if (or.lic?.status?.value != 'Deleted') {
+            // license under question is in or.lic - See if there are any notes attached to that license that this user can see
+            // Alert is globally visible or the alert
+            or.lic.documents.each { lic_doc_ctx ->
+              if ((lic_doc_ctx.alert) && (alertIsVisible(user, lic_doc_ctx))) {
+                notes.add(lic_doc_ctx)
+              }
             }
           }
-        }
-        if ( notes.size() > 0 ) {
-          result.add ( [rootObj:or.lic, notes:notes] )
+          if (notes.size() > 0) {
+            result.add([rootObj: or.lic, notes: notes])
+          }
         }
       }
     }

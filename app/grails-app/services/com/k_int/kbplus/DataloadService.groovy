@@ -181,7 +181,7 @@ class DataloadService {
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
             //TODO: Überarbeiten availableToOrgs
-            result.availableToOrgs = lic.orgLinks.find{it.roleType?.value == "Licensee" || it.roleType?.value == "Licensing Consortium"}?.org?.id
+            result.availableToOrgs = lic.orgLinks.find{it.roleType?.value in ["Licensee", "Licensee_Consortial", "Licensing Consortium"]}?.org?.id
             result.name = lic.reference
             result.rectype = 'License'
             result.status = lic.status?.value

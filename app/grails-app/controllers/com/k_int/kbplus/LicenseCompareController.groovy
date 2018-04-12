@@ -27,6 +27,10 @@ class LicenseCompareController {
             return;
         }
 
+        // TODO: find by 'Licensee' AND 'Licensee_Consortial'
+        // ajax/lookup
+        // License.refdataFind()
+
         def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
         result.isPublic = RefdataCategory.lookupOrCreate('YN', 'Yes');
         result.licensee_role  =licensee_role.id

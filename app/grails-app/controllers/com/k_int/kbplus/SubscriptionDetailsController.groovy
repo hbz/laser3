@@ -1104,11 +1104,17 @@ class SubscriptionDetailsController {
         if (subscriber || consortia) {
 
             def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+            def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
+
             def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
 
-            def qry_params = [(subscriber ?: consortia), licensee_role]
+            def qry_params = [(subscriber ?: consortia), licensee_role, licensee_cons_role]
 
-            def qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted' order by l.reference"
+            def qry = """
+select l from License as l 
+where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ? ) ) 
+AND l.status.value != 'Deleted' order by l.reference
+"""
 
             def license_list = License.executeQuery(qry, qry_params);
             license_list.each { l ->

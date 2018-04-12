@@ -39,9 +39,12 @@ class MyInstitutionController {
     def filterService
 
     // copied from
-    static String INSTITUTIONAL_LICENSES_QUERY      = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
+    static String INSTITUTIONAL_LICENSES_QUERY      =
+            " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType IN (:org_roles) ) AND (l.status!=:lic_status or l.status=null ) "
+
     // copied from
-    static String INSTITUTIONAL_SUBSCRIPTION_QUERY  = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
+    static String INSTITUTIONAL_SUBSCRIPTION_QUERY  =
+            " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
 
     // Map the parameter names we use in the webapp with the ES fields
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
@@ -216,10 +219,12 @@ class MyInstitutionController {
         result.offset = params.format? 0 : result.offset
 
         def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+        def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
+
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
 
-        def qry_params = [lic_org:result.institution, org_role:licensee_role, lic_status:license_status]
+        def qry_params = [lic_org:result.institution, org_roles:[licensee_role, licensee_cons_role], lic_status:license_status]
 
         def qry = INSTITUTIONAL_LICENSES_QUERY
         // def qry = "from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
@@ -969,6 +974,7 @@ from Subscription as s where (
         redirect controller: 'licenseDetails', action: 'show', id: params.licid, fragment: 'docstab'
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processAddSubscription() {
@@ -1397,12 +1403,15 @@ AND EXISTS (
         }
 
         def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+        def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
 
         // Find all licenses for this institution...
         def result = [:]
-        OrgRole.findAllByOrgAndRoleType(institution, licensee_role).each { it ->
-            if (it.lic?.status?.value != 'Deleted') {
-                result["License:${it.lic?.id}"] = it.lic?.reference
+        OrgRole.findAllByOrg(institution).each { it ->
+            if (it.roleType in [licensee_role, licensee_cons_role]) {
+                if (it.lic?.status?.value != 'Deleted') {
+                    result["License:${it.lic?.id}"] = it.lic?.reference
+                }
             }
         }
 
