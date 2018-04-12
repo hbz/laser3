@@ -177,7 +177,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
                 }
             }
         }
-        result
+        result = result.sort {it.name}
     }
 
     def isEditableBy(user) {
