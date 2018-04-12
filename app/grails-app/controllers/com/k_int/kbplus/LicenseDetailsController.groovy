@@ -295,7 +295,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def generateSlaveLicenses(){
-        redirect controller: 'packageDetails', action: 'show', params: params
+        redirect controller: 'licenseDetails', action: 'show', params: params
         return
 
     def slaved = RefdataCategory.lookupOrCreate('YN','Yes')
