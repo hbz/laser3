@@ -4,6 +4,11 @@
 
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
 
+<% def accService = grailsApplication.mainContext.getBean("accessService") %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+<g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
+
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />
 </g:if>
@@ -30,7 +35,7 @@
                     <td>
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.mandatory}">
-                            <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                            <span class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
                         </g:if>
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
@@ -38,23 +43,23 @@
                     </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
-                            <semui:xEditable owner="${prop}" type="text" field="intValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="intValue" overwriteEditable="${overwriteEditable}" />
                         </g:if>
                         <g:elseif test="${prop.type.type == String.toString()}">
-                            <semui:xEditable owner="${prop}" type="text" field="stringValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
                         <g:elseif test="${prop.type.type == BigDecimal.toString()}">
-                            <semui:xEditable owner="${prop}" type="text" field="decValue"/>
+                            <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
                     </td>
                     <td>
-                        <semui:xEditable owner="${prop}" type="textarea" field="note"/>
+                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
                     <td class="x">
-                        <g:if test="${editable == true}">
+                        <g:if test="${overwriteEditable == true}">
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
                             <g:remoteLink controller="ajax" action="deletePrivateProperty"
                                 before="if(!confirm('${confirmMsg}')) return false"
@@ -71,7 +76,7 @@
         </g:each>
     </tbody>
 
-    <g:if test="${editable}">
+    <g:if test="${overwriteEditable}">
         <tfoot>
             <tr>
                 <td colspan="4">

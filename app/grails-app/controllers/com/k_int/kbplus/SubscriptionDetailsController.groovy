@@ -711,7 +711,7 @@ class SubscriptionDetailsController {
 
         def orgType   = RefdataValue.get(params.asOrgType)
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
-        def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
 
         if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
@@ -729,9 +729,14 @@ class SubscriptionDetailsController {
                     if (params.generateSlavedSubs == "Y") {
                         log.debug("Generating seperate slaved instances for consortia members")
 
+                        def takePackage = params."selectedPackage_${cm.get(0).id}"
+                        def takeIE = params."selectedIssueEntitlement_${cm.get(0).id}"
+
+                        log.debug("Moe Package:${takePackage} IE:${takeIE}")
+
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
                         def cons_sub = new Subscription(
-                                type: RefdataValue.findByValue("Subscription Taken"),
+                                type: result.subscriptionInstance.type?:"",
                                 status: subStatus,
                                 name: result.subscriptionInstance.name + " (${postfix})",
                                 startDate: result.subscriptionInstance.startDate,
@@ -744,7 +749,28 @@ class SubscriptionDetailsController {
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
                                 owner: result.subscriptionInstance.owner
-                        ).save()
+                        )
+
+                        cons_sub.save()
+
+                            if(takePackage || takeIE)
+                            {
+                                result.subscriptionInstance.packages.each { sub_pkg ->
+                                    def pkg_to_link = sub_pkg.pkg
+                                    //def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                                    if (takeIE) {
+                                        pkg_to_link.addToSubscription(cons_sub, true)
+                                        /*sub_instances.each {
+                                            pkg_to_link.addToSubscription(it, true)
+                                        }*/
+                                    } else if (takePackage) {
+                                        pkg_to_link.addToSubscription(cons_sub, false)
+                                        /*sub_instances.each {
+                                            pkg_to_link.addToSubscription(it, false)
+                                        }*/
+                                    }
+                                }
+                            }
 
                         if (cons_sub) {
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
@@ -757,9 +783,14 @@ class SubscriptionDetailsController {
                         flash.error = cons_sub.errors
                     }
                 }
+                redirect controller: 'subscriptionDetails', action: 'members', params: [id: result.subscriptionInstance?.id]
             }
+            else {
+                redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
+            }
+        }else {
+            redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
         }
-        redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -1073,11 +1104,17 @@ class SubscriptionDetailsController {
         if (subscriber || consortia) {
 
             def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+            def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
+
             def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
 
-            def qry_params = [(subscriber ?: consortia), licensee_role]
+            def qry_params = [(subscriber ?: consortia), licensee_role, licensee_cons_role]
 
-            def qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted' order by l.reference"
+            def qry = """
+select l from License as l 
+where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ? ) ) 
+AND l.status.value != 'Deleted' order by l.reference
+"""
 
             def license_list = License.executeQuery(qry, qry_params);
             license_list.each { l ->
@@ -1320,7 +1357,7 @@ class SubscriptionDetailsController {
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgRelations = []
         result.subscriptionInstance.orgRelations?.each { or ->
-            if (! (or.org == contextService.getOrg() && or.roleType.value == "Subscriber")) {
+            if (! (or.org == contextService.getOrg() && or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
                 result.visibleOrgRelations << or
             }
         }

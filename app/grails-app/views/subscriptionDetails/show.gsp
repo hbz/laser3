@@ -120,6 +120,7 @@
                                 <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                             </dl>
+
                         </div>
                     </div>
                     <div class="ui card">
@@ -140,14 +141,14 @@
                                     </g:else>
                                 </dd>
                             </dl>
-                            <dl>
-                                <g:if test="${subscriptionInstance.instanceOf}">
+                            <g:if test="${subscriptionInstance.instanceOf}">
+                                <dl>
                                     <dt>${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
                                         <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
                                     </dd>
-                                </g:if>
-                            </dl>
+                                </dl>
+                            </g:if>
                         </div>
                     </div>
                 </div>
@@ -189,10 +190,11 @@
                                             </g:link>]
                                         </g:if>
 
+                                        <br/><br/>
                                         <g:if test="${editable}">
                                             <g:if test="${subscriptionInstance.owner == null}">
-                                                <br/><br/>
-                                                <g:link  controller="myInstitution" class="ui button" action="cleanLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}</g:link>
+                                                <g:link  controller="myInstitution" class="ui button" action="cleanLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}
+                                                </g:link>
                                             </g:if>
                                         </g:if>
                                 </dd>

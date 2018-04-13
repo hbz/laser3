@@ -125,7 +125,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
     def cons = null;
     
     orgRelations.each { or ->
-      if ( or?.roleType?.value=='Subscriber' )
+      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] )
         result = or.org;
         
       if ( or?.roleType?.value=='Subscription Consortia' )
@@ -142,7 +142,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
   def getAllSubscribers() {
     def result = [];
     orgRelations.each { or ->
-      if ( or?.roleType?.value=='Subscriber' )
+      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] )
         result.add(or.org)
     }
     result
@@ -168,15 +168,16 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
     def getDerivedSubscribers() {
         def result = []
-        def subscr = RefdataValue.findByValue('Subscriber')
 
         Subscription.findAllByInstanceOf(this).each { s ->
-            def ors = OrgRole.findAllWhere( roleType: subscr, sub: s )
+            def ors = OrgRole.findAllWhere( sub: s )
             ors.each { or ->
-                result << or.org
+                if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
+                    result << or.org
+                }
             }
         }
-        result
+        result = result.sort {it.name}
     }
 
     def isEditableBy(user) {
@@ -344,8 +345,9 @@ class Subscription extends BaseDomainComponent implements Permissions {
     def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd")
     def cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
-    def sub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-    def viableRoles = [cons_role, sub_role]
+    def subscr_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+    def subscr_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
+    def viableRoles = [cons_role, subscr_role, subscr_cons_role]
     
     hqlParams.put('viableRoles', viableRoles)
 

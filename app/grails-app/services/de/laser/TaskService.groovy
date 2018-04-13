@@ -115,12 +115,16 @@ class TaskService {
 
         def qry_params1 = [
             lic_org:    contextOrg,
-            org_role:   RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee'),
+            org_roles:  [
+                    RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee'),
+                    RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
+            ],
             lic_status: RefdataCategory.lookupOrCreate('License Status', 'Deleted')
         ]
         def qry_params2 = [
             'roleTypes' : [
                 RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber'),
+                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial'),
                 RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
             ],
             'activeInst': contextOrg

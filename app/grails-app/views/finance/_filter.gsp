@@ -122,7 +122,7 @@
                     </span>--%>
                     <input type="hidden" name="wildcard" value="on" />
                     <label>&nbsp;</label>
-                    <div id="filtering" class="btn-group" data-toggle="buttons-radio">
+                    <div id="filtering" data-toggle="buttons-radio">
                         <g:if test="${filterMode=='OFF'}">
                             <g:select name="filterMode" from="['OFF','ON']" type="button" class="ui button"></g:select>
                         </g:if>

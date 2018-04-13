@@ -58,7 +58,12 @@ class ReminderService implements ApplicationContextAware{
     def getAuthorisedSubsciptionsByUser(User user) {
         def qry_params = [user.defaultDash, LocalDate.now().minusMonths(13).toDate()]
         log.debug("Looking up subscriptions for user : ${user.username} Restricting to Subscriptions with renewal date one year previous to today!")
-        def base_qry = "select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org = ? ) ) ) AND ( s.status.value != 'Deleted' ) AND s.manualRenewalDate < ? order by s.manualRenewalDate asc "
+        def base_qry = """
+select s from Subscription as s where 
+  ( ( exists ( select o from s.orgRelations as o where ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) and o.org = ? ) ) ) 
+  AND ( s.status.value != 'Deleted' ) 
+  AND s.manualRenewalDate < ? order by s.manualRenewalDate asc 
+"""
         def results = Subscription.executeQuery(base_qry, qry_params);
         if (results.size() == 0)
             log.error("ReminderService :: getAuthorisedSubsciptionsByUser - Unable to retrieve any subscriptions for user ${user.username}")

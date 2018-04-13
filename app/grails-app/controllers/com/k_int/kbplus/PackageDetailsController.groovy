@@ -132,8 +132,11 @@ class PackageDetailsController {
       }
     }
 
-    @Secured(['ROLE_USER'])
+    @Deprecated
+    @Secured(['ROLE_YODA'])
     def consortia(){
+        redirect controller: 'packageDetails', action: 'show', params: params
+        return
 
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -187,7 +190,8 @@ class PackageDetailsController {
       result
     }
 
-    @Secured(['ROLE_USER'])
+    @Deprecated
+    @Secured(['ROLE_YODA'])
     def generateSlaveSubscriptions(){
       params.each { p ->
         if(p.key.startsWith("_create.")){
@@ -202,6 +206,7 @@ class PackageDetailsController {
     }
 
 
+    @Deprecated
     private def createNewSubscription(org, packageId, genSubName) {
       //Initialize default subscription values
       log.debug("Create slave with org ${org} and packageID ${packageId}")
@@ -457,7 +462,13 @@ class PackageDetailsController {
       result.user?.getAuthorizedAffiliations().each { ua ->
         if ( ua.formalRole.authority == 'INST_ADM' ) {
           def qry_params = [ua.org, sub_status, packageInstance, new Date()]
-          def q = "select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.roleType.value = 'Subscriber' and o.org = ? ) ) ) AND ( s.status is null or s.status != ? ) AND ( not exists ( select sp from s.packages as sp where sp.pkg = ? ) ) AND s.endDate >= ?"
+          def q = """
+select s from Subscription as s where 
+  ( exists ( select o from s.orgRelations as o where ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) and o.org = ? ) ) 
+  AND ( s.status is null or s.status != ? ) 
+  AND ( not exists ( select sp from s.packages as sp where sp.pkg = ? ) ) AND s.endDate >= ?
+"""
+
           Subscription.executeQuery(q, qry_params).each { s ->
             if ( ! result.subscriptionList.contains(s) ) {
               // Need to make sure that this package is not already linked to this subscription

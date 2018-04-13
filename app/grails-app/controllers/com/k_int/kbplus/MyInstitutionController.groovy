@@ -39,9 +39,12 @@ class MyInstitutionController {
     def filterService
 
     // copied from
-    static String INSTITUTIONAL_LICENSES_QUERY      = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType = :org_role ) AND (l.status!=:lic_status or l.status=null ) "
+    static String INSTITUTIONAL_LICENSES_QUERY      =
+            " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType IN (:org_roles) ) AND (l.status!=:lic_status or l.status=null ) "
+
     // copied from
-    static String INSTITUTIONAL_SUBSCRIPTION_QUERY  = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
+    static String INSTITUTIONAL_SUBSCRIPTION_QUERY  =
+            " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
 
     // Map the parameter names we use in the webapp with the ES fields
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
@@ -216,10 +219,12 @@ class MyInstitutionController {
         result.offset = params.format? 0 : result.offset
 
         def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+        def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
+
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
 
-        def qry_params = [lic_org:result.institution, org_role:licensee_role, lic_status:license_status]
+        def qry_params = [lic_org:result.institution, org_roles:[licensee_role, licensee_cons_role], lic_status:license_status]
 
         def qry = INSTITUTIONAL_LICENSES_QUERY
         // def qry = "from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
@@ -403,15 +408,16 @@ class MyInstitutionController {
     def currentProviders() {
         def result = setResultGenerics()
 
-        def role_sub = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
+        def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
+        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
 
         def mySubs = Subscription.executeQuery( """
             select s from Subscription as s join s.orgRelations as ogr where 
                 ( s.status.value != 'Deleted' ) and
                 ( s = ogr.sub and ogr.org = :subOrg ) and
-                ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubConsortia) )
-        """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubConsortia: role_sub_consortia])
+                ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubCons) or ogr.roleType = (:roleSubConsortia) )
+        """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubCons: role_sub_cons, roleSubConsortia: role_sub_consortia])
 
         result.orgList = []
         mySubs.each { sub ->
@@ -481,8 +487,9 @@ class MyInstitutionController {
 
         result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
 
-        def role_sub = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
+        def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
+        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
         def roleTypes = [role_sub, role_sub_consortia]
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
@@ -502,11 +509,9 @@ class MyInstitutionController {
 
         if (params.orgRole == 'Subscriber') {
 
-            //base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
-
             base_qry = """
 from Subscription as s where (
-    exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) 
+    exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) 
     AND ( s.status.value != 'Deleted' )
     AND (
         ( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) )
@@ -515,7 +520,7 @@ from Subscription as s where (
     )
 )
 """
-            qry_params = ['roleType':role_sub, 'activeInst':result.institution, 'scRoleType':role_sub_consortia]
+            qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':result.institution, 'scRoleType':role_sub_consortia]
         }
 
         if (params.orgRole == 'Subscription Consortia') {
@@ -579,6 +584,7 @@ from Subscription as s where (
         }
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addSubscription() {
@@ -685,7 +691,7 @@ from Subscription as s where (
         log.debug(params)
         def result = setResultGenerics()
         result.orgType = RefdataValue.get(params.asOrgType)
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
         
         def orgRole = null
@@ -867,7 +873,7 @@ from Subscription as s where (
                 log.error("Problem saving org links to license ${org.errors}");
             }
             if(params.sub) {
-                def subInstance = Subscription.get(params.sub)
+                def subInstance = Subscription.get(params.owner)
                 subInstance.owner = licenseInstance
                 subInstance.save(flush: true)
             }
@@ -968,6 +974,7 @@ from Subscription as s where (
         redirect controller: 'licenseDetails', action: 'show', id: params.licid, fragment: 'docstab'
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def processAddSubscription() {
@@ -1069,7 +1076,10 @@ from Subscription as s where (
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
         def del_sub = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
         def del_ie =  RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+
+        def role_sub        = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+        def role_sub_cons   = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
+
         def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
         def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
@@ -1077,7 +1087,16 @@ from Subscription as s where (
         log.debug("viable roles are: ${roles}")
         log.debug("Using params: ${params}")
         
-        def qry_params = [max:result.max, offset:result.offset, institution: result.institution.id, del_sub:del_sub.id, del_ie:del_ie.id, role_sub: role_sub.id, role_cons: role_sub_consortia.id]
+        def qry_params = [
+                max:result.max,
+                offset:result.offset,
+                institution: result.institution.id,
+                del_sub:del_sub.id,
+                del_ie:del_ie.id,
+                role_sub: role_sub.id,
+                role_sub_cons: role_sub_cons.id,
+                role_cons: role_sub_consortia.id]
+
 
         def sub_qry = "from issue_entitlement ie INNER JOIN subscription sub on ie.ie_subscription_fk=sub.sub_id inner join org_role orole on sub.sub_id=orole.or_sub_fk, title_instance_package_platform tipp inner join title_instance ti  on tipp.tipp_ti_fk=ti.ti_id cross join title_instance ti2 "
         if (filterOtherPlat) {
@@ -1086,7 +1105,7 @@ from Subscription as s where (
         if (filterPvd) {
             sub_qry += "INNER JOIN org_role orgrole on orgrole.or_pkg_fk=tipp.tipp_pkg_fk "
         }
-        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_cons) "
+        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
         sub_qry += "AND orole.or_org_fk = :institution "
         sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk <> :del_sub) "
         sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk <> :del_ie ) "
@@ -1205,12 +1224,15 @@ from Subscription as s where (
         // Query the list of Subscriptions
         def del_sub = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
         def del_ie =  RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber'); 
+
+        def role_sub            = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+        def role_sub_cons       = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
+        def role_sub_consortia  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+
         def cp = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider')
         def role_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
-        def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
-        
-        def roles = [role_sub,role_sub_consortia]
+
+        def roles = [role_sub, role_sub_cons, role_sub_consortia]
         
         def allInst = []
         if(result.availableConsortia){
@@ -1292,7 +1314,7 @@ ORDER BY p.platform.name""", sub_params);
 
         // Main query part
         title_query.append("\
-  WHERE o.roleType.value = 'Subscriber' \
+  WHERE ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) \
   AND o.org = :institution \
   AND s.status.value != 'Deleted' \
   AND s = ie.subscription ")
@@ -1381,12 +1403,15 @@ AND EXISTS (
         }
 
         def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+        def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
 
         // Find all licenses for this institution...
         def result = [:]
-        OrgRole.findAllByOrgAndRoleType(institution, licensee_role).each { it ->
-            if (it.lic?.status?.value != 'Deleted') {
-                result["License:${it.lic?.id}"] = it.lic?.reference
+        OrgRole.findAllByOrg(institution).each { it ->
+            if (it.roleType in [licensee_role, licensee_cons_role]) {
+                if (it.lic?.status?.value != 'Deleted') {
+                    result["License:${it.lic?.id}"] = it.lic?.reference
+                }
             }
         }
 
@@ -2399,7 +2424,7 @@ AND EXISTS (
                 startDate: sub_startDate,
                 endDate: sub_endDate,
                 previousSubscription: old_subOID ?: null,
-                type: RefdataValue.findByValue('Subscription Taken'))
+                type: params.subscription?.type)
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
         Date earliest_start_date = null

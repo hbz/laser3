@@ -7,6 +7,7 @@ class PublicController {
 
     def springSecurityService
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
   def journalLicenses(){
     log.debug("journalLicenses :: ${params}")
@@ -115,6 +116,7 @@ class PublicController {
     log.debug("Processed: "+result)
   }
 
+  @Deprecated
   private def retrieveIssueEntitlements(ti, org, result) {
     log.debug("retrieveIssueEntitlements")
     def issueEntitlements = []

@@ -214,7 +214,7 @@
                         <g:if test="${s.owner}">
                                 <div class="la-flexbox">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link  controller="licenseDetails" action="show" id="${s.owner.id}">${s.owner?.reference}</g:link>
+                                    <g:link  controller="licenseDetails" action="show" id="${s.owner.id}">${s.owner?.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}</g:link>
                                 </div>
                         </g:if>
                     </td>
@@ -252,7 +252,7 @@
                         </g:if>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
-                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber}</g:link> <br />
+                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
                             </g:each>
                         </g:if>
                     </td>
