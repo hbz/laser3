@@ -139,6 +139,23 @@ class SemanticUiTagLib {
         out << '<i class="icon"></i>'
         out << '</div>'
     }
+    def listIcon = { attrs, body ->
+
+        switch(attrs.type) {
+            case 'Journal':
+                out << '<i class="icon newspaper outline la-list-icon"></i>'
+                break
+            case 'Database':
+                out << '<i class="icon database outline la-list-icon"></i>'
+                break
+            case 'EBook':
+                out << '<i class="icon tablet alternate outline la-list-icon"></i>'
+                break
+            default:
+                out << '<i class="icon book la-list-icon"></i>'
+                break
+        }
+    }
 
     def editableLabel = { attrs, body ->
 
