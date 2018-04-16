@@ -55,7 +55,9 @@
         </table>
       </g:if>
       <g:else>
+        <p>
         Unable to locate any invoices against this subscription
+        </p>
       </g:else>
 
   </body>
