@@ -365,3 +365,44 @@ body[class*="organisation"] {
         }
     }
 }
+// x-editable & poshytip
+
+.tip-yellowsimple {
+    z-index: 1000;
+    text-align: left;
+    position: absolute;
+    text-transform: none;
+    text-align: left;
+    white-space: nowrap;
+    font-size: 1rem;
+    border: 1px solid #d4d4d5;
+    line-height: 1.4285em;
+    max-width: none;
+    background: #fff;
+    padding: .833em 1em;
+    -webkit-box-shadow: 0 2px 4px 0 rgba(34, 36, 38, .12), 0 2px 10px 0 rgba(34, 36, 38, .15);
+    box-shadow: 0 2px 4px 0 rgba(34, 36, 38, .12), 0 2px 10px 0 rgba(34, 36, 38, .15);
+}
+.tip-yellowsimple:before {
+    box-sizing: inherit;
+    box-shadow: 1px 1px 0 0 #bababc;
+    z-index: 2;
+    position: absolute;
+    content: '';
+    font-size: 1rem;
+    width: .71428571em;
+    height: .71428571em;
+    transition: all .1s ease;
+    transform-origin: center top;
+    top: auto;
+    right: auto;
+    bottom: -14%;
+    left: 50%;
+    background: #fff;
+    margin-left: -.07142857rem;
+    margin-bottom: .14285714rem;
+    visibility: visible;
+    pointer-events: auto;
+    transform: rotate(45deg) scale(1)!important;
+    opacity: 1;
+}

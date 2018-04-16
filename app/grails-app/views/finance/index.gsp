@@ -4,6 +4,7 @@
 <head>
     <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser', default:'LAS:eR')} : Financial Information</title>
+
 </head>
 <body>
 %{--<r:require modules="finance" />--}%
@@ -680,7 +681,7 @@
               };
             }
 
-            $.fn.editable.defaults.mode = 'inline'; //default is popup mode
+            $.fn.editable.defaults.mode = 'popup'; //default is popup mode
 
             $(document).ajaxStart(startLoadAnimation);
             $(document).ajaxStop(stopLoadAnimation);

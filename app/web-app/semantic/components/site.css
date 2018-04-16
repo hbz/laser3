@@ -560,3 +560,46 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
 .la-forward-back a:hover {
   color: #767676;
 }
+.tip-yellowsimple {
+  z-index: 1000;
+  position: absolute;
+  text-transform: none;
+  text-align: left;
+  white-space: nowrap;
+  font-size: 1rem;
+  border: 1px solid #d4d4d5;
+  line-height: 1.4285em;
+  max-width: none;
+  background: #fff;
+  padding: .833em 1em;
+  -webkit-box-shadow: 0 2px 4px 0 rgba(34, 36, 38, 0.12), 0 2px 10px 0 rgba(34, 36, 38, 0.15);
+  box-shadow: 0 2px 4px 0 rgba(34, 36, 38, 0.12), 0 2px 10px 0 rgba(34, 36, 38, 0.15);
+}
+.tip-yellowsimple:before {
+  -webkit-box-sizing: inherit;
+          box-sizing: inherit;
+  -webkit-box-shadow: 1px 1px 0 0 #bababc;
+          box-shadow: 1px 1px 0 0 #bababc;
+  z-index: 2;
+  position: absolute;
+  content: '';
+  font-size: 1rem;
+  width: .71428571em;
+  height: .71428571em;
+  -webkit-transition: all .1s ease;
+  transition: all .1s ease;
+  -webkit-transform-origin: center top;
+          transform-origin: center top;
+  top: auto;
+  right: auto;
+  bottom: -14%;
+  left: 50%;
+  background: #fff;
+  margin-left: -0.07142857rem;
+  margin-bottom: .14285714rem;
+  visibility: visible;
+  pointer-events: auto;
+  -webkit-transform: rotate(45deg) scale(1) !important;
+          transform: rotate(45deg) scale(1) !important;
+  opacity: 1;
+}
