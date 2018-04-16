@@ -238,8 +238,7 @@ from Subscription as s where
   }
 
     @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_YODA'])
     def consortia() {
         redirect controller: 'licenseDetails', action: 'show', params: params
         return

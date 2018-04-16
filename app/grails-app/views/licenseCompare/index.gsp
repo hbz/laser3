@@ -62,7 +62,7 @@
 	      		var option = $("input[name='selectedIdentifier']").val()
 	      		var option_name = option.split("||")[0]
 	      		var option_id = option.split("||") [1]
-	      		var list_option = "<option selected='selected' value='"+option_id+"''>"+option_name+"</option>"
+	      		var list_option = "<option selected='selected' value='"+option_id+"'>"+option_name+"</option>"
 	      		$("#selectedLicenses").append(list_option)
 	      		$('#selectedLicenses').trigger( "change" )
 			});
@@ -81,15 +81,16 @@
 	              return {
 	                  q: "%"+term+"%", // search term
 	                  inst:"${institution?.id}",
-	                  roleType:"${licensee_role}",
+	                  //roleType: ${licensee_role?.id},
+	                  roleTypes: [${licensee_role?.id}, ${licensee_cons_role?.id}],
 	                  isPublic:"${isPublic?.id}",
 	                  page_limit: 10,
 	                  baseClass:'com.k_int.kbplus.License'
-	              };
+	              }
 	          },
 	          results: function (data, page) {
 	            return {results: data.values};
-	          },
+	          }
 	        }
 	      });
 	    });
