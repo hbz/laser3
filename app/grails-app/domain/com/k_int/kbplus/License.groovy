@@ -592,9 +592,28 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
   }
 
   static def refdataFind(params) {
-       String INSTITUTIONAL_LICENSES_QUERY = " from License as l where ( exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org.id =(:orgId) and ol.roleType.id = (:orgRole)) OR l.isPublic.id=(:publicS)) AND l.status.value != 'Deleted' and lower(l.reference) like (:ref)"
+
+      String INSTITUTIONAL_LICENSES_QUERY = """ 
+ FROM License AS l WHERE 
+( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic.id=(:publicS)) 
+AND l.status.value != 'Deleted' 
+AND lower(l.reference) LIKE (:ref)
+"""
       def result = []
-      def  ql = License.executeQuery("select l ${INSTITUTIONAL_LICENSES_QUERY}",[orgId:params.inst?.toLong(),orgRole:params.roleType?.toLong(),publicS:params.isPublic?.toLong(),ref:"${params.q.toLowerCase()}"])
+      def ql
+
+        // TODO: ugly select2 fallback
+      def roleTypes = []
+      if (params.'roleTypes[]') {
+          params.'roleTypes[]'.each{ x -> roleTypes << x.toLong() }
+      } else {
+          roleTypes << params.roleType?.toLong()
+      }
+
+      ql = License.executeQuery("select l ${INSTITUTIONAL_LICENSES_QUERY}",
+        [orgId: params.inst?.toLong(), orgRoles: roleTypes, publicS: params.isPublic?.toLong(), ref: "${params.q.toLowerCase()}"])
+
+
       if ( ql ) {
           ql.each { lic ->
               def type = lic.type?.value ?"(${lic.type.value})":""
