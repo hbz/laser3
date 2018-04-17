@@ -98,5 +98,66 @@
             </div>
         </div>
 
+
     </g:form>
+
+    <r:script>
+
+        $('#create_task')
+                .form({
+            on: 'blur',
+            inline: true,
+            fields: {
+                title: {
+                    identifier  : 'title',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                },
+
+                endDate: {
+                    identifier  : 'endDate',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                },
+                createDate: {
+                    identifier  : 'createDate',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                },
+                statusId: {
+                    identifier  : 'status.id',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                },
+                creatorId: {
+                    identifier  : 'creator.id',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                }
+
+            }
+        });
+
+    </r:script>
 </semui:modal>
+

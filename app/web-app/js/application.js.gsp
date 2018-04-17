@@ -129,9 +129,17 @@ r2d2 = {
             $($(this).attr('href') + '.ui.modal').modal({
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-                }
+                },
+                detachable: true,
+                closable: true,
+                transition: 'fade up',
+                onApprove : function() {
+                    $('.ui.form').submit();
+                    return false;
+                },
             }).modal('show')
         });
+
 
         // dropdowns
         $('.ui.dropdown').dropdown({
