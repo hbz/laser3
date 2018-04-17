@@ -6,16 +6,18 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.members.label')}</title>
 </head>
 <body>
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
+
     <semui:controlButtons>
         <g:render template="actions" />
     </semui:controlButtons>
-    <h1 class="ui header"><semui:headerIcon />
 
+    <h1 class="ui header">
+        <semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
     </h1>
 
@@ -115,8 +117,6 @@
             </g:each>
         </tbody>
     </table>
-
-    <g:link controller="subscriptionDetails" action="addMembers"  params="${[id:params.id]}" target="_blank"><input type="button" class="ui button" value="${message(code:'subscription.details.addMembers.label')}" /></g:link>
 
 </body>
 </html>

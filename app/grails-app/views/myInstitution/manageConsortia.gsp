@@ -26,14 +26,20 @@
 <g:if test="${consortiaMembers}">
     <semui:filter>
         <g:form action="manageConsortia" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"/>
+            <g:render template="/templates/filter/orgFilter"
+                      model="[tmplConfigShow: ['name', 'federalState', 'libraryNetwork', 'libraryType']
+                      ]"/>
         </g:form>
     </semui:filter>
 
 
     <g:form action="manageConsortia" controller="myInstitution" method="post" class="ui form">
+
         <g:render template="/templates/filter/orgFilterTable"
-                  model="[orgList: consortiaMembers, tmplShowCheckbox: true]"/>
+                  model="[orgList: consortiaMembers,
+                          tmplShowCheckbox: true,
+                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                  ]"/>
 
         <br/>
 

@@ -25,12 +25,20 @@
 
     <semui:filter>
         <g:form action="addConsortiaMembers" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter" />
+            <g:render template="/templates/filter/orgFilter"
+                      model="[tmplConfigShow: ['name', 'federalState', 'libraryNetwork', 'libraryType']
+                      ]"/>
         </g:form>
     </semui:filter>
 
     <g:form action="addConsortiaMembers" controller="myInstitution" method="post" class="ui form">
-        <g:render template="/templates/filter/orgFilterTable" model="[orgList: availableOrgs, tmplShowCheckbox: true, tmplDisableOrgIds: consortiaMemberIds]" />
+
+        <g:render template="/templates/filter/orgFilterTable"
+                  model="[orgList: availableOrgs,
+                          tmplDisableOrgIds: consortiaMemberIds,
+                          tmplShowCheckbox: true,
+                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                  ]"/>
 
         <br/>
         <input type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}" />

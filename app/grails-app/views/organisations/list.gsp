@@ -24,17 +24,17 @@
 
         <semui:filter>
             <g:form action="list" method="get" class="ui form">
-                <div class="field">
-                    <label>${message(code: 'org.search.contains')}</label>
-                    <input type="text" name="orgNameContains" value="${params.orgNameContains}"/>
-                </div>
-
-                <g:render template="/templates/filter/orgFilter" />
-
+                <g:render template="/templates/filter/orgFilter"
+                          model="[tmplConfigShow: ['name', 'type', 'sector', 'federalState', 'libraryNetwork', 'libraryType']
+                          ]"/>
             </g:form>
         </semui:filter>
 
-        <g:render template="/templates/filter/orgFilterTable" model="[orgList: orgList]" />
+        <g:render template="/templates/filter/orgFilterTable"
+              model="[orgList: orgList,
+                      tmplShowCheckbox: false,
+                      tmplConfigShow: ['name', 'wib', 'isil', 'type', 'sector', 'federalState', 'libraryNetwork', 'libraryType']
+              ]"/>
 
         <semui:paginate total="${orgListTotal}" params="${params}" />
 
