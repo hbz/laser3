@@ -16,7 +16,11 @@
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/filter/orgFilterTable" model="[orgList: orgList]" />
+    <g:render template="/templates/filter/orgFilterTable"
+              model="[orgList: orgList,
+                      tmplShowCheckbox: false,
+                      tmplConfigShow: ['name', 'identifier', 'type', 'sector']
+              ]"/>
 
   </body>
 </html>

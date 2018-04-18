@@ -21,7 +21,8 @@ class PackageDetailsController {
     def accessService
     def contextService
     def taskService
-  
+    def addressbookService
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     @Secured(['ROLE_USER'])
@@ -451,6 +452,8 @@ class PackageDetailsController {
         def preCon      = taskService.getPreconditions(contextOrg)
         result << preCon
 
+        result.modalPrsLinkRole    = RefdataValue.findByValue('Specific package editor')
+        result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, packageInstance.orgs)
 
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgs = packageInstance.orgs

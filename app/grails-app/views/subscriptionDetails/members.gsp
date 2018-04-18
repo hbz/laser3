@@ -6,16 +6,18 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.members.label')}</title>
 </head>
 <body>
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
+
     <semui:controlButtons>
         <g:render template="actions" />
     </semui:controlButtons>
-    <h1 class="ui header"><semui:headerIcon />
 
+    <h1 class="ui header">
+        <semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
     </h1>
 
@@ -62,26 +64,26 @@
                             <g:set var="rdvGcp" value="${RefdataValue.findByValue('General contact person')}"/>
                             <g:set var="rdvSse" value="${RefdataValue.findByValue('Specific subscription editor')}"/>
 
-                            <g:each in="${Person.getByOrgAndFunction(subscr, 'General contact person')}" var="gcp">
+                            <g:each in="${Person.getByOrgFunc(subscr, 'General contact person')}" var="gcp">
                                 ${rdvGcp.getI10n('value')}
                                 <br />
                                 <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
                                 <br />
                             </g:each>
-                            <g:each in="${Person.getByOrgAndFunctionFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
+                            <g:each in="${Person.getByOrgFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
                                 <i class="address book outline icon"></i>
                                 ${rdvGcp.getI10n('value')}
                                 <br />
                                 <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
                                 <br />
                             </g:each>
-                            <g:each in="${Person.getByOrgAndObjectAndResponsibility(subscr, sub, 'Specific subscription editor')}" var="sse">
+                            <g:each in="${Person.getByOrgObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
                                 ${rdvSse.getI10n('value')}
                                 <br />
                                 <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
                                 <br />
                             </g:each>
-                            <g:each in="${Person.getByOrgAndObjectAndResponsibilityFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
+                            <g:each in="${Person.getByOrgObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
                                 <i class="address book outline icon"></i>
                                 ${rdvSse.getI10n('value')}
                                 <br />
@@ -115,8 +117,6 @@
             </g:each>
         </tbody>
     </table>
-
-    <g:link controller="subscriptionDetails" action="addMembers"  params="${[id:params.id]}" target="_blank"><input type="button" class="ui button" value="${message(code:'subscription.details.addMembers.label')}" /></g:link>
 
 </body>
 </html>

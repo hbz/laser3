@@ -2869,6 +2869,10 @@ AND EXISTS (
     def addConsortiaMembers() {
         def result = setResultGenerics()
 
+        // new: filter preset
+        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgType')?.id.toString()
+        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id.toString()
+
         if (params.selectedOrgs) {
             log.debug('adding orgs to consortia')
 
@@ -2902,6 +2906,10 @@ AND EXISTS (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageConsortia() {
         def result = setResultGenerics()
+
+        // new: filter preset
+        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgType')?.id.toString()
+        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id.toString()
 
         if (params.selectedOrgs) {
             log.debug('remove orgs from consortia')

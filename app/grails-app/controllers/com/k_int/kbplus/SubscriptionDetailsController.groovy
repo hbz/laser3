@@ -1393,16 +1393,6 @@ AND l.status.value != 'Deleted' order by l.reference
         result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
         result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, result.subscriptionInstance.orgRelations)
 
-        result.subscriptionInstance.orgRelations.each { or ->
-            or.org.prsLinks.each { pl ->
-                if (pl.prs?.isPublic?.value != 'No') {
-                    if (!result.modalVisiblePersons.contains(pl.prs)) {
-                        result.modalVisiblePersons << pl.prs
-                    }
-                }
-            }
-        }
-
         result.visiblePrsLinks = []
 
           result.subscriptionInstance.prsLinks.each { pl ->

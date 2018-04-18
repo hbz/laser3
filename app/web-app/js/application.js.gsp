@@ -39,7 +39,6 @@ r2d2 = {
                     }
                 }
             }
-
         }
     },
 
@@ -134,12 +133,11 @@ r2d2 = {
                 closable: true,
                 transition: 'fade up',
                 onApprove : function() {
-                    $('.ui.form').submit();
+                    $(this).find('.ui.form').submit();
                     return false;
-                },
+                }
             }).modal('show')
         });
-
 
         // dropdowns
         $('.ui.dropdown').dropdown({

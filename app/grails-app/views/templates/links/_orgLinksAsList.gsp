@@ -12,26 +12,52 @@
                         <g:link class="ui button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
                             <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                         </g:link>
+
+                        &nbsp;
+
+                        <button class="ui button" data-semui="modal" href="#prsLinksModal">
+                            ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                        </button>
                     </div>
                 </g:if>
+                <%-- public --%>
                 <div class="ui list">
-                    <g:each in="${Person.getByOrgAndFunction(role.org, 'General contact person')}" var="gcp">
+                    <g:each in="${Person.getByOrgFunc(role.org, 'General contact person')}" var="func">
                         <div class="item">
                             <i class="address card icon"></i>
                             <div class="content">
-                                <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-                                ,
+                                <g:link controller="person" action="show" id="${func.id}">${func}</g:link>,
                                 ${(RefdataValue.findByValue('General contact person')).getI10n('value')}
                             </div>
                         </div>
                     </g:each>
-                    <g:each in="${Person.getByOrgAndFunctionFromAddressbook(role.org, 'General contact person', contextService.getOrg())}" var="gcp">
+                    <g:each in="${Person.getByOrgObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
+                        <div class="item">
+                            <i class="address card icon"></i>
+                            <div class="content">
+                                <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>,
+                                ${(RefdataValue.findByValue(roleRespValue)).getI10n('value')}
+                            </div>
+                        </div>
+                    </g:each>
+                </div>
+                <%-- private --%>
+                <div class="ui list">
+                    <g:each in="${Person.getByOrgFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg())}" var="func">
                         <div class="item">
                             <i class="address card outline icon"></i>
                             <div class="content">
-                                <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-                                ,
+                                <g:link controller="person" action="show" id="${func.id}">${func}</g:link>,
                                 ${(RefdataValue.findByValue('General contact person')).getI10n('value')}
+                            </div>
+                        </div>
+                    </g:each>
+                    <g:each in="${Person.getByOrgObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())}" var="resp">
+                        <div class="item">
+                            <i class="address card outline icon"></i>
+                            <div class="content">
+                                <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>,
+                                ${(RefdataValue.findByValue(roleRespValue)).getI10n('value')}
                             </div>
                         </div>
                     </g:each>

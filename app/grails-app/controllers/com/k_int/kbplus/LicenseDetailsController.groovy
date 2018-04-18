@@ -127,16 +127,6 @@ class LicenseDetailsController {
       result.modalPrsLinkRole    = RefdataValue.findByValue('Specific license editor')
       result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, result.license.orgLinks)
 
-      result.license.orgLinks.each { or ->
-          or.org.prsLinks.each { pl ->
-              if (pl.prs?.isPublic?.value != 'No') {
-                  if (! result.modalVisiblePersons.contains(pl.prs)) {
-                      result.modalVisiblePersons << pl.prs
-                  }
-              }
-          }
-      }
-
       result.visiblePrsLinks = []
 
       result.license.prsLinks.each { pl ->

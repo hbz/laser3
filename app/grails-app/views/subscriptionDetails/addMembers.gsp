@@ -1,10 +1,11 @@
 <%@ page import="com.k_int.kbplus.*" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} ${message(code: 'subscription.label', default: 'Subscription')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.addMembers.label')}</title>
 </head>
 
 <body>
@@ -31,33 +32,43 @@
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
-            <g:render template="/templates/filter/orgFilter"/>
+            <g:render template="/templates/filter/orgFilter"
+                      model="[tmplConfigShow: ['name', 'federalState', 'libraryNetwork', 'libraryType']
+                      ]"/>
         </g:form>
     </semui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscriptionDetails" method="post"
-            class="ui form">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscriptionDetails" method="post" class="ui form">
 
         <input type="hidden" name="asOrgType" value="${institution?.orgType?.id}">
 
-        <div class="ui field">
-            <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
-            <label>Status</label>
-            <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
-                      optionKey="id"
-                      optionValue="${{ it.getI10n('value') }}"
-                      name="subStatus"
-                      value="${com.k_int.kbplus.RefdataValue.findByValue('Under Consideration')?.id}"/>
-        </div>
-
         <g:render template="/templates/filter/orgFilterTable"
-                  model="[orgList: cons_members, tmplShowCheckbox: true, tmplDisableOrgIds: cons_members_disabled, tmplShowOption: true, subInstance: subscriptionInstance]"/>
+                  model="[orgList: cons_members,
+                          tmplDisableOrgIds: cons_members_disabled,
+                          subInstance: subscriptionInstance,
+                          tmplShowCheckbox: true,
+                          tmplConfigOptions: ['addMembers'],
+                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          ]"/>
 
-        <div class="ui field">
-            <div class="ui checkbox">
-                <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked"
-                       readonly="readonly">
-                <label>${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
+        <div class="ui two fields">
+            <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
+            <div class="field">
+                <label>Status</label>
+                <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
+                          optionKey="id"
+                          optionValue="${{ it.getI10n('value') }}"
+                          name="subStatus"
+                          value="${com.k_int.kbplus.RefdataValue.findByValue('Under Consideration')?.id}"/>
+            </div>
+
+            <div class="field">
+                <label>&nbsp;</label>
+                <div class="ui checkbox">
+                    <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked"
+                           readonly="readonly">
+                    <label>${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
+                </div>
             </div>
         </div>
 
@@ -67,9 +78,19 @@
                    value="${message(code: 'default.button.create.label', default: 'Create')}"/>
         </g:if>
     </g:form>
-    <g:link controller="myInstitution" action="addConsortiaMembers" target="_blank"><input type="button"
-                                                                                           class="ui button"
-                                                                                           value="${message(code: 'menu.institutions.add_consortia_members')}"/></g:link>
+
+    <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
+        <hr />
+
+        <div class="ui info message">
+            <div class="header">Konsorten verwalten</div>
+            <p>
+                Sie können bei Bedarf über
+                <g:link controller="myInstitution" action="addConsortiaMembers">diesen Link</g:link>
+                Ihre Konsorten verwalten ..
+            </p>
+        </div>
+    </g:if>
 </g:if>
 
 </body>

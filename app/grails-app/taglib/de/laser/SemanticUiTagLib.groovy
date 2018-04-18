@@ -274,7 +274,7 @@ class SemanticUiTagLib {
         out <<     body()
         out <<   '</div>'
         out <<   '<div class="actions">'
-        out <<     '<a href="#" class="ui button" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
+        out <<     '<a href="#" class="ui button '+ attrs.id +'" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
 
         if (attrs.hideSubmitButton == null) {
             out <<   '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
