@@ -453,7 +453,7 @@ class PackageDetailsController {
         result << preCon
 
         result.modalPrsLinkRole    = RefdataValue.findByValue('Specific package editor')
-        result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, packageInstance.orgs)
+        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgs = packageInstance.orgs

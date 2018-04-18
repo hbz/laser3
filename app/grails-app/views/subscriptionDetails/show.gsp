@@ -250,13 +250,13 @@
                                         recip_prop: 'sub',
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen']}" />
-
+<%--
                     <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                           model="[roleLinks: visibleOrgRelations,
                                   'subscription': subscriptionInstance,
                                   parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
                                   role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-
+--%>
                 <% /*
                <dl>
                     <dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>

@@ -321,4 +321,11 @@ class Org extends BaseDomainComponent {
     String toString() {
         sector ? name + ', ' + sector?.getI10n('value') : "${name}"
     }
+
+    def getPublicPersons() {
+        Person.executeQuery(
+                "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org",
+                [org: this]
+        )
+    }
 }

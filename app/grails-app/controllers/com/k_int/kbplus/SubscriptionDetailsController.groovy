@@ -1391,7 +1391,7 @@ AND l.status.value != 'Deleted' order by l.reference
         // -- private properties
 
         result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
-        result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, result.subscriptionInstance.orgRelations)
+        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
         result.visiblePrsLinks = []
 

@@ -257,13 +257,14 @@
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
                                             tmplText:'Lizenzgeber hinzufügen'
                                   ]}" />
-
+<%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                                   model="[roleLinks: visibleOrgLinks,
                                           'license': license,
                                           parent: license.class.name + ':' + license.id,
                                           role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id
                                   ]"/>
+                                  --%>
                         </div>
                     </div>
 

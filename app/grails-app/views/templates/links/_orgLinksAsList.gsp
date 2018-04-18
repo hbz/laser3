@@ -3,6 +3,8 @@
 
 <g:each in="${roleLinks}" var="role">
     <g:if test="${role.org}">
+        <g:set var="cssId" value="prsLinksModal-${role.org.id}" />
+
         <dl>
              <dt><label class="control-label">${role?.roleType?.getI10n("value")}</label></dt>
             <dd>
@@ -15,7 +17,7 @@
 
                         &nbsp;
 
-                        <button class="ui button" data-semui="modal" href="#prsLinksModal">
+                        <button class="ui button" data-semui="modal" href="#${cssId}">
                             ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
                         </button>
                     </div>
@@ -26,8 +28,8 @@
                         <div class="item">
                             <i class="address card icon"></i>
                             <div class="content">
-                                <g:link controller="person" action="show" id="${func.id}">${func}</g:link>,
-                                ${(RefdataValue.findByValue('General contact person')).getI10n('value')}
+                                <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
+                                (${(RefdataValue.findByValue('General contact person')).getI10n('value')})
                             </div>
                         </div>
                     </g:each>
@@ -35,8 +37,8 @@
                         <div class="item">
                             <i class="address card icon"></i>
                             <div class="content">
-                                <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>,
-                                ${(RefdataValue.findByValue(roleRespValue)).getI10n('value')}
+                                <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
+                                (${(RefdataValue.findByValue(roleRespValue)).getI10n('value')})
                             </div>
                         </div>
                     </g:each>
@@ -47,8 +49,8 @@
                         <div class="item">
                             <i class="address card outline icon"></i>
                             <div class="content">
-                                <g:link controller="person" action="show" id="${func.id}">${func}</g:link>,
-                                ${(RefdataValue.findByValue('General contact person')).getI10n('value')}
+                                <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
+                                (${(RefdataValue.findByValue('General contact person')).getI10n('value')})
                             </div>
                         </div>
                     </g:each>
@@ -56,8 +58,8 @@
                         <div class="item">
                             <i class="address card outline icon"></i>
                             <div class="content">
-                                <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>,
-                                ${(RefdataValue.findByValue(roleRespValue)).getI10n('value')}
+                                <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
+                                (${(RefdataValue.findByValue(roleRespValue)).getI10n('value')})
                             </div>
                         </div>
                     </g:each>
@@ -66,6 +68,13 @@
             </dd>
         </dl>
 
+        <g:render template="/templates/links/orgLinksAsListAddPrsModal"
+                  model="['cssId': cssId,
+                          'orgRole': role,
+                          'roleObject': roleObject,
+                          parent: roleObject.class.name + ':' + roleObject.id,
+                          role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id
+                  ]"/>
     </g:if>
 </g:each>
 

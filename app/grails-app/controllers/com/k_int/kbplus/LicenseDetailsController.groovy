@@ -125,7 +125,7 @@ class LicenseDetailsController {
       // -- private properties
 
       result.modalPrsLinkRole    = RefdataValue.findByValue('Specific license editor')
-      result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, result.license.orgLinks)
+      result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
       result.visiblePrsLinks = []
 

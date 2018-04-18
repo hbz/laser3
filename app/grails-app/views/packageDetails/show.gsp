@@ -204,13 +204,13 @@
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen'
                               ]}" />
-
+<%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                                   model="[roleLinks: visibleOrgs,
                                           'package': packageInstance,
                                           parent: packageInstance.class.name + ':' + packageInstance.id,
                                           role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-
+--%>
                     </div>
                 </div>
                 <div class="ui card">

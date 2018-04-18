@@ -353,7 +353,7 @@ class OrganisationsController {
         }
 
         result.orgInstance = orgInstance
-        result.visiblePersons = addressbookService.getVisiblePersons(result.user, orgInstance)
+        result.visiblePersons = addressbookService.getAllVisiblePersons(result.user, orgInstance)
 
         result
     }

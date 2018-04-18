@@ -20,10 +20,10 @@
 
                             <g:if test="${true || tmplShowFunction}">
                                 <g:if test="${pr.functionType}">
-                                    , ${(pr.functionType).getI10n("value")}
+                                    (${(pr.functionType).getI10n("value")})
                                 </g:if>
                                 <g:if test="${pr.responsibilityType}">
-                                    , ${(pr.responsibilityType).getI10n("value")}
+                                    (${(pr.responsibilityType).getI10n("value")})
                                 </g:if>
                             </g:if>
                         </div>

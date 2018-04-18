@@ -201,7 +201,7 @@ class Person extends BaseDomainComponent {
         result
     }
 
-    static def getByOrgFuncFromAddressbook(Org org, String func, Org tenant) {
+    static def  getByOrgFuncFromAddressbook(Org org, String func, Org tenant) {
         def result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
                 [org, func, tenant]
