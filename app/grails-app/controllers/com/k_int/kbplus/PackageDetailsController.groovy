@@ -452,19 +452,8 @@ class PackageDetailsController {
         def preCon      = taskService.getPreconditions(contextOrg)
         result << preCon
 
-
         result.modalPrsLinkRole    = RefdataValue.findByValue('Specific package editor')
         result.modalVisiblePersons = addressbookService.getVisiblePersonsByOrgRoles(result.user, packageInstance.orgs)
-
-        packageInstance.orgs.each { or ->
-            or.org.prsLinks.each { pl ->
-                if (pl.prs?.isPublic?.value != 'No') {
-                    if (! result.modalVisiblePersons.contains(pl.prs)) {
-                        result.modalVisiblePersons << pl.prs
-                    }
-                }
-            }
-        }
 
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgs = packageInstance.orgs

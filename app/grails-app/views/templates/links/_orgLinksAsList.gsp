@@ -15,9 +15,9 @@
 
                         &nbsp;
 
-                        <a class="ui button" data-semui="modal" href="#prsLinksModal">
+                        <button class="ui button" data-semui="modal" href="#prsLinksModal">
                             ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
-                        </a>
+                        </button>
                     </div>
                 </g:if>
                 <%-- public --%>

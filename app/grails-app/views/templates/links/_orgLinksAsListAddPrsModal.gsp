@@ -2,6 +2,18 @@
 
     <p>${message(code:'myinst.addressBook.visibleOnly', default:'Some persons are visible to you due your addressbook')}</p>
 
+<%
+    // find persons by related orgs
+    roleLinks.each { or ->
+        or.org.prsLinks.each { pl ->
+            if (pl.prs?.isPublic?.value != 'No') {
+                if (!modalVisiblePersons.contains(pl.prs)) {
+                    modalVisiblePersons << pl.prs
+                }
+            }
+        }
+    }
+%>
     <div class="field">
 
         <table id="prs_role_tab" class="ui celled la-table la-table-small table">

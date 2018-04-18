@@ -252,7 +252,8 @@
                                         tmplText:'Anbieter hinzufügen']}" />
 
                     <g:render template="/templates/links/orgLinksAsListAddPrsModal"
-                          model="['subscription': subscriptionInstance,
+                          model="[roleLinks: visibleOrgRelations,
+                                  'subscription': subscriptionInstance,
                                   parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
                                   role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
 

@@ -206,7 +206,8 @@
                               ]}" />
 
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
-                                  model="['package': packageInstance,
+                                  model="[roleLinks: visibleOrgs,
+                                          'package': packageInstance,
                                           parent: packageInstance.class.name + ':' + packageInstance.id,
                                           role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
 

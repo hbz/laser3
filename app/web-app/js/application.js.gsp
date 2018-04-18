@@ -39,7 +39,6 @@ r2d2 = {
                     }
                 }
             }
-
         }
     },
 
@@ -136,10 +135,9 @@ r2d2 = {
                 onApprove : function() {
                     $(this).find('.ui.form').submit();
                     return false;
-                },
+                }
             }).modal('show')
         });
-
 
         // dropdowns
         $('.ui.dropdown').dropdown({
