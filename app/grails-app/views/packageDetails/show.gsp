@@ -4,7 +4,7 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'package', default: 'Package')}" />
-        <title><g:message code="default.edit.label" args="[entityName]" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
     </head>
     <body>
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
@@ -190,13 +190,26 @@
                         </dl>
 
                         <g:render template="/templates/links/orgLinksAsList"
-                                  model="${[roleLinks:visibleOrgs, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', editmode:editable, tmplButtonText:'Anbieter hinzufügen']}" />
+                                  model="${[roleLinks: visibleOrgs,
+                                            roleObject: packageInstance,
+                                            roleRespValue: 'Specific package editor',
+                                            editmode: editable,
+                                            tmplButtonText: 'Anbieter hinzufügen']}" />
 
                         <g:render template="/templates/links/orgLinksModal"
-                              model="${[linkType:packageInstance?.class?.name, parent:packageInstance.class.name+':'+packageInstance.id, property:'orgs', recip_prop:'pkg',
+                              model="${[linkType:packageInstance?.class?.name,
+                                        parent: packageInstance.class.name+':'+packageInstance.id,
+                                        property: 'orgs',
+                                        recip_prop: 'pkg',
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen'
                               ]}" />
+
+                        <g:render template="/templates/links/orgLinksAsListAddPrsModal"
+                                  model="['package': packageInstance,
+                                          parent: packageInstance.class.name + ':' + packageInstance.id,
+                                          role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
+
                     </div>
                 </div>
                 <div class="ui card">

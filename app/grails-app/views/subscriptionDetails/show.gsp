@@ -235,14 +235,26 @@
                     <dd> <semui:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" /></dd>
                 </dl> */ %>
 
-
-
-                    <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgRelations, editmode:editable, tmplButtonText:'Anbieter hinzufügen']}" />
+                    <g:render template="/templates/links/orgLinksAsList"
+                              model="${[roleLinks: visibleOrgRelations,
+                                        roleObject: subscriptionInstance,
+                                        roleRespValue: 'Specific subscription editor',
+                                        editmode: editable,
+                                        tmplButtonText:'Anbieter hinzufügen'
+                              ]}" />
 
                     <g:render template="/templates/links/orgLinksModal"
-                              model="${[linkType:subscriptionInstance?.class?.name, parent:subscriptionInstance.class.name+':'+subscriptionInstance.id, property:'orgs', recip_prop:'sub',
+                              model="${[linkType: subscriptionInstance?.class?.name,
+                                        parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
+                                        property: 'orgs',
+                                        recip_prop: 'sub',
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen']}" />
+
+                    <g:render template="/templates/links/orgLinksAsListAddPrsModal"
+                          model="['subscription': subscriptionInstance,
+                                  parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
+                                  role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
 
                 <% /*
                <dl>
@@ -259,11 +271,12 @@
                </dl>
                </g:if */ %>
 
-                            <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
+                <%--
+                    <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
 
-                            <g:render template="/templates/links/prsLinksModal"
+                    <g:render template="/templates/links/prsLinksModal"
                           model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-
+                --%>
 
                 <% /*
                 <dl>

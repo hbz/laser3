@@ -241,19 +241,28 @@
                                 </dd>
                             </dl>
                            --%>
-                        <g:render template="/templates/links/orgLinksAsList" model="${[roleLinks:visibleOrgLinks, editmode:editable, tmplButtonText:'Lizenzgeber hinzufügen']}" />
+                        <g:render template="/templates/links/orgLinksAsList"
+                                  model="${[roleLinks: visibleOrgLinks,
+                                            roleObject: license,
+                                            roleRespValue: 'Specific license editor',
+                                            editmode: editable,
+                                            tmplButtonText: 'Lizenzgeber hinzufügen'
+                                  ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
-                                  model="${[linkType:license?.class?.name, parent:license.class.name+':'+license.id, property:'orgLinks', recip_prop:'lic',
+                                  model="${[linkType: license?.class?.name,
+                                            parent: license.class.name+':'+license.id,
+                                            property: 'orgLinks',
+                                            recip_prop: 'lic',
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
                                             tmplText:'Lizenzgeber hinzufügen'
                                   ]}" />
 
-                                <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
-
-                                <g:render template="/templates/links/prsLinksModal"
-                                      model="['license': license, parent: license.class.name + ':' + license.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-
+                        <g:render template="/templates/links/orgLinksAsListAddPrsModal"
+                                  model="['license': license,
+                                          parent: license.class.name + ':' + license.id,
+                                          role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id
+                                  ]"/>
                         </div>
                     </div>
 

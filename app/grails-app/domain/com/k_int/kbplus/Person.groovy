@@ -161,7 +161,7 @@ class Person extends BaseDomainComponent {
     }
 
 
-    static def getByOrgAndFunction(Org org, String func) {
+    static def getByOrgFunc(Org org, String func) {
         def result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.functionType.value = ?",
                 [org, func]
@@ -169,16 +169,39 @@ class Person extends BaseDomainComponent {
         result
     }
 
-    static def getByOrgAndObjectAndResponsibility(Org org, def obj, String resp) {
-        // TODO implement: obj
+    static def getByOrgObjectResp(Org org, def obj, String resp) {
+        def q = ''
+        def p = ['org': org, 'resp': resp]
+
+        if (obj instanceof License) {
+            q = ' and pr.lic = :obj '
+            p << ['obj': obj]
+        }
+        if (obj instanceof Cluster) {
+            q = ' and pr.cluster = :obj '
+            p << ['obj': obj]
+        }
+        if (obj instanceof Package) {
+            q = ' and pr.pkg = :obj '
+            p << ['obj': obj]
+        }
+        if (obj instanceof Subscription) {
+            q = ' and pr.sub = :obj '
+            p << ['obj': obj]
+        }
+        if (obj instanceof TitleInstance) {
+            q = ' and pr.title = :obj '
+            p << ['obj': obj]
+        }
+
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.responsibilityType.value = ?",
-                [org, resp]
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org and pr.responsibilityType.value = :resp " + q,
+                p
         )
         result
     }
 
-    static def getByOrgAndFunctionFromAddressbook(Org org, String func, Org tenant) {
+    static def getByOrgFuncFromAddressbook(Org org, String func, Org tenant) {
         def result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
                 [org, func, tenant]
@@ -186,11 +209,34 @@ class Person extends BaseDomainComponent {
         result
     }
 
-    static def getByOrgAndObjectAndResponsibilityFromAddressbook(Org org, def obj, String resp, Org tenant) {
-        // TODO implement: obj
+    static def getByOrgObjectRespFromAddressbook(Org org, def obj, String resp, Org tenant) {
+        def q = ''
+        def p = ['org': org, 'resp': resp, 'tnt': tenant]
+
+        if (obj instanceof License) {
+            q = ' and pr.lic = :obj '
+            p << ['obj': obj]
+        }
+        if (obj instanceof Cluster) {
+            q = ' and pr.cluster = :obj '
+            p << ['obj': obj]
+        }
+        if (obj instanceof Package) {
+            q = ' and pr.pkg = :obj '
+            p << ['obj': obj]
+        }
+        if (obj instanceof Subscription) {
+            q = ' and pr.sub = :obj '
+            p << ['obj': obj]
+        }
+        if (obj instanceof TitleInstance) {
+            q = ' and pr.title = :obj '
+            p << ['obj': obj]
+        }
+
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.responsibilityType.value = ? and p.tenant = ?",
-                [org, resp, tenant]
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = :org and pr.responsibilityType.value = :resp and p.tenant = :tnt " + q,
+                p
         )
         result
     }
