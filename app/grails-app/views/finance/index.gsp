@@ -681,7 +681,7 @@
               };
             }
 
-            $.fn.editable.defaults.mode = 'popup'; //default is popup mode
+            $.fn.editable.defaults.mode = 'popup'; //default is inline mode
 
             $(document).ajaxStart(startLoadAnimation);
             $(document).ajaxStop(stopLoadAnimation);
