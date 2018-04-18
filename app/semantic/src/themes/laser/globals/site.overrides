@@ -368,9 +368,12 @@ body[class*="organisation"] {
 // x-editable & poshytip
 //
 .tip-yellowsimple {
+    /*
     margin-top: 28px;
     margin-left: 58px;
-    z-index: 1000;
+    */
+    margin-top: -1rem;
+    z-index: 10;
     text-align: left;
     position: absolute;
     text-transform: none;
@@ -388,7 +391,7 @@ body[class*="organisation"] {
         margin: 0 ;
     }
 }
-/*
+
 .tip-yellowsimple:before {
     box-sizing: inherit;
     box-shadow: 1px 1px 0 0 #bababc;
@@ -412,4 +415,3 @@ body[class*="organisation"] {
     transform: rotate(45deg) scale(1)!important;
     opacity: 1;
 }
-*/

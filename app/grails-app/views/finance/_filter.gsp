@@ -190,13 +190,14 @@
 
     </g:form>
     <table id="" class="ui striped celled la-rowspan table table-tworow">
+
         <thead>
             <tr>
                 <th>Preis in EUR</th>
                 <th>Kategorie</th>
                 <th>Komponente</th>
                 <th>Status</th>
-                <th>Bezeichnung</th>
+                <th class="three wide">Bezeichnung</th>
                 <th>Datum von</th>
                 <th>Datum bis</th>
                 <th>Aktionen</th>

@@ -561,9 +561,12 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
   color: #767676;
 }
 .tip-yellowsimple {
-  margin-top: 28px;
-  margin-left: 58px;
-  z-index: 1000;
+  /*
+    margin-top: 28px;
+    margin-left: 58px;
+    */
+  margin-top: -1rem;
+  z-index: 10;
   position: absolute;
   text-transform: none;
   text-align: left;
@@ -580,28 +583,31 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
 .tip-yellowsimple form.form-inline > * {
   margin: 0 ;
 }
-/*
 .tip-yellowsimple:before {
-    box-sizing: inherit;
-    box-shadow: 1px 1px 0 0 #bababc;
-    z-index: 2;
-    position: absolute;
-    content: '';
-    font-size: 1rem;
-    width: .71428571em;
-    height: .71428571em;
-    transition: all .1s ease;
-    transform-origin: center top;
-    top: auto;
-    right: auto;
-    bottom: -14%;
-    left: 50%;
-    background: #fff;
-    margin-left: -.07142857rem;
-    margin-bottom: .14285714rem;
-    visibility: visible;
-    pointer-events: auto;
-    transform: rotate(45deg) scale(1)!important;
-    opacity: 1;
+  -webkit-box-sizing: inherit;
+          box-sizing: inherit;
+  -webkit-box-shadow: 1px 1px 0 0 #bababc;
+          box-shadow: 1px 1px 0 0 #bababc;
+  z-index: 2;
+  position: absolute;
+  content: '';
+  font-size: 1rem;
+  width: .71428571em;
+  height: .71428571em;
+  -webkit-transition: all .1s ease;
+  transition: all .1s ease;
+  -webkit-transform-origin: center top;
+          transform-origin: center top;
+  top: auto;
+  right: auto;
+  bottom: -14%;
+  left: 50%;
+  background: #fff;
+  margin-left: -0.07142857rem;
+  margin-bottom: .14285714rem;
+  visibility: visible;
+  pointer-events: auto;
+  -webkit-transform: rotate(45deg) scale(1) !important;
+          transform: rotate(45deg) scale(1) !important;
+  opacity: 1;
 }
-*/
