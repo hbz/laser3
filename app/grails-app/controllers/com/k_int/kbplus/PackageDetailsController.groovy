@@ -457,6 +457,7 @@ class PackageDetailsController {
 
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgs = packageInstance.orgs
+        result.visibleOrgs.sort{it.org.sortname}
 
       result.subscriptionList=[]
       // We need to cycle through all the users institutions, and their respective subscripions, and add to this list

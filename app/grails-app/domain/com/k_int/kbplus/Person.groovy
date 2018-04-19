@@ -161,7 +161,7 @@ class Person extends BaseDomainComponent {
     }
 
 
-    static def getByOrgFunc(Org org, String func) {
+    static def getPublicByOrgAndFunc(Org org, String func) {
         def result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.functionType.value = ?",
                 [org, func]
@@ -169,7 +169,7 @@ class Person extends BaseDomainComponent {
         result
     }
 
-    static def getByOrgObjectResp(Org org, def obj, String resp) {
+    static def getPublicByOrgAndObjectResp(Org org, def obj, String resp) {
         def q = ''
         def p = ['org': org, 'resp': resp]
 
@@ -201,7 +201,7 @@ class Person extends BaseDomainComponent {
         result
     }
 
-    static def  getByOrgFuncFromAddressbook(Org org, String func, Org tenant) {
+    static def getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
         def result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
                 [org, func, tenant]
@@ -209,7 +209,7 @@ class Person extends BaseDomainComponent {
         result
     }
 
-    static def getByOrgObjectRespFromAddressbook(Org org, def obj, String resp, Org tenant) {
+    static def getPrivateByOrgAndObjectRespFromAddressbook(Org org, def obj, String resp, Org tenant) {
         def q = ''
         def p = ['org': org, 'resp': resp, 'tnt': tenant]
 

@@ -1361,6 +1361,7 @@ AND l.status.value != 'Deleted' order by l.reference
                 result.visibleOrgRelations << or
             }
         }
+        result.visibleOrgRelations.sort{it.org.sortname}
 
         // -- private properties
 

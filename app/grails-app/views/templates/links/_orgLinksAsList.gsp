@@ -24,7 +24,7 @@
                 </g:if>
                 <%-- public --%>
                 <div class="ui list">
-                    <g:each in="${Person.getByOrgFunc(role.org, 'General contact person')}" var="func">
+                    <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
                         <div class="item">
                             <i class="address card icon"></i>
                             <div class="content">
@@ -33,19 +33,28 @@
                             </div>
                         </div>
                     </g:each>
-                    <g:each in="${Person.getByOrgObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
+                    <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
                         <div class="item">
                             <i class="address card icon"></i>
                             <div class="content">
                                 <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
                                 (${(RefdataValue.findByValue(roleRespValue)).getI10n('value')})
+
+                                <g:if test="${editmode}">
+                                    <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
+                                    <div class="ui mini icon buttons">
+                                        <g:link class="ui button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                            <i class="times icon red"></i>
+                                        </g:link>
+                                    </div>
+                                </g:if>
                             </div>
                         </div>
                     </g:each>
                 </div>
                 <%-- private --%>
                 <div class="ui list">
-                    <g:each in="${Person.getByOrgFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg())}" var="func">
+                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg())}" var="func">
                         <div class="item">
                             <i class="address card outline icon"></i>
                             <div class="content">
@@ -54,12 +63,21 @@
                             </div>
                         </div>
                     </g:each>
-                    <g:each in="${Person.getByOrgObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())}" var="resp">
+                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())}" var="resp">
                         <div class="item">
                             <i class="address card outline icon"></i>
                             <div class="content">
                                 <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
                                 (${(RefdataValue.findByValue(roleRespValue)).getI10n('value')})
+
+                                <g:if test="${editmode}">
+                                    <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
+                                    <div class="ui mini icon buttons">
+                                        <g:link class="ui button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                            <i class="times icon red"></i>
+                                        </g:link>
+                                    </div>
+                                </g:if>
                             </div>
                         </div>
                     </g:each>

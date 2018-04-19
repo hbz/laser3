@@ -95,4 +95,15 @@ class PersonRole {
 
         personRole
     }
+
+    static def getByPersonAndOrgAndRespValue(Person prs, Org org, def resp) {
+
+        def result = PersonRole.findAllWhere(
+            prs: prs,
+            org: org,
+            responsibilityType: RefdataValue.getByValueAndCategory(resp, 'Person Responsibility')
+        )
+
+        result.first()
+    }
 }

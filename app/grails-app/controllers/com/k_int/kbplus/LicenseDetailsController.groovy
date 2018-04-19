@@ -95,6 +95,7 @@ class LicenseDetailsController {
                 result.visibleOrgLinks << or
             }
         }
+        result.visibleOrgLinks.sort{it.org.sortname}
 
       // -- private properties
 
