@@ -2856,7 +2856,7 @@ AND EXISTS (
         def sdFormat = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         def query = filterService.getTaskQuery(params, sdFormat)
         result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
-        result.myTaskInstanceList = taskService.getTasksByCreator(result.user, taskService.WITHOUT_TENANT_ONLY)
+        result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 

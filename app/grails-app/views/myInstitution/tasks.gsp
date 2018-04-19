@@ -55,9 +55,9 @@
             </form>
         </semui:filter>
 
-        <g:render template="/templates/tasks/table" model="${[ownobj:institution, owntp:'org', taskInstanceList:taskInstanceList]}"/>
+        <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
-        <g:render template="/templates/tasks/table2" model="${[ownobj:institution, owntp:'org', taskInstanceList:myTaskInstanceList]}"/>
+        <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList]}"/>
 
   </body>
 </html>

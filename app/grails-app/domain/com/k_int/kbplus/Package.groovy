@@ -54,6 +54,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
 
   static mapping = {
+                    sort sortName: 'asc'
                       id column:'pkg_id'
                  version column:'pkg_version'
                globalUID column:'pkg_guid'

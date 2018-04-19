@@ -6,8 +6,8 @@
     <g:each in="${tasks}" var="tsk">
         <div class="ui small feed content">
             <!--<div class="event">-->
-                    <div class="summary">
-                        <g:link controller="task" action="show" id="${tsk.id}">${tsk?.title}</g:link>
+                    <div id="summary" class="summary">
+                        <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
                         <br />
                         <div class="content">
                             ${message(code:'task.endDate.label')}
@@ -19,4 +19,20 @@
     </g:each>
 </semui:card>
 
-<g:render template="/templates/tasks/modal" />
+<g:render template="/templates/tasks/modal_create" />
+
+<r:script>
+    function taskedit(id) {
+
+        $.ajax({
+            url: "/laser/task/ajaxEdit/?id="+id,
+            success: function(result){
+                $("#dymanicModalContainer").empty();
+                $("#modalEditTask").remove();
+
+                $("#dymanicModalContainer").html(result);
+                $("#dymanicModalContainer .ui.modal").modal('show');
+            }
+        });
+    }
+</r:script>

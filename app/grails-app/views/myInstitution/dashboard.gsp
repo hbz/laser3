@@ -157,7 +157,7 @@
                     <div class="item">
                         <div class="content">
                             <div class="header">
-                                <g:link controller="task" action="show" params="${[id:tsk.id]}">${tsk.title}</g:link>
+                                <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
                             </div>
                             <div class="description">
                                 <g:if test="${tsk.description}">
@@ -165,9 +165,14 @@
                                 </g:if>
                                 <span>
                                     <strong>Betrifft:</strong>
+                                    <g:if test="${tsk.getObjects()}">
+                                        <ul>
                                     <g:each in="${tsk.getObjects()}" var="tskObj">
-                                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                        <li>${message(code: 'task.'+tskObj.controller)}: <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link></li>
                                     </g:each>
+                                        </ul>
+                                    </g:if>
+                                    <g:else>${message(code: 'task.general')}</g:else>
                                 </span>
                                 <br />
                                 <span>
@@ -184,7 +189,7 @@
             </div>
         </div>
 
-        <g:render template="/templates/tasks/modal" />
+        <g:render template="/templates/tasks/modal_create" />
 
         <% /*
         <g:if test="${grailsApplication.config.ZenDeskBaseURL}">
@@ -243,7 +248,21 @@
         </div><!-- .five -->
         </g:if>
         */ %>
+    <g:javascript>
+        function taskedit(id) {
 
+            $.ajax({
+                url: "/laser/task/ajaxEdit/?id="+id,
+                success: function(result){
+                    $("#dymanicModalContainer").empty();
+                    $("#modalEditTask").remove();
+
+                    $("#dymanicModalContainer").html(result);
+                    $("#dymanicModalContainer .ui.modal").modal('show');
+                }
+            });
+        }
+    </g:javascript>
         <r:script>
             $(document).ready( function(){
                 $('.tabular.menu .item').tab()

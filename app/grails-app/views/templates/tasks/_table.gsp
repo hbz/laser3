@@ -44,9 +44,9 @@
 
                     <td class="x">
                         <g:if test="${overwriteEditable}">
-                            <g:link controller="task" action="show" id="${taskInstance.id}" class="ui icon button">
+                            <a onclick="taskedit(${taskInstance.id});" class="ui icon button">
                                 <i class="write icon"></i>
-                            </g:link>
+                            </a>
                         </g:if>
                     </td>
                 </tr>
@@ -59,3 +59,19 @@
     </div><!-- .sixteen -->
 
 </div><!-- .grid -->
+
+<r:script>
+    function taskedit(id) {
+
+        $.ajax({
+            url: "/laser/task/ajaxEdit/?id="+id,
+            success: function(result){
+                $("#dymanicModalContainer").empty();
+                $("#modalEditTask").remove();
+
+                $("#dymanicModalContainer").html(result);
+                $("#dymanicModalContainer .ui.modal").modal('show');
+            }
+        });
+    }
+</r:script>

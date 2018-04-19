@@ -81,6 +81,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
   ]
 
   static mapping = {
+                    sort sortableReference: 'asc'
                      id column:'lic_id'
                 version column:'lic_version'
               globalUID column:'lic_guid'

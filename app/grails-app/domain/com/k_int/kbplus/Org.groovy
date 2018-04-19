@@ -71,6 +71,7 @@ class Org extends BaseDomainComponent {
     ]
 
     static mapping = {
+                sort 'sortname'
                 id column:'org_id'
            version column:'org_version'
          globalUID column:'org_guid'

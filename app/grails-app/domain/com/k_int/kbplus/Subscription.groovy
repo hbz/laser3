@@ -73,6 +73,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
                       ]
 
     static mapping = {
+        sort name: 'asc'
         id          column:'sub_id'
         version     column:'sub_version'
         globalUID   column:'sub_guid'

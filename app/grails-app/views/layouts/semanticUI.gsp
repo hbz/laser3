@@ -523,7 +523,7 @@
                 <div class="row"></div>
             </div>
         </div>
-
+    <div id="dymanicModalContainer"></div>
         <r:layoutResources/>
 
         <% if(! flash.redirectFrom) { flash.clear() } %>

@@ -135,8 +135,9 @@ class TaskService {
         def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
         if (contextOrg) {
-            result.validLicenses = License.executeQuery('select l ' + MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY, qry_params1, [max: 100, offset: 0])
-            result.validSubscriptions = Subscription.executeQuery("select s " + MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY, qry_params2,  [max: 100, offset: 0])
+            //TODO: MAX und OFFSET anders festlegen
+            result.validLicenses = License.executeQuery('select l ' + MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params1, [max: 100, offset: 0])
+            result.validSubscriptions = Subscription.executeQuery("select s " + MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by s.name asc', qry_params2,  [max: 100, offset: 0])
         }
         else { // TODO: admin and datamanager without contextOrg possible ?
             result.validLicenses = License.list()
