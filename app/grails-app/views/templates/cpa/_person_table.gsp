@@ -6,7 +6,7 @@
                 ${message(code:'person.last_name.label')},
                 ${message(code:'person.first_name.label')}
             </th>
-			<th></th>
+			<th>Kontext</th>
 			<th>${message(code:'person.contacts.label')}</th>
 			<th>${message(code:'person.addresses.label')}</th>
 		</tr>
@@ -24,7 +24,7 @@
 				</td>
 
 				<td>
-					<g:each in="${person?.roleLinks}" var="role">
+					<g:each in="${person?.roleLinks.unique{ it.org }}" var="role">
 						<g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
                         <br />
 					</g:each>

@@ -325,7 +325,7 @@ class PersonController {
             }
        }
         
-       params?.responsibilityType?.each{ key, value ->     
+       params?.responsibilityType?.each{ key, value ->
            def result
 
            def roleRdv      = RefdataValue.get(params.responsibilityType[key])

@@ -1,4 +1,4 @@
-<semui:modal id="${cssId}" text="Neue Kontaktperson hinzufügen" hideSubmitButton="true">
+<semui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly', default:'Some persons are visible to you due your addressbook')}</p>
 
@@ -8,8 +8,7 @@
             <thead>
             <tr>
                 <th>Person</th>
-                <th>Organisation</th>
-                <%--<th>Verantwortlichkeit</th>--%>
+                <th>Funktion</th>
                 <th>${message(code:'title.edit.actions.label')}</th>
             </tr>
             </thead>
@@ -20,11 +19,10 @@
                             <td>
                                 <i class="address card icon"></i> ${p}
                             </td>
-                            <%--<td>
-                                ${orgRole.org}
-                            </td>--%>
                             <td>
-                                ${modalPrsLinkRole.getI10n("value")}
+                                <g:each in="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}" var="prsFunc">
+                                    ${prsFunc.functionType?.getI10n("value")}
+                                </g:each>
                             </td>
                             <td class="x">
                                 <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
@@ -46,11 +44,10 @@
                             <td>
                                 <i class="address card outline icon"></i> ${p}
                             </td>
-                            <%--<td>
-                                ${orgRole.org}
-                            </td>--%>
                             <td>
-                                ${modalPrsLinkRole.getI10n("value")}
+                                <g:each in="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}" var="prsFunc">
+                                    ${prsFunc.functionType?.getI10n("value")}
+                                </g:each>
                             </td>
                             <td class="x">
                                 <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">

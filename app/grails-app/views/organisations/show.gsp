@@ -195,7 +195,7 @@
                                 </div>
                                 <g:if test="${editable}">
                                     <input class="ui button"
-                                           value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                                           value="${message(code: 'person.create_new.contactPerson.label')}"
                                            data-semui="modal"
                                            href="#personFormModal" />
 
@@ -203,7 +203,9 @@
                                               model="['tenant': contextOrg,
                                                       'org': orgInstance,
                                                       'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                      'tmplHideResponsibilities': true]"/>
+                                                      tmplHideFunctions: true,
+                                                      presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                      tmplHideResponsibilities: true]"/>
                                 </g:if>
                             </dd>
                         </dl>

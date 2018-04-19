@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 <% def cService = grailsApplication.mainContext.getBean("contextService") %>
 
-<semui:modal id="personFormModal" text="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}">
+<semui:modal id="personFormModal" text="${message(code: 'person.create_new.contactPerson.label')}">
 
     <g:form class="ui form" url="[controller: 'person', action: 'create']" method="POST">
 
@@ -157,6 +157,11 @@
                     })
                 </script>
             </g:if>
+            <g:else>
+                <%-- DEFAULT --%>
+                <input type="hidden" name="org.default" value="${org?.id}" />
+                <input type="hidden" name="functionType.default" value="${presetFunctionType?.id}" />
+            </g:else>
 
             <g:if test="${! tmplHideResponsibilities}">
                 <h4 class="ui header"><g:message code="person.responsibilites.label" default="Responsibilites" /></h4>
@@ -205,7 +210,6 @@
                     })
                 </script>
             </g:if>
-
         </div>
 
     </g:form>

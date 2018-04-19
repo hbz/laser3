@@ -18,7 +18,7 @@
                         &nbsp;
 
                         <button class="ui button" data-semui="modal" href="#${cssId}" style="margin-left:1rem">
-                            <i class="address plus icon"></i> ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                            <i class="address plus icon"></i> ${modalPrsLinkRole.getI10n("value")} hinzufügen
                         </button>
                     </div>
                 </g:if>

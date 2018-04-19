@@ -29,12 +29,17 @@ import="com.k_int.kbplus.RefdataCategory"
 
         <g:if test="${editable}">
             <input class="ui button"
-               value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+               value="${message(code: 'person.create_new.contactPerson.label')}"
                data-semui="modal"
                href="#personFormModal" />
         </g:if>
 
-        <g:render template="/person/formModal" model="['org': orgInstance, 'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No')]"/>
+        <g:render template="/person/formModal" model="['tenant': contextOrg,
+                                                       'org': orgInstance,
+                                                       'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
+                                                       tmplHideFunctions: true,
+                                                       presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                       tmplHideResponsibilities: true]"/>
 
 		<g:if test="${visiblePersons}">
 			<h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
