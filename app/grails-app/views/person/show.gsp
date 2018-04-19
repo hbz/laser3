@@ -69,18 +69,6 @@
                         </g:if>
                     </dd>
 
-                    <%--
-					<g:if test="${personInstance?.tenant}">
-						<dt><g:message code="person.tenant.label" default="Tenant" /></dt>
-						<dd><g:link controller="organisations" action="show" id="${personInstance.tenant?.id}">${personInstance.tenant?.encodeAsHTML()}</g:link></dd>	
-					</g:if>
-
-					<g:if test="${personInstance?.isPublic}">
-						<dt><g:message code="person.isPublic.label" default="IsPublic" /></dt>
-						<dd><semui:xEditableRefData owner="${personInstance}" field="isPublic" config="YN" /></dd>
-					</g:if>
-				    --%>
-
                     <dt><g:message code="person.functions.label" default="Functions" /></dt>
                     <dd><ul>
                         <g:each in="${personInstance.roleLinks}" var="link">
@@ -131,6 +119,26 @@
                         </g:each>
                     </ul>
                     </dd>
+
+                    <g:if test="${personInstance?.tenant}">
+                        <dt><g:message code="person.tenant.label" default="Tenant" /></dt>
+                        <dd>
+                            <g:link controller="organisations" action="show" id="${personInstance.tenant?.id}">${personInstance.tenant?.encodeAsHTML()}</g:link>
+                            <g:if test="${personInstance?.isPublic?.value == 'No'}">
+                                <i class="address card outline icon"></i>
+                            </g:if>
+                            <g:else>
+                                <i class="address card icon"></i>
+                            </g:else>
+                        </dd>
+                    </g:if>
+                    <%--
+                        <g:if test="${personInstance?.isPublic}">
+                            <dt><g:message code="person.isPublic.label" default="IsPublic" /></dt>
+                            <dd><semui:xEditableRefData owner="${personInstance}" field="isPublic" config="YN" /></dd>
+                        </g:if>
+                    --%>
+
                 </dl>
             </div>
             <g:if test="${editable}">
