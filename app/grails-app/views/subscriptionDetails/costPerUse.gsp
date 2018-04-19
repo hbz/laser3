@@ -55,7 +55,9 @@
         </table>
       </g:if>
       <g:else>
-        Unable to locate any invoices against this subscription
+        <p>
+        ${message(code:'myinst.subscriptionDetails.noCostPerUse')}
+        </p>
       </g:else>
 
   </body>

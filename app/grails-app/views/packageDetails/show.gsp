@@ -38,7 +38,6 @@
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
     </sec:ifAnyGranted>
 
-    <g:if test="${params.asAt}"><h1 class="ui header"><semui:headerIcon />${message(code:'package.show.asAt', args:[params.asAt])} </h1></g:if>
 
       <h1 class="ui header"><semui:headerIcon />
         <g:if test="${params.asAt}">${message(code:'package.show.asAt', args:[params.asAt])}</g:if>
