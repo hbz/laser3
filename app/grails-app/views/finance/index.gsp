@@ -63,7 +63,7 @@
 
 <div class="ui grid">
     <div class="column">
-        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentDialog" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
+        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
 
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
@@ -81,18 +81,7 @@
         <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
     </div>
 
-    <div id="recentModalWrapper" class="wrapper"><!-- modal dialog -->
-        <div class="ui modal hide" id="recentDialog">
-            <div class="modal-header">
-                <h3 class="ui header">Recently Updated Cost Items</h3>
-            </div>
-            <div class="modal-body">
-                <div id="recent">
-                    <g:render template="recentlyAdded" />
-                </div>
-            </div>
-        </div>
-    </div>
+    <g:render template="recentlyAddedModal" />
 
     <div class="ui grid">
         <div class="sixteen wide column">
