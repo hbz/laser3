@@ -779,7 +779,7 @@ class SubscriptionImportController {
     }
   }
 
-  def parseDate(datestr, possible_formats) {
+  private def parseDate(datestr, possible_formats) {
     def parsed_date = null;
     if ( datestr && ( datestr.toString().trim().length() > 0 ) ) {
       for(Iterator i = possible_formats.iterator(); ( i.hasNext() && ( parsed_date == null ) ); ) {

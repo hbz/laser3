@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Task" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<semui:modal id="modalEditTask" message="task.edit" editmodal="true" deletebutton="true" formID="edit_task" formdeleteID="delete_task">
+<semui:modal id="modalEditTask" message="task.edit" editmodal="true" >
 
     <g:form class="ui form" id="edit_task" url="[controller:'task',action:'edit',id:taskInstance?.id]" method="post">
         <g:hiddenField name="version" value="${taskInstance?.version}" />

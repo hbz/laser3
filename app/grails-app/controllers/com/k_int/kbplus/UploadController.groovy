@@ -279,7 +279,7 @@ class UploadController {
     result;
   }
 
-  def parseDate(datestr, possible_formats) {
+  private def parseDate(datestr, possible_formats) {
     def parsed_date = null;
     for(Iterator i = possible_formats.iterator(); ( i.hasNext() && ( parsed_date == null ) ); ) {
       try {
@@ -477,7 +477,7 @@ class UploadController {
      log.debug("result = ${result}");
   }
 
-  def validate(upload) {
+  private def validate(upload) {
 
     def result = generateAndValidatePackageIdentifier(upload) &&
                  validateConsortia(upload) &&
