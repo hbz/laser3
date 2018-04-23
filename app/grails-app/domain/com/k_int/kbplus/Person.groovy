@@ -53,7 +53,7 @@ class Person extends BaseDomainComponent {
     
     static constraints = {
         globalUID   (nullable:true,  blank:false, unique:true, maxSize:255)
-        first_name  (nullable:false, blank:false)
+        first_name  (nullable:true, blank:false)
         middle_name (nullable:true,  blank:false)
         last_name   (nullable:false, blank:false)
         gender      (nullable:true)

@@ -214,5 +214,34 @@
         });
         $("#radioresponsibleOrg").prop( "checked", true );
         $("#responsibleUser").hide();
+
+        $('#create_task')
+                .form({
+            on: 'blur',
+            inline: true,
+            fields: {
+                title: {
+                    identifier  : 'title',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                },
+
+                endDate: {
+                    identifier  : 'endDate',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                }
+             }
+        });
+
+
     </r:script>
 </semui:modal>
