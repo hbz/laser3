@@ -53,12 +53,12 @@
         <td class="x">
             <g:if test="${editable}">
                 <g:if test="${inSubMode}">
-                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon positive button">
+                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon positive button" data-ajaxid="costItem-${ci.id}">
                         <i class="write icon"></i>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon positive button">
+                    <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon positive button" data-ajaxid="costItem-${ci.id}">
                         <i class="write icon"></i>
                     </g:link>
                 </g:else>
@@ -72,18 +72,24 @@
 
     </tr>
 </g:each>
+
 <script>
     $('#costTable .x .button.positive').on('click', function(e) {
         e.preventDefault()
 
+        var tmplId = 'ajaxModal_' + $(this).data('ajaxid')
         $.ajax({
-            url: $(this).attr('href')
+            url: $(this).attr('href'),
+            data: 'tmplId=' + tmplId
         }).done( function(data) {
             $('#dynamicModalContainer').empty().append(data)
 
             $('#dynamicModalContainer .modal').modal({
-                onVisible: function() {
-                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                onVisible: function () {
+                    r2d2.initDynamicSemuiStuff('#' + tmplId);
+                    r2d2.initDynamicXEditableStuff('#' + tmplId);
+
+                    ajaxPostFunc()
                 },
                 detachable: true,
                 closable: true,
@@ -92,7 +98,7 @@
                     $(this).find('.ui.form').submit();
                     return false;
                 }
-            }).modal('show')
+            }).modal('show');
         })
     })
 </script>
