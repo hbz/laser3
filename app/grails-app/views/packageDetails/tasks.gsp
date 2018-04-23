@@ -40,7 +40,7 @@
 
     <g:render template="nav"/>
 
-    <g:render template="/templates/tasks/table" model="${[ownobj:packageInstance, owntp:'pkg', taskInstanceList:taskInstanceList]}"/>
+    <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
 </body>
 </html>

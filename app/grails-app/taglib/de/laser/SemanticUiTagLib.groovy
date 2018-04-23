@@ -264,9 +264,11 @@ class SemanticUiTagLib {
         def text      = attrs.text ? attrs.text : ''
         def message   = attrs.message ? "${message(code: attrs.message)}" : ''
         def title     = (text && message) ? text + " - " + message : text + message
+        def editmodal = attrs.editmodal
 
         def msgClose = "Schließen"
-        def msgSave  = "Änderungen speichern"
+        def msgSave  = editmodal ? "Änderungen speichern" : "Anlegen"
+        def msgDelete  = "Löschen"
 
         out << '<div class="ui modal"' + id + '>'
         out <<   '<div class="header">' + title + '</div>'
@@ -276,8 +278,20 @@ class SemanticUiTagLib {
         out <<   '<div class="actions">'
         out <<     '<a href="#" class="ui button '+ attrs.id +'" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
 
+
         if (attrs.hideSubmitButton == null) {
-            out <<   '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+            if (attrs.formID) {
+                out << '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
+            }else {
+                out << '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+            }
+        }
+        if (attrs.deletebutton) {
+            if (attrs.formdeleteID) {
+                out <<   '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '"onclick="'
+                out <<   'return confirm(\'Sind Sie sicher, dass Sie dies löschen wollen?\')?$(\'#' + attrs.id + '\').find(\'#' + attrs.formdeleteID + '\').submit():$(\'#' + attrs.id + '\').modal(\'show\')'
+                out <<   '"/>'
+            }
         }
         out <<   '</div>'
         out << '</div>'
@@ -290,8 +304,9 @@ class SemanticUiTagLib {
         def label       = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name        = attrs.name ? "${message(code: attrs.name)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
-        def value       = attrs.value ? "${message(code: attrs.value)}" : ''
+        def value       = attrs.value ?: ''
         def classes     = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
+        def required     = attrs.required ? 'required="true"' : ''
 
 
         if (attrs.class) {
@@ -307,7 +322,7 @@ class SemanticUiTagLib {
         out <<   '<div class="ui calendar datepicker">'
         out <<      '<div class="ui input left icon">'
         out <<          '<i class="calendar icon"></i>'
-        out <<          '<input name="' + name +'" type="text" placeholder="' + placeholder + '" value="' +  value + '">'
+        out <<          '<input name="' + name +'" type="text" placeholder="' + placeholder + '" value="' +  value + '"' + required +'>'
         out <<      '</div>'
         out <<   '</div>'
         out << '</div>'

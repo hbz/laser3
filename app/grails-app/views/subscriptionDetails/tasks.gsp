@@ -17,7 +17,9 @@
 
     <g:render template="nav" />
 
-    <g:render template="/templates/tasks/table" model="${[ownobj:subscriptionInstance, owntp:'subscription', taskInstanceList:taskInstanceList]}"/>
+    <semui:messages data="${flash}" />
+
+    <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
 </body>
 </html>

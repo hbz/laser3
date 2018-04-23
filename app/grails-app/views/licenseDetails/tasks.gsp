@@ -16,7 +16,10 @@
 
     <g:render template="nav" />
 
-    <g:render template="/templates/tasks/table" model="${[ownobj:license, owntp:'license', taskInstanceList:taskInstanceList]}"/>
+    <semui:messages data="${flash}" />
+
+
+    <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
     <!--g:render template="/templates/addTask" model="${[ownobj:license, owntp:'license']}" /-->
 
