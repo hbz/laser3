@@ -44,131 +44,17 @@ r2d2 = {
 
     go : function() {
 
-        r2d2.xEditableStuff()
-        r2d2.semuiStuff()
+        r2d2.initGlobalSemuiStuff();
+        r2d2.initGlobalXEditableStuff();
+
+        r2d2.initDynamicSemuiStuff('body');
+        r2d2.initDynamicXEditableStuff('body');
 
         console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
     },
 
-    xEditableStuff : function() {
-        console.log("r2d2.xEditableStuff()");
-
-        $.fn.editable.defaults.mode = 'inline'
-        $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
-            '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
-        $.fn.editableform.template = '<form class="ui form form-inline editableform"><div class="control-group"><div><div class="editable-input"></div>' +
-            '<div class="editable-buttons"></div></div><div class="editable-error-block"></div></div></form>'
-
-        // TODO $.fn.datepicker.defaults.language = gspLocale
-
-        $('.xEditable').editable({
-            language: gspLocale, /*
-            datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat
-        });
-
-        $('.xEditableValue').editable({
-            language: gspLocale, /*
-            datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat
-        });
-
-        $(".xEditableManyToOne").editable();
-
-        $(".simpleHiddenRefdata").editable({
-            language: gspLocale, /*
-            datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat,
-            url: function(params) {
-                var hidden_field_id = $(this).data('hidden-id');
-                $("#" + hidden_field_id).val(params.value);
-                // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
-            }
-        });
-
-        $(".simpleReferenceTypedown").select2({
-            placeholder: "Search for...",
-            minimumInputLength: 1,
-            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                url: "<g:createLink controller='ajax' action='lookup'/>",
-                dataType: 'json',
-                data: function (term, page) {
-                    return {
-                        format:'json',
-                        q: term,
-                        baseClass:$(this).data('domain')
-                    };
-                },
-                results: function (data, page) {
-                    return {results: data.values};
-                }
-            }
-        });
-    },
-
-    semuiStuff : function() {
-        console.log("r2d2.semuiStuff()")
-
-        // close semui:messages alerts
-        $(".close.icon").click(function() {
-            $(this).parent().hide();
-        });
-
-        // datepicker
-        $('.datepicker').calendar(r2d2.configs.datepicker);
-
-        // modal opener
-        $("*[data-semui=modal]").click(function() {
-            $($(this).attr('href') + '.ui.modal').modal({
-                onVisible: function() {
-                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-                },
-                detachable: true,
-                closable: true,
-                transition: 'fade up',
-                onApprove : function() {
-                    $(this).find('.ui.form').submit();
-                    return false;
-                }
-            }).modal('show')
-        });
-
-        // dropdowns
-        $('.ui.dropdown').dropdown({
-            duration: 150,
-            transition: 'fade'
-        });
-
-        $('.la-filter .ui.dropdown').on('keydown', function(event) {
-            if(['Escape','Backspace','Delete'].includes(event.key)) {
-                event.preventDefault();
-                $(this).dropdown('clear').dropdown('hide').removeClass("la-filter-dropdown-selected");
-            }
-        });
-
-        // SEM UI DROPDOWN CHANGE
-        $(".la-filter .ui.dropdown").change(function() {
-            ($(this).hasClass("default")) ? $(this).removeClass("la-filter-dropdown-selected") : $(this).addClass("la-filter-dropdown-selected");
-        });
-
-        $(".la-filter .ui.dropdown > select > option[selected=selected]").parents('.ui.dropdown').addClass('la-filter-dropdown-selected');
-
-        // accordions
-        $('.ui.accordion').accordion();
-
-        // checkboxes
-        $('.ui.checkbox').not('#la-advanced').checkbox();
-
-        // metaboxes
-        $('.metaboxToggle').click(function() {
-            $(this).next('.metaboxContent').slideToggle();
-        })
+    initGlobalSemuiStuff : function() {
+        console.log("r2d2.initGlobalSemuiStuff()")
 
         // spotlight
         $('.ui.search').search({
@@ -186,11 +72,11 @@ r2d2 = {
                         var category   = item.category || 'Unknown';
                         var maxResults = 15;
 
-                        if(index >= maxResults) {
+                        if (index >= maxResults) {
                             return false;
                         }
                         // create new object category
-                        if(response.results[category] === undefined) {
+                        if (response.results[category] === undefined) {
                             response.results[category] = {
                                 name    : category,
                                 results : []
@@ -215,24 +101,153 @@ r2d2 = {
             $(this).toggleClass('open');
         });
 
+        // metaboxes
+        $('.metaboxToggle').click(function() {
+            $(this).next('.metaboxContent').slideToggle();
+        })
+
         // stickies
         $('.ui.sticky').sticky({offset: 120});
 
         // sticky table header
         $('.table').floatThead({
-              position: 'fixed',
-              top: 78,
-              zIndex: 1
+            position: 'fixed',
+            top: 78,
+            zIndex: 1
         });
+
         $('.modal .table').floatThead('destroy');
         $('.table.ignore-floatThead').floatThead('destroy');
 
+        // modals
+        $("*[data-semui=modal]").click(function() {
+            $($(this).attr('href') + '.ui.modal').modal({
+                onVisible: function() {
+                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                },
+                detachable: true,
+                closable: true,
+                transition: 'fade up',
+                onApprove : function() {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show')
+        });
+    },
+
+    initGlobalXEditableStuff : function() {
+        console.log("r2d2.initGlobalXEditableStuff()");
+
+        $.fn.editable.defaults.mode = 'inline'
+        $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
+            '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
+        $.fn.editableform.template = '<form class="ui form form-inline editableform"><div class="control-group"><div><div class="editable-input"></div>' +
+            '<div class="editable-buttons"></div></div><div class="editable-error-block"></div></div></form>'
+
+        // TODO $.fn.datepicker.defaults.language = gspLocale
+    },
+
+    initDynamicXEditableStuff : function(ctxSel) {
+        console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
+
+        $(ctxSel + ' .xEditable').editable({
+            language: gspLocale, /*
+            datepicker: {
+                language: gspLocale
+            }, */
+            format: gspDateFormat
+        });
+
+        $(ctxSel + ' .xEditableValue').editable({
+            language: gspLocale, /*
+            datepicker: {
+                language: gspLocale
+            }, */
+            format: gspDateFormat
+        });
+
+        $(ctxSel + ' .xEditableManyToOne').editable();
+
+        $(ctxSel + ' .simpleHiddenRefdata').editable({
+            language: gspLocale, /*
+            datepicker: {
+                language: gspLocale
+            }, */
+            format: gspDateFormat,
+            url: function(params) {
+                var hidden_field_id = $(this).data('hidden-id');
+                $("#" + hidden_field_id).val(params.value);
+                // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
+            }
+        });
+
+        $(ctxSel + ' .simpleReferenceTypedown').select2({
+            placeholder: "Search for...",
+            minimumInputLength: 1,
+            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                url: "<g:createLink controller='ajax' action='lookup'/>",
+                dataType: 'json',
+                data: function (term, page) {
+                    return {
+                        format:'json',
+                        q: term,
+                        baseClass:$(this).data('domain')
+                    };
+                },
+                results: function (data, page) {
+                    return {results: data.values};
+                }
+            }
+        });
+    },
+
+    initDynamicSemuiStuff : function(ctxSel) {
+        console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
+
+        console.log ( $(ctxSel + ' .ui.dropdown') )
+        // close semui:messages alerts
+        $(ctxSel + ' .close.icon').click(function() {
+            $(this).parent().hide();
+        });
+
+        // accordions
+        $(ctxSel + ' .ui.accordion').accordion();
+
+        // checkboxes
+        $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
+
+        // datepicker
+        $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
+
+        // dropdowns
+        $(ctxSel + ' .ui.dropdown').dropdown({
+            duration: 150,
+            transition: 'fade'
+        });
+
+        // dropdowns escape
+        $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
+            if(['Escape','Backspace','Delete'].includes(event.key)) {
+                e.preventDefault();
+                $(this).dropdown('clear').dropdown('hide').removeClass("la-filter-dropdown-selected");
+            }
+        });
+
+        // SEM UI DROPDOWN CHANGE
+        $(ctxSel + ' .la-filter .ui.dropdown').change(function() {
+            ($(this).hasClass("default")) ? $(this).removeClass("la-filter-dropdown-selected") : $(this).addClass("la-filter-dropdown-selected");
+        });
+
+        $(ctxSel + ' .la-filter .ui.dropdown > select > option[selected=selected]').parents('.ui.dropdown').addClass('la-filter-dropdown-selected');
+
         // FILTER SELECT FUNCTION - INPUT LOADING
-        $(".la-filter input[type=text]").each(function() {
+        $(ctxSel + '.la-filter input[type=text]').each(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
         });
-        //  FILTER SELECT FUNCTION - INPUT  CHANGE
-        $(".la-filter input[type=text]").change(function() {
+
+        //  FILTER SELECT FUNCTION - INPUT CHANGE
+        $(ctxSel + '.la-filter input[type=text]').change(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
         });
     }
