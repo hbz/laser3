@@ -3,10 +3,14 @@
 
 <g:render template="vars" /><%-- setting vars --%>
 
-<semui:modal id="costItem_edit_modal" text="${message(code:'financials.editCost')} #${costItem?.id}" hideSubmitButton="true">
+<semui:modal id="${tmplId ?: params.tmplId ?: "costItem_ajaxModal"}" text="${message(code:'financials.editCost')} #${costItem?.id}">
+
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
-        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
+        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
+        <g:if test="${costItem}">
+            <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
+        </g:if>
 
         <p>DEBUG ${inSubMode} ${fixedSubscription}</p>
 
@@ -145,10 +149,10 @@
                 <div class="field">
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                     <g:if test="${inSubMode}">
-                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="la-full-width select2" value="${params.newIe}">
+                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="la-full-width select2" value="${params.newIe}" disabled="disabled">
                     </g:if>
                     <g:else>
-                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width select2" value="${params.newIe}">
+                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width select2" value="${params.newIe}" disabled="disabled">
                     </g:else>
                 </div><!-- .field -->
             </fieldset> <!-- 3/3 field -->
@@ -189,4 +193,90 @@
 
     </g:form>
 </semui:modal>
+
+<script>
+    var ajaxPostFunc = function () {
+
+        $('#costItem_edit_modal #newBudgetCode').select2({
+            placeholder: "New code or lookup  code",
+            allowClear: true,
+            tags: true,
+            tokenSeparators: [',', ' '],
+            minimumInputLength: 1,
+            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                url: "<g:createLink controller='ajax' action='lookup'/>",
+                dataType: 'json',
+                data: function (term, page) {
+                    return {
+                        format: 'json',
+                        q: term,
+                        shortcode: "${contextService.getOrg()?.shortcode}",
+                        baseClass: 'com.k_int.kbplus.CostItemGroup'
+                    };
+                },
+                results: function (data, page) {
+                    return {results: data.values};
+                }
+            }
+        });
+
+        $('#costItem_edit_modal #newSubscription').select2({
+            placeholder: "Type subscription name...",
+            minimumInputLength: 1,
+            global: false,
+            ajax: {
+                url: "<g:createLink controller='ajax' action='lookup'/>",
+                dataType: 'json',
+                data: function (term, page) {
+                    return {
+                        hideDeleted: 'true',
+                        hideIdent: 'false',
+                        inclSubStartDate: 'false',
+                        inst_shortcode: "${contextService.getOrg()?.shortcode}",
+                        q: '%'+term , // contains search term
+                        page_limit: 20,
+                        baseClass:'com.k_int.kbplus.Subscription'
+                    };
+                },
+                results: function (data, page) {
+                    return {results: data.values};
+                }
+            },
+            allowClear: true,
+            formatSelection: function(data) {
+                return data.text;
+            }
+        });
+
+        $('#costItem_edit_modal #newPackage').select2({
+            placeholder: "${message(code:'financials.newCosts.enterpkgName')}",
+            minimumInputLength: 1,
+            global: false,
+            ajax: {
+                url: "<g:createLink controller='ajax' action='lookup'/>",
+                dataType: 'json',
+                data: function (term, page) {
+                    return {
+                        hideDeleted: 'true',
+                        hideIdent: 'false',
+                        inclSubStartDate: 'false',
+                        inst_shortcode: "${contextService.getOrg()?.shortcode}",
+                        q: '%'+term , // contains search term
+                        page_limit: 20,
+                        subFilter:$(s.ft.filterSubscription).data().filtermode.split(":")[1],
+                        baseClass:'com.k_int.kbplus.SubscriptionPackage'
+                    };
+                },
+                results: function (data, page) {
+                    return {results: data.values};
+                }
+            },
+            allowClear: true,
+            formatSelection: function(data) {
+                return data.text;
+            }
+        });
+    }
+</script>
+
 <!-- _editAjax.gsp -->

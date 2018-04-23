@@ -17,6 +17,7 @@ class FinanceController {
     def springSecurityService
     def accessService
     def contextService
+    def genericOIDService
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
@@ -590,16 +591,14 @@ class FinanceController {
     def editCostItem() {
         def result = [:]
 
-        //copied from index()
-        result.inSubMode   = params.sub ? true : false
-        if (result.inSubMode)
-        {
+        //TODO: copied from index()
+        result.inSubMode = params.sub ? true : false
+        if (result.inSubMode) {
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
         }
-
         result.costItem = CostItem.findById(params.id)
 
-        render(template: "/finance/editAjax", model: result)
+        render(template: "/finance/ajaxModal", model: result)
     }
 
     @Secured(['ROLE_USER'])
@@ -712,30 +711,34 @@ class FinanceController {
 
         //def inclSub = params.includeInSubscription? (RefdataValue.get(params.long('includeInSubscription'))): defaultInclSub //todo Speak with Owen, unknown behaviour
 
-        newCostItem = new CostItem(
-                owner: result.institution,
-                sub: sub,
-                subPkg: pkg,
-                issueEntitlement: ie,
-                order: order,
-                invoice: invoice,
-                costItemCategory: cost_item_category,
-                costItemElement: cost_item_element,
-                costItemStatus: cost_item_status,
-                billingCurrency: billing_currency, //Not specified default to GDP
-                taxCode: cost_tax_type,
-                costDescription: params.newDescription ? params.newDescription.trim()?.toLowerCase():null,
-                costTitle: params.newCostTitle ?: null,
-                costInBillingCurrency: cost_billing_currency as Double,
-                costInLocalCurrency: cost_local_currency as Double,
-                currencyRate: cost_currency_rate as Double,
-                datePaid: datePaid,
-                startDate: startDate,
-                endDate: endDate,
-                includeInSubscription: null, //todo Discussion needed, nobody is quite sure of the functionality behind this...
-                reference: params.newReference? params.newReference.trim()?.toLowerCase() : null
-        )
+          if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
+              newCostItem = genericOIDService.resolveOID(params.oldCostItem)
+          }
+          else {
+              newCostItem = new CostItem()
+          }
 
+            newCostItem.owner               = result.institution
+            newCostItem.sub                 = sub
+            newCostItem.subPkg              = pkg
+            newCostItem.issueEntitlement    = ie
+            newCostItem.order               = order
+            newCostItem.invoice             = invoice
+            newCostItem.costItemCategory    = cost_item_category
+            newCostItem.costItemElement     = cost_item_element
+            newCostItem.costItemStatus      = cost_item_status
+            newCostItem.billingCurrency     = billing_currency //Not specified default to GDP
+            newCostItem.taxCode             = cost_tax_type
+            newCostItem.costDescription     = params.newDescription ? params.newDescription.trim()?.toLowerCase() : null
+            newCostItem.costTitle           = params.newCostTitle ?: null
+            newCostItem.costInBillingCurrency = cost_billing_currency as Double
+            newCostItem.costInLocalCurrency = cost_local_currency as Double
+            newCostItem.currencyRate        = cost_currency_rate as Double
+            newCostItem.datePaid            = datePaid
+            newCostItem.startDate           = startDate
+            newCostItem.endDate             = endDate
+            newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
+            newCostItem.reference           = params.newReference? params.newReference.trim()?.toLowerCase() : null
 
         if (!newCostItem.validate())
         {

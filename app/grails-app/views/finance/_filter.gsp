@@ -104,7 +104,7 @@
 
             <div class="field">
                 <label for="adv_ie">${message(code:'financials.newCosts.singleEntitlement')}</label>
-                <input id="adv_ie" name="adv_ie" class="input-large" type="text" disabled="disabled"/>
+                <input id="adv_ie" name="adv_ie" class="input-large" type="text" disabled="disabled" />
             </div>
         </div><!-- row3 -->
 

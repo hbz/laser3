@@ -150,18 +150,21 @@ r2d2 = {
 
     initDynamicXEditableStuff : function(ctxSel) {
         console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
+        if (! ctxSel) {
+            ctxSel = 'body'
+        }
 
         $(ctxSel + ' .xEditable').editable({
-            language: gspLocale, /*
-            datepicker: {
+            language: gspLocale,
+            /* datepicker: {
                 language: gspLocale
             }, */
             format: gspDateFormat
         });
 
         $(ctxSel + ' .xEditableValue').editable({
-            language: gspLocale, /*
-            datepicker: {
+            language: gspLocale,
+            /* datepicker: {
                 language: gspLocale
             }, */
             format: gspDateFormat
@@ -170,8 +173,8 @@ r2d2 = {
         $(ctxSel + ' .xEditableManyToOne').editable();
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
-            language: gspLocale, /*
-            datepicker: {
+            language: gspLocale,
+            /* datepicker: {
                 language: gspLocale
             }, */
             format: gspDateFormat,
@@ -204,6 +207,9 @@ r2d2 = {
 
     initDynamicSemuiStuff : function(ctxSel) {
         console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
+        if (! ctxSel) {
+            ctxSel = 'body'
+        }
 
         console.log ( $(ctxSel + ' .ui.dropdown') )
         // close semui:messages alerts

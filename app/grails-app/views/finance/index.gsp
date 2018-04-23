@@ -64,12 +64,8 @@
 
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
-            <button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_create_modal" id="addNew">${message(code:'financials.addNewCost')}</button>
-        </g:if>
-        <g:if test="${editable}">
-            <div id="CreateTemplateWrapper" class="wrapper"><!-- modal dialog -->
-                <g:render template="createModal" />
-            </div>
+            <button class="ui button pull-right" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_createModal" id="addNew">${message(code:'financials.addNewCost')}</button>
+            <g:render template="ajaxModal" model="['tmplId':'costItem_createModal']"/>
         </g:if>
     </div>
 </div>
