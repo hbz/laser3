@@ -44,14 +44,14 @@ r2d2 = {
 
     go : function() {
 
-        r2d2.legacyStuff()
+        r2d2.xEditableStuff()
         r2d2.semuiStuff()
 
         console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
     },
 
-    legacyStuff : function() {
-        console.log("r2d2.legacyStuff()");
+    xEditableStuff : function() {
+        console.log("r2d2.xEditableStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
@@ -209,12 +209,10 @@ r2d2 = {
             minCharacters: 3
         });
         $('#btn-search').on('click', function(e) {
-
             e.preventDefault();
 
             $('#spotlightSearch').animate({width: 'toggle'}).focus();
             $(this).toggleClass('open');
-
         });
 
         // stickies

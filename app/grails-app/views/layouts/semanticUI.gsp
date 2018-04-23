@@ -524,6 +524,8 @@
             </div>
         </div>
 
+        <div id="dynamicModalContainer"></div>
+
         <r:layoutResources/>
 
         <% if(! flash.redirectFrom) { flash.clear() } %>

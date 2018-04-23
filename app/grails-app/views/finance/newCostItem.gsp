@@ -50,7 +50,7 @@
           <tr>
               <td>
                   <h3 class="ui header">Cost date and status</h3>
-                  <input type="date" name="newDate" value="${params.newDate}"/><br/>
+                  <input type="date" name="newDatePaid" value="${params.newDatePaid}"/><br/>
 
                   <g:select name="newCostItemStatus"
                             from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemStatus')}"
@@ -187,7 +187,7 @@
       }
     });
 
-   $('#newDate').datepicker({
+   $('#newDatePaid').datepicker({
       format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
       language:"${message(code:'default.locale.label', default:'en')}",
       autoclose:true

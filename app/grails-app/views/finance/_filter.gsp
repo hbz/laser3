@@ -63,11 +63,9 @@
         <div class="three fields">
             <div class="field required">
                 <label>${message(code:'financials.invoice_number')}</label><!-- invoice -->
-                <div class="ui dropdown selection" tabindex="0">
-                    <input type="text" name="invoiceNumberFilter"
-                           class="filterUpdated"
-                           id="filterInvoiceNumber" value="${params.invoiceNumberFilter}" />
-                </div>
+                <input id="filterInvoiceNumber" name="invoiceNumberFilter"
+                       type="text" class="filterUpdated"
+                       value="${params.invoiceNumberFilter}" />
             </div>
 
             <div class="field">
@@ -97,7 +95,7 @@
 
             <div class="field">
                 <label>Steuer</label>
-                <laser:select id="todo-123" name="todo-123" class="ui dropdown"
+                <laser:select id="taxCode" name="taxCode" class="ui dropdown" disabled="disabled"
                           from="${taxType}"
                           optionKey="id"
                           optionValue="value"
@@ -105,8 +103,8 @@
             </div>
 
             <div class="field">
-                <label for="adv_ie">${message(code:'issueEntitlement.label')}</label>
-                <input id="adv_ie" name="adv_ie" class="input-large" type="text"/>
+                <label for="adv_ie">${message(code:'financials.newCosts.singleEntitlement')}</label>
+                <input id="adv_ie" name="adv_ie" class="input-large" type="text" disabled="disabled"/>
             </div>
         </div><!-- row3 -->
 

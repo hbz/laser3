@@ -11,7 +11,8 @@ class UrlMappings {
 
         "/myInstitution/tipview/$id"    (controller: 'myInstitution', action: 'tip')
         "/myInstitution/finance"        (controller: 'finance', action: 'index')
-        name subfinance: "/subscriptionDetails/$sub/finance/"   (controller: 'finance', action: 'index')
+        name subfinance:        "/subscriptionDetails/$sub/finance/"   (controller: 'finance', action: 'index')
+        name subfinanceEditCI:  "/subscriptionDetails/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
 
         "/ajax/$action?/$id?"(controller: 'ajax')
 

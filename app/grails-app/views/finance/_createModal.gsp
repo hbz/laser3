@@ -1,10 +1,13 @@
 <!-- _createModal.gsp -->
 
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
 <semui:modal id="costItem_create_modal" text="${message(code:'financials.addNewCost')}">
     <g:form class="ui small form" id="createCost" url="[controller:'finance', action:'newCostItem']">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
+
+        <p>DEBUG ${inSubMode} ${fixedSubscription}</p>
 
         <!-- div class="ui grid" -->
             <div class="two fields">
@@ -141,7 +144,7 @@
             <div class="three fields">
                 <fieldset class="field la-modal-fieldset-no-margin">
 
-                    <semui:datepicker label="financials.datePaid" name="newDate" placeholder="financials.datePaid" value="${params.newDate}" />
+                    <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${params.newDatePaid}" />
 
                     <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${params.newStartDate}" />
 

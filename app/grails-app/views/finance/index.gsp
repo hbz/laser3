@@ -7,15 +7,12 @@
 
 </head>
 <body>
-%{--<r:require modules="finance" />--}%
 
-%{--Run once data... can be reused for edit based functionality too. Pointless sending back this static data every request --}%
-<g:set var="costItemStatus"   scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemStatus')}"/>
-<g:set var="costItemCategory" scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemCategory')}"/>
-<g:set var="costItemElement"  scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemElement')}"/>
-<g:set var="taxType"          scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','TaxType')}"/>
-<g:set var="yn"               scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','YN')}"/>
-<g:set var="currency"         scope="page" value="${com.k_int.kbplus.CostItem.orderedCurrency()}"/>
+    <g:render template="vars" /><%-- setting vars --%>
+
+<%--
+<g:set var="filterMode" value="ON" />
+--%>
 
 <semui:breadcrumbs>
     <g:if test="${inSubMode}">
@@ -151,7 +148,7 @@
                 ajaxFinancePresent:"<g:createLink controller='finance' action='newCostItemsPresent'/>",
                 ajaxFinanceRefData:"<g:createLink controller='finance' action='financialRef'/>",
                 ajaxFinanceCodeDel:"<g:createLink controller='finance' action='removeBC'/>",
-                ajaxFinanceExport:"<g:createLink controller='finance' action='financialsExport'></g:createLink>",
+                ajaxFinanceExport:"<g:createLink controller='finance' action='financialsExport'/>",
                 ajaxFinanceCreateCode:"<g:createLink controller='finance' action='createCode'/>"
             },
             misc: {

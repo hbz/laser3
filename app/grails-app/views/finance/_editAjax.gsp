@@ -1,0 +1,192 @@
+<!-- _editAjax.gsp -->
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
+<g:render template="vars" /><%-- setting vars --%>
+
+<semui:modal id="costItem_edit_modal" text="${message(code:'financials.editCost')} #${costItem?.id}" hideSubmitButton="true">
+    <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
+
+        <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>
+
+        <p>DEBUG ${inSubMode} ${fixedSubscription}</p>
+
+        <div class="two fields">
+            <div class="field">
+                <div class="field">
+                    <label>${message(code:'financials.newCosts.costTitle')}</label>
+                    <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
+                </div><!-- .field -->
+
+                <div class="two fields">
+                    <div class="field">
+                        <label>${message(code:'financials.budgetCode')}</label>
+                        <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width" placeholder="${message(code:'financials.budgetCode')}"/>
+                    </div><!-- .field -->
+
+                    <div class="field">
+                        <label>Reference/Codes</label>
+                        <input type="text" name="newReference" id="newCostItemReference" placeholder="New Item Reference" value="${costItem?.reference}"/>
+                    </div><!-- .field -->
+                </div>
+            </div>
+            <div class="field">
+                <div class="field ">
+                    <label>${message(code:'financials.newCosts.UID')}</label>
+                    <input type="text" readonly value="${costItem?.globalUID}" />
+                </div><!-- .field -->
+
+                <div class="field">
+                    <label>${message(code:'financials.costItemStatus')}</label>
+                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                                  id="newCostItemStatus"
+                                  from="${costItemStatus}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.costItemStatus?.id}" />
+                </div><!-- .field -->
+            </div>
+        </div><!-- two fields -->
+
+        <div class="three fields">
+            <fieldset class="field la-modal-fieldset-no-margin">
+                <label>${g.message(code:'financials.newCosts.amount')}</label>
+
+                    <div class="field">
+                        <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
+                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
+                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
+                               placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/> <br/>
+                    </div><!-- .field -->
+
+                    <div class="field">
+                        <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
+                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                               name="newCurrencyRate" id="newCostCurrencyRate"
+                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" /> <br/>
+                    </div><!-- .field -->
+
+                    <div class="field">
+                        <label>${message(code:'financials.invoice_total')}</label>
+                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
+                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
+                               placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/> <br/>
+                    </div><!-- .field -->
+
+                    <div class="field">
+                        <g:select class="ui dropdown" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
+                                  from="${currency}"
+                                  optionKey="id"
+                                  optionValue="text"
+                                  value="${costItem?.billingCurrency?.id}" />
+                    </div><!-- .field -->
+            </fieldset> <!-- 1/3 field -->
+
+            <fieldset class="field la-modal-fieldset-margin">
+                <label>&nbsp;</label>
+                <div class="field">
+                    <label>${message(code:'financials.costItemCategory')}</label>
+                    <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
+                                  id="newCostItemCategory"
+                                  from="${costItemCategory}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.costItemCategory?.id}" />
+                </div><!-- .field -->
+
+                <div class="field">
+                    <label>${message(code:'financials.costItemElement')}</label>
+                    <laser:select name="newCostItemElement" class="ui dropdown"
+                                  from="${costItemElement}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.costItemElement?.id}" />
+                </div><!-- .field -->
+
+                <div class="field">
+                    <label>${message(code:'financials.newCosts.controllable')}</label>
+                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
+                                  from="${taxType}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.taxCode?.id}" />
+                </div><!-- .field -->
+            </fieldset> <!-- 2/3 field -->
+
+            <fieldset class="field la-modal-fieldset-no-margin">
+                <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
+
+                <div class="field">
+                    <label>${message(code:'subscription.label')}</label>
+                    <input ${inSubMode ? "disabled='disabled' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
+                            name="newSubscription" id="newSubscription"
+                            class="la-full-width select2" placeholder="${message(code:'financials.newCosts.newLicence')}"
+                            value="${inSubMode ? fixedSubscription?.name : params.newSubscription}" data-subfilter=""/>
+                    <g:if test="${inSubMode}">
+                        <g:hiddenField data-subfilter="" name="newSubscription" value="${fixedSubscription?.class.getName()}:${fixedSubscription?.id}"></g:hiddenField>
+                    </g:if>
+                </div><!-- .field -->
+
+                <div class="field">
+                    <label>${message(code:'package.label')}</label>
+                    <g:if test="${inSubMode}">
+                        <input name="newPackage" id="newPackage" class="select2 la-full-width"
+                               data-subFilter="${fixedSubscription?.id}" data-disableReset="true" />
+                    </g:if>
+                    <g:else>
+                        <input name="newPackage" id="newPackage" class="select2 la-full-width"
+                               disabled='disabled' data-subFilter="" data-disableReset="true" />
+                    </g:else>
+                </div><!-- .field -->
+
+                <div class="field">
+                    <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
+                    <g:if test="${inSubMode}">
+                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="la-full-width select2" value="${params.newIe}">
+                    </g:if>
+                    <g:else>
+                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width select2" value="${params.newIe}">
+                    </g:else>
+                </div><!-- .field -->
+            </fieldset> <!-- 3/3 field -->
+
+        </div><!-- three fields -->
+
+        <div class="three fields">
+            <fieldset class="field la-modal-fieldset-no-margin">
+                <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+
+                <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
+
+                <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
+            </fieldset> <!-- 1/3 field -->
+
+            <fieldset class="field la-modal-fieldset-margin">
+                <div class="field">
+                    <label>${message(code:'financials.newCosts.description')}</label>
+                    <textarea name="newDescription" id="newDescription" placeholder="${message(code:'default.description.label')}">${costItem?.costDescription}</textarea>
+                </div><!-- .field -->
+            </fieldset> <!-- 2/3 field -->
+
+            <fieldset class="field la-modal-fieldset-no-margin">
+                <div class="field">
+                    <label>${message(code:'financials.invoice_number')}</label>
+                    <input type="text" name="newInvoiceNumber" id="newInvoiceNumber" class="input-medium"
+                           placeholder="${message(code:'financials.invoice_number')}" value="${costItem?.invoice?.invoiceNumber}"/>
+                </div><!-- .field -->
+
+                <div class="field">
+                    <label>${message(code:'financials.order_number')}</label>
+                    <input type="text" name="newOrderNumber" id="newOrderNumber" class="input-medium"
+                           placeholder="${message(code:'financials.order_number')}" value="${costItem?.order?.orderNumber}"/>
+                </div><!-- .field -->
+            </fieldset> <!-- 3/3 field -->
+
+        </div><!-- three fields -->
+
+    </g:form>
+</semui:modal>
+<!-- _editAjax.gsp -->
