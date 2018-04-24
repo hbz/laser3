@@ -56,15 +56,13 @@
     <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
 </g:else>
 
-<h3 class="ui header">SEITE IN ARBEIT ..</h3>
-
 <div class="ui grid">
     <div class="column">
-        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
+        <button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
 
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
-            <button class="ui button pull-right" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_createModal" id="addNew">${message(code:'financials.addNewCost')}</button>
+            <button class="ui button pull-right" data-semui="modal" href="#costItem_createModal" id="addNew">${message(code:'financials.addNewCost')}</button>
             <g:render template="ajaxModal" model="['tmplId':'costItem_createModal']"/>
         </g:if>
     </div>
@@ -91,7 +89,7 @@
                 </div>
             </div>
 
-            <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">${message(code:'financials.backToTop')}</button>
+            <button class="ui button pull-right" data-offset="#jumpMark_top" title="Select this button to go back to the top of the page" id="top">${message(code:'financials.backToTop')}</button>
 
         </div><!-- .sixteen -->
     </div><!-- .grid -->
@@ -989,7 +987,7 @@
                s.mybody.on('click', s.ft.codeDelete, _removeBudgetCode); //attach delete functionality for budget codes
             */
 
-            s.mybody.on('click', '#addNew, #top', _scrollTo); //attach auto scrolling functionality
+            s.mybody.on('click', '#top', _scrollTo); //attach auto scrolling functionality
 
             $('input[name=_wildcard]').val("${wildcard?'on':'off'}"); //silly checkbox issues... default behaviour 1st run
             s.mybody.on('change', '#wildcard', function(event) {

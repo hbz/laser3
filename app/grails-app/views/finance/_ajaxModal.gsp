@@ -125,13 +125,14 @@
 
                 <div class="field">
                     <label>${message(code:'subscription.label')}</label>
+
                     <input ${inSubMode ? "disabled='disabled' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
                             name="newSubscription" id="newSubscription"
-                            class="la-full-width select2" placeholder="${message(code:'financials.newCosts.newLicence')}"
-                            value="${inSubMode ? fixedSubscription?.name : params.newSubscription}" data-subfilter=""/>
-                    <g:if test="${inSubMode}">
-                        <g:hiddenField data-subfilter="" name="newSubscription" value="${fixedSubscription?.class.getName()}:${fixedSubscription?.id}"></g:hiddenField>
-                    </g:if>
+                            class="la-full-width select2"
+                            data-subfilter=""
+                            placeholder="${message(code:'financials.newCosts.newLicence')}"
+                            ${inSubMode ? " value='${fixedSubscription?.name}' " : " value='${params.newSubscription}' "}
+                             />
                 </div><!-- .field -->
 
                 <div class="field">
@@ -196,7 +197,7 @@
     <script type="text/javascript">
         var ajaxPostFunc = function () {
 
-            $('#costItem_edit_modal #newBudgetCode').select2({
+            $('#costItem_ajaxModal #newBudgetCode').select2({
                 placeholder: "New code or lookup  code",
                 allowClear: true,
                 tags: true,
@@ -219,7 +220,7 @@
                 }
             });
 
-            $('#costItem_edit_modal #newSubscription').select2({
+            $('#costItem_ajaxModal #newSubscription').select2({
                 placeholder: "Type subscription name...",
                 minimumInputLength: 1,
                 global: false,
@@ -247,7 +248,7 @@
                 }
             });
 
-            $('#costItem_edit_modal #newPackage').select2({
+            $('#costItem_ajaxModal #newPackage').select2({
                 placeholder: "${message(code:'financials.newCosts.enterpkgName')}",
                 minimumInputLength: 1,
                 global: false,

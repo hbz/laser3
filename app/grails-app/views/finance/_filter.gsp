@@ -1,5 +1,8 @@
 <!-- _filter.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
+<g:if test="${false}"><!-- TMP::IGNOREFILTER -->
+
 %{--AJAX rendered messages--}%
 <g:if test="${info}">
     <div id="info" >
@@ -188,6 +191,10 @@
 
     </g:form>
 
+</semui:filter>
+
+</g:if><!-- TMP::IGNOREFILTER -->
+
     <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
 
         <thead>
@@ -201,17 +208,16 @@
                 <th>Datum bis</th>
                 <th>Aktionen</th>
             </tr>
+        </thead>
         <tbody>
-
-
-        %{--Empty result set--}%
-        <g:if test="${cost_item_count==0}">
-            <tr><td colspan="8" style="text-align:center">&nbsp;<br/><g:if test="${msg}">${msg}</g:if><g:else>No Cost Items Found</g:else><br/>&nbsp;</td></tr>
-        </g:if>
-        <g:else>
-        %{--Two rows of data per CostItem, separated for readability--}%
-            <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
-        </g:else>
+            %{--Empty result set--}%
+            <g:if test="${cost_item_count==0}">
+                <tr><td colspan="8" style="text-align:center">&nbsp;<br/><g:if test="${msg}">${msg}</g:if><g:else>No Cost Items Found</g:else><br/>&nbsp;</td></tr>
+            </g:if>
+            <g:else>
+            %{--Two rows of data per CostItem, separated for readability--}%
+                <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
+            </g:else>
         </tbody>
 
     </table>
@@ -286,10 +292,9 @@
                 <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
             </g:else>
             </tbody>
-             --%>
-        </table>
 
-</semui:filter>
+        </table>
+ --%>
 
 <div id="paginationWrapper" class="pagination">
     <div id="paginateInfo" hidden="true" data-offset="${offset!=null?offset:params.offset}" data-max="${max!=null?max:params.max}"
