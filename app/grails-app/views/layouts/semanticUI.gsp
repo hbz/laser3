@@ -513,6 +513,7 @@
             </g:if>
         </sec:ifLoggedIn>
 
+        <%-- global content container --%>
         <div class="ui main container">
             <g:layoutBody/>
         </div><!-- .main -->
@@ -524,9 +525,13 @@
             </div>
         </div>
 
+        <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
 
-        <div id="dymanicModalContainer"></div>
+        <%-- global loading indicator --%>
+        <div id="loadingIndicator" style="display: none">
+            <div class="ui text loader active">Loading</div>
+        </div>
 
         <r:layoutResources/>
 

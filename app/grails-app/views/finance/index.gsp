@@ -70,10 +70,6 @@
     </div>
 </div>
 
-    <div style="padding-left: 2%" hidden="hidden" class="loadingData">
-        <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
-    </div>
-
     <g:render template="recentlyAddedModal" />
 
     <div class="ui grid">
@@ -93,10 +89,6 @@
                 <div id="filterTemplate">
                     <g:render template="filter" />
                 </div>
-            </div>
-
-            <div style="padding-left: 2%" hidden="hidden" class="loadingData">
-                <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
             </div>
 
             <button class="ui button pull-right"  data-offset="#costTable" title="Select this button to go back to the top of the page" id="top">${message(code:'financials.backToTop')}</button>
@@ -563,13 +555,13 @@
         var startLoadAnimation = function() {
             s.options.timeout = setTimeout(function() {
                 $(s.ft.tableWrapper).addClass('overlay');
-                $('div.loadingData').show();
+                $('#loadingIndicator').show();
             }, 50); //50ms delay
         };
 
         //If ajax call finishes before the timeout occurs, we wouldn't have shown any animation.
         var stopLoadAnimation = function() {
-            $('div.loadingData').hide();
+            $('#loadingIndicator').hide();
             $(s.ft.tableWrapper).removeClass('overlay');
             clearTimeout(s.options.timeout);
         };
