@@ -444,6 +444,7 @@
             }
         };
 
+        /* removed to ajaxModal
         var _removeBudgetCode = function(e) {
             var element = $(this);
             $.ajax({
@@ -468,7 +469,7 @@
                  errorHandling(textStatus,'Removal of code ',errorThrown);
              });
         };
-
+        */
 
         //var _filterValidation = function() {
         function filterValidation()   {
@@ -984,7 +985,9 @@
 
             s.mybody.on('change',s.ft.filterOpt, _filterSelection); //on change of subscription select filter
 
-            s.mybody.on('click', s.ft.codeDelete, _removeBudgetCode); //attach delete functionality for budget codes
+            /* removed to ajaxModal
+               s.mybody.on('click', s.ft.codeDelete, _removeBudgetCode); //attach delete functionality for budget codes
+            */
 
             s.mybody.on('click', '#addNew, #top', _scrollTo); //attach auto scrolling functionality
 

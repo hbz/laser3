@@ -77,17 +77,16 @@
     $('#costTable .x .button.positive').on('click', function(e) {
         e.preventDefault()
 
-        var tmplId = 'ajaxModal_' + $(this).data('ajaxid')
         $.ajax({
-            url: $(this).attr('href'),
-            data: 'tmplId=' + tmplId
+            url: $(this).attr('href')
         }).done( function(data) {
-            $('#dynamicModalContainer').empty().append(data)
+            $('.ui.dimmer.modals').empty();
+            $('#dynamicModalContainer').empty().html(data);
 
-            $('#dynamicModalContainer .modal').modal({
+            $('#dynamicModalContainer .ui.modal').modal({
                 onVisible: function () {
-                    r2d2.initDynamicSemuiStuff('#' + tmplId);
-                    r2d2.initDynamicXEditableStuff('#' + tmplId);
+                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                     ajaxPostFunc()
                 },

@@ -28,37 +28,32 @@
                     <g:message code="task.typ" default="Task Typ"/>
                 </label>
                 <div class="ui radio checkbox">
-                    <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0"
-                           class="hidden" checked="">
+                    <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
                     <label for="general">${message(code: 'task.general')}</label>
                 </div>
 
                 <div class="ui radio checkbox">
-                    <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0"
-                           class="hidden">
+                    <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
                     <label for="license">
                         <g:message code="task.license.label" default="License"/>
                     </label>
                 </div>
 
                 <div class="ui radio checkbox">
-                    <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0"
-                           class="hidden">
+                    <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
                     <label for="pkg">
                         <g:message code="task.pkg.label" default="Pkg"/>
                     </label>
                 </div>
 
                 <div class="ui radio checkbox">
-                    <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0"
-                           class="hidden">
+                    <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                     <label for="subscription">
                         <g:message code="task.subscription.label" default="Subscription"/>
                     </label>
                 </div>
                 <div class="ui radio checkbox">
-                    <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0"
-                           class="hidden">
+                    <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
                     <label for="org">
                         <g:message code="task.org.label" default="Subscription"/>
                     </label>
@@ -68,39 +63,35 @@
             <div id="licensediv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
                 <label for="license">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label"
-                                                                                      default="License"/>
+                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" default="License"/>
                 </label>
                 <g:select id="license" name="license" from="${validLicenses}" optionKey="id"
-                          value="${ownobj?.id}" class="many-to-one" noSelection="['null': '']"/>
+                          value="${ownobj?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
             </div>
 
             <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
             <label for="org">
-                <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label"
-                                                                                  default="Org"/>
+                <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" default="Org"/>
             </label>
             <g:select id="org" name="org" from="${validOrgs}" optionKey="id" value="${ownobj?.id}"
-                      class="many-to-one" noSelection="['null': '']"/>
+                      class="ui dropdown many-to-one" noSelection="['null': '']"/>
         </div>
 
             <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} ">
                 <label for="pkg">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.pkg.label"
-                                                                                      default="Pkg"/>
+                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.pkg.label" default="Pkg"/>
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
-                          class="many-to-one" noSelection="['null': '']"/>
+                          class="ui dropdown many-to-one" noSelection="['null': '']"/>
             </div>
 
             <div id="subscriptiondiv"
                  class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
                 <label for="subscription">
-                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label"
-                                                                                      default="Subscription"/>
+                    <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
                 </label>
                 <g:select id="subscription" name="subscription" from="${validSubscriptions}" optionKey="id"
-                          value="${ownobj?.id}" class="many-to-one" noSelection="['null': '']"/>
+                          value="${ownobj?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
             </div>
 
         </g:if>
@@ -117,7 +108,7 @@
                                   from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}"
-                                  class="many-to-one"/>
+                                  class="ui dropdown many-to-one"/>
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate"
@@ -136,16 +127,14 @@
 
                     <div class="field">
                         <div class="ui radio checkbox">
-                            <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0"
-                                   class="hidden" checked="">
+                            <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
                             <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')}</label>
                         </div>
                     </div>
 
                     <div class="field">
                         <div class="ui radio checkbox">
-                            <input id="radioresponsibleUser" type="radio" value="User" name="responsible" tabindex="0"
-                                   class="hidden">
+                            <input id="radioresponsibleUser" type="radio" value="User" name="responsible" tabindex="0" class="hidden">
                             <label for="radioresponsibleUser">${message(code: 'task.responsibleUser.label')}</label>
                         </div>
                     </div>
@@ -158,7 +147,7 @@
                     </label>
                     <g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}"
                               optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}"
-                              class="many-to-one" noSelection="['null': '']"/>
+                              class="ui dropdown many-to-one" noSelection="['null': '']"/>
                 </div>
             </div>
         </div>
@@ -167,41 +156,27 @@
     <g:if test="${actionName == 'dashboard' || actionName == 'dashboard#'}">
         <r:script>
             $("#generalradio").change(function () {
-                $("#licensediv").hide();
-                $("#pkgdiv").hide();
-                $("#subscriptiondiv").hide();
-                $("#orgdiv").hide();
+                $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
             });
             $("#licenseradio").change(function () {
+                $("#orgdiv, #pkgdiv, #subscriptiondiv").hide();
                 $("#licensediv").show();
-                $("#pkgdiv").hide();
-                $("#subscriptiondiv").hide();
-                $("#orgdiv").hide();
             });
             $("#pkgradio").change(function () {
-                $("#licensediv").hide();
+                $("#licensediv, #orgdiv, #subscriptiondiv").hide();
                 $("#pkgdiv").show();
-                $("#subscriptiondiv").hide();
-                $("#orgdiv").hide();
             });
             $("#subscriptionradio").change(function () {
-                $("#licensediv").hide();
-                $("#pkgdiv").hide();
+                $("#licensediv, #orgdiv, #pkgdiv").hide();
                 $("#subscriptiondiv").show();
-                $("#orgdiv").hide();
             });
             $("#orgradio").change(function () {
-                $("#licensediv").hide();
-                $("#pkgdiv").hide();
-                $("#subscriptiondiv").hide();
+                $("#licensediv, #pkgdiv, #subscriptiondiv").hide();
                 $("#orgdiv").show();
             });
-            $("#generalradio").prop( "checked", true );
-            $("#licensediv").hide();
-            $("#pkgdiv").hide();
-            $("#subscriptiondiv").hide();
-            $("#orgdiv").hide();
 
+            $("#generalradio").prop( "checked", true );
+            $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
         </r:script>
     </g:if>
     <r:script>
@@ -210,7 +185,6 @@
         });
         $("#radioresponsibleUser").change(function () {
             $("#responsibleUser").show();
-
         });
         $("#radioresponsibleOrg").prop( "checked", true );
         $("#responsibleUser").hide();

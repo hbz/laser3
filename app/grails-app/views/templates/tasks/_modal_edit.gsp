@@ -1,5 +1,6 @@
 <%@ page import="com.k_int.kbplus.Task" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
 <semui:modal id="modalEditTask" message="task.edit" editmodal="true" >
 
     <g:form class="ui form" id="edit_task" url="[controller:'task',action:'edit',id:taskInstance?.id]" method="post">
@@ -73,7 +74,7 @@
                     <label for="status">
                         <g:message code="task.status.label" default="Status" />
                     </label>
-                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionValue="value" optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}" class="many-to-one"/>
+                    <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionValue="value" optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}" class="ui dropdown many-to-one"/>
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime', default:'yyyy-MM-dd'), date:taskInstance?.endDate)}" required="true" bean="${taskInstance}" />
@@ -107,29 +108,30 @@
                     <label for="responsibleUser">
                         <g:message code="task.responsibleUser.label" default="Responsible User" />
                     </label>
-                    <g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="many-to-one" noSelection="['null': '']"/>
+                    <g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}" optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
                 </div>
             </div>
         </div>
 
     </g:form>
 
-    <g:form class="ui form" id="delete_task" url="[controller:'task',action:'delete',id:taskInstance?.id]" method="post">
-    </g:form>
-
     <script type="text/javascript">
-        $("#radioresponsibleOrgEdit").change(function(){
-            $("#responsibleUserEdit").hide();
-        });
-        $("#radioresponsibleUserEdit").change(function(){
-            $("#responsibleUserEdit").show();
-        });
-        if($("#radioresponsibleUserEdit").is(':checked')){
-            $("#responsibleUserEdit").show();
-        }else{
-            $("#responsibleUserEdit").hide();
-        };
+        var ajaxPostFunc = function () {
 
+            $("#radioresponsibleOrgEdit").change(function () {
+                $("#responsibleUserEdit").hide();
+            });
+
+            $("#radioresponsibleUserEdit").change(function () {
+                $("#responsibleUserEdit").show();
+            });
+
+            if ($("#radioresponsibleUserEdit").is(':checked')) {
+                $("#responsibleUserEdit").show();
+            } else {
+                $("#responsibleUserEdit").hide();
+            }
+        }
     </script>
 </semui:modal>
 

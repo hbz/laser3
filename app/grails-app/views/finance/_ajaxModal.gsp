@@ -3,7 +3,7 @@
 
 <g:render template="vars" /><%-- setting vars --%>
 
-<semui:modal id="${tmplId ?: params.tmplId ?: "costItem_ajaxModal"}" text="${message(code:'financials.editCost')} #${costItem?.id}">
+<semui:modal id="${tmplId ?: "costItem_ajaxModal"}" text="${message(code:'financials.editCost')} #${costItem?.id}">
 
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
@@ -192,91 +192,91 @@
         </div><!-- three fields -->
 
     </g:form>
+
+    <script type="text/javascript">
+        var ajaxPostFunc = function () {
+
+            $('#costItem_edit_modal #newBudgetCode').select2({
+                placeholder: "New code or lookup  code",
+                allowClear: true,
+                tags: true,
+                tokenSeparators: [',', ' '],
+                minimumInputLength: 1,
+                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                    url: "<g:createLink controller='ajax' action='lookup'/>",
+                    dataType: 'json',
+                    data: function (term, page) {
+                        return {
+                            format: 'json',
+                            q: term,
+                            shortcode: "${contextService.getOrg()?.shortcode}",
+                            baseClass: 'com.k_int.kbplus.CostItemGroup'
+                        };
+                    },
+                    results: function (data, page) {
+                        return {results: data.values};
+                    }
+                }
+            });
+
+            $('#costItem_edit_modal #newSubscription').select2({
+                placeholder: "Type subscription name...",
+                minimumInputLength: 1,
+                global: false,
+                ajax: {
+                    url: "<g:createLink controller='ajax' action='lookup'/>",
+                    dataType: 'json',
+                    data: function (term, page) {
+                        return {
+                            hideDeleted: 'true',
+                            hideIdent: 'false',
+                            inclSubStartDate: 'false',
+                            inst_shortcode: "${contextService.getOrg()?.shortcode}",
+                            q: '%'+term , // contains search term
+                            page_limit: 20,
+                            baseClass:'com.k_int.kbplus.Subscription'
+                        };
+                    },
+                    results: function (data, page) {
+                        return {results: data.values};
+                    }
+                },
+                allowClear: true,
+                formatSelection: function(data) {
+                    return data.text;
+                }
+            });
+
+            $('#costItem_edit_modal #newPackage').select2({
+                placeholder: "${message(code:'financials.newCosts.enterpkgName')}",
+                minimumInputLength: 1,
+                global: false,
+                ajax: {
+                    url: "<g:createLink controller='ajax' action='lookup'/>",
+                    dataType: 'json',
+                    data: function (term, page) {
+                        return {
+                            hideDeleted: 'true',
+                            hideIdent: 'false',
+                            inclSubStartDate: 'false',
+                            inst_shortcode: "${contextService.getOrg()?.shortcode}",
+                            q: '%'+term , // contains search term
+                            page_limit: 20,
+                            subFilter:$(s.ft.filterSubscription).data().filtermode.split(":")[1],
+                            baseClass:'com.k_int.kbplus.SubscriptionPackage'
+                        };
+                    },
+                    results: function (data, page) {
+                        return {results: data.values};
+                    }
+                },
+                allowClear: true,
+                formatSelection: function(data) {
+                    return data.text;
+                }
+            });
+        }
+    </script>
+
 </semui:modal>
-
-<script>
-    var ajaxPostFunc = function () {
-
-        $('#costItem_edit_modal #newBudgetCode').select2({
-            placeholder: "New code or lookup  code",
-            allowClear: true,
-            tags: true,
-            tokenSeparators: [',', ' '],
-            minimumInputLength: 1,
-            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                url: "<g:createLink controller='ajax' action='lookup'/>",
-                dataType: 'json',
-                data: function (term, page) {
-                    return {
-                        format: 'json',
-                        q: term,
-                        shortcode: "${contextService.getOrg()?.shortcode}",
-                        baseClass: 'com.k_int.kbplus.CostItemGroup'
-                    };
-                },
-                results: function (data, page) {
-                    return {results: data.values};
-                }
-            }
-        });
-
-        $('#costItem_edit_modal #newSubscription').select2({
-            placeholder: "Type subscription name...",
-            minimumInputLength: 1,
-            global: false,
-            ajax: {
-                url: "<g:createLink controller='ajax' action='lookup'/>",
-                dataType: 'json',
-                data: function (term, page) {
-                    return {
-                        hideDeleted: 'true',
-                        hideIdent: 'false',
-                        inclSubStartDate: 'false',
-                        inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                        q: '%'+term , // contains search term
-                        page_limit: 20,
-                        baseClass:'com.k_int.kbplus.Subscription'
-                    };
-                },
-                results: function (data, page) {
-                    return {results: data.values};
-                }
-            },
-            allowClear: true,
-            formatSelection: function(data) {
-                return data.text;
-            }
-        });
-
-        $('#costItem_edit_modal #newPackage').select2({
-            placeholder: "${message(code:'financials.newCosts.enterpkgName')}",
-            minimumInputLength: 1,
-            global: false,
-            ajax: {
-                url: "<g:createLink controller='ajax' action='lookup'/>",
-                dataType: 'json',
-                data: function (term, page) {
-                    return {
-                        hideDeleted: 'true',
-                        hideIdent: 'false',
-                        inclSubStartDate: 'false',
-                        inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                        q: '%'+term , // contains search term
-                        page_limit: 20,
-                        subFilter:$(s.ft.filterSubscription).data().filtermode.split(":")[1],
-                        baseClass:'com.k_int.kbplus.SubscriptionPackage'
-                    };
-                },
-                results: function (data, page) {
-                    return {results: data.values};
-                }
-            },
-            allowClear: true,
-            formatSelection: function(data) {
-                return data.text;
-            }
-        });
-    }
-</script>
-
 <!-- _editAjax.gsp -->

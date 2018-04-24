@@ -258,7 +258,14 @@
                     $("#modalEditTask").remove();
 
                     $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal('show');
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#modalEditTask');
+                            r2d2.initDynamicXEditableStuff('#modalEditTask');
+
+                            ajaxPostFunc()
+                        }
+                    }).modal('show');
                 }
             });
         }
