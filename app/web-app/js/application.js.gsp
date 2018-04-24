@@ -44,14 +44,100 @@ r2d2 = {
 
     go : function() {
 
-        r2d2.legacyStuff()
-        r2d2.semuiStuff()
+        r2d2.initGlobalSemuiStuff();
+        r2d2.initGlobalXEditableStuff();
+
+        r2d2.initDynamicSemuiStuff('body');
+        r2d2.initDynamicXEditableStuff('body');
 
         console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
     },
 
-    legacyStuff : function() {
-        console.log("r2d2.legacyStuff()");
+    initGlobalSemuiStuff : function() {
+        console.log("r2d2.initGlobalSemuiStuff()")
+
+        // spotlight
+        $('.ui.search').search({
+            type: 'category',
+            searchFields   : [
+                'title'
+            ],
+            apiSettings: {
+                onResponse: function(elasticResponse) {
+                    var response = { results : {} };
+
+                    // translate Elasticsearch API response to work with semantic ui search
+                    $.each(elasticResponse.results, function(index, item) {
+
+                        var category   = item.category || 'Unknown';
+                        var maxResults = 15;
+
+                        if (index >= maxResults) {
+                            return false;
+                        }
+                        // create new object category
+                        if (response.results[category] === undefined) {
+                            response.results[category] = {
+                                name    : category,
+                                results : []
+                            };
+                        }
+                        // add result to category
+                        response.results[category].results.push({
+                            title       : item.title,
+                            url         : item.url
+                        });
+                    });
+                    return response;
+                },
+                url: "<g:createLink controller='spotlight' action='search'/>/?query={query}"
+            },
+            minCharacters: 3
+        });
+        $('#btn-search').on('click', function(e) {
+            e.preventDefault();
+
+            $('#spotlightSearch').animate({width: 'toggle'}).focus();
+            $(this).toggleClass('open');
+        });
+
+        // metaboxes
+        $('.metaboxToggle').click(function() {
+            $(this).next('.metaboxContent').slideToggle();
+        })
+
+        // stickies
+        $('.ui.sticky').sticky({offset: 120});
+
+        // sticky table header
+        $('.table').floatThead({
+            position: 'fixed',
+            top: 78,
+            zIndex: 1
+        });
+
+        $('.modal .table').floatThead('destroy');
+        $('.table.ignore-floatThead').floatThead('destroy');
+
+        // modals
+        $("*[data-semui=modal]").click(function() {
+            $($(this).attr('href') + '.ui.modal').modal({
+                onVisible: function() {
+                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                },
+                detachable: true,
+                closable: true,
+                transition: 'fade up',
+                onApprove : function() {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show')
+        });
+    },
+
+    initGlobalXEditableStuff : function() {
+        console.log("r2d2.initGlobalXEditableStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
@@ -60,28 +146,35 @@ r2d2 = {
             '<div class="editable-buttons"></div></div><div class="editable-error-block"></div></div></form>'
 
         // TODO $.fn.datepicker.defaults.language = gspLocale
+    },
 
-        $('.xEditable').editable({
-            language: gspLocale, /*
-            datepicker: {
+    initDynamicXEditableStuff : function(ctxSel) {
+        console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
+        if (! ctxSel) {
+            ctxSel = 'body'
+        }
+
+        $(ctxSel + ' .xEditable').editable({
+            language: gspLocale,
+            /* datepicker: {
                 language: gspLocale
             }, */
             format: gspDateFormat
         });
 
-        $('.xEditableValue').editable({
-            language: gspLocale, /*
-            datepicker: {
+        $(ctxSel + ' .xEditableValue').editable({
+            language: gspLocale,
+            /* datepicker: {
                 language: gspLocale
             }, */
             format: gspDateFormat
         });
 
-        $(".xEditableManyToOne").editable();
+        $(ctxSel + ' .xEditableManyToOne').editable();
 
-        $(".simpleHiddenRefdata").editable({
-            language: gspLocale, /*
-            datepicker: {
+        $(ctxSel + ' .simpleHiddenRefdata').editable({
+            language: gspLocale,
+            /* datepicker: {
                 language: gspLocale
             }, */
             format: gspDateFormat,
@@ -92,7 +185,7 @@ r2d2 = {
             }
         });
 
-        $(".simpleReferenceTypedown").select2({
+        $(ctxSel + ' .simpleReferenceTypedown').select2({
             placeholder: "Search for...",
             minimumInputLength: 1,
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
@@ -112,129 +205,55 @@ r2d2 = {
         });
     },
 
-    semuiStuff : function() {
-        console.log("r2d2.semuiStuff()")
+    initDynamicSemuiStuff : function(ctxSel) {
+        console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
+        if (! ctxSel) {
+            ctxSel = 'body'
+        }
 
+        console.log ( $(ctxSel + ' .ui.dropdown') )
         // close semui:messages alerts
-        $(".close.icon").click(function() {
+        $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
         });
 
-        // datepicker
-        $('.datepicker').calendar(r2d2.configs.datepicker);
+        // accordions
+        $(ctxSel + ' .ui.accordion').accordion();
 
-        // modal opener
-        $("*[data-semui=modal]").click(function() {
-            $($(this).attr('href') + '.ui.modal').modal({
-                onVisible: function() {
-                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-                },
-                detachable: true,
-                closable: true,
-                transition: 'fade up',
-                onApprove : function() {
-                    $(this).find('.ui.form').submit();
-                    return false;
-                }
-            }).modal('show')
-        });
+        // checkboxes
+        $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
+
+        // datepicker
+        $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
         // dropdowns
-        $('.ui.dropdown').dropdown({
+        $(ctxSel + ' .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade'
         });
 
-        $('.la-filter .ui.dropdown').on('keydown', function(event) {
+        // dropdowns escape
+        $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
-                event.preventDefault();
+                e.preventDefault();
                 $(this).dropdown('clear').dropdown('hide').removeClass("la-filter-dropdown-selected");
             }
         });
 
         // SEM UI DROPDOWN CHANGE
-        $(".la-filter .ui.dropdown").change(function() {
+        $(ctxSel + ' .la-filter .ui.dropdown').change(function() {
             ($(this).hasClass("default")) ? $(this).removeClass("la-filter-dropdown-selected") : $(this).addClass("la-filter-dropdown-selected");
         });
 
-        $(".la-filter .ui.dropdown > select > option[selected=selected]").parents('.ui.dropdown').addClass('la-filter-dropdown-selected');
-
-        // accordions
-        $('.ui.accordion').accordion();
-
-        // checkboxes
-        $('.ui.checkbox').not('#la-advanced').checkbox();
-
-        // metaboxes
-        $('.metaboxToggle').click(function() {
-            $(this).next('.metaboxContent').slideToggle();
-        })
-
-        // spotlight
-        $('.ui.search').search({
-            type: 'category',
-            searchFields   : [
-                'title'
-            ],
-            apiSettings: {
-                onResponse: function(elasticResponse) {
-                    var response = { results : {} };
-
-                    // translate Elasticsearch API response to work with semantic ui search
-                    $.each(elasticResponse.results, function(index, item) {
-
-                        var category   = item.category || 'Unknown';
-                        var maxResults = 15;
-
-                        if(index >= maxResults) {
-                            return false;
-                        }
-                        // create new object category
-                        if(response.results[category] === undefined) {
-                            response.results[category] = {
-                                name    : category,
-                                results : []
-                            };
-                        }
-                        // add result to category
-                        response.results[category].results.push({
-                            title       : item.title,
-                            url         : item.url
-                        });
-                    });
-                    return response;
-                },
-                url: "<g:createLink controller='spotlight' action='search'/>/?query={query}"
-            },
-            minCharacters: 3
-        });
-        $('#btn-search').on('click', function(e) {
-
-            e.preventDefault();
-
-            $('#spotlightSearch').animate({width: 'toggle'}).focus();
-            $(this).toggleClass('open');
-
-        });
-
-        // stickies
-        $('.ui.sticky').sticky({offset: 120});
-
-        // sticky table header
-        $('.table').floatThead({
-              position: 'fixed',
-              top: 78,
-              zIndex: 1
-        });
-        $('.modal .table').floatThead('destroy');
-        $('.table.ignore-floatThead').floatThead('destroy');
+        $(ctxSel + ' .la-filter .ui.dropdown > select > option[selected=selected]').parents('.ui.dropdown').addClass('la-filter-dropdown-selected');
 
         // FILTER SELECT FUNCTION - INPUT LOADING
-        $(".la-filter input[type=text]").each(function() {
+        $(ctxSel + '.la-filter input[type=text]').each(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
         });
-        //  FILTER SELECT FUNCTION - INPUT  CHANGE
-        $(".la-filter input[type=text]").change(function() {
+
+        //  FILTER SELECT FUNCTION - INPUT CHANGE
+        $(ctxSel + '.la-filter input[type=text]').change(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
         });
     }

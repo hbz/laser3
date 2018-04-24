@@ -17,6 +17,7 @@ class FinanceController {
     def springSecurityService
     def accessService
     def contextService
+    def genericOIDService
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
@@ -53,7 +54,7 @@ class FinanceController {
         //Check nothing strange going on with financial data
         result.institution =  contextService.getOrg()
 
-        def user           =  User.get(springSecurityService.principal.id)
+        def user =  User.get(springSecurityService.principal.id)
         if (!isFinanceAuthorised(result.institution, user)) {
             log.error("Sending 401 - forbidden");
             flash.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
@@ -586,6 +587,19 @@ class FinanceController {
             ]
     ]
 
+    @Secured(['ROLE_USER'])
+    def editCostItem() {
+        def result = [:]
+
+        //TODO: copied from index()
+        result.inSubMode = params.sub ? true : false
+        if (result.inSubMode) {
+            result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
+        }
+        result.costItem = CostItem.findById(params.id)
+
+        render(template: "/finance/ajaxModal", model: result)
+    }
 
     @Secured(['ROLE_USER'])
     def newCostItem() {
@@ -638,12 +652,12 @@ class FinanceController {
         }
 
         def datePaid = null
-        if (params.newDate)
+        if (params.newDatePaid)
         {
             try {
-                datePaid = dateFormat.parse(params.newDate)
+                datePaid = dateFormat.parse(params.newDatePaid)
             } catch (Exception e) {
-                log.debug("Unable to parse date : ${params.newDate} in format ${dateFormat.toPattern()}")
+                log.debug("Unable to parse date : ${params.newDatePaid} in format ${dateFormat.toPattern()}")
             }
         }
 
@@ -686,39 +700,45 @@ class FinanceController {
         }
 
         //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
-        def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', 0.00) : 0.00
-        def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
-        def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
-        def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
-        def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
-        def cost_billing_currency = params.newCostInBillingCurrency? params.double('newCostInBillingCurrency',0.00) : 0.00
-        def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
+          def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
+          def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
+          def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
+          def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
+
+          def cost_billing_currency = params.newCostInBillingCurrency? params.double('newCostInBillingCurrency',0.00) : 0.00
+          def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
+          def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', 0.00) : 0.00
 
         //def inclSub = params.includeInSubscription? (RefdataValue.get(params.long('includeInSubscription'))): defaultInclSub //todo Speak with Owen, unknown behaviour
 
-        newCostItem = new CostItem(
-                owner: result.institution,
-                sub: sub,
-                subPkg: pkg,
-                issueEntitlement: ie,
-                order: order,
-                invoice: invoice,
-                costItemCategory: cost_item_category,
-                costItemElement: cost_item_element,
-                costItemStatus: cost_item_status,
-                billingCurrency: billing_currency, //Not specified default to GDP
-                taxCode: cost_tax_type,
-                costDescription: params.newDescription? params.newDescription.trim()?.toLowerCase():null,
-                costInBillingCurrency: cost_billing_currency as Double,
-                costInLocalCurrency: cost_local_currency as Double,
-                currencyRate: cost_currency_rate as Double,
-                datePaid: datePaid,
-                startDate: startDate,
-                endDate: endDate,
-                includeInSubscription: null, //todo Discussion needed, nobody is quite sure of the functionality behind this...
-                reference: params.newReference? params.newReference.trim()?.toLowerCase() : null
-        )
+          if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
+              newCostItem = genericOIDService.resolveOID(params.oldCostItem)
+          }
+          else {
+              newCostItem = new CostItem()
+          }
 
+            newCostItem.owner               = result.institution
+            newCostItem.sub                 = sub
+            newCostItem.subPkg              = pkg
+            newCostItem.issueEntitlement    = ie
+            newCostItem.order               = order
+            newCostItem.invoice             = invoice
+            newCostItem.costItemCategory    = cost_item_category
+            newCostItem.costItemElement     = cost_item_element
+            newCostItem.costItemStatus      = cost_item_status
+            newCostItem.billingCurrency     = billing_currency //Not specified default to GDP
+            newCostItem.taxCode             = cost_tax_type
+            newCostItem.costDescription     = params.newDescription ? params.newDescription.trim()?.toLowerCase() : null
+            newCostItem.costTitle           = params.newCostTitle ?: null
+            newCostItem.costInBillingCurrency = cost_billing_currency as Double
+            newCostItem.costInLocalCurrency = cost_local_currency as Double
+            newCostItem.currencyRate        = cost_currency_rate as Double
+            newCostItem.datePaid            = datePaid
+            newCostItem.startDate           = startDate
+            newCostItem.endDate             = endDate
+            newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
+            newCostItem.reference           = params.newReference? params.newReference.trim()?.toLowerCase() : null
 
         if (!newCostItem.validate())
         {
@@ -785,7 +805,7 @@ class FinanceController {
         result.from            = dateTimeFormat.format(result.from)
         result.to              = dateTimeFormat.format(result.to)
         log.debug("FinanceController - getRecentCostItems, rendering template with model: ${result}")
-        render(template: "/finance/recentlyAdded", model: result)
+        render(template: "/finance/recentlyAddedModal", model: result)
     }
 
 

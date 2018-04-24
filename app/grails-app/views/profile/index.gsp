@@ -104,12 +104,12 @@
                 <h4 class="ui dividing header">
                     ${message(code: 'profile.preferences', default:'Preferences')}
                 </h4>
-
+                <%-- TODO: check this
                 <div class="field">
                     <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
                     <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
                 </div>
-
+                --%>
                 <div class="field">
                     <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
                     <semui:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />

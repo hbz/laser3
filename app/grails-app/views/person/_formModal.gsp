@@ -1,14 +1,14 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 <% def cService = grailsApplication.mainContext.getBean("contextService") %>
 
 <semui:modal id="personFormModal" text="${message(code: 'person.create_new.contactPerson.label')}">
 
-    <g:form class="ui form" url="[controller: 'person', action: 'create']" method="POST">
+    <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create']" method="POST">
 
         <div class="field">
             <div class="two fields">
 
-                <div class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
+                <div class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
                     <label for="first_name">
                         <g:message code="person.first_name.label" default="Firstname" />
                     </label>
@@ -56,7 +56,7 @@
 
                 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
                     <label for="roleType">
-                        <g:message code="person.roleType.label" default="Person Position" />
+                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
 
                     </label>
                     <laser:select class="ui dropdown" id="roleType" name="roleType"
@@ -69,7 +69,8 @@
 
                 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
                     <label for="contactType">
-                        <g:message code="person.contactType.label" default="Person Contact Type" />
+                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}
+
 
                     </label>
                     <laser:select class="ui dropdown" id="contactType" name="contactType"
@@ -213,5 +214,27 @@
         </div>
 
     </g:form>
+
+    <r:script>
+
+        $('#create_person')
+                .form({
+            on: 'blur',
+            inline: true,
+            fields: {
+                last_name: {
+                    identifier  : 'last_name',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                }
+             }
+        });
+
+
+    </r:script>
 
 </semui:modal>

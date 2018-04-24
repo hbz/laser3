@@ -47,14 +47,16 @@ class PersonController {
 		case 'POST':
 	        def personInstance = new Person(params)
 	        if (!personInstance.save(flush: true)) {
-	            render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
+                flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label', default: 'Person')])
+                redirect(url: request.getHeader('referer'))
+	            //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
 	            return
 	        }
             // processing dynamic form data
             addPersonRoles(personInstance)
             
-			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
-	        redirect action: 'show', id: personInstance.id
+			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+            redirect(url: request.getHeader('referer'))
 			break
 		}
     }

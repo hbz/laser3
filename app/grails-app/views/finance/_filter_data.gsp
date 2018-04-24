@@ -6,9 +6,9 @@
     <tr id="bulkdelete-b${ci.id}">
         <td>
             <g:if test="${editable}">
-                <semui:xEditable emptytext="Edit Cost" owner="${ci}" field="costInBillingCurrency" /> </br>
+                Cost: <semui:xEditable emptytext="Edit Cost" owner="${ci}" field="costInBillingCurrency" /> </br>
                 <semui:xEditableRefData config="Currency" emptytext="Edit billed" owner="${ci}" field="billingCurrency" /> </br>
-                <semui:xEditable emptytext="Edit local" owner="${ci}" field="costInLocalCurrency" />
+                Local: <semui:xEditable emptytext="Edit local" owner="${ci}" field="costInLocalCurrency" />
             </g:if>
             <g:else>
                 ${ci?.costInBillingCurrency} </br>
@@ -50,21 +50,56 @@
             </g:if>
         </td>
 
-        <td>
-            <g:link
-                    class="ui icon positiv button">
-
-                <i class="write icon"></i>
-
-            </g:link>
-            <g:link
-                    class="ui icon negative button">
-
-                <i class="trash alternate icon"></i>
-
-            </g:link>
+        <td class="x">
+            <g:if test="${editable}">
+                <g:if test="${inSubMode}">
+                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon positive button" data-ajaxid="costItem-${ci.id}">
+                        <i class="write icon"></i>
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon positive button" data-ajaxid="costItem-${ci.id}">
+                        <i class="write icon"></i>
+                    </g:link>
+                </g:else>
+            </g:if>
+            <g:if test="${editable}">
+                <g:link class="ui icon negative button">
+                    <i class="trash alternate icon"></i>
+                </g:link>
+            </g:if>
         </td>
 
     </tr>
 </g:each>
+
+<script>
+    $('#costTable .x .button.positive').on('click', function(e) {
+        e.preventDefault()
+
+        var tmplId = 'ajaxModal_' + $(this).data('ajaxid')
+        $.ajax({
+            url: $(this).attr('href'),
+            data: 'tmplId=' + tmplId
+        }).done( function(data) {
+            $('#dynamicModalContainer').empty().append(data)
+
+            $('#dynamicModalContainer .modal').modal({
+                onVisible: function () {
+                    r2d2.initDynamicSemuiStuff('#' + tmplId);
+                    r2d2.initDynamicXEditableStuff('#' + tmplId);
+
+                    ajaxPostFunc()
+                },
+                detachable: true,
+                closable: true,
+                transition: 'fade up',
+                onApprove : function() {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        })
+    })
+</script>
 <!-- _filter_data.gsp -->

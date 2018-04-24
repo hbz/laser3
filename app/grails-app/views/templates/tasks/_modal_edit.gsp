@@ -114,8 +114,6 @@
 
     </g:form>
 
-    <g:form class="ui form" id="delete_task" url="[controller:'task',action:'delete',id:taskInstance?.id]" method="post">
-    </g:form>
 
     <script type="text/javascript">
         $("#radioresponsibleOrgEdit").change(function(){
@@ -131,5 +129,35 @@
         };
 
     </script>
+    <script type="text/javascript">
+        $('#edit_task')
+            .form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            title: {
+                identifier  : 'title',
+                rules: [
+                    {
+                        type   : 'empty',
+                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                },
+
+                endDate: {
+                    identifier  : 'endDate',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                        }
+                    ]
+                }
+             }
+        });
+
+
+</script>
 </semui:modal>
 

@@ -7,15 +7,12 @@
 
 </head>
 <body>
-%{--<r:require modules="finance" />--}%
 
-%{--Run once data... can be reused for edit based functionality too. Pointless sending back this static data every request --}%
-<g:set var="costItemStatus"   scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemStatus')}"/>
-<g:set var="costItemCategory" scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemCategory')}"/>
-<g:set var="costItemElement"  scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemElement')}"/>
-<g:set var="taxType"          scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','TaxType')}"/>
-<g:set var="yn"               scope="page" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','YN')}"/>
-<g:set var="currency"         scope="page" value="${com.k_int.kbplus.CostItem.orderedCurrency()}"/>
+    <g:render template="vars" /><%-- setting vars --%>
+
+<%--
+<g:set var="filterMode" value="ON" />
+--%>
 
 <semui:breadcrumbs>
     <g:if test="${inSubMode}">
@@ -63,16 +60,12 @@
 
 <div class="ui grid">
     <div class="column">
-        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentDialog" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
+        <button class="ui button" type="submit" data-semui="modal" title="${g.message(code: 'financials.recent.title')}" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
 
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
-            <button class="ui button pull-right" type="submit" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_create_modal" id="addNew">${message(code:'financials.addNewCost')}</button>
-        </g:if>
-        <g:if test="${editable}">
-            <div id="CreateTemplateWrapper" class="wrapper"><!-- modal dialog -->
-                <g:render template="createModal" />
-            </div>
+            <button class="ui button pull-right" data-semui="modal" title="${g.message(code: 'financials.addNew.title')}" href="#costItem_createModal" id="addNew">${message(code:'financials.addNewCost')}</button>
+            <g:render template="ajaxModal" model="['tmplId':'costItem_createModal']"/>
         </g:if>
     </div>
 </div>
@@ -81,18 +74,7 @@
         <span>Loading...<img src="${resource(dir: 'images', file: 'loading.gif')}" /></span>
     </div>
 
-    <div id="recentModalWrapper" class="wrapper"><!-- modal dialog -->
-        <div class="ui modal hide" id="recentDialog">
-            <div class="modal-header">
-                <h3 class="ui header">Recently Updated Cost Items</h3>
-            </div>
-            <div class="modal-body">
-                <div id="recent">
-                    <g:render template="recentlyAdded" />
-                </div>
-            </div>
-        </div>
-    </div>
+    <g:render template="recentlyAddedModal" />
 
     <div class="ui grid">
         <div class="sixteen wide column">
@@ -162,7 +144,7 @@
                 ajaxFinancePresent:"<g:createLink controller='finance' action='newCostItemsPresent'/>",
                 ajaxFinanceRefData:"<g:createLink controller='finance' action='financialRef'/>",
                 ajaxFinanceCodeDel:"<g:createLink controller='finance' action='removeBC'/>",
-                ajaxFinanceExport:"<g:createLink controller='finance' action='financialsExport'></g:createLink>",
+                ajaxFinanceExport:"<g:createLink controller='finance' action='financialsExport'/>",
                 ajaxFinanceCreateCode:"<g:createLink controller='finance' action='createCode'/>"
             },
             misc: {

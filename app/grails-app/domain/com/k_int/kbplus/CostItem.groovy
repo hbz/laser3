@@ -1,10 +1,11 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.domain.BaseDomainComponent
 
 import javax.persistence.Transient
 
-class CostItem {
+class CostItem extends BaseDomainComponent {
 
     Org owner
     Subscription sub
@@ -25,6 +26,7 @@ class CostItem {
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
 
+    String costTitle
     String costDescription
     String reference
     Date datePaid
@@ -45,6 +47,7 @@ class CostItem {
 
     static mapping = {
         id              column: 'ci_id'
+        globalUID       column:'ci_guid'
         version         column: 'ci_version'
         sub             column: 'ci_sub_fk'
         owner           column: 'ci_owner'
@@ -55,6 +58,7 @@ class CostItem {
         costItemStatus  column: 'ci_status_rv_fk'
         billingCurrency column: 'ci_billing_currency_rv_fk'
         costDescription column: 'ci_cost_description', type:'text'
+        costTitle       column: 'ci_cost_title'
         costInBillingCurrency column: 'ci_cost_in_billing_currency'
         datePaid            column: 'ci_date_paid'
         costInLocalCurrency column: 'ci_cost_in_local_currency'
@@ -70,6 +74,7 @@ class CostItem {
     }
 
     static constraints = {
+        globalUID       (nullable:true, blank:false, unique:true, maxSize:255)
         owner           (nullable: false, blank: false)
         sub             (nullable: true, blank: false)
         subPkg          (nullable: true, blank: false)
@@ -78,6 +83,7 @@ class CostItem {
         invoice         (nullable: true, blank: false)
         billingCurrency (nullable: true, blank: false)
         costDescription (nullable: true, blank: false)
+        costTitle       (nullable: true, blank: false)
         costInBillingCurrency(nullable: true, blank: false)
         datePaid        (nullable: true, blank: false)
         costInLocalCurrency(nullable: true, blank: false)
@@ -95,6 +101,8 @@ class CostItem {
     }
 
     def beforeInsert() {
+        super.beforeInsert()
+
         def user = springSecurityService.getCurrentUser()
         if (user) {
             createdBy     = user
@@ -104,6 +112,8 @@ class CostItem {
     }
 
     def beforeUpdate() {
+        super.beforeUpdate()
+
         def user = springSecurityService.getCurrentUser()
         if (user)
             lastUpdatedBy = user
