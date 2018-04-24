@@ -36,7 +36,7 @@
 
                 <g:annotatedLabel owner="${subscriptionInstance}" property="entitlements">
                     <g:if test="${entitlements?.size() > 0}">
-                      Entitlements ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(entitlements?.size())),num_sub_rows])}. (
+                        ${message(code:'subscription.entitlement.plural')} ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(entitlements?.size())),num_sub_rows])}. (
                         <g:if test="${params.mode=='advanced'}">
                           ${message(code:'subscription.details.advanced.note', default:'Includes Expected or Expired entitlements, switch to')}
                           <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link>
@@ -114,16 +114,19 @@
                   <th rowspan="2"></th>
                   <th rowspan="2">#</th>
                   <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                  <th rowspan="2">${message(code:'subscription.details.ent_medium', default:'Entitlement Medium (P/E)')}</th>
+                  <th rowspan="2">${message(code:'subscription.details.print-electronic')}</th>
                   <g:sortableColumn params="${params}" property="startDate" title="${message(code:'subscription.details.startDate', default:'Earliest date')}" />
+              <% /*
                   <g:sortableColumn params="${params}" property="core_status" title="${message(code:'subscription.details.core_status', default:'Core Status')}" />
+              */ %>
                   <th rowspan="2">${message(code:'default.actions.label', default:'Actions')}</th>
                 </tr>
 
                 <tr>
+
                   <th>${message(code:'subscription.details.access_dates', default:'Access Dates')}</th>
                   <g:sortableColumn params="${params}" property="endDate" title="${message(code:'subscription.details.endDate', default:'Latest Date')}" />
-                  <th> ${message(code:'subscription.details.core_medium', default:'Core Medium')} </th>
+                  <% /*<th> ${message(code:'subscription.details.core_medium', default:'Core Medium')} </th>*/ %>
                 </tr>
 
                 <tr>
@@ -151,9 +154,11 @@
                       <th> <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>  <br/>
                            <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
                       </th>
+                        <% /*
                       <th>
                         <g:simpleHiddenRefdata id="bulk_coreStatus" name="bulk_coreStatus" refdataCategory="CoreStatus"/> <br/>
                       </th>
+                      */ %>
                     </g:if>
                     <g:else>
                         <th colspan="7">  </th>
@@ -205,12 +210,14 @@
                     <semui:xEditable owner="${ie}" type="date" field="startDate" /><br/>
                     <semui:xEditable owner="${ie}" type="date" field="endDate" />
                 </td>
+                <% /*
                 <td>
                 <g:render template="/templates/coreStatus" model="${['issueEntitlement': ie, 'date': params.asAt]}"/>
                <br/>
 
                <semui:xEditableRefData owner="${ie}" field="coreStatus" config='CoreStatus'/>
                 </td>
+                */ %>
                 <td class="x">
                   <g:if test="${editable}">
                       <g:link action="removeEntitlement" class="ui icon negative button" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">
