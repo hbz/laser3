@@ -198,6 +198,36 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 
 /*******************************
+        LATO Local Font
+*******************************/
+
+@font-face {
+  font-family: 'Lato';
+  src: url('./../themes/laser/assets/fonts/LatoLatin-Regular.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('./../themes/laser/assets/fonts/LatoLatin-Bold.woff') format('woff');
+  font-style: normal;
+  font-weight: 700;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('./../themes/laser/assets/fonts/LatoLatin-Italic.woff') format('woff');
+  font-style: italic;
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('./../themes/laser/assets/fonts/LatoLatin-BoldItalic.woff') format('woff');
+  font-style: italic;
+  font-weight: 700;
+}
+
+
+/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 
