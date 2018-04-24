@@ -24,7 +24,7 @@
                         <dt><g:message code="contact.content.label" default="Content" /></dt>
                         <dd><semui:xEditable owner="${contactInstance}" field="content" /></dd>
 
-                        <dt><g:message code="contact.type.label" default="Type" /></dt>
+                        <dt>${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}</dt>
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="ContactType" /></dd>
 
                         <g:if test="${contactInstance?.prs}">

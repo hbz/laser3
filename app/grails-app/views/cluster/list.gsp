@@ -24,7 +24,7 @@
 						
 							<g:sortableColumn property="name" title="${message(code: 'cluster.name.label', default: 'Name')}" />
 						
-							<th class="header"><g:message code="cluster.type.label" default="Type" /></th>
+							<th class="header">${com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Type').getI10n('desc')}</th>
 						
 							<th></th>
 						</tr>
