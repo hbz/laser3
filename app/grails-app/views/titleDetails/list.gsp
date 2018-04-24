@@ -65,7 +65,10 @@
                       <g:each in="${hits}" var="hit">
                         <tr>
                           <td>
-                            <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link>
+                            <div class="la-flexbox">
+                              <semui:listIcon type="${hit.getSource().typTitle}"/>
+                              <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link>
+                            </div>
                           </td>
                           <td>
                             ${hit.getSource().typTitle}
