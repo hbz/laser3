@@ -40,7 +40,7 @@
 							<dt><g:message code="address.country.label" default="Country" /></dt>
 							<dd><semui:xEditableRefData owner="${addressInstance}" field="country" config="Country" /></dd>
 
-							<dt><g:message code="address.type.label" default="Type" /></dt>
+							<dt>${com.k_int.kbplus.RefdataCategory.findByDesc('AddressType').getI10n('desc')}</dt>
 							<dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="AddressType" /></dd>
 
 						<g:if test="${addressInstance?.prs}">

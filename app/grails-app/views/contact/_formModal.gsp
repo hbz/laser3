@@ -22,7 +22,7 @@
 
                 <div class="field eight wide fieldcontain ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
                     <label for="type">
-                        <g:message code="contact.type.label" default="Type" />
+                        ${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="type" name="type.id"
                                   from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"

@@ -31,10 +31,10 @@
                     <dt><g:message code="person.gender.label" default="Gender" /></dt>
                     <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="Gender" /></dd>
 
-                    <dt><g:message code="person.roleType.label" default="Person Position" /></dt>
+                    <dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}</dt>
                     <dd><semui:xEditableRefData owner="${personInstance}" field="roleType" config="Person Position" /></dd>
 
-                    <dt><g:message code="person.contactType.label" default="Person Contact Type" /></dt>
+                    <dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}</dt>
                     <dd><semui:xEditableRefData owner="${personInstance}" field="contactType" config="Person Contact Type" /></dd>
 
                     <dt><g:message code="person.contacts.label" default="Contacts" /></dt>

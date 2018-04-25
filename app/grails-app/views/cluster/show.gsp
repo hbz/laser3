@@ -39,7 +39,7 @@
 					</g:if>
 
 					<g:if test="${clusterInstance?.type}">
-						<dt><g:message code="cluster.type.label" default="Type" /></dt>
+						<dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Type').getI10n('desc')}</dt>
 						<dd>${clusterInstance?.type?.encodeAsHTML()}</dd>
 					</g:if>
 				

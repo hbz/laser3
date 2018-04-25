@@ -115,6 +115,7 @@
 
     </g:form>
 
+
     <script type="text/javascript">
         var ajaxPostFunc = function () {
 
@@ -131,6 +132,33 @@
             } else {
                 $("#responsibleUserEdit").hide();
             }
+
+            $('#edit_task')
+                .form({
+                    on: 'blur',
+                    inline: true,
+                    fields: {
+                        title: {
+                            identifier: 'title',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                }
+                            ]
+                        },
+
+                        endDate: {
+                            identifier: 'endDate',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                }
+                            ]
+                        }
+                    }
+                });
         }
     </script>
 </semui:modal>
