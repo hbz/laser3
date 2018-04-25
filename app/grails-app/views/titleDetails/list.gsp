@@ -69,7 +69,7 @@
                             <strong><g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></strong>
                           </td>
                           <td>
-                            ${hit.getSource().typTitle}
+                            ${com.k_int.kbplus.RefdataValue.getByValueAndCategory(hit.getSource().typTitle, 'Title Type').getI10n('value')}
                           </td>
                           <td>
                             ${hit.getSource().publisher?:''}
