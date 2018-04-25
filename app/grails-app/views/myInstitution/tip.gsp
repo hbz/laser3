@@ -7,6 +7,12 @@
 
   <body>
 
+  <semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <semui:crumb  class="active"      text="${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}"/>
+
+  </semui:breadcrumbs>
 
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link>

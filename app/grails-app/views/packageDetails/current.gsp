@@ -156,15 +156,16 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td>
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
-                   ${t.title.title}
-                   <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
-                   <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
+                    <semui:listIcon type="${t.title.type.getI10n('value')}"/>
+                   <strong><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
+                    <br>
+                   <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span><br/>
                     <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>
                    <g:if test="${params.mode=='advanced'}">
                      <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
                      <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
-                     <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
+                     <br/> ${message(code:'tipp.accessEndDate', defauKlt:'Access End')}: <semui:xEditable owKner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
