@@ -34,6 +34,7 @@
                                           optionKey="id"
                                           optionValue="value"
                                           value="${personInstance?.contactType?.id}"
+                                          noSelection="['': '']"
                                           onchange="this.form.submit();"/></g:form></dd></dl>
 
                     <dl><dt id="person_last_name"><g:message code="person.last_name.label" default="Lastname"/></dt>

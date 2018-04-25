@@ -79,7 +79,8 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.gender?.id}"
-                                  noSelection="['': '']"/>
+                                  noSelection="['': '']"
+                    />
                 </div>
             </div>
         </div>
@@ -241,7 +242,9 @@
             {
                 $("label[for='last_name']").text("Benenner");
                 $("#roleType").hide();
+                $("#roleType").prop( "disabled", true );
                 $("#person_gender").hide();
+                $("#gender").prop( "disabled", true );
                 $("#person_first_name").hide();
                 $("#person_middle_name").hide();
             }
@@ -255,15 +258,18 @@
 
 
                 $("#person_gender").hide();
+                $("#gender").prop( "disabled", true );
 
                 $("#first_name").val('');
                 $("#person_first_name").hide();
+
 
                 $("#middle_name").val('');
                 $("#person_middle_name").hide();
 
 
                 $("#roleType").hide();
+                $("#roleType").prop( "disabled", true );
             }
             else
                 {
