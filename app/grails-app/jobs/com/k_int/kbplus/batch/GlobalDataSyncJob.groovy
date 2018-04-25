@@ -27,8 +27,8 @@ class GlobalDataSyncJob {
       log.debug("This server is marked as KBPlus master. Running GlobalDataSyncJob batch job");
       globalSourceSyncService.runAllActiveSyncTasks()
     }
-    else if ( grailsApplication.config.KBPlusMaster == true && grailsApplication.config.globalDataSyncJobActiv == true ) {
-      log.debug("This server is marked as KBPlus master. Running GlobalDataSyncJob batch job");
+    else if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.globalDataSyncJobActiv == true ) {
+      log.debug("This server is marked as hbz Master. Running GlobalDataSyncJob batch job");
       globalSourceSyncService.runAllActiveSyncTasks()
     }
     else {
