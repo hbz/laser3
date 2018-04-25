@@ -11,7 +11,9 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 //localauth = true
 // pilot version
 // access via grailsApplication.config.pilotDisableFlag
-pilotDisableFlag = false
+// pilotDisableFlag = false
+// access via grailsApplication.config.showDebugInfo
+// showDebugInfo = true
 
 // STATS-CONFIG
 //statsApiUrl = 'http://statsServer'
