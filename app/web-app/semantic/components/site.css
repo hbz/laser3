@@ -435,6 +435,11 @@ aside.ui.accordion .title:not(.ui) {
   display: -ms-flexbox;
   display: flex;
 }
+.la-inline-flexbox {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
 .la-list-icon:before {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;

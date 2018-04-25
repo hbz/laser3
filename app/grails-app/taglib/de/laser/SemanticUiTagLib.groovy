@@ -143,16 +143,24 @@ class SemanticUiTagLib {
 
         switch(attrs.type) {
             case 'Journal':
-                out << '<i class="icon newspaper outline la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code:'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny">'
+                out << '    <i class="icon newspaper outline la-list-icon"></i>'
+                out << '</div>'
                 break
             case 'Database':
-                out << '<i class="icon database outline la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code:'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny">'
+                out << '    <i class="icon database outline la-list-icon"></i>'
+                out << '</div>'
                 break
             case 'EBook':
-                out << '<i class="icon tablet alternate outline la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code:'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny">'
+                out << '    <i class="icon tablet alternate outline la-list-icon"></i>'
+                out << '</div>'
                 break
             default:
-                out << '<i class="icon book la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code:'spotlight.title') + '" data-position="left center" data-variation="tiny">'
+                out << '    <i class="icon book la-list-icon"></i>'
+                out << '</div>'
                 break
         }
     }
