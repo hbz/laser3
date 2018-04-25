@@ -174,10 +174,13 @@
                 <td><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${ie.id}" class="bulkcheck"/></g:if></td>
                 <td>${counter++}</td>
                 <td>
-                  <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link>
+                    <semui:listIcon type="${ie.tipp?.title.type.getI10n('value')}"/>
+                    <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link><br>
+                    <g:if test="${ie.tipp?.hostPlatformURL}">
 
-                  <g:if test="${ie.tipp?.hostPlatformURL}">( <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
-                            <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL} (${message(code:'default.new_window', default:'In new window')})" target="_blank"><i class="icon-share-alt"></i></a>)</g:if> <br/>
+                        <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}" target="_blank">${message(code:'tipp.hostPlatformURL', default:'Host Link')}  <i class="ui icon share square"></i></a>
+
+                    </g:if> <br/>
                   <g:each in="${ie?.tipp?.title?.ids}" var="title_id">
                     <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
                       ${title_id.identifier.ns.ns}:<strong>${title_id.identifier.value}</strong>
@@ -187,7 +190,6 @@
 <!--                  ISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('ISSN') ?: ' - '}</strong>,
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
                    ${message(code:'default.access.label', default:'Access')}: ${ie.availabilityStatus?.getI10n('value')}<br/>
-                    ${message(code:'title.type.label')}: ${ie.tipp?.title.type.getI10n('value')}<br/>
                    ${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}<br/>
                    ${message(code:'tipp.platform', default:'Platform')}: ${ie.tipp?.platform.name ?: message(code:'default.unknown')}
                    <g:if test="${ie.availabilityStatus?.value=='Expected'}">

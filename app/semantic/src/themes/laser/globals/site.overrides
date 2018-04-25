@@ -229,6 +229,9 @@ aside.ui.accordion .title:not(.ui) {
 .la-flexbox{
     display:flex;
 }
+.la-inline-flexbox{
+    display:inline-flex;
+}
 .la-list-icon{
     &:before{
         display:inline-flex;

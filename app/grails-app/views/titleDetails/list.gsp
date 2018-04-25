@@ -65,7 +65,8 @@
                       <g:each in="${hits}" var="hit">
                         <tr>
                           <td>
-                            <g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link>
+                            <semui:listIcon type="${hit.getSource().typTitle}"/>
+                            <strong><g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></strong>
                           </td>
                           <td>
                             ${hit.getSource().typTitle}
