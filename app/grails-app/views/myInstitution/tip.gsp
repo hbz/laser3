@@ -9,22 +9,9 @@
 
   <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <semui:crumb controller="myInstitution" action="tipview" text="${message(code:'title.plural', default:'Titles')}" />
     <semui:crumb  class="active"      text="${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}"/>
-
   </semui:breadcrumbs>
-
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link>
-          <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitution" action="dashboard">${institution.name} - ${message(code:'menu.institutions.dash', default:'Dashboard')}</g:link>
-          <span class="divider">/</span>  </li>
-        <li> <g:link controller="myInstitution" action="tipview"> ${message(code:'title.plural', default:'Titles')} </g:link>
-          <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitution" action="tip"> ${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name} </g:link>
-           </li>
-
-      </ul>
 
         <semui:messages data="${flash}" />
 
