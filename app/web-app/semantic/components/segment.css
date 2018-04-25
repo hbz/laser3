@@ -413,7 +413,7 @@
 ---------------*/
 
 .ui.disabled.segment {
-  opacity: 0.45;
+  opacity: 0.1;
   color: rgba(40, 40, 40, 0.3);
 }
 

@@ -1023,6 +1023,12 @@ aside.ui.accordion .title:not(.ui) {
   display: flex;
 }
 
+.la-inline-flexbox {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
 .la-list-icon:before {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
@@ -1476,7 +1482,7 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
 .ui.disabled.button:hover,
 .ui.disabled.active.button {
   cursor: default;
-  opacity: 0.45 !important;
+  opacity: 0.1 !important;
   background-image: none !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -8063,7 +8069,7 @@ i.emphasized.icon {
 }
 
 i.disabled.icon {
-  opacity: 0.45 !important;
+  opacity: 0.1 !important;
 }
 
 /*******************************
@@ -14060,7 +14066,7 @@ img.ui.bordered.image {
 
 .ui.disabled.input,
 .ui.input:not(.disabled) input[disabled] {
-  opacity: 0.45;
+  opacity: 0.1;
 }
 
 .ui.disabled.input > input,
@@ -18333,7 +18339,7 @@ ol.ui.horizontal.list li:before,
 ---------------*/
 
 .ui.disabled.segment {
-  opacity: 0.45;
+  opacity: 0.1;
   color: rgba(40, 40, 40, 0.3);
 }
 
@@ -20237,12 +20243,12 @@ ol.ui.horizontal.list li:before,
 .ui.form .disabled.field,
 .ui.form .field :disabled {
   pointer-events: none;
-  opacity: 0.45;
+  opacity: 0.1;
 }
 
 .ui.form .field.disabled > label,
 .ui.form .fields.disabled > label {
-  opacity: 0.45;
+  opacity: 0.1;
 }
 
 .ui.form .field.disabled :disabled {
@@ -32656,7 +32662,7 @@ select.ui.dropdown {
 
 .ui.active.search.dropdown input.search:focus + .text .icon,
 .ui.active.search.dropdown input.search:focus + .text .flag {
-  opacity: 0.45;
+  opacity: 0.1;
 }
 
 .ui.active.search.dropdown input.search:focus + .text {
@@ -33043,7 +33049,7 @@ select.ui.dropdown {
 .ui.dropdown .menu > .disabled.item {
   cursor: default;
   pointer-events: none;
-  opacity: 0.45;
+  opacity: 0.1;
 }
 
 /*******************************
