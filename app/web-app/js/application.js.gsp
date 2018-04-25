@@ -211,7 +211,6 @@ r2d2 = {
             ctxSel = 'body'
         }
 
-        console.log ( $(ctxSel + ' .ui.dropdown') )
         // close semui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();

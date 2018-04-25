@@ -20,7 +20,7 @@ class PersonController {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
@@ -56,7 +56,7 @@ class PersonController {
             addPersonRoles(personInstance)
             
 			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
-            redirect(url: request.getHeader('referer'))
+            redirect action: 'show', id: personInstance.id
 			break
 		}
     }
@@ -66,7 +66,8 @@ class PersonController {
         def personInstance = Person.get(params.id)
         if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect action: 'list'
+            //redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
 
@@ -84,7 +85,8 @@ class PersonController {
 
         if (! personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect action: 'list'
+            //redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
         if (! addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
@@ -112,7 +114,7 @@ class PersonController {
 	                personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
 	                          [message(code: 'person.label', default: 'Person')] as Object[],
 	                          "Another user has updated this Person while you were editing")
-	                render view: 'edit', model: [personInstance: personInstance, userMemberships: userMemberships]
+	                render view: 'show', model: [personInstance: personInstance, userMemberships: userMemberships]
 	                return
 	            }
 	        }
@@ -120,7 +122,7 @@ class PersonController {
 	        personInstance.properties = params
 
 	        if (! personInstance.save(flush: true)) {
-	            render view: 'edit', model: [personInstance: personInstance, userMemberships: userMemberships]
+	            render view: 'show', model: [personInstance: personInstance, userMemberships: userMemberships]
 	            return
 	        }
             // processing dynamic form data
@@ -144,7 +146,8 @@ class PersonController {
         def personInstance = Person.get(params.id)
         if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect action: 'list'
+            //redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
         if (! addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
@@ -155,7 +158,8 @@ class PersonController {
         try {
             personInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect action: 'list'
+            //redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])

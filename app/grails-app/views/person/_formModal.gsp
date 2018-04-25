@@ -5,23 +5,34 @@
 
     <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create']" method="POST">
 
+
         <div class="field">
             <div class="two fields">
 
-                <div class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
-                    <label for="first_name">
-                        <g:message code="person.first_name.label" default="Firstname" />
+                <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
+                    <label for="contactType">
+                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}
+
+
                     </label>
-                    <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
+                    <laser:select class="ui dropdown" id="contactType" name="contactType"
+                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${personInstance?.contactType?.id}"
+                                  noSelection="['': '']"/>
                 </div>
-
-                <div class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
-                    <label for="middle_name">
-                        <g:message code="person.middle_name.label" default="Middlename" />
+                <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
+                    <label for="roleType">
+                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
 
                     </label>
-                    <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
-
+                    <laser:select class="ui dropdown" id="roleType" name="roleType"
+                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Position')}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${personInstance?.roleType?.id}"
+                                  noSelection="['': '']"/>
                 </div>
             </div>
         </div>
@@ -37,7 +48,29 @@
 
                 </div>
 
-                <div class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
+                <div id="person_middle_name" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+                    <label for="middle_name">
+                        <g:message code="person.middle_name.label" default="Middlename" />
+
+                    </label>
+                    <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="two fields">
+
+                <div id="person_first_name" class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
+                    <label for="first_name">
+                        <g:message code="person.first_name.label" default="Firstname" />
+                    </label>
+                    <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
+                </div>
+
+                <div id="person_gender" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
                     <label for="gender">
                         <g:message code="person.gender.label" default="Gender" />
                     </label>
@@ -51,37 +84,6 @@
             </div>
         </div>
 
-        <div class="field">
-            <div class="two fields">
-
-                <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
-                    <label for="roleType">
-                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
-
-                    </label>
-                    <laser:select class="ui dropdown" id="roleType" name="roleType"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Position')}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${personInstance?.roleType?.id}"
-                                  noSelection="['': '']"/>
-                </div>
-
-                <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
-                    <label for="contactType">
-                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}
-
-
-                    </label>
-                    <laser:select class="ui dropdown" id="contactType" name="contactType"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${personInstance?.contactType?.id}"
-                                  noSelection="['': '']"/>
-                </div>
-            </div>
-        </div>
 
         <g:if test="${cService.getOrg()}">
             <input type="hidden" name="tenant.id" value="${cService.getOrg().id}" />
@@ -233,7 +235,46 @@
                 }
              }
         });
+        var x = $("#contactType option:selected").text();
+        var y = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
+        if(x == y)
+            {
+                $("label[for='last_name']").text("Benenner");
+                $("#roleType").hide();
+                $("#person_gender").hide();
+                $("#person_first_name").hide();
+                $("#person_middle_name").hide();
+            }
+        $("#contactType").on('change', function() {
+             x = $("#contactType option:selected").text();
+             y = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
+            if(x == y)
+            {
 
+                $("label[for='last_name']").text("Benenner");
+
+
+                $("#person_gender").hide();
+
+                $("#first_name").val('');
+                $("#person_first_name").hide();
+
+                $("#middle_name").val('');
+                $("#person_middle_name").hide();
+
+
+                $("#roleType").hide();
+            }
+            else
+                {
+                        $("label[for='last_name']").text("Nachname");
+                        $("#roleType").show();
+                        $("#person_gender").show();
+                        $("#person_first_name").show();
+                        $("#person_middle_name").show();
+                }
+            }
+        );
 
     </r:script>
 
