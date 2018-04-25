@@ -5,6 +5,7 @@ import org.hibernate.criterion.CriteriaSpecification
 class FactService {
 
   def sessionFactory
+  def contextService
 
   private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
       'select sum(factValue) ' +
@@ -394,6 +395,41 @@ class FactService {
     }
 
     result
+  }
+
+  def institutionsWithRequestorIDAndAPIKey()
+  {
+    def hql = "select o from Org as o" +
+        " join o.customProperties as cp" +
+        " where cp.type.name = 'RequestorID'" +
+        " and exists (select 1 from o.customProperties as icp where icp.type.name = 'API Key')"
+    return Org.executeQuery(hql)
+  }
+
+  def providersWithStatssid()
+  {
+    def hql = "select provider from Org as provider" +
+        " where exists (select 1 from provider.ids as oid where oid.identifier.ns.ns = 'statssid')"
+    return Org.executeQuery(hql)
+  }
+
+  def getFactInstitutionList()
+  {
+    def institutions = Fact.withCriteria {
+      projections {
+        distinct("inst")
+      }
+    }
+    institutions
+  }
+
+  def getFactProviderList()
+  {
+    Fact.withCriteria {
+      projections {
+        distinct("supplier")
+      }
+    }
   }
 
 }

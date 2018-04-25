@@ -6,11 +6,12 @@ import de.laser.domain.StatsTripleCursor
 import groovyx.net.http.*
 import java.text.SimpleDateFormat
 import static groovyx.net.http.ContentType.*
+import groovyx.gpars.GParsPool
 
 
 class StatsSyncService {
 
-    static final FIXED_THREAD_POOL_SIZE = grails.util.Holders.config.statsThreadPoolSize ?: 3
+    static final THREAD_POOL_SIZE = 4
     static final COUNTER_REPORT_VERSION = 4
     static final SYNC_STATS_FROM = '2012-01'
 
@@ -33,16 +34,6 @@ class StatsSyncService {
     static boolean running = false
     static transactional = false
 
-    // Distinct list of titles ids, the content provider, subscribing organisation and the zdbid
-    private static final String TITLE_INSTANCES_FOR_USAGE_SYNC_HQL_QUERY = "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
-            "join ie.tipp.pkg.orgs as po " +
-            "join ie.subscription.orgRelations as orgrel "+
-            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns = 'zdb' "+
-            "and po.roleType.value='Content Provider' "+
-            "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
-            "and orgrel.roleType.value = 'Subscriber' " +
-            "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'RequestorID' ) "
-
     def initSync() {
         log.debug("StatsSyncService::doSync ${this.hashCode()}");
         if ( this.running == true ) {
@@ -50,7 +41,7 @@ class StatsSyncService {
             return
         }
         log.debug("Mark StatsSyncTask as running...");
-        this.running = true
+        running = true
 
         submitCount=0
         completedCount=0
@@ -63,50 +54,55 @@ class StatsSyncService {
         activityHistogram = [:]
     }
 
-    def synchronized doSync() {
+    private String getTitleInstancesForUsageQuery()
+    {
+        // Distinct list of titles ids, the content provider, subscribing organisation and the zdbid
+       return "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
+            "join ie.tipp.pkg.orgs as po " +
+            "join ie.subscription.orgRelations as orgrel "+
+            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns = 'zdb' "+
+            "and po.roleType.value='Content Provider' "+
+            "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
+            "and orgrel.roleType.value = 'Subscriber' " +
+            "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'RequestorID' ) "
+    }
+
+    def doSync() {
         initSync()
         executorService.submit({ internalDoSync() } as java.util.concurrent.Callable)
     }
 
     def internalDoSync() {
-
-        def ftp = null
         try {
             log.debug("create thread pool")
 
             def statsApi = grailsApplication.config.statsApiUrl
-            if ( ( statsApi == null ) || ( statsApi == '' ) ) {
+            if ((statsApi == null) || (statsApi == '')) {
                 log.error("Stats API URL not set in config")
                 return
             }
             def mostRecentClosedPeriod = getMostRecentClosedPeriod()
             def start_time = System.currentTimeMillis()
-            log.debug("STATS Sync Task - Running query ${TITLE_INSTANCES_FOR_USAGE_SYNC_HQL_QUERY}")
-            def titleList = IssueEntitlement.executeQuery(TITLE_INSTANCES_FOR_USAGE_SYNC_HQL_QUERY)
+            log.debug("STATS Sync Task - Running query ${getTitleInstancesForUsageQuery()}")
+            def titleList = IssueEntitlement.executeQuery(getTitleInstancesForUsageQuery())
             queryTime = System.currentTimeMillis() - start_time
 
-            ftp = java.util.concurrent.Executors.newFixedThreadPool(FIXED_THREAD_POOL_SIZE)
-            titleList.each { to ->
-                ftp.submit( { ftp.submit processListItem(to, mostRecentClosedPeriod) } ) as java.util.concurrent.Callable
+            GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
+                titleList.anyParallel { to ->
+                    processListItem(to, mostRecentClosedPeriod)
+                    if (!running) {
+                        return true  // break closure
+                    }
+                }
             }
         }
         catch ( Exception e ) {
             log.error("Error", e)
         }
         finally {
-            log.debug("internalDoSync complete");
-            if ( ftp != null ) {
-                ftp.shutdown()
-                if ( ftp.awaitTermination(6,java.util.concurrent.TimeUnit.HOURS) ) {
-                    log.debug("FTP cleanly terminated")
-                }
-                else {
-                    log.debug("FTP still running.... Calling shutdown now to terminate any outstanding requests")
-                    ftp.shutdownNow()
-                }
-            }
+            log.debug("internalDoSync complete")
             log.debug("Mark StatsSyncTask as not running...")
-            this.running = false
+            running = false
         }
     }
 
@@ -309,5 +305,6 @@ class StatsSyncService {
 
         syncElapsed = System.currentTimeMillis() - syncStartTime
     }
+
 }
 
