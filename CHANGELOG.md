@@ -1,4 +1,8 @@
 
+0.4.4
+
+- changed GlobalDataSyncJob config 
+
 0.4.3
 
 - added rudimentary consortia member management
