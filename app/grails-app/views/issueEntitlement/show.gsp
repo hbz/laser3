@@ -84,210 +84,210 @@
                     <dt>${message(code:'subscription.details.core_medium', default:'Core Medium')}</dt>
                     <dd><semui:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus" config='CoreStatus'/> </dd>
                 </g:if>
-              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>                 
-              <dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
-              <dd> 
-                <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
-              </dd>
+              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
+<%--<dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
+<dd>
+  <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
+</dd> --%>
 
-                <g:if test="${issueEntitlementInstance?.tipp.hostPlatformURL}">
-                    <dt>${message(code:'tipp.hostPlatformURL', default:'Title URL')}</dt>
-                    <dd> <a href="${issueEntitlementInstance.tipp?.hostPlatformURL}" TITLE="${issueEntitlementInstance.tipp?.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a></dd>
-                </g:if>
-            </dl>
+  <g:if test="${issueEntitlementInstance?.tipp.hostPlatformURL}">
+      <dt>${message(code:'tipp.hostPlatformURL', default:'Title URL')}</dt>
+      <dd> <a href="${issueEntitlementInstance.tipp?.hostPlatformURL}" TITLE="${issueEntitlementInstance.tipp?.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a></dd>
+  </g:if>
+</dl>
 
-            <br/>
-            
-            <h6 class="ui header"><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
+<br/>
 
-            <table class="ui celled la-table table">
-                <thead>
-                    <tr>
-                        <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
-                        <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startDate" type="date"/></td>
-                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startVolume"/></td>
-                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="startIssue"/></td>
-                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endDate" type="date"/></td>
-                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endVolume"/></td>
-                      <td><semui:xEditable owner="${issueEntitlementInstance}" field="endIssue"/></td>
-                    </tr>
-                </tbody>
-            </table>
+<h6 class="ui header"><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
 
-            <dl>
-                <dt>${message(code:'tipp.embargo', default:'Embargo')}</dt>
-                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="embargo"/></dd>
-            </dl>
+<table class="ui celled la-table table">
+  <thead>
+      <tr>
+          <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
+          <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><semui:xEditable owner="${issueEntitlementInstance}" field="startDate" type="date"/></td>
+        <td><semui:xEditable owner="${issueEntitlementInstance}" field="startVolume"/></td>
+        <td><semui:xEditable owner="${issueEntitlementInstance}" field="startIssue"/></td>
+        <td><semui:xEditable owner="${issueEntitlementInstance}" field="endDate" type="date"/></td>
+        <td><semui:xEditable owner="${issueEntitlementInstance}" field="endVolume"/></td>
+        <td><semui:xEditable owner="${issueEntitlementInstance}" field="endIssue"/></td>
+      </tr>
+  </tbody>
+</table>
 
-            <dl>
-                <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
-                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="coverageDepth"/></dd>
-            </dl>
+<dl>
+  <dt>${message(code:'tipp.embargo', default:'Embargo')}</dt>
+  <dd><semui:xEditable owner="${issueEntitlementInstance}" field="embargo"/></dd>
+</dl>
 
-            <dl>
-                <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
-                <dd><semui:xEditable owner="${issueEntitlementInstance}" field="coverageNote"/></dd>
-            </dl>
+<dl>
+  <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
+  <dd><semui:xEditable owner="${issueEntitlementInstance}" field="coverageDepth"/></dd>
+</dl>
 
-            <br/>
-            
-            <h6 class="ui header"><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
+<dl>
+  <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
+  <dd><semui:xEditable owner="${issueEntitlementInstance}" field="coverageNote"/></dd>
+</dl>
 
-            <table class="ui celled la-table table">
-                <thead>
-                    <tr>
-                        <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
-                        <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                      <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.startDate}"/></td>
-                      <td>${issueEntitlementInstance.tipp.startVolume}</td>
-                      <td>${issueEntitlementInstance.tipp.startIssue}</td>
-                      <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.endDate}"/></td>
-                      <td>${issueEntitlementInstance.tipp.endVolume}</td>
-                      <td>${issueEntitlementInstance.tipp.endIssue}</td>
-                    </tr>
-                </tbody>
-            </table>
+<br/>
 
-            <dl>
-                <dt>${message(code:'tipp.embargo', default:'Embargo')} (tipp)</dt>
-                <dd>${issueEntitlementInstance.tipp.embargo}</dd>
-            </dl>
+<h6 class="ui header"><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
 
-            <dl>
-                <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
-                <dd>${issueEntitlementInstance.tipp.coverageDepth}</dd>
-            </dl>
+<table class="ui celled la-table table">
+  <thead>
+      <tr>
+          <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
+          <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.startDate}"/></td>
+        <td>${issueEntitlementInstance.tipp.startVolume}</td>
+        <td>${issueEntitlementInstance.tipp.startIssue}</td>
+        <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.endDate}"/></td>
+        <td>${issueEntitlementInstance.tipp.endVolume}</td>
+        <td>${issueEntitlementInstance.tipp.endIssue}</td>
+      </tr>
+  </tbody>
+</table>
 
-            <dl>
-                <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
-                <dd>${issueEntitlementInstance.tipp.coverageNote}</dd>
-            </dl>
+<dl>
+  <dt>${message(code:'tipp.embargo', default:'Embargo')} (tipp)</dt>
+  <dd>${issueEntitlementInstance.tipp.embargo}</dd>
+</dl>
 
-            <g:if test="${(institutional_usage_identifier) && ( usage != null ) && ( usage.size() > 0 ) }">
-              <span class="pull-right">
-                  <laser:statsLink class="ui basic negative"
-                                   base="${grailsApplication.config.statsApiUrl}"
-                                   module="statistics"
-                                   controller="default"
-                                   action="select"
-                                   params="[mode:usageMode,
-                                            packages:issueEntitlementInstance.subscription.getCommaSeperatedPackagesIsilList(),
-                                            institutions:statsWibid
-                                   ]"
-                                   title="Springe zu Statistik im Nationalen Statistikserver">
-                      <i class="chart bar outline icon"></i>
-                  </laser:statsLink>
-              </span>
-                <h6 class="ui header">${message(code:'tipp.show.usage.header')}</h6>
-              <table class="ui celled la-table table">
-                  <thead>
-                <tr>
-                  <th>${message(code:'tipp.show.usage.period')}</th>
-                  <g:each in="${x_axis_labels}" var="l">
-                    <th>${l}</th>
-                  </g:each>
-                </tr>
-                  </thead>
-                  <tbody>
-                <g:set var="counter" value="${0}" />
-                <g:each in="${usage}" var="v">
-                  <tr>
-                    <td>${y_axis_labels[counter++]}</td>
-                    <g:each in="${v}" var="v2">
-                      <td>${v2}</td>
-                    </g:each>
-                  </tr>
-                </g:each>
-                  </tbody>
-              </table>
-            </g:if>
+<dl>
+  <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
+  <dd>${issueEntitlementInstance.tipp.coverageDepth}</dd>
+</dl>
 
-            <g:if test="${issueEntitlementInstance.tipp.title?.tipps}">
+<dl>
+  <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
+  <dd>${issueEntitlementInstance.tipp.coverageNote}</dd>
+</dl>
 
-                <br/>
-                
-                <h6 class="ui header"><strong><g:message code="titleInstance.tipps.label" default="Occurrences of this title against Packages / Platforms" /></strong></h6>
+<g:if test="${(institutional_usage_identifier) && ( usage != null ) && ( usage.size() > 0 ) }">
+<span class="pull-right">
+    <laser:statsLink class="ui basic negative"
+                     base="${grailsApplication.config.statsApiUrl}"
+                     module="statistics"
+                     controller="default"
+                     action="select"
+                     params="[mode:usageMode,
+                              packages:issueEntitlementInstance.subscription.getCommaSeperatedPackagesIsilList(),
+                              institutions:statsWibid
+                     ]"
+                     title="Springe zu Statistik im Nationalen Statistikserver">
+        <i class="chart bar outline icon"></i>
+    </laser:statsLink>
+</span>
+  <h6 class="ui header">${message(code:'tipp.show.usage.header')}</h6>
+<table class="ui celled la-table table">
+    <thead>
+  <tr>
+    <th>${message(code:'tipp.show.usage.period')}</th>
+    <g:each in="${x_axis_labels}" var="l">
+      <th>${l}</th>
+    </g:each>
+  </tr>
+    </thead>
+    <tbody>
+  <g:set var="counter" value="${0}" />
+  <g:each in="${usage}" var="v">
+    <tr>
+      <td>${y_axis_labels[counter++]}</td>
+      <g:each in="${v}" var="v2">
+        <td>${v2}</td>
+      </g:each>
+    </tr>
+  </g:each>
+    </tbody>
+</table>
+</g:if>
 
+<g:if test="${issueEntitlementInstance.tipp.title?.tipps}">
 
-                <semui:filter>
-                    <g:form action="show" params="${params}" method="get" class="ui form">
-                      <input type="hidden" name="sort" value="${params.sort}">
-                      <input type="hidden" name="order" value="${params.order}">
+  <br/>
 
-                        <div class="fields three">
-                            <div class="field">
-                                <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}</label>
-                                <input name="filter" value="${params.filter}"/>
-                            </div>
-                            <div class="field">
-                                <semui:datepicker label="default.startsBefore.label" name="startsBefore" value="${params.startsBefore}" />
-                            </div>
-                            <div class="field">
-                                <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
-                            </div>
-                        </div>
-                        <div class="field">
-                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
-                        </div>
-
-                    </g:form>
-                </semui:filter>
-
-                <table class="ui celled la-table table">
-                    <thead>
-                        <tr>
-                            <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
-                            <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
-                            <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-                            <th>${message(code:'platform.label', default:'Platform')}</th><th>${message(code:'package.label', default:'Package')}</th><th>${message(code:'default.actions.label', default:'Actions')}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <g:each in="${tippList}" var="t">
-                            <tr>
-                                <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.startDate}"/></td>
-                            <td>${t.startVolume}</td>
-                            <td>${t.startIssue}</td>
-                            <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.endDate}"/></td>
-                            <td>${t.endVolume}</td>
-                            <td>${t.endIssue}</td>
-                            <td>${t.coverageDepth}</td>
-                            <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
-                            <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
-                            <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.details', default:'View Details')}</g:link></td>
-                            </tr>
-                        </g:each>
-                    </tbody>
-                </table>
-            </g:if>
-        </div>
+  <h6 class="ui header"><strong><g:message code="titleInstance.tipps.label" default="Occurrences of this title against Packages / Platforms" /></strong></h6>
 
 
-    <div id="magicArea">
-      <g:render template="coreAssertionsModal" contextPath="../templates" model="${[tipID:-1,coreDates:[]]}"/>
-    </div>
-       <r:script language="JavaScript">
-       function hideModal(){
-        $("[name='coreAssertionEdit']").modal('hide');
-       }
-        function showCoreAssertionModal(){
-          $("input.datepicker-class").datepicker({
-            format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
-            language:"${message(code:'default.locale.label', default:'en')}",
-            autoclose:true
-          });
-          $("[name='coreAssertionEdit']").modal('show');
-          $('.xEditableValue').editable();
-        }
-      </r:script>
+  <semui:filter>
+      <g:form action="show" params="${params}" method="get" class="ui form">
+        <input type="hidden" name="sort" value="${params.sort}">
+        <input type="hidden" name="order" value="${params.order}">
+
+          <div class="fields three">
+              <div class="field">
+                  <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}</label>
+                  <input name="filter" value="${params.filter}"/>
+              </div>
+              <div class="field">
+                  <semui:datepicker label="default.startsBefore.label" name="startsBefore" value="${params.startsBefore}" />
+              </div>
+              <div class="field">
+                  <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
+              </div>
+          </div>
+          <div class="field">
+              <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label', default:'Submit')}">
+          </div>
+
+      </g:form>
+  </semui:filter>
+
+  <table class="ui celled la-table table">
+      <thead>
+          <tr>
+              <th>${message(code:'tipp.startDate', default:'From Date')}</th><th>${message(code:'tipp.startVolume', default:'From Volume')}</th><th>${message(code:'tipp.startIssue', default:'From Issue')}</th>
+              <th>${message(code:'tipp.startDate', default:'To Date')}</th><th>${message(code:'tipp.endVolume', default:'To Volume')}</th><th>${message(code:'tipp.endIssue', default:'To Issue')}</th>
+              <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+              <th>${message(code:'platform.label', default:'Platform')}</th><th>${message(code:'package.label', default:'Package')}</th><th>${message(code:'default.actions.label', default:'Actions')}</th>
+          </tr>
+      </thead>
+      <tbody>
+          <g:each in="${tippList}" var="t">
+              <tr>
+                  <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.startDate}"/></td>
+              <td>${t.startVolume}</td>
+              <td>${t.startIssue}</td>
+              <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.endDate}"/></td>
+              <td>${t.endVolume}</td>
+              <td>${t.endIssue}</td>
+              <td>${t.coverageDepth}</td>
+              <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
+              <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
+              <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.details', default:'View Details')}</g:link></td>
+              </tr>
+          </g:each>
+      </tbody>
+  </table>
+</g:if>
+</div>
+
+
+<div id="magicArea">
+<g:render template="coreAssertionsModal" contextPath="../templates" model="${[tipID:-1,coreDates:[]]}"/>
+</div>
+<r:script language="JavaScript">
+function hideModal(){
+$("[name='coreAssertionEdit']").modal('hide');
+}
+function showCoreAssertionModal(){
+$("input.datepicker-class").datepicker({
+format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd').toLowerCase()}",
+language:"${message(code:'default.locale.label', default:'en')}",
+autoclose:true
+});
+$("[name='coreAssertionEdit']").modal('show');
+$('.xEditableValue').editable();
+}
+</r:script>
 </body>
 </html>
