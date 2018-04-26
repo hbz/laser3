@@ -197,14 +197,17 @@ class BootStrap {
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
 
-        log.debug("createOrganisationProperties ..")
-        createOrganisationConfig()
+        log.debug("createOrgConfig ..")
+        createOrgConfig()
 
-        log.debug("createSubscriptionProperties ..")
-        createSubscriptionProperties()
+        log.debug("createOrgProperties ..")
+        createOrgProperties()
 
         log.debug("createLicenseProperties ..")
         createLicenseProperties()
+
+        log.debug("createSubscriptionProperties ..")
+        createSubscriptionProperties()
 
         log.debug("createPrivateProperties ..")
         createPrivateProperties()
@@ -357,24 +360,29 @@ class BootStrap {
         }
     }
 
-    def createOrganisationConfig() {
+    def createOrgConfig() {
+
         def allDescr = [en: PropertyDefinition.ORG_CONF, de: PropertyDefinition.ORG_CONF]
+
         def requiredProps = [
-                [name: [en: "API Key", de: "API Key"],                            descr:allDescr, type:String.toString()],
-                [name: [en: "statslogin", de: "statslogin"],                      descr:allDescr, type:String.toString()],
+                [name: [en: "API Key", de: "API Key"],       descr:allDescr, type:String.toString()],
+                [name: [en: "statslogin", de: "statslogin"], descr:allDescr, type:String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
-    def createSubscriptionProperties() {
-        
-        def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
-        
-        def requiredProps = [
-                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"], descr:allDescr, type:RefdataValue.toString(), cat:'YN']
+    def createOrgProperties() {
 
+        def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
+
+        def requiredOrgProps = [
+                [name: [en: "Promotionsrecht", de: "Promotionsrecht"],                      descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "EZB-Teilnehmer", de: "EZB-Teilnehmer"],                        descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "Nationallizenz-Teilnehmer", de: "Nationallizenz-Teilnehmer"],  descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "Discovery-System", de: "Discovery-System"],                    descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "Verwendete Discovery-Systeme", de: "Verwendete Discovery-Systeme"],    descr: allOrgDescr, type:String.toString()]
         ]
-        createPropertyDefinitionsWithI10nTranslations(requiredProps)
+        createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
     }
     
     def createLicenseProperties() {
@@ -521,6 +529,17 @@ class BootStrap {
         createPropertyDefinitionsWithI10nTranslations(requiredARCProps)
     }
 
+    def createSubscriptionProperties() {
+
+        def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
+
+        def requiredProps = [
+                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"], descr:allDescr, type:RefdataValue.toString(), cat:'YN']
+
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredProps)
+    }
+
     def createPrivateProperties() {
 
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
@@ -567,6 +586,7 @@ class BootStrap {
     }
 
     def addDefaultPageMappings() {
+
         if (! SitePage.findAll()) {
             def home    = new SitePage(alias: "Home",    action: "index",       controller: "home").save()
             def profile = new SitePage(alias: "Profile", action: "index",       controller: "profile").save()
@@ -722,6 +742,7 @@ class BootStrap {
         RefdataValue.loc('YNO',  [en: 'Yes', de: 'Ja'])
         RefdataValue.loc('YNO',  [en: 'No', de: 'Nein'])
         RefdataValue.loc('YNO',  [en: 'Not applicable', de: 'Nicht zutreffend'])
+        RefdataValue.loc('YNO',  [en: 'Planed', de: 'Geplant'])
         RefdataValue.loc('YNO',  [en: 'Unknown', de: 'Unbekannt'])
         RefdataValue.loc('YNO',  [en: 'Other', de: 'Andere'])
         
@@ -755,6 +776,8 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Postal address', de: 'Postanschrift'])
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Library address', de: 'Bibliotheksanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Legal Patron Address', de: 'Anschrift des rechtlichen Trägers'])
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])
 
@@ -769,6 +792,7 @@ class BootStrap {
         RefdataValue.loc('ContactContentType',   [en: 'E-Mail', de: 'E-Mail'])
         RefdataValue.loc('ContactContentType',   [en: 'Phone', de: 'Telefon'])
         RefdataValue.loc('ContactContentType',   [en: 'Fax', de: 'Fax'])
+        RefdataValue.loc('ContactContentType',   [en: 'Url', de: 'Url'])
 
         RefdataValue.loc('ContactType',  [en: 'Personal', de: 'Privat'])
         RefdataValue.loc('ContactType',  [en: 'Job-related', de: 'Geschäftlich'])
@@ -835,9 +859,10 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Kunst- und Musikhochschule', de: 'Kunst- und Musikhochschule'])
         RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'])
-        RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes- / Regionalbibliothek', de: 'Staats-/ Landes- / Regionalbibliothek'])
+        RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes-/ Regionalbibliothek', de: 'Staats-/ Landes-/ Regionalbibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'])
+        RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'])
 
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'])
         RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Commercial', de: 'Kommerziell'])
@@ -855,6 +880,13 @@ class BootStrap {
         RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'])
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Allgemeine Kontaktperson'])
+        RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'])
+        RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'])
+        RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'])
+        RefdataValue.loc('Person Function',     [en: 'Erwerbungsabteilung', de: 'Erwerbungsabteilung'])
+        RefdataValue.loc('Person Function',     [en: 'Erwerbungsleitung', de: 'Erwerbungsleitung'])
+        RefdataValue.loc('Person Function',     [en: 'Medienbearbeitung', de: 'Medienbearbeitung'])
+        RefdataValue.loc('Person Function',     [en: 'Zeitschriftenabteilung', de: 'Zeitschriftenabteilung'])
 
         RefdataValue.loc('Person Position',     [en: 'Account Manager', de: 'Account Manager'])
         RefdataValue.loc('Person Position',     [en: 'Head Access Services', de: 'Erwerbungsleiter'])

@@ -19,14 +19,37 @@
 				<div class="inline-lists">
 
 					<dl>
+                            <dt>${com.k_int.kbplus.RefdataCategory.findByDesc('AddressType').getI10n('desc')}</dt>
+                            <dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="AddressType" /></dd>
+
+                            <g:if test="${addressInstance?.prs}">
+                                <dt><g:message code="address.prs.label" default="Prs" /></dt>
+                                <dd><g:link controller="person" action="show" id="${addressInstance?.prs?.id}">${addressInstance?.prs?.encodeAsHTML()}</g:link></dd>
+                            </g:if>
+
+                            <g:if test="${addressInstance?.org}">
+                                <dt><g:message code="address.org.label" default="Org" /></dt>
+                                <dd><g:link controller="organisations" action="show" id="${addressInstance?.org?.id}">${addressInstance?.org?.encodeAsHTML()}</g:link></dd>
+                            </g:if>
+
+
+                            <g:if test="${addressInstance?.prs?.tenant}">
+                                <dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
+                                <dd><g:link controller="organisations" action="show" id="${addressInstance?.prs?.tenant?.id}">${addressInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
+                            </g:if>
+
+                            <g:if test="${addressInstance?.prs?.isPublic}">
+                                <dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
+                                <dd>${addressInstance?.prs?.isPublic?.encodeAsHTML()}</dd>
+                            </g:if>
+
+                            <hr />
+
 							<dt><g:message code="address.street_1.label" default="Street1" /></dt>
 							<dd><semui:xEditable owner="${addressInstance}" field="street_1" /></dd>
 
 							<dt><g:message code="address.street_2.label" default="Street2" /></dt>
 							<dd><semui:xEditable owner="${addressInstance}" field="street_2" /></dd>
-
-							<dt><g:message code="address.pob.label" default="Pob" /></dt>
-							<dd><semui:xEditable owner="${addressInstance}" field="pob" /></dd>
 
 							<dt><g:message code="address.zipcode.label" default="Zipcode" /></dt>
 							<dd><semui:xEditable owner="${addressInstance}" field="zipcode" /></dd>
@@ -40,29 +63,28 @@
 							<dt><g:message code="address.country.label" default="Country" /></dt>
 							<dd><semui:xEditableRefData owner="${addressInstance}" field="country" config="Country" /></dd>
 
-							<dt>${com.k_int.kbplus.RefdataCategory.findByDesc('AddressType').getI10n('desc')}</dt>
-							<dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="AddressType" /></dd>
+                            <hr />
 
-						<g:if test="${addressInstance?.prs}">
-							<dt><g:message code="address.prs.label" default="Prs" /></dt>
-							<dd><g:link controller="person" action="show" id="${addressInstance?.prs?.id}">${addressInstance?.prs?.encodeAsHTML()}</g:link></dd>
-						</g:if>
+							<dt><g:message code="address.pob.label" default="Pob" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="pob" /></dd>
 
-						<g:if test="${addressInstance?.org}">
-							<dt><g:message code="address.org.label" default="Org" /></dt>
-							<dd><g:link controller="organisations" action="show" id="${addressInstance?.org?.id}">${addressInstance?.org?.encodeAsHTML()}</g:link></dd>
-						</g:if>
+							<dt><g:message code="address.pobZipcode.label" default="pobZipcode" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="pobZipcode" /></dd>
 
+							<dt><g:message code="address.pobCity.label" default="pobCity" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="pobCity" /></dd>
 
-						<g:if test="${addressInstance?.prs?.tenant}">
-							<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
-							<dd><g:link controller="organisations" action="show" id="${addressInstance?.prs?.tenant?.id}">${addressInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
-						</g:if>
+                            <hr />
 
-						<g:if test="${addressInstance?.prs?.isPublic}">
-							<dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
-							<dd>${addressInstance?.prs?.isPublic?.encodeAsHTML()}</dd>
-						</g:if>
+							<dt><g:message code="address.name.label" default="name" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="name" /></dd>
+
+							<dt><g:message code="address.additionFirst.label" default="additionFirst" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="additionFirst" /></dd>
+
+							<dt><g:message code="address.additionSecond.label" default="additionSecond" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="additionSecond" /></dd>
+
 					</dl>
 				</div>
 
