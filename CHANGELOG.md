@@ -1,4 +1,8 @@
 
+0.5-pre
+
+- in progress
+
 0.4.4
 
 - changed GlobalDataSyncJob config 
