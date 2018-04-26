@@ -247,13 +247,12 @@ r2d2 = {
         $(ctxSel + ' .la-filter .ui.dropdown > select > option[selected=selected]').parents('.ui.dropdown').addClass('la-filter-dropdown-selected');
 
         // FILTER SELECT FUNCTION - INPUT LOADING
-        $(ctxSel + '.la-filter input[type=text]').each(function() {
+        $(ctxSel + ' .la-filter input[type=text]').each(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
         });
 
         //  FILTER SELECT FUNCTION - INPUT CHANGE
-        $(ctxSel + '.la-filter input[type=text]').change(function() {
-            $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+        $(ctxSel + ' .la-filter input[type=text]').change(function() {
         });
     }
 }
