@@ -82,7 +82,7 @@ class StatsSyncService {
             queryParams['provider'] = params.provider as long
         }
         if (params.institution != 'null'){
-            queryParams['institution'] = params.institution
+            queryParams['institution'] = params.institution as long
         }
     }
 
