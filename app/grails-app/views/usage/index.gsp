@@ -62,7 +62,7 @@
     <tr><td>SUSHI API Url</td><td>${grailsApplication.config.statsApiUrl}</td></tr>
     <tr><td>Provider mit gespeicherter Statistik</td><td>TODO</td></tr>
     <tr><td>Kontexteinrichtung für API Abruf freigeschaltet</td><td>TODO</td></tr>
-    <tr><td>Einrichtungskontext</td><td>TODO</td></tr>
+    <tr><td>Einrichtungskontext</td><td>${institution.orgType?.value}</td></tr>
 </table>
 <h3 class="ui header">STATS Sync Service</h3>
 <table class="ui celled la-table table">

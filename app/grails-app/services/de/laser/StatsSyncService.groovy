@@ -20,7 +20,7 @@ class StatsSyncService {
     def sessionFactory
     def factService
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-    def Map queryParams
+    def queryParams = [:]
 
 
     static int submitCount=0
@@ -37,12 +37,12 @@ class StatsSyncService {
     static transactional = false
 
     def initSync() {
-        log.debug("StatsSyncService::doSync ${this.hashCode()}");
+        log.debug("StatsSyncService::doSync ${this.hashCode()}")
         if ( this.running == true ) {
-            log.debug("Skipping sync.. task already running");
+            log.debug("Skipping sync.. task already running")
             return
         }
-        log.debug("Mark StatsSyncTask as running...");
+        log.debug("Mark StatsSyncTask as running...")
         running = true
 
         submitCount=0
@@ -51,7 +51,7 @@ class StatsSyncService {
         totalTime=0
         queryTime=0
         syncStartTime=System.currentTimeMillis()
-        log.debug("Launch STATS sync at ${syncStartTime} ( ${System.currentTimeMillis()} )");
+        log.debug("Launch STATS sync at ${syncStartTime} ( ${System.currentTimeMillis()} )")
         syncElapsed=0
         activityHistogram = [:]
     }
@@ -78,7 +78,6 @@ class StatsSyncService {
 
     def addFilters(params)
     {
-        queryParams = [:]
         if (params.provider != 'null'){
             queryParams['provider'] = params.provider as long
         }

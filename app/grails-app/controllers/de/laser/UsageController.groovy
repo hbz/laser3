@@ -10,6 +10,7 @@ class UsageController {
 
     def statsSyncService
     def factService
+    def contextService
 
     static transactional = false
 
@@ -34,6 +35,7 @@ class UsageController {
         result.statsSyncService.syncStartTime = statsSyncService.syncStartTime
         result.statsSyncService.syncElapsed = statsSyncService.syncElapsed
 
+        result.institution = contextService.getOrg()
         result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
         result.providerList = factService.providersWithStatssid()
         result.institutionsWithFacts = factService.getFactInstitutionList()
