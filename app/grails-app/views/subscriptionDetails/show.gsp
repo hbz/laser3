@@ -382,8 +382,22 @@
                                     <g:each in="${usage}" var="v">
                                         <tr>
                                             <td>${y_axis_labels[counter++]}</td>
-                                            <g:each in="${v}" var="v2">
-                                                <td>${v2}</td>
+                                            <g:each in="${v}" status="i" var="v2">
+                                                <td>
+                                                <laser:statsLink
+                                                    base="${grailsApplication.config.statsApiUrl}"
+                                                    module="statistics"
+                                                    controller="default"
+                                                    action="select"
+                                                    params="[mode        : usageMode,
+                                                             packages    : subscription.getCommaSeperatedPackagesIsilList(),
+                                                             institutions: statsWibid,
+                                                             years: x_axis_labels[i]
+                                                    ]"
+                                                    title="Springe zu Statistik im Nationalen Statistikserver">
+                                                    ${v2}
+                                                </laser:statsLink>
+                                                </td>
                                             </g:each>
                                         </tr>
                                     </g:each>
