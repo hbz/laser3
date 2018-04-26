@@ -70,11 +70,11 @@
         $.ajax({
             url: "/laser/task/ajaxEdit/?id="+id,
             success: function(result){
-                $("#dymanicModalContainer").empty();
+                $("#dynamicModalContainer").empty();
                 $("#modalEditTask").remove();
 
-                $("#dymanicModalContainer").html(result);
-                $("#dymanicModalContainer .ui.modal").modal('show');
+                $("#dynamicModalContainer").html(result);
+                $("#dynamicModalContainer .ui.modal").modal('show');
             }
         });
     }

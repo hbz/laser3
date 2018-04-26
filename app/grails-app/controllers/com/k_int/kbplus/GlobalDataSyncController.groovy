@@ -10,7 +10,7 @@ class GlobalDataSyncController {
   def globalSourceSyncService
   def genericOIDService
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_GLOBAL_DATA'])
   def index() {
     def result = [:]
 
@@ -68,7 +68,7 @@ class GlobalDataSyncController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_GLOBAL_DATA'])
   def newCleanTracker() {
     log.debug("params:"+params)
     def result = [:]
@@ -117,7 +117,7 @@ class GlobalDataSyncController {
     render view:'reviewTracker', model:result
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_GLOBAL_DATA'])
   def createTracker() {
     log.debug("params:"+params)
     def result = [:]

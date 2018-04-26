@@ -26,6 +26,10 @@ class StatsSyncJob {
             log.debug("This server is marked as KBPlus master. Running Stats SYNC batch job");
             statsSyncService.doSync()
         }
+        else if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.StatsSyncJobActiv == true ) {
+            log.debug("This server is marked as KBPlus master. Running Stats SYNC batch job");
+            statsSyncService.doSync()
+        }
         else {
             log.debug("This server is NOT marked as KBPlus master. NOT Running Stats SYNC batch job");
         }

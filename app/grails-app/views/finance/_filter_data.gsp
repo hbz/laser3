@@ -53,12 +53,12 @@
         <td class="x">
             <g:if test="${editable}">
                 <g:if test="${inSubMode}">
-                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon positive button" data-ajaxid="costItem-${ci.id}">
+                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon positive button">
                         <i class="write icon"></i>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon positive button" data-ajaxid="costItem-${ci.id}">
+                    <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon positive button">
                         <i class="write icon"></i>
                     </g:link>
                 </g:else>
@@ -74,20 +74,19 @@
 </g:each>
 
 <script>
-    $('#costTable .x .button.positive').on('click', function(e) {
+     $('#costTable .x .button.positive').on('click', function(e) {
         e.preventDefault()
 
-        var tmplId = 'ajaxModal_' + $(this).data('ajaxid')
         $.ajax({
-            url: $(this).attr('href'),
-            data: 'tmplId=' + tmplId
+            url: $(this).attr('href')
         }).done( function(data) {
-            $('#dynamicModalContainer').empty().append(data)
+            $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+            $('#dynamicModalContainer').empty().html(data);
 
-            $('#dynamicModalContainer .modal').modal({
+            $('#dynamicModalContainer .ui.modal').modal({
                 onVisible: function () {
-                    r2d2.initDynamicSemuiStuff('#' + tmplId);
-                    r2d2.initDynamicXEditableStuff('#' + tmplId);
+                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                     ajaxPostFunc()
                 },
