@@ -77,7 +77,7 @@ class IssueEntitlementController {
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier =
-                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), org)
+                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org)
           //def jusp_login = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('jusplogin')?.value
           //def jusp_iid = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('juspiid')?.value
           //def jusp_sid = result.issueEntitlementInstance.tipp.pkg.contentProvider?.getIdentifierByType('juspsid')?.value

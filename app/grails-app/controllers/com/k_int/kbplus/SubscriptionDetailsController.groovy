@@ -104,7 +104,7 @@ class SubscriptionDetailsController {
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
       result.institutional_usage_identifier =
-              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
     }
 
         if (params.mode == "advanced") {
@@ -1182,7 +1182,7 @@ AND l.status.value != 'Deleted' order by l.reference
     if (result.institution) {
       result.subscriber_shortcode = result.institution.shortcode
       result.institutional_usage_identifier =
-        OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+        OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
     }
     log.debug("Going for ES")
     params.rectype = "Package"
@@ -1279,7 +1279,7 @@ AND l.status.value != 'Deleted' order by l.reference
         if ( result.institution ) {
           result.subscriber_shortcode = result.institution.shortcode
           result.institutional_usage_identifier =
-                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
         // Get a unique list of invoices
@@ -1345,7 +1345,7 @@ AND l.status.value != 'Deleted' order by l.reference
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
             result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
@@ -1416,13 +1416,14 @@ AND l.status.value != 'Deleted' order by l.reference
           }
         // usage
         def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
+
         if (suppliers) {
           if (suppliers.size() > 1) {
             log.debug('Found different content providers, cannot show usage')
           } else  {
             def supplier_id = suppliers[0]
             result.institutional_usage_identifier =
-                OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+                OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
             if (result.institutional_usage_identifier) {
 
                 // TODO can there be different currency codes? We would have to handle that somehow.
@@ -1431,13 +1432,14 @@ AND l.status.value != 'Deleted' order by l.reference
                 def totalCostRow = CostItem.executeQuery(query, [sub: result.subscriptionInstance]).first()
 
                     def totalUsageForLicense = factService.totalUsageForSub(result.subscriptionInstance, 'STATS:JR1')
-                if (totalCostRow[0]) {
+                if (totalCostRow[0] && totalUsageForLicense) {
                     def totalCostPerUse = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
                     result.totalCostPerUse = totalCostPerUse
                     result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
                 }
                 def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                 def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
+                result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
                 result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
                 result.usage = fsresult?.usage
                 result.x_axis_labels = fsresult?.x_axis_labels

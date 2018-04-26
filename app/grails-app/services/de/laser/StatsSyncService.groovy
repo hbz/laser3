@@ -41,7 +41,7 @@ class StatsSyncService {
             "and po.roleType.value='Content Provider' "+
             "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
             "and orgrel.roleType.value = 'Subscriber' " +
-            "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'statslogin' ) "
+            "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'RequestorID' ) "
 
     def initSync() {
         log.debug("StatsSyncService::doSync ${this.hashCode()}");
@@ -127,7 +127,7 @@ class StatsSyncService {
             def platform = supplier_inst.getIdentifierByType('statssid').value
             def customer = org_inst.getIdentifierByType('wibid').value
             def apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), org_inst)
-            def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), org_inst)
+            def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org_inst)
 
             def reports = RefdataValue.findAllByValueLikeAndOwner('STATS%', RefdataCategory.findByDesc('FactType'))
 
@@ -180,13 +180,19 @@ class StatsSyncService {
                                     def cal = new GregorianCalendar()
                                     usageMap.each { key, value ->
                                         def fact = [:]
+                                        def usageValue = ''
+                                        if (value.size() > 1){
+                                            usageValue = value*.toInteger().sum().toString()
+                                        } else {
+                                            usageValue = value.text()
+                                        }
                                         fact.from = timeStampFormat.parse(key)
                                         fact.to =timeStampFormat.parse(getLastDayOfMonth(key))
                                         cal.setTime(fact.to)
                                         fact.reportingYear=cal.get(Calendar.YEAR)
                                         fact.reportingMonth=cal.get(Calendar.MONTH)+1
                                         fact.type = statsReport.toString()
-                                        fact.value = value.text()
+                                        fact.value = usageValue
                                         fact.uid = "${titleId}:${platform}:${customer}:${key}:${report}"
                                         fact.title = title_inst
                                         fact.supplier = supplier_inst
