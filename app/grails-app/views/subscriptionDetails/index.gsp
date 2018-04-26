@@ -59,7 +59,7 @@
 
         <div class="row">
             <div class="column">
-das ist hier
+
                 <semui:filter>
                     <g:form action="index" params="${params}" method="get" class="ui form">
                         <input type="hidden" name="sort" value="${params.sort}">
