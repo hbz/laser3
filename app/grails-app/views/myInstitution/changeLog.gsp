@@ -10,23 +10,28 @@
   <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
     <semui:crumb message="default.changeLog.label" class="active" />
-
-    <li class="dropdown pull-right">
-      <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.exports.label', default:'Exports')}<strong class="caret"></strong></a>
-      <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-        <li><g:link controller="myInstitution" action="changeLog" params="${params+[format:'csv']}">CSV Export</g:link></li>
-      </ul>
-    </li>
   </semui:breadcrumbs>
+
+
+  <semui:controlButtons>
+    <semui:exportDropdown>
+      <semui:exportDropdownItem>
+        <g:link controller="myInstitution" class="item" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+      </semui:exportDropdownItem>
+    </semui:exportDropdown>
+    <g:render template="actions"/>
+  </semui:controlButtons>
+
 
     <div class="home-page">
 
-      <div style="text-align:center">
+      <div>
         ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br/>
         <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br/>
         <g:form method="get" action="changeLog" params="${params}">
-          ${message(code:'myinst.changeLog.restrictTo', default:'Restrict to')}: <select name="restrict" onchange="this.form.submit()">
-            <option value="">${message(code:'myinst.changelog.all', default:'ALL')}</option>
+          ${message(code:'myinst.changeLog.restrictTo', default:'Restrict to')}:
+          <select class="ui dropdown" name="restrict" onchange="this.form.submit()">
+            <option value="${message(code:'myinst.changelog.all', default:'ALL')}">${message(code:'myinst.changelog.all', default:'ALL')}</option>
             <g:each in="${institutional_objects}" var="io">
               <option value="${io[0]}" ${(params.restrict?.equals(io[0]) ? 'selected' : '')}>${io[1]}</option>
             </g:each>
