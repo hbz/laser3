@@ -70,11 +70,11 @@
                                 <label>
                                     <g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')} </g:annotatedLabel>
                                 </label>
-                                <input name="filter" value="${params.filter}"/>
+                                <input  name="filter" value="${params.filter}"/>
                             </div>
                             <div class="field">
                                 <label>${message(code:'subscription.details.from_pkg', default:'From Package')}</label>
-                                <select name="pkgfilter">
+                                <select class="ui dropdown" name="pkgfilter">
                                     <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
                                     <g:each in="${subscriptionInstance.packages}" var="sp">
                                         <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>
@@ -272,7 +272,7 @@
       <g:if test="${editable}">
 
       function selectAll() {
-        $('.bulkcheck').attr('checked', true);
+        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
       }
 
       function confirmSubmit() {
