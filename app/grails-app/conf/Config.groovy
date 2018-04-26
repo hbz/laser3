@@ -32,7 +32,7 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 // FEATURE-CONFIG
 //feature.eBooks = true
 //feature.issnl = true
-feature_finance = true
+feature_finance = false
 //feature.notifications = true
 //globalDataSyncJobActiv = true
 //AdminReminderJobActiv = true
