@@ -59,7 +59,7 @@
 
         <div class="row">
             <div class="column">
-
+das ist hier
                 <semui:filter>
                     <g:form action="index" params="${params}" method="get" class="ui form">
                         <input type="hidden" name="sort" value="${params.sort}">
@@ -70,11 +70,11 @@
                                 <label>
                                     <g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')} </g:annotatedLabel>
                                 </label>
-                                <input name="filter" value="${params.filter}"/>
+                                <input  name="filter" value="${params.filter}"/>
                             </div>
                             <div class="field">
                                 <label>${message(code:'subscription.details.from_pkg', default:'From Package')}</label>
-                                <select name="pkgfilter">
+                                <select class="ui dropdown" name="pkgfilter">
                                     <option value="">${message(code:'subscription.details.from_pkg.all', default:'All')}</option>
                                     <g:each in="${subscriptionInstance.packages}" var="sp">
                                         <option value="${sp.pkg.id}" ${sp.pkg.id.toString()==params.pkgfilter?'selected=true':''}>${sp.pkg.name}</option>

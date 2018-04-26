@@ -244,7 +244,13 @@ r2d2 = {
             ($(this).hasClass("default")) ? $(this).removeClass("la-filter-dropdown-selected") : $(this).addClass("la-filter-dropdown-selected");
         });
 
-        $(ctxSel + ' .la-filter .ui.dropdown > select > option[selected=selected]').parents('.ui.dropdown').addClass('la-filter-dropdown-selected');
+        // for default selected Dropdown value
+        var currentDropdown = $(ctxSel + ' .la-filter .ui.dropdown > select > option[selected=selected]').parents('.ui.dropdown');
+        currentDropdown.find("div.text").hasClass("default")
+            ?  currentDropdown.removeClass('la-filter-dropdown-selected')
+            : currentDropdown.addClass('la-filter-dropdown-selected');
+
+
 
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {
