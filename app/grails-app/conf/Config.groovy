@@ -569,7 +569,8 @@ grails.plugin.springsecurity.providerNames = [
 grails.plugin.springsecurity.roleHierarchy = '''
     ROLE_YODA > ROLE_ADMIN
     ROLE_ADMIN > ROLE_DATAMANAGER
-    ROLE_DATAMANAGER > ROLE_USER
+    ROLE_DATAMANAGER > ROLE_GLOBAL_DATA
+    ROLE_GLOBAL_DATA > ROLE_USER
 '''
 
 /*grails.plugins.springsecurity.controllerAnnotations.staticRules = [

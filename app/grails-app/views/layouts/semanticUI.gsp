@@ -232,12 +232,13 @@
             </g:if>
 
             <sec:ifLoggedIn>
-                <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
+                <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.datamanager')}
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
+                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
                             <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
                             <g:link class="item" controller="dataManager"
                                     action="deletedTitleManagement">${message(code: 'datamanager.deletedTitleManagement.label', default: 'Deleted Title management')}</g:link>
@@ -262,17 +263,17 @@
                             <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                             <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
                             <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
-                            <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link>
-
-                            <div class="divider"></div>
-
+                            <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
+                            </sec:ifAnyGranted>
+                            
                             <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
 
+                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
                             <div class="divider"></div>
-
                             <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
                             <g:link class="item" controller="titleDetails" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
-                        </div>
+                            </sec:ifAnyGranted>
+                            </div>
                     </div>
                 </sec:ifAnyGranted>
             </sec:ifLoggedIn>
