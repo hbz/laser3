@@ -24,7 +24,7 @@
 
 
     <div class="home-page">
-
+      <br>
       <div>
         ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br/>
         <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br/>
