@@ -195,7 +195,7 @@
       });
 
       function selectAll() {
-        $('.bulkcheck').attr('checked', true);
+        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
       }
 
     </r:script>
