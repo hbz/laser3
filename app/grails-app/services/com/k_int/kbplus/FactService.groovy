@@ -1,21 +1,31 @@
 package com.k_int.kbplus
 
 import org.hibernate.criterion.CriteriaSpecification
+import org.hibernate.transform.Transformers
 
 class FactService {
 
-  static transactional = false;
+  def sessionFactory
+
+  private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
+      'select sum(factValue) ' +
+          'from Fact as f ' +
+          'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and exists ' +
+          '(select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
+          'where ie.subscription= :sub  and tipp.title = f.relatedTitle)'
+
+  static transactional = false
 
     def registerFact(fact) {
       // log.debug("Enter registerFact");
-      def result = false;
+      def result = false
 
-      if ( ( fact.type == null ) || 
+      if ( ( fact.type == null ) ||
            ( fact.type == '' ) ) 
-        return result;
+        return result
 
       try {
-          def fact_type_refdata_value = RefdataCategory.lookupOrCreate('FactType',fact.type);
+          def fact_type_refdata_value = RefdataCategory.lookupOrCreate('FactType',fact.type)
 
           // Are we updating an existing fact?
           if ( fact.uid != null ) {
@@ -38,21 +48,21 @@ class FactService {
                 result=true
               }
               else {
-                log.error("Problem saving fact: ${current_fact.errors}");
+                log.error("Problem saving fact: ${current_fact.errors}")
               }
             }
             else {
-              log.debug("update existing fact ${current_fact.id} (${fact.uid} ${fact_type_refdata_value})");
+              log.debug("update existing fact ${current_fact.id} (${fact.uid} ${fact_type_refdata_value})")
             }
           }
       }
       catch ( Exception e ) {
-        log.error("Problem registering fact",e);
+        log.error("Problem registering fact",e)
       }
       finally {
         // log.debug("Leave registerFact");
       }
-      return result;
+      return result
     }
 
 
@@ -79,8 +89,8 @@ class FactService {
           x_axis_labels.add(x_label)
       }
 
-      x_axis_labels.sort();
-      y_axis_labels.sort();
+      x_axis_labels.sort()
+      y_axis_labels.sort()
 
       // log.debug("X Labels: ${x_axis_labels}");
       // log.debug("Y Labels: ${y_axis_labels}");
@@ -93,8 +103,8 @@ class FactService {
         result.usage[y_axis_labels.indexOf(y_label)][x_axis_labels.indexOf(x_label)] += Long.parseLong(f[0])
       }
 
-      result.x_axis_labels = x_axis_labels;
-      result.y_axis_labels = y_axis_labels;
+      result.x_axis_labels = x_axis_labels
+      result.y_axis_labels = y_axis_labels
     }
     result
   }
@@ -122,8 +132,8 @@ class FactService {
           x_axis_labels.add(x_label)
       }
 
-      x_axis_labels.sort();
-      y_axis_labels.sort();
+      x_axis_labels.sort()
+      y_axis_labels.sort()
 
       // log.debug("X Labels: ${x_axis_labels}");
       // log.debug("Y Labels: ${y_axis_labels}");
@@ -136,8 +146,8 @@ class FactService {
         result.usage[y_axis_labels.indexOf(y_label)][x_axis_labels.indexOf(x_label)] += Long.parseLong(f[0])
       }
 
-      result.x_axis_labels = x_axis_labels;
-      result.y_axis_labels = y_axis_labels;
+      result.x_axis_labels = x_axis_labels
+      result.y_axis_labels = y_axis_labels
     }
 
     result
@@ -178,11 +188,10 @@ class FactService {
     result
   }
 
-  def generateUsageDataForLicense(title_id, org_id, supplier_id, license) {
+  def generateUsageDataForLicense(org_id, supplier_id, license, title_id=null) {
     def result = [:]
 
-    if (title_id != null &&
-        org_id != null &&
+    if (org_id != null &&
         supplier_id != null) {
 
       Calendar cal = Calendar.getInstance()
@@ -191,7 +200,8 @@ class FactService {
       cal.setTimeInMillis(license.endDate.getTime())
       def (lastLicenseMonth, lastLicenseYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
 
-      def factList = getUsageFacts(org_id, supplier_id, title_id, license)
+      //def factList = getUsageFacts(org_id, supplier_id, title_id, license)
+      def factList = getTotalUsageFactsForSub(org_id,supplier_id,title_id,license)
 
       def y_axis_labels = factList.factType.value.unique(false).sort()
       def x_axis_labels = (firstLicenseYear..lastLicenseYear).toList()
@@ -225,6 +235,46 @@ class FactService {
     }
     usage
   }
+
+  private def getTotalUsageFactsForSub(org_id, supplier_id, title_id=null, sub=null)  {
+    def params = [:]
+    def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType' +
+        ' from Fact as f' +
+        ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
+        if (sub) {
+          hql += ' and f.factFrom >= :start and f.factTo <= :end'
+          params['start'] = sub.startDate
+          params['end'] = sub.endDate
+        }
+        if (title_id) {
+          hql += ' and f.relatedTitle.id=:titleid'
+          params['titleid'] = title_id
+        } else {
+          hql += ' and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
+              'where ie.subscription= :sub  and tipp.title = f.relatedTitle)'
+          params['sub'] = sub
+        }
+    hql += ' group by f.factType, f.reportingYear, f.reportingMonth'
+    hql += ' order by f.reportingYear desc,f.reportingMonth desc'
+    params['supplierid'] = supplier_id
+    params['orgid'] = org_id
+    def queryResult = Fact.executeQuery(hql, params)
+    transformToListOfMaps(queryResult)
+  }
+
+  private def transformToListOfMaps(queryResult) {
+    def list = []
+    queryResult.each { li ->
+      def map = [:]
+      map['factValue'] = li[0]
+      map['reportingYear'] = li[1]
+      map['reportingMonth'] = li[2]
+      map['factType'] = li[3]
+      list.add(map)
+    }
+    list
+  }
+
 
   /**
    * @param title_id
@@ -279,7 +329,8 @@ class FactService {
     if (org_id != null &&
         supplier_id != null) {
 
-      def factList = getUsageFacts(org_id, supplier_id, title_id)
+      //def factList = getUsageFacts(org_id, supplier_id, title_id)
+      def factList = getTotalUsageFactsForSub(org_id, supplier_id, title_id)
       def y_axis_labels = factList.factType.value.unique(false).sort()
       def x_axis_labels = factList.reportingYear.unique(false).sort()*.intValue()
 
@@ -288,6 +339,14 @@ class FactService {
       result.y_axis_labels = y_axis_labels
     }
     result
+  }
+
+  def totalUsageForSub(sub, factType) {
+    Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
+        start: sub.startDate,
+        end  : sub.endDate,
+        sub  : sub,
+        factType : factType])[0]
   }
 
   def generateExpandableMonthlyUsageGrid(title_id, org_id, supplier_id) {
@@ -317,7 +376,7 @@ class FactService {
         }
       }
 
-      x_axis_labels.sort();
+      x_axis_labels.sort()
 
       // log.debug("X Labels: ${x_axis_labels}");
       // log.debug("Y Labels: ${y_axis_labels}");
@@ -330,8 +389,8 @@ class FactService {
         result.usage[y_axis_labels.indexOf(y_label)][x_axis_labels.indexOf(x_label)] += Long.parseLong(f[0])
       }
 
-      result.x_axis_labels = x_axis_labels;
-      result.y_axis_labels = y_axis_labels;
+      result.x_axis_labels = x_axis_labels
+      result.y_axis_labels = y_axis_labels
     }
 
     result

@@ -11,6 +11,8 @@ import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
+import java.text.NumberFormat
+
 //For Transform
 import static groovyx.net.http.ContentType.*
 
@@ -48,11 +50,11 @@ class SubscriptionDetailsController {
                     'group by f.reportingYear, f.reportingMonth order by f.reportingYear desc, f.reportingMonth desc';
 
     private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
-            'select sum(factValue) ' +
-                    'from Fact as f ' +
-                    'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:jr1a and exists ' +
-                    '( select ie.tipp.title from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.title = f.relatedTitle)';
-
+        'select sum(factValue) ' +
+            'from Fact as f ' +
+            'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and exists ' +
+            '(select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
+            'where ie.subscription= :sub  and tipp.title = f.relatedTitle)'
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -1300,7 +1302,7 @@ AND l.status.value != 'Deleted' order by l.reference
                         start: it[3].startDate,
                         end  : it[3].endDate,
                         sub  : result.subscription,
-                        jr1a : 'STATS:JR1'])[0]
+                        factType : 'STATS:JR1'])[0]
 
                 if (usage_str && usage_str.trim().length() > 0) {
                     cost_row.total_usage_for_sub = Double.parseDouble(usage_str);
@@ -1422,11 +1424,27 @@ AND l.status.value != 'Deleted' order by l.reference
             result.institutional_usage_identifier =
                 OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
             if (result.institutional_usage_identifier) {
+
+              // TODO can there be different currency codes? We would have to handle that somehow.
+              def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost from CostItem co ' +
+                    'where co.sub=:sub'
+              def totalCostRow = CostItem.executeQuery(query, [sub: result.subscriptionInstance]).first()
+              def totalUsageForLicense = factService.totalUsageForSub(result.subscriptionInstance, 'STATS:JR1')
+              def totalCostPerUse = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
+              result.totalCostPerUse = totalCostPerUse
+              result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+
               def fsresult = factService.generateUsageData(result.institution.id, supplier_id)
+              def fsLicenseResult = factService.generateUsageDataForLicense(
+                  result.institution.id, supplier_id, result.subscriptionInstance)
               result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels
+
+              result.lusage = fsLicenseResult?.usage
+              result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+              result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
             }
           }
         }
