@@ -20,6 +20,8 @@ class StatsSyncService {
     def sessionFactory
     def factService
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def Map queryParams
+
 
     static int submitCount=0
     static int completedCount=0
@@ -57,7 +59,7 @@ class StatsSyncService {
     private String getTitleInstancesForUsageQuery()
     {
         // Distinct list of titles ids, the content provider, subscribing organisation and the zdbid
-       return "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
+       def hql =  "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
             "join ie.tipp.pkg.orgs as po " +
             "join ie.subscription.orgRelations as orgrel "+
             "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns = 'zdb' "+
@@ -65,6 +67,24 @@ class StatsSyncService {
             "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
             "and orgrel.roleType.value = 'Subscriber' " +
             "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'RequestorID' ) "
+        if (queryParams['provider'] != null){
+            hql += "and po.org.id =:provider "
+        }
+        if (queryParams['institution'] != null){
+            hql += "and orgrel.org.id =:institution"
+        }
+        return hql
+    }
+
+    def addFilters(params)
+    {
+        queryParams = [:]
+        if (params.provider != 'null'){
+            queryParams['provider'] = params.provider as long
+        }
+        if (params.institution != 'null'){
+            queryParams['institution'] = params.institution
+        }
     }
 
     def doSync() {
@@ -84,7 +104,7 @@ class StatsSyncService {
             def mostRecentClosedPeriod = getMostRecentClosedPeriod()
             def start_time = System.currentTimeMillis()
             log.debug("STATS Sync Task - Running query ${getTitleInstancesForUsageQuery()}")
-            def titleList = IssueEntitlement.executeQuery(getTitleInstancesForUsageQuery())
+            def titleList = IssueEntitlement.executeQuery(getTitleInstancesForUsageQuery(), queryParams)
             queryTime = System.currentTimeMillis() - start_time
 
             GParsPool.withPool(THREAD_POOL_SIZE) { pool ->

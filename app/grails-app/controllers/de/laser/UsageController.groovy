@@ -54,6 +54,7 @@ class UsageController {
     def fetchSelection()
     {
         def result = initResult()
+        statsSyncService.addFilters(params)
         statsSyncService.doSync()
         redirect(view: "index", model: result)
     }
