@@ -253,6 +253,7 @@ r2d2 = {
 
         //  FILTER SELECT FUNCTION - INPUT CHANGE
         $(ctxSel + ' .la-filter input[type=text]').change(function() {
+            $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
         });
     }
 }
