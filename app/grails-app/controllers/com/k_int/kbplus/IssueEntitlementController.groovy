@@ -74,21 +74,26 @@ class IssueEntitlementController {
       if ( title_id != null &&
            org != null &&
            supplier_id != null ) {
-
-          def fsresult = factService.generateExpandableMonthlyUsageGrid(title_id, org.id, supplier_id)
+          def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
+          def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier =
-                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), org)
+                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org)
           //def jusp_login = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('jusplogin')?.value
           //def jusp_iid = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('juspiid')?.value
           //def jusp_sid = result.issueEntitlementInstance.tipp.pkg.contentProvider?.getIdentifierByType('juspsid')?.value
           //def jusp_title_id = result.issueEntitlementInstance.tipp.title.getIdentifierValue('jusp')
 
-          if (result.institutional_usage_identifier) {
+          if (result.institutional_usage_identifier && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
               result.usageMode = (org.orgType?.value == 'Consortium') ? 'package' : 'institution'
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels
+              if (fsLicenseResult.usage) {
+                  result.lusage = fsLicenseResult?.usage
+                  result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+                  result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+              }
           }
       }
 

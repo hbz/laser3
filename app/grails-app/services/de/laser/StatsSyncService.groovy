@@ -6,11 +6,12 @@ import de.laser.domain.StatsTripleCursor
 import groovyx.net.http.*
 import java.text.SimpleDateFormat
 import static groovyx.net.http.ContentType.*
+import groovyx.gpars.GParsPool
 
 
 class StatsSyncService {
 
-    static final FIXED_THREAD_POOL_SIZE = grails.util.Holders.config.statsThreadPoolSize ?: 3
+    static final THREAD_POOL_SIZE = 4
     static final COUNTER_REPORT_VERSION = 4
     static final SYNC_STATS_FROM = '2012-01'
 
@@ -19,6 +20,8 @@ class StatsSyncService {
     def sessionFactory
     def factService
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def queryParams = [:]
+
 
     static int submitCount=0
     static int completedCount=0
@@ -33,24 +36,14 @@ class StatsSyncService {
     static boolean running = false
     static transactional = false
 
-    // Distinct list of titles ids, the content provider, subscribing organisation and the zdbid
-    private static final String TITLE_INSTANCES_FOR_USAGE_SYNC_HQL_QUERY = "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
-            "join ie.tipp.pkg.orgs as po " +
-            "join ie.subscription.orgRelations as orgrel "+
-            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns = 'zdb' "+
-            "and po.roleType.value='Content Provider' "+
-            "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
-            "and orgrel.roleType.value = 'Subscriber' " +
-            "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'statslogin' ) "
-
     def initSync() {
-        log.debug("StatsSyncService::doSync ${this.hashCode()}");
+        log.debug("StatsSyncService::doSync ${this.hashCode()}")
         if ( this.running == true ) {
-            log.debug("Skipping sync.. task already running");
+            log.debug("Skipping sync.. task already running")
             return
         }
-        log.debug("Mark StatsSyncTask as running...");
-        this.running = true
+        log.debug("Mark StatsSyncTask as running...")
+        running = true
 
         submitCount=0
         completedCount=0
@@ -58,55 +51,77 @@ class StatsSyncService {
         totalTime=0
         queryTime=0
         syncStartTime=System.currentTimeMillis()
-        log.debug("Launch STATS sync at ${syncStartTime} ( ${System.currentTimeMillis()} )");
+        log.debug("Launch STATS sync at ${syncStartTime} ( ${System.currentTimeMillis()} )")
         syncElapsed=0
         activityHistogram = [:]
     }
 
-    def synchronized doSync() {
+    private String getTitleInstancesForUsageQuery()
+    {
+        // Distinct list of titles ids, the content provider, subscribing organisation and the zdbid
+       def hql =  "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
+            "join ie.tipp.pkg.orgs as po " +
+            "join ie.subscription.orgRelations as orgrel "+
+            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns = 'zdb' "+
+            "and po.roleType.value='Content Provider' "+
+            "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
+            "and orgrel.roleType.value = 'Subscriber' " +
+            "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'RequestorID' ) "
+        if (queryParams['provider'] != null){
+            hql += "and po.org.id =:provider "
+        }
+        if (queryParams['institution'] != null){
+            hql += "and orgrel.org.id =:institution"
+        }
+        return hql
+    }
+
+    def addFilters(params)
+    {
+        if (params.provider != 'null'){
+            queryParams['provider'] = params.provider as long
+        }
+        if (params.institution != 'null'){
+            queryParams['institution'] = params.institution as long
+        }
+    }
+
+    def doSync() {
         initSync()
         executorService.submit({ internalDoSync() } as java.util.concurrent.Callable)
     }
 
     def internalDoSync() {
-
-        def ftp = null
         try {
             log.debug("create thread pool")
 
             def statsApi = grailsApplication.config.statsApiUrl
-            if ( ( statsApi == null ) || ( statsApi == '' ) ) {
+            if ((statsApi == null) || (statsApi == '')) {
                 log.error("Stats API URL not set in config")
                 return
             }
             def mostRecentClosedPeriod = getMostRecentClosedPeriod()
             def start_time = System.currentTimeMillis()
-            log.debug("STATS Sync Task - Running query ${TITLE_INSTANCES_FOR_USAGE_SYNC_HQL_QUERY}")
-            def titleList = IssueEntitlement.executeQuery(TITLE_INSTANCES_FOR_USAGE_SYNC_HQL_QUERY)
+            log.debug("STATS Sync Task - Running query ${getTitleInstancesForUsageQuery()}")
+            def titleList = IssueEntitlement.executeQuery(getTitleInstancesForUsageQuery(), queryParams)
             queryTime = System.currentTimeMillis() - start_time
 
-            ftp = java.util.concurrent.Executors.newFixedThreadPool(FIXED_THREAD_POOL_SIZE)
-            titleList.each { to ->
-                ftp.submit( { ftp.submit processListItem(to, mostRecentClosedPeriod) } ) as java.util.concurrent.Callable
+            GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
+                titleList.anyParallel { to ->
+                    processListItem(to, mostRecentClosedPeriod)
+                    if (!running) {
+                        return true  // break closure
+                    }
+                }
             }
         }
         catch ( Exception e ) {
             log.error("Error", e)
         }
         finally {
-            log.debug("internalDoSync complete");
-            if ( ftp != null ) {
-                ftp.shutdown()
-                if ( ftp.awaitTermination(6,java.util.concurrent.TimeUnit.HOURS) ) {
-                    log.debug("FTP cleanly terminated")
-                }
-                else {
-                    log.debug("FTP still running.... Calling shutdown now to terminate any outstanding requests")
-                    ftp.shutdownNow()
-                }
-            }
+            log.debug("internalDoSync complete")
             log.debug("Mark StatsSyncTask as not running...")
-            this.running = false
+            running = false
         }
     }
 
@@ -127,7 +142,7 @@ class StatsSyncService {
             def platform = supplier_inst.getIdentifierByType('statssid').value
             def customer = org_inst.getIdentifierByType('wibid').value
             def apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), org_inst)
-            def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), org_inst)
+            def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org_inst)
 
             def reports = RefdataValue.findAllByValueLikeAndOwner('STATS%', RefdataCategory.findByDesc('FactType'))
 
@@ -180,14 +195,20 @@ class StatsSyncService {
                                     def cal = new GregorianCalendar()
                                     usageMap.each { key, value ->
                                         def fact = [:]
+                                        def usageValue = ''
+                                        if (value.size() > 1){
+                                            usageValue = value*.toInteger().sum().toString()
+                                        } else {
+                                            usageValue = value.text()
+                                        }
                                         fact.from = timeStampFormat.parse(key)
                                         fact.to =timeStampFormat.parse(getLastDayOfMonth(key))
                                         cal.setTime(fact.to)
                                         fact.reportingYear=cal.get(Calendar.YEAR)
                                         fact.reportingMonth=cal.get(Calendar.MONTH)+1
                                         fact.type = statsReport.toString()
-                                        fact.value = value.text()
-                                        fact.uid = "${titleId}:${platform}:${customer}:${key}:${reportValues[1]}"
+                                        fact.value = usageValue
+                                        fact.uid = "${titleId}:${platform}:${customer}:${key}:${report}"
                                         fact.title = title_inst
                                         fact.supplier = supplier_inst
                                         fact.inst = org_inst
@@ -262,6 +283,10 @@ class StatsSyncService {
 
     private Boolean responseHasUsageData(xml, titleId) {
         // TODO maybe better check for usage first
+        // What if we get a 3030 Exception? We return false here and do not store facts for the queried period.
+        // Do we need to handle the 3031 Exceptions and kind of flag periods which are mentioned in the XML data element?
+        // Or store 0 values for 3030 Exceptions, which allows us to mark missing/errorneous months, but would increase
+        // the number of facts significantly
         if (xml.Exception.isEmpty() == false && xml.Exception.Number != '3031') {
             log.debug('SUSHI Exception Number ' + xml.Exception.Number + ' : ' + xml.Exception.Message)
             return false
@@ -299,5 +324,6 @@ class StatsSyncService {
 
         syncElapsed = System.currentTimeMillis() - syncStartTime
     }
+
 }
 

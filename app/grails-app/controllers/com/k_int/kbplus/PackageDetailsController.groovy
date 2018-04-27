@@ -522,7 +522,7 @@ select s from Subscription as s where
 
       result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
-      if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), contextOrg)) {
+      if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), contextOrg)) {
           result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
           result.usageMode = (contextOrg.orgType?.value == 'Consortium') ? 'package' : 'institution'
           result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
