@@ -140,7 +140,7 @@ class RefdataCategory extends I10nTranslatableAbstract {
               icon:  it.icon.toString()
               ]}
       */
-      def result = RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name))
+      def result = RefdataValue.findAllByOwner( RefdataCategory.findByDesc(category_name)).sort{a,b -> a.getI10n('value').compareToIgnoreCase b.getI10n('value')}
       result
   }
 

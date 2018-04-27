@@ -4,7 +4,12 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <g:if test="${orgInstance.orgType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+            <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
+        </g:if>
+        <g:else>
+            <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        </g:else>
         <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
 
         <g:javascript src="properties.js"/>
@@ -89,6 +94,7 @@
 
                 <div class="ui card">
                     <div class="content">
+                        <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
                         <dl>
                             <dt><g:message code="org.sector.label" default="Sector" /></dt>
                             <dd>
@@ -101,6 +107,21 @@
                                 <semui:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
                             </dd>
                         </dl>
+                        </g:if>
+                        <g:else>
+                            <dl>
+                                <dt><g:message code="org.sector.label" default="Sector" /></dt>
+                                <dd>
+                                    ${orgInstance.sector.getI10n('value')}
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><g:message code="org.type.label" default="Org Type" /></dt>
+                                <dd>
+                                    ${orgInstance.orgType.getI10n('value')}
+                                </dd>
+                            </dl>
+                        </g:else>
                         <dl>
                             <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
                             <dd>${orgInstance.status?.getI10n('value')}</dd>
@@ -110,6 +131,7 @@
 
                 <div class="ui card">
                     <div class="content">
+                    <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>
@@ -134,6 +156,7 @@
                                 <semui:xEditableRefData owner="${orgInstance}" field="federalState" config='Federal State'/>
                             </dd>
                         </dl>
+                    </g:if>
                         <dl>
                             <dt><g:message code="org.country.label" default="Country" /></dt>
                             <dd>
@@ -211,7 +234,7 @@
                         </dl>
                     </div>
                 </div><!-- .card -->
-
+                <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -228,6 +251,7 @@
                         </dl>
                     </div>
                 </div><!--.card-->
+                </g:if>
 
             <% /*
             <dt><g:message code="org.membership.label" default="Membership Organisation" /></dt>
