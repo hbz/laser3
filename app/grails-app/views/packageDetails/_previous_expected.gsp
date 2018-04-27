@@ -178,7 +178,7 @@
         $('.xEditableValue').editable();
       });
       function selectAll() {
-        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+        $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
       function confirmSubmit() {
