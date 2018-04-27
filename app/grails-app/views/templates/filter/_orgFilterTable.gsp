@@ -93,7 +93,11 @@
             </td>
 
             <g:if test="${tmplConfigShow?.contains('identifier')}">
-                <td>TODO</td>
+                <td><g:if test="${org.ids}">
+                    <ul>
+                            <li><g:each in="${org.ids}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
+                    </ul>
+                </g:if></td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('wib')}">
                 <td>${org.getIdentifierByType('wib')?.value}</td>
