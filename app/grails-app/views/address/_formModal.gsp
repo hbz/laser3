@@ -7,54 +7,21 @@
 
         <div class="field">
             <div class="three fields">
-                <div class="field wide eight fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
+                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
                     <label for="street_1">
                         <g:message code="address.street_1.label" default="Street1" />
-                        <span class="required-indicator">*</span>
                     </label>
                     <g:textField name="street_1" required="" value="${addressInstance?.street_1}"/>
                 </div>
 
-                <div class="field three wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_2', 'error')} ">
+                <div class="field two wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_2', 'error')} ">
                     <label for="street_2">
                         <g:message code="address.street_2.label" default="Street2" />
                     </label>
                     <g:textField name="street_2" value="${addressInstance?.street_2}"/>
                 </div>
 
-                <div class="field five wide fieldcontain ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
-                    <label for="pob">
-                        <g:message code="address.pob.label" default="Pob" />
-                    </label>
-                    <g:textField name="pob" value="${addressInstance?.pob}"/>
-                </div>
-            </div>
-        </div>
-
-        <div class="field">
-            <div class="two fields">
-                <div class="field eight wide fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')} required">
-                    <label for="zipcode">
-                        <g:message code="address.zipcode.label" default="Zipcode" />
-                        <span class="required-indicator">*</span>
-                    </label>
-                    <g:textField name="zipcode" required="" value="${addressInstance?.zipcode}"/>
-                </div>
-
-                <div class="field eight wide fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')} required">
-                    <label for="city">
-                        <g:message code="address.city.label" default="City" />
-                        <span class="required-indicator">*</span>
-                    </label>
-                    <g:textField name="city" required="" value="${addressInstance?.city}"/>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="field">
-            <div class="two fields">
-                <div class="field eight wide fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')}">
+                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')}">
                     <label for="state">
                         <g:message code="address.state.label" default="State" />
                     </label>
@@ -65,8 +32,26 @@
                                   value="${addressInstance?.state?.id}"
                                   noSelection="['null': '']" />
                 </div>
+            </div>
+        </div>
 
-                <div class="field eight wide fieldcontain ${hasErrors(bean: addressInstance, field: 'country', 'error')}">
+        <div class="field">
+            <div class="three fields">
+                <div class="field three wide fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')} required">
+                    <label for="zipcode">
+                        <g:message code="address.zipcode.label" default="Zipcode" />
+                    </label>
+                    <g:textField name="zipcode" required="" value="${addressInstance?.zipcode}"/>
+                </div>
+
+                <div class="field six wide fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')} required">
+                    <label for="city">
+                        <g:message code="address.city.label" default="City" />
+                    </label>
+                    <g:textField name="city" required="" value="${addressInstance?.city}"/>
+                </div>
+
+                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'country', 'error')}">
                     <label for="country">
                         <g:message code="address.country.label" default="Country" />
                     </label>
@@ -78,6 +63,57 @@
                                   noSelection="['null': '']" />
                 </div>
             </div>
+        </div>
+
+        <h4 class="ui dividing header"><g:message code="address.pob.label" default="Pob" /></h4>
+
+        <div class="field">
+            <div class="three fields">
+                <div class="field six wide fieldcontain ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
+                    <label for="pob">
+                        <g:message code="address.pob.label" default="Pob" />
+                    </label>
+                    <g:textField name="pob" value="${addressInstance?.pob}"/>
+                </div>
+
+                <div class="field three wide fieldcontain ${hasErrors(bean: addressInstance, field: 'pobZipcode', 'error')} ">
+                    <label for="pobZipcode">
+                        <g:message code="address.zipcode.label" default="pobZipcode" />
+                    </label>
+                    <g:textField name="pobZipcode" value="${addressInstance?.pobZipcode}"/>
+                </div>
+
+                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'pobCity', 'error')} ">
+                    <label for="pobCity">
+                        <g:message code="address.city.label" default="pobCity" />
+
+                    </label>
+                    <g:textField name="pobCity" value="${addressInstance?.pobCity}"/>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>
+
+        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
+            <label for="name">
+                <g:message code="address.name.label" default="name" />
+            </label>
+            <g:textField name="name" value="${addressInstance?.name}"/>
+        </div>
+
+        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionFirst', 'error')} ">
+            <label for="additionFirst">
+                <g:message code="address.additionFirst.label" default="additionFirst" />
+            </label>
+            <g:textField name="additionFirst" value="${addressInstance?.additionFirst}"/>
+        </div>
+
+        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionSecond', 'error')} ">
+            <label for="additionSecond">
+                <g:message code="address.additionSecond.label" default="additionSecond" />
+            </label>
+            <g:textField name="additionSecond" value="${addressInstance?.additionSecond}"/>
         </div>
 
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">

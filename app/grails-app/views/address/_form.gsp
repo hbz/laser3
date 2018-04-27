@@ -1,12 +1,42 @@
 <%@ page import="com.k_int.kbplus.Address" %>
 
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
+	<label for="type">
+		${com.k_int.kbplus.RefdataCategory.findByDesc('AddressType').getI10n('desc')}
+
+	</label>
+	<laser:select class="ui dropdown" id="type" name="type.id"
+				  from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
+				  optionKey="id"
+				  optionValue="value"
+				  value="${addressInstance?.type?.id}"
+				  required=""/>
+</div>
+
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'prs', 'error')} ">
+    <label for="prs">
+        <g:message code="address.prs.label" default="Prs" />
+
+    </label>
+    <g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${addressInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
+</div>
+
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'org', 'error')} ">
+    <label for="org">
+        <g:message code="address.org.label" default="Org" />
+
+    </label>
+    <g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${addressInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
+</div>
+
+<hr />
+
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
 	<label for="street_1">
 		<g:message code="address.street_1.label" default="Street1" />
 		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="street_1" required="" value="${addressInstance?.street_1}"/>
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'street_2', 'error')} ">
@@ -15,16 +45,6 @@
 		
 	</label>
 	<g:textField name="street_2" value="${addressInstance?.street_2}"/>
-
-</div>
-
-<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
-	<label for="pob">
-		<g:message code="address.pob.label" default="Pob" />
-		
-	</label>
-	<g:textField name="pob" value="${addressInstance?.pob}"/>
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')} required">
@@ -33,7 +53,6 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="zipcode" required="" value="${addressInstance?.zipcode}"/>
-
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')} required">
@@ -69,34 +88,55 @@
                   noSelection="['null': '']" />
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
-	<label for="type">
-		${com.k_int.kbplus.RefdataCategory.findByDesc('AddressType').getI10n('desc')}
-		
+<hr />
+
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
+	<label for="pob">
+		<g:message code="address.pob.label" default="Pob" />
+
 	</label>
-	<laser:select class="ui dropdown" id="type" name="type.id"
-		from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
-    	optionKey="id"
-    	optionValue="value"
-    	value="${addressInstance?.type?.id}"
-        required=""/>
+	<g:textField name="pob" value="${addressInstance?.pob}"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'prs', 'error')} ">
-	<label for="prs">
-		<g:message code="address.prs.label" default="Prs" />
-		
-	</label>
-	<g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${addressInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'pobZipcode', 'error')} ">
+	<label for="pobZipcode">
+		<g:message code="address.pobZipcode.label" default="pobZipcode" />
 
+	</label>
+	<g:textField name="pobZipcode" value="${addressInstance?.pobZipcode}"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'org', 'error')} ">
-	<label for="org">
-		<g:message code="address.org.label" default="Org" />
-		
-	</label>
-	<g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${addressInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'pobCity', 'error')} ">
+	<label for="pobCity">
+		<g:message code="address.pobCity.label" default="pobCity" />
 
+	</label>
+	<g:textField name="pobCity" value="${addressInstance?.pobCity}"/>
+</div>
+
+<hr />
+
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
+    <label for="name">
+        <g:message code="address.name.label" default="name" />
+
+    </label>
+    <g:textField name="name" value="${addressInstance?.name}"/>
+</div>
+
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionFirst', 'error')} ">
+    <label for="additionFirst">
+        <g:message code="address.additionFirst.label" default="additionFirst" />
+
+    </label>
+    <g:textField name="additionFirst" value="${addressInstance?.additionFirst}"/>
+</div>
+
+<div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionSecond', 'error')} ">
+    <label for="additionSecond">
+        <g:message code="address.additionSecond.label" default="additionSecond" />
+
+    </label>
+    <g:textField name="additionSecond" value="${addressInstance?.additionSecond}"/>
 </div>
 

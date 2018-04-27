@@ -57,7 +57,17 @@
                     <div class="control-group ">
                         <label class="control-label" for="descr">Context</label>
                         <div class="controls">
-                        	<g:select name="descr" disabled="${!editable}" value="${propDefInstance.descr}" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" />
+                        	<%--<g:select name="descr" disabled="${!editable}" value="${propDefInstance.descr}" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" />--%>
+                            <select name="descr" id="descr" disabled="${!editable}">
+                                <g:each in="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" var="pd">
+                                    <g:if test="${propDefInstance.descr == pd}">
+                                        <option value="${pd}" selected="selected"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
+                                    </g:if>
+                                    <g:else>
+                                        <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
+                                    </g:else>
+                                </g:each>
+                            </select>
                         </div>
                     </div>
                     <div class="control-group ">

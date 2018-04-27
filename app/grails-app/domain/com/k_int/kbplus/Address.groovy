@@ -10,17 +10,26 @@ import groovy.util.logging.*
 
 @Log4j
 class Address {
-    
+
     String street_1
     String street_2
-    String pob
     String zipcode
     String city
+
+    String pob
+    String pobZipcode
+    String pobCity
+
     RefdataValue state      // RefdataCategory 'Federal State'
     RefdataValue country    // RefdataCategory 'Country'
     RefdataValue type       // RefdataCategory 'AddressType'
-    Person prs          // person related contact; exclusive with org
-    Org    org          // org related contact; exclusive with prs
+
+    String name
+    String additionFirst
+    String additionSecond
+
+    Person prs              // person related contact; exclusive with org
+    Org    org              // org related contact; exclusive with prs
     
     static mapping = {
         id       column:'adr_id'
@@ -28,10 +37,15 @@ class Address {
         street_1 column:'adr_street_1'
         street_2 column:'adr_street_2'
         pob      column:'adr_pob'
+        pobZipcode   column:'adr_pob_zipcode'
+        pobCity      column:'adr_pob_city'
         zipcode  column:'adr_zipcode'
         city     column:'adr_city'
         state    column:'adr_state_rv_fk'
         country  column:'adr_country_rv_fk'
+        name     column:'adr_name'
+        additionFirst   column:'adr_addition_first'
+        additionSecond  column:'adr_addition_second'
         type     column:'adr_type_rv_fk'
         prs      column:'adr_prs_fk'
         org      column:'adr_org_fk'
@@ -40,11 +54,16 @@ class Address {
     static constraints = {
         street_1 (nullable:false, blank:false)
         street_2 (nullable:true,  blank:true)
-        pob      (nullable:true,  blank:true)
+        pob         (nullable:true,  blank:true)
+        pobZipcode  (nullable:true,  blank:true)
+        pobCity     (nullable:true,  blank:true)
         zipcode  (nullable:false, blank:false)
         city     (nullable:false, blank:false)
         state    (nullable:true,  blank:true)
         country  (nullable:true,  blank:true)
+        name            (nullable:true,  blank:true)
+        additionFirst   (nullable:true,  blank:true)
+        additionSecond  (nullable:true,  blank:true)
         type     (nullable:false)
         prs      (nullable:true)
         org      (nullable:true)
