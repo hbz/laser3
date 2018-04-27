@@ -97,7 +97,7 @@
             </sec:ifLoggedIn>
             */ %>
 
-            <g:if test="${user}">
+            <g:if test="${contextUser}">
                 <g:if test="${contextOrg}">
                     <sec:ifLoggedIn>
                         <div class="ui simple dropdown item">
@@ -108,6 +108,7 @@
                                 <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
                                 <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
                                 <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
+                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
 
                                 <%--<div class="divider"></div>
 
@@ -396,14 +397,14 @@
                         <div class="results"></div>
                     </div>
 
-                    <g:if test="${user}">
+                    <g:if test="${contextUser}">
                         <div class="ui simple dropdown item la-noBorder">
-                            ${user.displayName}
+                            ${contextUser.displayName}
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
 
-                                <g:set var="usaf" value="${user.authorizedOrgs}" />
+                                <g:set var="usaf" value="${contextUser.authorizedOrgs}" />
                                 <g:if test="${usaf && usaf.size() > 0}">
                                     <g:each in="${usaf}" var="org">
                                         <g:if test="${org.id == contextOrg?.id}">
@@ -505,7 +506,7 @@
     <div class="navbar-push"></div>
 
         <sec:ifLoggedIn>
-            <g:if test="${user!=null && ( user.display==null || user.display=='' ) }">
+            <g:if test="${contextUser!=null && ( contextUser.display==null || contextUser.display=='' ) }">
                 <div>
                     <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
                         Your display name</g:link> as soon as possible.

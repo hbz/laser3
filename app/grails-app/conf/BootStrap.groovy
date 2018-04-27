@@ -783,6 +783,14 @@ class BootStrap {
         RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'])
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'])
         RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'])
+        RefdataValue.loc('Country',   [en: 'France', de: 'Frankreich'])
+        RefdataValue.loc('Country',   [en: 'Great Britain', de: 'Großbritannien'])
+        RefdataValue.loc('Country',   [en: 'United States of America', de: 'Vereinigte Staaten von Amerika'])
+        RefdataValue.loc('Country',   [en: 'Belgium', de: 'Belgien'])
+        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'])
+        RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'])
+        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'])
+
 
         RefdataValue.loc('FactType', [en: 'STATS:JR1'])
         RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
@@ -846,6 +854,7 @@ class BootStrap {
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Verlag'])
+        RefdataValue.loc('OrgType',      [en: 'Provider', de: 'Anbieter'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
         RefdataValue.loc('Package Status',      [en: 'Deleted', de: 'Gelöscht'])
