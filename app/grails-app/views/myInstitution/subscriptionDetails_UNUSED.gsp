@@ -50,7 +50,7 @@
               <table  class="table table-striped table-bordered table-condensed">
                 <tr>
                   <th></th>
-                  <th>#</th>
+                  <th>${message(code:'sidewide.number')}</th>
                   <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="Title" />
                   <th>ISSN</th>
                   <th>iISSN</th>

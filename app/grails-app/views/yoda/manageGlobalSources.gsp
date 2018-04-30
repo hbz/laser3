@@ -28,7 +28,7 @@
             <th>Principal</th>
             <th>Credentials</th>
             <th>RecType</th>
-            <th># Local Copies</th>
+            <th>${message(code:'sidewide.number')} Local Copies</th>
             <th>Actions</th>
           </tr>
         </thead>

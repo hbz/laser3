@@ -65,7 +65,7 @@
                   <th style="vertical-align:middle;">
                     <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
                   </th>
-                  <th>#</th>
+                    <th>${message(code:'sidewide.number')}</th>
                   <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
                   <th>ISSN</th>
                   <th>eISSN</th>
