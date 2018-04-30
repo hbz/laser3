@@ -1176,7 +1176,7 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Back File', de: 'Back File'])
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Master File', de: 'Master File'])
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Scope Undefined', de: 'Scope Undefined'])
-        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'unknown', de: 'unbekannt'])
+        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'unknown', de: 'Unbekannt'])
 
         RefdataCategory.loc('TaxType',
                 [en: 'TaxType', de: 'TaxType'])
