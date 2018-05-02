@@ -11,6 +11,9 @@
 
                 <th>${message(code: 'task.endDate.label', default: 'End Date')}</th>
 
+                <th>${message(code: 'task.status.label', default: 'Status')}</th>
+
+
                 <th>${message(code: 'task.object.label', default: 'Object')}</th>
 
                 <th>${message(code: 'task.creator.label', default: 'Creator')}</th>
@@ -26,6 +29,10 @@
                     <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.endDate}"/></td>
+
+                    <td>
+                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
+                    </td>
 
                     <td>
                         <g:if test="${taskInstance.license}">

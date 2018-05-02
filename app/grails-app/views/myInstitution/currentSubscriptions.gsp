@@ -182,6 +182,8 @@
             <g:if test="${params.orgRole == 'Subscriber'}">
                 <th>${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
+
+            <th>${message(code: 'default.provider.label', default: 'Provider')}</th>
             <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
@@ -257,7 +259,11 @@
                             ${s.getConsortia()?.name}
                         </td>
                     </g:if>
-
+                    <td>
+                        <g:each in="${visibleOrgRelations}" var="role">
+                            <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
+                        </g:each>
+                    </td>
                     <%--
                     <td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
