@@ -14,6 +14,24 @@
 
         <semui:modeSwitch controller="packageDetails" action="show" params="${params}" />
 
+        <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
+                </semui:exportDropdownItem>
+
+                <g:each in="${transforms}" var="transkey,transval">
+                    <semui:exportDropdownItem>
+                        <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                    </semui:exportDropdownItem>
+                </g:each>
+            </semui:exportDropdown>
+            <g:render template="actions" />
+        </semui:controlButtons>
+
         <h1 class="ui header"><semui:headerIcon />
 
             <g:if test="${editable}"><span id="packageNameEdit"
@@ -88,7 +106,7 @@
             <tr>
 
               <th>
-                <g:if test="${editable}"><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
               </th>
 
               <th colspan="7">
@@ -266,7 +284,9 @@
         $('.xEditableValue').editable();
       });
       function selectAll() {
-        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+
+        //$('#select-all').is( ':checked' )? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
       }
 
       function confirmSubmit() {

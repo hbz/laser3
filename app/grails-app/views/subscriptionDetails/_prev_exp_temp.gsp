@@ -37,7 +37,7 @@
                 <thead>
 
                 <tr>
-                    <th rowspan="2">#</th>
+                    <th rowspan="2">${message(code:'sidewide.number')}</th>
                     <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
                     <th>ISSN</th>
                     <g:sortableColumn params="${params}" property="coreStatus" title="${message(code:'subscription.details.core', default:'Core')}" />

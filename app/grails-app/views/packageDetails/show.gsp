@@ -371,7 +371,7 @@
             <tr class="no-background">
 
               <th>
-                <g:if test="${editable}"><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                <g:if test="${editable}"><input type="checkbox" id="select-all" name="chkall" onClick="javascript:selectAll();"/></g:if>
               </th>
 
               <th colspan="7">
@@ -681,7 +681,7 @@
         $('.xEditableValue').editable();
       });
       function selectAll() {
-          $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+          $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
       function confirmSubmit() {
