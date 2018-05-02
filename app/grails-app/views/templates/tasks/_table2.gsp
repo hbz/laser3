@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">Meine Aufgaben</h2>
+        <h2 class="ui header">Von mir erstellte Aufgaben</h2>
 
         <table class="ui celled la-table table">
             <thead>
@@ -68,7 +68,7 @@
     function taskedit(id) {
 
         $.ajax({
-            url: "/laser/task/ajaxEdit/?id="+id,
+            url: "/laser/task/ajaxEdit?id="+id,
             success: function(result){
                 $("#dynamicModalContainer").empty();
                 $("#modalEditTask").remove();

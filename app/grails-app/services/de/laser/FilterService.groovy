@@ -41,6 +41,10 @@ class FilterService {
             query << "o.libraryType.id = ?"
             queryParams << Long.parseLong(params.libraryType)
         }
+        if (params.country?.length() > 0) {
+            query << "o.country.id = ?"
+            queryParams << Long.parseLong(params.country)
+        }
 
         if (query.size() > 0) {
             query = "from Org o where " + query.join(" and ") + " order by LOWER(o.name) asc"

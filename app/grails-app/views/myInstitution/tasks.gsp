@@ -55,6 +55,7 @@
             </form>
         </semui:filter>
 
+        <h2 class="ui header">Mir zugewiesene Aufgaben</h2>
         <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList]}"/>

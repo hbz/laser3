@@ -39,14 +39,14 @@
                             <g:each in="${privatePropertyDefinitions}" var="ppd">
                                 <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(ppd, 'name')}" />
                                 <tr>
-                                    <td>${ppd.getI10n('descr')}</td>
+                                    <td><g:message code="propertyDefinition.${ppd.descr}.label" default="${ppd.descr}" /></td>
                                     <td>
                                         ${ppd.getI10n('name')}
                                         <g:if test="${ppd.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                                         </g:if>
                                         <g:if test="${ppd.mandatory}">
-                                            <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                                            <span class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
                                         </g:if>
                                         <g:if test="${ppd.multipleOccurrence}">
                                             <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
@@ -97,12 +97,17 @@
 
                 <div class="field five wide">
                     <label class="property-label">${message(code:'propertyDefinition.descr.label', default:'Description')}</label>
-                    <g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>
+                    <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
+                    <select name="pd_descr" id="pd_descr" class="ui dropdown">
+                        <g:each in="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}" var="pd">
+                            <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
+                        </g:each>
+                    </select>
                 </div>
 
                 <div class="field five wide">
                     <label class="property-label">Type</label>
-                    <g:select
+                    <g:select  class="ui dropdown"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="value" optionValue="key"
                         name="pd_type"
