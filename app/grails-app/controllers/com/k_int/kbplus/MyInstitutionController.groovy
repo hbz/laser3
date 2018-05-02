@@ -659,7 +659,7 @@ from Subscription as s where (
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
         
-        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
@@ -708,7 +708,7 @@ from Subscription as s where (
             subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
 
-        if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
+        if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
             def startDate = sdf.parse(params.valid_from)
