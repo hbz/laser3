@@ -200,7 +200,7 @@
                       ${id.identifier.ns.ns}: <a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a>
                     </g:if>
                     <g:else>
-                      ${id.identifier.ns.ns}:${id.identifier.value}
+                      ${id.identifier.ns.ns}: ${id.identifier.value}
                     </g:else>
                     <br/>
                   </g:each>
