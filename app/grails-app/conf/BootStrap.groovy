@@ -1249,6 +1249,14 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'])
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'])
 
+        RefdataCategory.loc('TIPP Access Status',
+                [en: 'TIPP Access Status', de: 'TIPP Access Status'])
+
+        RefdataValue.loc('TIPP Access Status', [en: 'Current(*)', de: 'Aktuell(*)'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Expected', de: 'Erwartet'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Expired', de: 'Abgelaufen'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Current', de: 'Aktuell'])
+
         // Controlled values from the <UsageType> element.
 
         RefdataCategory.loc('UsageStatus',
