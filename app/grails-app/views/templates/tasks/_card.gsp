@@ -25,7 +25,7 @@
     function taskedit(id) {
 
         $.ajax({
-            url: "/laser/task/ajaxEdit?id="+id,
+            url: "/laser/ajax/TaskEdit?id="+id,
             success: function(result){
                 $("#dynamicModalContainer").empty();
                 $("#modalEditTask").remove();
