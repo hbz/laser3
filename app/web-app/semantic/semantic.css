@@ -18789,6 +18789,14 @@ ol.ui.horizontal.list li:before,
   background: #e6eaef;
   border: none;
 }
+
+.ui.segment.la-role-admin {
+  border-right: 10px solid #004678;
+}
+
+.ui.segment.la-role-yoda {
+  border-right: 10px solid #98B500;
+}
 /*!
  * # Semantic UI 2.3.0 - Step
  * http://github.com/semantic-org/semantic-ui/
@@ -28931,6 +28939,14 @@ a.ui.card:hover,
   font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
+}
+
+.ui.card.la-role-admin {
+  border-right: 10px solid #004678;
+}
+
+.ui.card.la-role-yoda {
+  border-right: 10px solid #98B500;
 }
 /*!
  * # Semantic UI 2.3.0 - Comment

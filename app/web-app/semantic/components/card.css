@@ -1029,3 +1029,9 @@ a.ui.card:hover,
   margin-top: -0.21425em;
   line-height: 1.28571429em;
 }
+.ui.card.la-role-admin {
+  border-right: 10px solid #004678;
+}
+.ui.card.la-role-yoda {
+  border-right: 10px solid #98B500;
+}
