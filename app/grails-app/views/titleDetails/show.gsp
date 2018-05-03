@@ -52,7 +52,7 @@
                     <table class="ui celled la-table la-table-small table ignore-floatThead">
                         <thead>
                         <tr>
-                            <th>${message(code:'title.edit.component_id.label')}</th>
+                            %{--<th>${message(code:'title.edit.component_id.label')}</th>--}%
                             <th>${message(code:'title.edit.namespace.label')}</th>
                             <th>${message(code:'identifier.label')}</th>
                             <th>${message(code:'default.actions.label')}</th>
@@ -61,7 +61,7 @@
                         <tbody>
                         <g:each in="${ti.ids}" var="io">
                             <tr>
-                                <td>${io.id}</td>
+                                %{--<td>${io.id}</td>--}%
                                 <td>${io.identifier.ns.ns}</td>
                                 <td>${io.identifier.value}</td>
                                 <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ti.class.name}:${ti.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'title.edit.identifier.delete')}</g:link></g:if></td>
@@ -116,7 +116,7 @@
             <table class="ui celled la-table table ">
               <thead>
                 <tr>
-                  <th>${message(code:'title.edit.component_id.label')}</th>
+                  %{--<th>${message(code:'title.edit.component_id.label')}</th>--}%
                   <th>${message(code:'template.orgLinks.name')}</th>
                   <th>${message(code:'template.orgLinks.role')}</th>
                   <th>${message(code:'title.edit.orglink.from')}</th>
@@ -126,7 +126,7 @@
               <tbody>
                 <g:each in="${ti.orgs}" var="org">
                   <tr>
-                    <td>${org.org.id}</td>
+                    %{--<td>${org.org.id}</td>--}%
                     <td><g:link controller="organisations" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>

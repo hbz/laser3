@@ -59,8 +59,8 @@
                 <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
                 <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
 
-                <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>
+                %{--<dt>${message(code: 'package.show.persistent_id')}</dt>
+                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>--}%
 
                 <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
