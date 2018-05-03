@@ -11,7 +11,7 @@
 
 <semui:card>
     <div class="content">
-        <h1 class="ui header"><semui:headerIcon/>404</h1>
+        <h1 class="ui header">404</h1>
 
         <h3 class="ui header">${message(code: 'serverCode.notFound.message1')}</h3>
 

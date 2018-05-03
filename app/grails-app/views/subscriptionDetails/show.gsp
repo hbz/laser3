@@ -163,8 +163,7 @@
                                         <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
                                         <g:if test="${sp.pkg?.contentProvider}">
-                                            ,
-                                            ${sp.pkg?.contentProvider?.name}
+                                            (${sp.pkg?.contentProvider?.name})
                                         </g:if>
 
                                         <g:if test="${editable}">

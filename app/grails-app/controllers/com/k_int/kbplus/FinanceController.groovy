@@ -22,6 +22,7 @@ class FinanceController {
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
     private final def admin_role      = Role.findByAuthority('INST_ADM')
+    private final def editor_role      = Role.findByAuthority('INST_EDITOR')
     private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
@@ -38,7 +39,7 @@ class FinanceController {
 
     private boolean isFinanceAuthorised(Org org, User user) {
 
-        accessService.checkUserOrgRole(user, org, admin_role)
+        accessService.checkMinUserOrgRole(user, org, editor_role)
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -111,7 +112,7 @@ class FinanceController {
      */
     private def setupQueryData(result, params, user) {
         //Setup params
-        result.editable    =  accessService.checkUserOrgRole(user, result.institution, admin_role)
+        result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, editor_role)
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.filterMode  =  params.filterMode?: "OFF"
         result.info        =  [] as List
