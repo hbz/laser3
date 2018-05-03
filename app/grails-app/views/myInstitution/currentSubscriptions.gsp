@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 
 <r:require module="annotations" />
@@ -260,8 +260,8 @@
                         </td>
                     </g:if>
                     <td>
-                        <g:each in="${visibleOrgRelations}" var="role">
-                            <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
+                        <g:each in="${OrgRole.findAllBySubAndRoleType(s, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
+                            <g:link controller="Organisations" action="show" id="${role.org?.id}">${role.org?.name}</g:link><br />
                         </g:each>
                     </td>
                     <%--
