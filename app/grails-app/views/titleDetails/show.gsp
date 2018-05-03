@@ -116,7 +116,7 @@
             <table class="ui celled la-table table ">
               <thead>
                 <tr>
-                  <th>${message(code:'title.edit.component_id.label')}</th>
+                  %{--<th>${message(code:'title.edit.component_id.label')}</th>--}%
                   <th>${message(code:'template.orgLinks.name')}</th>
                   <th>${message(code:'template.orgLinks.role')}</th>
                   <th>${message(code:'title.edit.orglink.from')}</th>
@@ -126,7 +126,7 @@
               <tbody>
                 <g:each in="${ti.orgs}" var="org">
                   <tr>
-                    <td>${org.org.id}</td>
+                    %{--<td>${org.org.id}</td>--}%
                     <td><g:link controller="organisations" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>
