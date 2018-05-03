@@ -993,6 +993,21 @@ class BootStrap {
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'CLOCKSS', de: 'CLOCKSS'])
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Portico', de: 'Portico'])
 
+        RefdataValue.loc('Authorization Method',      [en: 'IPv4', de: 'IPv4'])
+        RefdataValue.loc('Authorization Method',      [en: 'IPv6', de: 'IPv6'])
+        RefdataValue.loc('Authorization Method',      [en: 'Shibboleth', de: 'Shibboleth'])
+        RefdataValue.loc('Authorization Method',      [en: 'Username/Password', de: 'Benutzername/Passwort'])
+        RefdataValue.loc('Authorization Method',      [en: 'Open Athens', de: 'OpenAthens'])
+        RefdataValue.loc('Authorization Method',      [en: 'Referrer', de: 'Referrer'])
+
+        RefdataValue.loc('Access Method',      [en: 'IP', de: 'IP'])
+        RefdataValue.loc('Access Method',      [en: 'IP', de: 'IP'])
+        RefdataValue.loc('Access Method',      [en: 'Proxy', de: 'Proxy'])
+        RefdataValue.loc('Access Method',      [en: 'Shibboleth', de: 'Shibboleth'])
+        RefdataValue.loc('Access Method',      [en: 'Username/Password', de: 'Benutzername/Passwort'])
+        RefdataValue.loc('Access Method',      [en: 'Open Athens', de: 'OpenAthens'])
+        RefdataValue.loc('Access Method',      [en: 'Referrer', de: 'Referrer'])
+
     }
 
     def setupOnixPlRefdata = {
