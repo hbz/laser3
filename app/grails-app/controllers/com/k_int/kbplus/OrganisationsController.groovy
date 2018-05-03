@@ -30,7 +30,7 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         // TODO: deactived
       /*
@@ -275,7 +275,7 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
       def tracked_roles = ["ROLE_ADMIN":"KB+ Administrator"]
 
@@ -334,7 +334,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if (accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
+      if (accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_REJECTED
         uo.save()
       }
@@ -347,7 +347,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
+      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_APPROVED
         uo.save();
       }
@@ -379,7 +379,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
+      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.delete();
       }
       redirect action: 'users', id: params.id

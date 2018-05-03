@@ -151,7 +151,7 @@ class PackageDetailsController {
           isAdmin = true;
       }
       else {
-        hasAccess = result.packageInstance.orgs.find{it.roleType?.value == 'Package Consortia' && accessService.checkUserOrgRole(result.user, it.org, 'INST_ADM') }
+        hasAccess = result.packageInstance.orgs.find{it.roleType?.value == 'Package Consortia' && accessService.checkMinUserOrgRole(result.user, it.org, 'INST_ADM') }
       }
 
       if( !isAdmin &&  hasAccess == null ) {

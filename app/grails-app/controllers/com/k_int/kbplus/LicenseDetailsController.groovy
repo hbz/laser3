@@ -193,7 +193,7 @@ class LicenseDetailsController {
     private def getAvailableSubscriptions(license, user) {
         def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
           orgRole.roleType?.value in ["Licensee", "Licensee_Consortial"]
-        }?.collect{  accessService.checkUserOrgRole(user, it.org, 'INST_ADM') ? it.org : null  }
+        }?.collect{  accessService.checkMinUserOrgRole(user, it.org, 'INST_EDITOR ') ? it.org : null  }
 
     def subscriptions = null
     if(licenseInstitutions){
@@ -244,7 +244,7 @@ from Subscription as s where
     if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
         isAdmin = true;
     }else{
-       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkUserOrgRole(result.user, it.org, 'INST_ADM') }
+       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkMinUserOrgRole(result.user, it.org, 'INST_ADM') }
     }
     if( !isAdmin && (result.license.licenseType != "Template" || hasAccess == null)) {
       flash.error = message(code:'license.consortia.access.error')

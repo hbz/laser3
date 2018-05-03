@@ -47,6 +47,7 @@ class AccessService {
     //
     // NO ROLE HIERARCHY !!!
     //
+    @Deprecated
     boolean checkUserOrgRole(user, org, role) {
 
         if (! user || ! org) {

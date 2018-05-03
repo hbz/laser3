@@ -9,8 +9,6 @@
 <semui:messages data="${flash}"/>
 <semui:card>
     <div class="content">
-        <h1 class="ui header"><semui:headerIcon/></h1>
-
         <h3 class="ui header">${message(code: 'serverCode.forbidden.message2')}</h3>
 
         <g:if test="${!flash.error}">

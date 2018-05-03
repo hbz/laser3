@@ -714,7 +714,7 @@ class SubscriptionDetailsController {
         def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
 
-        if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
+        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             if (orgType?.value == 'Consortium') {
                 def cons_members = []
