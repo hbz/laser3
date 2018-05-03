@@ -65,7 +65,7 @@ class StatsSyncService {
             "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns = 'zdb' "+
             "and po.roleType.value='Content Provider' "+
             "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
-            "and orgrel.roleType.value = 'Subscriber' " +
+            "and orgrel.roleType.value = 'Subscriber_Consortial' " +
             "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'RequestorID' ) "
         if (queryParams['provider'] != null){
             hql += "and po.org.id =:provider "

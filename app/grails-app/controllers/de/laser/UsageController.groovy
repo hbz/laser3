@@ -1,6 +1,8 @@
 package de.laser
 
 import com.k_int.kbplus.Fact
+import com.k_int.kbplus.OrgCustomProperty
+import com.k_int.properties.PropertyDefinition
 import de.laser.domain.StatsTripleCursor
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
@@ -40,6 +42,8 @@ class UsageController {
         result.providerList = factService.providersWithStatssid()
         result.institutionsWithFacts = factService.getFactInstitutionList()
         result.providersWithFacts = factService.getFactProviderList()
+        result.apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), result.institution)
+        result.requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
 
         return result
     }
