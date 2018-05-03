@@ -201,7 +201,8 @@
                                         property: 'orgs',
                                         recip_prop: 'pkg',
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
-                                        tmplText:'Anbieter hinzufügen'
+                                        tmplText:'Anbieter hinzufügen',
+                                        tmplID:'ContentProvider'
                               ]}" />
 <%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
