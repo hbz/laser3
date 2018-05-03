@@ -77,7 +77,7 @@ class YodaController {
         result.statsSyncService.completedCount = statsSyncService.completedCount
         result.statsSyncService.newFactCount = statsSyncService.newFactCount
         result.statsSyncService.totalTime = statsSyncService.totalTime
-        result.statsSyncService.threads = statsSyncService.FIXED_THREAD_POOL_SIZE
+        result.statsSyncService.threads = statsSyncService.THREAD_POOL_SIZE
         result.statsSyncService.queryTime = statsSyncService.queryTime
         result.statsSyncService.activityHistogram = statsSyncService.activityHistogram
         result.statsSyncService.syncStartTime = statsSyncService.syncStartTime
