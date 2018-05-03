@@ -49,10 +49,10 @@
                     <g:if test="${editable}">
                         <g:form controller="person" action="delete">
                             <g:hiddenField name="id" value="${person?.id}" />
-                                <g:link class="ui button" controller="person" action="show" id="${person?.id}">
+                                <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
                                     <i class="write icon"></i>
                                 </g:link>
-                                <button class="ui negative button" type="submit" name="_action_delete">
+                                <button class="ui icon negative button" type="submit" name="_action_delete">
                                     <i class="trash alternate icon"></i>
                                 </button>
                         </g:form>

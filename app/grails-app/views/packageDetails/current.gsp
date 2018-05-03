@@ -178,7 +178,7 @@
                    <strong><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
                     <br>
                    <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link><br/>
-                   <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span><br/>
+                   <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.getI10n('value')}</span><br/>
                     <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>
                    <g:if test="${params.mode=='advanced'}">
                      <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
