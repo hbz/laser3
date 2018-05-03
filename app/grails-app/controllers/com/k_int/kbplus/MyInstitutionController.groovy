@@ -2686,8 +2686,7 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(['ROLE_YODA'])
     def changeLog() {
         def result = setResultGenerics()
 
