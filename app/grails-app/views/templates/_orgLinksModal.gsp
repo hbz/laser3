@@ -51,7 +51,7 @@
         oOrTable = $('#org_role_tab').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
-            "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="ContentProvider" params="${[format:'json']}"/>",
+            "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="allOrgs" params="${[format:'json']}"/>",
             "bServerSide": true,
             "bProcessing": true,
             "bDestroy":    true,

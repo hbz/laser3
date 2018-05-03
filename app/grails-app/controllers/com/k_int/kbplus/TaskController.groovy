@@ -178,8 +178,7 @@ class TaskController {
 		}
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
 		def contextOrg = contextService.getOrg()
 		def result     = taskService.getPreconditions(contextOrg)

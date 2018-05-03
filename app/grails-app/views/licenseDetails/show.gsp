@@ -255,7 +255,8 @@
                                             property: 'orgLinks',
                                             recip_prop: 'lic',
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
-                                            tmplText:'Lizenzgeber hinzufügen'
+                                            tmplText:'Lizenzgeber hinzufügen',
+                                            tmplID:'ContentProvider'
                                   ]}" />
 <%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
