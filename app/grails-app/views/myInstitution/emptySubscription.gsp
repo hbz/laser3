@@ -22,13 +22,13 @@
 
         <semui:messages data="${flash}"/>
 
-        <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form">
+        <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form newLicence">
 
             <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>
 
-            <div class="field">
+            <div class="field required">
                 <label>${message(code:'myinst.emptySubscription.name', default:'New Subscription Name')}</label>
-                <input type="text" name="newEmptySubName" placeholder="New Subscription Name"/>
+                <input required type="text" name="newEmptySubName" placeholder="New Subscription Name"/>
              </div>
 
             <div class="field hidden">
@@ -36,9 +36,9 @@
                 <input type="text" name="newEmptySubId" value="${defaultSubIdentifier}"/>
             </div>
 
-            <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" />
+            <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" class="required" />
 
-            <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
+            <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" class="required" />
 
             <g:if test="${orgType?.value == 'Consortium'}">
                 <div class="field">
@@ -119,5 +119,44 @@
             </r:script>
 
         </g:if>
+        <r:script language="JavaScript">
+
+                    $('.newLicence')
+                            .form({
+                        on: 'blur',
+                        inline: true,
+                        fields: {
+                            newEmptySubName: {
+                                identifier  : 'newEmptySubName',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            },
+
+                            valid_from: {
+                                identifier  : 'valid_from',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            },
+                             valid_to: {
+                                identifier  : 'valid_to',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            }
+
+                         }
+                    });
+        </r:script>
     </body>
 </html>

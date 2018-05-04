@@ -82,7 +82,7 @@
             <g:each in="${orgInstance.outgoingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
                 (<g:each in="${i.toOrg?.ids}" var="id">
-                  ${id.identifier.ns.ns}:${id.identifier.value} 
+                  ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)
               </dd>
             </g:each>
@@ -93,7 +93,7 @@
             <g:each in="${orgInstance.incomingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="org" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
                 (<g:each in="${i.fromOrg?.ids}" var="id">
-                  ${id.identifier.ns.ns}:${id.identifier.value} 
+                  ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)
               </dd>
 

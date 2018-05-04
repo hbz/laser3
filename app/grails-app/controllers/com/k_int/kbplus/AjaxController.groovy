@@ -11,6 +11,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class AjaxController {
 
     def contextService
+    def taskService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -1198,6 +1199,16 @@ class AjaxController {
             }
         }
         redirect(url: request.getHeader('referer'))
+    }
+
+
+    def TaskEdit() {
+        def contextOrg = contextService.getOrg()
+        def result     = taskService.getPreconditions(contextOrg)
+        result.params = params
+        result.taskInstance = Task.get(params.id)
+
+        render template:"../templates/tasks/modal_edit", model: result
     }
 
 }

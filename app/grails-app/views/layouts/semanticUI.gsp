@@ -219,13 +219,19 @@
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />
-
                                 <g:if test="${grailsApplication.config.feature_finance}">
                                     <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
 
                                     <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
                                 </g:if>
+
+                                <sec:ifAnyGranted roles="ROLE_YODA">
+                                    <div class="divider"></div>
+
+                                    <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
+                                    <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
+                                </sec:ifAnyGranted>
+
                             </div>
                         </div>
                     </sec:ifLoggedIn>

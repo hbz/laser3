@@ -4,7 +4,6 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
-
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController {
 

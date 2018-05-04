@@ -1,4 +1,6 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 
 <!doctype html>
 <html>
@@ -265,109 +267,133 @@
             </dd>
             */ %>
 
-                <g:if test="${orgInstance?.outgoingCombos}">
-                    <div class="ui card">
-                        <div class="content">
-                            <dl>
-                                <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
-                                <dd>
-                                    <g:each in="${orgInstance.outgoingCombos}" var="i">
-                                        <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                                            (<g:each in="${i.toOrg?.ids}" var="id_out">
+                    <g:if test="${orgInstance?.outgoingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
+                            <div class="ui card">
+                        </g:if>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                            <div class="ui card la-role-admin">
+                        </g:elseif>
+                        <g:else>
+                            <div class="ui card la-role-yoda">
+                        </g:else>
+                                <div class="content">
+                                    <dl>
+                                        <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
+                                        <dd>
+                                            <g:each in="${orgInstance.outgoingCombos}" var="i">
+                                                <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
+                                                (<g:each in="${i.toOrg?.ids}" var="id_out">
                                                 ${id_out.identifier.ns.ns}:${id_out.identifier.value}
                                             </g:each>)
-                                    </g:each>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div><!--.card-->
-                </g:if>
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div><!--.card-->
+                    </g:if>
 
-                <g:if test="${orgInstance?.incomingCombos}">
-                    <div class="ui card">
-                        <div class="content">
-                            <dl>
-                                <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
-                                <dd>
-                                    <g:each in="${orgInstance.incomingCombos}" var="i">
-                                      <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                        (<g:each in="${i.fromOrg?.ids}" var="id_in">
-                                          ${id_in.identifier.ns.ns}:${id_in.identifier.value}
-                                        </g:each>)
-                                    </g:each>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div><!--.card-->
-                </g:if>
+                    <g:if test="${orgInstance?.incomingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
+                            <div class="ui card">
+                        </g:if>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                            <div class="ui card la-role-admin">
+                        </g:elseif>
+                        <g:else>
+                            <div class="ui card la-role-yoda">
+                        </g:else>
+                                <div class="content">
+                                    <dl>
+                                        <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
+                                        <dd>
+                                            <g:each in="${orgInstance.incomingCombos}" var="i">
+                                              <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                (<g:each in="${i.fromOrg?.ids}" var="id_in">
+                                                  ${id_in.identifier.ns.ns}:${id_in.identifier.value}
+                                                </g:each>)
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div><!--.card-->
+                    </g:if>
 
-                <g:if test="${orgInstance?.links}">
-                    <div class="ui card">
-                        <div class="content">
+                    <g:if test="${orgInstance?.links && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
+                            <div class="ui card">
+                        </g:if>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                            <div class="ui card la-role-admin">
+                        </g:elseif>
+                        <g:else>
+                            <div class="ui card la-role-yoda">
+                        </g:else>
+                                <div class="content">
+                                    <g:each in="${sorted_links}" var="rdv_id,link_cat">
 
-                            <g:each in="${sorted_links}" var="rdv_id,link_cat">
+                                        <dl>
+                                            <dt>
+                                                <h5 class="ui header">Als ${link_cat.rdv.getI10n('value')}</h5>
+                                            <dd>
+                                                <div class="ui list">
+                                                  <g:each in="${link_cat.links}" var="i">
+                                                    <div class="item">
+                                                      <g:if test="${i.pkg}">
+                                                            <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
+                                                                ${message(code:'package.label', default:'Package')}: ${i.pkg.name}
+                                                            </g:link>
+                                                            (${i.pkg?.packageStatus?.getI10n('value')})
+                                                      </g:if>
+                                                      <g:if test="${i.sub}">
+                                                            <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">
+                                                                ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
+                                                            </g:link>
+                                                            (${i.sub.status?.getI10n('value')})
+                                                      </g:if>
+                                                      <g:if test="${i.lic}">
+                                                            <g:link controller="licenseDetails" action="show" id="${i.lic.id}">
+                                                                ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
+                                                            </g:link>
+                                                          (${i.lic.status?.getI10n('value')})
+                                                      </g:if>
+                                                      <g:if test="${i.title}">
+                                                            <g:link controller="titleDetails" action="show" id="${i.title.id}">
+                                                                ${message(code:'title.label', default:'Title')}: ${i.title.title}
+                                                            </g:link>
+                                                            (${i.title.status?.getI10n('value')})
+                                                      </g:if>
+                                                    </div>
+                                                  </g:each>
 
-                                <dl>
-                                    <dt>
-                                        <h5 class="ui header">Als ${link_cat.rdv.getI10n('value')}</h5>
-                                    <dd>
-                                        <div class="ui list">
-                                          <g:each in="${link_cat.links}" var="i">
-                                            <div class="item">
-                                              <g:if test="${i.pkg}">
-                                                    <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
-                                                        ${message(code:'package.label', default:'Package')}: ${i.pkg.name}
-                                                    </g:link>
-                                                    (${i.pkg?.packageStatus?.getI10n('value')})
-                                              </g:if>
-                                              <g:if test="${i.sub}">
-                                                    <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">
-                                                        ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
-                                                    </g:link>
-                                                    (${i.sub.status?.getI10n('value')})
-                                              </g:if>
-                                              <g:if test="${i.lic}">
-                                                    <g:link controller="licenseDetails" action="show" id="${i.lic.id}">
-                                                        ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
-                                                    </g:link>
-                                                  (${i.lic.status?.getI10n('value')})
-                                              </g:if>
-                                              <g:if test="${i.title}">
-                                                    <g:link controller="titleDetails" action="show" id="${i.title.id}">
-                                                        ${message(code:'title.label', default:'Title')}: ${i.title.title}
-                                                    </g:link>
-                                                    (${i.title.status?.getI10n('value')})
-                                              </g:if>
-                                            </div>
-                                          </g:each>
+                                                    <g:set var="local_offset" value="${params[link_cat.rdvl] ? Long.parseLong(params[link_cat.rdvl]) : null}" />
 
-                                            <g:set var="local_offset" value="${params[link_cat.rdvl] ? Long.parseLong(params[link_cat.rdvl]) : null}" />
-
-                                            <g:if test="${link_cat.total > 10}">
-                                                <div class="item">
-                                                    ${message(code:'default.paginate.offset', args:[(local_offset ?: 1),(local_offset ? (local_offset + 10 > link_cat.total ? link_cat.total : local_offset + 10) : 10), link_cat.total])}
-
-                                                    <g:if test="${local_offset}">
-                                                        </div>
+                                                    <g:if test="${link_cat.total > 10}">
                                                         <div class="item">
-                                                        <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
-                                                        <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev', default:'Previous')}</g:link>
-                                                    </g:if>
-                                                    <g:if test="${!local_offset || ( local_offset < (link_cat.total - 10) )}">
+                                                            ${message(code:'default.paginate.offset', args:[(local_offset ?: 1),(local_offset ? (local_offset + 10 > link_cat.total ? link_cat.total : local_offset + 10) : 10), link_cat.total])}
+
+                                                            <g:if test="${local_offset}">
+                                                                </div>
+                                                                <div class="item">
+                                                                <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
+                                                                <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev', default:'Previous')}</g:link>
+                                                            </g:if>
+                                                            <g:if test="${!local_offset || ( local_offset < (link_cat.total - 10) )}">
+                                                                </div>
+                                                                <div class="item">
+                                                                <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
+                                                                <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next', default:'Next')}</g:link>
+                                                            </g:if>
                                                         </div>
-                                                        <div class="item">
-                                                        <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
-                                                        <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next', default:'Next')}</g:link>
                                                     </g:if>
                                                 </div>
-                                            </g:if>
-                                        </div>
-                                    </dd>
-                                </dl>
-                            </g:each>
-                        </div>
-                    </div><!--.card-->
-                </g:if>
+                                            </dd>
+                                        </dl>
+                                    </g:each>
+                                </div>
+                            </div><!--.card-->
+                    </g:if>
+
 
                 <div class="ui card la-dl-no-table">
                     <div class="content">

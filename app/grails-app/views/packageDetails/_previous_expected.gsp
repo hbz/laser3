@@ -93,7 +93,7 @@
                    <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
-                    <span>${message(code:'title.type.label')}: ${t.tile.type.getI10n('value')}</span>
+                    <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>
                    <g:if test="${params.action == 'previous'}">
                     <br/> ${message(code:'tipp.accessEndDate', default:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
@@ -120,7 +120,7 @@
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                   <g:each in="${t.title.ids}" var="id">
-                    ${id.identifier.ns.ns}:${id.identifier.value}<br/>
+                    ${id.identifier.ns.ns}: ${id.identifier.value}<br/>
                   </g:each>
                 </td>
 
