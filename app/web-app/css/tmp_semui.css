@@ -204,12 +204,16 @@ body.myInstitution_dashboard .ui.tab .item span {
     position: fixed;
     bottom: 0;
     left: 0;
-    top: 90px;
+    top: 0;
     margin: 0 !important;
     border-radius: 0 !important;
+    z-index: 999;
+}
+.la-server-label span {
+    line-height: 30px;
 }
 
-/* mainSearch */
+    /* mainSearch */
 
 #mainSearch {
 }

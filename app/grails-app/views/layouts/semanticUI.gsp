@@ -39,12 +39,12 @@
 
     <g:if test="${'LAS:eR-Dev' == grailsApplication.config.laserSystemId}">
         <div class="ui green label big la-server-label">
-            DEV-System
+            <span>DEV</span>
         </div>
     </g:if><%-- debug --%>
     <g:if test="${'LAS:eR-QA/Stage' == grailsApplication.config.laserSystemId}">
         <div class="ui red label big la-server-label">
-            QA-System
+            <span>QA</span>
         </div>
     </g:if><%-- debug --%>
 

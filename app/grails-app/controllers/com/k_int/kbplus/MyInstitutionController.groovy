@@ -485,7 +485,7 @@ class MyInstitutionController {
         }
         */
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
         def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
