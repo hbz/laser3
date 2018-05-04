@@ -1201,7 +1201,7 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_USER'])
+
     def TaskEdit() {
         def contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
