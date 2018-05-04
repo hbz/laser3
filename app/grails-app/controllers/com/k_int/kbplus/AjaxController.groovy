@@ -807,7 +807,7 @@ class AjaxController {
                 tenant: tenant,
                 newProp: newProp,
                 error: error,
-                custom_props_div: "custom_props_div_${tenant.shortcode}", // JS markup id
+                custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
                 prop_desc: type?.descr // form data
         ])
     }
@@ -873,7 +873,7 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
-            custom_props_div: "custom_props_div_${tenant.shortcode}",  // JS markup id
+            custom_props_div: "custom_props_div_${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])
   }
