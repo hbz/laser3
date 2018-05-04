@@ -45,7 +45,9 @@
 
               <div class="fields">
                   <div class="field">
-                      <label>&nbsp;</label>
+                  <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                    </div>
+                  <div class="field">
                       <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}" />
                   </div>
               </div>

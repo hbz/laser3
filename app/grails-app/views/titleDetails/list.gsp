@@ -24,10 +24,14 @@
             <label for="filter" class="control-label">${message(code: 'title.search_in')}</label>
             <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
-          <div class="field">
+            <div class="field">
+              <label>&nbsp;</label>
+              <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+            </div>
+            <div class="field">
               <label>&nbsp;</label>
               <button class="ui secondary button" type="submit" name="search" value="yes">${message(code: 'default.button.search.label')}</button>
-          </div>
+            </div>
         </div>
       </g:form>
     </semui:filter>
