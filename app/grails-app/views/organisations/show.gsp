@@ -420,16 +420,16 @@
                         <div class="content">
                             <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
 
-                            <div id="custom_props_div_${authOrg.shortcode}">
+                            <div id="custom_props_div_${authOrg.id}">
                                 <g:render template="/templates/properties/private" model="${[
                                         prop_desc: PropertyDefinition.ORG_PROP,
                                         ownobj: orgInstance,
-                                        custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                        custom_props_div: "custom_props_div_${authOrg.id}",
                                         tenant: authOrg]}"/>
 
                                 <r:script language="JavaScript">
                                     $(document).ready(function(){
-                                        c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                        c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                                     });
                                 </r:script>
                             </div>

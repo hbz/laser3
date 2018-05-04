@@ -239,10 +239,6 @@
 @veryCompactVerticalPadding: 0.4em;
 @veryCompactHorizontalPadding: 0.6em;
 
-/* la-table */
-
-
-
 /* Sizes */
 @small: 0.9em;
 @medium: 1em;

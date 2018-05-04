@@ -27412,24 +27412,24 @@ Floated Menu / Item
   background: rgba(0, 0, 0, 0.05);
 }
 
-.ui .table tr td {
+.ui.table tr td {
   background-color: white;
   padding: 20px 0;
 }
 
-.ui .table tr td,
-.ui .table tr th {
+.ui.table tr td,
+.ui.table tr th {
   padding-left: 0.9rem;
   padding-right: 0.9rem;
 }
 
-.ui .table tr th {
+.ui.table tr th {
   color: gray;
   font-size: 0.8rem;
   text-transform: uppercase;
 }
 
-.ui .table tr th a {
+.ui.table tr th a {
   display: inline-block;
   padding: 0.5rem 0;
   cursor: pointer;
@@ -27453,6 +27453,16 @@ Floated Menu / Item
 .ui.la-table.table tr th,
 .ui.la-table.table tr td {
   border-top: none;
+}
+
+/*--------------
+     la-table-inCard
+---------------*/
+
+.ui.table.la-table-inCard tr th {
+  background-color: #f4f8f9;
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
 }
 
 /*--------------

@@ -61,7 +61,7 @@
                         <g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel>
                     </dt>
                     <dd>
-                        <table class="ui celled la-table table ignore-floatThead">
+                        <table class="ui single line table ignore-floatThead">
                             <thead>
                             <tr>
                                 <th>${message(code:'default.authority.label', default:'Authority')}</th>
@@ -304,7 +304,7 @@
                             <dl>
                                 <dt>${message(code:'financials.label', default:'Financials')}</dt>
                                 <dd>
-                                    <table class="ui celled la-table table">
+                                    <table class="ui single line  table">
                                         <thead>
                                         <tr>
                                             <th>${message(code:'financials.costItemCategory')}</th>
@@ -381,16 +381,16 @@
                             <g:if test="${authOrg.name == contextOrg?.name}">
                                 <h5 class="ui header">${message(code:'subscription.properties.private')} ${authOrg.name}</h5>
 
-                                <div id="custom_props_div_${authOrg.shortcode}">
+                                <div id="custom_props_div_${authOrg.id}">
                                     <g:render template="/templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.SUB_PROP,
                                             ownobj: subscriptionInstance,
-                                            custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                            custom_props_div: "custom_props_div_${authOrg.id}",
                                             tenant: authOrg]}"/>
 
                                     <r:script language="JavaScript">
                                         $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                                         });
                                     </r:script>
                                 </div>
