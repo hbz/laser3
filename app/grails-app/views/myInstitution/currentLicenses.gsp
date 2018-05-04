@@ -39,6 +39,7 @@
                     <label>${message(code:'license.search.by_ref', default:'Search by Reference')}</label>
                     <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
                 </div>
+                <%--
                 <div class="field">
                     <label>${message(code:'license.property.search')}</label>
                     <div class="two fields">
@@ -49,10 +50,13 @@
                 </div>
             </div><!--.fields-->
             <div class="fields">
+
                 <div class="field">
+                    <label>&nbsp;</label>
                     <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
-                </div>
+                </div> --%>
                 <div class="field">
+                    <label>&nbsp;</label>
                     <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
                 </div>
             </div><!--.fields-->
@@ -116,6 +120,7 @@
 
           <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
 
+  <%--
     <r:script type="text/javascript">
 
         $('.license-results input[type="radio"]').click(function () {
@@ -193,7 +198,7 @@
         })
         window.onload = setTypeAndSearch()
     </r:script>
-
+--%>
 
   </body>
 </html>
