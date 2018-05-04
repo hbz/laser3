@@ -34,7 +34,7 @@
 
 }
 
-.ui .table {
+.ui.table {
 
   tr{
     td {
@@ -74,6 +74,17 @@
 .ui.la-table.table tr th,
 .ui.la-table.table tr td {
   border-top:none;
+}
+/*--------------
+     la-table-inCard
+---------------*/
+.ui.table.la-table-inCard {
+  tr th {
+    background-color: @simulateTransparency;
+    padding-top: 1.5em;
+    padding-bottom: 1.5em;
+  }
+
 }
 /*--------------
      la-rowspan

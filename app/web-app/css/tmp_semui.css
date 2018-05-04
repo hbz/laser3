@@ -77,6 +77,7 @@
     text-align: right;
     white-space: nowrap;
 }
+
 .ui.button > i.icon {
     margin-right: 0 !important;
     opacity: 1 !important;
@@ -132,6 +133,7 @@ TODO: remove and set in semantic css: la-table-small
     padding-top: 0.6em;
     padding-bottom: 0.6em;
 }
+
 
 /* semantic ui - upgrade to 2.3 - start */
 
