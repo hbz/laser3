@@ -141,7 +141,17 @@ class DataloadService {
             result.consortiaName = pkg.getConsortia()?.name
             result.cpid = pkg.getContentProvider()?.id
             result.cpname = pkg.getContentProvider()?.name
-            result.identifiers = pkg.ids.collect{"${it?.identifier?.ns?.ns} : ${it?.identifier?.value}"}
+
+            result.identifiers = []
+            pkg.ids?.each { id ->
+                try{
+                    result.identifiers.add([type:id.identifier.ns.ns, value:id.identifier.value])
+                } catch(Exception e) {
+                    log.error(e)
+                }
+            }
+
+            //result.identifiers = pkg.ids.collect{"${it?.identifier?.ns?.ns} : ${it?.identifier?.value}"}
             result.isPublic = pkg?.isPublic?.value?:'No'
             result.endDate = pkg.endDate
             def lastmod = pkg.lastUpdated ?: pkg.dateCreated
