@@ -15,7 +15,15 @@
 
             <semui:simpleForm controller="titleDetails" action="findTitleMatches" method="get" message="title.findTitleMatches.proposed">
               <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
-              <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui button">
+              <label>&nbsp;</label>
+              <div class="fields">
+                  <div class="field">
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                    </div>
+                  <div class="field">
+                    <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui button">
+                  </div>
+              </div>
             </semui:simpleForm>
 
             <br/>

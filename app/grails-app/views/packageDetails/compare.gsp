@@ -95,8 +95,14 @@
 				</tr>
 			</tbody>
 		</table>
-
-		<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}">
+		<div class="fields">
+                  <div class="field">
+                  <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+                    </div>
+                  <div class="field">
+					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}">
+				  </div>
+		</div>
 	</g:form>
 
 <g:if test="${pkgInsts?.get(0) && pkgInsts?.get(1)}">

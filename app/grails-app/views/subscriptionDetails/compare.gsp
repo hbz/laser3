@@ -87,8 +87,15 @@
 						</tr>
 							</tr>
 						</tbody>
-					</table>	
-					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
+					</table>
+					<div class="fields">
+                  		<div class="field">
+                  			<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+                    	</div>
+						<div class="field">
+							<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
+						</div>
+					</div>
 				</g:form>
 
 
