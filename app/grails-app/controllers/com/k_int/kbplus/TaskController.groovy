@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
-@Secured(['permitAll']) // TODO
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController {
 
 	def springSecurityService
@@ -13,12 +13,12 @@ class TaskController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['IS_AUTHENTICATED_FULLY', 'ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
-	@Secured(['IS_AUTHENTICATED_FULLY', 'ROLE_ADMIN'])
+	@Secured(['ROLE_ADMIN'])
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
@@ -84,7 +84,7 @@ class TaskController {
 		}
     }
 
-    @Secured(['IS_AUTHENTICATED_FULLY', 'ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     def show() {
         def taskInstance = Task.get(params.id)
         if (! taskInstance) {
