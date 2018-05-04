@@ -691,7 +691,8 @@ from Subscription as s where (
         log.debug(params)
         def result = setResultGenerics()
         result.orgType = RefdataValue.get(params.asOrgType)
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
+        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
         
         def orgRole = null
@@ -766,7 +767,7 @@ from Subscription as s where (
                                           
                         new OrgRole(org: cm,
                             sub: cons_sub,
-                            roleType: role_sub).save();
+                            roleType: role_sub_cons).save();
 
                         new OrgRole(org: result.institution,
                             sub: cons_sub,
@@ -775,7 +776,7 @@ from Subscription as s where (
                     else {
                         new OrgRole(org: cm,
                             sub: new_sub,
-                            roleType: role_sub).save();
+                            roleType: role_sub_cons).save();
                     }
                   }
                 }
