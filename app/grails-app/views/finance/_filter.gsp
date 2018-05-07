@@ -296,6 +296,11 @@
         </table>
  --%>
 
+<br />
+<br />
+<br />
+
+<%--
 <div id="paginationWrapper" class="pagination">
     <div id="paginateInfo" hidden="true" data-offset="${offset!=null?offset:params.offset}" data-max="${max!=null?max:params.max}"
          data-wildcard="${wildcard!=null?wildcard:params.wildcard}" data-insubmode="${inSubMode}" data-sub="${fixedSubscription?.id}"
@@ -309,4 +314,5 @@
           offset='0'  total="${cost_item_count}"  max="20" pageSizes="[10, 20, 50, 100, 200]" alwaysShowPageSizes="true" controller="finance" action="index"
            params="${params+["filterMode": "${filterMode}", "sort":"${sort}", "order":"${order}", "format":"frag", "inSubMode":"${inSubMode}", "sub":"${fixedSubscription?.id}"]}" />
 </div>
+--%>
 <!-- _filter.gsp -->

@@ -806,6 +806,7 @@ class FinanceController {
         result.from            = dateTimeFormat.format(result.from)
         result.to              = dateTimeFormat.format(result.to)
         log.debug("FinanceController - getRecentCostItems, rendering template with model: ${result}")
+
         render(template: "/finance/recentlyAddedModal", model: result)
     }
 

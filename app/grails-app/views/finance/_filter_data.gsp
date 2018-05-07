@@ -6,13 +6,13 @@
     <tr id="bulkdelete-b${ci.id}">
         <td>
             <g:if test="${editable}">
-                Cost: <semui:xEditable emptytext="Edit Cost" owner="${ci}" field="costInBillingCurrency" /> </br>
-                <semui:xEditableRefData config="Currency" emptytext="Edit billed" owner="${ci}" field="billingCurrency" /> </br>
+                Cost: <semui:xEditable emptytext="Edit Cost" owner="${ci}" field="costInBillingCurrency" /> <br />
+                <semui:xEditableRefData config="Currency" emptytext="Edit billed" owner="${ci}" field="billingCurrency" /> <br /><br />
                 Local: <semui:xEditable emptytext="Edit local" owner="${ci}" field="costInLocalCurrency" />
             </g:if>
             <g:else>
-                ${ci?.costInBillingCurrency} </br>
-                ${ci?.billingCurrency} </br>
+                ${ci?.costInBillingCurrency} <br />
+                ${ci?.billingCurrency} <br />
                 ${ci?.costInLocalCurrency}
             </g:else>
         </td>
