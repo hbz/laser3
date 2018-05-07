@@ -11,6 +11,8 @@ import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
+import java.text.NumberFormat
+
 //For Transform
 import static groovyx.net.http.ContentType.*
 
@@ -35,6 +37,7 @@ class SubscriptionDetailsController {
     def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
     def accessService
     def filterService
+    def factService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -47,11 +50,11 @@ class SubscriptionDetailsController {
                     'group by f.reportingYear, f.reportingMonth order by f.reportingYear desc, f.reportingMonth desc';
 
     private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
-            'select sum(factValue) ' +
-                    'from Fact as f ' +
-                    'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:jr1a and exists ' +
-                    '( select ie.tipp.title from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.title = f.relatedTitle)';
-
+        'select sum(factValue) ' +
+            'from Fact as f ' +
+            'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and exists ' +
+            '(select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
+            'where ie.subscription= :sub  and tipp.title = f.relatedTitle)'
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -101,7 +104,7 @@ class SubscriptionDetailsController {
     if ( result.institution ) {
       result.subscriber_shortcode = result.institution.shortcode
       result.institutional_usage_identifier =
-              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+              OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
     }
 
         if (params.mode == "advanced") {
@@ -1179,7 +1182,7 @@ AND l.status.value != 'Deleted' order by l.reference
     if (result.institution) {
       result.subscriber_shortcode = result.institution.shortcode
       result.institutional_usage_identifier =
-        OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+        OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
     }
     log.debug("Going for ES")
     params.rectype = "Package"
@@ -1276,7 +1279,7 @@ AND l.status.value != 'Deleted' order by l.reference
         if ( result.institution ) {
           result.subscriber_shortcode = result.institution.shortcode
           result.institutional_usage_identifier =
-                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
         // Get a unique list of invoices
@@ -1299,7 +1302,7 @@ AND l.status.value != 'Deleted' order by l.reference
                         start: it[3].startDate,
                         end  : it[3].endDate,
                         sub  : result.subscription,
-                        jr1a : 'STATS:JR1'])[0]
+                        factType : 'STATS:JR1'])[0]
 
                 if (usage_str && usage_str.trim().length() > 0) {
                     cost_row.total_usage_for_sub = Double.parseDouble(usage_str);
@@ -1342,7 +1345,7 @@ AND l.status.value != 'Deleted' order by l.reference
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
             result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)
+                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
@@ -1411,6 +1414,43 @@ AND l.status.value != 'Deleted' order by l.reference
                   }
               }
           }
+        // usage
+        def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
+
+        if (suppliers) {
+          if (suppliers.size() > 1) {
+            log.debug('Found different content providers, cannot show usage')
+          } else  {
+            def supplier_id = suppliers[0]
+            result.institutional_usage_identifier =
+                OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+            if (result.institutional_usage_identifier) {
+
+                // TODO can there be different currency codes? We would have to handle that somehow.
+                def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost from CostItem co ' +
+                    'where co.sub=:sub'
+                def totalCostRow = CostItem.executeQuery(query, [sub: result.subscriptionInstance]).first()
+
+                    def totalUsageForLicense = factService.totalUsageForSub(result.subscriptionInstance, 'STATS:JR1')
+                if (totalCostRow[0] && totalUsageForLicense) {
+                    def totalCostPerUse = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
+                    result.totalCostPerUse = totalCostPerUse
+                    result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                }
+                def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
+                def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
+                result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
+                result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
+                result.usage = fsresult?.usage
+                result.x_axis_labels = fsresult?.x_axis_labels
+                result.y_axis_labels = fsresult?.y_axis_labels
+
+                result.lusage = fsLicenseResult?.usage
+                result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+                result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+            }
+          }
+        }
 
         result
     }
