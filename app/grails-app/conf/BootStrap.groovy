@@ -241,7 +241,7 @@ class BootStrap {
 
         OrgPermShare.assertPermShare(view_permission, or_licensee_cons_role)
 
-        def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia'])
+        def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia', de:'Konsortium'])
         def or_subscr_role      = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
         def or_subscr_cons_role = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'])
 
@@ -366,8 +366,8 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.ORG_CONF, de: PropertyDefinition.ORG_CONF]
 
         def requiredProps = [
-                [name: [en: "API Key", de: "API Key"],       descr:allDescr, type:String.toString()],
-                [name: [en: "statslogin", de: "statslogin"], descr:allDescr, type:String.toString()]
+                [name: [en: "API Key", de: "API Key"],         descr:allDescr, type:String.toString()],
+                [name: [en: "RequestorID", de: "RequestorID"], descr:allDescr, type:String.toString()],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -807,6 +807,14 @@ class BootStrap {
         RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'])
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'])
         RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'])
+        RefdataValue.loc('Country',   [en: 'France', de: 'Frankreich'])
+        RefdataValue.loc('Country',   [en: 'Great Britain', de: 'Großbritannien'])
+        RefdataValue.loc('Country',   [en: 'United States of America', de: 'Vereinigte Staaten von Amerika'])
+        RefdataValue.loc('Country',   [en: 'Belgium', de: 'Belgien'])
+        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'])
+        RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'])
+        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'])
+
 
         RefdataValue.loc('FactType', [en: 'STATS:JR1'])
         RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
@@ -871,6 +879,7 @@ class BootStrap {
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Verlag'])
+        RefdataValue.loc('OrgType',      [en: 'Provider', de: 'Anbieter'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
         RefdataValue.loc('Package Status',      [en: 'Deleted', de: 'Gelöscht'])
@@ -1161,6 +1170,7 @@ class BootStrap {
 
         RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'Checked', de: 'Überprüft'])
         RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'In Progress', de: 'In Bearbeitung'])
+        RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'Unknown', de: 'Unbekannt'])
         RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'No', de: 'Nein'])
         RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'Yes', de: 'Ja'])
         RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'Unknown', de: 'Unbekannt'])
@@ -1175,6 +1185,7 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Back File', de: 'Back File'])
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Master File', de: 'Master File'])
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Scope Undefined', de: 'Scope Undefined'])
+        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Unknown', de: 'Unbekannt'])
 
         RefdataCategory.loc('TaxType',
                 [en: 'TaxType', de: 'TaxType'])
@@ -1237,6 +1248,14 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'])
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'])
+
+        RefdataCategory.loc('TIPP Access Status',
+                [en: 'TIPP Access Status', de: 'TIPP Access Status'])
+
+        RefdataValue.loc('TIPP Access Status', [en: 'Current(*)', de: 'Aktuell(*)'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Expected', de: 'Erwartet'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Expired', de: 'Abgelaufen'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Current', de: 'Aktuell'])
 
         // Controlled values from the <UsageType> element.
 

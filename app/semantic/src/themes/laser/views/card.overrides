@@ -36,3 +36,9 @@
   margin-top: @headerLineHeightOffset;
   line-height: @headerLineHeight;
 }
+.ui.card.la-role-admin {
+  border-right: 10px solid @blue;
+}
+.ui.card.la-role-yoda {
+  border-right: 10px solid @green;
+}

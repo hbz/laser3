@@ -724,6 +724,7 @@ class GlobalSourceSyncService {
     def sync_job = GlobalRecordSource.get(sync_job_id)
     int rectype = sync_job.rectype.longValue()
     def cfg = rectypes[rectype]
+    def olddate = sync_job.haveUpTo
 
     Thread.currentThread().setName("GlobalDataSync");
 
@@ -868,6 +869,9 @@ class GlobalSourceSyncService {
     catch ( Exception e ) {
       log.error("Problem",e);
       log.error("Problem running job ${sync_job_id}, conf=${cfg}",e);
+      log.debug("Reset sync job haveUpTo");
+      sync_job.haveUpTo = olddate
+      sync_job.save(flush: true);
     }
     finally {
       log.debug("internalOAISync completed for job ${sync_job_id}");

@@ -8,3 +8,10 @@
   background: @laFilterBackground;
   border: none;
 }
+
+.ui.segment.la-role-admin {
+  border-right: 10px solid @blue;
+}
+.ui.segment.la-role-yoda {
+  border-right: 10px solid @green;
+}

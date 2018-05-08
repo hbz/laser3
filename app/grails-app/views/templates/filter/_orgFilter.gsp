@@ -82,6 +82,20 @@
     <g:else>
         <input type="hidden" name="libraryType" value="${params.libraryType}" />
     </g:else>
+    <g:if test="${tmplConfigShow?.contains('country')}">
+        <div class="field">
+            <label>${message(code: 'org.country.label')}</label>
+            <laser:select class="ui dropdown" name="country"
+                          from="${RefdataCategory.getAllRefdataValues('Country')}"
+                          optionKey="id"
+                          optionValue="value"
+                          value="${params.country}"
+                          noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+        </div>
+    </g:if>
+    <g:else>
+        <input type="hidden" name="country" value="${params.country}" />
+    </g:else>
 
 </div>
 

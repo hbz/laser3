@@ -1,11 +1,10 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
-import com.k_int.kbplus.*;
-import grails.converters.*
+import com.k_int.kbplus.auth.User
+import grails.converters.JSON
 
 
-class ChangeNotificationService {
+class ChangeNotificationService_en_original {
 
   def executorService
   def genericOIDService
@@ -68,10 +67,10 @@ class ChangeNotificationService {
 
         if ( contextObject ) {
           if ( contextObject.metaClass.respondsTo(contextObject, 'getURL') ) {
-            sw.write("<p>Änderungen an <a href=\"${contextObject.getURL()}\">${contextObject.toString()}</a> ${new Date().toString()}</p><p><ul>");
+            sw.write("<p>Changes on <a href=\"${contextObject.getURL()}\">${contextObject.toString()}</a> ${new Date().toString()}</p><p><ul>");
           }
           else  {
-            sw.write("<p>Änderungen an ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
+            sw.write("<p>Changes on ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
           }
         }
         else {
@@ -102,11 +101,11 @@ class ChangeNotificationService {
               sw.write(tmpl.toString());
               sw.write("</li>");
             }else{
-              sw.write("<li>Komponente ${parsed_event_info.OID} wurde gelöscht!</li>")
+              sw.write("<li>Component ${parsed_event_info.OID} was deleted!</li>")
             }
           }
           else {
-            sw.write("<li>Template für das Ereignis \"ChangeNotification.${parsed_event_info.event}\" kann nicht gefunden werden. Infos zum Ereignis:\n\n${pc.changeDocument}</li>");
+            sw.write("<li>Unable to find template for change event \"ChangeNotification.${parsed_event_info.event}\". Event info follows\n\n${pc.changeDocument}</li>");
           }
           contr++;
 
@@ -133,7 +132,7 @@ class ChangeNotificationService {
                     // log.debug("Send zendesk forum notification for ${ne.remoteid}");
                     zenDeskSyncService.postTopicCommentInForum(announcement_content,
                                                                ne.remoteid.toString(), 
-                                                               "Änderungen beziehen sich auf ${contextObject.toString()}".toString(),
+                                                               "Changes related to ${contextObject.toString()}".toString(),
                                                                'System generated alerts and notifications will appear as comments under this topic');
                   }
                   else {

@@ -23,18 +23,18 @@
             <g:each in="${authorizedOrgs}" var="authOrg">
                 <br />
 
-                <div id="custom_props_div_${authOrg.shortcode}">
+                <div id="custom_props_div_${authOrg.id}">
                     <h5 class="ui header">@ ${authOrg.name}</h5>
 
                     <g:render template="/templates/properties/private" model="${[
                             prop_desc: PropertyDefinition.PRS_PROP,
                             ownobj: personInstance,
-                            custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                            custom_props_div: "custom_props_div_${authOrg.id}",
                             tenant: authOrg]}"/>
 
                     <r:script language="JavaScript">
                             $(document).ready(function(){
-                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                             });
                     </r:script>
                 </div>

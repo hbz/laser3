@@ -14,6 +14,24 @@
 
         <semui:modeSwitch controller="packageDetails" action="show" params="${params}" />
 
+        <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
+                </semui:exportDropdownItem>
+
+                <g:each in="${transforms}" var="transkey,transval">
+                    <semui:exportDropdownItem>
+                        <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                    </semui:exportDropdownItem>
+                </g:each>
+            </semui:exportDropdown>
+            <g:render template="actions" />
+        </semui:controlButtons>
+
         <h1 class="ui header"><semui:headerIcon />
 
             <g:if test="${editable}"><span id="packageNameEdit"
@@ -88,7 +106,7 @@
             <tr>
 
               <th>
-                <g:if test="${editable}"><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
               </th>
 
               <th colspan="7">
@@ -160,12 +178,12 @@
                    <strong><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
                     <br>
                    <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link><br/>
-                   <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span><br/>
+                   <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.getI10n('value')}</span><br/>
                     <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>
                    <g:if test="${params.mode=='advanced'}">
                      <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
                      <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
-                     <br/> ${message(code:'tipp.accessEndDate', defauKlt:'Access End')}: <semui:xEditable owKner="${t}" type="date" field="accessEndDate" />
+                     <br/> ${message(code:'tipp.accessEndDate', defauKlt:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
@@ -182,7 +200,7 @@
                       ${id.identifier.ns.ns}: <a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a>
                     </g:if>
                     <g:else>
-                      ${id.identifier.ns.ns}:${id.identifier.value}
+                      ${id.identifier.ns.ns}: ${id.identifier.value}
                     </g:else>
                     <br/>
                   </g:each>
@@ -266,7 +284,9 @@
         $('.xEditableValue').editable();
       });
       function selectAll() {
-        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+
+        //$('#select-all').is( ':checked' )? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
       }
 
       function confirmSubmit() {

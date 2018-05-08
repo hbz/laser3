@@ -1,4 +1,5 @@
 <!-- _recentlyAdded.gsp -->
+
 <semui:modal id="recentlyAdded_modal" text="${message(code:'financials.recentCosts')}" hideSubmitButton="true">
 
     <p>Quickly see costing items that have been recently added/updated</p>
@@ -41,9 +42,12 @@
 
     </g:if>
     <g:else>
+
         <p>No recent cost items...</p>
         <p>Table automatically updates</p>
+
     </g:else>
 
 </semui:modal>
+
 <!-- _recentlyAdded.gsp -->

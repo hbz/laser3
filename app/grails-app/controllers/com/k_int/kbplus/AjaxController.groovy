@@ -11,12 +11,13 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class AjaxController {
 
     def contextService
+    def taskService
 
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:'select count(o) from Org as o where lower(o.name) like ?',
-      rowQry:'select o from Org as o where lower(o.name) like ? order by o.name asc',
+      countQry:"select count(o) from Org as o where o.orgType.value = 'Provider' and lower(o.name) like ?",
+      rowQry:"select o from Org as o where o.orgType.value = 'Provider' and lower(o.name) like ? order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',
@@ -51,7 +52,25 @@ class AjaxController {
       ],
       cols:['value'],
       format:'simple'
-    ]
+    ],
+    "allOrgs" : [
+            domain:'Org',
+            countQry:"select count(o) from Org as o where lower(o.name) like ?",
+            rowQry:"select o from Org as o where lower(o.name) like ? order by o.name asc",
+            qryParams:[
+                    [
+                            param:'sSearch',
+                            clos:{ value ->
+                                def result = '%'
+                                if ( value && ( value.length() > 0 ) )
+                                    result = "%${value.trim().toLowerCase()}%"
+                                result
+                            }
+                    ]
+            ],
+            cols:['name'],
+            format:'map'
+    ],
   ]
 
   @Secured(['ROLE_USER'])
@@ -788,7 +807,7 @@ class AjaxController {
                 tenant: tenant,
                 newProp: newProp,
                 error: error,
-                custom_props_div: "custom_props_div_${tenant.shortcode}", // JS markup id
+                custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
                 prop_desc: type?.descr // form data
         ])
     }
@@ -854,7 +873,7 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
-            custom_props_div: "custom_props_div_${tenant.shortcode}",  // JS markup id
+            custom_props_div: "custom_props_div_${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])
   }
@@ -1180,6 +1199,16 @@ class AjaxController {
             }
         }
         redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def TaskEdit() {
+        def contextOrg = contextService.getOrg()
+        def result     = taskService.getPreconditions(contextOrg)
+        result.params = params
+        result.taskInstance = Task.get(params.id)
+
+        render template:"../templates/tasks/modal_edit", model: result
     }
 
 }

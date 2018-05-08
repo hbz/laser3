@@ -10,11 +10,9 @@
 
 <body>
 
-	<ul class="breadcrumb">
-		<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
-			class="divider">/</span></li>
-		<li>${message(code:'menu.institutions.comp_onix')}</li>
-	</ul>
+<semui:breadcrumbs>
+	<semui:crumb message="menu.institutions.comp_onix" class="active" />
+</semui:breadcrumbs>
 
 	<h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
 
@@ -39,9 +37,14 @@
 							options="${termList}" selected="true" multiple="true" />
 					</div>
 
-					<div>
+				<div class="fields">
+                  	<div class="field">
+                  		<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+                    </div>
+					<div class="field">
 					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
 					</div>
+				</div>
 				</g:form>
 			</div>
 		</div>

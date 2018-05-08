@@ -1,18 +1,28 @@
 <!doctype html>
 <html>
-    <head>
-        <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} - Forbidden</title>
-    </head>
-    <body>
-        <semui:messages data="${flash}" />
+<head>
+    <meta name="layout" content="semanticUI"/>
+    <title>${message(code: 'laser', default: 'LAS:eR')} - ${message(code: 'serverCode.forbidden.message2')}</title>
+</head>
 
-        <div class="ui grid">
-            <div class="twelve wide column">
+<body>
+<semui:messages data="${flash}"/>
+<semui:card>
+    <div class="content">
+        <h3 class="ui header">${message(code: 'serverCode.forbidden.message2')}</h3>
 
-                <p>${message(code:'serverCode.forbidden.message')}</p>
+        <g:if test="${!flash.error}">
+            <div>
+                <p>${message(code: 'serverCode.forbidden.message')}</p>
+                <br/>
 
-            </div><!-- .twelve -->
-        </div><!-- .grid -->
-    </body>
+                <p>
+                    <button class="ui button"
+                            onclick="javascript:window.history.back()">${message(code: 'default.button.back')}</button>
+                </p>
+            </div>
+        </g:if>
+    </div>
+</semui:card>
+</body>
 </html>

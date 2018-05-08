@@ -48,14 +48,14 @@
 	<label for="fteStudents">
 		<g:message code="org.fteStudents.label" default="Fte Students" />
 	</label>
-	<g:field name="fteStudents" type="number" value="${orgInstance.fteStudents}" required=""/>
+	<g:field name="fteStudents" type="number" value="${orgInstance?.fteStudents}" required=""/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'fteStaff', 'error')}">
 	<label for="fteStaff">
 		<g:message code="org.fteStaff.label" default="Fte Staff" />
 	</label>
-	<g:field name="fteStaff" type="number" value="${orgInstance.fteStaff}" required=""/>
+	<g:field name="fteStaff" type="number" value="${orgInstance?.fteStaff}" required=""/>
 </div>
 
 <% /*

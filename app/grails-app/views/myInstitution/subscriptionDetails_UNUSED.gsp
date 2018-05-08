@@ -50,7 +50,7 @@
               <table  class="table table-striped table-bordered table-condensed">
                 <tr>
                   <th></th>
-                  <th>#</th>
+                  <th>${message(code:'sidewide.number')}</th>
                   <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="Title" />
                   <th>ISSN</th>
                   <th>iISSN</th>
@@ -64,7 +64,7 @@
                   <th>JUSP</th>
                 </tr>  
                 <tr>  
-                  <th><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></th>
+                  <th><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></th>
                   <th colspan="4"><input type="Submit" value="Apply Batch Changes" class="ui positive button"/></th>
                   <th><span id="entitlementBatchEdit" class="entitlementBatchEdit"></span><input type="hidden" name="bulk_core" id="bulk_core"/></th>
                   <th><span>${message('code':'default.button.edit.label')}</span> <input name="bulk_start_date" type="hidden" class="hdp" /></th>
@@ -195,7 +195,7 @@
       });
 
       function selectAll() {
-        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+        $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
     </r:script>

@@ -11,7 +11,6 @@
                 <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
             </th>
         </g:if>
-
         <g:if test="${tmplConfigShow?.contains('name')}">
             <th rowspan="${rowspan}">${message(code: 'org.name.label', default: 'Name')}</th>
         </g:if>
@@ -38,6 +37,9 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th rowspan="${rowspan}">${message(code: 'org.libraryType.label')}</th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('country')}">
+            <th owspan="${rowspan}">${message(code: 'org.country.label')}</th>
         </g:if>
         <g:if test="${tmplConfigOptions?.contains('addMembers')}">
             <th colspan="2">
@@ -91,7 +93,11 @@
             </td>
 
             <g:if test="${tmplConfigShow?.contains('identifier')}">
-                <td>TODO</td>
+                <td><g:if test="${org.ids}">
+                    <ul>
+                        <g:each in="${org.ids}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
+                    </ul>
+                </g:if></td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('wib')}">
                 <td>${org.getIdentifierByType('wib')?.value}</td>
@@ -113,6 +119,9 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('libraryType')}">
                 <td>${org.libraryType?.getI10n('value')}</td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('country')}">
+                <td>${org.country?.getI10n('value')}</td>
             </g:if>
 
             <g:if test="${tmplConfigOptions?.contains('addMembers')}">

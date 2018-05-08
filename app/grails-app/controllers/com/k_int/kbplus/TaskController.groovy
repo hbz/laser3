@@ -4,7 +4,6 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
-
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController {
 
@@ -178,8 +177,7 @@ class TaskController {
 		}
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
 		def contextOrg = contextService.getOrg()
 		def result     = taskService.getPreconditions(contextOrg)

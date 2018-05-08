@@ -87,8 +87,15 @@
 						</tr>
 							</tr>
 						</tbody>
-					</table>	
-					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
+					</table>
+					<div class="fields">
+                  		<div class="field">
+                  			<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+                    	</div>
+						<div class="field">
+							<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
+						</div>
+					</div>
 				</g:form>
 
 
@@ -175,12 +182,12 @@
 							<g:set var="highlight" value="${entry.value[2]}"/>
 							<tr>
 								
-								<td>
+								<td><semui:listIcon type="${currentTitle.type.getI10n('value')}"/>
 								<strong><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
 								<g:each in="${currentTitle.ids}" var="id">
-				                    <br>${id.identifier.ns.ns}:${id.identifier.value}
+				                    <br>${id.identifier.ns.ns}: ${id.identifier.value}
 				                </g:each>
 								</td>
 							

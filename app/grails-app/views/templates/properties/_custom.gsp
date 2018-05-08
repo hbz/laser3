@@ -11,8 +11,7 @@
 <g:if test="${error}">
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
-
-<table class="ui celled la-table la-table-small table">
+<table class="ui single line la-table-small la-table-inCard table">
     <g:if test="${ownobj.customProperties}">
         <thead>
             <tr>
@@ -22,7 +21,7 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th>${message(code:'property.table.delete')}</th>
+                <th class="x">${message(code:'property.table.delete')}</th>
             </tr>
         </thead>
     </g:if>
@@ -61,7 +60,7 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
-                    <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                    <td>  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${editable == true}">
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
                             <g:remoteLink controller="ajax" action="deleteCustomProperty"

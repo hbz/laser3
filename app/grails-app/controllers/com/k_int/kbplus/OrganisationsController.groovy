@@ -30,7 +30,7 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         // TODO: deactived
       /*
@@ -77,6 +77,24 @@ class OrganisationsController {
         result
     }
 
+    @Secured(['ROLE_USER'])
+    def listProvider() {
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        params.max = params.max ?: result.user?.getDefaultPageSize()
+
+        params.orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector').id.toString()
+        params.orgType = RefdataValue.getByValueAndCategory('Provider','OrgType').id.toString()
+
+        def fsq = filterService.getOrgQuery(params)
+
+        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
+        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+
+        result
+    }
+
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def create() {
         switch (request.method) {
@@ -103,6 +121,35 @@ class OrganisationsController {
                 render view: 'create', model: [orgInstance: orgInstance]
                 break
         }
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    def createProvider() {
+
+                def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+                def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
+                def orgInstance = new Org(name: params.provider, orgType: orgType.id, sector: orgSector.id)
+
+                if ( orgInstance.save(flush:true) ) {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+                    redirect action: 'show', id: orgInstance.id
+                    return
+                }
+                else {
+                    log.error("Problem creating title: ${orgInstance.errors}");
+                    flash.message = "Problem creating Provider: ${orgInstance.errors}"
+                    redirect ( action:'findProviderMatchesMatches' )
+                }
+    }
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    def findProviderMatches() {
+
+        def result=[:]
+        if ( params.proposedProvider ) {
+
+            result.providerMatches= Org.findAllByNameLikeAndOrgType("%${params.proposedProvider}%", RefdataValue.getByValueAndCategory('Provider','OrgType'))
+        }
+        result
     }
 
     @Secured(['ROLE_USER'])
@@ -228,7 +275,7 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
       def tracked_roles = ["ROLE_ADMIN":"KB+ Administrator"]
 
@@ -287,7 +334,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if (accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
+      if (accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_REJECTED
         uo.save()
       }
@@ -300,7 +347,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
+      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_APPROVED
         uo.save();
       }
@@ -332,7 +379,7 @@ class OrganisationsController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.grant)
-      if ( accessService.checkUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
+      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.delete();
       }
       redirect action: 'users', id: params.id

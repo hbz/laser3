@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 
 <r:require module="annotations" />
@@ -173,17 +173,22 @@
             <th>
                 <g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel>
             </th>
+            <% /*
             <th>
                 ${message(code: 'myinst.currentSubscriptions.subscription_type', default: 'Subscription Type')}
             </th>
+            */ %>
 
             <g:if test="${params.orgRole == 'Subscriber'}">
                 <th>${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
+
+            <th>${message(code: 'default.provider.label', default: 'Provider')}</th>
+            <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
             </g:if>
-
+            --%>
             <g:sortableColumn params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
             <g:sortableColumn params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
@@ -243,19 +248,31 @@
                         </g:if>
                     <!-- packages -->
                     </td>
+                    <%--
                     <td>
                         ${s.type?.getI10n('value')}
                     </td>
-                    <td>
-                        <g:if test="${params.orgRole == 'Subscriber'}">
+                    --%>
+
+                    <g:if test="${params.orgRole == 'Subscriber'}">
+                        <td>
                             ${s.getConsortia()?.name}
-                        </g:if>
+                        </td>
+                    </g:if>
+                    <td>
+                        <g:each in="${OrgRole.findAllBySubAndRoleType(s, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
+                            <g:link controller="Organisations" action="show" id="${role.org?.id}">${role.org?.name}</g:link><br />
+                        </g:each>
+                    </td>
+                    <%--
+                    <td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
                                 <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
                             </g:each>
                         </g:if>
                     </td>
+                    --%>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 
@@ -274,6 +291,7 @@
                             <i class="chart bar outline icon"></i>
                           </laser:statsLink>
                         </g:if>
+
                         <g:if test="${editable && ((institution in s.allSubscribers) || s.consortia == institution)}">
                             <g:link controller="myInstitution" action="actionCurrentSubscriptions"
                                     class="ui icon negative button"

@@ -151,7 +151,7 @@ class PackageDetailsController {
           isAdmin = true;
       }
       else {
-        hasAccess = result.packageInstance.orgs.find{it.roleType?.value == 'Package Consortia' && accessService.checkUserOrgRole(result.user, it.org, 'INST_ADM') }
+        hasAccess = result.packageInstance.orgs.find{it.roleType?.value == 'Package Consortia' && accessService.checkMinUserOrgRole(result.user, it.org, 'INST_ADM') }
       }
 
       if( !isAdmin &&  hasAccess == null ) {
@@ -522,7 +522,7 @@ select s from Subscription as s where
 
       result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
-      if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), contextOrg)) {
+      if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), contextOrg)) {
           result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
           result.usageMode = (contextOrg.orgType?.value == 'Consortium') ? 'package' : 'institution'
           result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value

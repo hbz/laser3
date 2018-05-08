@@ -112,7 +112,7 @@
             <thead>
                 <tr>
                   <th rowspan="2"></th>
-                  <th rowspan="2">#</th>
+                  <th rowspan="2">${message(code:'sidewide.number')}</th>
                   <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
                   <th rowspan="2">${message(code:'subscription.details.print-electronic')}</th>
                   <g:sortableColumn params="${params}" property="startDate" title="${message(code:'subscription.details.startDate', default:'Earliest date')}" />
@@ -133,7 +133,7 @@
                     <g:if test="${editable}">
 
                       <th style="vertical-align:middle;">
-                        <input type="checkbox" name="chkall" onClick="javascript:selectAll();"/>
+                        <input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/>
                       </th>
 
                       <th colspan="2">
@@ -272,7 +272,7 @@
       <g:if test="${editable}">
 
       function selectAll() {
-        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+        $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
       function confirmSubmit() {

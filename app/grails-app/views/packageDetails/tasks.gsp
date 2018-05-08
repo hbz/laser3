@@ -28,6 +28,7 @@
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
+        <g:render template="actions" />
     </semui:controlButtons>
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 

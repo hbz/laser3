@@ -141,7 +141,7 @@ class MyInstitutionController {
 
         result.tips = results
         result.institution = current_inst
-        result.editable = accessService.checkUserOrgRole(result.user, current_inst, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, current_inst, 'INST_EDITOR')
         result
     }
 
@@ -191,7 +191,7 @@ class MyInstitutionController {
         def result = setResultGenerics()
         result.transforms = grailsApplication.config.licenseTransforms
 
-        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -360,7 +360,7 @@ class MyInstitutionController {
             return;
         }
 
-        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def qparams = [template_license_type]
@@ -485,7 +485,7 @@ class MyInstitutionController {
         }
         */
 
-        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
         def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
@@ -574,7 +574,7 @@ from Subscription as s where (
             [(it.getI10n('name')) : it.type + "&&" + it.refdataCategory]
         }
 
-        if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("statslogin"), result.institution)) {
+        if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
             result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
         }
@@ -659,7 +659,7 @@ from Subscription as s where (
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
         
-        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
@@ -691,7 +691,8 @@ from Subscription as s where (
         log.debug(params)
         def result = setResultGenerics()
         result.orgType = RefdataValue.get(params.asOrgType)
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
+        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
         
         def orgRole = null
@@ -708,7 +709,7 @@ from Subscription as s where (
             subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
 
-        if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
+        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
             def startDate = sdf.parse(params.valid_from)
@@ -766,7 +767,7 @@ from Subscription as s where (
                                           
                         new OrgRole(org: cm,
                             sub: cons_sub,
-                            roleType: role_sub).save();
+                            roleType: role_sub_cons).save();
 
                         new OrgRole(org: result.institution,
                             sub: cons_sub,
@@ -775,7 +776,7 @@ from Subscription as s where (
                     else {
                         new OrgRole(org: cm,
                             sub: new_sub,
-                            roleType: role_sub).save();
+                            roleType: role_sub_cons).save();
                     }
                   }
                 }
@@ -852,7 +853,7 @@ from Subscription as s where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        if (! accessService.checkUserOrgRole(user, org, 'INST_ADM')) {
+        if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -889,7 +890,7 @@ from Subscription as s where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        if (! accessService.checkUserOrgRole(user, org, 'INST_ADM')) {
+        if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -1058,7 +1059,7 @@ from Subscription as s where (
         }
         
         // Set is_inst_admin
-        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         // Set offset and max
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
@@ -2206,7 +2207,7 @@ AND EXISTS (
             flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
             response.sendError(401)
             return;
-        } else if (!accessService.checkUserOrgRole(result.user, result.institution, "INST_ADM")) {
+        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_ADM")) {
             flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2236,7 +2237,7 @@ AND EXISTS (
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
-        } else if (! accessService.checkUserOrgRole(result.user, result.institution, "INST_ADM")) {
+        } else if (! accessService.checkMinUserOrgRole(result.user, result.institution, "INST_ADM")) {
             flash.error = message(code:'myinst.renewalUpload.error.noAdmin', default:'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2594,8 +2595,8 @@ AND EXISTS (
             return;
         }
 
-        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.editable = result.user?.hasAffiliation('INST_EDITOR')
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
         getTodoForInst(result)
@@ -2686,8 +2687,7 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(['ROLE_YODA'])
     def changeLog() {
         def result = setResultGenerics()
 
@@ -3049,7 +3049,7 @@ AND EXISTS (
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
 
-        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
             if(result.orgType?.value == 'Consortium') {

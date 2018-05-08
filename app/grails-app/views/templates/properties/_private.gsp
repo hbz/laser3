@@ -17,7 +17,7 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-<table class="ui celled la-table la-table-small table">
+<table class="ui single line la-table-small la-table-inCard table">
     <g:if test="${ownobj.privateProperties}">
         <thead>
             <tr>
@@ -58,7 +58,7 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
-                    <td class="x">
+                    <td>
                         <g:if test="${overwriteEditable == true}">
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
                             <g:remoteLink controller="ajax" action="deletePrivateProperty"

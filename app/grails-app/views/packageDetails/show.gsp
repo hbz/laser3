@@ -59,8 +59,8 @@
                 <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
                 <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
 
-                <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>
+                %{--<dt>${message(code: 'package.show.persistent_id')}</dt>
+                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>--}%
 
                 <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
@@ -201,7 +201,8 @@
                                         property: 'orgs',
                                         recip_prop: 'pkg',
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
-                                        tmplText:'Anbieter hinzufügen'
+                                        tmplText:'Anbieter hinzufügen',
+                                        tmplID:'ContentProvider'
                               ]}" />
 <%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
@@ -371,7 +372,7 @@
             <tr class="no-background">
 
               <th>
-                <g:if test="${editable}"><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                <g:if test="${editable}"><input type="checkbox" id="select-all" name="chkall" onClick="javascript:selectAll();"/></g:if>
               </th>
 
               <th colspan="7">
@@ -681,7 +682,7 @@
         $('.xEditableValue').editable();
       });
       function selectAll() {
-          $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+          $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
       function confirmSubmit() {

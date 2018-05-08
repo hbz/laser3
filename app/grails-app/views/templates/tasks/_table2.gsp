@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">Meine Aufgaben</h2>
+        <h2 class="ui header">Von mir erstellte Aufgaben</h2>
 
         <table class="ui celled la-table table">
             <thead>
@@ -10,6 +10,9 @@
                 <th>${message(code: 'task.title.label', default: 'Title')}</th>
 
                 <th>${message(code: 'task.endDate.label', default: 'End Date')}</th>
+
+                <th>${message(code: 'task.status.label', default: 'Status')}</th>
+
 
                 <th>${message(code: 'task.object.label', default: 'Object')}</th>
 
@@ -26,6 +29,10 @@
                     <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.endDate}"/></td>
+
+                    <td>
+                        <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
+                    </td>
 
                     <td>
                         <g:if test="${taskInstance.license}">
@@ -68,7 +75,7 @@
     function taskedit(id) {
 
         $.ajax({
-            url: "/laser/task/ajaxEdit/?id="+id,
+            url: '<g:createLink controller="ajax" action="TaskEdit"/>?id='+id,
             success: function(result){
                 $("#dynamicModalContainer").empty();
                 $("#modalEditTask").remove();

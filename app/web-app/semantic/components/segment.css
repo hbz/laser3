@@ -813,3 +813,9 @@
   background: #e6eaef;
   border: none;
 }
+.ui.segment.la-role-admin {
+  border-right: 10px solid #004678;
+}
+.ui.segment.la-role-yoda {
+  border-right: 10px solid #98B500;
+}

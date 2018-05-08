@@ -75,7 +75,9 @@
 /* new buttons */
 .ui table td.x {
     text-align: right;
+    white-space: nowrap;
 }
+
 .ui.button > i.icon {
     margin-right: 0 !important;
     opacity: 1 !important;
@@ -131,6 +133,7 @@ TODO: remove and set in semantic css: la-table-small
     padding-top: 0.6em;
     padding-bottom: 0.6em;
 }
+
 
 /* semantic ui - upgrade to 2.3 - start */
 
@@ -203,11 +206,16 @@ body.myInstitution_dashboard .ui.tab .item span {
     position: fixed;
     bottom: 0;
     left: 0;
+    top: 0;
     margin: 0 !important;
     border-radius: 0 !important;
+    z-index: 999;
+}
+.la-server-label span {
+    line-height: 30px;
 }
 
-/* mainSearch */
+    /* mainSearch */
 
 #mainSearch {
 }

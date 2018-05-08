@@ -255,7 +255,8 @@
                                             property: 'orgLinks',
                                             recip_prop: 'lic',
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
-                                            tmplText:'Lizenzgeber hinzufügen'
+                                            tmplText:'Lizenzgeber hinzufügen',
+                                            tmplID:'ContentProvider'
                                   ]}" />
 <%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
@@ -314,16 +315,16 @@
                             <g:if test="${authOrg.name == contextOrg?.name}">
                                 <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
 
-                                <div id="custom_props_div_${authOrg.shortcode}">
+                                <div id="custom_props_div_${authOrg.id}">
                                     <g:render template="/templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.LIC_PROP,
                                             ownobj: license,
-                                            custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                            custom_props_div: "custom_props_div_${authOrg.id}",
                                             tenant: authOrg]}"/>
 
                                     <r:script language="JavaScript">
                                             $(document).ready(function(){
-                                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                                             });
                                     </r:script>
                                 </div>
