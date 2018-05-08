@@ -1,7 +1,19 @@
 
 0.5-pre
 
-- in progress
+STILL IN PROGRESS
+
+- splitted titles into three derived objects: books, databases and journals
+- added new roles for consortia context: subscriber_consortial and licensee_consortial
+- added views and functionality for managing consortia members
+- added predefined constraints for adding orgRoles to objects
+- reworked views and functionality for tasks
+- reworked views and templates for managing persons, contacts and addresses
+- added list views for providers
+- reworked various ui elements and views
+- more translations
+- fixed a great number of bugs
+- upgrade to semantic-ui 2.3.1
 
 0.4.4
 
