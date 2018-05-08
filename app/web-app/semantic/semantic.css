@@ -17250,6 +17250,7 @@ ol.ui.horizontal.list li:before,
 *******************************/
 
 .ui.indeterminate.loader:after {
+  -webkit-animation-direction: reverse;
   animation-direction: reverse;
   -webkit-animation-duration: 1.2s;
   animation-duration: 1.2s;
@@ -23351,8 +23352,8 @@ input#spotlightSearch[type="search"] {
   -webkit-box-align: inherit;
   -ms-flex-align: inherit;
   align-items: inherit;
-  -webkit-box-orient: inherit;
-  -webkit-box-direction: inherit;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
   -ms-flex-direction: inherit;
   flex-direction: inherit;
 }
