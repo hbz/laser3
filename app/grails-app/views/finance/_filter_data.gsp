@@ -74,7 +74,7 @@
 </g:each>
 
 <script>
-     $('#costTable .x .button.positive').on('click', function(e) {
+     $('#costTable .x .button:not(.negative)').on('click', function(e) {
         e.preventDefault()
 
         $.ajax({

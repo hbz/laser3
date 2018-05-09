@@ -102,7 +102,7 @@
         go : function() {
             console.log("go")
             financeRecentConstroller.recentCostItems( null ); // pulls latest cost items
-            financeRecentConstroller.pullJob = setInterval( financeRecentConstroller.costItemsPresent, 10 * 1000 ); // Recently updated code block
+            financeRecentConstroller.pullJob = setInterval( financeRecentConstroller.costItemsPresent, 60 * 1000 ); // Recently updated code block
         },
 
         recentCostItems : function(to) {
@@ -118,7 +118,7 @@
                 global: false
             })
                 .done(function(data) {
-                    $('#recentlyAdded_modal > .content').replaceWith($(data).find('.content')); // TODO !!!!!!!
+                    $('#recentlyAdded_modal > .content').replaceWith($(data).find('.content'));
                 })
                 .fail(function(jqXHR, textStatus, errorThrown ) {
                     console.log('Unable to perform recent cost update ... ', errorThrown);
@@ -148,8 +148,9 @@
                         $('#recentModalWrapper', '#showHideRecent').remove();
                     })
                     .done(function(data) {
-                        //if(data.count > 0) // TODO: remove as comment
-                        financeRecentConstroller.recentCostItems(renderedDateTo);
+                        if(data.count > 0) {
+                            financeRecentConstroller.recentCostItems(renderedDateTo);
+                        }
                     });
             }
         }
