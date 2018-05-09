@@ -24,6 +24,13 @@ class ProfileController {
     }
 
     @Secured(['ROLE_USER'])
+    def errorReport() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result
+    }
+
+    @Secured(['ROLE_USER'])
     def help() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)

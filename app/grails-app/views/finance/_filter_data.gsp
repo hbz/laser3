@@ -53,12 +53,12 @@
         <td class="x">
             <g:if test="${editable}">
                 <g:if test="${inSubMode}">
-                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon positive button">
+                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon button">
                         <i class="write icon"></i>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon positive button">
+                    <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon button">
                         <i class="write icon"></i>
                     </g:link>
                 </g:else>

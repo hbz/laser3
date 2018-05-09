@@ -11,6 +11,7 @@ STILL IN PROGRESS
 - reworked views and templates for managing persons, contacts and addresses
 - added list views for providers
 - reworked various ui elements and views
+- removed legacy stylesheets
 - more translations
 - fixed a great number of bugs
 - upgrade to semantic-ui 2.3.1

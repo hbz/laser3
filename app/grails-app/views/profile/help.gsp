@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.help')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.user.help')}</title>
 </head>
 
 <body>
@@ -12,7 +12,7 @@
     <semui:crumb message="menu.institutions.help" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header"><semui:headerIcon />${message(code: 'menu.institutions.help')}</h1>
+<h1 class="ui header"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
 
 <div class="ui styled accordion">
     <div class="active title">
