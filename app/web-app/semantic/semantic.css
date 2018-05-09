@@ -842,8 +842,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .landingpage .ui.inverted.menu.la-top-menu {
-  height: 70px;
-  margin: 0 !important;
+  height: 50px;
   border-radius: 0 !important;
   border: none !important;
 }
@@ -871,6 +870,7 @@ aside.ui.accordion .title:not(.ui) {
   background-image: url('../images/landingpage/hero.jpg') !important;
   background-repeat: no-repeat !important;
   background-position: top center !important;
+  background-color: #447294;
   border: none !important;
   min-height: 450px;
   padding: 0 0 3rem 0em;
@@ -17250,7 +17250,6 @@ ol.ui.horizontal.list li:before,
 *******************************/
 
 .ui.indeterminate.loader:after {
-  -webkit-animation-direction: reverse;
   animation-direction: reverse;
   -webkit-animation-duration: 1.2s;
   animation-duration: 1.2s;
@@ -23352,8 +23351,8 @@ input#spotlightSearch[type="search"] {
   -webkit-box-align: inherit;
   -ms-flex-align: inherit;
   align-items: inherit;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
+  -webkit-box-orient: inherit;
+  -webkit-box-direction: inherit;
   -ms-flex-direction: inherit;
   flex-direction: inherit;
 }

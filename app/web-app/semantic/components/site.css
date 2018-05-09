@@ -282,8 +282,7 @@ aside.ui.accordion .title:not(.ui) {
   display: none;
 }
 .landingpage .ui.inverted.menu.la-top-menu {
-  height: 70px;
-  margin: 0 !important;
+  height: 50px;
   border-radius: 0 !important;
   border: none !important;
 }
@@ -307,6 +306,7 @@ aside.ui.accordion .title:not(.ui) {
   background-image: url('../images/landingpage/hero.jpg') !important;
   background-repeat: no-repeat !important;
   background-position: top center !important;
+  background-color: #447294;
   border: none !important;
   min-height: 450px;
   padding: 0 0 3rem 0em;
