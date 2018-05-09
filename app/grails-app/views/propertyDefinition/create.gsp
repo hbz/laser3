@@ -8,7 +8,7 @@
   </head>
      <g:set var="entityName" value="${message(code: 'propertyDefinition.label', default: 'PropertyDefinition')}"/>
 <body>
-<div class="row-fluid">
+<div>
 
     <div class="span3">
         <div class="well">

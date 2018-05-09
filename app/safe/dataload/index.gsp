@@ -29,7 +29,7 @@
   </head>
 
   <body>
-    <div class="row-fluid">
+    <div>
       <p>
         JISC KB+ data explorer. Use the links above to navigate the data items imported by the KB+ import process and validate the data.
       </p>

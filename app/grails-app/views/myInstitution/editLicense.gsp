@@ -5,7 +5,7 @@
     <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
   </head>
   <body>
-    <div class="row-fluid">
+    <div>
       <div class="well">
         <p>
           Edit License...
