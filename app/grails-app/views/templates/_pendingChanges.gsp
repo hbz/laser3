@@ -28,7 +28,7 @@
               <tr>
                 <td>${pc.desc}</td>
                   <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
-                <td>
+                <td class="x">
                   <g:if test="${editable && !processingpc}">
                     <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui icon positive button">
                       <i class="checkmark icon"></i>
