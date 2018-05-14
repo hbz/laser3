@@ -157,6 +157,7 @@
                     </div>
 
                     <div class="field la-filter-search ">
+                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
                     </div>
                 </div>
@@ -316,6 +317,9 @@
 
     <r:script type="text/javascript">
         $(document).ready(function(){
+              // initialize the form an fields
+              $('.ui.form')
+              .form();
             var val = "${params.dateBeforeFilter}";
             if(val == "null"){
                 $(".dateBefore").addClass("hidden");
