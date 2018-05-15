@@ -195,7 +195,7 @@
 
 </g:if><!-- TMP::IGNOREFILTER -->
 
-    <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
+    <table id="costTable" class="ui celled sortable table table-tworow la-table floatThead">
 
         <thead>
             <tr>
@@ -221,6 +221,7 @@
         </tbody>
 
     </table>
+
 
 
     <%--

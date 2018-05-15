@@ -127,7 +127,7 @@
           </div>
           <div class="fields">
                     <div class="field">
-                              <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                              <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                     </div>
                     <div class="field">
                       <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
