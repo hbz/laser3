@@ -227,16 +227,22 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     }
 
     @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
-    def importOrgs() {
-        log.info("simple org import via xml .. ROLE_API_WRITER required")
+    def importInstitutions() {
+        log.info("import institutions via xml .. ROLE_API_WRITER required")
 
-        def xml = "Errare humanum est .."
+        def xml = "(Code: 0) - Errare humanum est"
+        def rawText = request.getReader().getText()
 
         if (request.method == 'POST') {
-            xml = new XmlSlurper().parseText(request.reader.text)
-            assert xml instanceof groovy.util.slurpersupport.GPathResult
-            // apiService.importOrg(xml)
-            apiService.newOrgImport(xml)
+
+            if(rawText) {
+                xml = new XmlSlurper().parseText(rawText)
+                assert xml instanceof groovy.util.slurpersupport.GPathResult
+                apiService.makeshiftOrgImport(xml)
+            }
+            else {
+                xml = "(Code: 1) - Ex nihilo nihil fit"
+            }
         }
         render xml
     }

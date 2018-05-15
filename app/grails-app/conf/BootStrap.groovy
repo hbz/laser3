@@ -373,17 +373,25 @@ class BootStrap {
     }
 
     def createOrgProperties() {
-
+        /*
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
         def requiredOrgProps = [
-                [name: [en: "Promotionsrecht", de: "Promotionsrecht"],                      descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "EZB-Teilnehmer", de: "EZB-Teilnehmer"],                        descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Nationallizenz-Teilnehmer", de: "Nationallizenz-Teilnehmer"],  descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Discovery-System", de: "Discovery-System"],                    descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Verwendete Discovery-Systeme", de: "Verwendete Discovery-Systeme"],    descr: allOrgDescr, type:String.toString()]
+                [key:"promotionsrecht",
+                    name: [en: "Promotionsrecht", de: "Promotionsrecht"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [key:"privatrechtlich",
+                    name: [en: "Privatrechtlich", de: "Privatrechtlich"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [key:"ezb teilnehmer",
+                    name: [en: "EZB-Teilnehmer", de: "EZB-Teilnehmer"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [key:"nationallizenz teilnehmer",
+                    name: [en: "Nationallizenz-Teilnehmer", de: "Nationallizenz-Teilnehmer"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [key:"discovery system",
+                    name: [en: "Discovery-System", de: "Discovery-System"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [key:"verwendete discovery systeme",
+                    name: [en: "Verwendete Discovery-Systeme", de: "Verwendete Discovery-Systeme"], descr: allOrgDescr, type:String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
+        */
     }
     
     def createLicenseProperties() {
@@ -561,11 +569,13 @@ class BootStrap {
     def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
         requiredProps.each { default_prop ->
-            def prop = PropertyDefinition.findByName(default_prop.name['en'])
+
+            def key = default_prop.key ?: default_prop.name['en']
+            def prop = PropertyDefinition.findByName(key)
 
             if (! prop) {
-                log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
-                prop = new PropertyDefinition(name: default_prop.name['en'])
+                log.debug("Unable to locate property definition for ${key} .. creating")
+                prop = new PropertyDefinition(name: key)
 
                 if (default_prop.cat != null) {
                     prop.setRefdataCategory(default_prop.cat)
@@ -778,7 +788,7 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
         RefdataValue.loc('AddressType', [en: 'Library address', de: 'Bibliotheksanschrift'])
-        RefdataValue.loc('AddressType', [en: 'Legal Patron Address', de: 'Anschrift des rechtlichen Trägers'])
+        RefdataValue.loc('AddressType', [en: 'Legal patron address', de: 'Anschrift des rechtlichen Trägers'])
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])
 

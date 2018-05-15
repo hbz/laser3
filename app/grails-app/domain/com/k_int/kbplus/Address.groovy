@@ -52,18 +52,18 @@ class Address {
     }
     
     static constraints = {
-        street_1 (nullable:false, blank:false)
-        street_2 (nullable:true,  blank:true)
-        pob         (nullable:true,  blank:true)
-        pobZipcode  (nullable:true,  blank:true)
-        pobCity     (nullable:true,  blank:true)
-        zipcode  (nullable:false, blank:false)
-        city     (nullable:false, blank:false)
-        state    (nullable:true,  blank:true)
-        country  (nullable:true,  blank:true)
-        name            (nullable:true,  blank:true)
-        additionFirst   (nullable:true,  blank:true)
-        additionSecond  (nullable:true,  blank:true)
+        street_1 (nullable:true,  blank:false)
+        street_2 (nullable:true,  blank:false)
+        pob         (nullable:true,  blank:false)
+        pobZipcode  (nullable:true,  blank:false)
+        pobCity     (nullable:true,  blank:false)
+        zipcode  (nullable:true, blank:false)
+        city     (nullable:true, blank:false)
+        state    (nullable:true,  blank:false)
+        country  (nullable:true,  blank:false)
+        name            (nullable:true,  blank:false)
+        additionFirst   (nullable:true,  blank:false)
+        additionSecond  (nullable:true,  blank:false)
         type     (nullable:false)
         prs      (nullable:true)
         org      (nullable:true)
@@ -78,17 +78,33 @@ class Address {
         zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type?.value
     }
 
-    static def lookup(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
+    static def lookup(
+            name,
+            street1,
+            street2,
+            zipcode,
+            city,
+            state,
+            country,
+            postbox,
+            pobZipcode,
+            pobCity,
+            type,
+            person,
+            organisation) {
 
         def address
         def check = Address.findAllWhere(
+                name:           name ?: null,
                 street_1: street1 ?: null,
                 street_2: street2 ?: null,
-                pob:      postbox ?: null,
                 zipcode:  zipcode ?: null,
                 city:     city ?: null,
                 state:    state ?: null,
                 country:  country ?: null,
+                pob:            postbox ?: null,
+                pobZipcode:     pobZipcode ?: null,
+                pobCity:        pobCity ?: null,
                 type:     type ?: null,
                 prs:      person,
                 org:      organisation
@@ -100,29 +116,45 @@ class Address {
         address
     }
 
-    static def lookupOrCreate(street1, street2, postbox, zipcode, city, state, country, type, person, organisation) {
+    static def lookupOrCreate(
+            name,
+            street1,
+            street2,
+            zipcode,
+            city,
+            state,
+            country,
+            postbox,
+            pobZipcode,
+            pobCity,
+            type,
+            person,
+            organisation) {
         
-        def info   = "saving new address: ${type}}"
+        def info   = "saving new address: ${type}"
         def result = null
         
         if (person && organisation) {
             type = RefdataValue.findByValue("Job-related")
         }
 
-        def check = Address.lookup(street1, street2, postbox, zipcode, city, state, country, type, person, organisation)
+        def check = Address.lookup(name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation)
         if (check) {
             result = check
             info += " > ignored; duplicate found"
         }
         else {
             result = new Address(
+                name:     name,
                 street_1: street1,
                 street_2: street2,
-                pob:      postbox,
                 zipcode:  zipcode,
                 city:     city,
                 state:    state,
                 country:  country,
+                pob:      postbox,
+                pobZipcode: pobZipcode,
+                pobCity:  pobCity,
                 type:     type,
                 prs:      person,
                 org:      organisation

@@ -17,23 +17,12 @@ class UrlMappings {
         "/ajax/$action?/$id?"(controller: 'ajax')
 
         // new custom api
-        "/api/importOrgs"       (controller: 'api', action: 'importOrgs')
+        "/api/push/orgs"        (controller: 'api', action: 'importInstitutions', parseRequest: false)
         "/api/v0/spec"          (uri: '/rest/v0/laser.yaml.gsp')
         "/api/v0/$obj"          (controller: 'api', action: 'v0')
 
         "/"                     (view: "public/index")
         "/public"               (view: "public/index")
-
-        /*
-        "/about"                (view: "public/about")
-        "/contact-us"           (view: "public/contact-us")
-        "/freedom-of-information-policy"(view: "public/freedom-of-information-policy")
-        "/noHostPlatformUrl"    (view: "public/noHostPlatformUrl")
-        "/privacy-policy"       (view: "public/privacy-policy")
-        "/public"               (view: "public/index")
-        "/signup"               (view: "public/signup")
-        "/terms-and-conditions" (view: "public/terms-and-conditions")
-        */
 
         "/oai/$id"(controller: 'oai', action: 'index')
 
