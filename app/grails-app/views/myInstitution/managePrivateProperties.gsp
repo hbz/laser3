@@ -41,7 +41,7 @@
                                 <tr>
                                     <td>${ppd.getI10n('descr')}</td>
                                     <td>
-                                        ${ppd.getI10n('name')}
+                                        ${ppd.name}
                                         <g:if test="${ppd.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                                         </g:if>

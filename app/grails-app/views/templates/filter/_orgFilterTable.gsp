@@ -50,8 +50,8 @@
                     </g:link>
                 </g:else>
             </td>
-            <td>${org.getIdentifierByType('wib')?.value}</td>
-            <td>${org.getIdentifierByType('isil')?.value}</td>
+            <td>${org.getIdentifiersByType('wib')?.value?.join(', ')}</td>
+            <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
             <td>${org.orgType?.getI10n('value')}</td>
             <td>${org.sector?.getI10n('value')}</td>
             <td>${org.federalState?.getI10n('value')}</td>

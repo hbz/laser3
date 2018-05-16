@@ -75,11 +75,14 @@ class ApiService {
             def identifiers = []
 
             inst.identifier.children().each { ident ->
-                def idValue = normString(ident.text())
-                if (idValue) {
-                    identifiers << ["${ident.name()}": idValue]
 
-                    doublets.put("${ident.name()}:${idValue}", (doublets.get("${ident.name()}:${idValue}") ?: 0) + 1)
+                (ident.children().size() > 0 ? ident.children() : ident).each { innerIdent -> // get nested ones
+
+                    def idValue = normString(innerIdent.text())
+                    if (idValue) {
+                        identifiers << ["${innerIdent.name()}": idValue]
+                        doublets.put("${innerIdent.name()}:${idValue}", (doublets.get("${innerIdent.name()}:${idValue}") ?: 0) + 1)
+                    }
                 }
             }
 //return;
