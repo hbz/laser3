@@ -644,6 +644,8 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Postal address', de: 'Postanschrift'])
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Library address', de: 'Bibliotheksanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Legal patron address', de: 'Anschrift des rechtlichen Trägers'])
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])
 
@@ -655,6 +657,7 @@ class BootStrap {
         RefdataValue.loc('ContactContentType',   [en: 'E-Mail', de: 'E-Mail'])
         RefdataValue.loc('ContactContentType',   [en: 'Phone', de: 'Telefon'])
         RefdataValue.loc('ContactContentType',   [en: 'Fax', de: 'Fax'])
+        RefdataValue.loc('ContactContentType', [en: 'Url', de: 'Url'])
 
         RefdataValue.loc('ContactType',  [en: 'Personal', de: 'Privat'])
         RefdataValue.loc('ContactType',  [en: 'Job-related', de: 'Geschäftlich'])
@@ -668,6 +671,13 @@ class BootStrap {
         RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'])
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'])
         RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'])
+        RefdataValue.loc('Country',   [en: 'France', de: 'Frankreich'])
+        RefdataValue.loc('Country',   [en: 'Great Britain', de: 'Großbritannien'])
+        RefdataValue.loc('Country',   [en: 'United States of America', de: 'Vereinigte Staaten von Amerika'])
+        RefdataValue.loc('Country',   [en: 'Belgium', de: 'Belgien'])
+        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'])
+        RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'])
+        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'])
 
         RefdataValue.loc('FactType', [en: 'STATS:JR1'])
         RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
@@ -721,9 +731,10 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Kunst- und Musikhochschule', de: 'Kunst- und Musikhochschule'])
         RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'])
-        RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes- / Regionalbibliothek', de: 'Staats-/ Landes- / Regionalbibliothek'])
+        RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes-/ Regionalbibliothek', de: 'Staats-/ Landes-/ Regionalbibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'])
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'])
+        RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'])
 
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'])
         RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Comercial', de: 'Comercial'])
@@ -731,6 +742,7 @@ class BootStrap {
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Verlag'])
+        RefdataValue.loc('OrgType',      [en: 'Provider', de: 'Anbieter'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
         RefdataValue.loc('Package Status',      [en: 'Deleted', de: 'Gelöscht'])
@@ -741,6 +753,13 @@ class BootStrap {
         RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'])
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Allgemeine Kontaktperson'])
+        RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'])
+        RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'])
+        RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'])
+        RefdataValue.loc('Person Function',     [en: 'Erwerbungsabteilung', de: 'Erwerbungsabteilung'])
+        RefdataValue.loc('Person Function',     [en: 'Erwerbungsleitung', de: 'Erwerbungsleitung'])
+        RefdataValue.loc('Person Function',     [en: 'Medienbearbeitung', de: 'Medienbearbeitung'])
+        RefdataValue.loc('Person Function',     [en: 'Zeitschriftenabteilung', de: 'Zeitschriftenabteilung'])
 
         RefdataValue.loc('Person Position',     [en: 'Account Manager', de: 'Account Manager'])
         RefdataValue.loc('Person Position',     [en: 'Head Access Services', de: 'Erwerbungsleiter'])
