@@ -60,7 +60,13 @@
 <h3 class="ui header">Konfiguration</h3>
 <table class="ui celled la-table table">
     <tr><td>SUSHI API Url</td><td>${grailsApplication.config.statsApiUrl}</td></tr>
-    <tr><td>Provider mit gespeicherter Statistik</td><td>TODO</td></tr>
+    <tr><td>Anzahl gespeicherter Customer/Provider/Titel Statistikzeiträume</td><td>
+    <div class="ui relaxed divided list">
+    <g:each in="${cursorCount}" var="cc">
+        <div class="item">${cc[0]}: ${cc[1]}</div>
+    </g:each>
+    </div>
+        </td></tr>
     <g:if test="${apiKey}">
         <tr><td>API Key</td><td>${apiKey}</td></tr>
     </g:if>

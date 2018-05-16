@@ -43,6 +43,7 @@ class UsageController {
         result.providerList = factService.providersWithStatssid()
         result.institutionsWithFacts = factService.getFactInstitutionList()
         result.providersWithFacts = factService.getFactProviderList()
+        result.cursorCount = factService.getSupplierCursorCount()
         result.apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), result.institution)
         result.requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
 
@@ -109,11 +110,11 @@ class UsageController {
             factParams.customer_id = instOrg
             cursorParams.customerName = wibid
         }
-        def cursorCount = StatsTripleCursor.executeUpdate('delete from StatsTripleCursor t1 where 1=1' + cursorAndWhereCondition,
+        def deletedCursorCount = StatsTripleCursor.executeUpdate('delete from StatsTripleCursor t1 where 1=1' + cursorAndWhereCondition,
             cursorParams)
-        def factCount = Fact.executeUpdate('delete from Fact t1 where 1=1' + factAndWhereCondition,
+        def deletedFactCount = Fact.executeUpdate('delete from Fact t1 where 1=1' + factAndWhereCondition,
             factParams)
-
+        log.debug("Deleted ${deletedCursorCount} entries from StatsTripleCursor table and ${deletedFactCount} entries from fact table")
         flash.message = message(code: 'default.usage.delete.success')
         redirect(view: "index", model: result)
     }
