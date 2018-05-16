@@ -142,8 +142,18 @@ r2d2 = {
         $.fn.editable.defaults.mode = 'inline'
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
             '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
-        $.fn.editableform.template = '<form class="ui form form-inline editableform"><div class="control-group"><div><div class="editable-input"></div>' +
-            '<div class="editable-buttons"></div></div><div class="editable-error-block"></div></div></form>'
+        $.fn.editableform.template = '<form class="ui form form-inline editableform">' +
+            '                           <div class="control-group">' +
+            '                               <div>' +
+            '                                   <div class="editable-input">' +
+
+            '                                   </div>' +
+            '                                   <div class="editable-buttons"></div>' +
+            '                               </div>' +
+            '                               <div class="editable-error-block">' +
+            '                               </div>' +
+            '                           </div>' +
+            '                          </form>'
 
         // TODO $.fn.datepicker.defaults.language = gspLocale
     },
@@ -163,6 +173,7 @@ r2d2 = {
         });
 
         $(ctxSel + ' .xEditableValue').editable({
+
             language: gspLocale,
             /* datepicker: {
                 language: gspLocale
@@ -170,7 +181,13 @@ r2d2 = {
             format: gspDateFormat
         });
 
-        $(ctxSel + ' .xEditableManyToOne').editable();
+        $(ctxSel + ' .xEditableDatepicker').editable({
+
+        });
+
+        $(ctxSel + ' .xEditableManyToOne').editable({
+            tpl: '<select class="ui dropdown"></select>'
+        });
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
             language: gspLocale,

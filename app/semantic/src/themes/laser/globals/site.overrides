@@ -447,3 +447,36 @@ body[class*="organisation"] {
     transform: rotate(45deg) scale(1)!important;
     opacity: 1;
 }
+
+//  Overwrites x-editable
+// only in table the select-box appears as 'overlay'
+.ui.table .editableform .control-group{
+    background-color: #f4f8f9;
+    padding: 10px;
+    box-shadow: 1px 1px 2px 1px rgba(20,20,20,.3);
+    position: relative;
+    left: -20px;
+}
+.editableform .control-group {
+    select, input {
+        width: auto!important;
+    }
+}
+.editable-clear-x {
+    background: none;
+    height: 1em;
+    color: @grey;
+    display: block;
+    margin: -9px 10px 0 0;
+    font-size: 1.5em;
+    transition: color 0.6s ease, transform 0.2s ease;
+    font-family: Icons;
+    font-style: normal;
+    font-weight: 400;
+    text-decoration: inherit;
+    text-align: center;
+    backface-visibility: hidden;
+    &:before {
+        content: "\f2ed";
+    }
+}
