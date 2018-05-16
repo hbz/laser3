@@ -17,6 +17,7 @@ class Org extends BaseDomainComponent {
     String shortcode            // Used to generate friendly semantic URLs
     String sortname
     String url
+    String urlGov
 
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate
@@ -79,6 +80,7 @@ class Org extends BaseDomainComponent {
          shortname column:'org_shortname', index:'org_shortname_idx'
           sortname column:'org_sortname', index:'org_sortname_idx'
                url column:'org_url'
+            urlGov column:'org_url_gov'
        fteStudents column:'org_fte_students'
           fteStaff column:'org_fte_staff'
            comment column:'org_comment'
@@ -105,6 +107,7 @@ class Org extends BaseDomainComponent {
            shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
+              urlGov(nullable:true, blank:true, maxSize:512)
          fteStudents(nullable:true, blank:true)
             fteStaff(nullable:true, blank:true)
                impId(nullable:true, blank:true, maxSize:255)
