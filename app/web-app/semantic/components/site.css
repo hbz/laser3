@@ -663,7 +663,7 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
   height: 1em;
   color: #767676;
   display: block;
-  margin: -9px 10px 0 0;
+  margin: -9px 3px 0 0;
   font-size: 1.5em;
   -webkit-transition: color 0.6s ease, -webkit-transform 0.2s ease;
   transition: color 0.6s ease, -webkit-transform 0.2s ease;

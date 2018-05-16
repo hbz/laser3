@@ -467,7 +467,7 @@ body[class*="organisation"] {
     height: 1em;
     color: @grey;
     display: block;
-    margin: -9px 10px 0 0;
+    margin: -9px 3px 0 0;
     font-size: 1.5em;
     transition: color 0.6s ease, transform 0.2s ease;
     font-family: Icons;
