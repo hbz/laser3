@@ -58,7 +58,7 @@
 
                     <dt>
                         <g:message code="org.ids.label" default="Ids" />
-                        <g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel>
+                        (<g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel>)
                     </dt>
                     <dd>
                         <table class="ui single line table ignore-floatThead">

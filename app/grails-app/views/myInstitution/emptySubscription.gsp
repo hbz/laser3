@@ -38,7 +38,7 @@
 
             <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" class="required" />
 
-            <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" class="required" />
+            <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
 
             <g:if test="${orgType?.value == 'Consortium'}">
                 <div class="field">
@@ -144,17 +144,7 @@
                                         prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
                                     }
                                 ]
-                            },
-                             valid_to: {
-                                identifier  : 'valid_to',
-                                rules: [
-                                    {
-                                        type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                                    }
-                                ]
                             }
-
                          }
                     });
         </r:script>

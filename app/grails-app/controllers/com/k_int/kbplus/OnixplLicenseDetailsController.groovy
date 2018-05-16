@@ -9,7 +9,7 @@ class OnixplLicenseDetailsController {
 
     def springSecurityService
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def index() {
         def user = User.get(springSecurityService.principal.id)
         // def onixplLicense = OnixplLicense.get(params.id)
@@ -24,7 +24,7 @@ class OnixplLicenseDetailsController {
         forward (action:'matrix', params:[Compare:"Compare", id:"compare",compareAll:true,selectedLicenses:licenses],controller:"onixplLicenseCompare")
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def notes() {
         log.debug("licenseDetails id:${params.id}");
         def user = User.get(springSecurityService.principal.id)
@@ -36,7 +36,7 @@ class OnixplLicenseDetailsController {
         [onixplLicense: onixplLicense, user: user]
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def documents() {
         log.debug("licenseDetails id:${params.id}");
         def user = User.get(springSecurityService.principal.id)
@@ -48,7 +48,7 @@ class OnixplLicenseDetailsController {
         [onixplLicense: onixplLicense, user: user]
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def history() {
         log.debug("licenseDetails id:${params.id}");
         def user = User.get(springSecurityService.principal.id)
@@ -67,14 +67,14 @@ class OnixplLicenseDetailsController {
         [onixplLicense: onixplLicense, user: user, max: max, offset: offset, historyLines: historyLines, historyLinesTotal: historyLinesTotal]
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def permissionInfo() {
         def user = User.get(springSecurityService.principal.id)
         def onixplLicense = OnixplLicense.get(params.id)
         [onixplLicense: onixplLicense, user: user]
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [onixplLicenseInstanceList: OnixplLicense.list(params), onixplLicenseInstanceTotal: OnixplLicense.count()]

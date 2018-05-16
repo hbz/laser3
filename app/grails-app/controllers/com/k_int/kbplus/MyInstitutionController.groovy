@@ -713,7 +713,7 @@ from Subscription as s where (
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
             def startDate = sdf.parse(params.valid_from)
-            def endDate = sdf.parse(params.valid_to)
+            def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
 
             def new_sub = new Subscription(

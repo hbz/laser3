@@ -1,6 +1,6 @@
 <semui:modal id="modalEditNote" text="${message(code:'template.editNote', default: 'Edit Note')}" editmodal="true">
 
-    <g:form id="edit_note" class="ui form"  url="[controller:'doc',action:'edit',id:noteInstance?.id]" method="post">
+    <g:form id="edit_note" class="ui form"  url="[controller:'doc',action:'editNote',id:noteInstance?.id]" method="post">
 
         <div class="field fieldcontain">
             <label>${message(code:'template.addNote.title', default: 'Titel')}:</label>
