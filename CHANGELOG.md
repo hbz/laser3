@@ -1,4 +1,8 @@
 
+0.4.5
+
+- reworked xml import for organisations 
+
 0.4.4
 
 - changed GlobalDataSyncJob config 
