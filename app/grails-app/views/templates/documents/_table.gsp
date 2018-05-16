@@ -1,12 +1,5 @@
 <g:form id="delete_doc_form" url="[controller:"${controllerName}" ,action:'deleteDocuments']" method="post">
-    <g:if test="${editable}">
 
-        <div class="well hide license-documents-options">
-            <button class="ui negative delete-document" id="delete-doc">${message(code:'template.documents.delete', default:'Delete Selected Documents')}</button>
-            <input type="hidden" name="instanceId" value="${instance.id}"/>
-            <input type="hidden" name="redirectAction" value="${redirect}"/>
-        </div>
-    </g:if>
 
     <table class="ui celled la-table table license-documents">
         <thead>
@@ -20,15 +13,15 @@
         </tr>
         </thead>
         <tbody>
-        <g:each in="${instance.documents}" var="docctx">
+        <g:each in="${instance.documents.sort{it.owner?.title}}" var="docctx">
             <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
                 <tr>
                     <g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/>
                     </td></g:if>
-                    <td style="max-width: 300px;overflow: hidden;text-overflow: ellipsis;">
+                    <td>
                         <semui:xEditable owner="${docctx.owner}" field="title" id="title"/>
                     </td>
-                    <td style="max-width: 300px;overflow: hidden;text-overflow: ellipsis;">
+                    <td>
                         <semui:xEditable owner="${docctx.owner}" field="filename" id="filename"/>
                     </td>
                     <td>
@@ -37,14 +30,22 @@
                         </g:if>
                     </td>
                     <td>
-                        <semui:xEditable owner="${docctx.owner}" field="creator" id="creator"/>
+                        ${docctx.owner.creator}
                     </td>
-                    <td>${docctx.owner?.type?.value}</td>
+                    <td>${docctx.owner?.type?.getI10n('value')}</td>
                 </tr>
             </g:if>
         </g:each>
         </tbody>
     </table>
+    <g:if test="${editable}">
+
+        <div class="well hide license-documents-options">
+            <button class="ui negative delete-document" id="delete-doc">${message(code:'template.documents.delete', default:'Delete Selected Documents')}</button>
+            <input type="hidden" name="instanceId" value="${instance.id}"/>
+            <input type="hidden" name="redirectAction" value="${redirect}"/>
+        </div>
+    </g:if>
     <g:if test="${editable}">          
       <input type="button" class="ui button" value="${message(code:'template.documents.add', default:'Add new document')}" data-semui="modal" href="#modalCreateDocument"/>
       </g:if>

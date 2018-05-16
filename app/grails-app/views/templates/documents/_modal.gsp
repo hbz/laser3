@@ -28,9 +28,9 @@
                 </dt>
                 <dd>
                     <select name="doctype">
-                        <option value="License"><g:message code="license" default="License"/></option>
-                        <option value="General"><g:message code="template.addDocument.type.general" default="General"/></option>
-                        <option value="General"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
+                        <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'License'])}"><g:message code="license" default="License"/></option>
+                        <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'General'])}"><g:message code="template.addDocument.type.general" default="General"/></option>
+                        <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'Addendum'])}"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
                     </select>
                 </dd>
             </dl>

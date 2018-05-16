@@ -23,7 +23,7 @@ class Doc {
 
   String title
   String filename
-  String creator
+  User creator
   String mimeType
   Integer contentType = CONTENT_TYPE_STRING
   String content 

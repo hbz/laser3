@@ -1360,11 +1360,19 @@ AND l.status.value != 'Deleted' order by l.reference
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgRelations = []
         result.subscriptionInstance.orgRelations?.each { or ->
-            if (! (or.org == contextService.getOrg() && or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Agency'])) {
                 result.visibleOrgRelations << or
             }
         }
         result.visibleOrgRelations.sort{it.org.sortname}
+
+        result.visibleOrgAgencyRelations = []
+        result.subscriptionInstance.orgRelations?.each { or ->
+            if (!(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Provider']) && !(or.org == contextService.getOrg())) {
+                result.visibleOrgAgencyRelations << or
+            }
+        }
+        result.visibleOrgAgencyRelations.sort{it.org.sortname}
 
         // -- private properties
 
@@ -1451,6 +1459,7 @@ AND l.status.value != 'Deleted' order by l.reference
             }
           }
         }
+
 
         result
     }

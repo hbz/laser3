@@ -1,6 +1,6 @@
 <semui:card message="license.documents" class="documents" href="#modalCreateDocument" editable="${editable}">
 
-    <g:each in="${ownobj.documents}" var="docctx">
+    <g:each in="${ownobj.documents.sort{it.owner?.title}}" var="docctx">
         <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
             <div class="ui small feed content">
                 <!--<div class="event">-->
@@ -18,7 +18,8 @@
                                         ${message(code:'template.documents.missing', default: 'Missing title and filename')}
                                     </g:else>
                                 </g:else>
-                            </g:link>
+
+                            </g:link>(${docctx.owner.type.getI10n("value")})
                         </div>
 
                 <!--</div>-->

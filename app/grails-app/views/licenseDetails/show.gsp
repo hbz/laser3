@@ -246,7 +246,8 @@
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
                                             editmode: editable,
-                                            tmplButtonText: 'Lizenzgeber hinzufügen'
+                                            tmplButtonText: 'Lizenzgeber hinzufügen',
+                                            tmplmodalID:'osel_add_modal'
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
@@ -256,7 +257,8 @@
                                             recip_prop: 'lic',
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
                                             tmplText:'Lizenzgeber hinzufügen',
-                                            tmplID:'ContentProvider'
+                                            tmplID:'ContentProvider',
+                                            tmplmodalID:'osel_add_modal'
                                   ]}" />
 <%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"

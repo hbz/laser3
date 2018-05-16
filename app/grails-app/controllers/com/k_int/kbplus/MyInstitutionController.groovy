@@ -429,7 +429,7 @@ class MyInstitutionController {
                 result.orgList << provider.org
             }
         }
-
+        result.orgList.sort{a, b -> a.name.compareToIgnoreCase b.name}
         result.test = mySubs
         result
     }
@@ -874,7 +874,7 @@ from Subscription as s where (
                 log.error("Problem saving org links to license ${org.errors}");
             }
             if(params.sub) {
-                def subInstance = Subscription.get(params.owner)
+                def subInstance = Subscription.get(params.sub)
                 subInstance.owner = licenseInstance
                 subInstance.save(flush: true)
             }

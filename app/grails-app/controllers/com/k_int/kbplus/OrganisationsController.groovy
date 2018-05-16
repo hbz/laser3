@@ -147,7 +147,7 @@ class OrganisationsController {
         def result=[:]
         if ( params.proposedProvider ) {
 
-            result.providerMatches= Org.findAllByNameLikeAndOrgType("%${params.proposedProvider}%", RefdataValue.getByValueAndCategory('Provider','OrgType'))
+            result.providerMatches= Org.findAllByNameIlikeAndOrgType("%${params.proposedProvider}%", RefdataValue.getByValueAndCategory('Provider','OrgType'))
         }
         result
     }

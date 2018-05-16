@@ -299,6 +299,7 @@ class DataloadService {
     def updateES(esclient, domain, recgen_closure) {
 
     def count = 0;
+
     try {
         log.debug("updateES - ${domain.name}")
 
@@ -394,9 +395,10 @@ class DataloadService {
 
       log.debug("Processed ${total} records for ${domain.name}")
 
-      // update timestamp
+        // update timestamp
         latest_ft_record.lastTimestamp = highest_timestamp
-      latest_ft_record.save(flush:true);
+        latest_ft_record.save(flush:true);
+        checkESElementswithDBElements(domain)
     }
     catch ( Exception e ) {
       log.error("Problem with FT index", e)
@@ -664,5 +666,58 @@ class DataloadService {
         CreateIndexResponse createResponse = client.admin().indices().create(new CreateIndexRequest(es_index)).actionGet()
 
         log.debug("Clear down and init ES completed... AS OF 4.1 MAPPINGS -MUST- Be installed in ESHOME/mappings/kbplus")
+    }
+
+    def checkESElementswithDBElements(domain) {
+
+        //Datenbank Abfrage
+        def c = domain.createCriteria()
+        def ResultsinDB = c.list(){}
+
+        //ES Abfrage
+        def rectype = ""
+        if(domain.name == 'com.k_int.kbplus.Subscription')
+        {
+            rectype = "Subscription"
+        }else if(domain.name == 'com.k_int.kbplus.Org')
+        {
+            rectype = "Organisation"
+        }else if (domain.name == 'com.k_int.kbplus.TitleInstance')
+        {
+            rectype = "Title"
+        }
+        else if (domain.name == 'com.k_int.kbplus.Package')
+        {
+            rectype = "Package"
+        }else if (domain.name == 'com.k_int.kbplus.License')
+        {
+            rectype = "License"
+        }
+        else if (domain.name == 'com.k_int.kbplus.Platform')
+        {
+            rectype = "Platform"
+        }
+        def query_str = "rectype: '${rectype}'"
+
+        Client esclient = ESWrapperService.getClient()
+            def search = esclient.search {
+                indices grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX
+                source {
+                    query {
+                        query_string(query: query_str)
+                    }
+                }
+            }.actionGet()
+
+            def resultsTotal =  search ?search.hits.totalHits: ""
+
+            def ft_record = FTControl.findByDomainClassNameAndActivity(domain.name,'ESIndex')
+            ft_record.dbElements = ResultsinDB.size()?:null
+            ft_record.esElements = resultsTotal?:null
+            ft_record.save(flush: true)
+            if(ResultsinDB.size() != resultsTotal) {
+                log.debug("****ES NOT COMPLETE FOR ${rectype}: ES Results = ${resultsTotal}, DB Results = ${ResultsinDB.size()}****")
+            }
+
     }
 }

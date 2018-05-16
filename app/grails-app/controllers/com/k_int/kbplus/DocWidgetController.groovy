@@ -92,13 +92,13 @@ class DocWidgetController {
                                     filename: original_filename,
                                     mimeType: request.getFile("upload_file")?.contentType,
                                     title: params.upload_title,
-                                    type:RefdataCategory.lookupOrCreate('Document Type',params.doctype))
+                                    type:RefdataCategory.lookupOrCreate('Document Type',params.doctype),
+                                    creator: user)
           doc_content.setBlobData(input_stream, input_file.size)
           doc_content.save()
 
           def doc_context = new DocContext("${params.ownertp}":instance,
                                            owner:doc_content,
-                                           user:user,
                                            doctype:RefdataCategory.lookupOrCreate('Document Type',params.doctype)).save(flush:true);
 
           log.debug("Doc created and new doc context set on ${params.ownertp} for ${params.ownerid}");

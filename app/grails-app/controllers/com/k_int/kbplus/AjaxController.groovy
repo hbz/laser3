@@ -1211,4 +1211,13 @@ class AjaxController {
         render template:"../templates/tasks/modal_edit", model: result
     }
 
+    @Secured(['ROLE_USER'])
+    def NoteEdit() {
+        def result = [:]
+        result.params = params
+        result.noteInstance = Doc.get(params.id)
+
+        render template:"../templates/notes/modal_edit", model: result
+    }
+
 }

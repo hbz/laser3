@@ -84,6 +84,7 @@ class YodaController {
         result.statsSyncService.syncElapsed = statsSyncService.syncElapsed
         result.dataloadService.update_running = dataloadService.update_running
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
+        result.esinfos = FTControl.list()
 
         result
     }

@@ -193,7 +193,9 @@
                                             roleObject: packageInstance,
                                             roleRespValue: 'Specific package editor',
                                             editmode: editable,
-                                            tmplButtonText: 'Anbieter hinzufügen']}" />
+                                            tmplButtonText: 'Anbieter hinzufügen',
+                                            tmplmodalID:'osel_add_modal'
+                                  ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
                               model="${[linkType:packageInstance?.class?.name,
@@ -202,7 +204,8 @@
                                         recip_prop: 'pkg',
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen',
-                                        tmplID:'ContentProvider'
+                                        tmplID:'ContentProvider',
+                                        tmplmodalID:'osel_add_modal'
                               ]}" />
 <%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"

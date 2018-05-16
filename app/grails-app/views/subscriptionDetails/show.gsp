@@ -239,7 +239,8 @@
                                         roleObject: subscriptionInstance,
                                         roleRespValue: 'Specific subscription editor',
                                         editmode: editable,
-                                        tmplButtonText:'Anbieter hinzufügen'
+                                        tmplButtonText:'Anbieter hinzufügen',
+                                        tmplmodalID:'osel_add_modal'
                               ]}" />
 
                     <g:render template="/templates/links/orgLinksModal"
@@ -249,7 +250,30 @@
                                         recip_prop: 'sub',
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen',
-                                        tmplID:'ContentProvider']}" />
+                                        tmplID:'ContentProvider',
+                                        tmplmodalID:'osel_add_modal'
+                              ]}" />
+
+
+                <g:render template="/templates/links/orgLinksAsList"
+                          model="${[roleLinks: visibleOrgAgencyRelations,
+                                    roleObject: subscriptionInstance,
+                                    roleRespValue: 'Specific subscription editor',
+                                    editmode: editable,
+                                    tmplButtonText:'Agentur hinzufügen',
+                                    tmplmodalID:'osel_add_modal1'
+                          ]}" />
+
+                <g:render template="/templates/links/orgLinksModal"
+                          model="${[linkType: subscriptionInstance?.class?.name,
+                                    parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
+                                    property: 'orgs',
+                                    recip_prop: 'sub',
+                                    tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'),
+                                    tmplText:'Agentur hinzufügen',
+                                    tmplID:'ContentProvider',
+                                    tmplmodalID:'osel_add_modal1'
+                          ]}" />
 <%--
                     <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                           model="[roleLinks: visibleOrgRelations,

@@ -674,7 +674,8 @@ class BootStrap {
                 [[en: 'Subscription Consortia'], sub],
                 [[en: 'Content Provider', de: 'Anbieter'], pkg],
                 [[en: 'Package Consortia'], pkg],
-                [[en: 'Publisher', de: 'Verlag'], null]
+                [[en: 'Publisher', de: 'Verlag'], null],
+                [[en: 'Agency', de: 'Agentur'], sub]
         ]
 
         RefdataCategory.loc('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
@@ -1095,7 +1096,10 @@ class BootStrap {
                 [en: 'Document Type', de: 'Dokumenttyp'])
 
         RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'])
-        RefdataValue.loc('Document Type', [en: 'License', de: 'Lizenz'])
+        RefdataValue.loc('Document Type', [en: 'Subscription', de: 'Lizenz'])
+        RefdataValue.loc('Document Type', [en: 'License', de: 'Vertrag'])
+        RefdataValue.loc('Document Type', [en: 'General', de: 'Allgemein'])
+        RefdataValue.loc('Document Type', [en: 'Addendum', de: 'Zusatz'])
         RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung'])
         RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'])
 
