@@ -100,10 +100,10 @@
                 </g:if></td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('wib')}">
-                <td>${org.getIdentifierByType('wib')?.value}</td>
+                <td>${org.getIdentifiersByType('wib')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('isil')}">
-                <td>${org.getIdentifierByType('isil')?.value}</td>
+                <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('type')}">
                 <td>${org.orgType?.getI10n('value')}</td>

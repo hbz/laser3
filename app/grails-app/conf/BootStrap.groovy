@@ -23,7 +23,7 @@ class BootStrap {
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
         def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
-        
+
         log.debug("setupRefdata ..")
         setupRefdata()
 
@@ -375,25 +375,11 @@ class BootStrap {
     def createOrgProperties() {
         /*
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
-
-        def requiredOrgProps = [
-                [key:"promotionsrecht",
-                    name: [en: "Promotionsrecht", de: "Promotionsrecht"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [key:"privatrechtlich",
-                    name: [en: "Privatrechtlich", de: "Privatrechtlich"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [key:"ezb teilnehmer",
-                    name: [en: "EZB-Teilnehmer", de: "EZB-Teilnehmer"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [key:"nationallizenz teilnehmer",
-                    name: [en: "Nationallizenz-Teilnehmer", de: "Nationallizenz-Teilnehmer"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [key:"discovery system",
-                    name: [en: "Discovery-System", de: "Discovery-System"], descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [key:"verwendete discovery systeme",
-                    name: [en: "Verwendete Discovery-Systeme", de: "Verwendete Discovery-Systeme"], descr: allOrgDescr, type:String.toString()]
-        ]
+        def requiredOrgProps = []
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
         */
     }
-    
+
     def createLicenseProperties() {
 
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
@@ -429,7 +415,7 @@ class BootStrap {
                 [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 //[name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                
+
                 // New Properties by FAK / Verde Review
                 [name: [en: "General Terms note", de: "Allgemeine Bedingungen"],                    descr:allDescr, type:String.toString()],
                 [name: [en: "User restriction note", de: "Benutzungsbeschränkungen"],               descr:allDescr, type:String.toString()],
@@ -487,7 +473,7 @@ class BootStrap {
                 [name: [en: "Licensor termination notice period", de: "Kündigungsfrist des Lizenzgebers"], descr:allDescr, type:String.toString()],
                 //[name: [en: "Termination right note", de: "Kündigungsrecht Hinweise"], descr:allDescr, type:String.toString()],
                 [name: [en: "Termination requirement note", de: "Kündigungsrecht besondere Anforderung"], descr:allDescr, type:String.toString()]
-            
+
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
@@ -553,8 +539,22 @@ class BootStrap {
 
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
+        // TODO - remove HOTFIX: hardcoded hbz properties
         def requiredOrgProps = [
-                [name: [en: "Note", de: "Anmerkung"], descr: allOrgDescr, type: String.toString()]
+                [name: [en: "Note", de: "Anmerkung"],
+                            tenant: 'hbz', descr: allOrgDescr, type: String.toString()],
+                [name: [en: "promotionsrecht", de: "Promotionsrecht"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "privatrechtlich", de: "Privatrechtlich"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "ezb teilnehmer", de: "EZB-Teilnehmer"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "nationallizenz teilnehmer", de: "Nationallizenz-Teilnehmer"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "discovery system", de: "Discovery-System"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "verwendete discovery systeme", de: "Verwendete Discovery-Systeme"],
+                            tenant: 'hbz', descr: allOrgDescr, type:String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
 
@@ -569,7 +569,7 @@ class BootStrap {
     def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
         requiredProps.each { default_prop ->
-
+            /* TODO merge_conflict @ 0.4.5 into 0.5
             def key = default_prop.key ?: default_prop.name['en']
             def prop = PropertyDefinition.findByName(key)
 
@@ -580,6 +580,36 @@ class BootStrap {
                 if (default_prop.cat != null) {
                     prop.setRefdataCategory(default_prop.cat)
                 }
+            }
+            */
+            def prop
+            def tenant
+
+            if (default_prop.tenant) {
+                tenant = Org.findByShortname(default_prop.tenant)
+
+                if (tenant) {
+                    prop = PropertyDefinition.findByNameAndTenant(default_prop.name['en'], tenant)
+                } else {
+                    log.debug("Unable to locate tenant: ${default_prop.tenant} .. ignored")
+                    return
+                }
+            } else {
+                prop = PropertyDefinition.findByName(default_prop.name['en'])
+            }
+
+            if (! prop) {
+                if (tenant) {
+                    log.debug("Unable to locate private property definition for ${default_prop.name['en']} for tenant: ${tenant} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'], tenant: tenant)
+                } else {
+                    log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'])
+                }
+            }
+
+            if (default_prop.cat != null) {
+                prop.setRefdataCategory(default_prop.cat)
             }
 
             if (default_prop.multiple) {
@@ -757,7 +787,7 @@ class BootStrap {
         RefdataValue.loc('YNO',  [en: 'Planed', de: 'Geplant'])
         RefdataValue.loc('YNO',  [en: 'Unknown', de: 'Unbekannt'])
         RefdataValue.loc('YNO',  [en: 'Other', de: 'Andere'])
-        
+
         RefdataValue.loc('Permissions',  [en: 'Permitted (explicit)', de: 'Ausdrücklich erlaubt'])
         RefdataValue.loc('Permissions',  [en: 'Permitted (interpreted)', de: 'Vermutlich erlaubt'])
         RefdataValue.loc('Permissions',  [en: 'Prohibited (explicit)', de: 'Ausdrücklich verboten'])
@@ -765,21 +795,21 @@ class BootStrap {
         RefdataValue.loc('Permissions',  [en: 'Silent', de: 'Stillschweigend'])
         RefdataValue.loc('Permissions',  [en: 'Not applicable', de: 'Nicht zutreffend'])
         RefdataValue.loc('Permissions',  [en: 'Unknown', de: 'Unbekannt'])
-        
+
         RefdataValue.loc('Existence',   [en: 'Existent', de: 'Bestehend'])
         RefdataValue.loc('Existence',   [en: 'Nonexistend', de: 'Fehlend'])
-        
+
         RefdataValue.loc('Indemnification',  [en: 'General', de: 'Generell'])
         RefdataValue.loc('Indemnification',  [en: 'Intellectual Property Only', de: 'Nur geistiges Eigentum'])
         RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'])
         RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unbekannt'])
-        
+
         RefdataValue.loc('Confidentiality',  [en: 'All', de: 'Alles'])
         RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'])
         RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'])
         RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'])
         RefdataValue.loc('Confidentiality',  [en: 'Unknown', de: 'Unbekannt'])
-        
+
         RefdataValue.loc('Termination Condition',  [en: 'At will', de: 'Nach Belieben'])
         RefdataValue.loc('Termination Condition',  [en: 'Breach by Licensor/Licensee', de: 'Wegen Verstoß des Vertragspartners'])
         RefdataValue.loc('Termination Condition',  [en: 'Other', de: 'Andere Gründe'])

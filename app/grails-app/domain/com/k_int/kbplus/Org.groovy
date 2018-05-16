@@ -196,6 +196,17 @@ class Org extends BaseDomainComponent {
     result
   }
 
+    // TODO
+    def getIdentifiersByType(idtype) {
+        def result = []
+        ids.each { id ->
+            if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
+                result << id.identifier;
+            }
+        }
+        result
+    }
+
   static def refdataFind(params) {
     def result = [];
     def ql = null;
