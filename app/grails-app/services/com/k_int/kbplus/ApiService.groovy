@@ -101,7 +101,7 @@ class ApiService {
             def tenant, isPublic
 
             if (inst.source == 'edb des hbz') {
-               tenant = Org.findByShortcode('Hochschulbibliothekszentrum_des_Landes_NRW')
+               tenant = Org.findByShortnameIlike('hbz')
                isPublic = RefdataValue.getByValueAndCategory('No','YN')
             }
             //else if (inst.source == 'nationallizenzen.de') {
