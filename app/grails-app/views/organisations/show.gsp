@@ -47,7 +47,7 @@
                 <dt><g:message code="org.ids.label" default="Ids" /></dt>
                 <dd>
                     <g:if test="${orgInstance?.ids}">
-                        <g:each in="${orgInstance.ids}" var="i">
+                        <g:each in="${orgInstance.ids.sort{it.identifier.ns.ns}}" var="i">
                             <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link>
                             <br />
                         </g:each>
@@ -283,7 +283,7 @@
                                         <dd>
                                             <g:each in="${orgInstance.outgoingCombos}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                                                (<g:each in="${i.toOrg?.ids}" var="id_out">
+                                                (<g:each in="${i.toOrg?.ids.sort{it.identifier.ns.ns}}" var="id_out">
                                                 ${id_out.identifier.ns.ns}:${id_out.identifier.value}
                                             </g:each>)
                                             </g:each>
@@ -309,7 +309,7 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos}" var="i">
                                               <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                (<g:each in="${i.fromOrg?.ids}" var="id_in">
+                                                (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id_in">
                                                   ${id_in.identifier.ns.ns}:${id_in.identifier.value}
                                                 </g:each>)
                                             </g:each>

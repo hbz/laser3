@@ -186,7 +186,7 @@
 								<strong><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
-								<g:each in="${currentTitle.ids}" var="id">
+								<g:each in="${currentTitle.ids.sort{it.identifier.ns.ns}}" var="id">
 				                    <br>${id.identifier.ns.ns}: ${id.identifier.value}
 				                </g:each>
 								</td>

@@ -112,14 +112,14 @@
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                    <g:if test="${t.hostPlatformURL != null}">
-                     <a href="${t.hostPlatformURL}">${t.platform?.name}</a>
+                       <a href="${t.hostPlatformURL.contains('http') ?:'http://'+t.hostPlatformURL}" target="_blank">${t.platform?.name}</a>
                    </g:if>
                    <g:else>
                      ${t.platform?.name}
                    </g:else>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
-                  <g:each in="${t.title.ids}" var="id">
+                  <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="id">
                     ${id.identifier.ns.ns}: ${id.identifier.value}<br/>
                   </g:each>
                 </td>

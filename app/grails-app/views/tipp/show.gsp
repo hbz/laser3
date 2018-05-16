@@ -28,7 +28,7 @@
 
                     <dt><g:message code="title.identifiers.label" /></dt>
 
-                    <dd><g:each in="${titleInstanceInstance.ids}" var="i">
+                    <dd><g:each in="${titleInstanceInstance.ids.sort{it.identifier.ns.ns}}" var="i">
                         <g:if test="${i.identifier.ns.ns != 'originediturl'}">
                             ${i.identifier.ns.ns}:${i.identifier.value}<br/>
                         </g:if>

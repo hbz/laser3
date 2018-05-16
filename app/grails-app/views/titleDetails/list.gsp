@@ -79,9 +79,9 @@
                             ${hit.getSource().publisher?:''}
                           </td>
                           <td>
-                            <g:each in="${hit.getSource().identifiers}" var="id">
+                            <g:each in="${hit.getSource().identifiers.sort{it.type}}" var="id">
                               <g:if test="${id.type != 'originediturl'}">
-                                <div style="white-space:nowrap"><span>${id.type}:</span><span>${id.value}</span></div>
+                                <div style="white-space:nowrap"><span>${id.type}:</span> <span>${id.value}</span></div>
                               </g:if>
                             </g:each>
                           </td>

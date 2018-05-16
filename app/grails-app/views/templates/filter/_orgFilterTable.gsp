@@ -95,7 +95,7 @@
             <g:if test="${tmplConfigShow?.contains('identifier')}">
                 <td><g:if test="${org.ids}">
                     <ul>
-                        <g:each in="${org.ids}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
+                        <g:each in="${org.ids.sort{it.identifier.ns.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
                     </ul>
                 </g:if></td>
             </g:if>

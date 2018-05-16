@@ -85,8 +85,8 @@
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
                       <br/>
                       <span class="pull-right">
-                        <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
-                            <a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a> &nbsp;| &nbsp;</g:if>
+                        <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
+                            <a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a> &nbsp;| &nbsp;</g:if>
                             <g:link action="processAddEntitlements" 
                                     params="${[siid:subscriptionInstance.id,('_bulkflag.'+tipp.id):'Y']}"
                                     class="pull-right">${message(code:'subscription.details.addEntitlements.add_now', default:'Add now')}</g:link>

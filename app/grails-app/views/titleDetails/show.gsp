@@ -59,7 +59,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${ti.ids}" var="io">
+                        <g:each in="${ti.ids.sort{it.identifier.ns.ns}}" var="io">
                             <tr>
                                 %{--<td>${io.id}</td>--}%
                                 <td>${io.identifier.ns.ns}</td>

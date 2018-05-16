@@ -59,7 +59,7 @@
                 <g:if test="${issueEntitlementInstance?.tipp.title?.ids}">
                     <dt>${message(code:'title.identifiers.label', default:'Title Identifiers')}</dt>
                     <dd><ul>
-                      <g:each in="${issueEntitlementInstance?.tipp.title?.ids}" var="i">
+                      <g:each in="${issueEntitlementInstance?.tipp.title?.ids.sort{it.identifier.ns.ns}}" var="i">
                           <li>${i.identifier.ns.ns}: <g:if test="${i.identifier.ns.ns == 'originediturl'}"><a href="${i.identifier.value}">${i.identifier.value}</a></g:if><g:else>${i.identifier.value}</g:else>
 <!--                            <g:if test="${i.identifier.ns.ns.equalsIgnoreCase('issn')}">
                               (<a href="http://suncat.edina.ac.uk/F?func=find-c&ccl_term=022=${i.identifier.value}">search on SUNCAT</a>)
@@ -92,7 +92,7 @@
 
   <g:if test="${issueEntitlementInstance?.tipp.hostPlatformURL}">
       <dt>${message(code:'tipp.hostPlatformURL', default:'Title URL')}</dt>
-      <dd> <a href="${issueEntitlementInstance.tipp?.hostPlatformURL}" TITLE="${issueEntitlementInstance.tipp?.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a></dd>
+      <dd> <a href="${issueEntitlementInstance.tipp?.hostPlatformURL.contains('http') ?:'http://'+issueEntitlementInstance.tipp?.hostPlatformURL}" target="_blank" TITLE="${issueEntitlementInstance.tipp?.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a></dd>
   </g:if>
 </dl>
 

@@ -46,7 +46,7 @@
                             </thead>
                             <tbody>
                             <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
-                            <g:each in="${license.ids}" var="io">
+                            <g:each in="${license.ids.sort{it.identifier.ns.ns}}" var="io">
                                 <tr>
                                     <td>${io.identifier.ns.ns}</td>
                                     <td>${io.identifier.value}</td>

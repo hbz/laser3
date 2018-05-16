@@ -73,7 +73,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${packageInstance.ids}" var="io">
+                        <g:each in="${packageInstance.ids.sort{it.identifier.ns.ns}}" var="io">
                             <tr>
                                 <td>${io.id}</td>
                                 <td>${io.identifier.ns.ns}</td>

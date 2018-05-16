@@ -181,7 +181,7 @@
                         <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}" target="_blank">${message(code:'tipp.hostPlatformURL', default:'Host Link')}  <i class="ui icon share square"></i></a>
 
                     </g:if> <br/>
-                  <g:each in="${ie?.tipp?.title?.ids}" var="title_id">
+                  <g:each in="${ie?.tipp?.title?.ids.sort{it.identifier.ns.ns}}" var="title_id">
                     <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
                       ${title_id.identifier.ns.ns}:<strong>${title_id.identifier.value}</strong>
                     </g:if>

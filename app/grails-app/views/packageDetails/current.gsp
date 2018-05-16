@@ -187,15 +187,15 @@
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
-                   <g:if test="${t.hostPlatformURL != null}">
-                     <a href="${t.hostPlatformURL}">${t.platform?.name}</a>
+                   <g:if test="${t.hostPlatformURL}">
+                     <a href="${t.hostPlatformURL.contains('http') ?:'http://'+t.hostPlatformURL}" target="_blank">${t.platform?.name}</a>
                    </g:if>
                    <g:else>
                      ${t.platform?.name}
                    </g:else>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
-                  <g:each in="${t.title.ids}" var="id">
+                  <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="id">
                     <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                       ${id.identifier.ns.ns}: <a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a>
                     </g:if>

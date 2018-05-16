@@ -43,7 +43,7 @@
                     <g:each in="${titleMatches}" var="titleInstance">
                       <tr>
                         <td>${titleInstance.title} <g:link controller="titleDetails" action="show" id="${titleInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
-                        <td><ul><g:each in="${titleInstance.ids}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each></ul></td>
+                        <td><ul><g:each in="${titleInstance.ids.sort{it.identifier.ns.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each></ul></td>
                         <td>
                           <ul>
                             <g:each in="${titleInstance.orgs}" var="org">
