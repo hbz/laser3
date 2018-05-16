@@ -280,7 +280,7 @@ class SemanticUiTagLib {
 
         out << '<div class="ui modal"' + id + '>'
         out <<   '<div class="header">' + title + '</div>'
-        out <<   '<div class="scrolling content">'
+        out <<   '<div class="content">'
         out <<     body()
         out <<   '</div>'
         out <<   '<div class="actions">'

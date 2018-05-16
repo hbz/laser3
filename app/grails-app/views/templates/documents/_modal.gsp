@@ -33,7 +33,7 @@
                     <label>${message(code: 'template.addDocument.type', default: 'Document Type')}:</label>
                 </dt>
                 <dd>
-                    <select name="doctype">
+                    <select class="ui dropdown fluid" name="doctype">
                         <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'License'])}"><g:message code="license" default="License"/></option>
                         <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'General'])}"><g:message code="template.addDocument.type.general" default="General"/></option>
                         <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'Addendum'])}"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
