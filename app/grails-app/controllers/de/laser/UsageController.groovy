@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.Fact
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.StatsTripleCursor
@@ -77,10 +78,43 @@ class UsageController {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def deleteSelection()
     {
         def result = initResult()
-        flash.message = 'Not yet implemented'
+        def wibid, supplier, supplierOrg, instOrg
+
+        if (params.supplier != 'null'){
+            supplierOrg = Org.get(params.supplier)
+            supplier = supplierOrg?.getIdentifierByType('statssid')?.value
+        }
+        if (params.institution != 'null'){
+            instOrg = Org.get(params.institution)
+            wibid = instOrg?.getIdentifierByType('wibid')?.value
+        }
+        def factAndWhereCondition = ''
+        def cursorAndWhereCondition = ''
+        def factParams = [:]
+        def cursorParams = [:]
+
+        if (supplier) {
+            factAndWhereCondition += " and t1.supplier = :supplier_id"
+            cursorAndWhereCondition += " and t1.supplierId =:supplierName"
+            factParams.supplier_id = supplierOrg
+            cursorParams.supplierName = supplier
+        }
+        if (wibid) {
+            factAndWhereCondition += " and t1.inst = :customer_id"
+            cursorAndWhereCondition += " and t1.customerId = :customerName"
+            factParams.customer_id = instOrg
+            cursorParams.customerName = wibid
+        }
+        def cursorCount = StatsTripleCursor.executeUpdate('delete from StatsTripleCursor t1 where 1=1' + cursorAndWhereCondition,
+            cursorParams)
+        def factCount = Fact.executeUpdate('delete from Fact t1 where 1=1' + factAndWhereCondition,
+            factParams)
+
+        flash.message = message(code: 'default.usage.delete.success')
         redirect(view: "index", model: result)
     }
 

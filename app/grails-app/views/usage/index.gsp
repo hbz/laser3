@@ -22,11 +22,11 @@
         <div class="three fields">
             <div class="field fieldcontain">
                 <label>Anbieter</label>
-                <g:select class="ui dropdown" name="provider"
+                <g:select class="ui dropdown" name="supplier"
                               from="${providerList}"
                               optionKey="id"
                               optionValue="name"
-                              value="${params.provider}"
+                              value="${params.supplier}"
                               noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
             </div>
             <div class="field fieldcontain">
@@ -61,9 +61,8 @@
 <table class="ui celled la-table table">
     <tr><td>SUSHI API Url</td><td>${grailsApplication.config.statsApiUrl}</td></tr>
     <tr><td>Provider mit gespeicherter Statistik</td><td>TODO</td></tr>
-    <tr><td>Kontexteinrichtung für API Abruf freigeschaltet</td><td>TODO</td></tr>
     <g:if test="${apiKey}">
-        <tr><td>API Key</td><td>${apiKey}]}</td></tr>
+        <tr><td>API Key</td><td>${apiKey}</td></tr>
     </g:if>
     <g:if test="${requestor}">
         <tr><td>Requestor ID</td><td>${requestor}</td></tr>

@@ -67,8 +67,8 @@ class StatsSyncService {
             "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
             "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'RequestorID' ) "
-        if (queryParams['provider'] != null){
-            hql += "and po.org.id =:provider "
+        if (queryParams['supplier'] != null){
+            hql += "and po.org.id =:supplier "
         }
         if (queryParams['institution'] != null){
             hql += "and orgrel.org.id =:institution"
@@ -79,8 +79,8 @@ class StatsSyncService {
     def addFilters(params)
     {
         queryParams = [:]
-        if (params.provider != 'null'){
-            queryParams['provider'] = params.provider as long
+        if (params.supplier != 'null'){
+            queryParams['supplier'] = params.supplier as long
         }
         if (params.institution != 'null'){
             queryParams['institution'] = params.institution as long
