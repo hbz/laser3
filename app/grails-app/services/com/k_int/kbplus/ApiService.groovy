@@ -66,19 +66,23 @@ class ApiService {
             ["street1": street1, "street2": street2]
         }
 
+        def doublets = [:]
+
         xml.institution.each { inst ->
 
             // handle identifiers
 
-            def identifiers = [:]
+            def identifiers = []
 
             inst.identifier.children().each { ident ->
                 def idValue = normString(ident.text())
                 if (idValue) {
-                    identifiers.put("${ident.name()}", idValue)
+                    identifiers << ["${ident.name()}": idValue]
+
+                    doublets.put("${ident.name()}:${idValue}", (doublets.get("${ident.name()}:${idValue}") ?: 0) + 1)
                 }
             }
-
+//return;
             // find org by identifier or name (Org.lookupOrCreate)
 
             def org = Org.lookup(inst.name?.text(), identifiers)
@@ -130,10 +134,12 @@ class ApiService {
 
             // adding new identifiers
 
-            identifiers.each{ k,v ->
-                def ns = IdentifierNamespace.findByNsIlike(k)
-                if(null == Identifier.findByNsAndValue(ns, v)){
-                    new IdentifierOccurrence(org:org, identifier:Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+            identifiers.each{ it ->
+                it.each { k, v ->
+                    def ns = IdentifierNamespace.findByNsIlike(k)
+                    if (null == Identifier.findByNsAndValue(ns, v)) {
+                        new IdentifierOccurrence(org: org, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    }
                 }
             }
 
@@ -362,6 +368,8 @@ class ApiService {
                 }
             }
         }
+
+        log.debug("WARNING: doublets @ " + doublets.findAll{ it.value > 1})
 
         return xml
     }
