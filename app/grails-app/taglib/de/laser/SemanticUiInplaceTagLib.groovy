@@ -5,6 +5,8 @@ import com.k_int.kbplus.RefdataValue
 
 class SemanticUiInplaceTagLib {
 
+    def genericOIDService
+
     static namespace = "semui"
 
     /**
@@ -133,8 +135,17 @@ class SemanticUiInplaceTagLib {
 
                 out << "<span>"
 
+                def dataValue = ""
+                def obj = genericOIDService.resolveOID(oid)
+
+                if (obj && obj."${attrs.field}") {
+                    def tmpId = obj."${attrs.field}".id
+                    dataValue = " data-value=\"com.k_int.kbplus.RefdataValue:${tmpId}\" "
+                }
+
                 // Output an editable link
-                out << "<span id=\"${id}\" class=\"xEditableManyToOne\" data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
+                out << "<span id=\"${id}\" class=\"xEditableManyToOne\" " + dataValue +
+                        "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 // Here we can register different ways of presenting object references. The most pressing need to be
                 // outputting a span containing an icon for refdata fields.

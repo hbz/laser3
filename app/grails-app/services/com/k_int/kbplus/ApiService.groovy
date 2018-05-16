@@ -8,182 +8,6 @@ import groovy.util.slurpersupport.GPathResult
 class ApiService {
 
     /**
-     *
-     * @param xml
-     * @return
-     */
-    GPathResult importOrg(GPathResult xml){
-
-        def rdcYN = RefdataCategory.findByDesc('YN')
-        def rdcContactContentType = RefdataCategory.findByDesc('ContactContentType')
-
-        def overrideTenant
-        def overrideIsPublic
-
-        if(xml.override?.tenant?.text()){
-            overrideTenant   = Org.findByShortcode(xml.override.tenant.text())
-            overrideIsPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'No')
-
-            log.info("OVERRIDING TENANT: ${overrideTenant}")
-        }
-
-        xml.institution.each{ inst ->
-
-            def identifiers = [:]
-            def org         = null
-
-            def title = normString(inst.title.text())
-            def subscriperGroup = inst.subscriper_group ? normString(inst.subscriper_group.text()) : ''
-
-            log.info("importing org: ${title}")
-
-            def firstName, middleName, lastName
-            def email, telephone
-            def street1, street2
-
-            // store identifiers
-            def tmp = [:]
-
-            if(inst.uid){
-                tmp.put("uid", normString(inst.uid.text()))
-            }
-            if(inst.sigel){
-                tmp.put("isil", normString(inst.sigel.text()))
-            }
-            if(inst.user_name){
-                tmp.put("wib", normString(inst.user_name.text()))
-            }
-            tmp.each{ k, v ->
-                if(v != '')
-                    identifiers.put(k, v)
-            }
-            
-            // find org by identifier or name (Org.lookupOrCreate)
-            org = Org.lookupOrCreate(title, subscriperGroup, null, identifiers, null)
-            if(org){
-
-                // adding new identifiers
-                identifiers.each{ k,v ->
-                    def ns   = IdentifierNamespace.findByNsIlike(k)
-                    if(null == Identifier.findByNsAndValue(ns, v)){
-                        new IdentifierOccurrence(org:org, identifier:Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
-                    }
-                }
-
-                // adding address
-                if(inst.zip && inst.city){
-                    def stParts = normString(inst.street.text())
-                    stParts = stParts.replaceAll("(Str\\.|Strasse)", "Straße").replaceAll("stra(ss|ß)e", "str.").trim().split(" ")
-                    
-                    if(stParts.size() > 1){
-                        street1 = stParts[0..stParts.size() - 2].join(" ")
-                        street2 = stParts[stParts.size() - 1]
-                    }
-                    else {
-                        street1 = stParts[0]
-                        street2 = ""
-                    }
-                    
-                    // create if no match found
-                    Address.lookupOrCreate(
-                        "${street1}",
-                        "${street2}",
-                        null,
-                        normString(inst.zip?.text()),
-                        normString(inst.city?.text()),
-                        normString(inst.county?.text()),
-                        normString(inst.country?.text()),
-                        RefdataValue.findByValue("Postal address"),
-                        null,
-                        org
-                        )
-                }
-                
-                // adding contact persons
-                def person
-                
-                // overrides
-                def tenant   = org
-                def isPublic = RefdataValue.findByOwnerAndValue(rdcYN, 'Yes')
-                
-                if(overrideTenant){
-                    tenant = overrideTenant
-                }
-                if(overrideIsPublic){
-                    isPublic = overrideIsPublic
-                }
-                
-                def cpList    = flattenToken(inst.contactperson)
-                def mailList  = flattenToken(inst.email)
-                def phoneList = flattenToken(inst.telephone)
-                def faxList   = flattenToken(inst.fax)
-                         
-                cpList.eachWithIndex{ token, i ->
-
-                    // adding person
-                    def cpText = cpList[i] ? cpList[i].text() : ''
-                    def cpParts = normString(cpText).replaceAll("(Herr|Frau)", "").trim().split(" ")
-  
-                    firstName  = cpParts[0].trim()
-                    middleName = (cpParts.size() > 2) ? (cpParts[1..cpParts.size() - 2].join(" ")) : ""
-                    lastName   = cpParts[cpParts.size() - 1].trim()
-
-                    // create if no match found
-                    if(firstName != '' && lastName != ''){
-                        person = Person.lookupOrCreateWithPersonRole(
-                            firstName,
-                            middleName,
-                            lastName,
-                            null /* gender */,
-                            tenant,
-                            isPublic,
-                            org, /* needed for person_role */
-                            RefdataValue.findByValue("General contact person")
-                            )
-
-                        // adding contacts
-                            
-                        def mailText  = mailList[i]  ? mailList[i].text()  : ''
-                        def phoneText = phoneList[i] ? phoneList[i].text() : ''
-                        def faxText   = faxList[i]   ? faxList[i].text()   : ''
-
-                        if(mailText != '' ){
-                            Contact.lookupOrCreate(
-                                normString(mailText),
-                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Mail'),
-                                RefdataValue.findByValue("Job-related"),
-                                person,
-                                null /* person contact only */
-                                )
-                        }
-                        if(phoneText != ''){
-                            Contact.lookupOrCreate(
-                                normString(phoneText),
-                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Phone'),
-                                RefdataValue.findByValue("Job-related"),
-                                person,
-                                null /* person contact only */
-                                )
-                        }
-                        if(faxText != ''){
-                            Contact.lookupOrCreate(
-                                normString(faxText),
-                                RefdataValue.findByOwnerAndValue(rdcContactContentType, 'Fax'),
-                                RefdataValue.findByValue("Job-related"),
-                                person,
-                                null /* person contact only */
-                                )
-                        }
-                    }     
-                    
-                }
-            } // if(org)
-        }
-        
-        return xml
-    }
-    
-    /**
      * 
      * @param s
      * @return trimmed string with multiple whitespaces removed
@@ -220,9 +44,27 @@ class ApiService {
      * @param xml
      * @return
      */
-    GPathResult newOrgImport(GPathResult xml){
+    GPathResult makeshiftOrgImport(GPathResult xml){
 
         def count = xml.institution.size()
+
+        // helper
+
+        def resolveStreet = { street ->
+
+            def street1 = '', street2 = '', stParts = normString(street)
+            stParts = stParts.replaceAll("(Str\\.|Strasse)", "Straße").replaceAll("stra(ss|ß)e", "str.").trim().split(" ")
+
+            if (stParts.size() > 1) {
+                street1 = stParts[0..stParts.size() - 2].join(" ")
+                street2 = stParts[stParts.size() - 1]
+            }
+            else {
+                street1 = stParts[0]
+            }
+
+            ["street1": street1, "street2": street2]
+        }
 
         xml.institution.each { inst ->
 
@@ -258,9 +100,9 @@ class ApiService {
                tenant = Org.findByShortcode('Hochschulbibliothekszentrum_des_Landes_NRW')
                isPublic = RefdataValue.getByValueAndCategory('No','YN')
             }
-            else if (inst.source == 'nationallizenzen.de') {
+            //else if (inst.source == 'nationallizenzen.de') {
             //    tenant = Org.findByShortcode('NL')
-            }
+            //}
             if (! tenant) {
                 tenant = org
                 isPublic = RefdataValue.getByValueAndCategory('Yes','YN')
@@ -271,6 +113,7 @@ class ApiService {
             def now = new Date()
             org.importSource    = inst.source?.text() ?: org.importSource
             org.sortname        = inst.sortname?.text() ?: org.sortname
+            org.shortname       = inst.shortname?.text() ?: org.shortname
             org.lastImportDate  = now
 
             org.fteStudents     = inst.fte_students?.text() ? Long.valueOf(inst.fte_students.text()) : org.fteStudents
@@ -296,25 +139,19 @@ class ApiService {
 
             // postal address
 
-            def street1 = '', street2 = '', stParts = normString(inst.street.text())
-            stParts = stParts.replaceAll("(Str\\.|Strasse)", "Straße").replaceAll("stra(ss|ß)e", "str.").trim().split(" ")
+            def tmp1 = resolveStreet(inst.street.text())
 
-            if (stParts.size() > 1) {
-                street1 = stParts[0..stParts.size() - 2].join(" ")
-                street2 = stParts[stParts.size() - 1]
-            }
-            else {
-                street1 = stParts[0]
-            }
-
-            Address.lookupOrCreate( // street1, street2, postbox, zipcode, city, state, country, type, person, organisation
-                    normString("${street1}"),
-                    normString("${street2}"),
-                    normString("${inst.pobox}"),
+            Address.lookupOrCreate( // name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation
+                    normString("${inst.name}"),
+                    normString("${tmp1.street1}"),
+                    normString("${tmp1.street2}"),
                     normString("${inst.zip}"),
                     normString("${inst.city}"),
                     RefdataValue.getByCategoryDescAndI10nValueDe('Federal State', inst.county?.text()),
                     RefdataValue.getByCategoryDescAndI10nValueDe('Country', inst.country?.text()),
+                    normString("${inst.pob}"),
+                    normString("${inst.pobZipcode}"),
+                    normString("${inst.pobCity}"),
                     RefdataValue.getByValueAndCategory('Postal address', 'AddressType'),
                     null,
                     org
@@ -322,65 +159,105 @@ class ApiService {
 
             // billing address
 
-            if (inst.billing_address?.text()) {
-                street2 = ''
-                stParts = normString(inst.billing_address.street?.text())
-                stParts = stParts.replaceAll("(Str\\.|Strasse)", "Straße").replaceAll("stra(ss|ß)e", "str.").trim().split(" ")
+            inst.billing_address.each{ billing_address ->
 
-                if (stParts.size() > 1) {
-                    street1 = stParts[0..stParts.size() - 2].join(" ")
-                    street2 = stParts[stParts.size() - 1]
-                }
-                else {
-                    street1 = stParts[0]
-                }
+                def tmp2 = resolveStreet(billing_address.street?.text())
 
-                Address.lookupOrCreate( // street1, street2, postbox, zipcode, city, state, country, type, person, organisation
-                        normString("${street1}"),
-                        normString("${street2}"),
+                def billingAddress = Address.lookupOrCreate( // name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation
+                        inst.billing_address.name.text() ? normString("${billing_address.name}") : normString("${inst.name}"),
+                        normString("${tmp2.street1}"),
+                        normString("${tmp2.street2}"),
+                        normString("${billing_address.zip}"),
+                        normString("${billing_address.city}"),
                         null,
-                        normString("${inst.billing_address.zip}"),
-                        normString("${inst.billing_address.city}"),
                         null,
-                        null,
+                        billing_address.pob ? normString("${billing_address.pob}") : null,
+                        billing_address.pobZipcode ? normString("${billing_address.pobZipcode}") : null,
+                        billing_address.pobCity ? normString("${billing_address.pobCity}") : null,
                         RefdataValue.getByValueAndCategory('Billing address', 'AddressType'),
                         null,
                         org
                 )
+                if (billing_address.addition_first) {
+                    billingAddress.setAdditionFirst( normString("${billing_address.addition_first}"))
+                    billingAddress.save()
+                }
+                if (billing_address.addition_second) {
+                    billingAddress.setAdditionSecond(normString("${billing_address.addition_second}"))
+                    billingAddress.save()
+                }
             }
 
-            // private properties
-            // TODO custom prop when tenant = org
+            // legal address
+
+            inst.legal_address.each{ legal_address ->
+
+                def tmp3 = resolveStreet(legal_address.street?.text())
+
+                def legalAddress = Address.lookupOrCreate( // name, street1, street2, zipcode, city, state, country, postbox, pobZipcode, pobCity, type, person, organisation
+                        legal_address.name.text() ? normString("${legal_address.name}") : normString("${inst.name}"),
+                        normString("${tmp3.street1}"),
+                        normString("${tmp3.street2}"),
+                        normString("${legal_address.zip}"),
+                        normString("${legal_address.city}"),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        RefdataValue.getByValueAndCategory('Legal patron address', 'AddressType'),
+                        null,
+                        org
+                )
+                if (legal_address.url.text()) {
+                    log.debug("setting urlGov to: " + legal_address.url)
+                    org.setUrlGov(legal_address.url?.text())
+                    org.save(flush: true)
+                }
+            }
 
             inst.private_property.children().each { pp ->
-                def name = pp.name().capitalize()
+                def name = pp.name().replace('_', ' ').toLowerCase()
+
                 def type = PropertyDefinition.findWhere(
                         name: name,
-                        refdataCategory: name,
                         type: 'class ' + RefdataValue.class.name,
                         descr:  PropertyDefinition.ORG_PROP,
                         tenant: tenant
                 )
+                if (! type) {
+                    type = PropertyDefinition.findWhere(
+                            name: name,
+                            type: 'class ' + String.class.name,
+                            descr:  PropertyDefinition.ORG_PROP,
+                            tenant: tenant
+                    )
+                }
 
                 if (type) {
-                    def check = "adding private property: " + name + " : " + pp.text()
+                    def opp
+                    def check = "private property: " + name + " : " + pp.text()
 
-                    // create on-the-fly
-                    def rdv = RefdataValue.getByCategoryDescAndI10nValueDe(name, pp.text())
-                    if (! rdv) {
-                        rdv = new RefdataValue(value: pp.text(), owner: RefdataCategory.getByI10nDesc(name))
-                        rdv.save()
-                    }
-                    def opp = OrgPrivateProperty.findWhere(type: type, owner: org, refValue: rdv)
-                    if (! opp) {
-                        opp = new OrgPrivateProperty(type: type, owner: org, refValue: rdv)
-                    }
-
-                    if (opp.save()) {
-                        check += " > OK"
+                    if (type.refdataCategory) {
+                        def rdv = RefdataValue.getByCategoryDescAndI10nValueDe(type.refdataCategory, pp.text())
+                        if (rdv) {
+                            opp = OrgPrivateProperty.findWhere(type: type, owner: org, refValue: rdv)
+                            if (! opp) {
+                                opp = new OrgPrivateProperty(type: type, owner: org, refValue: rdv)
+                                opp.save() ? (check += " > OK") : (check += " > FAIL")
+                            } else {
+                                check = "ignored existing " + check
+                            }
+                        }
                     }
                     else {
-                        check += " > FAIL"
+                        opp = OrgPrivateProperty.findWhere(type: type, owner: org, stringValue: pp.text())
+                        if (! opp) {
+                            opp = new OrgPrivateProperty(type: type, owner: org, stringValue: pp.text())
+                            opp.save() ? (check += " > OK") : (check += " > FAIL")
+                        } else {
+                            check = "ignored existing " + check
+                        }
                     }
 
                     log.debug(check)
@@ -396,24 +273,34 @@ class ApiService {
             def rdvJobRelated    = RefdataValue.getByValueAndCategory('Job-related','ContactType')
 
             inst.person?.children().each { p ->
-                def person = Person.lookup(
-                        normString("${p.first_name}"),
-                        normString("${p.last_name}"),
+
+                def rdvContactType   = RefdataValue.getByValueAndCategory('Personal contact', 'Person Contact Type')
+
+                if( ! p.first_name.text() ) {
+                    rdvContactType = RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type')
+                }
+                def person = Person.lookup( // firstName, lastName, tenant, isPublic, contactType, org, functionType
+                        p.first_name.text() ? normString("${p.first_name}") : null,
+                        p.last_name.text() ? normString("${p.last_name}") : null,
                         tenant,
                         isPublic,
+                        rdvContactType,
                         org,
-                        rdvContactPerson
+                        rdvContactPerson,
                 )
+
+                // do NOT change existing persons !!!
                 if (! person) {
                     log.debug("creating new person: ${p.first_name} ${p.last_name}")
 
                     person = new Person(
-                            first_name: normString("${p.first_name}"),
+                            first_name: p.first_name.text() ? normString("${p.first_name}") : null,
                             last_name: normString("${p.last_name}"),
                             tenant: tenant,
-                            isPublic: isPublic
+                            isPublic: isPublic,
+                            contactType: rdvContactType,
+                            gender: RefdataValue.getByCategoryDescAndI10nValueDe('Gender', p.gender?.text())
                     )
-                    person.gender = RefdataValue.getByCategoryDescAndI10nValueDe('Gender', p.gender?.text()) ?: person.gender
 
                     if (person.save()) {
                         log.debug("creating new personRole: ${person} ${rdvContactPerson} ${org}")
@@ -426,6 +313,18 @@ class ApiService {
                                 functionType: rdvContactPerson
                         )
                         pr.save()
+
+                        p.function.children().each { func ->
+                            def rdv = RefdataValue.getByCategoryDescAndI10nValueDe('Person Function', func.text())
+                            if (rdv) {
+                                def pf = new PersonRole(
+                                        prs: person,
+                                        org: org,
+                                        functionType: rdv
+                                )
+                                pf.save()
+                            }
+                        }
 
                         // contacts
 

@@ -3,6 +3,11 @@
 		<g:link controller="address" action="show" id="${address?.id}">
             ${address.type?.getI10n('value')}:
 
+            <g:if test="${address?.name}">
+                <br />
+                ${address?.name.encodeAsHTML()}
+            </g:if>
+
 			<br />
 			${address?.street_1.encodeAsHTML()} ${address?.street_2.encodeAsHTML()}
 
@@ -24,10 +29,6 @@
                 ${address?.pobZipcode?.encodeAsHTML()} ${address?.pobCity?.encodeAsHTML()}
             </g:if>
 
-            <g:if test="${address?.name}">
-                <br />
-                ${address?.name.encodeAsHTML()}
-            </g:if>
             <g:if test="${address?.additionFirst}">
                 <br />
                 ${address?.additionFirst.encodeAsHTML()}
