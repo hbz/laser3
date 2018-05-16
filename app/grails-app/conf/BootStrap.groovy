@@ -447,8 +447,22 @@ class BootStrap {
 
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
+        // TODO - remove HOTFIX: hardcoded hbz properties
         def requiredOrgProps = [
-                [name: [en: "Note", de: "Anmerkung"], descr: allOrgDescr, type: String.toString()]
+                [name: [en: "Note", de: "Anmerkung"],
+                            tenant: 'hbz', descr: allOrgDescr, type: String.toString()],
+                [name: [en: "promotionsrecht", de: "Promotionsrecht"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "privatrechtlich", de: "Privatrechtlich"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "ezb teilnehmer", de: "EZB-Teilnehmer"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "nationallizenz teilnehmer", de: "Nationallizenz-Teilnehmer"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "discovery system", de: "Discovery-System"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "verwendete discovery systeme", de: "Verwendete Discovery-Systeme"],
+                            tenant: 'hbz', descr: allOrgDescr, type:String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
 
@@ -463,11 +477,30 @@ class BootStrap {
     def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
         requiredProps.each { default_prop ->
-            def prop = PropertyDefinition.findByName(default_prop.name['en'])
+            def prop
+            def tenant
+
+            if (default_prop.tenant) {
+                tenant = Org.findByShortname(default_prop.tenant)
+
+                if (tenant) {
+                    prop = PropertyDefinition.findByNameAndTenant(default_prop.name['en'], tenant)
+                } else {
+                    log.debug("Unable to locate tenant: ${default_prop.tenant} .. ignored")
+                    return
+                }
+            } else {
+                prop = PropertyDefinition.findByName(default_prop.name['en'])
+            }
 
             if (! prop) {
-                log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
-                prop = new PropertyDefinition(name: default_prop.name['en'])
+                if (tenant) {
+                    log.debug("Unable to locate private property definition for ${default_prop.name['en']} for tenant: ${tenant} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'], tenant: tenant)
+                } else {
+                    log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'])
+                }
 
                 if (default_prop.cat != null) {
                     prop.setRefdataCategory(default_prop.cat)
