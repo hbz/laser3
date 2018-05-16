@@ -40,8 +40,8 @@
     </table>
     <g:if test="${editable}">
 
-        <div class="well hide license-documents-options">
-            <button class="ui negative delete-document" id="delete-doc">${message(code:'template.documents.delete', default:'Delete Selected Documents')}</button>
+        <div class="well license-documents-options" style="display:none">
+            <button class="ui negative button delete-document" id="delete-doc">${message(code:'template.documents.delete', default:'Delete Selected Documents')}</button>
             <input type="hidden" name="instanceId" value="${instance.id}"/>
             <input type="hidden" name="redirectAction" value="${redirect}"/>
         </div>
@@ -75,4 +75,5 @@
             $('.license-documents-options').slideUp('fast');
         });
     })
+
 </r:script>

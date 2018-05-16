@@ -19,7 +19,13 @@
                     <label>${message(code: 'template.addDocument.file', default: 'File')}:</label>
                 </dt>
                 <dd>
-                    <input type="file" name="upload_file" />
+                    <div class="ui fluid action input">
+                        <input type="text" placeholder="${message(code:'template.addDocument.selectFile')}">
+                        <input type="file" name="upload_file" style="display: none;">
+                        <div class="ui icon button">
+                            <i class="attach icon"></i>
+                        </div>
+                    </div>
                 </dd>
             </dl>
             <dl>
@@ -39,4 +45,14 @@
     </g:form>
 
 </semui:modal>
+<r:script type="text/javascript">
+    $("input:text").click(function() {
+        $(this).parent().find("input:file").click();
+    });
 
+    $('input:file', '.ui.action.input')
+            .on('change', function(e) {
+        var name = e.target.files[0].name;
+        $('input:text', $(e.target).parent()).val(name);
+    });
+</r:script>
