@@ -33,7 +33,7 @@
 
                     <dt>
                         <g:message code="org.ids.label" default="Ids" />
-                        <g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel>
+                        (<g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel>)
                     </dt>
                     <dd>
                         <table class="ui celled la-table la-table-small table ignore-floatThead">

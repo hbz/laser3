@@ -71,6 +71,12 @@ class DocWidgetController {
     log.debug("upload document....");
 
     def input_file = request.getFile("upload_file")
+    if(input_file.size == 0)
+        {
+            flash.error = message(code: 'template.emptyDocument.file')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
     def input_stream = input_file?.inputStream
     def original_filename = request.getFile("upload_file")?.originalFilename
 
