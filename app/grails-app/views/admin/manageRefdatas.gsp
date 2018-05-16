@@ -26,6 +26,16 @@
             </div>
         </semui:card>
 
+<%-- TODO: tmp commit
+<pre>
+<g:each in="${rdvMap}" var="objs">
+    ${objs.key}
+    <g:each in="${objs.value}" var="attrs">    ${attrs}
+    </g:each>
+</g:each>
+</pre>
+--%>
+
         <div class="ui styled fluid accordion">
             <g:each in="${rdCategories}" var="rdc">
                 <g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
@@ -65,7 +75,7 @@
                             <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
                                 <tr>
                                     <td></td>
-                                    <td>
+                                    <td data-position="top left" data-tooltip="${rdv.getAllDeclarations()}">
                                         ${rdv.value}
                                         <g:if test="${rdv.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>

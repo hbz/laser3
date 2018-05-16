@@ -847,12 +847,40 @@ class AdminController {
             ]
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def manageRefdatas() {
+    @Secured(['ROLE_ADMIN'])
+    def manageRefdatas() {
 
-    render view: 'manageRefdatas', model: [
-            editable    : true,
-            rdCategories: RefdataCategory.where{}.sort('desc')
-    ]
+        def rdvMap = [:]
+        /*
+        TODO: tmp commit
+
+        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+            log.debug(dc)
+
+            //def dcInst = grailsApplication.getArtefact("Domain", dc.fullName)
+            def dcMap = [:]
+
+            dc.clazz.declaredFields
+                .findAll{ it -> ! it.synthetic}
+                .findAll{ it -> it.type.name == 'com.k_int.kbplus.RefdataValue'}
+                .each { df ->
+                    def query = "SELECT DISTINCT ${df.name} FROM ${dc.name}"
+                    log.debug(query)
+
+                    def rdvs = SystemAdmin.executeQuery(query)
+                    dcMap << ["${df.name}": rdvs.collect{ it -> "${it.id}:${it.value}"}]
+
+                }
+            if (! dcMap.isEmpty()) {
+                rdvMap << ["${dc}": dcMap]
+            }
+        }
+        */
+
+        render view: 'manageRefdatas', model: [
+                editable    : true,
+                rdCategories: RefdataCategory.where{}.sort('desc'),
+                rdvMap: rdvMap
+        ]
   }
 }
