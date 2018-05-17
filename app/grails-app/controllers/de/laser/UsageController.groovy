@@ -88,6 +88,7 @@ class UsageController {
         if (params.supplier != 'null'){
             supplierOrg = Org.get(params.supplier)
             supplier = supplierOrg?.getIdentifierByType('statssid')?.value
+
         }
         if (params.institution != 'null'){
             instOrg = Org.get(params.institution)
