@@ -92,7 +92,7 @@
                       <dt><label class="control-label" for="subscriptions">Linked Subscriptions</label></dt>
                       <dd>
                         <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
-                          <g:each in="${license.subscriptions}" var="sub">
+                          <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
                             ${sub.id} (${sub.name})
                           </g:each>
                         </g:if>
@@ -104,7 +104,7 @@
                       <dt><label class="control-label" for="${license.pkgs}">Linked Packages</label></dt>
                       <dd>
                         <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
-                          <g:each in="${license.pkgs}" var="pkg">
+                          <g:each in="${license.pkgs.sort{it.name}}" var="pkg">
                            ${pkg.id} (${pkg.name})<br/>
                           </g:each>
                         </g:if>

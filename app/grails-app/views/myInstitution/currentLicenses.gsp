@@ -89,7 +89,7 @@
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
-                        <g:each in="${l.subscriptions}" var="sub">
+                        <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
                               <div class="la-flexbox">
                                   <i class="icon folder open outline la-list-icon"></i>

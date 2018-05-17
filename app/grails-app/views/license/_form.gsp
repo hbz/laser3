@@ -211,7 +211,7 @@
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${licenseInstance?.subscriptions?}" var="s">
+<g:each in="${licenseInstance?.subscriptions?.sort{it.name}}" var="s">
     <li><g:link controller="subscriptionDetails" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">
