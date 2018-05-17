@@ -243,7 +243,7 @@
 	</tbody>
 </table>
 
- <semui:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" maxsteps="${max}" total="${unionListSize}" />
+ <semui:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" max="${max}" total="${unionListSize}" />
 
 </g:if>
 </div>

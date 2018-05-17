@@ -28,7 +28,7 @@
                     <dt><g:message code="title.identifiers.label" default="Ids" /></dt>
                     <dd>
                       <g:each in="${titleInstanceInstance.ids.sort{it.identifier.ns.ns}}" var="i">
-                          <div>${i.identifier.ns.ns}:${i.identifier.value}</div>
+                          <div>${i.identifier.ns.ns}: ${i.identifier.value}</div>
                       </g:each>
                     </dd>
                 </dl>

@@ -284,7 +284,7 @@
                                             <g:each in="${orgInstance.outgoingCombos}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
                                                 (<g:each in="${i.toOrg?.ids.sort{it.identifier.ns.ns}}" var="id_out">
-                                                ${id_out.identifier.ns.ns}:${id_out.identifier.value}
+                                                ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
                                             </g:each>)
                                             </g:each>
                                         </dd>
@@ -310,7 +310,7 @@
                                             <g:each in="${orgInstance.incomingCombos}" var="i">
                                               <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
                                                 (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id_in">
-                                                  ${id_in.identifier.ns.ns}:${id_in.identifier.value}
+                                                  ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
                                                 </g:each>)
                                             </g:each>
                                         </dd>

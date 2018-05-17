@@ -77,7 +77,7 @@
                         <td><g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></td>
                         <td>
                           <g:each in="${hit.getSource().identifiers}" var="id">
-                            ${id.type}:${id.value} &nbsp;
+                            ${id.type}: ${id.value} &nbsp;
                           </g:each>
                         </td>
                       </g:if>
