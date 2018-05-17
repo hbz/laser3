@@ -26,7 +26,7 @@
                 <i class="large internet explorer middle aligned icon"></i>
                 <div class="content">
                     <div class="description">Internet Explorer</div>
-                    <a href="https://support.microsoft.com/de-de/help/508440" class="header" target="_blank">https://support.microsoft.com/de-de/help/508440</a>
+                    <a href="https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history" class="header" target="_blank">https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history</a>
                 </div>
             </div>
             <div class="item">
