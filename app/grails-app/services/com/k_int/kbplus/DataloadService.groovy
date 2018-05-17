@@ -398,7 +398,8 @@ class DataloadService {
         // update timestamp
         latest_ft_record.lastTimestamp = highest_timestamp
         latest_ft_record.save(flush:true);
-        checkESElementswithDBElements(domain)
+
+        checkESElementswithDBElements(domain, latest_ft_record)
     }
     catch ( Exception e ) {
       log.error("Problem with FT index", e)
@@ -668,7 +669,7 @@ class DataloadService {
         log.debug("Clear down and init ES completed... AS OF 4.1 MAPPINGS -MUST- Be installed in ESHOME/mappings/kbplus")
     }
 
-    def checkESElementswithDBElements(domain) {
+    def checkESElementswithDBElements(domain, ft_record) {
 
         //Datenbank Abfrage
         def c = domain.createCriteria()
@@ -711,7 +712,7 @@ class DataloadService {
 
             def resultsTotal =  search ?search.hits.totalHits: ""
 
-            def ft_record = FTControl.findByDomainClassNameAndActivity(domain.name,'ESIndex')
+
             ft_record.dbElements = ResultsinDB.size()?:null
             ft_record.esElements = resultsTotal?:null
             ft_record.save(flush: true)
