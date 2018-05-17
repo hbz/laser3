@@ -142,18 +142,19 @@ r2d2 = {
         $.fn.editable.defaults.mode = 'inline'
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
             '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
-        $.fn.editableform.template = '<form class="ui form form-inline editableform">' +
-            '                           <div class="control-group">' +
-            '                               <div>' +
-            '                                   <div class="editable-input">' +
-
-            '                                   </div>' +
-            '                                   <div class="editable-buttons"></div>' +
-            '                               </div>' +
-            '                               <div class="editable-error-block">' +
-            '                               </div>' +
-            '                           </div>' +
-            '                          </form>'
+        $.fn.editableform.template =
+            '<form class="test form-inline editableform">' +
+            '	<div class="control-group">' +
+            '		<div class="ui calendar datepicker">' +
+            '			<div class="ui input left icon editable-input">' +
+            '			</div>' +
+            '			<div class="editable-buttons">' +
+            '			</div>' +
+            '		</div>' +
+            '		<div class="editable-error-block">' +
+            '		</div>' +
+            '	</div>' +
+            '</form>'
 
         // TODO $.fn.datepicker.defaults.language = gspLocale
     },
@@ -240,8 +241,10 @@ r2d2 = {
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
 
         // datepicker
-        $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
+        $( "body" ).click(function() {
+            $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
+        });
         // dropdowns
         $(ctxSel + ' .ui.dropdown').dropdown({
             duration: 150,
