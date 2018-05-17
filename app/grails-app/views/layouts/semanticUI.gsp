@@ -423,9 +423,9 @@
                                 </g:if>
 
                                 <div class="divider"></div>
-
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
+                                <a href="https://www.hbz-nrw.de/datenschutz" class="item" target="_blank" >${message(code:'dse')}</a>
                                 <%--<g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>--%>
 
                                 <div class="divider"></div>
