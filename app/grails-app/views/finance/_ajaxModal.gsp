@@ -63,9 +63,9 @@
                                placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/> <br/>
                     </div><!-- .field -->
 
-                    <div class="field">
+                    <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
-                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                        1: <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCurrencyRate" id="newCostCurrencyRate"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" /> <br/>
                     </div><!-- .field -->

@@ -25,6 +25,13 @@
     padding-left: 15px;
     padding-right: 15px;
   }
+  .la-exchange-rate {
+    white-space: nowrap;
+    input {
+      width: 95%;
+      vertical-align: middle;
+    }
+  }
 }
 .ui.form .fields .field.la-modal-fieldset-margin {
   margin-left: 15px;
