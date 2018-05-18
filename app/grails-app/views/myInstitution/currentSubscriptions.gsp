@@ -29,7 +29,7 @@
         <div class="four fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')}</label>
+                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag und Paket)</label>
 
                 <div class="ui input">
                     <input type="text" name="q"

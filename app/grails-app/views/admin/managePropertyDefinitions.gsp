@@ -46,6 +46,7 @@
                                 <!--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />-->
                                 <tr>
                                     <td>
+                                        <!-- ${pd.id} -->
                                         ${fieldValue(bean: pd, field: "name")}
                                         <g:if test="${pd.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
