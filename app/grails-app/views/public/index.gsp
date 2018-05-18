@@ -160,7 +160,7 @@
                             <div class="ui inverted link list">
                                 <a class="item" href="mailto:laser@hbz-nrw.de">${message(code: 'landingpage.footer.1.link1')}</a>
                                 <a target="_blank" class="item" href="https://www.hbz-nrw.de/ueber-uns/kontakt/anreise">${message(code: 'landingpage.footer.1.link2')}</a>
-                                <%--<a target="_blank" class="item" href="homepage.html#">${message(code: 'landingpage.footer.1.link3')}</a> --%>
+                                <a target="_blank" class="item" href="https://www.hbz-nrw.de/impressum">${message(code: 'landingpage.footer.1.link3')}</a>
                                 <a target="_blank" class="item" href="https://www.hbz-nrw.de/datenschutz">${message(code:'dse')}</a>
                             </div>
                         </div>
