@@ -53,28 +53,35 @@
         </div><!-- two fields -->
 
         <div class="three fields">
-            <fieldset class="field la-modal-fieldset-no-margin">
+            <fieldset class="field la-modal-fieldset-no-margin la-account-currency">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
 
                     <div class="field">
                         <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
                         <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
-                               placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/> <br/>
+                               placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
+                        <div class="ui button" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">${g.message(code: 'financials.newCosts.buttonAutoCorrect')}</div>
+                        <br/>
                     </div><!-- .field -->
 
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
                         1: <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCurrencyRate" id="newCostCurrencyRate"
-                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" /> <br/>
+                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" />
+                            <div class="ui button" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">${g.message(code: 'financials.newCosts.buttonAutoCorrect')}</div>
+
+                <br/>
                     </div><!-- .field -->
 
                     <div class="field">
                         <label>${message(code:'financials.invoice_total')}</label>
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/> <br/>
+                               placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
+                        <div class="ui button" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">${g.message(code: 'financials.newCosts.buttonAutoCorrect')}</div>
+                        <br/>
                     </div><!-- .field -->
 
                     <div class="field">
