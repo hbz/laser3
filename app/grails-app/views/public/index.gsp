@@ -79,8 +79,6 @@
                         Wenn auch Sie Interesse haben, das Projekt als Pilotanwender zu unterstützen, melden Sie sich noch bis zum 06. April 2018 an <a href="mailto:laser@hbz-nrw.de">laser@hbz-nrw.de</a>. Alle Informationen zum Nachlesen finden Sie in den <a href="https://wiki1.hbz-nrw.de/download/attachments/282198029/laser_webinar_vortrag.pdf?version=1&modificationDate=1522130342844" target="_blank">bereits online verfügbaren Webinar-Folien</a>.
                     <br><br>
                         Eine Aufbereitung der Rückfragen in Form einer FAQ-Sammlung und eine Aufzeichnung des Webinar-Vortrags folgen.
-                     <br><br>
-                        Ab dem 25. Mai 2018 gilt die neue EU Datenschutzgrundverordnung (EU-DSGVO) auch in Deutschland. Unsere Datenschutzerklärung finden Sie <a target="_blank" class="item" href="https://www.hbz-nrw.de/datenschutz">hier</a>.
                     </span>
                 </div>
 
