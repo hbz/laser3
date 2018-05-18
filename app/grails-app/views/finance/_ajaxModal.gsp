@@ -208,8 +208,62 @@
 
     <script type="text/javascript">
         $("#costButton1").click(function() {
-            $(this).siblings("input").css("background-color", "red");
+            var input = $(this).siblings("input");
+
+            if   ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostInLocalCurrency");
+            }
+            else if ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostCurrencyRate");
+            }
+            else {
+                input.transition('glow');
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+                removeError();
+            }
         })
+        $("#costButton2").click(function() {
+            var input = $(this).siblings("input");
+
+            if   ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostInLocalCurrency");
+            }
+            else if ($("#newCostInBillingCurrency").val().length <= 0 || $("#newCostInBillingCurrency").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostInBillingCurrency");
+            }
+            else {
+                input.transition('glow');
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9) );
+                removeError();
+            }
+        })
+        $("#costButton3").click(function() {
+            var input = $(this).siblings("input");
+
+            if   ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostCurrencyRate");
+            }
+            else if ($("#newCostInBillingCurrency").val().length <= 0 || $("#newCostInBillingCurrency").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostInBillingCurrency");
+            }
+            else {
+                input.transition('glow');
+                input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
+                removeError();
+            }
+        });
+        var addError = function(input)  {
+            $(input).parent(".field").addClass("error");
+        }
+        var removeError = function()  {
+            $(".la-account-currency").children(".field").removeClass("error");
+        }
 
 
         var ajaxPostFunc = function () {
