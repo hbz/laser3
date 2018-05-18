@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.domain.StatsTripleCursor
 import org.hibernate.criterion.CriteriaSpecification
 
 class FactService {
@@ -430,6 +431,12 @@ class FactService {
         distinct("supplier")
       }
     }
+  }
+
+  def getSupplierCursorCount()
+  {
+    def hql = 'select supplierId, count(*) from StatsTripleCursor group by supplierId'
+    return StatsTripleCursor.executeQuery(hql)
   }
 
 }

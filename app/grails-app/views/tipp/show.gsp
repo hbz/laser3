@@ -30,7 +30,7 @@
 
                     <dd><g:each in="${titleInstanceInstance.ids.sort{it.identifier.ns.ns}}" var="i">
                         <g:if test="${i.identifier.ns.ns != 'originediturl'}">
-                            ${i.identifier.ns.ns}:${i.identifier.value}<br/>
+                            ${i.identifier.ns.ns}: ${i.identifier.value}<br/>
                         </g:if>
                         <g:else>
                             GOKb: <a href="${i.identifier.value}">${message(code:'component.originediturl.label')}</a><br/>

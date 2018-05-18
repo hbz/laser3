@@ -50,8 +50,8 @@
         <div class="ui negative message">
             <div class="header"><g:message code="myinst.subscriptionDetails.message.attention" /></div>
             <p>
-                <g:message code="myinst.subscriptionDetails.message.SubscriptionView" /> ${subscriptionInstance.getAllSubscribers()}.
-                <g:message code="myinst.subscriptionDetails.message.ConsortialView" /><g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">hier</g:link>.
+                <g:message code="myinst.subscriptionDetails.message.SubscriptionView" /> <span class="ui label">${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
+                <g:message code="myinst.subscriptionDetails.message.ConsortialView" /><g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
             </p>
         </div>
     </g:if>

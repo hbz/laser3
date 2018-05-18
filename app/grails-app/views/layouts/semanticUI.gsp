@@ -342,7 +342,7 @@
                             <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
                             <g:link class="item" controller="admin" action="allNotes">All Notes</g:link>
                             <g:link class="item" controller="userDetails" action="list">User Details</g:link>
-                            <g:link class="item" controller="admin" action="statsSync" onclick="return confirm('${message(code:'confirm.start.StatsSync')}')">Run Stats Sync</g:link>
+                            <g:link class="item" controller="usage">Manage Usage Stats</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
@@ -397,10 +397,10 @@
                 <sec:ifLoggedIn>
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
-                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .." type="text">
+                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .. (ganzes Wort)" type="text">
                             <i id="btn-search"  class="search icon"></i>
                         </div>
-                        <div class="results"></div>
+                        <div class="results" style="overflow-y:scroll;max-height: 400px;min-height: content-box;"></div>
                     </div>
 
                     <g:if test="${contextUser}">
@@ -423,9 +423,9 @@
                                 </g:if>
 
                                 <div class="divider"></div>
-
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
+                                <a href="https://www.hbz-nrw.de/datenschutz" class="item" target="_blank" >${message(code:'dse')}</a>
                                 <%--<g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>--%>
 
                                 <div class="divider"></div>

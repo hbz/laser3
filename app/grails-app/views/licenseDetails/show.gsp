@@ -134,7 +134,7 @@
                                 <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
                                 <dd>
                                     <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
-                                        <g:each in="${license.subscriptions}" var="sub">
+                                        <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
                                             <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link>
 
                                             <g:if test="${editable}">
@@ -176,7 +176,7 @@
                                 <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
                                 <dd>
                                     <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
-                                        <g:each in="${license.pkgs}" var="pkg">
+                                        <g:each in="${license.pkgs.sort{it.name}}" var="pkg">
                                             <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
                                         </g:each>
                                     </g:if>
@@ -257,7 +257,7 @@
                                             recip_prop: 'lic',
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
                                             tmplText:'Lizenzgeber hinzufügen',
-                                            tmplID:'ContentProvider',
+                                            tmplID:'CommercialOrgs',
                                             tmplmodalID:'osel_add_modal'
                                   ]}" />
 <%--
