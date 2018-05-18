@@ -29,7 +29,7 @@
         <div class="four fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')}</label>
+                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag und Paket)</label>
 
                 <div class="ui input">
                     <input type="text" name="q"
@@ -133,6 +133,15 @@
             <div class="field">
                 <div class="two fields">
                     <div class="field">
+
+                        <g:if test="${params.orgRole == 'Subscriber'}">
+                            <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
+                        </g:if>
+                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                            <input id="radioKonsortium" type="hidden" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden">
+                        </g:if>
+
+                        <%--  explicit filter by orgRole removed
                         <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
 
                         <div class="inline fields la-filter-inline">
@@ -154,6 +163,7 @@
                                 </div>
                             </div>
                         </div>
+                        --%>
                     </div>
 
                     <div class="field la-filter-search ">

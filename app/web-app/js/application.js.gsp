@@ -70,11 +70,11 @@ r2d2 = {
                     $.each(elasticResponse.results, function(index, item) {
 
                         var category   = item.category || 'Unknown';
-                        var maxResults = 15;
+                        //var maxResults = 15;
 
-                        if (index >= maxResults) {
-                            return false;
-                        }
+                        //if (index >= maxResults) {
+                        //    return false;
+                        //}
                         // create new object category
                         if (response.results[category] === undefined) {
                             response.results[category] = {

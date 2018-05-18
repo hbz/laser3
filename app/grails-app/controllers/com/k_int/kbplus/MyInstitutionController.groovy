@@ -530,7 +530,13 @@ from Subscription as s where (
         }
 
         if (params.q?.length() > 0) {
-            base_qry += " and ( lower(s.name) like :name_filter or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) ) "
+            base_qry += (
+                    " and ( lower(s.name) like :name_filter " // filter by subscription
+                + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
+                + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
+                +  " ) "
+            )
+
             qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
         }
 
@@ -563,7 +569,7 @@ from Subscription as s where (
             base_qry += " order by LOWER(s.name) asc"
         }
 
-        //log.debug("query: ${base_qry} && params: ${qry_params}")
+        log.debug("query: ${base_qry} && params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);

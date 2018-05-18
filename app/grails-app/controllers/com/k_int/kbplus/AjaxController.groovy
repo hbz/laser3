@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Secured(['permitAll']) // TODO
 class AjaxController {
 
+    def genericOIDService
     def contextService
     def taskService
 
@@ -71,6 +72,24 @@ class AjaxController {
             cols:['name'],
             format:'map'
     ],
+    "CommercialOrgs" : [
+            domain:'Org',
+            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? ",
+            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ?  order by o.name asc",
+            qryParams:[
+                    [
+                            param:'sSearch',
+                            clos:{ value ->
+                                def result = '%'
+                                if ( value && ( value.length() > 0 ) )
+                                    result = "%${value.trim().toLowerCase()}%"
+                                result
+                            }
+                    ]
+            ],
+            cols:['name'],
+            format:'map'
+    ]
   ]
 
   @Secured(['ROLE_USER'])
@@ -444,9 +463,65 @@ class AjaxController {
     }
   }
 
+    def sel2RefdataSearchNew() {
+        def result = []
+        def rdc = genericOIDService.resolveOID(params.oid)
+
+        def config = [
+                domain:'RefdataValue',
+                countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
+                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
+                qryParams:[],
+                cols:['value'],
+                format:'simple'
+        ]
+
+        def query_params = []
+        config.qryParams.each { qp ->
+            if (qp?.clos) {
+                query_params.add(qp.clos(params[qp.param]?:''));
+            }
+            else if(qp?.value) {
+                params."${qp.param}" = qp?.value
+            }
+            else {
+                query_params.add(params[qp.param]);
+            }
+        }
+
+        def cq = RefdataValue.executeQuery(config.countQry, query_params);
+        def rq = RefdataValue.executeQuery(config.rowQry,
+                query_params,
+                [max:params.iDisplayLength?:100, offset:params.iDisplayStart?:0]);
+
+        rq.each { it ->
+            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
+
+            if ( it instanceof I10nTranslatableAbstract) {
+                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
+            }
+            else {
+                def objTest = rowobj[config.cols[0]]
+                if (objTest) {
+                    def no_ws = objTest.replaceAll(' ','');
+                    def local_text = message(code:"refdata.${no_ws}", default:"${objTest}");
+                    result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"])
+                }
+            }
+        }
+        withFormat {
+            html {
+                result
+            }
+            json {
+                render result as JSON
+            }
+        }
+    }
+
   def sel2RefdataSearch() {
 
-    // log.debug("sel2RefdataSearch params: ${params}");
+    log.debug("sel2RefdataSearch params: ${params}");
     
     def result = []
     //we call toString in case we got a GString
@@ -503,8 +578,6 @@ class AjaxController {
     else {
       log.error("No config for refdata search ${params.id}");
     }
-
-      def test = result
 
     withFormat {
       html {
