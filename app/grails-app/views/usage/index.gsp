@@ -57,6 +57,16 @@
             </div>
     </g:form>
 </semui:filter>
+<div class="ui mini message">
+    <i class="close icon"></i>
+    <ul class="list">
+        <li>Anbieter sind nur auswählbar, wenn ein statssid Identifier dafür gespeichert ist</li>
+        <li>Einrichtungen sind nur auswählbar, wenn ein wibid Identifier dafür gespeichert ist</li>
+        <li>statssid und WIBID müssen für einen erfolgreichen Abruf zu den IDs im Statistikserver passen</li>
+        <li>Das Matching der Titel erfolgt über die Titel ZDB ID. Diese IDs müssen sowohl im Statistikserver als auch in LAS:eR existieren</li>
+        <li>RequestorId, APIKey und Einrichtungskontext sind für erforderliche Einstellungen</li>
+    </ul>
+</div>
 <h3 class="ui header">${message(code: 'default.usage.adminPage.infoHeader')}</h3>
 <table class="ui celled la-table table">
     <tr><td>SUSHI API Url</td><td>
