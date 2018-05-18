@@ -68,7 +68,7 @@ class SemanticUiRefdataTagLib {
                 optionValue: { it -> it.getI10n('desc') + " (${it.desc})" })
 
         def rdvPreset
-        if (rdValues && attrs.value && rdValues) {
+        if (rdValues && attrs.value) {
             rdvPreset = RefdataCategory.findById((attrs.value) as Long)
         }
         out << g.select( id: nameRdv, name: nameRdv,
