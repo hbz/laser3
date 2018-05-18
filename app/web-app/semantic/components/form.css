@@ -1095,7 +1095,7 @@
   padding-right: 15px;
 }
 .ui.form .fields .field.la-modal-fieldset-no-margin .la-exchange-rate input {
-  width: 95%;
+  width: 76%;
   vertical-align: middle;
 }
 .ui.form .fields .field.la-modal-fieldset-margin {
@@ -1146,5 +1146,5 @@ input#spotlightSearch[type="search"] {
   white-space: nowrap;
 }
 .ui.form .la-account-currency .field input {
-  width: 60%;
+  width: 82%;
 }

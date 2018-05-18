@@ -28,7 +28,7 @@
   .la-exchange-rate {
 
     input {
-      width: 95%;
+      width: 76%;
       vertical-align: middle;
     }
   }
@@ -90,7 +90,7 @@ input#spotlightSearch[type="search"] {
   .field {
     white-space: nowrap;
      input {
-      width: 60%;
+      width: 82%;
     }
   }
 

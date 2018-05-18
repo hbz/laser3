@@ -61,7 +61,9 @@
                         <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
-                        <div class="ui button" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">${g.message(code: 'financials.newCosts.buttonAutoCorrect')}</div>
+                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                            <i class="calculator icon"></i>
+                        </div>
                         <br/>
                     </div><!-- .field -->
 
@@ -70,8 +72,9 @@
                         1: <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCurrencyRate" id="newCostCurrencyRate"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" />
-                            <div class="ui button" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">${g.message(code: 'financials.newCosts.buttonAutoCorrect')}</div>
-
+                    <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <i class="calculator icon"></i>
+                    </div>
                 <br/>
                     </div><!-- .field -->
 
@@ -80,8 +83,10 @@
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
-                        <div class="ui button" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">${g.message(code: 'financials.newCosts.buttonAutoCorrect')}</div>
-                        <br/>
+                    <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <i class="calculator icon"></i>
+                    </div>
+                    <br/>
                     </div><!-- .field -->
 
                     <div class="field">
@@ -202,6 +207,11 @@
     </g:form>
 
     <script type="text/javascript">
+        $("#costButton1").click(function() {
+            $(this).siblings("input").css("background-color", "red");
+        })
+
+
         var ajaxPostFunc = function () {
 
             $('#costItem_ajaxModal #newBudgetCode').select2({

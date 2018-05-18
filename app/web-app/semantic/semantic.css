@@ -21277,7 +21277,7 @@ ol.ui.horizontal.list li:before,
 }
 
 .ui.form .fields .field.la-modal-fieldset-no-margin .la-exchange-rate input {
-  width: 95%;
+  width: 76%;
   vertical-align: middle;
 }
 
@@ -21342,7 +21342,7 @@ input#spotlightSearch[type="search"] {
 }
 
 .ui.form .la-account-currency .field input {
-  width: 60%;
+  width: 82%;
 }
 /*!
  * # Semantic UI 2.3.1 - Grid
