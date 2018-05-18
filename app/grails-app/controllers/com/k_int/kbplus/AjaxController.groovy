@@ -71,6 +71,24 @@ class AjaxController {
             cols:['name'],
             format:'map'
     ],
+    "CommercialOrgs" : [
+            domain:'Org',
+            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? ",
+            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ?  order by o.name asc",
+            qryParams:[
+                    [
+                            param:'sSearch',
+                            clos:{ value ->
+                                def result = '%'
+                                if ( value && ( value.length() > 0 ) )
+                                    result = "%${value.trim().toLowerCase()}%"
+                                result
+                            }
+                    ]
+            ],
+            cols:['name'],
+            format:'map'
+    ]
   ]
 
   @Secured(['ROLE_USER'])

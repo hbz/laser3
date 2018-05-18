@@ -91,7 +91,7 @@
                     </g:link>
                     <g:if test="${l.pkgs && ( l.pkgs.size() > 0 )}">
                       <ul>
-                        <g:each in="${l.pkgs}" var="pkg">
+                        <g:each in="${l.pkgs.sort{it.name}}" var="pkg">
                           <li><g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.id} (${pkg.name})</g:link><br/></li>
                         </g:each>
                       </ul>
