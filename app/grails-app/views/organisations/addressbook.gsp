@@ -37,7 +37,6 @@ import="com.k_int.kbplus.RefdataCategory"
         <g:render template="/person/formModal" model="['tenant': contextOrg,
                                                        'org': orgInstance,
                                                        'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
-                                                       tmplHideFunctions: true,
                                                        presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
                                                        tmplHideResponsibilities: true]"/>
 
