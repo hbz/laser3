@@ -62,8 +62,35 @@
 
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
-            <button class="ui button pull-right" data-semui="modal" href="#costItem_createModal" id="addNew">${message(code:'financials.addNewCost')}</button>
-            <g:render template="ajaxModal" model="['tmplId':'costItem_createModal']"/>
+
+            <button class="ui button pull-right" id="addNew">${message(code:'financials.addNewCost')}</button>
+            <script>
+$('#addNew').on('click', function(e) {
+   $.ajax({
+       url: "<g:createLink controller='finance' action='editCostItem'/>"
+   }).done( function(data) {
+       $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+       $('#dynamicModalContainer').empty().html(data);
+
+       $('#dynamicModalContainer .ui.modal').modal({
+           onVisible: function () {
+               r2d2.initDynamicSemuiStuff('#costItem_createModal');
+               r2d2.initDynamicXEditableStuff('#costItem_createModal');
+
+               ajaxPostFunc()
+           },
+           detachable: true,
+           closable: true,
+           transition: 'fade up',
+           onApprove : function() {
+               $(this).find('.ui.form').submit();
+               return false;
+           }
+       }).modal('show');
+   })
+})
+            </script>
+
         </g:if>
     </div>
 </div>

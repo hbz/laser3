@@ -2,30 +2,30 @@
 
 <semui:modal id="recentlyAdded_modal" text="${message(code:'financials.recentCosts')}" hideSubmitButton="true">
 
-    <p>Quickly see costing items that have been recently added/updated</p>
-    <p>From: ${from}  -> To: ${to}</p>
+    <p>Überblick über die zuletzt hinzugefügten Kosten.</p>
+    <p>Von ${from} bis ${to}</p>
 
     <g:if test="${recentlyUpdated}">
 
         <table class="ui celled la-table la-table-small table" id="recentUpdatesTable" data-resultsTo="${to}" data-resultsFrom="${from}">
             <thead>
                 <tr>
-                    <th>Cost#</th>
-                    <th>Invoice#</th>
-                    <th>Order#</th>
-                    <th>Subscription</th>
+                    <th>${message(code:'financials.newCosts.costTitle')}</th>
+                    <th>${message(code:'financials.invoice_number')}</th>
+                    <th>${message(code:'financials.order_number')}</th>
+                    <th>${message(code:'subscription.label')}</th>
                 </tr>
                 <tr>
-                    <th>Package</th>
-                    <th>IE</th>
-                    <th>Amount [billing]/<br/>[local]</th>
-                    <th>Updated</th>
+                    <th>${message(code:'package.label')}</th>
+                    <th>${message(code:'financials.newCosts.singleEntitlement')}</th>
+                    <th>${message(code:'financials.invoice_total')} /<br/>${message(code:'financials.costInLocalCurrency')}</th>
+                    <th>Zuletzt aktualisiert</th>
                 </tr>
             </thead>
             <tbody>
                 <g:each in="${recentlyUpdated}" var="item">
                     <tr>
-                        <td>${item?.id}</td>
+                        <td>${item?.costTitle}</td>
                         <td>${item?.invoice?.invoiceNumber.encodeAsHTML()}</td>
                         <td>${item?.order?.orderNumber.encodeAsHTML()}</td>
                         <td>${item?.sub?.name.encodeAsHTML()}</td>
@@ -34,7 +34,7 @@
                         <td>${item?.subPkg?.pkg?.name.encodeAsHTML()}</td>
                         <td>${item?.issueEntitlement?.tipp?.title?.title.encodeAsHTML()}</td>
                         <td>${item?.costInBillingCurrency.encodeAsHTML()}</td>
-                        <td><g:formatDate format="dd-MM-yy" date="${item?.lastUpdated}"/></td>
+                        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${item?.lastUpdated}"/></td>
                     </tr>
                 </g:each>
             </tbody>
@@ -43,8 +43,8 @@
     </g:if>
     <g:else>
 
-        <p>No recent cost items...</p>
-        <p>Table automatically updates</p>
+        <p>${message(code:'finance.result.filtered.empty')}</p>
+        <p>Diese Übersicht aktualisiert sich automatisch.</p>
 
     </g:else>
 

@@ -3,7 +3,13 @@
 
 <g:render template="vars" /><%-- setting vars --%>
 
-<semui:modal id="${tmplId ?: "costItem_ajaxModal"}" text="${message(code:'financials.editCost')} #${costItem?.id}">
+<g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
+
+<g:if test="${costItem}">
+    <g:set var="modalText" value="${message(code:'financials.editCost')} #${costItem?.id}" />
+</g:if>
+
+<semui:modal id="costItem_ajaxModal" text="${modalText}">
 
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
@@ -12,7 +18,7 @@
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
 
-        <p>DEBUG ${inSubMode} ${fixedSubscription}</p>
+        <!-- DEBUG ${inSubMode} ${fixedSubscription} -->
 
         <div class="two fields">
             <div class="field">
@@ -61,7 +67,8 @@
                         <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
-                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+
+                            <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                         <br/>
@@ -69,10 +76,11 @@
 
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
-                        1: <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                        1 : <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCurrencyRate" id="newCostCurrencyRate"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" />
-                    <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+
+                        <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                         <i class="calculator icon"></i>
                     </div>
                 <br/>
@@ -83,7 +91,8 @@
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
-                    <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+
+                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                         <i class="calculator icon"></i>
                     </div>
                     <br/>
@@ -191,13 +200,13 @@
             <fieldset class="field la-modal-fieldset-no-margin">
                 <div class="field">
                     <label>${message(code:'financials.invoice_number')}</label>
-                    <input type="text" name="newInvoiceNumber" id="newInvoiceNumber" class="input-medium"
+                    <input type="text" name="newInvoiceNumber" id="newInvoiceNumber"
                            placeholder="${message(code:'financials.invoice_number')}" value="${costItem?.invoice?.invoiceNumber}"/>
                 </div><!-- .field -->
 
                 <div class="field">
                     <label>${message(code:'financials.order_number')}</label>
-                    <input type="text" name="newOrderNumber" id="newOrderNumber" class="input-medium"
+                    <input type="text" name="newOrderNumber" id="newOrderNumber"
                            placeholder="${message(code:'financials.order_number')}" value="${costItem?.order?.orderNumber}"/>
                 </div><!-- .field -->
             </fieldset> <!-- 3/3 field -->
@@ -210,7 +219,7 @@
         $("#costButton1").click(function() {
             var input = $(this).siblings("input");
 
-            if   ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
+            if ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
                 $(".la-account-currency").children(".field").removeClass("error");
                 addError("#newCostInLocalCurrency");
             }
@@ -227,7 +236,7 @@
         $("#costButton2").click(function() {
             var input = $(this).siblings("input");
 
-            if   ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
+            if ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
                 $(".la-account-currency").children(".field").removeClass("error");
                 addError("#newCostInLocalCurrency");
             }
@@ -244,7 +253,7 @@
         $("#costButton3").click(function() {
             var input = $(this).siblings("input");
 
-            if   ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
+            if ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
                 $(".la-account-currency").children(".field").removeClass("error");
                 addError("#newCostCurrencyRate");
             }
@@ -269,12 +278,34 @@
         var ajaxPostFunc = function () {
 
             $('#costItem_ajaxModal #newBudgetCode').select2({
-                placeholder: "New code or lookup  code",
+                minimumInputLength: 1,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note')}";
+                },
+                initSelection: function(element, callback) {
+                    console.log( "GSP: _ajaxModal > JS: initSelection")
+                    /*
+                    $.ajax({
+                        url: "<g:createLink controller='ajax' action='lookup'/>",
+                        data: {
+                            format: 'json',
+                            q:'',
+                            shortcode: "${contextService.getOrg()?.shortcode}",
+                            baseClass: 'com.k_int.kbplus.CostItemGroup'
+                            },
+                        dataType: 'json',
+                        results: function (data, page) {
+                            return {results: data.values};
+                        }
+                    }).done( function(data) {
+                        callback(data)
+                    })
+                    */
+                },
                 allowClear: true,
                 tags: true,
                 tokenSeparators: [',', ' '],
-                minimumInputLength: 1,
-                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                ajax: {
                     url: "<g:createLink controller='ajax' action='lookup'/>",
                     dataType: 'json',
                     data: function (term, page) {
@@ -288,12 +319,26 @@
                     results: function (data, page) {
                         return {results: data.values};
                     }
+                },
+                createSearchChoice: function(term, data) {
+                    var existsAlready = false;
+                    for (var i = 0; i < data.length; i++) {
+                        if(term.toLowerCase() == data[i].text.toLowerCase()) {
+                            existsAlready = true;
+                            break;
+                        }
+                    }
+                    if(! existsAlready)
+                        return {id: -1 + term, text: "${message(code: 'default.newValue.label')}: " + term};
                 }
-            });
+            })
 
             $('#costItem_ajaxModal #newSubscription').select2({
-                placeholder: "Type subscription name...",
+                placeholder: "${message(code:'financials.newCosts.enterSubName')}",
                 minimumInputLength: 1,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note')}";
+                },
                 global: false,
                 ajax: {
                     url: "<g:createLink controller='ajax' action='lookup'/>",
@@ -304,7 +349,7 @@
                             hideIdent: 'false',
                             inclSubStartDate: 'false',
                             inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                            q: '%'+term , // contains search term
+                            q: '%' + term , // contains search term
                             page_limit: 20,
                             baseClass:'com.k_int.kbplus.Subscription'
                         };
@@ -320,8 +365,11 @@
             });
 
             $('#costItem_ajaxModal #newPackage').select2({
-                placeholder: "${message(code:'financials.newCosts.enterpkgName')}",
+                placeholder: "${message(code:'financials.newCosts.enterPkgName')}",
                 minimumInputLength: 1,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note')}";
+                },
                 global: false,
                 ajax: {
                     url: "<g:createLink controller='ajax' action='lookup'/>",
@@ -332,7 +380,7 @@
                             hideIdent: 'false',
                             inclSubStartDate: 'false',
                             inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                            q: '%'+term , // contains search term
+                            q: '%' + term , // contains search term
                             page_limit: 20,
                             subFilter:$(s.ft.filterSubscription).data().filtermode.split(":")[1],
                             baseClass:'com.k_int.kbplus.SubscriptionPackage'

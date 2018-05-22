@@ -29,6 +29,7 @@ class CostItemGroup {
         def qryResults = null
         def searchTerm = (params.q ? params.q.toLowerCase() : '' ) + "%"
         def orgOwner   = Org.findByShortcode(params.shortcode)
+        /*
         def owner      = BudgetCode.findByOwner(orgOwner)
 
         if (! owner) { //First run ever...
@@ -36,6 +37,12 @@ class CostItemGroup {
         }
         if (owner) {
             //qryResults = RefdataValue.findAllByOwnerAndValueIlike(owner,searchTerm)
+            qryResults = BudgetCode.findAllByOwnerAndValueIlike(orgOwner, searchTerm)
+        }
+        */
+        if (! searchTerm) {
+            qryResults = BudgetCode.findAllByOwner(orgOwner)
+        } else {
             qryResults = BudgetCode.findAllByOwnerAndValueIlike(orgOwner, searchTerm)
         }
 
