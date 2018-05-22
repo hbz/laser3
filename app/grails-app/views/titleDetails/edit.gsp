@@ -120,7 +120,7 @@
         placeholder: "Search for an org...",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
@@ -142,7 +142,7 @@
         placeholder: "Search for an role...",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
