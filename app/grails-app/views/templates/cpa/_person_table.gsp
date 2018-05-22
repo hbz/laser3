@@ -19,9 +19,8 @@
 			<tr>
 				<td>
 
-                        ${person?.last_name?.encodeAsHTML()}
-                        ,
-                        ${person?.first_name?.encodeAsHTML()}
+                        ${person?.first_name?.encodeAsHTML() ? person?.last_name?.encodeAsHTML()+', '+person?.first_name?.encodeAsHTML() : person?.last_name?.encodeAsHTML()}
+
                         ${person?.middle_name?.encodeAsHTML()}
 
 				</td>
