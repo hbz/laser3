@@ -53,28 +53,40 @@
         </div><!-- two fields -->
 
         <div class="three fields">
-            <fieldset class="field la-modal-fieldset-no-margin">
+            <fieldset class="field la-modal-fieldset-no-margin la-account-currency">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
 
                     <div class="field">
                         <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
                         <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
-                               placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/> <br/>
+                               placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
+                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                            <i class="calculator icon"></i>
+                        </div>
+                        <br/>
                     </div><!-- .field -->
 
-                    <div class="field">
+                    <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
-                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                        1: <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCurrencyRate" id="newCostCurrencyRate"
-                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" /> <br/>
+                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" />
+                    <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <i class="calculator icon"></i>
+                    </div>
+                <br/>
                     </div><!-- .field -->
 
                     <div class="field">
                         <label>${message(code:'financials.invoice_total')}</label>
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/> <br/>
+                               placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
+                    <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <i class="calculator icon"></i>
+                    </div>
+                    <br/>
                     </div><!-- .field -->
 
                     <div class="field">
@@ -195,6 +207,65 @@
     </g:form>
 
     <script type="text/javascript">
+        $("#costButton1").click(function() {
+            var input = $(this).siblings("input");
+
+            if   ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostInLocalCurrency");
+            }
+            else if ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostCurrencyRate");
+            }
+            else {
+                input.transition('glow');
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+                removeError();
+            }
+        })
+        $("#costButton2").click(function() {
+            var input = $(this).siblings("input");
+
+            if   ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostInLocalCurrency");
+            }
+            else if ($("#newCostInBillingCurrency").val().length <= 0 || $("#newCostInBillingCurrency").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostInBillingCurrency");
+            }
+            else {
+                input.transition('glow');
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9) );
+                removeError();
+            }
+        })
+        $("#costButton3").click(function() {
+            var input = $(this).siblings("input");
+
+            if   ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostCurrencyRate");
+            }
+            else if ($("#newCostInBillingCurrency").val().length <= 0 || $("#newCostInBillingCurrency").val() < 0)  {
+                $(".la-account-currency").children(".field").removeClass("error");
+                addError("#newCostInBillingCurrency");
+            }
+            else {
+                input.transition('glow');
+                input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
+                removeError();
+            }
+        });
+        var addError = function(input)  {
+            $(input).parent(".field").addClass("error");
+        }
+        var removeError = function()  {
+            $(".la-account-currency").children(".field").removeClass("error");
+        }
+
+
         var ajaxPostFunc = function () {
 
             $('#costItem_ajaxModal #newBudgetCode').select2({

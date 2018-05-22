@@ -25,6 +25,13 @@
     padding-left: 15px;
     padding-right: 15px;
   }
+  .la-exchange-rate {
+
+    input {
+      width: 76%;
+      vertical-align: middle;
+    }
+  }
 }
 .ui.form .fields .field.la-modal-fieldset-margin {
   margin-left: 15px;
@@ -76,4 +83,15 @@ input#spotlightSearch[type="search"] {
 
 .ui.input > input#spotlightSearch:focus  {
   border-color: @lightGrey;
+}
+
+// Account Currency
+.ui.form .la-account-currency {
+  .field {
+    white-space: nowrap;
+     input {
+      width: 82%;
+    }
+  }
+
 }
