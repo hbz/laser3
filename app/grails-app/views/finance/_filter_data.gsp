@@ -5,10 +5,10 @@
 <g:each in="${cost_items}" var="ci">
     <tr id="bulkdelete-b${ci.id}">
         <td>
-            <semui:xEditableRefData config="Currency" emptytext="Edit billed" owner="${ci}" field="billingCurrency" />:
-            <semui:xEditable emptytext="Edit Cost" owner="${ci}" field="costInBillingCurrency" />
-            <br /><br />
-            Euro: <semui:xEditable emptytext="Edit local" owner="${ci}" field="costInLocalCurrency" />
+            <span class="costInLocalCurrency" data-costInLocalCurrency="${ci.costInLocalCurrency}">
+                <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR"/>
+                ( <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/> )
+            </span>
         </td>
         <td>
             <semui:xEditableRefData config="CostItemCategory" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemCategory" />
