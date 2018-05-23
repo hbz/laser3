@@ -145,7 +145,7 @@
                 <div class="field">
                     <label>${message(code:'subscription.label')}</label>
 
-                    <input ${inSubMode ? "disabled='disabled' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
+                    <input ${inSubMode ? "readonly='readonly' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
                             name="newSubscription" id="newSubscription"
                             class="la-full-width select2"
                             data-subfilter=""
@@ -157,7 +157,7 @@
                 <div class="field">
                     <label>${message(code:'package.label')}</label>
                     <g:if test="${! inSubMode}">
-                        <input name="newPackage" id="newPackage" class="la-full-width" disabled='disabled' data-subFilter="" data-disableReset="true" />
+                        <input name="newPackage" id="newPackage" class="la-full-width" disabled="disabled" data-subFilter="" data-disableReset="true" />
                     </g:if>
                     <g:else>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
@@ -167,11 +167,11 @@
                                 noSelection="['':'']"
                                 value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}"
                         />
-                        <%--<input name="newPackage" id="newPackage" class="select2 la-full-width" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" />--%>
                     </g:else>
                 </div><!-- .field -->
 
                 <div class="field">
+                    <%--
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                     <g:if test="${! inSubMode}">
                         <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
@@ -179,6 +179,7 @@
                     <g:else>
                         <input name="newIe" id="newIE" disabled="disabled" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
                     </g:else>
+                    --%>
                 </div><!-- .field -->
             </fieldset> <!-- 3/3 field -->
 
@@ -219,6 +220,12 @@
     </g:form>
 
     <script type="text/javascript">
+        /*var costSelectors = {
+            lc:   "#newCostInLocalCurrency",
+            rate: "#newCostCurrencyRate",
+            bc:   "#newCostInBillingCurrency"
+        }*/
+
         $("#costButton1").click(function() {
             if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
@@ -254,6 +261,17 @@
             }
             return false
         }
+
+        var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency")
+
+        costElems.on('change', function(){
+            if ( $("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val() != $("#newCostInBillingCurrency").val() ) {
+                costElems.parent('.field').addClass('error')
+            }
+            else {
+                costElems.parent('.field').removeClass('error')
+            }
+        })
 
         var ajaxPostFunc = function () {
 
@@ -360,43 +378,6 @@
                 }
             });
 
-            </g:if>
-
-            <g:if test="${inSubMode}">
-
-            <%--
-            $('#costItem_ajaxModal #newPackage').select2({
-                placeholder: "${message(code:'financials.newCosts.enterPkgName')}",
-                minimumInputLength: 1,
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note')}";
-                },
-                global: false,
-                ajax: {
-                    url: "<g:createLink controller='ajax' action='lookup'/>",
-                    dataType: 'json',
-                    data: function (term, page) {
-                        return {
-                            hideDeleted: 'true',
-                            hideIdent: 'false',
-                            inclSubStartDate: 'false',
-                            inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                            q: '%' + term , // contains search term
-                            page_limit: 20,
-                            subFilter:$(s.ft.filterSubscription).data().filtermode.split(":")[1],
-                            baseClass:'com.k_int.kbplus.SubscriptionPackage'
-                        };
-                    },
-                    results: function (data, page) {
-                        return {results: data.values};
-                    }
-                },
-                allowClear: true,
-                formatSelection: function(data) {
-                    return data.text;
-                }
-            });
-            --%>
             </g:if>
         }
     </script>

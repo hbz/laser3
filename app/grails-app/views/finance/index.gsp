@@ -67,7 +67,10 @@
             <script>
 $('#addNew').on('click', function(e) {
    $.ajax({
-       url: "<g:createLink controller='finance' action='editCostItem'/>"
+        url: "<g:createLink controller='finance' action='editCostItem'/>",
+        data: {
+            sub: "${fixedSubscription?.id}"
+        }
    }).done( function(data) {
        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
        $('#dynamicModalContainer').empty().html(data);

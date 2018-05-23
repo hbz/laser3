@@ -592,14 +592,12 @@ class FinanceController {
     def editCostItem() {
         def result = [:]
 
-        if (params.id) {
-            //TODO: copied from index()
-            result.inSubMode = params.sub ? true : false
-            if (result.inSubMode) {
-                result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
-            }
-            result.costItem = CostItem.findById(params.id)
+        //TODO: copied from index()
+        result.inSubMode = params.sub ? true : false
+        if (result.inSubMode) {
+            result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
         }
+        result.costItem = CostItem.findById(params.id)
 
         render(template: "/finance/ajaxModal", model: result)
     }
