@@ -58,12 +58,42 @@
 
 <div class="ui grid">
     <div class="column">
-        <button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
+        <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>
 
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
-            <button class="ui button pull-right" data-semui="modal" href="#costItem_createModal" id="addNew">${message(code:'financials.addNewCost')}</button>
-            <g:render template="ajaxModal" model="['tmplId':'costItem_createModal']"/>
+
+            <button class="ui button pull-right" id="addNew">${message(code:'financials.addNewCost')}</button>
+            <script>
+$('#addNew').on('click', function(e) {
+   $.ajax({
+        url: "<g:createLink controller='finance' action='editCostItem'/>",
+        data: {
+            sub: "${fixedSubscription?.id}"
+        }
+   }).done( function(data) {
+       $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+       $('#dynamicModalContainer').empty().html(data);
+
+       $('#dynamicModalContainer .ui.modal').modal({
+           onVisible: function () {
+               r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+               r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+
+               ajaxPostFunc()
+           },
+           detachable: true,
+           closable: true,
+           transition: 'fade up',
+           onApprove : function() {
+               $(this).find('.ui.form').submit();
+               return false;
+           }
+       }).modal('show');
+   })
+})
+            </script>
+
         </g:if>
     </div>
 </div>

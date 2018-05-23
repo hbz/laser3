@@ -199,27 +199,56 @@
 
         <thead>
             <tr>
-                <th>Preis in EUR</th>
-                <th>Kategorie</th>
-                <th>Komponente</th>
-                <th>Status</th>
-                <th class="three wide">Bezeichnung</th>
-                <th>Datum von</th>
-                <th>Datum bis</th>
+                <th>${message(code:'financials.costInLocalCurrency')}</th>
+                <th>${message(code:'financials.costItemCategory')}</th>
+                <th>${message(code:'financials.costItemComponent')}</th>
+                <th>${message(code:'financials.costItemStatus')}</th>
+                <th class="three wide">${message(code:'financials.newCosts.costTitle')}</th>
+                <th>${message(code:'financials.dateFrom')}</th>
+                <th>${message(code:'financials.dateTo')}</th>
                 <th>Aktionen</th>
             </tr>
+            <g:if test="${cost_item_count > 0}">
+                <tr>
+                    <th>
+                        <strong>Gesammtkosten: <span class="sumOfCosts"></span></strong>
+                    </th>
+                </tr>
+            </g:if>
         </thead>
         <tbody>
             %{--Empty result set--}%
-            <g:if test="${cost_item_count==0}">
-                <tr><td colspan="8" style="text-align:center">&nbsp;<br/><g:if test="${msg}">${msg}</g:if><g:else>No Cost Items Found</g:else><br/>&nbsp;</td></tr>
+            <g:if test="${cost_item_count == 0}">
+                <tr><td colspan="8" style="text-align:center">&nbsp;<br/>
+                    <g:if test="${msg}">${msg}</g:if><g:else>${message(code:'finance.result.filtered.empty')}</g:else><br/>&nbsp;
+                </td></tr>
             </g:if>
             <g:else>
-            %{--Two rows of data per CostItem, separated for readability--}%
                 <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
             </g:else>
         </tbody>
-
+        <tfoot>
+            <tr>
+                <th>
+                    <strong>Gesammtkosten: <span class="sumOfCosts"></span></strong>
+                    <script>
+                        function calcSumOfCosts() {
+                            var result = 0
+                            $('#costTable tbody tr span.costInLocalCurrency').each( function(){
+                                result += parseFloat($(this).attr('data-costInLocalCurrency'))
+                            })
+                            $('#costTable .sumOfCosts').text(
+                                Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
+                            )
+                        }
+                        $(function() {
+                            calcSumOfCosts()
+                        })
+                    </script>
+                </th>
+                <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th>
+            </tr>
+        </tfoot>
     </table>
 
 

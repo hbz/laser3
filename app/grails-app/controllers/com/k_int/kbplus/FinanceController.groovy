@@ -595,7 +595,7 @@ class FinanceController {
         //TODO: copied from index()
         result.inSubMode = params.sub ? true : false
         if (result.inSubMode) {
-            result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
+            result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
         }
         result.costItem = CostItem.findById(params.id)
 
@@ -646,7 +646,9 @@ class FinanceController {
         if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
         {
             try {
-                pkg = SubscriptionPackage.load(params.newPackage.split(":")[1])
+                if (params.newPackage.split(":")[1] != 'null') {
+                    pkg = SubscriptionPackage.load(params.newPackage.split(":")[1])
+                }
             } catch (Exception e) {
                 log.error("Non-valid sub-package sent ${params.newPackage}",e)
             }

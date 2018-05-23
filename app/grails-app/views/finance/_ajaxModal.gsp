@@ -3,7 +3,13 @@
 
 <g:render template="vars" /><%-- setting vars --%>
 
-<semui:modal id="${tmplId ?: "costItem_ajaxModal"}" text="${message(code:'financials.editCost')} #${costItem?.id}">
+<g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
+
+<g:if test="${costItem}">
+    <g:set var="modalText" value="${message(code:'financials.editCost')} #${costItem?.id}" />
+</g:if>
+
+<semui:modal id="costItem_ajaxModal" text="${modalText}">
 
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
@@ -12,7 +18,7 @@
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
 
-        <p>DEBUG ${inSubMode} ${fixedSubscription}</p>
+        <!-- DEBUG ${inSubMode} ${fixedSubscription} -->
 
         <div class="two fields">
             <div class="field">
@@ -24,12 +30,12 @@
                 <div class="two fields">
                     <div class="field">
                         <label>${message(code:'financials.budgetCode')}</label>
-                        <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width" placeholder="${message(code:'financials.budgetCode')}"/>
+                        <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width" placeholder=""/>
                     </div><!-- .field -->
 
                     <div class="field">
                         <label>Reference/Codes</label>
-                        <input type="text" name="newReference" id="newCostItemReference" placeholder="New Item Reference" value="${costItem?.reference}"/>
+                        <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
             </div>
@@ -58,35 +64,35 @@
 
                     <div class="field">
                         <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
-                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
-                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
-                               placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
+                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
+                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
+                               placeholder="${message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
+
                         <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
-                        <br/>
                     </div><!-- .field -->
 
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
-                        1: <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
-                               name="newCurrencyRate" id="newCostCurrencyRate"
-                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" />
-                    <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                               name="newCostCurrencyRate" id="newCostCurrencyRate"
+                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.000000001" />
+
+                        <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                         <i class="calculator icon"></i>
                     </div>
-                <br/>
                     </div><!-- .field -->
 
                     <div class="field">
                         <label>${message(code:'financials.invoice_total')}</label>
-                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
-                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
-                    <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
-                        <i class="calculator icon"></i>
-                    </div>
-                    <br/>
+                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
+                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
+                               placeholder="${g.message(code:'financials.invoice_total')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
+
+                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                            <i class="calculator icon"></i>
+                        </div>
                     </div><!-- .field -->
 
                     <div class="field">
@@ -96,6 +102,7 @@
                                   optionValue="text"
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
+
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin">
@@ -138,7 +145,7 @@
                 <div class="field">
                     <label>${message(code:'subscription.label')}</label>
 
-                    <input ${inSubMode ? "disabled='disabled' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
+                    <input ${inSubMode ? "readonly='readonly' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
                             name="newSubscription" id="newSubscription"
                             class="la-full-width select2"
                             data-subfilter=""
@@ -149,24 +156,30 @@
 
                 <div class="field">
                     <label>${message(code:'package.label')}</label>
-                    <g:if test="${inSubMode}">
-                        <input name="newPackage" id="newPackage" class="select2 la-full-width"
-                               data-subFilter="${fixedSubscription?.id}" data-disableReset="true" />
+                    <g:if test="${! inSubMode}">
+                        <input name="newPackage" id="newPackage" class="la-full-width" disabled="disabled" data-subFilter="" data-disableReset="true" />
                     </g:if>
                     <g:else>
-                        <input name="newPackage" id="newPackage" class="select2 la-full-width"
-                               disabled='disabled' data-subFilter="" data-disableReset="true" />
+                        <g:select name="newPackage" id="newPackage" class="ui dropdown"
+                                from="${[{}] + fixedSubscription?.packages}"
+                                optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                                optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                                noSelection="['':'']"
+                                value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}"
+                        />
                     </g:else>
                 </div><!-- .field -->
 
                 <div class="field">
+                    <%--
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
-                    <g:if test="${inSubMode}">
-                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="la-full-width select2" value="${params.newIe}" disabled="disabled">
+                    <g:if test="${! inSubMode}">
+                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
                     </g:if>
                     <g:else>
-                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width select2" value="${params.newIe}" disabled="disabled">
+                        <input name="newIe" id="newIE" disabled="disabled" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
                     </g:else>
+                    --%>
                 </div><!-- .field -->
             </fieldset> <!-- 3/3 field -->
 
@@ -191,13 +204,13 @@
             <fieldset class="field la-modal-fieldset-no-margin">
                 <div class="field">
                     <label>${message(code:'financials.invoice_number')}</label>
-                    <input type="text" name="newInvoiceNumber" id="newInvoiceNumber" class="input-medium"
+                    <input type="text" name="newInvoiceNumber" id="newInvoiceNumber"
                            placeholder="${message(code:'financials.invoice_number')}" value="${costItem?.invoice?.invoiceNumber}"/>
                 </div><!-- .field -->
 
                 <div class="field">
                     <label>${message(code:'financials.order_number')}</label>
-                    <input type="text" name="newOrderNumber" id="newOrderNumber" class="input-medium"
+                    <input type="text" name="newOrderNumber" id="newOrderNumber"
                            placeholder="${message(code:'financials.order_number')}" value="${costItem?.order?.orderNumber}"/>
                 </div><!-- .field -->
             </fieldset> <!-- 3/3 field -->
@@ -207,74 +220,77 @@
     </g:form>
 
     <script type="text/javascript">
-        $("#costButton1").click(function() {
-            var input = $(this).siblings("input");
+        /*var costSelectors = {
+            lc:   "#newCostInLocalCurrency",
+            rate: "#newCostCurrencyRate",
+            bc:   "#newCostInBillingCurrency"
+        }*/
 
-            if   ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostInLocalCurrency");
-            }
-            else if ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostCurrencyRate");
-            }
-            else {
+        $("#costButton1").click(function() {
+            if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
+                var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
-                removeError();
+                input.val(($("#newCostInBillingCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+
+                $(".la-account-currency").children(".field").removeClass("error");
             }
         })
         $("#costButton2").click(function() {
-            var input = $(this).siblings("input");
-
-            if   ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostInLocalCurrency");
-            }
-            else if ($("#newCostInBillingCurrency").val().length <= 0 || $("#newCostInBillingCurrency").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostInBillingCurrency");
-            }
-            else {
+            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
+                var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9) );
-                removeError();
+                input.val(($("#newCostInBillingCurrency").val() / $("#newCostInLocalCurrency").val()).toFixed(9));
+
+                $(".la-account-currency").children(".field").removeClass("error");
             }
         })
         $("#costButton3").click(function() {
-            var input = $(this).siblings("input");
-
-            if   ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostCurrencyRate");
-            }
-            else if ($("#newCostInBillingCurrency").val().length <= 0 || $("#newCostInBillingCurrency").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostInBillingCurrency");
-            }
-            else {
+            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
+                var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
-                removeError();
+                input.val(($("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
+
+                $(".la-account-currency").children(".field").removeClass("error");
             }
         });
-        var addError = function(input)  {
-            $(input).parent(".field").addClass("error");
-        }
-        var removeError = function()  {
-            $(".la-account-currency").children(".field").removeClass("error");
+        var isError = function(cssSel)  {
+            if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
+                $(".la-account-currency").children(".field").removeClass("error");
+                $(cssSel).parent(".field").addClass("error");
+                return true
+            }
+            return false
         }
 
+        var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency")
+
+        costElems.on('change', function(){
+            if ( $("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val() != $("#newCostInBillingCurrency").val() ) {
+                costElems.parent('.field').addClass('error')
+            }
+            else {
+                costElems.parent('.field').removeClass('error')
+            }
+        })
 
         var ajaxPostFunc = function () {
 
+            console.log( "ajaxPostFunc")
+            /*
+            $('#newCostCurrency').dropdown('setting', 'onChange', function(value, text, $selectedItem) {
+                $('#newCostCurrency').dropdown('set text', text.split('-')[0].trim());
+            }).dropdown('change');
+            */
+
             $('#costItem_ajaxModal #newBudgetCode').select2({
-                placeholder: "New code or lookup  code",
+                minimumInputLength: 1,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note')}";
+                },
                 allowClear: true,
                 tags: true,
                 tokenSeparators: [',', ' '],
-                minimumInputLength: 1,
-                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                ajax: {
                     url: "<g:createLink controller='ajax' action='lookup'/>",
                     dataType: 'json',
                     data: function (term, page) {
@@ -288,12 +304,55 @@
                     results: function (data, page) {
                         return {results: data.values};
                     }
+                },
+                createSearchChoice: function(term, data) {
+                    var existsAlready = false;
+                    for (var i = 0; i < data.length; i++) {
+                        if(term.toLowerCase() == data[i].text.toLowerCase()) {
+                            existsAlready = true;
+                            break;
+                        }
+                    }
+                    if(! existsAlready)
+                        return {id: -1 + term, text: "${message(code: 'default.newValue.label')}: " + term};
+                }
+            })
+
+            /*
+            $.ajax({
+                url: "<g:createLink controller='ajax' action='lookup'/>",
+                dataType: 'json',
+                data: {
+                    format: 'json',
+                    shortcode: "${contextService.getOrg()?.shortcode}",
+                    baseClass: 'com.k_int.kbplus.CostItemGroup'
+                },
+                success: function(data) {
+                    $('#costItem_ajaxModal #newBudgetCode').select2({
+                        tags: data.values
+                    })
+                    for (var i = 0; i < data.values.length; i++) {
+                        $('#costItem_ajaxModal #newBudgetCode').val(data.values[i].id).trigger('change')
+                    }
                 }
             });
+*/
+
+/*
+            $('#s2test').select2({
+                tags: [{id:123, text: 'blah'},{id:36, text: 'blubb'}]
+            })
+            $('#s2test').val('123', '36').trigger('change')
+*/
+
+            <g:if test="${! inSubMode}">
 
             $('#costItem_ajaxModal #newSubscription').select2({
-                placeholder: "Type subscription name...",
+                placeholder: "${message(code:'financials.newCosts.enterSubName')}",
                 minimumInputLength: 1,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note')}";
+                },
                 global: false,
                 ajax: {
                     url: "<g:createLink controller='ajax' action='lookup'/>",
@@ -304,7 +363,7 @@
                             hideIdent: 'false',
                             inclSubStartDate: 'false',
                             inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                            q: '%'+term , // contains search term
+                            q: '%' + term , // contains search term
                             page_limit: 20,
                             baseClass:'com.k_int.kbplus.Subscription'
                         };
@@ -319,34 +378,7 @@
                 }
             });
 
-            $('#costItem_ajaxModal #newPackage').select2({
-                placeholder: "${message(code:'financials.newCosts.enterpkgName')}",
-                minimumInputLength: 1,
-                global: false,
-                ajax: {
-                    url: "<g:createLink controller='ajax' action='lookup'/>",
-                    dataType: 'json',
-                    data: function (term, page) {
-                        return {
-                            hideDeleted: 'true',
-                            hideIdent: 'false',
-                            inclSubStartDate: 'false',
-                            inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                            q: '%'+term , // contains search term
-                            page_limit: 20,
-                            subFilter:$(s.ft.filterSubscription).data().filtermode.split(":")[1],
-                            baseClass:'com.k_int.kbplus.SubscriptionPackage'
-                        };
-                    },
-                    results: function (data, page) {
-                        return {results: data.values};
-                    }
-                },
-                allowClear: true,
-                formatSelection: function(data) {
-                    return data.text;
-                }
-            });
+            </g:if>
         }
     </script>
 

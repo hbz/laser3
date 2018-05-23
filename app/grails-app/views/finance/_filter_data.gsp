@@ -5,49 +5,28 @@
 <g:each in="${cost_items}" var="ci">
     <tr id="bulkdelete-b${ci.id}">
         <td>
-            <g:if test="${editable}">
-                Cost: <semui:xEditable emptytext="Edit Cost" owner="${ci}" field="costInBillingCurrency" /> <br />
-                <semui:xEditableRefData config="Currency" emptytext="Edit billed" owner="${ci}" field="billingCurrency" /> <br /><br />
-                Local: <semui:xEditable emptytext="Edit local" owner="${ci}" field="costInLocalCurrency" />
-            </g:if>
-            <g:else>
-                ${ci?.costInBillingCurrency} <br />
-                ${ci?.billingCurrency} <br />
-                ${ci?.costInLocalCurrency}
-            </g:else>
+            <span class="costInLocalCurrency" data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>">
+                <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR"/>
+                ( <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/> )
+            </span>
         </td>
         <td>
-            <g:if test="${editable}">
-                <semui:xEditableRefData config="CostItemCategory" emptytext="Edit Category" owner="${ci}" field="costItemCategory" />
-            </g:if>
+            <semui:xEditableRefData config="CostItemCategory" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemCategory" />
         </td>
         <td>
-            <g:if test="${editable}">
-                <semui:xEditableRefData config="CostItemElement" emptytext="Edit Element" owner="${ci}" field="costItemElement" />
-            </g:if>
+            <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
         </td>
         <td>
-            <g:if test="${editable}">
-                <semui:xEditableRefData config="CostItemStatus" emptytext="Edit Status" owner="${ci}" field="costItemStatus" />
-            </g:if>
+            <semui:xEditableRefData config="CostItemStatus" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
         </td>
         <td>
-            <g:if test="${editable}">
-                <semui:xEditable emptytext="Edit Description" owner="${ci}" field="costDescription" />
-            </g:if>
-            <g:else>
-                ${ci?.costDescription}
-            </g:else>
+            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
         </td>
         <td>
-            <g:if test="${editable}">
-                <semui:xEditable emptytext="Edit Start-Date" owner="${ci}" type="date" field="startDate" />
-            </g:if>
+            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" type="date" field="startDate" />
         </td>
         <td>
-            <g:if test="${editable}">
-                <semui:xEditable emptytext="Edit End-Date" owner="${ci}" type="date" field="endDate" />
-            </g:if>
+            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" type="date" field="endDate" />
         </td>
 
         <td class="x">
