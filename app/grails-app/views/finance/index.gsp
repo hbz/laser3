@@ -74,8 +74,8 @@ $('#addNew').on('click', function(e) {
 
        $('#dynamicModalContainer .ui.modal').modal({
            onVisible: function () {
-               r2d2.initDynamicSemuiStuff('#costItem_createModal');
-               r2d2.initDynamicXEditableStuff('#costItem_createModal');
+               r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+               r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                ajaxPostFunc()
            },

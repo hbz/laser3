@@ -10,7 +10,6 @@
 </g:if>
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}">
-
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
@@ -30,12 +29,12 @@
                 <div class="two fields">
                     <div class="field">
                         <label>${message(code:'financials.budgetCode')}</label>
-                        <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width" placeholder="${message(code:'financials.budgetCode')}"/>
+                        <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width" placeholder=""/>
                     </div><!-- .field -->
 
                     <div class="field">
                         <label>Reference/Codes</label>
-                        <input type="text" name="newReference" id="newCostItemReference" placeholder="New Item Reference" value="${costItem?.reference}"/>
+                        <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
             </div>
@@ -64,38 +63,35 @@
 
                     <div class="field">
                         <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
-                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
-                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
-                               placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
+                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
+                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
+                               placeholder="${message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
 
-                            <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
-                        <br/>
                     </div><!-- .field -->
 
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
-                        1 : <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCurrencyRate" id="newCostCurrencyRate"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" />
 
                         <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                         <i class="calculator icon"></i>
                     </div>
-                <br/>
                     </div><!-- .field -->
 
                     <div class="field">
                         <label>${message(code:'financials.invoice_total')}</label>
-                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
-                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code:'financials.invoice_total')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
+                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
+                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
+                               placeholder="${g.message(code:'financials.invoice_total')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
 
-                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
-                        <i class="calculator icon"></i>
-                    </div>
-                    <br/>
+                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                            <i class="calculator icon"></i>
+                        </div>
                     </div><!-- .field -->
 
                     <div class="field">
@@ -105,6 +101,7 @@
                                   optionValue="text"
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
+
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin">
@@ -158,23 +155,21 @@
 
                 <div class="field">
                     <label>${message(code:'package.label')}</label>
-                    <g:if test="${inSubMode}">
-                        <input name="newPackage" id="newPackage" class="select2 la-full-width"
-                               data-subFilter="${fixedSubscription?.id}" data-disableReset="true" />
+                    <g:if test="${! inSubMode}">
+                        <input name="newPackage" id="newPackage" class="la-full-width" disabled='disabled' data-subFilter="" data-disableReset="true" />
                     </g:if>
                     <g:else>
-                        <input name="newPackage" id="newPackage" class="select2 la-full-width"
-                               disabled='disabled' data-subFilter="" data-disableReset="true" />
+                        <input name="newPackage" id="newPackage" class="select2 la-full-width" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" />
                     </g:else>
                 </div><!-- .field -->
 
                 <div class="field">
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
-                    <g:if test="${inSubMode}">
-                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="la-full-width select2" value="${params.newIe}" disabled="disabled">
+                    <g:if test="${! inSubMode}">
+                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
                     </g:if>
                     <g:else>
-                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width select2" value="${params.newIe}" disabled="disabled">
+                        <input name="newIe" id="newIE" disabled="disabled" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
                     </g:else>
                 </div><!-- .field -->
             </fieldset> <!-- 3/3 field -->
@@ -217,65 +212,46 @@
 
     <script type="text/javascript">
         $("#costButton1").click(function() {
-            var input = $(this).siblings("input");
-
-            if ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostInLocalCurrency");
-            }
-            else if ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostCurrencyRate");
-            }
-            else {
+            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
+                var input = $(this).siblings("input");
                 input.transition('glow');
                 input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
-                removeError();
+
+                $(".la-account-currency").children(".field").removeClass("error");
             }
         })
         $("#costButton2").click(function() {
-            var input = $(this).siblings("input");
-
-            if ($("#newCostInLocalCurrency").val().length <= 0 || $("#newCostInLocalCurrency").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostInLocalCurrency");
-            }
-            else if ($("#newCostInBillingCurrency").val().length <= 0 || $("#newCostInBillingCurrency").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostInBillingCurrency");
-            }
-            else {
+            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
+                var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9) );
-                removeError();
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9));
+
+                $(".la-account-currency").children(".field").removeClass("error");
             }
         })
         $("#costButton3").click(function() {
-            var input = $(this).siblings("input");
-
-            if ($("#newCostCurrencyRate").val().length <= 0 || $("#newCostCurrencyRate").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostCurrencyRate");
-            }
-            else if ($("#newCostInBillingCurrency").val().length <= 0 || $("#newCostInBillingCurrency").val() < 0)  {
-                $(".la-account-currency").children(".field").removeClass("error");
-                addError("#newCostInBillingCurrency");
-            }
-            else {
+            if (! isError("#newCostCurrencyRate") && ! isError("#newCostInBillingCurrency")) {
+                var input = $(this).siblings("input");
                 input.transition('glow');
                 input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
-                removeError();
+
+                $(".la-account-currency").children(".field").removeClass("error");
             }
         });
-        var addError = function(input)  {
-            $(input).parent(".field").addClass("error");
+        var isError = function(cssSel)  {
+            if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
+                $(".la-account-currency").children(".field").removeClass("error");
+                $(cssSel).parent(".field").addClass("error");
+                return true
+            }
+            return false
         }
-        var removeError = function()  {
-            $(".la-account-currency").children(".field").removeClass("error");
-        }
-
 
         var ajaxPostFunc = function () {
+
+            $('#newCostCurrency').dropdown('setting', 'onChange', function(value, text, $selectedItem) {
+                $('#newCostCurrency').dropdown('set text', text.split('-')[0].trim());
+            }).dropdown('change');
 
             $('#costItem_ajaxModal #newBudgetCode').select2({
                 minimumInputLength: 1,
@@ -333,6 +309,8 @@
                 }
             })
 
+            <g:if test="${! inSubMode}">
+
             $('#costItem_ajaxModal #newSubscription').select2({
                 placeholder: "${message(code:'financials.newCosts.enterSubName')}",
                 minimumInputLength: 1,
@@ -363,6 +341,10 @@
                     return data.text;
                 }
             });
+
+            </g:if>
+
+            <g:if test="${inSubMode}">
 
             $('#costItem_ajaxModal #newPackage').select2({
                 placeholder: "${message(code:'financials.newCosts.enterPkgName')}",
@@ -395,6 +377,8 @@
                     return data.text;
                 }
             });
+
+            </g:if>
         }
     </script>
 

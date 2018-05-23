@@ -262,3 +262,13 @@ aside.metaboxContent + .metaboxContent-spacer {
     margin: 1rem 0;
     padding: 1em 0;
 }
+
+/* hotfix finance */
+
+.ui.form .la-account-currency .field .calc {
+    width: 75%;
+    float: left;
+}
+.la-account-currency .field .button {
+    float: right;
+}
