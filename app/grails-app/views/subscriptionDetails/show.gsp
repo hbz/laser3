@@ -423,6 +423,7 @@
                                                     module="statistics"
                                                     controller="default"
                                                     action="select"
+                                                    target="_blank"
                                                     params="[mode        : usageMode,
                                                              packages    : subscription.getCommaSeperatedPackagesIsilList(),
                                                              institutions: statsWibid,

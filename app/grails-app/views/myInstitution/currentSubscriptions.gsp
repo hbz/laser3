@@ -294,6 +294,7 @@
                                          module="statistics"
                                          controller="default"
                                          action="select"
+                                         target="_blank"
                                          params="[mode:usageMode,
                                                   packages:s.getCommaSeperatedPackagesIsilList(),
                                                   institutions:statsWibid
