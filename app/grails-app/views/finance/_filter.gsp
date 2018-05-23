@@ -235,7 +235,7 @@
                         function calcSumOfCosts() {
                             var result = 0
                             $('#costTable tbody tr span.costInLocalCurrency').each( function(){
-                                result += parseFloat($(this).text())
+                                result += parseFloat($(this).attr('data-costInLocalCurrency'))
                             })
                             $('#costTable .sumOfCosts').text(
                                 Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)

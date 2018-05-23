@@ -5,7 +5,7 @@
 <g:each in="${cost_items}" var="ci">
     <tr id="bulkdelete-b${ci.id}">
         <td>
-            <span class="costInLocalCurrency" data-costInLocalCurrency="${ci.costInLocalCurrency}">
+            <span class="costInLocalCurrency" data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>">
                 <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR"/>
                 ( <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/> )
             </span>
