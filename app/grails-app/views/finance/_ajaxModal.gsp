@@ -67,7 +67,7 @@
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
 
-                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -75,8 +75,8 @@
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
                         <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
-                               name="newCurrencyRate" id="newCostCurrencyRate"
-                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.01" />
+                               name="newCostCurrencyRate" id="newCostCurrencyRate"
+                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.000000001" />
 
                         <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                         <i class="calculator icon"></i>
@@ -89,7 +89,7 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.invoice_total')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
 
-                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -212,10 +212,10 @@
 
     <script type="text/javascript">
         $("#costButton1").click(function() {
-            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
+            if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+                input.val(($("#newCostInBillingCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").children(".field").removeClass("error");
             }
@@ -224,16 +224,16 @@
             if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9));
+                input.val(($("#newCostInBillingCurrency").val() / $("#newCostInLocalCurrency").val()).toFixed(9));
 
                 $(".la-account-currency").children(".field").removeClass("error");
             }
         })
         $("#costButton3").click(function() {
-            if (! isError("#newCostCurrencyRate") && ! isError("#newCostInBillingCurrency")) {
+            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
+                input.val(($("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").children(".field").removeClass("error");
             }

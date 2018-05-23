@@ -502,7 +502,7 @@
                     ;
                 </script>
                 </g:if>
-                <semui:editableLabel editable="${editable}" />
+                <%--semui:editableLabel editable="${editable}" /--%>
             </div>
         </div>
     </div><!-- Context Bar -->
