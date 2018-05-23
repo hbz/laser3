@@ -23,18 +23,14 @@
         <semui:messages data="${flash}"/>
 
         <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form newLicence">
+            <input type="hidden" name="newEmptySubId" value="${defaultSubIdentifier}"/>
 
             <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>
 
             <div class="field required">
                 <label>${message(code:'myinst.emptySubscription.name', default:'New Subscription Name')}</label>
-                <input required type="text" name="newEmptySubName" placeholder="New Subscription Name"/>
+                <input required type="text" name="newEmptySubName" placeholder=""/>
              </div>
-
-            <div class="field hidden">
-                <label>${message(code:'myinst.emptySubscription.identifier', default:'New Subscription Identifier')}</label>
-                <input type="text" name="newEmptySubId" value="${defaultSubIdentifier}"/>
-            </div>
 
             <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" class="required" />
 
