@@ -247,6 +247,7 @@
                                                      module="statistics"
                                                      controller="default"
                                                      action="select"
+                                                     target="_blank"
                                                      params="[mode:usageMode,
                                                               packages:packageInstance.getIdentifierByType('isil').value,
                                                               institutions:statsWibid

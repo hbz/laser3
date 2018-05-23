@@ -179,6 +179,7 @@
                      module="statistics"
                      controller="default"
                      action="select"
+                     target="_blank"
                      params="[mode:usageMode,
                               packages:issueEntitlementInstance.subscription.getCommaSeperatedPackagesIsilList(),
                               institutions:statsWibid
@@ -209,6 +210,7 @@
                             module="statistics"
                             controller="default"
                             action="select"
+                            target="_blank"
                             params="[mode        : usageMode,
                                      packages    : issueEntitlementInstance.subscription.getCommaSeperatedPackagesIsilList(),
                                      institutions: statsWibid,
