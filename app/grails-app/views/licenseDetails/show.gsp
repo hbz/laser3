@@ -130,7 +130,7 @@
                                     <dd>
                                             <g:each in="${license?.incomingLinks}" var="il">
                                                 <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link> -
-                                                ${message(code:'license.details.incoming.child', default:'Child')}:
+                                                ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
                                                 <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
 
                                             </g:each>
