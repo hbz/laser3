@@ -785,6 +785,13 @@ class FinanceController {
                 }
 
                 if (bc != null) {
+                    // WORKAROUND ERMS-337: only support ONE budgetcode per costitem
+                    def existing = CostItemGroup.executeQuery(
+                            "SELECT DISTINCT cig.id FROM CostItemGroup AS cig JOIN cig.costItem AS ci JOIN cig.budgetCode AS bc WHERE ci = ? AND bc.owner = ? AND bc IS NOT ?",
+                            [costItem, budgetOwner, bc] );
+                    existing.each { id ->
+                        CostItemGroup.get(id).delete()
+                    }
                     if (! CostItemGroup.findByCostItemAndBudgetCode(costItem, bc)) {
                         result.add(new CostItemGroup(costItem: costItem, budgetCode: bc).save(flush: true))
                     }

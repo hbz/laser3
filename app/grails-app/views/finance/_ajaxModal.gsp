@@ -30,7 +30,8 @@
                 <div class="two fields">
                     <div class="field">
                         <label>${message(code:'financials.budgetCode')}</label>
-                        <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width" placeholder=""/>
+                        <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width"
+                               placeholder="${com.k_int.kbplus.CostItemGroup.findByCostItem(costItem)?.budgetCode?.value}"/>
                     </div><!-- .field -->
 
                     <div class="field">
@@ -283,13 +284,15 @@
             */
 
             $('#costItem_ajaxModal #newBudgetCode').select2({
-                minimumInputLength: 1,
+                minimumInputLength: 0,
                 formatInputTooShort: function () {
                     return "${message(code:'select2.minChars.note')}";
                 },
                 allowClear: true,
+                /*
                 tags: true,
                 tokenSeparators: [',', ' '],
+                */
                 ajax: {
                     url: "<g:createLink controller='ajax' action='lookup'/>",
                     dataType: 'json',
@@ -302,7 +305,8 @@
                         };
                     },
                     results: function (data, page) {
-                        return {results: data.values};
+                        return {results:
+                            data.values};
                     }
                 },
                 createSearchChoice: function(term, data) {
