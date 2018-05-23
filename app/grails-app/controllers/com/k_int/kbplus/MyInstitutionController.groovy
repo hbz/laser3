@@ -245,7 +245,7 @@ class MyInstitutionController {
         }
 
         if (date_restriction) {
-            qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null ) "
+            qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null OR l.startDate >= :date_restr  ) "
             qry_params += [date_restr: date_restriction]
             qry_params += [date_restr: date_restriction]
         }
@@ -359,6 +359,17 @@ class MyInstitutionController {
             response.sendError(401)
             return;
         }
+
+        def cal = new java.util.GregorianCalendar()
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+        cal.setTimeInMillis(System.currentTimeMillis())
+        cal.set(Calendar.MONTH, Calendar.JANUARY)
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        result.defaultStartYear = sdf.format(cal.getTime())
+        cal.set(Calendar.MONTH, Calendar.DECEMBER)
+        cal.set(Calendar.DAY_OF_MONTH, 31)
+        result.defaultEndYear = sdf.format(cal.getTime())
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
@@ -866,9 +877,39 @@ from Subscription as s where (
             return;
         }
 
+        def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
+        //Nur wenn von Vorlage ist
+        if(baseLicense) {
+            if (!baseLicense?.hasPerm("view", user)) {
+                log.debug("return 401....");
+                flash.error = message(code: 'myinst.newLicense.error', default: 'You do not have permission to view the selected license. Please request access on the profile page');
+                response.sendError(401)
+
+            } else {
+                def copyLicense = institutionsService.copyLicense(params)
+                if (copyLicense.hasErrors()) {
+                    log.error("Problem saving license ${copyLicense.errors}");
+                    render view: 'editLicense', model: [licenseInstance: copyLicense]
+                } else {
+                    copyLicense.reference = params.licenseName
+                    copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
+                    copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
+
+                    if (!copyLicense.save(flush: true)) {
+                    }
+
+                    flash.message = message(code: 'license.created.message')
+                    redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
+                    return
+                }
+            }
+        }
+
         def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
-        def licenseInstance = new License(type: license_type, status: license_status)
+        def licenseInstance = new License(type: license_type, status: license_status, reference: params.licenseName ?:null,
+                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
+                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
         if (!licenseInstance.save(flush: true)) {
         } else {
             log.debug("Save ok");

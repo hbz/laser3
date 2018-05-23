@@ -293,7 +293,7 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
         else if(sub.status.value != "Deleted") {
           changeNotificationService.registerPendingChange('subscription',
                                                           dep_ie.subscription,
-                                                          "The package entry for title \"${this.title.title}\" was deleted. Apply this change to remove the corresponding Issue Entitlement from this Subscription",
+                                                          "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problemberechtigung aus dieser Lizenz zu entfernen",
                                                           sub.getSubscriber(),
                                                           [
                                                             changeType:'TIPPDeleted',
@@ -324,8 +324,8 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
         def pkgLink =  grailsLinkGenerator.link(controller: 'packageDetails', action: 'show', id: this.pkg.id, absolute: true)
         changeNotificationService.registerPendingChange('subscription',
                                                         dep_ie.subscription,
-                                                        "Information about title <a href=\"${titleLink}\">${this.title.title}</a> changed in package <a href=\"${pkgLink}\">${this.pkg.name}</a>. " +
-                                                                "<b>${changeDocument.prop}</b> was updated from <b>\"${changeDocument.oldLabel}\"</b>(${changeDocument.old}) to <b>\"${changeDocument.newLabel}\"</b>" +
+                                                        "Die Information vom Titel <a href=\"${titleLink}\">${this.title.title}</a> haben sich im Paket <a href=\"${pkgLink}\">${this.pkg.name}</a> geändert. " +
+                                                                "<b>${messageSource.getMessage("tipp.${changeDocument.prop}",null,loc)?:changeDocument.prop}</b> wurde aktualisiert von <b>\"${changeDocument.oldLabel}\"</b>(${changeDocument.old}) zu <b>\"${changeDocument.newLabel}\"</b>" +
                                                                 "(${changeDocument.new}). "+description,
                                                         sub?.getSubscriber(),
                                                         [

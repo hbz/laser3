@@ -6,7 +6,7 @@
     <semui:subNavItem controller="subscriptionDetails" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
 
     <g:if test="${(subscriptionInstance?.getConsortia()?.id == contextService.getOrg()?.id) && !subscriptionInstance.instanceOf}">
-        <semui:subNavItem controller="subscriptionDetails" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
+        <semui:subNavItem controller="subscriptionDetails" action="members" params="${[id:params.id, showDeleted:'Y']}" message="subscription.details.members.label" />
     </g:if>
 
     <semui:subNavItem controller="subscriptionDetails" action="tasks" params="${[id:params.id]}" message="task.plural" />

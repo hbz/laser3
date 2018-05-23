@@ -125,6 +125,17 @@
                                     </dd>
                                 </dl>
                                 -->
+                                <dl>
+                                    <dt><label class="control-label" for="licenseeRef">${message(code:'license.linktoLicense', default:'License Template')}</label></dt>
+                                    <dd>
+                                            <g:each in="${license?.incomingLinks}" var="il">
+                                                <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link> -
+                                                ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                                <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+
+                                            </g:each>
+                                    </dd>
+                                </dl>
                             </div>
                         </div>
                     </div>
@@ -225,22 +236,9 @@
                         </dl>
                         --%>
 
-                        <%--
-                            <dl>
-                                <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
-                                <dd>
-                                    <ul>
-                                        <g:each in="${license?.incomingLinks}" var="il">
-                                            <li><g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> -
-                                            ${message(code:'license.details.incoming.child', default:'Child')}:
-                                            <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
-                                            </li>
-                                        </g:each>
 
-                                    </ul>
-                                </dd>
-                            </dl>
-                           --%>
+
+
                         <g:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks: visibleOrgLinks,
                                             roleObject: license,

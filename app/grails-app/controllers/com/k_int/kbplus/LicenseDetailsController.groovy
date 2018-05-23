@@ -48,7 +48,7 @@ class LicenseDetailsController {
       result.onixplLicense = result.license.onixplLicense;
 
       if (executorWrapperService.hasRunningProcess(result.license)) {
-          log.debug("PEndingChange processing in progress")
+          log.debug("PendingChange processing in progress")
           result.processingpc = true
       } else {
 
