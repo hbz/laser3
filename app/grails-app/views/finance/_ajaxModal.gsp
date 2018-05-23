@@ -10,6 +10,7 @@
 </g:if>
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}">
+
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
@@ -159,7 +160,14 @@
                         <input name="newPackage" id="newPackage" class="la-full-width" disabled='disabled' data-subFilter="" data-disableReset="true" />
                     </g:if>
                     <g:else>
-                        <input name="newPackage" id="newPackage" class="select2 la-full-width" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" />
+                        <g:select name="newPackage" id="newPackage" class="ui dropdown"
+                                from="${[{}] + fixedSubscription?.packages}"
+                                optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                                optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                                noSelection="['':'']"
+                                value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}"
+                        />
+                        <%--<input name="newPackage" id="newPackage" class="select2 la-full-width" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" />--%>
                     </g:else>
                 </div><!-- .field -->
 
@@ -249,34 +257,17 @@
 
         var ajaxPostFunc = function () {
 
+            console.log( "ajaxPostFunc")
+            /*
             $('#newCostCurrency').dropdown('setting', 'onChange', function(value, text, $selectedItem) {
                 $('#newCostCurrency').dropdown('set text', text.split('-')[0].trim());
             }).dropdown('change');
+            */
 
             $('#costItem_ajaxModal #newBudgetCode').select2({
                 minimumInputLength: 1,
                 formatInputTooShort: function () {
                     return "${message(code:'select2.minChars.note')}";
-                },
-                initSelection: function(element, callback) {
-                    console.log( "GSP: _ajaxModal > JS: initSelection")
-                    /*
-                    $.ajax({
-                        url: "<g:createLink controller='ajax' action='lookup'/>",
-                        data: {
-                            format: 'json',
-                            q:'',
-                            shortcode: "${contextService.getOrg()?.shortcode}",
-                            baseClass: 'com.k_int.kbplus.CostItemGroup'
-                            },
-                        dataType: 'json',
-                        results: function (data, page) {
-                            return {results: data.values};
-                        }
-                    }).done( function(data) {
-                        callback(data)
-                    })
-                    */
                 },
                 allowClear: true,
                 tags: true,
@@ -308,6 +299,33 @@
                         return {id: -1 + term, text: "${message(code: 'default.newValue.label')}: " + term};
                 }
             })
+
+            /*
+            $.ajax({
+                url: "<g:createLink controller='ajax' action='lookup'/>",
+                dataType: 'json',
+                data: {
+                    format: 'json',
+                    shortcode: "${contextService.getOrg()?.shortcode}",
+                    baseClass: 'com.k_int.kbplus.CostItemGroup'
+                },
+                success: function(data) {
+                    $('#costItem_ajaxModal #newBudgetCode').select2({
+                        tags: data.values
+                    })
+                    for (var i = 0; i < data.values.length; i++) {
+                        $('#costItem_ajaxModal #newBudgetCode').val(data.values[i].id).trigger('change')
+                    }
+                }
+            });
+*/
+
+/*
+            $('#s2test').select2({
+                tags: [{id:123, text: 'blah'},{id:36, text: 'blubb'}]
+            })
+            $('#s2test').val('123', '36').trigger('change')
+*/
 
             <g:if test="${! inSubMode}">
 
@@ -346,6 +364,7 @@
 
             <g:if test="${inSubMode}">
 
+            <%--
             $('#costItem_ajaxModal #newPackage').select2({
                 placeholder: "${message(code:'financials.newCosts.enterPkgName')}",
                 minimumInputLength: 1,
@@ -377,7 +396,7 @@
                     return data.text;
                 }
             });
-
+            --%>
             </g:if>
         }
     </script>
