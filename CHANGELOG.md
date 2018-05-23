@@ -16,6 +16,10 @@ STILL IN PROGRESS
 - fixed a great number of bugs
 - upgrade to semantic-ui 2.3.1
 
+0.4.6
+
+- added imprint and dsvgo links
+
 0.4.5
 
 - reworked xml import for organisations

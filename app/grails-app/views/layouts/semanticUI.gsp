@@ -272,7 +272,7 @@
                             <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
                             <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
                             </sec:ifAnyGranted>
-                            
+
                             <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
