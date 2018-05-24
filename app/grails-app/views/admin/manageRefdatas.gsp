@@ -81,7 +81,7 @@ ${rdvList.join(", ")}
                                             ${rdv.value}
                                         </g:if>
                                         <g:else>
-                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet"
+                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})"
                                                   style="font-style:italic; color:lightsteelblue;">${rdv.value}</span>
                                         </g:else>
 
