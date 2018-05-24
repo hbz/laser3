@@ -25,4 +25,5 @@ databaseChangeLog = {
 
 	// to release branch 0.4.5 & 0.5
 	include file: 'changelog-160.groovy'
+	include file: 'changelog-165.groovy'
 }
