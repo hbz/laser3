@@ -664,15 +664,15 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        if (params.showDeleted == 'Y') {
+        //if (params.showDeleted == 'Y') {
             result.subscriptionChildren = Subscription.findAllByInstanceOf(result.subscriptionInstance)
-        }
-        else {
-            result.subscriptionChildren = Subscription.executeQuery(
-                    "select sub from Subscription as sub where sub.instanceOf = ? and sub.status.value != 'Deleted'",
-                    [result.subscriptionInstance]
-            )
-        }
+        //}
+        //else {
+        //    result.subscriptionChildren = Subscription.executeQuery(
+        //           "select sub from Subscription as sub where sub.instanceOf = ? and sub.status.value != 'Deleted'",
+        //            [result.subscriptionInstance]
+        //    )
+        //}
         result
     }
 
