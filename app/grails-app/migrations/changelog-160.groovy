@@ -1,40 +1,38 @@
 databaseChangeLog = {
 
-    /* to release branch 0.5
-
     changeSet(author: "kloberd (generated)", id: "1524742653846-1") {
-       createTable(tableName: "creator") {
-           column(autoIncrement: "true", name: "cre_id", type: "bigint") {
-               constraints(nullable: "false", primaryKey: "true", primaryKeyName: "creatorPK")
-           }
+        createTable(tableName: "creator") {
+            column(autoIncrement: "true", name: "cre_id", type: "bigint") {
+                constraints(nullable: "false", primaryKey: "true", primaryKeyName: "creatorPK")
+            }
 
-           column(name: "cre_version", type: "bigint") {
-               constraints(nullable: "false")
-           }
+            column(name: "cre_version", type: "bigint") {
+                constraints(nullable: "false")
+            }
 
-           column(name: "cre_dateCreated", type: "datetime") {
-               constraints(nullable: "false")
-           }
+            column(name: "cre_dateCreated", type: "datetime") {
+                constraints(nullable: "false")
+            }
 
-           column(name: "cre_firstname", type: "varchar(255)")
+            column(name: "cre_firstname", type: "varchar(255)")
 
-           column(name: "cre_guid", type: "varchar(255)")
+            column(name: "cre_guid", type: "varchar(255)")
 
-           column(name: "cre_gnd_id_fk", type: "bigint")
+            column(name: "cre_gnd_id_fk", type: "bigint")
 
-           column(name: "cre_lastUpdated", type: "datetime") {
-               constraints(nullable: "false")
-           }
+            column(name: "cre_lastUpdated", type: "datetime") {
+                constraints(nullable: "false")
+            }
 
-           column(name: "cre_lastname", type: "varchar(255)") {
-               constraints(nullable: "false")
-           }
+            column(name: "cre_lastname", type: "varchar(255)") {
+                constraints(nullable: "false")
+            }
 
-           column(name: "cre_middlename", type: "varchar(255)")
-       }
-   }
+            column(name: "cre_middlename", type: "varchar(255)")
+        }
+    }
 
-   changeSet(author: "kloberd (generated)", id: "1524742653846-2") {
+    changeSet(author: "kloberd (generated)", id: "1524742653846-2") {
        createTable(tableName: "creator_title") {
            column(autoIncrement: "true", name: "ct_id", type: "bigint") {
                constraints(nullable: "false", primaryKey: "true", primaryKeyName: "creator_titlePK")
@@ -64,65 +62,57 @@ databaseChangeLog = {
                constraints(nullable: "false")
            }
        }
-   }
+    }
 
-   */
+    changeSet(author: "kloberd (generated)", id: "1524742653846-3") {
+        addColumn(tableName: "address") {
+            column(name: "adr_addition_first", type: "varchar(255)")
+        }
+    }
 
-   changeSet(author: "kloberd (generated)", id: "1524742653846-3") {
-       addColumn(tableName: "address") {
-           column(name: "adr_addition_first", type: "varchar(255)")
-       }
-   }
+    changeSet(author: "kloberd (generated)", id: "1524742653846-4") {
+        addColumn(tableName: "address") {
+            column(name: "adr_addition_second", type: "varchar(255)")
+        }
+    }
 
-   changeSet(author: "kloberd (generated)", id: "1524742653846-4") {
-       addColumn(tableName: "address") {
-           column(name: "adr_addition_second", type: "varchar(255)")
-       }
-   }
+    changeSet(author: "kloberd (generated)", id: "1524742653846-5") {
+        addColumn(tableName: "address") {
+            column(name: "adr_name", type: "varchar(255)")
+        }
+    }
 
-   changeSet(author: "kloberd (generated)", id: "1524742653846-5") {
-       addColumn(tableName: "address") {
-           column(name: "adr_name", type: "varchar(255)")
-       }
-   }
-
-   changeSet(author: "kloberd (generated)", id: "1524742653846-6") {
+    changeSet(author: "kloberd (generated)", id: "1524742653846-6") {
        addColumn(tableName: "address") {
            column(name: "adr_pob_city", type: "varchar(255)")
        }
-   }
+    }
 
-   changeSet(author: "kloberd (generated)", id: "1524742653846-7") {
-       addColumn(tableName: "address") {
-           column(name: "adr_pob_zipcode", type: "varchar(255)")
+    changeSet(author: "kloberd (generated)", id: "1524742653846-7") {
+        addColumn(tableName: "address") {
+            column(name: "adr_pob_zipcode", type: "varchar(255)")
        }
-   }
+    }
 
-   /* to release branch 0.5
-
-   changeSet(author: "kloberd (generated)", id: "1524742653846-8") {
-       addColumn(tableName: "cost_item") {
-           column(name: "ci_cost_title", type: "varchar(255)")
+    changeSet(author: "kloberd (generated)", id: "1524742653846-8") {
+        addColumn(tableName: "cost_item") {
+            column(name: "ci_cost_title", type: "varchar(255)")
        }
-   }
+    }
 
-   changeSet(author: "kloberd (generated)", id: "1524742653846-9") {
-       addColumn(tableName: "cost_item") {
-           column(name: "ci_guid", type: "varchar(255)") {
-               constraints(unique: "true")
+    changeSet(author: "kloberd (generated)", id: "1524742653846-9") {
+        addColumn(tableName: "cost_item") {
+            column(name: "ci_guid", type: "varchar(255)") {
+                constraints(unique: "true")
            }
        }
-   }
-
-   */
+    }
 
     changeSet(author: "kloberd (generated)", id: "1524742653846-10") {
         addColumn(tableName: "org") {
             column(name: "org_url_gov", type: "varchar(512)")
         }
     }
-
-    /* to release branch 0.5
 
     changeSet(author: "kloberd (generated)", id: "1524742653846-11") {
         addColumn(tableName: "title_instance") {
@@ -211,8 +201,6 @@ databaseChangeLog = {
     changeSet(author: "kloberd (generated)", id: "1524742653846-20") {
         addForeignKeyConstraint(baseColumnNames: "ct_title_fk", baseTableName: "creator_title", constraintName: "FK68B134855B4619CA", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "ti_id", referencedTableName: "title_instance", referencesUniqueColumn: "false")
     }
-
-    */
 
     changeSet(author: "kloberd (generated)", id: "1526466553199-7") {
         dropNotNullConstraint(columnDataType: "varchar(255)", columnName: "adr_city", tableName: "address")
