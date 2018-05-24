@@ -720,6 +720,7 @@ class GlobalSourceSyncService {
   def intOAI(sync_job_id) {
 
     log.debug("internalOAI processing ${sync_job_id}");
+    new EventLog(event:'kbplus.doOAISync', message:"internalOAI processing ${sync_job_id}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
     def sync_job = GlobalRecordSource.get(sync_job_id)
     int rectype = sync_job.rectype.longValue()
@@ -869,12 +870,14 @@ class GlobalSourceSyncService {
     catch ( Exception e ) {
       log.error("Problem",e);
       log.error("Problem running job ${sync_job_id}, conf=${cfg}",e);
+      new EventLog(event:'kbplus.doOAISync', message:"Problem running job ${sync_job_id}, conf=${cfg}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
       log.debug("Reset sync job haveUpTo");
       sync_job.haveUpTo = olddate
       sync_job.save(flush: true);
     }
     finally {
       log.debug("internalOAISync completed for job ${sync_job_id}");
+      new EventLog(event:'kbplus.doOAISync', message:"internalOAISync completed for job ${sync_job_id}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
     }
   }
 
