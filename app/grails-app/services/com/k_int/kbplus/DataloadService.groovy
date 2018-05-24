@@ -403,6 +403,7 @@ class DataloadService {
     }
     catch ( Exception e ) {
       log.error("Problem with FT index", e)
+        new EventLog(event:'kbplus.updateFTIndexes', message:"Problem with FT index ${domain.name}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
     }
     finally {
       log.debug("Completed processing on ${domain.name} - saved ${count} records")
@@ -660,6 +661,7 @@ class DataloadService {
         }
         catch ( Exception e ) {
             log.warn("Problem deleting index ..", e)
+            new EventLog(event:'kbplus.fullReset', message:"Problem deleting index .. ${es_index}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
         }
 
         log.debug("Create new ES index ..")

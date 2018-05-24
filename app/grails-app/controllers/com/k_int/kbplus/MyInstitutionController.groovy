@@ -498,10 +498,14 @@ class MyInstitutionController {
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
+
+
         def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
         def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
         def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
         def roleTypes = [role_sub, role_sub_consortia]
+        def role_provider        = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
+        def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':result.institution]
@@ -545,6 +549,8 @@ from Subscription as s where (
                     " and ( lower(s.name) like :name_filter " // filter by subscription
                 + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
                 + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
+                + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
+                            + " or lower(orgR.org.shortname) like :name_filter or lower(orgR.org.sortname) like :name_filter) ) " // filter by Anbieter, Konsortium, Agency
                 +  " ) "
             )
 
@@ -596,8 +602,124 @@ from Subscription as s where (
             result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
         }
 
+        if ( params.exportXLS=='yes' ) {
+            exportcurrentSubscription(result.subscriptions)
+            return
+        }
+
         withFormat {
-            html result
+            html {
+                result
+            }
+        }
+    }
+
+    private def exportcurrentSubscription(subscriptions) {
+        try {
+            String[] titles = [
+                    'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
+
+            def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
+
+
+            HSSFWorkbook wb = new HSSFWorkbook();
+
+            HSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"));
+
+
+
+            //the following three statements are required only for HSSF
+            sheet.setAutobreaks(true);
+
+
+            //the header row: centered text in 48pt font
+            Row headerRow = sheet.createRow(0);
+            headerRow.setHeightInPoints(16.75f);
+            titles.eachWithIndex { titlesName, index ->
+                Cell cell = headerRow.createCell(index);
+                cell.setCellValue(titlesName);
+
+            }
+
+            //freeze the first row
+            sheet.createFreezePane(0, 1);
+
+            Row row;
+            Cell cell;
+            int rownum = 1;
+
+            subscriptions.sort{it.name}
+            subscriptions.each{  sub ->
+                int cellnum = 0;
+                row = sheet.createRow(rownum);
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.name));
+
+                cell = row.createCell(cellnum++);
+                //sub.owner.sort{it.reference}
+                sub.owner.each{
+                    cell.setCellValue(new HSSFRichTextString(it.reference));
+                }
+                cell = row.createCell(cellnum++);
+                sub.packages.sort{it.pkg.name}
+                def packages =""
+                sub.packages.each{
+                    packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name+', ';
+                }
+                cell.setCellValue(new HSSFRichTextString(packages));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.getConsortia()?.name));
+
+                cell = row.createCell(cellnum++);
+                def providername = ""
+                def provider = OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))
+                       provider.each {
+                       providername += (it == provider.last()) ? it.org.name : it.org.name+", "
+                }
+                cell.setCellValue(new HSSFRichTextString(providername));
+                cell = row.createCell(cellnum++);
+                def agencyname = ""
+                def agency = OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'))
+                agency.each {
+                    agencyname += (it == agency.last()) ? it.org.name : it.org.name+", "
+                }
+                cell.setCellValue(new HSSFRichTextString(agencyname));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sdf.format(sub.startDate)));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sdf.format(sub.endDate)));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.type?.getI10n("value")));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.status?.getI10n("value")));
+
+                rownum++
+            }
+
+            for (int i = 0; i < 22; i++) {
+                sheet.autoSizeColumn(i);
+            }
+            // Write the output to a file
+            String file = g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions")+"_${datetoday}.xls";
+            //if(wb instanceof XSSFWorkbook) file += "x";
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+            // response.contentType = 'application/xls'
+            response.contentType = 'application/vnd.ms-excel'
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+
+        }
+        catch ( Exception e ) {
+            log.error("Problem",e);
+            response.sendError(500)
         }
     }
 

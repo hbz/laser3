@@ -16,6 +16,14 @@
         </semui:breadcrumbs>
 
         <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="currentSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="currentSubscriptions" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>
             <g:render template="actions" />
         </semui:controlButtons>
 
@@ -26,10 +34,10 @@
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
 
-        <div class="four fields">
+        <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag und Paket)</label>
+                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag, Paket, Anbieter, Konsortium, Agentur)</label>
 
                 <div class="ui input">
                     <input type="text" name="q"
@@ -194,7 +202,7 @@
                 <th>${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
 
-            <th>${message(code: 'default.provider.label', default: 'Provider')}</th>
+            <th>${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>
             <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
@@ -273,6 +281,9 @@
                     <td>
                         <g:each in="${OrgRole.findAllBySubAndRoleType(s, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
                             <g:link controller="Organisations" action="show" id="${role.org?.id}">${role.org?.name}</g:link><br />
+                        </g:each>
+                        <g:each in="${OrgRole.findAllBySubAndRoleType(s, RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'))}" var="role">
+                            <g:link controller="Organisations" action="show" id="${role.org?.id}">${role.org?.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
                         </g:each>
                     </td>
                     <%--
