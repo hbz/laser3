@@ -108,6 +108,7 @@
 
             <fieldset class="field la-modal-fieldset-margin">
                 <label>&nbsp;</label>
+            <%--
                 <div class="field">
                     <label>${message(code:'financials.costItemCategory')}</label>
                     <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
@@ -118,7 +119,7 @@
                                   noSelection="${['':'']}"
                                   value="${costItem?.costItemCategory?.id}" />
                 </div><!-- .field -->
-
+            --%>
                 <div class="field">
                     <label>${message(code:'financials.costItemElement')}</label>
                     <laser:select name="newCostItemElement" class="ui dropdown"

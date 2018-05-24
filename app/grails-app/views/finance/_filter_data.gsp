@@ -10,9 +10,9 @@
                 ( <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/> )
             </span>
         </td>
-        <td>
+        <%--<td>
             <semui:xEditableRefData config="CostItemCategory" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemCategory" />
-        </td>
+        </td>--%>
         <td>
             <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
         </td>
