@@ -18,9 +18,6 @@
         <semui:controlButtons>
             <semui:exportDropdown>
                 <semui:exportDropdownItem>
-                    <g:link class="item" action="currentSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-                </semui:exportDropdownItem>
-                <semui:exportDropdownItem>
                     <g:link class="item" action="currentSubscriptions" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
                 </semui:exportDropdownItem>
             </semui:exportDropdown>
