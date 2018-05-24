@@ -26,15 +26,16 @@
             </div>
         </semui:card>
 
-<%-- TODO: tmp commit
-<pre>
-<g:each in="${rdvMap}" var="objs">
+<%--<pre>
+${rdvList.join(", ")}
+
+<g:each in="${attrMap}" var="objs">
     ${objs.key}
     <g:each in="${objs.value}" var="attrs">    ${attrs}
     </g:each>
 </g:each>
-</pre>
---%>
+</pre>--%>
+
 
         <div class="ui styled fluid accordion">
             <g:each in="${rdCategories}" var="rdc">
@@ -75,8 +76,15 @@
                             <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
                                 <tr>
                                     <td></td>
-                                    <td data-position="top left" data-tooltip="${rdv.getAllDeclarations()}">
-                                        ${rdv.value}
+                                    <td>
+                                        <g:if test="${rdvList?.contains(rdv.id)}">
+                                            ${rdv.value}
+                                        </g:if>
+                                        <g:else>
+                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet"
+                                                  style="font-style:italic; color:lightsteelblue;">${rdv.value}</span>
+                                        </g:else>
+
                                         <g:if test="${rdv.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                                         </g:if>
