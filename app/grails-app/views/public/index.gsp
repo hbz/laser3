@@ -183,7 +183,7 @@
                                     Version: ${grailsApplication.metadata['app.version']}
                                 </a>
 
-                                <g:if test="${!grailsApplication.metadata['repository.revision.number']}">
+                                <g:if test="${grailsApplication.metadata['repository.revision.number']}">
                                     <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.branch']}">
                                         Branch: ${grailsApplication.metadata['repository.branch']}
                                     </a>
