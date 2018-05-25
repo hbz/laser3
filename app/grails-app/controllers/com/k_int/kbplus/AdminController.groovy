@@ -354,6 +354,15 @@ class AdminController {
     result
   }
 
+  @Secured(['ROLE_ADMIN'])
+  def eventLog() {
+    def result = [:]
+
+    result.eventlogs = EventLog.list(params)
+
+    result
+  }
+
   @Secured(['ROLE_YODA'])
   def dataCleanse() {
     // Sets nominal platform
