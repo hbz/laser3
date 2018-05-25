@@ -1183,40 +1183,58 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-  def editableSetValue() {
-    log.debug("editableSetValue ${params}");
-    def target_object = resolveOID2(params.pk)
-    
-    if ( target_object ) {
-      if ( params.type=='date' ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-        if( params.value && params.value.size() > 0 ){
-          def parsed_date = sdf.parse(params.value)
-          target_object."${params.name}" = parsed_date
-        } 
-        else {
-          target_object."${params.name}" = null
+    def editableSetValue() {
+        log.debug("editableSetValue ${params}");
+        def target_object = resolveOID2(params.pk)
+        def result = null
+
+        if ( target_object ) {
+            if ( params.type=='date' ) {
+                def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+                def backup = target_object."${params.name}"
+                try {
+                    if( params.value && params.value.size() > 0 ) {
+                        // parse new date
+                        def parsed_date = sdf.parse(params.value)
+                        target_object."${params.name}" = parsed_date
+                    }
+                    else {
+                        // delete existing date
+                        target_object."${params.name}" = null
+                    }
+                    target_object.save(failOnError: true, flush: true);
+                }
+                catch(Exception e) {
+                    target_object."${params.name}" = backup
+                    log.error(e)
+                }
+                finally {
+                    if (target_object."${params.name}") {
+                        result = (target_object."${params.name}").format(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                    }
+                }
+            }
+            else {
+                def binding_properties = [:]
+                binding_properties[params.name] = params.value
+                bindData(target_object, binding_properties)
+                // target_object."${params.name}" = params.value
+                target_object.save(failOnError: true, flush: true);
+
+                result = target_object."${params.name}"
+            }
         }
-      }
-      else {
-        def binding_properties = [:]
-        binding_properties[ params.name ] = params.value
-        bindData(target_object, binding_properties)
-        // target_object."${params.name}" = params.value
-      }
-        target_object.save(failOnError:true,flush:true);
 
+        response.setContentType('text/plain')
+
+        def outs = response.outputStream
+
+        outs << result
+
+        outs.flush()
+        outs.close()
     }
-
-    response.setContentType('text/plain')
-
-    def outs = response.outputStream
-
-    outs << target_object."${params.name}"
-    
-    outs.flush()
-    outs.close()
-  }
 
     @Secured(['ROLE_USER'])
     def removeUserRole() {

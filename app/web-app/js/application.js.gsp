@@ -142,18 +142,13 @@ r2d2 = {
         $.fn.editable.defaults.mode = 'inline'
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
             '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
-        $.fn.editableform.template = '<form class="ui form form-inline editableform">' +
-            '                           <div class="control-group">' +
+        $.fn.editableform.template = '<form class="ui form form-inline editableform"><div class="control-group">' +
             '                               <div>' +
-            '                                   <div class="editable-input">' +
-
-            '                                   </div>' +
+            '                                   <div class="editable-input"></div>' +
             '                                   <div class="editable-buttons"></div>' +
             '                               </div>' +
-            '                               <div class="editable-error-block">' +
-            '                               </div>' +
-            '                           </div>' +
-            '                          </form>'
+            '                               <div class="editable-error-block"></div>' +
+            '                           </div></form>'
 
         // TODO $.fn.datepicker.defaults.language = gspLocale
     },
@@ -166,23 +161,28 @@ r2d2 = {
 
         $(ctxSel + ' .xEditable').editable({
             language: gspLocale,
-            /* datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat
+            format:   gspDateFormat
         });
 
         $(ctxSel + ' .xEditableValue').editable({
-
             language: gspLocale,
-            /* datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat
+            format:   gspDateFormat,
+            validate: function(value) {
+                if ($(this).attr('data-format')) {
+                    //console.log( 'todo: frontend validation')
+                }
+            },
+            success: function(response) {
+                // override newValue with response from backend
+                return {newValue: (response != 'null' ? response : null)}
+            }
+        }).on('save', function(e, params){
+            if ($(this).attr('data-format')) {
+                console.log(params)
+            }
         });
 
         $(ctxSel + ' .xEditableDatepicker').editable({
-
         });
 
         $(ctxSel + ' .xEditableManyToOne').editable({
@@ -191,10 +191,7 @@ r2d2 = {
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
             language: gspLocale,
-            /* datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat,
+            format:   gspDateFormat,
             url: function(params) {
                 var hidden_field_id = $(this).data('hidden-id');
                 $("#" + hidden_field_id).val(params.value);
