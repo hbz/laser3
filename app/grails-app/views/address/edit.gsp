@@ -6,7 +6,20 @@
 		<g:set var="entityName" value="${message(code: 'address.label', default: 'Address')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
+
 	<body>
+	<semui:breadcrumbs>
+		<g:if test="${addressInstance.org.orgType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+			<semui:crumb message="menu.institutions.all_provider" controller="organisations" action="listProvider"/>
+			<semui:crumb message="${addressInstance.org.getDesignation()}" controller="organisations" action="show" id="${addressInstance.org.id}"/>
+			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
+		</g:if>
+		<g:else>
+			<semui:crumb message="menu.institutions.all_orgs" controller="organisations" action="index"/>
+			<semui:crumb message="${addressInstance.org.getDesignation()}" controller="organisations" action="show" id="${addressInstance.org.id}"/>
+			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
+		</g:else>
+	</semui:breadcrumbs>
 
 		<h1 class="ui header"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
 

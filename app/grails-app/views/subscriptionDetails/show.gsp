@@ -192,12 +192,19 @@
                             <dl>
                                 <dt>${message(code:'license')}</dt>
                                 <dd>
-                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                                        <g:if test="${subscriptionInstance.owner != null}">
+
+                                        <g:if test="${subscriptionInstance.owner == null}">
+                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                                        </g:if>
+                                        <g:else><g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                                    ${subscriptionInstance.owner}
+                                                </g:link>
+                                        </g:else>
+                                       %{-- <g:if test="${subscriptionInstance.owner != null}">
                                             [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
                                                 <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
                                             </g:link>]
-                                        </g:if>
+                                        </g:if>--}%
 
                                         <br/><br/>
                                         <g:if test="${editable}">

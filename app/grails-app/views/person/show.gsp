@@ -68,7 +68,7 @@
                             </ul>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
+                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
                                 <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd></dl>
