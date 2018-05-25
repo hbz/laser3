@@ -192,6 +192,7 @@ class MyInstitutionController {
         result.transforms = grailsApplication.config.licenseTransforms
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
