@@ -43,8 +43,6 @@
                 ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br/>
                 <table class="ui celled la-table table">
                     <tbody>
-                    <input type="hidden" name="subscription.start_date" value="${permissionInfo?.sub_startDate}"/>
-                    <input type="hidden" name="subscription.end_date" value="${permissionInfo?.sub_endDate}"/>
                     <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
                     <input type="hidden" name="subscription.name" value="${permissionInfo?.sub_name}"/>
 
@@ -52,12 +50,12 @@
                     <tr>
                         <th><g:checkBox name="subscription.copyStart" value="${true}" /></th>
                         <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-                        <td>${permissionInfo?.sub_startDate}</td>
+                        <td><semui:datepicker class="wide eight" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="true" /></td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyEnd" value="${true}" /></th>
                         <th>${message(code:'default.endDate.label', default:'End Date')}</th>
-                        <td>${permissionInfo?.sub_endDate}</td>
+                        <td><semui:datepicker class="wide eight" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" required="true" /></td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
@@ -66,6 +64,13 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <div class="pull-right">
+                    <g:if test="${entitlements}">
+                        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept', default:'Accept and Process')}</button>
+                    </g:if>
+                </div>
+                <br><hr/>
                 <table class="ui celled la-table table">
                     <thead>
                     <tr>

@@ -2594,7 +2594,7 @@ AND EXISTS (
                 startDate: sub_startDate,
                 endDate: sub_endDate,
                 previousSubscription: old_subOID ?: null,
-                type: params.subscription?.type)
+                type: Subscription.get(old_subOID)?.type?:null)
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
         Date earliest_start_date = null
