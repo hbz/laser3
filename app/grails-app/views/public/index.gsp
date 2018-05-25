@@ -178,23 +178,30 @@
                         <div class="three wide column left aligned">
                             <h4 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h4>
                             <div class="ui inverted link list">
-                                <g:if test="${grailsApplication.metadata['repository.revision.number']}">
-                                    <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.revision.number']}">
-                                </g:if>
-                                <g:else>
-                                    <a target="_blank" class="item" href="https://github.com/hbz/laser">
-                                </g:else>
-                                        Version: ${grailsApplication.metadata['app.version']}
-                                </a>
-                                <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
-                                <!-- (${grailsApplication.metadata['build.DateTimeStamp']}) -->
 
-                                <div class="item">Last Build on: ${grailsApplication.metadata['app.buildDate']}</div>
+                                <a target="_blank" class="item" href="https://github.com/hbz/laser/releases">
+                                    Version: ${grailsApplication.metadata['app.version']}
+                                </a>
+
                                 <g:if test="${grailsApplication.metadata['repository.revision.number']}">
                                     <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.branch']}">
-                                        @GitHub: ${grailsApplication.metadata['repository.branch']}
+                                        Branch: ${grailsApplication.metadata['repository.branch']}
                                     </a>
                                 </g:if>
+
+                                <div class="item">
+                                    <g:if test="${grailsApplication.metadata['repository.revision.number']}">
+                                        <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.revision.number']}">
+                                            Build: ${grailsApplication.metadata['app.buildDate']}
+                                        </a>
+                                    </g:if>
+                                    <g:else>
+                                        Build: ${grailsApplication.metadata['app.buildDate']}
+                                    </g:else>
+                                </div>
+
+                                <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
+                                <!-- (${grailsApplication.metadata['build.DateTimeStamp']}) -->
                             </div>
                         </div>
 

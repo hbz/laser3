@@ -168,8 +168,10 @@ r2d2 = {
             language: gspLocale,
             format:   gspDateFormat,
             validate: function(value) {
-                if ($(this).attr('data-format')) {
-                    //console.log( 'todo: frontend validation')
+                if ($(this).attr('data-format') && value) {
+                    if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
+                        return "Ungültiges Format";
+                    }
                 }
             },
             success: function(response) {

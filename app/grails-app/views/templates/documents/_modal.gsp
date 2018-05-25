@@ -22,7 +22,7 @@
                     <div class="ui fluid action input">
                         <input type="text" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                         <input type="file" name="upload_file" style="display: none;">
-                        <div class="ui icon button">
+                        <div class="ui icon button" style="padding-left:30px; padding-right:30px">
                             <i class="attach icon"></i>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
 
 </semui:modal>
 <r:script type="text/javascript">
-    $('#modalCreateDocument .action .icon.button, #modalCreateDocument .action input:text').click( function() {
+    $('#modalCreateDocument .action .icon.button').click( function() {
          $(this).parent('.action').find('input:file').click();
     });
 
