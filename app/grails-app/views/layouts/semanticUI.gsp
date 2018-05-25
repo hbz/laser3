@@ -309,6 +309,7 @@
                                     <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
 
                                     <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                                    <g:link class="item" controller="admin" action="eventLog">Event Log</g:link>
 
                                     <div class="divider"></div>
 
