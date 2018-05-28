@@ -23,10 +23,10 @@
             <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
         </td>
         <td>
-            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" type="date" field="startDate" />
+            <semui:xEditable owner="${ci}" type="date" field="startDate" />
         </td>
         <td>
-            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" type="date" field="endDate" />
+            <semui:xEditable owner="${ci}" type="date" field="endDate" />
         </td>
 
         <td class="x">

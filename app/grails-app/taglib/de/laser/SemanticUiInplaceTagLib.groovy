@@ -39,7 +39,7 @@ class SemanticUiInplaceTagLib {
                 out << " data-viewformat=\"${df}\""
                 out << " data-template=\"${df}\""
 
-                default_empty = message(code:'default.date.format.notime').toLowerCase()
+                default_empty = message(code:'default.date.format.notime.normal')
 
             } else {
                 out << " data-type=\"${attrs.type?:'text'}\""
@@ -173,7 +173,7 @@ class SemanticUiInplaceTagLib {
             out << " data-viewformat=\"${df}\""
             out << " data-template=\"${df}\""
 
-            default_empty = message(code:'default.date.format.notime').toLowerCase()
+            default_empty = message(code:'default.date.format.notime.normal')
 
             if (attrs.language) {
                 out << " data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\""
