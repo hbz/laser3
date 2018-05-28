@@ -246,8 +246,12 @@ body.myInstitution_dashboard .ui.tab .item span {
 .ui table.la-bulk-header thead {
     background: white;
 }
-.ui table.la-bulk-header thead tr td {
+.ui table.la-bulk-header thead tr {
+}
+.ui table.la-bulk-header thead tr td,
+.ui table.la-bulk-header thead tr th {
     line-height: 1rem;
+    border-bottom: 3px solid #e6eaef;
 }
 
 /* hotfix aside.metaboxContent */

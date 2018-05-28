@@ -138,8 +138,17 @@
 
                       <th colspan="2">
                         <g:set var="selected_label" value="${message(code:'default.selected.label')}" />
-
-                          <select id="bulkOperationSelect" name="bulkOperation">
+<%--
+                            <div class="ui radio checkbox">
+                                <input name="bulkOperation" value="edit" tabindex="0" class="hidden" type="radio">
+                                <label>${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</label>
+                            </div>
+                            <div class="ui radio checkbox">
+                                <input name="bulkOperation" value="remove" tabindex="0" class="hidden" type="radio">
+                                <label>${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</label>
+                            </div>
+--%>
+                          <select id="bulkOperationSelect" name="bulkOperation" style="width:50%; float:left">
                             <option value="edit">${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</option>
                             <option value="remove">${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</option>
                           </select>
