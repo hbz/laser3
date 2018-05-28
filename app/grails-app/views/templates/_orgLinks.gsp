@@ -3,7 +3,7 @@
       <tr>
         <th>${message(code:'license.organisationName')}</th>
         <th>${message(code:'template.orgLinks.role')}</th>
-        <th>${message(code:'title.edit.actions.label')}</th>
+        <th>${message(code:'default.actions')}</th>
       </tr>
     </thead>
     <g:each in="${roleLinks}" var="role">

@@ -1133,16 +1133,9 @@ from Subscription as s where (
 
         log.debug("deleteDocuments ${params}");
 
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag.')) {
-                def docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete}");
-                def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status', 'Deleted');
-            }
-        }
+        docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'licenseDetails', action: 'show', id: params.licid, fragment: 'docstab'
+        redirect controller: 'licenseDetails', action: 'show', id: params.licid /*, fragment: 'docstab' */
     }
 
     @Deprecated

@@ -191,7 +191,7 @@
                   <tr>
                       <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
                       <th>${message(code:'tipp.endDate')}</th><th>${message(code:'tipp.endVolume')}</th><th>${message(code:'tipp.endIssue')}</th><th>${message(code:'tipp.coverageDepth')}</th>
-                      <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'title.edit.actions.label')}</th>
+                      <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'default.actions')}</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -222,7 +222,7 @@
                       <th>${message(code:'tipp.start')}</th>
                       <th>${message(code:'tipp.end')}</th>
                       <th>${message(code:'tipp.coverageDepth')}</th>
-                      <th>${message(code:'title.edit.actions.label')}</th>
+                      <th>${message(code:'default.actions')}</th>
                     </tr>
                     <tr>
                       <th colspan="6">${message(code:'tipp.coverageNote')}</th>

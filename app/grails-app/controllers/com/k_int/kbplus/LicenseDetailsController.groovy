@@ -459,33 +459,10 @@ from Subscription as s where
         //def l = License.get(params.instanceId);
         //userAccessCheck(l,user,'edit')
 
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag.') ) {
-                def docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete} for delete");
-                def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted');
-                docctx.save(flush:true);
-            }
-        }
+        docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId, fragment:'docstab'
+        redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
-
-    /*
-    @Deprecated
-    def userAccessCheck(license, user, role_str) {
-        if ((license == null || user == null ) || (! license?.hasPerm(role_str, user))) {
-            log.debug("return 401....");
-            def this_license = message(code:'license.details.flash.this_license')
-            def this_inst = message(code:'license.details.flash.this_inst')
-            flash.error = message(code:'license.details.flash.error', args:[role_str,(license?.reference?:this_license),(license?.licensee?.name?:this_inst)])
-            response.sendError(401);
-            return false
-        }
-        return true
-    }
-    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })

@@ -38,6 +38,7 @@ class SubscriptionDetailsController {
     def accessService
     def filterService
     def factService
+    def docstoreService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -1021,14 +1022,7 @@ class SubscriptionDetailsController {
 
         log.debug("deleteDocuments ${params}");
 
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag.')) {
-                def docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete} for delete");
-                def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status', 'Deleted');
-            }
-        }
+        docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'subscriptionDetails', action: params.redirectAction, id: params.instanceId
     }

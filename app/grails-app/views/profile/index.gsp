@@ -168,7 +168,7 @@
                 <th>${message(code: 'profile.membership.role', default:'Role')}</th>
                 <th>${message(code: 'profile.membership.status', default:'Status')}</th>
                 <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
-                <th>${message(code: 'profile.membership.actions', default:'Actions')}</th>
+                <th>${message(code: 'default.actions', default:'Actions')}</th>
             </tr>
             </thead>
             <tbody>

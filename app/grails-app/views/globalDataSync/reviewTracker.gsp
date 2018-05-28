@@ -72,7 +72,7 @@
             <g:else>
               <th><g:message code="globalDataSync.localPackage" args="[localPkg.name]"/></th>
             </g:else>
-          <th><g:message code="globalDataSync.actions.label" /></th>
+          <th><g:message code="default.actions" /></th>
           <th>
             <g:if test="${type=='new'}">
               <g:message code="globalDataSync.newPackageafterProc"/>
