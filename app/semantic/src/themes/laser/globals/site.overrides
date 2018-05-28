@@ -476,6 +476,7 @@ body[class*="organisation"] {
     text-decoration: inherit;
     text-align: center;
     backface-visibility: hidden;
+    z-index: 80;
     &:before {
         content: "\f2ed";
     }

@@ -1298,6 +1298,7 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
   text-align: center;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  z-index: 80;
 }
 
 .editable-clear-x:before {
@@ -27990,6 +27991,10 @@ Floated Menu / Item
 
 .calendar .ui.table.day tr td {
   border-top: 1px dotted rgba(34, 36, 38, 0.1);
+}
+
+.la-column-nowrap {
+  white-space: nowrap;
 }
 /*!
  * # Semantic UI 2.3.1 - Ad
