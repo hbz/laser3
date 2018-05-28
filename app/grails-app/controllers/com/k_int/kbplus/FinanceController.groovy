@@ -21,8 +21,7 @@ class FinanceController {
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
-    private final def admin_role      = Role.findByAuthority('INST_ADM')
-    private final def editor_role      = Role.findByAuthority('INST_EDITOR')
+    private final def user_role        = Role.findByAuthority('INST_USER')
     private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
@@ -39,11 +38,11 @@ class FinanceController {
 
     private boolean isFinanceAuthorised(Org org, User user) {
 
-        accessService.checkMinUserOrgRole(user, org, editor_role)
+        accessService.checkMinUserOrgRole(user, org, user_role)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
       log.debug("FinanceController::index() ${params}");
 
@@ -112,7 +111,7 @@ class FinanceController {
      */
     private def setupQueryData(result, params, user) {
         //Setup params
-        result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, editor_role)
+        result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.filterMode  =  params.filterMode?: "OFF"
         result.info        =  [] as List
@@ -189,7 +188,8 @@ class FinanceController {
         }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
 
@@ -588,7 +588,8 @@ class FinanceController {
             ]
     ]
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
 
@@ -602,7 +603,33 @@ class FinanceController {
         render(template: "/finance/ajaxModal", model: result)
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteCostItem() {
+        def result = [:]
+        def user = User.get(springSecurityService.principal.id)
+        def institution = contextService.getOrg()
+        if (!isFinanceAuthorised(institution, user)) {
+            response.sendError(403)
+            return
+        }
+
+        def ci = CostItem.findByIdAndOwner(params.id, institution)
+        if (ci) {
+            def cigs = CostItemGroup.findAllByCostItem(ci)
+
+            cigs.each { item ->
+                item.delete()
+                log.debug("deleting CostItemGroup: " + item)
+            }
+            log.debug("deleting CostItem: " + ci)
+            ci.delete()
+        }
+        redirect(controller: 'myInstitution', action: 'finance')
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItem() {
 
         def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -803,7 +830,8 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getRecentCostItems() {
         def dateTimeFormat     = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def  institution       = contextService.getOrg()
@@ -820,7 +848,8 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItemsPresent() {
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def institution = contextService.getOrg()
@@ -836,7 +865,8 @@ class FinanceController {
         render(text: builder.toString(), contentType: "text/json", encoding: "UTF-8")
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def delete() {
         log.debug("FinanceController::delete() ${params}");
 
@@ -893,7 +923,7 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_USER'])
     def financialRef() {
         log.debug("Financials :: financialRef - Params: ${params}")
 
@@ -1004,7 +1034,8 @@ class FinanceController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def removeBC() {
         log.debug("Financials :: remove budget code - Params: ${params}")
         def result      = [:]
@@ -1041,7 +1072,8 @@ class FinanceController {
         render result as JSON
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def createCode() {
         def result      = [:]
         def user        = springSecurityService.currentUser

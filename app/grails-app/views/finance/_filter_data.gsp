@@ -43,7 +43,7 @@
                 </g:else>
             </g:if>
             <g:if test="${editable}">
-                <g:link class="ui icon negative button">
+                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" class="ui icon negative button">
                     <i class="trash alternate icon"></i>
                 </g:link>
             </g:if>
