@@ -17,11 +17,11 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-<table class="ui single line la-table-small la-table-inCard table">
+<table class="ui la-table-small la-table-inCard table">
     <g:if test="${ownobj.privateProperties}">
         <thead>
             <tr>
-                <th>${message(code:'property.table.property')}</th>
+                <th class="la-column-nowrap">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <th>${message(code:'property.table.notes')}</th>
                 <th>${message(code:'property.table.delete')}</th>
@@ -32,7 +32,7 @@
         <g:each in="${ownobj.privateProperties}" var="prop">
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
-                    <td>
+                    <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.mandatory}">
                             <span class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>

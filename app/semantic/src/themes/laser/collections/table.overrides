@@ -135,3 +135,6 @@
   border-top: 1px dotted @internalBorderColor;
 }
 
+.la-column-nowrap {
+  white-space: nowrap;
+}
