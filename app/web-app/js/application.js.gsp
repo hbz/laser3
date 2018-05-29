@@ -184,6 +184,8 @@ r2d2 = {
             }
         }).on('shown', function() {
             $(".table").trigger('reflow');
+        }).on('hidden', function() {
+            $(".table").trigger('reflow');
         });
 
         $(ctxSel + ' .xEditableDatepicker').editable({
@@ -193,6 +195,8 @@ r2d2 = {
             tpl: '<select class="ui dropdown"></select>'
         }).on('shown', function() {
             $(".table").trigger('reflow')
+        }).on('hidden', function() {
+            $(".table").trigger('reflow');
         });
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
