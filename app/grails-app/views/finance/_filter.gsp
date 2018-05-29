@@ -200,10 +200,10 @@
         <thead>
             <tr>
                 <th>${message(code:'financials.costInLocalCurrency')}</th>
-               <%-- <th>${message(code:'financials.costItemCategory')}</th> --%>
+                <th class="three wide">${message(code:'financials.newCosts.costTitle')}</th>
+                <%-- <th>${message(code:'financials.costItemCategory')}</th> --%>
                 <th>${message(code:'financials.costItemComponent')}</th>
                 <th>${message(code:'financials.costItemStatus')}</th>
-                <th class="three wide">${message(code:'financials.newCosts.costTitle')}</th>
                 <th>${message(code:'financials.dateFrom')}</th>
                 <th>${message(code:'financials.dateTo')}</th>
                 <th>Aktionen</th>

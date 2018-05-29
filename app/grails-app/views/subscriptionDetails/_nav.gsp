@@ -27,7 +27,11 @@
 
     <g:if test="${grailsApplication.config.feature_finance}">
     %{--Custom URL mapping for re-use of index--}%
-        <g:link class="item" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">${message(code:'subscription.details.financials.label', default:'Subscription Financials')}</g:link>
+
+        <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
+            ${message(code:'subscription.details.financials.label', default:'Subscription Financials')}
+        </g:link>
+
     </g:if>
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">

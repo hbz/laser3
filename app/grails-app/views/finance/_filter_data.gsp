@@ -1,6 +1,5 @@
 <!-- _filter_data.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-%{--Two rows of data per CostItem--}%
 
 <g:each in="${cost_items}" var="ci">
     <tr id="bulkdelete-b${ci.id}">
@@ -10,6 +9,9 @@
                 ( <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/> )
             </span>
         </td>
+        <td>
+            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+        </td>
         <%--<td>
             <semui:xEditableRefData config="CostItemCategory" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemCategory" />
         </td>--%>
@@ -18,9 +20,6 @@
         </td>
         <td>
             <semui:xEditableRefData config="CostItemStatus" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
-        </td>
-        <td>
-            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
         </td>
         <td>
             <semui:xEditable owner="${ci}" type="date" field="startDate" />

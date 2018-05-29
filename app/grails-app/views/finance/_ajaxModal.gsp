@@ -18,7 +18,12 @@
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
 
-        <!-- DEBUG ${inSubMode} ${fixedSubscription} -->
+        <!--
+        Sub.Mode: ${inSubMode}
+        Ctx.Sub: ${fixedSubscription}
+        CI.Sub: ${costItem?.sub}
+        CI.SubPkg: ${costItem?.subPkg}
+        -->
 
         <div class="two fields">
             <div class="field">
@@ -147,29 +152,55 @@
                 <div class="field">
                     <label>${message(code:'subscription.label')}</label>
 
-                    <input ${inSubMode ? "readonly='readonly' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
-                            name="newSubscription" id="newSubscription"
-                            class="la-full-width select2"
-                            data-subfilter=""
-                            placeholder="${message(code:'financials.newCosts.newLicence')}"
-                            ${inSubMode ? " value='${fixedSubscription?.name}' " : " value='${params.newSubscription}' "}
-                             />
+                    <g:if test="${costItem?.sub}">
+                        <input class="la-full-width"
+                               readonly='readonly'
+                               value="${costItem.sub.getName()}" />
+                        <input name="newSubscription"
+                               type="hidden"
+                               value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
+                    </g:if>
+                    <g:else>
+                        <g:if test="${inSubMode}">
+                            <input class="la-full-width"
+                                   readonly='readonly'
+                                   value="${fixedSubscription?.getName()}" />
+                            <input name="newSubscription"
+                                   type="hidden"
+                                   value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
+                        </g:if>
+                        <g:else>
+                            <input name="newSubscription" id="newSubscription" class="la-full-width select2"
+                                   data-filterMode="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}"
+                                   data-subfilter=""
+                                   placeholder="${message(code:'financials.newCosts.newLicence')}" />
+                        </g:else>
+                    </g:else>
                 </div><!-- .field -->
 
                 <div class="field">
                     <label>${message(code:'package.label')}</label>
-                    <g:if test="${! inSubMode}">
-                        <input name="newPackage" id="newPackage" class="la-full-width" disabled="disabled" data-subFilter="" data-disableReset="true" />
-                    </g:if>
-                    <g:else>
+
+                    <g:if test="${costItem?.sub}">
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
-                                from="${[{}] + fixedSubscription?.packages}"
-                                optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
-                                optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
-                                noSelection="['':'']"
-                                value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}"
-                        />
+                                  from="${[{}] + costItem?.sub?.packages}"
+                                  optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                                  optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                                  noSelection="['':'']"
+                                  value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
+                    </g:if>
+                    <g:elseif test="${inSubMode}">
+                        <g:select name="newPackage" id="newPackage" class="ui dropdown"
+                                  from="${[{}] + fixedSubscription?.packages}"
+                                  optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                                  optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                                  noSelection="['':'']"
+                                  value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
+                    </g:elseif>
+                    <g:else>
+                        <input name="newPackage" id="newPackage" class="la-full-width" disabled="disabled" data-subFilter="" data-disableReset="true" />
                     </g:else>
+
                 </div><!-- .field -->
 
                 <div class="field">

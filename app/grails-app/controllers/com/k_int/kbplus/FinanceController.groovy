@@ -66,6 +66,11 @@ class FinanceController {
         result.inSubMode   = params.sub ? true : false
         if (result.inSubMode)
         {
+            // WORKAROUND to filter by costItem.sub
+            params.filterMode = "ON"
+            params.subscriptionFilter = "${params.sub}"
+            // WORKAROUND to filter by costItem.sub
+
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
             if (!result.fixedSubscription) {
                 log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
@@ -160,8 +165,17 @@ class FinanceController {
         {
             log.debug("FinanceController::index()  -- Performing filtering processing...")
             def qryOutput = filterQuery(result, params, result.wildcard)
+
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
+
+            cost_item_qry_params.addAll(qryOutput.fqParams)
+            result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
+            result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
+            log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
+
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
+            /*
             if (qryOutput.filterCount == 0 || !qryOutput.qry_string) //Nothing found from filtering!
-            {
                 result.info.add([status:message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.mode')]),
                                  msg:message(code: 'finance.result.filtered.empty')])
                 result.filterMode =  "OFF" //SWITCHING BACK!!! ...Since nothing has been found, informed user!
@@ -174,6 +188,8 @@ class FinanceController {
                 result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
                 log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
             }
+            */
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
             result.info.addAll(qryOutput.failed)
             result.info.addAll(qryOutput.valid)
         }
@@ -527,15 +543,20 @@ class FinanceController {
         fqResult.filterCount = CostItem.executeQuery(countCheck,fqResult.fqParams).first()
         if (fqResult.failed.size() > 0 || fqResult.filterCount == 0)
         {
-            fqResult.failed.add([status: message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.nomatch')]),
-                                 msg: message(code: 'financials.result.filtered.invalid')])
-            fqResult.qry_string = ""
-            fqResult.fqParams.clear()
-            params.remove('orderNumberFilter')
-            params.remove('invoiceNumberFilter')
-            if (!result.inSubMode)
-                params.remove('subscriptionFilter')
-            params.remove('packageFilter')
+            // WORKAROUND: ACCEPT EMPTY RESULTS
+
+            //fqResult.failed.add([status: message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.nomatch')]),
+            //                     msg: message(code: 'financials.result.filtered.invalid')])
+            //fqResult.qry_string = ""
+            //fqResult.fqParams.clear()
+            //params.remove('orderNumberFilter')
+            //params.remove('invoiceNumberFilter')
+            //if (!result.inSubMode)
+            //    params.remove('subscriptionFilter')
+            //params.remove('packageFilter')
+
+            fqResult.fqParams.remove(0) // NEW ADDED DUE WORKAROUND
+            // WORKAROUND: ACCEPT EMPTY RESULTS
         }
         else
             fqResult.fqParams.remove(0) //already have this where necessary in the index method!
