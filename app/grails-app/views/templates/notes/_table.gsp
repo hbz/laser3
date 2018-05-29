@@ -1,3 +1,8 @@
+
+<g:if test="${editable}">
+    <input type="button" class="ui button" value="${message(code:'template.addNote', default:'Add new Note')}" data-semui="modal" href="#modalCreateNote"/>
+</g:if>
+
 <g:form id="delete_doc_form" url="[controller:"${controllerName}",action:'deleteDocuments']" method="post">
 
     <table class="ui celled la-table table license-documents">
@@ -52,10 +57,6 @@
             <input type="submit" class="ui negative button delete-document" value="${message(code:'template.notes.delete', default:'Delete Selected Notes')}"/>
         </div>
     </g:if> : REMOVED BULK --%>
-
-    <g:if test="${editable}">
-        <input type="button" class="ui button" value="${message(code:'template.addNote', default:'Add new Note')}" data-semui="modal" href="#modalCreateNote"/>
-   </g:if>
 
 </g:form>
 
