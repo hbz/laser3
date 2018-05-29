@@ -852,6 +852,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .landingpage .logo {
+  height: 50px;
   width: 144px;
   padding-right: 2rem;
 }
@@ -958,6 +959,7 @@ aside.ui.accordion .title:not(.ui) {
   background-color: #d7c4b2!important;
   color: #544e48!important;
   font-weight: 400!important;
+  width: 100%;
 }
 
 .ui.la-eye-catcher .la-eye-catcher-header {
