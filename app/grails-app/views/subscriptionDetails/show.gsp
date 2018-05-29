@@ -348,7 +348,7 @@
                                     <table class="ui single line  table">
                                         <thead>
                                         <tr>
-                                            <th>${message(code:'financials.costItemCategory')}</th>
+                                            <th class="la-column-nowrap">${message(code:'financials.costItemCategory')}</th>
                                             <th>${message(code:'financials.costItemElement')}</th>
                                             <th>${message(code:'financials.costInLocalCurrency')}</th>
                                             <th>${message(code:'financials.costItemStatus', default:'Status')}</th>
@@ -357,7 +357,7 @@
                                         <tbody>
                                             <g:each in="${subscriptionInstance.costItems}" var="ci">
                                                 <tr>
-                                                    <td>${ci.costItemCategory?.getI10n('value')}</td>
+                                                    <td class="la-column-nowrap">${ci.costItemCategory?.getI10n('value')}</td>
                                                     <td>${ci.costItemElement?.getI10n('value')}</td>
                                                     <td>${ci.costInLocalCurrency} ${RefdataCategory.lookupOrCreate('Currency','EUR').getI10n('value')}</td>
                                                     <td>${ci.costItemStatus?.getI10n('value')}</td>

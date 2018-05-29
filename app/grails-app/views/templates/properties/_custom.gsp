@@ -11,11 +11,11 @@
 <g:if test="${error}">
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
-<table class="ui single line la-table-small la-table-inCard table">
+<table class="ui la-table-small la-table-inCard table">
     <g:if test="${ownobj.customProperties}">
         <thead>
             <tr>
-                <th>${message(code:'property.table.property')}</th>
+                <th class="la-column-nowrap" >${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                     <th>${message(code:'property.table.paragraph')}</th>
@@ -29,7 +29,7 @@
         <g:each in="${ownobj.customProperties}" var="prop">
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
-                    <td>
+                    <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>

@@ -358,6 +358,9 @@ class AdminController {
   def eventLog() {
     def result = [:]
 
+    params.sort = 'tstp'
+    params.order = 'desc'
+
     result.eventlogs = EventLog.list(params)
 
     result

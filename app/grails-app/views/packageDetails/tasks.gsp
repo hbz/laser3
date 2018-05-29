@@ -32,8 +32,6 @@
     </semui:controlButtons>
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
-    <semui:messages data="${flash}" />
-
     <h1 class="ui header"><semui:headerIcon />
 
         ${packageInstance?.name}
@@ -41,7 +39,12 @@
 
     <g:render template="nav"/>
 
+    <semui:messages data="${flash}" />
+
     <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
+
+
+    <g:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 
 </body>
 </html>

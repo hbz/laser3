@@ -913,7 +913,20 @@ select s from Subscription as s where
         result.packageInstance = Package.get(params.id)
         result.editable=isEditable()
 
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance)
+        if (params.deleteId) {
+            def dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    dTask.delete(flush: true)
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+            }
+        }
+
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance, params)
         log.debug(result.taskInstanceList)
 
         result

@@ -3,7 +3,7 @@
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
-        <g:if test="${(actionName != 'dashboard' && actionName != 'dashboard#')}">
+        <g:if test="${controllerName != 'myInstitution'}">
             <g:hiddenField name="${owntp}" value="${params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
@@ -22,7 +22,7 @@
             <g:textArea name="description" value="${taskInstance?.description}" rows="5" cols="40"/>
         </div>
 
-        <g:if test="${actionName == 'dashboard' || actionName == 'dashboard#'}">
+        <g:if test="${controllerName == 'myInstitution'}">
             <div class="field fieldcontain required">
                 <label for="typ">
                     <g:message code="task.typ" default="Task Typ"/>
@@ -153,7 +153,7 @@
         </div>
 
     </g:form>
-    <g:if test="${actionName == 'dashboard' || actionName == 'dashboard#'}">
+    <g:if test="${controllerName == 'myInstitution'}">
         <r:script>
             $("#generalradio").change(function () {
                 $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();

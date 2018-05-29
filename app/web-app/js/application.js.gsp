@@ -182,6 +182,8 @@ r2d2 = {
             if ($(this).attr('data-format')) {
                 console.log(params)
             }
+        }).on('shown', function() {
+            $(".table").trigger('reflow');
         });
 
         $(ctxSel + ' .xEditableDatepicker').editable({
@@ -189,6 +191,8 @@ r2d2 = {
 
         $(ctxSel + ' .xEditableManyToOne').editable({
             tpl: '<select class="ui dropdown"></select>'
+        }).on('shown', function() {
+            $(".table").trigger('reflow')
         });
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({

@@ -992,10 +992,23 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
+        if (params.deleteId) {
+            def dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    dTask.delete(flush: true)
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+            }
+        }
+
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance)
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
 
         log.debug(result.taskInstanceList)
         result

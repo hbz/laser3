@@ -131,9 +131,9 @@ class FilterService {
         }
 
         if (query.size() > 0) {
-            query = " and " + query.join(" and ") + " order by t.endDate desc"
+            query = " and " + query.join(" and ") + " order by " + params.sort?:"t.endDate"+ params.order?:"desc"
         } else {
-            query = " order by t.endDate desc"
+            query = " order by " + params.sort?:"t.endDate"+ params.order?:"desc"
         }
 
         result.query = query
