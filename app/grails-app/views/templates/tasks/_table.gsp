@@ -7,21 +7,25 @@
 
     <div class="sixteen wide column">
 
-        <table class="ui celled la-table table">
+        <g:if test="${editable && controllerName != 'myInstitution'}">
+            <input type="button" class="ui button" value="${message(code:'task.create.new', default:'Add new Task')}" data-semui="modal" href="#modalCreateTask"/>
+        </g:if>
+
+        <table class="ui sortable celled la-table table">
             <thead>
             <tr>
-                <th>${message(code: 'task.title.label', default: 'Title')}</th>
-                <th>${message(code: 'task.endDate.label', default: 'End Date')}</th>
-                <th>${message(code: 'task.status.label', default: 'Status')}</th>
+                <g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}"/>
+                <g:sortableColumn property="endDate" title="${message(code: 'task.endDate.label', default: 'End Date')}"/>
+               <g:sortableColumn property="status" title="${message(code: 'task.status.label', default: 'Status')}"/>
                 <g:if test="${controllerName == 'myInstitution'}">
-                <th>${message(code: 'task.object.label', default: 'Object')}</th>
+                    <th>${message(code: 'task.object.label', default: 'Object')}</th>
                 </g:if>
                 <th>
                     ${message(code: 'task.responsibleOrg.label', default: 'responsibleOrg')} <br />
                     ${message(code: 'task.responsibleUser.label', default: 'responsibleUser')}
                 </th>
-                <th>${message(code: 'task.creator.label', default: 'Creator')}</th>
-                <th>${message(code: 'task.createDate.label', default: 'Create Date')}</th>
+                <g:sortableColumn property="creator" title="${message(code: 'task.creator.label', default: 'Creator')}"/>
+                <g:sortableColumn property="createDate" title="${message(code: 'task.createDate.label', default: 'Create Date')}"/>
                 <th></th>
             </tr>
             </thead>
@@ -67,6 +71,11 @@
                                 <i class="write icon"></i>
                             </a>
                         </g:if>
+                        <g:if test="${user == taskInstance.creator}">
+                        <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
+                            <i class="trash alternate icon"></i>
+                        </g:link>
+                        </g:if>
                     </td>
                 </tr>
             </g:each>
@@ -74,6 +83,7 @@
         </table>
 
         <semui:paginate total="${taskInstanceTotal}" />
+
 
     </div><!-- .sixteen -->
 

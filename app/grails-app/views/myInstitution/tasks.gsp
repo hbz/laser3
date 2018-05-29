@@ -15,8 +15,6 @@
             <semui:crumb message="menu.institutions.tasks" class="active"/>
         </semui:breadcrumbs>
 
-        <semui:messages data="${flash}" />
-
         <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
 
         <semui:filter>
@@ -57,10 +55,21 @@
             </form>
         </semui:filter>
 
+        <semui:messages data="${flash}" />
+
         <h2 class="ui header">Mir zugewiesene Aufgaben</h2>
+
+        <g:if test="${editable}">
+            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+        </g:if>
+
+        <g:render template="/templates/tasks/modal_create" />
+
         <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList]}"/>
+
+
 
   </body>
 </html>

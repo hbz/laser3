@@ -23,7 +23,8 @@
 
     <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
-    <!--g:render template="/templates/addTask" model="${[ownobj:license, owntp:'license']}" /-->
+
+    <g:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
 
 </body>
 </html>

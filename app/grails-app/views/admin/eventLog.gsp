@@ -13,7 +13,7 @@
 </semui:breadcrumbs>
 
 <div>
-    <table class="ui celled la-table table">
+    <table class="ui sortable celled la-table table">
         <thead>
         <tr>
             <g:sortableColumn property="event" title="Event"/>
