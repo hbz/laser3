@@ -52,7 +52,7 @@
 </g:each>
 
 <script>
-     $('#costTable .x .button:not(.negative)').on('click', function(e) {
+     $('table[id^=costTable] .x .button:not(.negative)').on('click', function(e) {
         e.preventDefault()
 
         $.ajax({
@@ -70,7 +70,7 @@
                 },
                 detachable: true,
                 closable: true,
-                transition: 'fade up',
+                transition: 'scale',
                 onApprove : function() {
                     $(this).find('.ui.form').submit();
                     return false;

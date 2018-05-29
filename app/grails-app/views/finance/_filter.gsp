@@ -195,7 +195,7 @@
 
 </g:if><!-- TMP::IGNOREFILTER -->
 
-    <table id="costTable" class="ui celled sortable table table-tworow la-table floatThead">
+    <table id="${tmplId}" class="ui celled sortable table table-tworow la-table floatThead">
 
         <thead>
             <tr>
@@ -231,20 +231,6 @@
             <tr>
                 <th>
                     <strong>Gesammtkosten: <span class="sumOfCosts"></span></strong>
-                    <script>
-                        function calcSumOfCosts() {
-                            var result = 0
-                            $('#costTable tbody tr span.costInLocalCurrency').each( function(){
-                                result += parseFloat($(this).attr('data-costInLocalCurrency'))
-                            })
-                            $('#costTable .sumOfCosts').text(
-                                Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
-                            )
-                        }
-                        $(function() {
-                            calcSumOfCosts()
-                        })
-                    </script>
                 </th>
             </tr>
         </tfoot>
@@ -324,10 +310,6 @@
 
         </table>
  --%>
-
-<br />
-<br />
-<br />
 
 <%--
 <div id="paginationWrapper" class="pagination">

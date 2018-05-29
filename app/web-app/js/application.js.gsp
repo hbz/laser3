@@ -127,7 +127,7 @@ r2d2 = {
                 },
                 detachable: true,
                 closable: true,
-                transition: 'fade up',
+                transition: 'scale',
                 onApprove : function() {
                     $(this).find('.ui.form').submit();
                     return false;
