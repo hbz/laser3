@@ -206,7 +206,7 @@ class OrganisationsController {
 
         def mandatories = []
         result.user?.authorizedOrgs?.each{ org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Org Property", true, org)
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, org)
             if(ppd){
                 mandatories << ppd
             }
@@ -246,7 +246,7 @@ class OrganisationsController {
 
         def mandatories = []
         result.user?.authorizedOrgs?.each{ org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Org Property", true, org)
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, org)
             if(ppd){
                 mandatories << ppd
             }
