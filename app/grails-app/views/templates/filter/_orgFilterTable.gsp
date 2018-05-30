@@ -12,7 +12,7 @@
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
-            <th rowspan="${rowspan}">${message(code: 'org.name.label', default: 'Name')}</th>
+            <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)" rowspan="${rowspan}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th rowspan="${rowspan}">Identifier</th>

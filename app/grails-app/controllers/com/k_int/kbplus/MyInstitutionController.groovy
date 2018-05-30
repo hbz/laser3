@@ -3106,9 +3106,11 @@ AND EXISTS (
 
         if('add' == params.cmd) {
             flash.message = addPrivatePropertyDefinition(params)
+            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
+            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
         result
     }
