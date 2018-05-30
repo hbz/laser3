@@ -245,8 +245,9 @@ aside.ui.accordion .title:not(.ui) {
 }
 /* EDITABLE OVERWRITE */
 /* Sorry for the !important - overwriting Javascript of the Editable-Javascript */
-
-.la-time-card {
+.ui.two.cards>.card.la-time-card {
+    //fixing rounding bug in IE Edge
+    margin-right:0.99em;
     .editable-input input[type=text]{
         padding-right: 1em!important;
         width: 8rem!important;

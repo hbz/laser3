@@ -280,11 +280,12 @@
                                     <dl>
                                         <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
                                         <dd>
-                                            <g:each in="${orgInstance.outgoingCombos}" var="i">
+                                            <g:each in="${orgInstance.outgoingCombos.sort{it.toOrg.name}}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
                                                 (<g:each in="${i.toOrg?.ids.sort{it.identifier.ns.ns}}" var="id_out">
-                                                ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
-                                            </g:each>)
+                                                    ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
+                                                </g:each>)
+                                                <br />
                                             </g:each>
                                         </dd>
                                     </dl>
@@ -306,11 +307,12 @@
                                     <dl>
                                         <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
                                         <dd>
-                                            <g:each in="${orgInstance.incomingCombos}" var="i">
-                                              <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id_in">
-                                                  ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
-                                                </g:each>)
+                                            <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
+                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                    (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id_in">
+                                                        ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
+                                                    </g:each>)
+                                                    <br />
                                             </g:each>
                                         </dd>
                                     </dl>

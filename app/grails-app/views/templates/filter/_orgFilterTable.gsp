@@ -3,7 +3,7 @@
     <g:set var="rowspan" value="2"/>
 </g:if>
 
-<table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+<table class="ui sortable celled la-table table">
     <thead>
     <tr>
         <g:if test="${tmplShowCheckbox}">
