@@ -42,8 +42,8 @@
     </semui:filter>
     --%>
 
-    <g:set var="validSubChilds" value="${subscriptionChildren.findAll{ it.status?.value != 'Deleted' }}" />
-    <g:set var="deletedSubChilds" value="${subscriptionChildren.findAll{ it.status?.value == 'Deleted' }}" />
+    %{--<g:set var="validSubChilds" value="${subscriptionChildren.findAll{ it.status?.value != 'Deleted' }}" />
+    <g:set var="deletedSubChilds" value="${subscriptionChildren.findAll{ it.status?.value == 'Deleted' }}" />--}%
 
     <g:each in="${[validSubChilds, deletedSubChilds]}" status="i" var="outerLoop">
 

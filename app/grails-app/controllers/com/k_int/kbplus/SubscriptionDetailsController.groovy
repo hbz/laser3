@@ -666,7 +666,12 @@ class SubscriptionDetailsController {
         }
 
         //if (params.showDeleted == 'Y') {
-            result.subscriptionChildren = Subscription.findAllByInstanceOf(result.subscriptionInstance)
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(result.subscriptionInstance, com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+            result.validSubChilds = validSubChilds
+
+        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(result.subscriptionInstance, com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        result.deletedSubChilds = deletedSubChilds
         //}
         //else {
         //    result.subscriptionChildren = Subscription.executeQuery(
@@ -717,6 +722,8 @@ class SubscriptionDetailsController {
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
         def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+        def role_provider = RefdataCategory.lookupOrCreate('Organisational Role', 'Provider')
+        def role_agency = RefdataCategory.lookupOrCreate('Organisational Role', 'Agency')
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
@@ -777,6 +784,18 @@ class SubscriptionDetailsController {
                             }
 
                         if (cons_sub) {
+
+                            def providers = OrgRole.findAllBySubAndRoleType(result.subscriptionInstance, role_provider)
+
+                            providers.each { provider ->
+                                new OrgRole(org: provider.org, sub: cons_sub, roleType: role_provider).save()
+                            }
+
+                            def agencys = OrgRole.findAllBySubAndRoleType(result.subscriptionInstance, role_agency)
+                            agencys.each { agency ->
+                                new OrgRole(org: agency.org, sub: cons_sub, roleType: role_agency).save()
+                            }
+
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_cons).save()
                         }
