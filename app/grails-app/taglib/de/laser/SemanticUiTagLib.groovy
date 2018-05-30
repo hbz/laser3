@@ -289,9 +289,9 @@ class SemanticUiTagLib {
 
         if (attrs.hideSubmitButton == null) {
             if (attrs.formID) {
-                out << '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
+                out << '<div class="ui positive " >' + msgSave +'</div>'
             }else {
-                out << '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+                out << '<div class="ui positive" > '+ msgSave +'</div>'
             }
         }
         if (attrs.deletebutton) {
