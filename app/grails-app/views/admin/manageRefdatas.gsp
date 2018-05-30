@@ -119,7 +119,7 @@ ${rdvList.join(", ")}
                         from="${rdCategories}"
                         optionKey="id" optionValue="desc"
                         name="refdata_category_id"
-                        id="refdata_modal_select" />
+                        id="refdata_modal_select" class="ui search selection dropdown" />
                 </div>
 
             </g:form>

@@ -1,5 +1,5 @@
 
-<table class="ui stripped table">
+<table class="ui table la-table">
 	<thead>
 		<tr>
             <th>
