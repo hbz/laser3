@@ -289,9 +289,9 @@ class SemanticUiTagLib {
 
         if (attrs.hideSubmitButton == null) {
             if (attrs.formID) {
-                out << '<div class="ui positive " >' + msgSave +'</div>'
+                out << '<div class="ui positive button" >' + msgSave +'</div>'
             }else {
-                out << '<div class="ui positive" > '+ msgSave +'</div>'
+                out << '<div class="ui positive button" > '+ msgSave +'</div>'
             }
         }
         if (attrs.deletebutton) {
