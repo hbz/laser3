@@ -137,20 +137,9 @@ $('#addNew').on('click', function(e) {
 
             <div id="filterTemplateWrapper" class="wrapper">
                 <div id="filterTemplate">
-                    <g:each in="${costItemSubList}" var="subListItem" status="i">
-                        <g:if test="${costItemSubList.size() > 1 && subListItem.key != "clean"}">
-                            <h3 class="ui dividing header">${subListItem.key}</h3>
-                        </g:if>
 
-                        <g:render template="filter" model="['cost_items': subListItem.value, 'tmplId': "costTable_${i}"]"/>
+                    <g:render template="filter" model="['costItemSubList': costItemSubList]"/>
 
-                        <r:script>
-                            $(document).ready(function() {
-                                financeHelper.calcSumOfCosts("costTable_${i}")
-                            })
-                        </r:script>
-                        <br />
-                    </g:each>
                 </div>
             </div>
 
@@ -229,20 +218,25 @@ $('#addNew').on('click', function(e) {
 
     var financeHelper = {
 
-        calcSumOfCosts : function (costTableId) {
-            var result = 0
+        calcSumOfCosts : function () {
 
-            $('#' + costTableId + ' tbody tr span.costInLocalCurrency').each( function(){
-                result += parseFloat($(this).attr('data-costInLocalCurrency'))
+            $('table[id^=costTable]').each( function() {
+                var result = 0
+                $(this).find('tbody tr span.costInLocalCurrency').each( function() {
+                    result += parseFloat($(this).attr('data-costInLocalCurrency'))
+                })
+                var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
+                console.log(socClass)
+                $('.' + socClass).text(
+                    Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
+                )
             })
-            $('#' + costTableId + ' .sumOfCosts').text(
-                Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
-            )
         }
     }
 
     $(document).ready(function() {
         financeRecentController.go()
+        financeHelper.calcSumOfCosts()
     })
 </r:script>
 

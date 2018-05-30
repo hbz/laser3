@@ -17,16 +17,16 @@
 
     <semui:subNavItem controller="subscriptionDetails" action="tasks" params="${[id:params.id]}" message="task.plural" />
 
-    <!-- <semui:subNavItem controller="subscriptionDetails" action="renewals" params="${[id:params.id]}" message="subscription.details.renewals.label" />-->
-    <!--
+    <%-- <semui:subNavItem controller="subscriptionDetails" action="renewals" params="${[id:params.id]}" message="subscription.details.renewals.label" /> --%>
+    <%--
         <semui:subNavItem controller="subscriptionDetails" action="previous" params="${[id:params.id]}" message="subscription.details.previous.label" />
         <semui:subNavItem controller="subscriptionDetails" action="expected" params="${[id:params.id]}" message="subscription.details.expected.label" />
-    -->
-<%--
+    --%>
+    <%--
         <g:if test="${grailsApplication.config.feature_finance}">
             <semui:subNavItem controller="subscriptionDetails" action="costPerUse" params="${[id:params.id]}" message="subscription.details.costPerUse.label" />
         </g:if>
---%>
+    --%>
 
     <semui:subNavItem controller="subscriptionDetails" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <semui:subNavItem controller="subscriptionDetails" action="notes" params="${[id:params.id]}" message="default.notes.label" />

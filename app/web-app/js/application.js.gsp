@@ -183,9 +183,9 @@ r2d2 = {
                 console.log(params)
             }
         }).on('shown', function() {
-            $(".table").trigger('reflow');
+            $(".table").trigger('reflow')
         }).on('hidden', function() {
-            $(".table").trigger('reflow');
+            $(".table").trigger('reflow')
         });
 
         $(ctxSel + ' .xEditableDatepicker').editable({
@@ -196,7 +196,7 @@ r2d2 = {
         }).on('shown', function() {
             $(".table").trigger('reflow')
         }).on('hidden', function() {
-            $(".table").trigger('reflow');
+            $(".table").trigger('reflow')
         });
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
@@ -241,7 +241,14 @@ r2d2 = {
         });
 
         // accordions
-        $(ctxSel + ' .ui.accordion').accordion();
+        $(ctxSel + ' .ui.accordion').accordion({
+            onOpening: function() {
+                $(".table").trigger('reflow')
+            },
+            onOpen: function() {
+                $(".table").trigger('reflow')
+            }
+        });
 
         // checkboxes
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
