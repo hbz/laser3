@@ -736,7 +736,7 @@ class SubscriptionDetailsController {
                         def takePackage = params."selectedPackage_${cm.get(0).id}"
                         def takeIE = params."selectedIssueEntitlement_${cm.get(0).id}"
 
-                        log.debug("Moe Package:${takePackage} IE:${takeIE}")
+                        log.debug("Package:${takePackage} IE:${takeIE}")
 
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
                         def cons_sub = new Subscription(
