@@ -3,7 +3,13 @@
 <semui:subNav actionName="${actionName}">
 
     <semui:subNavItem controller="subscriptionDetails" action="show" params="${[id:params.id]}" message="subscription.details.details.label" />
-    <semui:subNavItem controller="subscriptionDetails" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
+
+    <g:if test="${controllerName != 'finance'}">%{-- template is used by subscriptionDetails/* and finance/index --}%
+        <semui:subNavItem controller="subscriptionDetails" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
+    </g:if>
+    <g:else>%{-- prevent two active items with action 'index' due url mapping 'subfinance' --}%
+        <g:link controller="subscriptionDetails" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}</g:link>
+    </g:else>
 
     <g:if test="${(subscriptionInstance?.getConsortia()?.id == contextService.getOrg()?.id) && !subscriptionInstance.instanceOf}">
         <semui:subNavItem controller="subscriptionDetails" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
