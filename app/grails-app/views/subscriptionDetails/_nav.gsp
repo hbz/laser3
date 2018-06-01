@@ -41,8 +41,8 @@
     </g:if>
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <semui:subNavItem controller="subscriptionDetails" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
-        <semui:subNavItem controller="subscriptionDetails" action="history" params="${[id:params.id]}" message="license.nav.edit_history" />
-        <semui:subNavItem controller="subscriptionDetails" action="permissionInfo" params="${[id:params.id]}" message="default.permissionInfo.label" />
+        <semui:subNavItem controller="subscriptionDetails" action="changes" params="${[id:params.id]}" class="la-role-admin" message="license.nav.todo_history" />
+        <semui:subNavItem controller="subscriptionDetails" action="history" params="${[id:params.id]}" class="la-role-admin" message="license.nav.edit_history" />
+        <semui:subNavItem controller="subscriptionDetails" action="permissionInfo" params="${[id:params.id]}" class="la-role-admin" message="default.permissionInfo.label" />
     </sec:ifAnyGranted>
 </semui:subNav>
