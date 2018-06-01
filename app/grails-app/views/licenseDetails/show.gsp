@@ -150,7 +150,10 @@
 
                                             <g:if test="${editable}">
                                                 <div class="ui mini icon buttons">
-                                                    <g:link class="ui disabled button" controller="todo" action="todo" id="todo" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                    <g:link class="ui button" name="unlinkSubscription"
+                                                            controller="licenseDetails" action="unlinkSubscription"
+                                                            params="['license':license.id, 'subscription':sub.id]"
+                                                            onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
                                                         <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>
@@ -215,7 +218,7 @@
                                             </g:if>
                                         </g:if>
                                         <g:else>
-                                            <g:link class="ui negative button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
+                                            <g:link class="ui positive button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
                                         </g:else>
                                     </dd>
 

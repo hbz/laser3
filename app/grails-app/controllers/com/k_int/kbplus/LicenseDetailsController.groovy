@@ -228,6 +228,20 @@ from Subscription as s where
 
   }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def unlinkSubscription(){
+        log.debug("unlinkSubscription :: ${params}")
+        if(params.subscription && params.license){
+            def sub = Subscription.get(params.subscription)
+            if (sub.owner == License.get(params.license)) {
+                sub.owner = null
+                sub.save(flush:true)
+            }
+        }
+        redirect controller:'licenseDetails', action:'show', params: [id:params.license]
+    }
+
     @Deprecated
     @Secured(['ROLE_YODA'])
     def consortia() {
