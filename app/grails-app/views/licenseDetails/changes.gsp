@@ -16,8 +16,7 @@
 
     <g:render template="nav" />
 
-    <div>
-      <h3 class="ui header">${message(code:'license.nav.todo_history', default:'ToDo History')}</h3>
+
       <table  class="ui celled la-table table">
           <thead>
             <tr>
@@ -43,7 +42,6 @@
 
         <semui:paginate  action="todoHistory" controller="licenseDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
 
-    </div>
 
 </body>
 </html>
