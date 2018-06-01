@@ -6,6 +6,7 @@
 - added views and functionality for managing consortia members
 - added predefined constraints for adding orgRoles to objects
 - complete rework of finance views and functionality
+- integrated connection to statistic server
 - reworked views and templates for managing persons, contacts and addresses
 - reworked tasks (views and functionality)
 - added list views for providers
