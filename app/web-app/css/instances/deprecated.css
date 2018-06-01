@@ -1178,10 +1178,6 @@ button.close {
   -moz-border-radius: 3px;
   border-radius: 3px;
 }
-.badge {
-  padding-left: 9px;
-  padding-right: 9px;
-}
 .label:empty,
 .badge:empty {
   display: none;

@@ -4,7 +4,7 @@
 <!-- deprecated -->
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${institution.name} :: Financial Information</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${institution.name} :: Financial Information</title>
   </head>
 
   <body>

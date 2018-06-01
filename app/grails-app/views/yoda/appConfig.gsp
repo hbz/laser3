@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} Application Config</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Application Config</title>
     <r:require module="annotations" />
     <g:javascript src="properties.js"/>
 </head>

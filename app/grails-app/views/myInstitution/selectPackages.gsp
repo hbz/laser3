@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'myinst.selectPackages.label', default:'Package Planning - Select Candidate Packages')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.selectPackages.label', default:'Package Planning - Select Candidate Packages')}</title>
   </head>
 
   <body>

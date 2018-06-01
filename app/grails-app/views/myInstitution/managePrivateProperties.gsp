@@ -18,8 +18,12 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="ui grid">
-        <div class="twelve wide column">
+    <semui:card>
+        <div class="content ui form">
+            <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
+                   data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
+        </div>
+    </semui:card>
 
             <g:if test="${privatePropertyDefinitions}">
 
@@ -32,7 +36,7 @@
                                 <th>Name (DE)</th>
                                 <th>Name (EN)</th>
                                 <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
-                                <th>${message(code:'default.button.delete.label', default:'Delete')}</th>
+                                <th>${message(code:'default.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,16 +74,6 @@
                     <p>${message(code:'propertyDefinition.private.info')}</p>
                 </g:form>
             </g:if>
-        </div>
-        <aside class="four wide column">
-            <semui:card>
-                <div class="content">
-                    <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
-                           data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
-                </div>
-            </semui:card>
-        </aside>
-    </div><!-- .grid -->
 
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
