@@ -153,7 +153,7 @@
                                     </g:else>
                                 </dd>
                             </dl>
-                            <g:if test="${subscriptionInstance.instanceOf}">
+                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
                                 <dl>
                                     <dt>${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
