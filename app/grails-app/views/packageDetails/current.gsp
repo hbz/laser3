@@ -247,7 +247,7 @@
 
             <semui:form>
                 <g:form class="ui form" controller="ajax" action="addToCollection">
-                  <fieldset>
+
                     <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
                     <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
                     <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
@@ -255,15 +255,18 @@
 
                     <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
                     <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
-
-                    <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-                    <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
-                    <span class="help-block"></span>
-                    <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-                    <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
-                    <span class="help-block"></span>
+                      <div class="two fluid fields">
+                          <div class="field">
+                            <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
+                            <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/>
+                          </div>
+                          <div class="field">
+                            <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
+                            <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/>
+                          </div>
+                      </div>
                     <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
-                  </fieldset>
+
                 </g:form>
             </semui:form>
 
@@ -273,7 +276,7 @@
       </div>
 
 
-    <g:render template="enhanced_select" contextPath="../templates" />
+    <%-- <g:render template="enhanced_select" contextPath="../templates" /> --%>
     <g:render template="orgLinksModal" 
               contextPath="../templates" 
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
