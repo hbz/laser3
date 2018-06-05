@@ -2370,7 +2370,7 @@ AND EXISTS (
             flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
             response.sendError(401)
             return;
-        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_ADM")) {
+        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
             flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2398,7 +2398,7 @@ AND EXISTS (
             flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
             response.sendError(401)
             return;
-        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_ADM")) {
+        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
             flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2424,7 +2424,7 @@ AND EXISTS (
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
-        } else if (! accessService.checkMinUserOrgRole(result.user, result.institution, "INST_ADM")) {
+        } else if (! accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
             flash.error = message(code:'myinst.renewalUpload.error.noAdmin', default:'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -3276,6 +3276,6 @@ AND EXISTS (
         else {
             log.error("FLASH");
         }
-        redirect(action: "index")
+        redirect(action: "manageAffiliationRequests")
     }
 }

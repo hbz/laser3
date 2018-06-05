@@ -310,7 +310,7 @@ class TitleDetailsController {
     result
   }
 
-  @Secured(['ROLE_USER'])
+  @Secured(['ROLE_ADMIN'])
   def availability() {
     def result = [:]
     result.ti = TitleInstance.get(params.id)
