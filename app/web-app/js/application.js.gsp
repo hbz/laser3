@@ -261,6 +261,9 @@ r2d2 = {
             duration: 150,
             transition: 'fade'
         });
+        $(ctxSel + ' .ui.search.dropdown').dropdown({
+            fullTextSearch: 'exact'
+        });
 
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
