@@ -200,7 +200,11 @@
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
                    ${message(code:'default.access.label', default:'Access')}: ${ie.availabilityStatus?.getI10n('value')}<br/>
                    ${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}<br/>
-                   ${message(code:'tipp.platform', default:'Platform')}: ${ie.tipp?.platform.name ?: message(code:'default.unknown')}
+                    ${message(code:'tipp.platform', default:'Platform')}:
+                    <g:if test="${ie.tipp?.platform.name}">
+                        <g:link controller="platform" action="show" id="${ie.tipp?.platform.id}">${ie.tipp?.platform.name}</g:link>
+                    </g:if>
+                    <g:else>${message(code:'default.unknown')}</g:else>
                    <g:if test="${ie.availabilityStatus?.value=='Expected'}">
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessStartDate}"/>
                    </g:if>

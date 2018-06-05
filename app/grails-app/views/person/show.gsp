@@ -60,7 +60,7 @@
                     <dl><dt><g:message code="person.contacts.label" default="Contacts"/></dt>
                         <dd>
                             <ul>
-                                <g:each in="${personInstance.contacts}" var="c">
+                                <g:each in="${personInstance.contacts.sort{it.content}}" var="c">
                                     <li>
                                         <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
                                     </li>
@@ -76,7 +76,7 @@
                     <dl><dt><g:message code="person.addresses.label" default="Addresses"/></dt>
                         <dd>
                             <ul>
-                                <g:each in="${personInstance.addresses}" var="a">
+                                <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
                                     <li>
                                         <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
                                     </li>
