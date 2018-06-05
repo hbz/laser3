@@ -60,7 +60,7 @@
                     <tr>
                         <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
                         <th>${message(code:'myinst.renewalUpload.copy', default:'Copy Documents and Notes from Subscription')}</th>
-                        <td>${permissionInfo?.sub_name}</td>
+                        <td>${message(code: 'subscription', default:'Subscription')}: ${permissionInfo?.sub_name}</td>
                     </tr>
                     </tbody>
                 </table>

@@ -19,13 +19,13 @@
 				<dl>
 				
 					<g:if test="${identifierInstance?.ns}">
-						<dt><g:message code="identifier.ns.label" default="Namespace / Identifier Type" /></dt>						
+						<dt><g:message code="identifier.namespace.label" default="Namespace / Identifier Type" /></dt>
 							<dd>${identifierInstance?.ns?.ns?.encodeAsHTML()}</dd>
 						
 					</g:if>
 				
 					<g:if test="${identifierInstance?.value}">
-						<dt><g:message code="identifier.value.label" default="Value" /></dt>
+						<dt><g:message code="${message(code:'identifier.label')}" default="Value" /></dt>
 						
 							<dd><g:fieldValue bean="${identifierInstance}" field="value"/></dd>
 						

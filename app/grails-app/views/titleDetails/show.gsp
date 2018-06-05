@@ -322,6 +322,8 @@
               </table>
             </g:form>
 
+            <br><br>
+
   <r:script language="JavaScript">
 
     $(function(){

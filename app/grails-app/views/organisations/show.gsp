@@ -174,7 +174,7 @@
                             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
                             <dd>
                                 <div class="ui relaxed list">
-                                    <g:each in="${orgInstance?.addresses}" var="a">
+                                    <g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
                                         <g:if test="${a.org}">
                                             <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
                                         </g:if>
@@ -193,7 +193,7 @@
                             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
                             <dd>
                                 <div class="ui relaxed list">
-                                    <g:each in="${orgInstance?.contacts}" var="c">
+                                    <g:each in="${orgInstance?.contacts.sort{it.content}}" var="c">
                                         <g:if test="${c.org}">
                                             <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
                                         </g:if>

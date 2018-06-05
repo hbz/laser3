@@ -6,11 +6,13 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
 import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.auth.User
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class AddressbookService {
 
     def springSecurityService
     def contextService
+    def accessService
 
     def getAllVisiblePersonsByOrgRoles(User user, orgRoles) {
         def orgList = []
@@ -60,12 +62,15 @@ class AddressbookService {
     }
 
     def isAddressEditable(Address address, User user) {
-        true // TODO
+        accessService.checkMinUserOrgRole(user, address.org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        //true // TODO: Rechte nochmal überprüfen
     }
     def isContactEditable(Contact contact, User user) {
-        true // TODO
+        accessService.checkMinUserOrgRole(user, contact.org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        //true // TODO: Rechte nochmal überprüfen
     }
     def isPersonEditable(Person person, User user) {
-        true // TODO
+        accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        //true // TODO: Rechte nochmal überprüfen
     }
 }

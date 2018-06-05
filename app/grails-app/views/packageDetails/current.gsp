@@ -99,7 +99,7 @@
         </semui:filter>
 
         <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
-
+            <g:if test="${editable}">
           <table class="ui celled la-table table ignore-floatThead la-bulk-header">
 
             <thead>
@@ -110,7 +110,7 @@
               </th>
 
               <th colspan="7">
-                <g:if test="${editable}">
+
                   <select id="bulkOperationSelect" name="bulkOperation" class="input-xxlarge">
                     <option value="edit">${message(code:'package.show.batch.edit.label', default:'Batch Edit Selected Rows Using the following values')}</option>
                     <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
@@ -144,13 +144,14 @@
                   </table>
                   <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
                   <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
-                </g:if>
+
               </th>
             </tr>
 
             </thead>
                 <tbody></tbody>
           </table>
+            </g:if>
 
             <table class="ui celled la-table table">
                 <thead>

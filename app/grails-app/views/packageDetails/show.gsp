@@ -67,7 +67,7 @@
                     <table class="ui celled la-table la-table-small table ignore-floatThead">
                         <thead>
                         <tr>
-                            <th>${message(code: 'component.id.label')}</th>
+                            %{--<th>${message(code: 'component.id.label')}</th>--}%
                             <th>${message(code: 'identifier.namespace.label')}</th>
                             <th>${message(code: 'identifier.label')}</th>
                         </tr>
@@ -75,7 +75,7 @@
                         <tbody>
                         <g:each in="${packageInstance.ids.sort{it.identifier.ns.ns}}" var="io">
                             <tr>
-                                <td>${io.id}</td>
+                                %{--<td>${io.id}</td>--}%
                                 <td>${io.identifier.ns.ns}</td>
                                 <g:if test="${io.identifier.value =~ /^http/}">
                                     <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>

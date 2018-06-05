@@ -15,7 +15,7 @@
 
     <h1 class="ui header"><semui:headerIcon />
 
-        ${license.licensee?.name}
+        %{--${license.licensee?.name}--}%
         ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
