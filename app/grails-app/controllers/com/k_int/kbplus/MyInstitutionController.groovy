@@ -2386,7 +2386,31 @@ AND EXISTS (
 
         result.entitlements = subscription.issueEntitlements
 
+        result
+    }
 
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def renewalswithoutPackage() {
+        def result = setResultGenerics()
+
+        if (!accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
+            response.sendError(401)
+            return;
+        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_ADM")) {
+            flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
+            response.sendError(401)
+            return;
+        }
+
+        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+
+        def subscription = Subscription.get(params.sub_id)
+
+        result.errors = []
+
+        result.permissionInfo = [sub_startDate: sdf.format(subscription.startDate), sub_endDate: sdf.format(subscription.endDate), sub_name: subscription.name, sub_id: subscription.id]
 
         result
     }
