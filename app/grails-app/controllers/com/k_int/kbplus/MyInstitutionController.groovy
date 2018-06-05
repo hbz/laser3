@@ -2382,7 +2382,7 @@ AND EXISTS (
 
         result.errors = []
 
-        result.permissionInfo = [sub_startDate: sdf.format(subscription.startDate), sub_endDate: sdf.format(subscription.endDate), sub_name: subscription.name, sub_id: subscription.id]
+        result.permissionInfo = [sub_startDate: (subscription.startDate ? sdf.format(subscription.startDate) : null), sub_endDate: (subscription.endDate ? sdf.format(subscription.endDate) : null), sub_name: subscription.name, sub_id: subscription.id]
 
         result.entitlements = subscription.issueEntitlements
 
@@ -2410,7 +2410,7 @@ AND EXISTS (
 
         result.errors = []
 
-        result.permissionInfo = [sub_startDate: sdf.format(subscription.startDate), sub_endDate: sdf.format(subscription.endDate), sub_name: subscription.name, sub_id: subscription.id]
+        result.permissionInfo = [sub_startDate: (subscription.startDate ? sdf.format(subscription.startDate) : null), sub_endDate: (subscription.endDate ? sdf.format(subscription.endDate) : null), sub_name: subscription.name, sub_id: subscription.id]
 
         result
     }
