@@ -340,10 +340,6 @@
 <r:script>
     $(document).ready(function () {
 
-        $('.ui.search.dropdown').dropdown({
-            fullTextSearch: 'exact'
-        });
-
         $('#passwordToggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
         })
