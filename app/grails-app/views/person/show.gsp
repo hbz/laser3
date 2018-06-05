@@ -16,7 +16,8 @@
 </semui:breadcrumbs>
 
 <h1 class="ui header"><semui:headerIcon/>
-${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type') ? personInstance?.contactType.getI10n('value') + ': ' + personInstance?.last_name : personInstance?.contactType.getI10n('value') + ': ' + personInstance?.first_name + ' ' + personInstance?.last_name}
+${personInstance?.contactType?.getI10n('value')  ? personInstance?.contactType?.getI10n('value') +': ' :  ' ' }
+${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type') ? personInstance?.last_name : personInstance?.first_name + ' ' + personInstance?.last_name}
 </h1>
 <g:render template="nav" contextPath="."/>
 
