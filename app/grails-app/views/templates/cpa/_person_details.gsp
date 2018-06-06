@@ -11,7 +11,7 @@
 
 		<g:if test="${person?.contacts}">
 			<div class="ui list">
-				<g:each in="${person?.contacts}" var="contact">
+				<g:each in="${person?.contacts.sort{it.content}}" var="contact">
 					<div class="item">
 						<g:render template="/templates/cpa/contact" model="${[contact: contact]}"></g:render>
 					</div>
@@ -20,7 +20,7 @@
 		</g:if>
 		<g:if test="${person?.contacts}">
 			<div class="ui list">
-				<g:each in="${person?.addresses}" var="address">
+				<g:each in="${person?.addresses.sort{it.type?.getI10n('value')}}" var="address">
 					<div class="item">
 						<g:render template="/templates/cpa/address" model="${[address: address]}"></g:render>
 					</div>
@@ -54,7 +54,7 @@
 
 		<g:if test="${personRole?.prs?.contacts}">
 			<div class="ui list">
-				<g:each in="${personRole?.prs?.contacts}" var="contact">
+				<g:each in="${personRole?.prs?.contacts.sort{it.content}}" var="contact">
 					<div class="item">
 						<g:render template="/templates/cpa/contact" model="${[contact: contact]}"></g:render>
 					</div>
@@ -63,7 +63,7 @@
 		</g:if>
 		<g:if test="${personRole?.prs?.addresses}">
 			<div class="ui list">
-				<g:each in="${personRole?.prs?.addresses}" var="address">
+				<g:each in="${personRole?.prs?.addresses.sort{it.type?.getI10n('value')}}" var="address">
 					<div class="item">
 						<g:render template="/templates/cpa/address" model="${[address: address]}"></g:render>
 					</div>

@@ -34,13 +34,13 @@
                 </g:if>
 
                 <td>
-                    <g:each in="${person.contacts}" var="contact">
+                    <g:each in="${person.contacts.sort{it.content}}" var="contact">
                         <g:render template="/templates/cpa/contact" model="${[contact: contact]}"></g:render>
                     </g:each>
                 </td>
 
                 <td>
-                    <g:each in="${person.addresses}" var="address">
+                    <g:each in="${person.addresses.sort{it.type?.getI10n('value')}}" var="address">
                         <g:render template="/templates/cpa/address" model="${[address: address]}"></g:render>
                     </g:each>
                 </td>

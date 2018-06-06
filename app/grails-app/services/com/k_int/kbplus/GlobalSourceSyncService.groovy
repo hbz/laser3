@@ -568,7 +568,7 @@ class GlobalSourceSyncService {
               title      : [
                       name       : tip.title.name.text(),
                       identifiers: [],
-                      titleType: tip.mediumByTypClass.text()
+                      titleType: tip.title.mediumByTypClass.text()
               ],
               status     : tip.status?.text() ?: 'Current',
               titleId    : tip.title.'@id'.text(),

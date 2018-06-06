@@ -12,7 +12,7 @@
             <semui:crumb message="menu.institutions.all_provider" class="active" />
         </semui:breadcrumbs>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR">
             <semui:controlButtons>
                 <g:render template="actions" />
             </semui:controlButtons>

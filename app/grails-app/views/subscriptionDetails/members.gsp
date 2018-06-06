@@ -45,6 +45,7 @@
     %{--<g:set var="validSubChilds" value="${subscriptionChildren.findAll{ it.status?.value != 'Deleted' }}" />
     <g:set var="deletedSubChilds" value="${subscriptionChildren.findAll{ it.status?.value == 'Deleted' }}" />--}%
 
+    <g:if test="${validSubChilds || deletedSubChilds}">
     <g:each in="${[validSubChilds, deletedSubChilds]}" status="i" var="outerLoop">
 
         <br />
@@ -129,6 +130,10 @@
             </tbody>
         </table>
     </g:each>
+    </g:if>
+    <g:else>
+        <br><strong><g:message code="subscription.details.nomembers.label" default="No members have been added to this license. You must first add members."/></strong>
+    </g:else>
 
 </body>
 </html>

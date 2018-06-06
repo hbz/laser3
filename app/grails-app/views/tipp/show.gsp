@@ -49,7 +49,7 @@
 
         <dl>
           <dt>${message(code:'tipp.show.avStatus', default:'Availability Status')}</dt>
-          <dd><span title="${tipp.availabilityStatusExplanation}">${tipp.availabilityStatus?.value}</span></dd>
+          <dd><span title="${tipp.availabilityStatusExplanation}">${tipp.availabilityStatus?.getI10n("value")}</span></dd>
 
           <dt>${message(code:'tipp.show.accessStart', default:'Access Start Date (Enters Package)')}</dt>
           <dd><semui:xEditable owner="${tipp}" type="date" field="accessStartDate" /></dd>

@@ -10,8 +10,14 @@
     <g:javascript src="properties.js"/>
 </head>
 <body>
+    <semui:breadcrumbs>
+        <semui:crumb message="menu.institutions.all_orgs" controller="organisations" action="index" />
+        <g:message code="default.show.label" args="[entityName]" class="active"/>
+    </semui:breadcrumbs>
 
-    <h1 class="ui header"><semui:headerIcon />${personInstance.first_name} ${personInstance.middle_name} ${personInstance.last_name}</h1>
+    <h1 class="ui header"><semui:headerIcon/>
+    ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type') ? personInstance?.contactType.getI10n('value') + ': ' + personInstance?.last_name : personInstance?.contactType.getI10n('value') + ': ' + personInstance?.first_name + ' ' + personInstance?.last_name}
+    </h1>
     <g:render template="nav" contextPath="." />
 
     <div class="ui grid">
