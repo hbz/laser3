@@ -4,7 +4,8 @@ class Numbers {
 
     RefdataValue type
     Integer number
-    Date valid_date
+    Date startDate
+    Date endDate
 
     Date dateCreated
     Date lastUpdated
@@ -14,7 +15,8 @@ class Numbers {
     static constraints = {
         type            (nullable:false, blank:false)
         number          (nullable:true,  blank:true)
-        valid_date      (nullable:true, blank:false)
+        startDate       (nullable:false, blank:false)
+        endDate         (nullable:true,  blank:true)
 
         lastUpdated     (nullable:false, blank:false)
         dateCreated     (nullable:false, blank:false)
@@ -27,7 +29,8 @@ class Numbers {
 
         type            column:'num_typ_rdv_fk'
         number          column:'num_number'
-        valid_date      column:'num_valid_date'
+        startDate       column:'num_start_date'
+        endDate         column:'num_end_date'
 
         lastUpdated     column:'num_lastUpdate_date'
         dateCreated     column:'num_create_date'

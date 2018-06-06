@@ -26,12 +26,13 @@ pipeline {
                     env.SERVERDELOPY = input message: 'On which Server you want to deploy', ok: 'Deploy!',
                                             parameters: [choice(name: 'Server to deploy', choices: "${SERVER_DEV}\n${SERVER_QA}\n${SERVER_PROD}", description: '')]
                     echo "Server Set to: ${SERVERDELOPY}"
-                    echo "Deploying on ${SERVERDELOPY}...."
+
                 }
 
-                input('OK to continue?')
+                input('OK to continue the Deploying on Server ${SERVERDELOPY}?')
                 script{
                     if(SERVERDELOPY == SERVER_DEV){
+                        echo "Deploying on ${SERVERDELOPY}...."
                         sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/ROOT.war'
 
                     }else{
