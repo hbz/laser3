@@ -281,6 +281,7 @@ class BootStrap {
 
         def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
         def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
+        def orgComRole     = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
