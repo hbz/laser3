@@ -282,7 +282,15 @@
                         moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
                         lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
                     })
-                })
+                });
+                $('.xEditableManyToOne').editable({
+                }).on('hidden', function() {
+                    if ($( this ).attr("data-value") == 'com.k_int.kbplus.RefdataValue:523') {
+                        $( this ).closest('.item').remove();
+                    }
+                 });
+
+
             })
         </r:script>
 
