@@ -184,12 +184,14 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
     font-style: italic;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR {
-    color: #8B4513;
-}
+     color: #8B4513;
+ }
 body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR {
     color: #8B4513;
 }
-
+body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_COM_EDITOR {
+    color: #8B4513;
+}
 
 /* dashboard tasks */
 

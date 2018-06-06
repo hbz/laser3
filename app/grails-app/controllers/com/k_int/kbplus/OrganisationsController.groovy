@@ -123,7 +123,7 @@ class OrganisationsController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def createProvider() {
 
                 def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
@@ -141,7 +141,7 @@ class OrganisationsController {
                     redirect ( action:'findProviderMatchesMatches' )
                 }
     }
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def findProviderMatches() {
 
         def result=[:]
@@ -158,7 +158,16 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
+
+        //IF ORG is a Provider
+        if(orgInstance.sector == orgSector || orgType == orgInstance.orgType)
+        {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR')
+        }else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        }
 
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -302,7 +311,7 @@ class OrganisationsController {
       result
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def edit() {
         redirect controller: 'organisations', action: 'show', params: params
         return
