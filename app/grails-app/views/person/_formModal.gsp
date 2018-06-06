@@ -3,7 +3,7 @@
 
 <semui:modal id="personFormModal" text="${message(code: 'person.create_new.contactPerson.label')}">
 
-    <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create']" method="POST">
+    <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create', params: [org_id: org.id]]" method="POST">
 
 
         <div class="field">
@@ -20,7 +20,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.contactType?.id}"
-                                  noSelection="['': '']"/>
+                                  />
                 </div>
                 <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
                     <label for="roleType">
