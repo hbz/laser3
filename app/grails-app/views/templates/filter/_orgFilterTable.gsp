@@ -75,7 +75,7 @@
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                         ${fieldValue(bean: org, field: "name")} <br>
                         <g:if test="${org.shortname}">
-                            ${fieldValue(bean: org, field: "shortname")}
+                            (${fieldValue(bean: org, field: "shortname")})
                         </g:if>
                 </g:if>
                 <g:else>
