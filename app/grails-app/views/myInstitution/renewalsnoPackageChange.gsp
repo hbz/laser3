@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} ${message(code: 'myinst.renewalUpload.label', default: 'Renewals Upload')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} ${message(code: 'myinst.renewals', default: 'Renewal')}</title>
 </head>
 
 <body>
@@ -48,12 +48,17 @@
                 <tr>
                     <th><g:checkBox name="subscription.copyEnd" value="${true}"/></th>
                     <th>${message(code: 'default.endDate.label', default: 'End Date')}</th>
-                    <td><semui:datepicker class="wide eight" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" required="true" /></td>
+                    <td><semui:datepicker class="wide eight" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyDocs" value="${true}"/></th>
                     <th>${message(code: 'myinst.renewalUpload.copy', default: 'Copy Documents and Notes from Subscription')}</th>
                     <td>${message(code: 'subscription', default:'Subscription')}: ${permissionInfo?.sub_name}</td>
+                </tr>
+                <tr>
+                    <th><g:checkBox name="subscription.copyLicense" value="${permissionInfo?.sub_license ? true : false}"/></th>
+                    <th>${message(code: 'myinst.renewalUpload.copyLiense', default: 'Copy License from Subscription')}</th>
+                    <td>${message(code: 'license', default:'License')}: ${permissionInfo?.sub_license?:message(code: 'myinst.renewalUpload.noLicensetoSub', default: 'No License in the Subscription!')}</td>
                 </tr>
                 </tbody>
             </table>
