@@ -28,12 +28,12 @@ ${orgInstance.name}
 
 <g:if test="${editable}">
     <input class="ui button"
-           value="${message(code: 'person.create_new.contactPerson.label')}"
+           value="${message(code: 'numbers.create.label')}"
            data-semui="modal"
-           href="#personFormModal" />
+           href="#numbersFormModal" />
 </g:if>
 
-<g:render template="/person/formModal" model="['tenant': contextOrg,
+<g:render template="/numbers/formModal" model="['tenant': contextOrg,
                                                'org': orgInstance,
                                                'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
                                                presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),

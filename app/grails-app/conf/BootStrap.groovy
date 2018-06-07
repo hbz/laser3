@@ -777,6 +777,7 @@ class BootStrap {
         RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'])
         RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'])
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'])
+        RefdataCategory.loc('Number Typ',                               [en: 'Number Typ', de: 'Zahlen-Typ'])
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'])
@@ -1043,6 +1044,12 @@ class BootStrap {
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'LOCKSS', de: 'LOCKSS'])
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'CLOCKSS', de: 'CLOCKSS'])
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Portico', de: 'Portico'])
+
+        RefdataValue.loc('Number Typ',      [en: 'Students', de: 'Studenten'])
+        RefdataValue.loc('Number Typ',      [en: 'Staff', de: 'Personal'])
+        RefdataValue.loc('Number Typ',      [en: 'Scientific staff', de: 'wissenschaftliches Personal'])
+        RefdataValue.loc('Number Typ',      [en: 'User', de: 'Nutzer'])
+        RefdataValue.loc('Number Typ',      [en: 'Population', de: 'Einwohner'])
 
     }
 

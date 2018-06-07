@@ -36,4 +36,8 @@ class Numbers {
         dateCreated     column:'num_create_date'
         org             column:'num_org_fk'
     }
+
+    static getAllRefdataValues(String category) {
+        RefdataCategory.getAllRefdataValues(category)
+    }
 }
