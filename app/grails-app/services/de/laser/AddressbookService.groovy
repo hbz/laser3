@@ -7,6 +7,7 @@ import com.k_int.kbplus.Person
 import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.codehaus.groovy.syntax.Numbers
 
 class AddressbookService {
 
@@ -70,6 +71,11 @@ class AddressbookService {
         //true // TODO: Rechte nochmal überprüfen
     }
     def isPersonEditable(Person person, User user) {
+        accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        //true // TODO: Rechte nochmal überprüfen
+    }
+
+    def isNumbersEditable(Numbers numbers, User user) {
         accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         //true // TODO: Rechte nochmal überprüfen
     }

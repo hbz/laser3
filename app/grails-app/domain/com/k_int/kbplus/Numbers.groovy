@@ -18,8 +18,6 @@ class Numbers {
         startDate       (nullable:false, blank:false)
         endDate         (nullable:true,  blank:true)
 
-        lastUpdated     (nullable:false, blank:false)
-        dateCreated     (nullable:false, blank:false)
         org             (nullable:false, blank:false)
     }
 

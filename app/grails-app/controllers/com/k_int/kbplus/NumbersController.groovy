@@ -14,19 +14,6 @@ class NumbersController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-	@Secured(['ROLE_ADMIN'])
-    def index() {
-        redirect action: 'list', params: params
-    }
-
-	@Secured(['ROLE_ADMIN'])
-    def list() {
-		if (! params.max) {
-			User user   = springSecurityService.getCurrentUser()
-			params.max = user?.getDefaultPageSize()
-		}
-        [numbersInstanceList: Numbers.list(params), numbersInstanceTotal: Numbers.count()]
-    }
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
@@ -48,7 +35,7 @@ class NumbersController {
 	        def numbersInstance = new Numbers(params)
 	        if (! numbersInstance.save(flush: true)) {
 				flash.error = message(code: 'default.not.created.message', args: [message(code: 'numbers.number.label', default: 'Number')])
-				redirect(url: request.getHeader('referer'))
+                render view: 'create', model: [numbersInstance: numbersInstance]
 	            return
 	        }
 
@@ -57,17 +44,7 @@ class NumbersController {
 			break
 		}
     }
-	@Secured(['ROLE_ADMIN'])
-    def show() {
-        def numbersInstance = Numbers.get(params.id)
-        if (! numbersInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
-            redirect action: 'list'
-            return
-        }
 
-        [numbersInstance: numbersInstance]
-    }
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
@@ -76,7 +53,7 @@ class NumbersController {
 	        def numbersInstance = Numbers.get(params.id)
 	        if (! numbersInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
-	            redirect action: 'list'
+				redirect(url: request.getHeader('referer'))
 	            return
 	        }
 
@@ -86,7 +63,7 @@ class NumbersController {
 	        def numbersInstance = Numbers.get(params.id)
 	        if (! numbersInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
-	            redirect action: 'list'
+				redirect(url: request.getHeader('referer'))
 	            return
 	        }
 
@@ -109,7 +86,7 @@ class NumbersController {
 	        }
 
 			flash.message = message(code: 'default.updated.message', args: [message(code: 'numbers.label', default: 'Numbers'), numbersInstance.id])
-	        redirect action: 'show', id: numbersInstance.id
+			redirect(url: request.getHeader('referer'))
 			break
 		}
     }
@@ -119,18 +96,18 @@ class NumbersController {
         def numbersInstance = Numbers.get(params.id)
         if (! numbersInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
-            redirect action: 'list'
+			redirect(url: request.getHeader('referer'))
             return
         }
 
         try {
             numbersInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
-            redirect action: 'list'
+			redirect(url: request.getHeader('referer'))
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
-            redirect action: 'show', id: params.id
+			redirect(url: request.getHeader('referer'))
         }
     }
 }

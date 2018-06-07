@@ -10,41 +10,73 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
+    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="default.show.label"
+                                                                     args="[entityName]"/></title>
 </head>
+
 <body>
 
-<g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+<g:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
 
-<h1 class="ui header"><semui:headerIcon />
+<h1 class="ui header"><semui:headerIcon/>
 ${orgInstance.name}
 </h1>
 
-<g:render template="nav" contextPath="." />
+<g:render template="nav" contextPath="."/>
 
-<semui:messages data="${flash}" />
+<semui:messages data="${flash}"/>
 
 
 <g:if test="${editable}">
     <input class="ui button"
            value="${message(code: 'numbers.create.label')}"
            data-semui="modal"
-           href="#numbersFormModal" />
+           href="#numbersFormModal"/>
 </g:if>
 
-<g:render template="/numbers/formModal" model="['tenant': contextOrg,
-                                               'org': orgInstance,
-                                               'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
-                                               presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                               tmplHideResponsibilities: true]"/>
+<g:render template="/numbers/formModal" model="['org'                   : orgInstance,
+                                                'isPublic'              : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
+                                                presetFunctionType      : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                tmplHideResponsibilities: true]"/>
 
-<g:if test="${visiblePersons}">
-    <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
 
-    <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}" />
-</g:if>
+<h5 class="ui header"><g:message code="numbers.plural" default="Numbers"/></h5>
 
+<table class="ui table la-table">
+<thead>
+<tr>
+    <th>${message(code: 'numbers.number.label')}-${message(code: 'numbers.type.label')}</th>
+    <th>${message(code: 'numbers.number.label')}</th>
+    <th>${message(code: 'numbers.startDate.label')}</th>
+    <th>${message(code: 'numbers.endDate.label')}</th>
+    <th></th>
+</tr>
+</thead>
+<tbody>
+<g:each in="${numbersInstance}" var="number">
+    <tr>
+        <td>${number.type.getI10n('value')}</td>
+        <td>${number.number}</td>
+        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${number?.startDate}" /></td>
+        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${number?.endDate}" /></td>
+        <td class="x">
+            <g:if test="${editable}">
+                <g:form controller="numbers" action="delete">
+                    <g:hiddenField name="id" value="${number?.id}"/>
+                    <g:link class="ui icon button" controller="numbers" action="edit" id="${number?.id}">
+                        <i class="write icon"></i>
+                    </g:link>
+                    <button class="ui icon negative button" type="submit" name="_action_delete">
+                        <i class="trash alternate icon"></i>
+                    </button>
+                </g:form>
+            </g:if>
+        </td>
+    </tr>
+</g:each>
+</tbody>
+</table>
 
 </body>
 </html>

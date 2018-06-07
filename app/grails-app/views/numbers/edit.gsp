@@ -7,6 +7,9 @@
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
+
+	<g:render template="breadcrumb" model="${[orgInstance: numbersInstance.org, params: params]}"/>
+
 		<h1 class="ui header"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
 
         <semui:messages data="${flash}" />
@@ -44,10 +47,6 @@
 				</fieldset>
 
 			</div><!-- .twelve -->
-
-            <aside class="four wide column">
-                <g:render template="../templates/sideMenu" />
-            </aside><!-- .four -->
 
 		</div><!-- .grid -->
 	</body>
