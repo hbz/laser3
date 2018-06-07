@@ -604,7 +604,8 @@ from Subscription as s where (
         }
 
         if ( params.exportXLS=='yes' ) {
-            exportcurrentSubscription(result.subscriptions)
+            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
+            exportcurrentSubscription(subscriptions)
             return
         }
 
