@@ -67,33 +67,35 @@
 
             <script>
 $('#addNew').on('click', function(e) {
-   $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
-   $('#dynamicModalContainer').empty()
+    if(event.detail == 1) {
+        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+        $('#dynamicModalContainer').empty()
 
-   $.ajax({
-        url: "<g:createLink controller='finance' action='editCostItem'/>",
-        data: {
-            sub: "${fixedSubscription?.id}"
-        }
-   }).done( function(data) {
-       $('#dynamicModalContainer').html(data);
+        $.ajax({
+            url: "<g:createLink controller='finance' action='editCostItem'/>",
+            data: {
+                sub: "${fixedSubscription?.id}"
+            }
+        }).done(function (data) {
+            $('#dynamicModalContainer').html(data);
 
-       $('#dynamicModalContainer .ui.modal').modal({
-           onVisible: function () {
-               r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
-               r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+            $('#dynamicModalContainer .ui.modal').modal({
+                onVisible: function () {
+                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-               ajaxPostFunc()
-           },
-           detachable: true,
-           closable: true,
-           transition: 'scale',
-           onApprove : function() {
-               $(this).find('.ui.form').submit();
-               return false;
-           }
-       }).modal('show');
-   })
+                    ajaxPostFunc()
+                },
+                detachable: true,
+                closable: true,
+                transition: 'scale',
+                onApprove: function () {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        })
+    }
 })
             </script>
 
