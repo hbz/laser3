@@ -180,9 +180,8 @@
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>${message(code:'package.label')}</label>
-
                     <g:if test="${costItem?.sub}">
+                        <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
                                   from="${[{}] + costItem?.sub?.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
@@ -191,6 +190,7 @@
                                   value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                     </g:if>
                     <g:elseif test="${inSubMode}">
+                        <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
                                   from="${[{}] + fixedSubscription?.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
