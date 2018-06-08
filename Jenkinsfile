@@ -23,23 +23,24 @@ pipeline {
             steps {
 
             script{
-                    env.SERVERDELOPY = input message: 'On which Server you want to deploy', ok: 'Deploy!',
+                    env.SERVERDEPLOY = input message: 'On which Server you want to deploy', ok: 'Deploy!',
                                             parameters: [choice(name: 'Server to deploy', choices: "${SERVER_DEV}\n${SERVER_QA}\n${SERVER_PROD}", description: '')]
-                    echo "Server Set to: ${SERVERDELOPY}"
+                    echo "Server Set to: ${SERVERDEPLOY}"
 
                 }
 
-                input('OK to continue the Deploying on Server ${SERVERDELOPY}?')
-                currentStage.result = SERVERDELOPY
+                input("OK to continue the Deploying on Server ${env.SERVERDEPLOY}?")
+
                 script{
-                    if(SERVERDELOPY == SERVER_DEV){
-                        echo "Deploying on ${SERVERDELOPY}...."
+                    currentBuild.displayName = "${currentBuild.number}: Deploy on ${SERVERDEPLOY}"
+                    if(SERVERDEPLOY == SERVER_DEV){
+                        echo "Deploying on ${SERVERDEPLOY}...."
                         sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/ROOT.war'
 
                     }else{
                         sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'
                         writeFile file: "${WORKSPACE}/job.batch", text: "put /${WORKSPACE}/ROOT.war\n quit"
-                        sh 'sftp -b ${WORKSPACE}/job.batch -i ${TOMCAT_HOME_PATH}/.ssh/id_rsa ${SERVERDELOPY}:${TOMCAT_HOME_PATH}/default/webapps/'
+                        sh 'sftp -b ${WORKSPACE}/job.batch -i ${TOMCAT_HOME_PATH}/.ssh/id_rsa ${SERVERDEPLOY}:${TOMCAT_HOME_PATH}/default/webapps/'
                     }
                 }
 
@@ -72,8 +73,8 @@ pipeline {
                     }
 
                 mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, rupp@hbz-nrw.de',
-                                                             subject: "Succeeded Deploy on Server ${SERVERDELOPY}: ${currentBuild.fullDisplayName}",
-                                                             body: "Succeeded Deploy on Server ${SERVERDELOPY}  \nAll Right: ${env.BUILD_URL} \n\n\n${changeLog}"
+                                                             subject: "Succeeded Deploy on Server ${SERVERDEPLOY}: ${currentBuild.fullDisplayName}",
+                                                             body: "Succeeded Deploy on Server ${SERVERDEPLOY}  \nAll Right: ${env.BUILD_URL} \n\n\n${changeLog}"
                 cleanWs()
             }
             unstable {
@@ -82,8 +83,8 @@ pipeline {
             failure {
                 echo 'I failed :('
                 mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de ',
-                             subject: "Failed Deploy on Server ${SERVERDELOPY}: ${currentBuild.fullDisplayName}",
-                             body: "Failed Deploy on Server ${SERVERDELOPY}\n Something is wrong with ${env.BUILD_URL}"
+                             subject: "Failed Deploy on Server ${SERVERDEPLOY}: ${currentBuild.fullDisplayName}",
+                             body: "Failed Deploy on Server ${SERVERDEPLOY}\n Something is wrong with ${env.BUILD_URL}"
             }
             changed {
                 echo 'Things were different before...'
