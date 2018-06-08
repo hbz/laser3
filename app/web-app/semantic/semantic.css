@@ -20220,7 +20220,7 @@ ol.ui.horizontal.list li:before,
 }
 
 .ui.form textarea:not([rows]) {
-  height: 12em;
+  height: 8em;
   min-height: 8em;
   max-height: 24em;
 }
@@ -21278,11 +21278,6 @@ ol.ui.horizontal.list li:before,
   margin-bottom: 0!important;
 }
 
-.ui.form .fields .field.la-modal-fieldset-no-margin .field {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
 .ui.form .fields .field.la-modal-fieldset-no-margin .la-exchange-rate input {
   width: 76%;
   vertical-align: middle;
@@ -21295,11 +21290,6 @@ ol.ui.horizontal.list li:before,
   margin-bottom: 0!important;
   background: #fffaf5;
   padding: 15px;
-}
-
-.ui.form .fields .field.la-modal-fieldset-margin .field {
-  padding-left: 15px;
-  padding-right: 15px;
 }
 
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,

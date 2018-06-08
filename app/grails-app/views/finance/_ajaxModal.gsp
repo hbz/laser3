@@ -25,7 +25,7 @@
         CI.SubPkg: ${costItem?.subPkg}
         -->
 
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
                 <div class="field">
                     <label>${message(code:'financials.newCosts.costTitle')}</label>
@@ -44,6 +44,7 @@
                         <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
+
             </div>
             <div class="field">
                 <div class="field ">
@@ -62,9 +63,42 @@
                                   value="${costItem?.costItemStatus?.id}" />
                 </div><!-- .field -->
             </div>
-        </div><!-- two fields -->
+            <div class="field">
+                <%--
+                    <div class="field">
+                        <label>${message(code:'financials.costItemCategory')}</label>
+                        <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
+                                      id="newCostItemCategory"
+                                      from="${costItemCategory}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.costItemCategory?.id}" />
+                    </div><!-- .field -->
+                --%>
+                <div class="field">
+                    <label>${message(code:'financials.costItemElement')}</label>
+                    <laser:select name="newCostItemElement" class="ui dropdown"
+                                  from="${costItemElement}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.costItemElement?.id}" />
+                </div><!-- .field -->
 
-        <div class="three fields">
+                <div class="field">
+                    <label>${message(code:'financials.newCosts.controllable')}</label>
+                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
+                                  from="${taxType}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.taxCode?.id}" />
+                </div><!-- .field -->
+            </div> <!-- 3/3 field -->
+        </div><!-- three fields -->
+
+        <div class="two fields">
             <fieldset class="field la-modal-fieldset-no-margin la-account-currency">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
 
@@ -109,42 +143,9 @@
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
 
-            </fieldset> <!-- 1/3 field -->
+            </fieldset> <!-- 1/2 field -->
 
-            <fieldset class="field la-modal-fieldset-margin">
-                <label>&nbsp;</label>
-            <%--
-                <div class="field">
-                    <label>${message(code:'financials.costItemCategory')}</label>
-                    <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
-                                  id="newCostItemCategory"
-                                  from="${costItemCategory}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemCategory?.id}" />
-                </div><!-- .field -->
-            --%>
-                <div class="field">
-                    <label>${message(code:'financials.costItemElement')}</label>
-                    <laser:select name="newCostItemElement" class="ui dropdown"
-                                  from="${costItemElement}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemElement?.id}" />
-                </div><!-- .field -->
 
-                <div class="field">
-                    <label>${message(code:'financials.newCosts.controllable')}</label>
-                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
-                                  from="${taxType}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.taxCode?.id}" />
-                </div><!-- .field -->
-            </fieldset> <!-- 2/3 field -->
 
             <fieldset class="field la-modal-fieldset-no-margin">
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
@@ -214,17 +215,18 @@
                     </g:else>
                     --%>
                 </div><!-- .field -->
-            </fieldset> <!-- 3/3 field -->
+            </fieldset> <!-- 2/2 field -->
 
         </div><!-- three fields -->
 
         <div class="three fields">
             <fieldset class="field la-modal-fieldset-no-margin">
                 <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+                <div class="two fields">
+                    <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
 
-                <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
-
-                <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
+                    <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
+                </div>
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin">

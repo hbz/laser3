@@ -22,8 +22,8 @@
   margin-top: 0!important;
   margin-bottom: 0!important;
   .field {
-    padding-left: 15px;
-    padding-right: 15px;
+    //padding-left: 15px;
+    //padding-right: 15px;
   }
   .la-exchange-rate {
 
@@ -41,8 +41,8 @@
   background: #fffaf5;
   padding: 15px;
   .field {
-    padding-left: 15px;
-    padding-right: 15px;
+    //padding-left: 15px;
+    //padding-right: 15px;
   }
 }
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
@@ -93,5 +93,4 @@ input#spotlightSearch[type="search"] {
       width: 82%;
     }
   }
-
 }
