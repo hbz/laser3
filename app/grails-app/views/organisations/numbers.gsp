@@ -5,7 +5,7 @@
         import="com.k_int.kbplus.RefdataValue"
         import="com.k_int.kbplus.RefdataCategory"
 %>
-
+<g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 <!doctype html>
 <html>
 <head>
@@ -54,17 +54,17 @@ ${orgInstance.name}
 </tr>
 </thead>
 <tbody>
-<g:each in="${numbersInstance}" var="number">
+<g:each in="${numbersInstanceList}" var="numbersInstance">
     <tr>
-        <td>${number.type.getI10n('value')}</td>
-        <td>${number.number}</td>
-        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${number?.startDate}" /></td>
-        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${number?.endDate}" /></td>
+        <td><semui:xEditableRefData config="Number Type" owner="${numbersInstance}" field="type" overwriteEditable="${overwriteEditable}"/></td>
+        <td><semui:xEditableRefData owner="${numbersInstance}" field="number" overwriteEditable="${overwriteEditable}"/></td>
+        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${numbersInstance?.startDate}" /></td>
+        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${numbersInstance?.endDate}" /></td>
         <td class="x">
             <g:if test="${editable}">
                 <g:form controller="numbers" action="delete">
-                    <g:hiddenField name="id" value="${number?.id}"/>
-                    <g:link class="ui icon button" controller="numbers" action="edit" id="${number?.id}">
+                    <g:hiddenField name="id" value="${numbersInstance?.id}"/>
+                    <g:link class="ui icon button" controller="numbers" action="edit" id="${numbersInstance?.id}">
                         <i class="write icon"></i>
                     </g:link>
                     <button class="ui icon negative button" type="submit" name="_action_delete">
