@@ -9,7 +9,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.help" class="active"/>
+    <semui:crumb message="menu.user.properties" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui header"><semui:headerIcon />${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</h1>
