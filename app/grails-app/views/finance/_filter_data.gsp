@@ -42,7 +42,7 @@
                 </g:else>
             </g:if>
             <g:if test="${editable}">
-                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" class="ui icon negative button">
+                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
                     <i class="trash alternate icon"></i>
                 </g:link>
             </g:if>

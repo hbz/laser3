@@ -247,7 +247,7 @@
             <tfoot>
                 <tr>
                     <th>
-                        <strong>Gesammtkosten: <span class="sumOfCosts_${i}"></span></strong>
+                        <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}: <span class="sumOfCosts_${i}"></span></strong>
                     </th>
                 </tr>
             </tfoot>
