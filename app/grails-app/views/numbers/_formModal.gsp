@@ -28,7 +28,7 @@
                         <g:message code="numbers.type.label" default="Type" />
                     </label>
                     <laser:select class="ui dropdown" id="type" name="type"
-                                  from="${com.k_int.kbplus.Numbers.getAllRefdataValues('Number Typ')}"
+                                  from="${com.k_int.kbplus.Numbers.getAllRefdataValues('Number Type')}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${numbersInstance?.type?.id}"

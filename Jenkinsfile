@@ -30,6 +30,7 @@ pipeline {
                 }
 
                 input('OK to continue the Deploying on Server ${SERVERDELOPY}?')
+                currentStage.result = SERVERDELOPY
                 script{
                     if(SERVERDELOPY == SERVER_DEV){
                         echo "Deploying on ${SERVERDELOPY}...."

@@ -1,8 +1,11 @@
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisations" action="show" params="${[id: params.id]}" message="org.nav.details"/>
 
-    <semui:subNavItem controller="organisations" action="numbers" params="${[id: params.id]}"
+    <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+    <semui:securedSubNavItem controller="organisations" action="numbers" params="${[id: params.id]}"
+                             affiliation="INST_EDITOR" affiliationOrg="${orgInstance}"
                       message="menu.institutions.numbers"/>
+    </g:if>
 
     <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
         <semui:securedSubNavItem controller="organisations" action="users" params="${[id: params.id]}"

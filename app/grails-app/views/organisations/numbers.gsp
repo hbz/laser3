@@ -35,10 +35,7 @@ ${orgInstance.name}
            href="#numbersFormModal"/>
 </g:if>
 
-<g:render template="/numbers/formModal" model="['org'                   : orgInstance,
-                                                'isPublic'              : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
-                                                presetFunctionType      : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                                tmplHideResponsibilities: true]"/>
+<g:render template="/numbers/formModal"/>
 
 
 <h5 class="ui header"><g:message code="numbers.plural" default="Numbers"/></h5>
