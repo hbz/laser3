@@ -67,7 +67,7 @@
 
             <script>
 $('#addNew').on('click', function(e) {
-    if(event.detail == 1) {
+
         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
         $('#dynamicModalContainer').empty()
 
@@ -95,7 +95,7 @@ $('#addNew').on('click', function(e) {
                 }
             }).modal('show');
         })
-    }
+
 })
             </script>
 
