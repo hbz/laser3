@@ -1046,7 +1046,6 @@ class BootStrap {
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Portico', de: 'Portico'])
 
         RefdataValue.loc('Number Type',      [en: 'Students', de: 'Studenten'])
-        RefdataValue.loc('Number Type',      [en: 'Staff', de: 'Personal'])
         RefdataValue.loc('Number Type',      [en: 'Scientific staff', de: 'wissenschaftliches Personal'])
         RefdataValue.loc('Number Type',      [en: 'User', de: 'Nutzer'])
         RefdataValue.loc('Number Type',      [en: 'Population', de: 'Einwohner'])
