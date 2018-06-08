@@ -28,9 +28,9 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
-        <semui:exportDropdownItem>
-            <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
-        </semui:exportDropdownItem>
+        %{--<semui:exportDropdownItem>--}%
+            %{--<a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>--}%
+    %{--</semui:exportDropdownItem>--}%
         <%--
         <semui:exportDropdownItem>
             <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
@@ -219,7 +219,7 @@ $('#addNew').on('click', function(e) {
     var financeHelper = {
 
         calcSumOfCosts : function () {
-
+            var totalcost = 0
             $('table[id^=costTable]').each( function() {
                 var result = 0
                 $(this).find('tbody tr span.costInLocalCurrency').each( function() {
@@ -230,7 +230,9 @@ $('#addNew').on('click', function(e) {
                 $('.' + socClass).text(
                     Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
                 )
+                totalcost += result
             })
+              $('#totalCost').text(Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(totalcost))
         }
     }
 
