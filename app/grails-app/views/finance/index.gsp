@@ -66,7 +66,8 @@
             <button class="ui button pull-right" id="addNew">${message(code:'financials.addNewCost')}</button>
 
             <script>
-$('#addNew').on('click', function(e) {
+$('#addNew').on('click', function(event) {
+    if(event.detail==1) {
 
         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
         $('#dynamicModalContainer').empty()
@@ -95,6 +96,7 @@ $('#addNew').on('click', function(e) {
                 }
             }).modal('show');
         })
+    }
 
 })
             </script>
