@@ -57,16 +57,13 @@ ${orgInstance.name}
 <g:each in="${numbersInstanceList}" var="numbersInstance">
     <tr>
         <td><semui:xEditableRefData config="Number Type" owner="${numbersInstance}" field="type" overwriteEditable="${overwriteEditable}"/></td>
-        <td><semui:xEditableRefData owner="${numbersInstance}" field="number" overwriteEditable="${overwriteEditable}"/></td>
-        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${numbersInstance?.startDate}" /></td>
-        <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${numbersInstance?.endDate}" /></td>
+        <td><semui:xEditable owner="${numbersInstance}" field="number" overwriteEditable="${overwriteEditable}"/></td>
+        <td><semui:xEditable owner="${numbersInstance}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/></td>
+        <td><semui:xEditable owner="${numbersInstance}" type="date" field="endDate" overwriteEditable="${overwriteEditable}"/></td>
         <td class="x">
             <g:if test="${editable}">
                 <g:form controller="numbers" action="delete">
                     <g:hiddenField name="id" value="${numbersInstance?.id}"/>
-                    <g:link class="ui icon button" controller="numbers" action="edit" id="${numbersInstance?.id}">
-                        <i class="write icon"></i>
-                    </g:link>
                     <button class="ui icon negative button" type="submit" name="_action_delete">
                         <i class="trash alternate icon"></i>
                     </button>
