@@ -21,6 +21,7 @@
     <semui:card >
         <div class="content">
             <form action='${postUrl}' method='POST' id='loginForm' class='ui form cssform' autocomplete='off'>
+                <form-login always-use-default-target="true" />
                 <div class="field">
                     <label for='username'><g:message code="springSecurity.login.username.label"/>:</label>
                     <input type='text' class='text_' name='j_username' id='username'/>
