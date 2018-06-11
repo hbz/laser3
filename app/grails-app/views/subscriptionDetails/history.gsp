@@ -8,7 +8,9 @@
 
     <g:render template="breadcrumb" model="${[ subscriptionInstance:subscription, params:params ]}"/>
 
-    <g:render template="actions" />
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
 
     <h1 class="ui header"><semui:headerIcon />
 
