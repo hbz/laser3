@@ -134,7 +134,7 @@ class PersonController {
                 userMemberships << personInstance.tenant 
             }
             
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
 	        redirect action: 'show', id: personInstance.id
 			break
 		}
@@ -307,7 +307,32 @@ class PersonController {
     }
 
     private addPersonRoles(Person prs){
-    
+
+        //IF functionType not seleced
+        if(!params?.functionType && params.org_id)
+        {
+            def result
+
+            def roleRdv = RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+            def org     = Org.get(params.org_id)
+
+            if (roleRdv && org) {
+                result = new PersonRole(prs: prs, functionType: roleRdv, org: org)
+
+                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${roleRdv.id}")) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
+                }
+                else if (result) {
+                    if (result.save(flush:true)) {
+                        log.debug("adding PersonRole ${result}")
+                    }
+                    else {
+                        log.error("problem saving new PersonRole ${result}")
+                    }
+                }
+            }
+        }
+
         params?.functionType?.each{ key, value ->
             def result
             

@@ -28,9 +28,9 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
-        <semui:exportDropdownItem>
-            <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
-        </semui:exportDropdownItem>
+        %{--<semui:exportDropdownItem>--}%
+            %{--<a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>--}%
+    %{--</semui:exportDropdownItem>--}%
         <%--
         <semui:exportDropdownItem>
             <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
@@ -66,35 +66,42 @@
             <button class="ui button pull-right" id="addNew">${message(code:'financials.addNewCost')}</button>
 
             <script>
-$('#addNew').on('click', function(e) {
-   $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
-   $('#dynamicModalContainer').empty()
+                var isClicked = false;
+                $('#addNew').on('click', function(event) {
+                    // prevent 2 Clicks open 2 Modals
+                    if (!isClicked) {
+                        isClicked = true;
+                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+                        $('#dynamicModalContainer').empty()
+                        $.ajax({
+                            url: "<g:createLink controller='finance' action='editCostItem'/>",
+                            data: {
+                                sub: "${fixedSubscription?.id}"
+                            }
+                        }).done(function (data) {
+                            $('#dynamicModalContainer').html(data);
 
-   $.ajax({
-        url: "<g:createLink controller='finance' action='editCostItem'/>",
-        data: {
-            sub: "${fixedSubscription?.id}"
-        }
-   }).done( function(data) {
-       $('#dynamicModalContainer').html(data);
+                            $('#dynamicModalContainer .ui.modal').modal({
+                                onVisible: function () {
+                                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-       $('#dynamicModalContainer .ui.modal').modal({
-           onVisible: function () {
-               r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
-               r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-
-               ajaxPostFunc()
-           },
-           detachable: true,
-           closable: true,
-           transition: 'scale',
-           onApprove : function() {
-               $(this).find('.ui.form').submit();
-               return false;
-           }
-       }).modal('show');
-   })
-})
+                                    ajaxPostFunc()
+                                },
+                                detachable: true,
+                                closable: true,
+                                transition: 'scale',
+                                onApprove: function () {
+                                    $(this).find('.ui.form').submit();
+                                    return false;
+                                }
+                            }).modal('show');
+                        })
+                        setTimeout(function () {
+                            isClicked = false;
+                        }, 800);
+                    }
+                })
             </script>
 
         </g:if>
@@ -219,7 +226,7 @@ $('#addNew').on('click', function(e) {
     var financeHelper = {
 
         calcSumOfCosts : function () {
-
+            var totalcost = 0
             $('table[id^=costTable]').each( function() {
                 var result = 0
                 $(this).find('tbody tr span.costInLocalCurrency').each( function() {
@@ -230,7 +237,9 @@ $('#addNew').on('click', function(e) {
                 $('.' + socClass).text(
                     Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
                 )
+                totalcost += result
             })
+              $('#totalCost').text(Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(totalcost))
         }
     }
 

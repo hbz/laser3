@@ -285,9 +285,7 @@
                 });
                 $('.xEditableManyToOne').editable({
                 }).on('hidden', function() {
-                    if ($( this ).attr("data-value") == 'com.k_int.kbplus.RefdataValue:523') {
-                        $( this ).closest('.item').remove();
-                    }
+                        location.reload();
                  });
 
 
