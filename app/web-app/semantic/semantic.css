@@ -21279,12 +21279,19 @@ ol.ui.horizontal.list li:before,
 }
 
 .ui.form .fields .field.la-modal-fieldset-no-margin .la-exchange-rate input {
-  width: 76%;
   vertical-align: middle;
 }
 
 .ui.form .fields .field.la-modal-fieldset-margin {
   margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+  background: #fffaf5;
+  padding: 15px;
+}
+
+.ui.form .fields .field.la-modal-fieldset-margin-right {
   margin-right: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
@@ -21340,6 +21347,11 @@ input#spotlightSearch[type="search"] {
 
 .ui.form .la-account-currency .field input {
   width: 82%;
+}
+
+.ui.form .field > .selection.dropdown.la-currency {
+  margin-left: -32px;
+  width: 105%;
 }
 /*!
  * # Semantic UI 2.3.1 - Grid
