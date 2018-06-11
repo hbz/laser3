@@ -98,17 +98,17 @@
             </div> <!-- 3/3 field -->
         </div><!-- three fields -->
 
-        <div class="two fields">
-            <fieldset class="field la-modal-fieldset-no-margin la-account-currency">
+        <div class="fields">
+            <fieldset class="twelve wide field la-modal-fieldset-margin-right la-account-currency">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
-
+                <div class="two fields">
                     <div class="field">
                         <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
 
-                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -119,10 +119,12 @@
                                name="newCostCurrencyRate" id="newCostCurrencyRate"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.000000001" />
 
-                        <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
-                        <i class="calculator icon"></i>
-                    </div>
+                        <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                            <i class="calculator icon"></i>
+                        </div>
                     </div><!-- .field -->
+                </div>
+                <div class="two fields">
 
                     <div class="field">
                         <label>${message(code:'financials.invoice_total')}</label>
@@ -130,24 +132,25 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.invoice_total')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
 
-                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
+                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
 
                     <div class="field">
-                        <g:select class="ui dropdown" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
+                        <label>&nbsp;</label>
+                        <g:select class="ui dropdown la-currency" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
                                   optionValue="text"
                                   value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
-
+                </div>
             </fieldset> <!-- 1/2 field -->
 
 
 
-            <fieldset class="field la-modal-fieldset-no-margin">
+            <fieldset class="four wide field la-modal-fieldset-no-margin">
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
 
                 <div class="field">
@@ -267,7 +270,7 @@
                 input.transition('glow');
                 input.val(($("#newCostInBillingCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
 
-                $(".la-account-currency").children(".field").removeClass("error");
+                $(".la-account-currency").find(".field").removeClass("error");
             }
         })
         $("#costButton2").click(function() {
@@ -276,7 +279,7 @@
                 input.transition('glow');
                 input.val(($("#newCostInBillingCurrency").val() / $("#newCostInLocalCurrency").val()).toFixed(9));
 
-                $(".la-account-currency").children(".field").removeClass("error");
+                $(".la-account-currency").find(".field").removeClass("error");
             }
         })
         $("#costButton3").click(function() {
@@ -285,7 +288,7 @@
                 input.transition('glow');
                 input.val(($("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
 
-                $(".la-account-currency").children(".field").removeClass("error");
+                $(".la-account-currency").find(".field").removeClass("error");
             }
         });
         var isError = function(cssSel)  {
