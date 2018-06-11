@@ -66,39 +66,42 @@
             <button class="ui button pull-right" id="addNew">${message(code:'financials.addNewCost')}</button>
 
             <script>
-$('#addNew').on('click', function(event) {
-    if(event.detail==1) {
+                var isClicked = false;
+                $('#addNew').on('click', function(event) {
+                    // prevent 2 Clicks open 2 Modals
+                    if (!isClicked) {
+                        isClicked = true;
+                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+                        $('#dynamicModalContainer').empty()
+                        $.ajax({
+                            url: "<g:createLink controller='finance' action='editCostItem'/>",
+                            data: {
+                                sub: "${fixedSubscription?.id}"
+                            }
+                        }).done(function (data) {
+                            $('#dynamicModalContainer').html(data);
 
-        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
-        $('#dynamicModalContainer').empty()
+                            $('#dynamicModalContainer .ui.modal').modal({
+                                onVisible: function () {
+                                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-        $.ajax({
-            url: "<g:createLink controller='finance' action='editCostItem'/>",
-            data: {
-                sub: "${fixedSubscription?.id}"
-            }
-        }).done(function (data) {
-            $('#dynamicModalContainer').html(data);
-
-            $('#dynamicModalContainer .ui.modal').modal({
-                onVisible: function () {
-                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
-                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-
-                    ajaxPostFunc()
-                },
-                detachable: true,
-                closable: true,
-                transition: 'scale',
-                onApprove: function () {
-                    $(this).find('.ui.form').submit();
-                    return false;
-                }
-            }).modal('show');
-        })
-    }
-
-})
+                                    ajaxPostFunc()
+                                },
+                                detachable: true,
+                                closable: true,
+                                transition: 'scale',
+                                onApprove: function () {
+                                    $(this).find('.ui.form').submit();
+                                    return false;
+                                }
+                            }).modal('show');
+                        })
+                        setTimeout(function () {
+                            isClicked = false;
+                        }, 800);
+                    }
+                })
             </script>
 
         </g:if>
