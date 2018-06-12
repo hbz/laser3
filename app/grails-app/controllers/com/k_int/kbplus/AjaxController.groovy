@@ -594,22 +594,43 @@ class AjaxController {
         def owner  = resolveOID(params.parent?.split(":"))
         def rel    = RefdataValue.get(params.orm_orgRole)
 
+
+
         def orgIds = params.list('orm_orgoid')
         orgIds.each{ oid ->
             def org_to_link = resolveOID(oid.split(":"))
+            def duplicateOrgRole = false
 
-            def new_link = new OrgRole(org:org_to_link, roleType:rel)
-            new_link[params.recip_prop] = owner
-
-            if (new_link.save(flush:true)) {
-                // log.debug("Org link added")
+            if(params.recip_prop == 'sub')
+            {
+                duplicateOrgRole = OrgRole.findAllBySubAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
             }
-            else {
-                log.error("Problem saving new org link ..")
-                new_link.errors.each { e ->
-                    log.error(e)
+            if(params.recip_prop == 'pkg')
+            {
+                duplicateOrgRole = OrgRole.findAllByPkgAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
+            }
+            if(params.recip_prop == 'lic')
+            {
+                duplicateOrgRole = OrgRole.findAllByLicAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
+            }
+            if(params.recip_prop == 'title')
+            {
+                duplicateOrgRole = OrgRole.findAllByTitleAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
+            }
+
+            if(!duplicateOrgRole) {
+                def new_link = new OrgRole(org: org_to_link, roleType: rel)
+                new_link[params.recip_prop] = owner
+
+                if (new_link.save(flush: true)) {
+                    // log.debug("Org link added")
+                } else {
+                    log.error("Problem saving new org link ..")
+                    new_link.errors.each { e ->
+                        log.error(e)
+                    }
+                    //flash.error = message(code: 'default.error')
                 }
-                //flash.error = message(code: 'default.error')
             }
         }
         redirect(url: request.getHeader('referer'))
