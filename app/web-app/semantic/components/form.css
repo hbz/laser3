@@ -1141,12 +1141,19 @@ input#spotlightSearch[type="search"] {
   border-color: #DCDDDE;
 }
 .ui.form .la-account-currency .field {
+  margin: 0;
   white-space: nowrap;
 }
 .ui.form .la-account-currency .field input {
   width: 82%;
 }
 .ui.form .field > .selection.dropdown.la-currency {
-  margin-left: -32px;
+  margin-left: -17px;
   width: 105%;
+}
+.ui.form .fields.la-fields-no-margin-button .field {
+  margin: 0;
+}
+.ui.form .la-select2-fixed-width {
+  width: 356.938px;
 }

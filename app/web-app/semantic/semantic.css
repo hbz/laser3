@@ -16439,6 +16439,11 @@ a.ui.basic.label:hover {
 .ui.massive.label {
   font-size: 1.71428571rem;
 }
+
+.finance_index .ui.ribbon.label {
+  left: calc(-2.8rem);
+  top: -22px;
+}
 /*!
  * # Semantic UI 2.3.1 - List
  * http://github.com/semantic-org/semantic-ui/
@@ -21342,6 +21347,7 @@ input#spotlightSearch[type="search"] {
 }
 
 .ui.form .la-account-currency .field {
+  margin: 0;
   white-space: nowrap;
 }
 
@@ -21350,8 +21356,16 @@ input#spotlightSearch[type="search"] {
 }
 
 .ui.form .field > .selection.dropdown.la-currency {
-  margin-left: -32px;
+  margin-left: -17px;
   width: 105%;
+}
+
+.ui.form .fields.la-fields-no-margin-button .field {
+  margin: 0;
+}
+
+.ui.form .la-select2-fixed-width {
+  width: 356.938px;
 }
 /*!
  * # Semantic UI 2.3.1 - Grid
