@@ -1,0 +1,4 @@
+.finance_index .ui.ribbon.label {
+  left: calc(-1rem - 1.8em);
+  top: -22px;
+}

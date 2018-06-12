@@ -10,7 +10,11 @@
 </g:if>
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}">
-
+    <g:if test="${costItem?.globalUID}">
+        <div class="ui blue ribbon label">
+            <strong class="red">${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
+        </div>
+    </g:if>
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
@@ -25,14 +29,14 @@
         CI.SubPkg: ${costItem?.subPkg}
         -->
 
-        <div class="three fields">
-            <div class="field">
+        <div class="fields">
+            <div class="nine wide field">
                 <div class="field">
                     <label>${message(code:'financials.newCosts.costTitle')}</label>
                     <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
                 </div><!-- .field -->
 
-                <div class="two fields">
+                <div class="two fields la-fields-no-margin-button">
                     <div class="field">
                         <label>${message(code:'financials.budgetCode')}</label>
                         <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width"
@@ -44,14 +48,6 @@
                         <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
-
-            </div>
-            <div class="field">
-                <div class="field ">
-                    <label>${message(code:'financials.newCosts.UID')}</label>
-                    <input type="text" readonly value="${costItem?.globalUID}" />
-                </div><!-- .field -->
-
                 <div class="field">
                     <label>${message(code:'financials.costItemStatus')}</label>
                     <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
@@ -62,8 +58,10 @@
                                   noSelection="${['':'']}"
                                   value="${costItem?.costItemStatus?.id}" />
                 </div><!-- .field -->
+
             </div>
-            <div class="field">
+
+            <div class="seven wide field">
                 <%--
                     <div class="field">
                         <label>${message(code:'financials.costItemCategory')}</label>
@@ -95,11 +93,11 @@
                                   noSelection="${['':'']}"
                                   value="${costItem?.taxCode?.id}" />
                 </div><!-- .field -->
-            </div> <!-- 3/3 field -->
-        </div><!-- three fields -->
+            </div> <!-- 2/2 field -->
+        </div><!-- two fields -->
 
         <div class="fields">
-            <fieldset class="twelve wide field la-modal-fieldset-margin-right la-account-currency">
+            <fieldset class="nine wide field la-modal-fieldset-margin-right la-account-currency">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
                 <div class="two fields">
                     <div class="field">
@@ -112,7 +110,12 @@
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
+                    <!-- Aditial field here-->
+                    <div class="field">
 
+                    </div><!-- .field -->
+                </div>
+                <div class="two fields">
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
                         <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
@@ -122,6 +125,10 @@
                         <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
+                    </div><!-- .field -->
+                    <!-- Aditial field here-->
+                    <div class="field">
+
                     </div><!-- .field -->
                 </div>
                 <div class="two fields">
@@ -150,14 +157,14 @@
 
 
 
-            <fieldset class="four wide field la-modal-fieldset-no-margin">
+            <fieldset class="seven wide field la-modal-fieldset-no-margin">
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
 
                 <div class="field">
                     <label>${message(code:'subscription.label')}</label>
 
                     <g:if test="${costItem?.sub}">
-                        <input class="la-full-width"
+                        <input class="la-full-width la-select2-fixed-width"
                                readonly='readonly'
                                value="${costItem.sub.getName()}" />
                         <input name="newSubscription"
@@ -166,7 +173,7 @@
                     </g:if>
                     <g:else>
                         <g:if test="${inSubMode}">
-                            <input class="la-full-width"
+                            <input class="la-full-width la-select2-fixed-width"
                                    readonly='readonly'
                                    value="${fixedSubscription?.getName()}" />
                             <input name="newSubscription"
@@ -174,7 +181,7 @@
                                    value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
                         </g:if>
                         <g:else>
-                            <input name="newSubscription" id="newSubscription" class="la-full-width select2"
+                            <input name="newSubscription" id="newSubscription" class="la-full-width select2 la-select2-fixed-width"
                                    data-filterMode="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}"
                                    data-subfilter=""
                                    placeholder="${message(code:'financials.newCosts.newLicence')}" />
