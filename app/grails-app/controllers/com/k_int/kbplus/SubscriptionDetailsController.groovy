@@ -10,6 +10,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.elasticsearch.client.Client
 
 import java.text.NumberFormat
 
@@ -39,6 +40,7 @@ class SubscriptionDetailsController {
     def filterService
     def factService
     def docstoreService
+    def ESWrapperService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -1211,7 +1213,13 @@ AND l.status.value != 'Deleted' order by l.reference
         OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
     }
     log.debug("Going for ES")
-    params.rectype = "Package"
+    User user   = springSecurityService.getCurrentUser()
+    params.max = user?.getDefaultPageSize()?:25
+
+    //Change to GOKB ElasticSearch
+    params.esgokb = "Package"
+    params.sort = "name"
+
     result.putAll(ESSearchService.search(params))
 
         result

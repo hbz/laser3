@@ -413,4 +413,16 @@ class OrganisationsController {
 
         result
     }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def numbers() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.orgInstance = contextService.getOrg()
+        result.numbersInstanceList = Numbers.findAllByOrg(contextService.getOrg(), [sort: 'type'])
+
+        result
+    }
 }

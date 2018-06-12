@@ -166,20 +166,21 @@
        </g:if>
         <div class="paginateButtons" style="text-align:center">
             <g:if test="${params.int('offset')}">
-                ${message(code:'title.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
+                ${message(code:'default.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
             </g:if>
             <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                ${message(code:'title.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
+                ${message(code:'default.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
             </g:elseif>
             <g:else>
-                ${message(code:'title.search.no_pagiantion.text', args:[resultsTotal])}
+                ${message(code:'default.search.no_pagiantion.text', args:[resultsTotal])}
             </g:else>
         </div>
-       <div class="paginateButtons" style="text-align:center">
           <g:if test="${hits}" >
-            <span><g:paginate controller="subscriptionDetails" action="linkPackage" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${resultsTotal}" /></span>
+              <semui:paginate action="linkPackage" controller="subscriptionDetails" params="${params}"
+                              next="${message(code: 'default.paginate.next', default: 'Next')}"
+                              prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                              total="${resultsTotal}"/>
           </g:if>
-        </div>
     </div>
   </div>
 

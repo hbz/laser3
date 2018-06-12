@@ -236,7 +236,7 @@
                     </div>
                 </div><!-- .card -->
                 <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
-                <div class="ui card">
+                %{--<div class="ui card">
                     <div class="content">
                         <dl>
                             <dt><g:message code="org.fteStudents.label" default="Fte Students" /></dt>
@@ -251,7 +251,7 @@
                             </dd>
                         </dl>
                     </div>
-                </div><!--.card-->
+                </div><!--.card-->--}%
                 </g:if>
 
             <% /*
