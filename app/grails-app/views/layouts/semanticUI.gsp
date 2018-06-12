@@ -105,10 +105,12 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
-                                <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
-                                <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
-                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
+                                    <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
+                                    <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
+                                </sec:ifAnyGranted>
+                                    <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
 
                                 <%--<div class="divider"></div>
 
@@ -428,6 +430,7 @@
                                 <div class="divider"></div>
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
+                                <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</g:link>
                                 <a href="https://www.hbz-nrw.de/datenschutz" class="item" target="_blank" >${message(code:'dse')}</a>
                                 <%--<g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>--%>
 

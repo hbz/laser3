@@ -10,7 +10,11 @@
 </g:if>
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}">
-
+    <g:if test="${costItem?.globalUID}">
+        <div class="ui blue ribbon label">
+            <strong class="red">${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
+        </div>
+    </g:if>
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
@@ -25,14 +29,14 @@
         CI.SubPkg: ${costItem?.subPkg}
         -->
 
-        <div class="two fields">
-            <div class="field">
+        <div class="fields">
+            <div class="nine wide field">
                 <div class="field">
                     <label>${message(code:'financials.newCosts.costTitle')}</label>
                     <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
                 </div><!-- .field -->
 
-                <div class="two fields">
+                <div class="two fields la-fields-no-margin-button">
                     <div class="field">
                         <label>${message(code:'financials.budgetCode')}</label>
                         <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width"
@@ -44,13 +48,6 @@
                         <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
-            </div>
-            <div class="field">
-                <div class="field ">
-                    <label>${message(code:'financials.newCosts.UID')}</label>
-                    <input type="text" readonly value="${costItem?.globalUID}" />
-                </div><!-- .field -->
-
                 <div class="field">
                     <label>${message(code:'financials.costItemStatus')}</label>
                     <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
@@ -61,70 +58,22 @@
                                   noSelection="${['':'']}"
                                   value="${costItem?.costItemStatus?.id}" />
                 </div><!-- .field -->
+
             </div>
-        </div><!-- two fields -->
 
-        <div class="three fields">
-            <fieldset class="field la-modal-fieldset-no-margin la-account-currency">
-                <label>${g.message(code:'financials.newCosts.amount')}</label>
-
+            <div class="seven wide field">
+                <%--
                     <div class="field">
-                        <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
-                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
-                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
-
-                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
-                            <i class="calculator icon"></i>
-                        </div>
+                        <label>${message(code:'financials.costItemCategory')}</label>
+                        <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
+                                      id="newCostItemCategory"
+                                      from="${costItemCategory}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.costItemCategory?.id}" />
                     </div><!-- .field -->
-
-                    <div class="field la-exchange-rate">
-                        <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
-                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
-                               name="newCostCurrencyRate" id="newCostCurrencyRate"
-                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.000000001" />
-
-                        <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
-                        <i class="calculator icon"></i>
-                    </div>
-                    </div><!-- .field -->
-
-                    <div class="field">
-                        <label>${message(code:'financials.invoice_total')}</label>
-                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
-                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
-                               placeholder="${g.message(code:'financials.invoice_total')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
-
-                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="right center" data-variation="tiny">
-                            <i class="calculator icon"></i>
-                        </div>
-                    </div><!-- .field -->
-
-                    <div class="field">
-                        <g:select class="ui dropdown" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
-                                  from="${currency}"
-                                  optionKey="id"
-                                  optionValue="text"
-                                  value="${costItem?.billingCurrency?.id}" />
-                    </div><!-- .field -->
-
-            </fieldset> <!-- 1/3 field -->
-
-            <fieldset class="field la-modal-fieldset-margin">
-                <label>&nbsp;</label>
-            <%--
-                <div class="field">
-                    <label>${message(code:'financials.costItemCategory')}</label>
-                    <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
-                                  id="newCostItemCategory"
-                                  from="${costItemCategory}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemCategory?.id}" />
-                </div><!-- .field -->
-            --%>
+                --%>
                 <div class="field">
                     <label>${message(code:'financials.costItemElement')}</label>
                     <laser:select name="newCostItemElement" class="ui dropdown"
@@ -144,16 +93,78 @@
                                   noSelection="${['':'']}"
                                   value="${costItem?.taxCode?.id}" />
                 </div><!-- .field -->
-            </fieldset> <!-- 2/3 field -->
+            </div> <!-- 2/2 field -->
+        </div><!-- two fields -->
 
-            <fieldset class="field la-modal-fieldset-no-margin">
+        <div class="fields">
+            <fieldset class="nine wide field la-modal-fieldset-margin-right la-account-currency">
+                <label>${g.message(code:'financials.newCosts.amount')}</label>
+                <div class="two fields">
+                    <div class="field">
+                        <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
+                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
+                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
+                               placeholder="${message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
+
+                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                            <i class="calculator icon"></i>
+                        </div>
+                    </div><!-- .field -->
+                    <!-- Aditial field here-->
+                    <div class="field">
+
+                    </div><!-- .field -->
+                </div>
+                <div class="two fields">
+                    <div class="field la-exchange-rate">
+                        <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
+                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                               name="newCostCurrencyRate" id="newCostCurrencyRate"
+                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.000000001" />
+
+                        <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                            <i class="calculator icon"></i>
+                        </div>
+                    </div><!-- .field -->
+                    <!-- Aditial field here-->
+                    <div class="field">
+
+                    </div><!-- .field -->
+                </div>
+                <div class="two fields">
+
+                    <div class="field">
+                        <label>${message(code:'financials.invoice_total')}</label>
+                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
+                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
+                               placeholder="${g.message(code:'financials.invoice_total')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
+
+                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                            <i class="calculator icon"></i>
+                        </div>
+                    </div><!-- .field -->
+
+                    <div class="field">
+                        <label>&nbsp;</label>
+                        <g:select class="ui dropdown la-currency" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
+                                  from="${currency}"
+                                  optionKey="id"
+                                  optionValue="text"
+                                  value="${costItem?.billingCurrency?.id}" />
+                    </div><!-- .field -->
+                </div>
+            </fieldset> <!-- 1/2 field -->
+
+
+
+            <fieldset class="seven wide field la-modal-fieldset-no-margin">
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
 
                 <div class="field">
                     <label>${message(code:'subscription.label')}</label>
 
                     <g:if test="${costItem?.sub}">
-                        <input class="la-full-width"
+                        <input class="la-full-width la-select2-fixed-width"
                                readonly='readonly'
                                value="${costItem.sub.getName()}" />
                         <input name="newSubscription"
@@ -162,7 +173,7 @@
                     </g:if>
                     <g:else>
                         <g:if test="${inSubMode}">
-                            <input class="la-full-width"
+                            <input class="la-full-width la-select2-fixed-width"
                                    readonly='readonly'
                                    value="${fixedSubscription?.getName()}" />
                             <input name="newSubscription"
@@ -170,7 +181,7 @@
                                    value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
                         </g:if>
                         <g:else>
-                            <input name="newSubscription" id="newSubscription" class="la-full-width select2"
+                            <input name="newSubscription" id="newSubscription" class="la-full-width select2 la-select2-fixed-width"
                                    data-filterMode="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}"
                                    data-subfilter=""
                                    placeholder="${message(code:'financials.newCosts.newLicence')}" />
@@ -179,9 +190,8 @@
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>${message(code:'package.label')}</label>
-
                     <g:if test="${costItem?.sub}">
+                        <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
                                   from="${[{}] + costItem?.sub?.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
@@ -190,6 +200,7 @@
                                   value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                     </g:if>
                     <g:elseif test="${inSubMode}">
+                        <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
                                   from="${[{}] + fixedSubscription?.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
@@ -214,17 +225,18 @@
                     </g:else>
                     --%>
                 </div><!-- .field -->
-            </fieldset> <!-- 3/3 field -->
+            </fieldset> <!-- 2/2 field -->
 
         </div><!-- three fields -->
 
         <div class="three fields">
             <fieldset class="field la-modal-fieldset-no-margin">
                 <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+                <div class="two fields">
+                    <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
 
-                <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
-
-                <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
+                    <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
+                </div>
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin">
@@ -265,7 +277,7 @@
                 input.transition('glow');
                 input.val(($("#newCostInBillingCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
 
-                $(".la-account-currency").children(".field").removeClass("error");
+                $(".la-account-currency").find(".field").removeClass("error");
             }
         })
         $("#costButton2").click(function() {
@@ -274,7 +286,7 @@
                 input.transition('glow');
                 input.val(($("#newCostInBillingCurrency").val() / $("#newCostInLocalCurrency").val()).toFixed(9));
 
-                $(".la-account-currency").children(".field").removeClass("error");
+                $(".la-account-currency").find(".field").removeClass("error");
             }
         })
         $("#costButton3").click(function() {
@@ -283,7 +295,7 @@
                 input.transition('glow');
                 input.val(($("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
 
-                $(".la-account-currency").children(".field").removeClass("error");
+                $(".la-account-currency").find(".field").removeClass("error");
             }
         });
         var isError = function(cssSel)  {

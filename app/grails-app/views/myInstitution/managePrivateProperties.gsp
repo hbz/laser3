@@ -131,6 +131,8 @@
 
        if( $( "#cust_prop_modal_select option:selected" ).val() == "class com.k_int.kbplus.RefdataValue") {
             $("#cust_prop_ref_data_name").show();
+       }else {
+            $("#cust_prop_ref_data_name").hide();
        }
 
     $('#cust_prop_modal_select').change(function() {

@@ -62,7 +62,7 @@ class OrganisationsController {
       result
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def list() {
 
         def result = [:]

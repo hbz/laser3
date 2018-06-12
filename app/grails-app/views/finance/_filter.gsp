@@ -247,7 +247,7 @@
             <tfoot>
                 <tr>
                     <th>
-                        <strong>Gesammtkosten: <span class="sumOfCosts_${i}"></span></strong>
+                        <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}: <span class="sumOfCosts_${i}"></span></strong>
                     </th>
                 </tr>
             </tfoot>
@@ -259,6 +259,9 @@
 </g:each>
 
 <g:if test="${costItemSubList.size() > 1}">%{-- global finance view --}%
+    <div class="title">
+        <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}:<span id="totalCost" style="position:absolute;right:30px"></span></strong>
+    </div>
     </div>
 </g:if>
 
