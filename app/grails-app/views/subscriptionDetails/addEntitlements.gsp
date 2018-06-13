@@ -59,6 +59,9 @@
 
           <g:form action="processAddEntitlements">
             <input type="hidden" name="siid" value="${subscriptionInstance.id}"/>
+              <div class="paginateButtons" style="text-align:center">
+                  <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="ui button"/>
+              </div>
             <table class="ui celled stripped table">
               <thead>
                 <tr>

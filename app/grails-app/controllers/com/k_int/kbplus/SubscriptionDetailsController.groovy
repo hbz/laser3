@@ -41,6 +41,7 @@ class SubscriptionDetailsController {
     def factService
     def docstoreService
     def ESWrapperService
+    def globalSourceSyncService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -1176,34 +1177,88 @@ AND l.status.value != 'Deleted' order by l.reference
         }
 
         if (params.addType && (params.addType != '')) {
-            def pkg_to_link = Package.get(params.addId)
-            def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-            log.debug("Add package ${params.addType} to subscription ${params}");
+            if(params.esgokb)
+            {
+                def gri = GlobalRecordInfo.findByIdentifier(params.addId)
+                def grt = GlobalRecordTracker.findByOwner(gri)
+                if(!grt){
+                    def new_tracker_id = java.util.UUID.randomUUID().toString()
 
-            if (params.addType == 'With') {
-                pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+                    grt = new GlobalRecordTracker(
+                                        owner: gri,
+                                        identifier: new_tracker_id,
+                                        name: gri.name,
+                                        autoAcceptTippAddition: params.autoAcceptTippAddition == 'on' ? true : false,
+                                        autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
+                                        autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
+                                        autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
+                    if ( grt.save() ) {
+                         globalSourceSyncService.initialiseTracker(grt);
+                    }
+                    else {
+                          log.error(grt.errors)
+                    }
+                }
+                def pkg_to_link =Package.findByImpId(grt.owner.identifier)
+                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                log.debug("Add package ${params.addType} to subscription ${params}");
 
-                sub_instances.each {
-                    pkg_to_link.addToSubscription(it, true)
+                if (params.addType == 'With') {
+                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                    sub_instances.each {
+                        pkg_to_link.addToSubscription(it, true)
+                    }
+
+                    redirect action:'index', id:params.id
+                }
+                else if ( params.addType == 'Without' ) {
+                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+                    sub_instances.each {
+                        pkg_to_link.addToSubscription(it, false)
+                    }
+
+                    redirect action: 'addEntitlements', id: params.id
                 }
 
-        redirect action:'index', id:params.id
-      }
-      else if ( params.addType == 'Without' ) {
-        pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+            }else
+            {
+                def pkg_to_link = Package.get(params.addId)
+                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                log.debug("Add package ${params.addType} to subscription ${params}");
 
-                sub_instances.each {
-                    pkg_to_link.addToSubscription(it, false)
+                if (params.addType == 'With') {
+                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                    sub_instances.each {
+                        pkg_to_link.addToSubscription(it, true)
+                    }
+
+                    redirect action:'index', id:params.id
                 }
+                else if ( params.addType == 'Without' ) {
+                     pkg_to_link.addToSubscription(result.subscriptionInstance, false)
 
-                redirect action: 'addEntitlements', id: params.id
+                    sub_instances.each {
+                        pkg_to_link.addToSubscription(it, false)
+                    }
+
+                    redirect action: 'addEntitlements', id: params.id
+                }
             }
         }
 
         if (result.subscriptionInstance.packages) {
             result.pkgs = []
-            result.subscriptionInstance.packages.each { sp ->
-                result.pkgs.add(sp.pkg.id)
+            if(params.esgokb) {
+                result.subscriptionInstance.packages.each { sp ->
+                    result.pkgs.add(sp.pkg.impId)
+                }
+            }else {
+                result.subscriptionInstance.packages.each { sp ->
+                    result.pkgs.add(sp.pkg.id)
+                }
             }
         }
 
@@ -1221,7 +1276,16 @@ AND l.status.value != 'Deleted' order by l.reference
     params.sort = "name"
 
     result.putAll(ESSearchService.search(params))
-
+    if(params.esgokb) {
+            result.tippcount = []
+            result.hits.each {
+                def bais = new ByteArrayInputStream((byte[]) (GlobalRecordInfo.findByIdentifier(it.id).record))
+                def ins = new ObjectInputStream(bais);
+                def rec_info = ins.readObject()
+                ins.close()
+                result.tippcount.add(rec_info.tipps.size())
+            }
+    }
         result
     }
 

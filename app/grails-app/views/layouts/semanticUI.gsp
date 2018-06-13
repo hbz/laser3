@@ -325,6 +325,7 @@
                                     <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
                                     <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
                                     <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
 
                                     <div class="divider"></div>
 

@@ -199,6 +199,35 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def manageESSources() {
+        def result = [:]
+        log.debug("manageESSources ..")
+        result.sources = ElasticsearchSource.list()
+
+        result
+    }
+    @Secured(['ROLE_YODA'])
+    def newESSource() {
+        def result=[:]
+        log.debug("manageGlobalSources ..")
+
+        result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
+                identifier:params.identifier,
+                name:params.name,
+                type:params.type,
+                haveUpTo:null,
+                uri:params.uri,
+                listPrefix:params.listPrefix,
+                fullPrefix:params.fullPrefix,
+                principal:params.principal,
+                credentials:params.credentials,
+                rectype:params.int('rectype'))
+        result.newSource.save()
+
+        redirect action:'manageGlobalSources'
+    }
+
+    @Secured(['ROLE_YODA'])
     def deleteGlobalSource() {
         GlobalRecordSource.removeSource(params.long('id'))
 

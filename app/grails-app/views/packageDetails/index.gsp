@@ -130,46 +130,41 @@
                     <thead>
                       <tr>
                       <g:sortableColumn property="sortname" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
-                      <g:sortableColumn property="consortiaName" title="${message(code:'consortium', default:'Consortium')}" params="${params}" />
-                      <th style="word-break:normal">${message(code:'package.show.start_date', default:'Start Date')}</th>
-                      <th style="word-break:normal">${message(code:'package.show.end_date', default:'End Date')}</th>
-                      <th>${message(code:'package.lastUpdated.label', default:'Last Modified')}</th></tr>
+                      <th>${message(code:'package.compare.overview.tipps')}</th></tr>
                     </thead>
                     <tbody>
-                      <g:each in="${hits}" var="hit">
+                      <g:each in="${hits}" var="hit" status="k">
                         <tr>
-                          <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link>
-                            <!--(${hit.score})-->
-                            <span style="white-space:nowrap">(
-                              <g:if test="${hit.getSource().titleCount}">
-                                <g:if test="${hit.getSource().titleCount == 1}">
+                          <td>
+                            <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
+                          <g:link controller="packageDetails" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
+                            </g:if>
+                              <g:else>${hit.getSource().name}</g:else>
+                          </td>
+                          <td>
+                              <g:if test="${tippcount[k]}">
+                                <g:if test="${tippcount[k] == 1}">
                                   ${message(code:'packageDetails.index.result.titles.single')}
                                 </g:if>
                                 <g:else>
-                                  ${message(code:'packageDetails.index.result.titles', args: [hit.getSource().titleCount])}
+                                  ${message(code:'packageDetails.index.result.titles', args: [tippcount[k]])}
                                 </g:else>
                               </g:if>
                               <g:else>
                                   ${message(code:'packageDetails.index.result.titles.unknown', default:'Unknown number of TIPPs')}
                               </g:else>
-                            )</span>
                           </td>
-                          <td>${hit.getSource().consortiaName}</td>
-                          <td style="white-space:nowrap">
-                          <g:formatDate formatName="default.date.format.notime" date='${hit.getSource().startDate?dateFormater.parse(hit.getSource().startDate):null}'/>
-                          </td>
-                          <td style="white-space:nowrap">
-                          <g:formatDate formatName="default.date.format.notime" date='${hit.getSource().endDate?dateFormater.parse(hit.getSource().endDate):null}'/>
-                          </td>
-                          <td style="white-space:nowrap">${hit.getSource().lastModified}</td>
                         </tr>
                       </g:each>
                     </tbody>
                   </table>
                 </div><!-- #resultsarea -->
-                <div class="paginateButtons" style="text-align:center">
-                  <span><g:paginate controller="packageDetails" action="index" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" total="${resultsTotal}" /></span>
-                </div>
+
+                 <semui:paginate action="index" controller="packageDetails" params="${params}"
+                                 next="${message(code: 'default.paginate.next', default: 'Next')}"
+                                 prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                                 total="${resultsTotal}"/>
+
              </g:if>
             <g:else>
               <p><g:message code="default.search.empty" default="No results found"/></p>

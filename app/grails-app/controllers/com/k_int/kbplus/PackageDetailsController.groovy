@@ -28,15 +28,18 @@ class PackageDetailsController {
 
     @Secured(['ROLE_USER'])
     def index() {
-        redirect controller: 'packageDetails', action: 'list', params: params
-        return // ----- deprecated
+        //redirect controller: 'packageDetails', action: 'list', params: params
+
 
         def result = [:]
         result.user = springSecurityService.getCurrentUser()
         params.max = result.user.defaultPageSize
 
         if (springSecurityService.isLoggedIn()) {
-            params.rectype = "Package" // Tells ESSearchService what to look for
+            //params.rectype = "Package" // Tells ESSearchService what to look for
+            //Change to GOKB ElasticSearch
+            params.esgokb = "Package"
+            params.sort = "name"
             if(params.q == "")  params.remove('q');
 
             if(params.search.equals("yes")){
@@ -46,6 +49,16 @@ class PackageDetailsController {
             }
 
             result =  ESSearchService.search(params)
+            if(params.esgokb) {
+                result.tippcount = []
+                result.hits.each {
+                    def bais = new ByteArrayInputStream((byte[]) (GlobalRecordInfo.findByIdentifier(it.id).record))
+                    def ins = new ObjectInputStream(bais);
+                    def rec_info = ins.readObject()
+                    ins.close()
+                    result.tippcount.add(rec_info.tipps.size())
+                }
+            }
         }
         result
     }

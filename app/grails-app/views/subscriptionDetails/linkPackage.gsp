@@ -57,7 +57,9 @@
 
         <g:render template="nav" contextPath="." />
 
-        <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
+
+
+    <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
             <input type="hidden" name="offset" value="${params.offset}"/>
             <input type="hidden" name="id" value="${params.id}"/>
 
@@ -68,8 +70,30 @@
                 </div>
                 <div class="field">
                     <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.search.label', default:'Search')}</button>
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
                 </div>
             </div>
+
+
+        <div class="ui modal" id="durationAlert">
+        <div class="ui message icon">
+
+            <i class="notched circle loading icon"></i>
+            <div class="content">
+                <div class="header">
+                    <g:message code="globalDataSync.requestProcessing" />
+                </div>
+                <g:message code="globalDataSync.requestProcessingInfo" />
+
+            </div>
+        </div>
+        </div>
+
+        <r:script language="JavaScript">
+            function toggleAlert() {
+                $('#durationAlert').toggle();
+            }
+        </r:script>
 
       <div class="ui grid">
 
@@ -80,6 +104,7 @@
                 </g:each>
               </g:each>
           </div>
+
 
         <div class="four wide column facetFilter">
             <div class="ui card">
@@ -136,7 +161,8 @@
                           <th>${message(code:'default.action.label', default:'Action')}</th></tr>
                     </thead>
                     <tbody>
-                      <g:each in="${hits}" var="hit">
+                      <g:each in="${hits}" var="hit" status="k">
+                          <g:if test="${!params.esgokb}">
                           <tr>
                               <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} </g:link>(${hit.getSource()?.titleCount?:'0'} ${message(code:'title.plural', default:'Titles')})</td>
                               <%--<td>${hit.getSource().consortiaName}</td>--%>
@@ -159,6 +185,32 @@
                                 </g:else>
                               </td>
                             </tr>
+                          </g:if><g:else>
+                          <tr>
+                              <td>${hit.getSource().name}
+                              (${tippcount[k]?:'0'} ${message(code:'title.plural', default:'Titles')})
+                              </td>
+
+                              <td>
+                                  <g:if test="${editable && (!pkgs || !pkgs.contains(hit.id))}">
+                                      <g:link action="linkPackage"
+                                              id="${params.id}"
+                                              params="${[addId:hit.id, addType:'Without', esgokb: 'Package']}"
+                                              style="white-space:nowrap;"
+                                              onClick="return confirm('${message(code:'subscription.details.link.no_ents.confirm', default:'Are you sure you want to add without entitlements?')}'); toggleAlert();">${message(code:'subscription.details.link.no_ents', default:'Link (no Entitlements)')}</g:link>
+                                      <br/>
+                                      <g:link action="linkPackage"
+                                              id="${params.id}"
+                                              params="${[addId:hit.id, addType:'With', esgokb: 'Package']}"
+                                              style="white-space:nowrap;"
+                                              onClick="return confirm('${message(code:'subscription.details.link.with_ents.confirm', default:'Are you sure you want to add with entitlements?')}'); toggleAlert();">${message(code:'subscription.details.link.with_ents', default:'Link (with Entitlements)')}</g:link>
+                                  </g:if>
+                                  <g:else>
+                                      <span></span>
+                                  </g:else>
+                              </td>
+                          </tr>
+                      </g:else>
                       </g:each>
               </tbody>
             </table>
@@ -191,7 +243,7 @@
           </div>
           <div class="content">
               <g:each in="${subscriptionInstance.packages}" var="sp">
-                  <div class="item"><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></div>
+                  <div class="item"><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></div><hr>
               </g:each>
           </div>
       </div>
