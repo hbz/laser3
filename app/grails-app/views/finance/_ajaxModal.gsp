@@ -149,34 +149,34 @@
             <fieldset class="field la-modal-fieldset-no-margin">
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
 
-                <div class="field">
-                    <label>${message(code:'subscription.label')}</label>
+            <div class="field">
+                <label>${message(code:'subscription.label')}</label>
 
-                    <g:if test="${costItem?.sub}">
-                        <input class="la-full-width"
+                <g:if test="${costItem?.sub}">
+                    <input class="la-full-width la-select2-fixed-width"
+                           readonly='readonly'
+                           value="${costItem.sub.getName()}" />
+                    <input name="newSubscription"
+                           type="hidden"
+                           value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
+                </g:if>
+                <g:else>
+                    <g:if test="${inSubMode}">
+                        <input class="la-full-width la-select2-fixed-width"
                                readonly='readonly'
-                               value="${costItem.sub.getName()}" />
+                               value="${fixedSubscription?.getName()}" />
                         <input name="newSubscription"
                                type="hidden"
-                               value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
+                               value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
                     </g:if>
                     <g:else>
-                        <g:if test="${inSubMode}">
-                            <input class="la-full-width"
-                                   readonly='readonly'
-                                   value="${fixedSubscription?.getName()}" />
-                            <input name="newSubscription"
-                                   type="hidden"
-                                   value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
-                        </g:if>
-                        <g:else>
-                            <input name="newSubscription" id="newSubscription" class="la-full-width select2"
-                                   data-filterMode="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}"
-                                   data-subfilter=""
-                                   placeholder="${message(code:'financials.newCosts.newLicence')}" />
-                        </g:else>
+                        <input name="newSubscription" id="newSubscription" class="la-full-width select2 la-select2-fixed-width"
+                               data-filterMode="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}"
+                               data-subfilter=""
+                               placeholder="${message(code:'financials.newCosts.newLicence')}" />
                     </g:else>
-                </div><!-- .field -->
+                </g:else>
+            </div><!-- .field -->
 
                 <div class="field">
                     <label>${message(code:'package.label')}</label>
