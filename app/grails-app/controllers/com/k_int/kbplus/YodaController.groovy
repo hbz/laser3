@@ -211,12 +211,12 @@ class YodaController {
         def result=[:]
         log.debug("manageGlobalSources ..")
 
-        result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
+        /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
                 identifier:params.identifier,
                 name:params.name,
                 host:params.uri)
 
-        result.newSource.save()
+        result.newSource.save()*/
 
         redirect action:'manageGlobalSources'
     }
