@@ -51,63 +51,79 @@
       <semui:crumb message="package.show.all" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:filter>
-      <g:form action="index" method="get" params="${params}">
-        <input type="hidden" name="offset" value="${params.offset}"/>
+  <h1 class="ui header"><semui:headerIcon />${message(code:'package.show.all')}</h1>
 
-        ${message(code:'package.show.pkg_name', default:'Package Name')}: <input name="q" placeholder="${message(code:'packageDetails.index.search.ph')}" value="${params.q}"/>
-        ${message(code:'packageDetails.index.search.sort', default:'Sort')}: <select name="sort">
-                <option ${params.sort=='sortname' ? 'selected' : ''} value="sortname">${message(code:'package.show.pkg_name', default:'Package Name')}</option>
-                <option ${params.sort=='_score' ? 'selected' : ''} value="_score">${message(code:'packageDetails.index.search.sort.score', default:'Score')}</option>
-                <option ${params.sort=='lastModified' ? 'selected' : ''} value="lastModified">${message(code:'packageDetails.index.search.sort.modified', default:'Last Modified')}</option>
-              </select>
-        ${message(code:'packageDetails.index.search.order', default:'Order')}: <select name="order" value="${params.order}">
-                <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
-                <option ${params.order=='desc' ? 'selected' : ''} value="desc">${message(code:'default.desc', default:'Descending')}</option>
-              </select>
-        <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
+  <semui:messages data="${flash}" />
+
+
+  <semui:filter>
+      <g:form action="index" method="get" params="${params}" class="ui form">
+        <input type="hidden" name="offset" value="${params.offset}"/>
+                <div class="field">
+                    <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
+                    <input name="q" placeholder="" value="${params.q}"/>
+                </div>
+                <div class="field">
+                    <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.search.label', default:'Search')}</button>
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                </div>
       </g:form>
    </semui:filter>
 
-       <p>
+  %{--<div class="ui grid">
+
+      <div class="sixteen wide column">
           <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">
             <g:each in="${params.list(facet)}" var="fv">
               <span class="badge alert-info">${facet}:${fv} &nbsp; <g:link controller="packageDetails" action="index" params="${removeFacet(params,facet,fv)}"><i class="icon-remove icon-white"></i></g:link></span>
             </g:each>
           </g:each>
-        </p>
+      </div>
 
-    <div class="ui grid">
 
-        <div class="four wide column facetFilter">
-          <g:each in="${facets.sort{it.key}}" var="facet">
-            <g:if test="${facet.key != 'type'}">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h5 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h5>
-              </div>
-              <div class="panel-body">
-                <ul>
-                  <g:each in="${facet.value.sort{it.display}}" var="v">
-                    <li>
-                      <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
- 
-                      <g:if test="${params.list(facet.key).contains(v.term.toString())}">
-                        ${v.display} (${v.count})
+  <div class="four wide column facetFilter">
+      <div class="ui card">
+          <div class="content">
+              <div class="header"><g:message code="default.filter.label" default="Filter"/></div>
+          </div>
+          <div class="content">
+              <div class="ui relaxed list">
+                  <g:each in="${facets}" var="facet">
+                      <g:if test="${!(facet.key in ['consortiaName'])}"><%-- hide consortia filter --%>
+                          <div class="item">
+                              <h4 class="header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h4>
+
+                              <g:each in="${facet.value.sort{it.display}}" var="v">
+                                  <g:if test="${v.display.toString().length() > 3}">
+                                      <div class="description">
+                                          <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
+
+
+                                          <g:if test="${params.list(facet.key).contains(v.term.toString())}">
+                                              ${v.display} (${v.count})
+                                          </g:if>
+                                          <g:else>
+                                              <g:link controller="${controller}" action="linkPackage" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
+                                          </g:else>
+
+                                          <%--<div class="ui checkbox">
+                                              <g:checkBox class="hidden" name="${facet.key}" value="${params[fname]}" onchange="submit()"/>
+                                              <label>${v.display} (${v.count})</label>
+                                          </div>--%>
+                                      </div>
+                                  </g:if>
+                              </g:each>
+
+                          </div>
                       </g:if>
-                      <g:else>
-                        <g:link controller="${controller}" action="${action}" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
-                      </g:else>
-                    </li>
                   </g:each>
-                </ul>
-              </div>
-            </div>
-            </g:if>
-          </g:each>
-        </div><!-- .four -->
+         </div>
+        </div>
+      </div>
+  </div>--}%
 
-        <div class="twelve wide column ">
+  <div class="twelve wide column">
+      <div>
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
 
@@ -139,7 +155,7 @@
                             <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
                           <g:link controller="packageDetails" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
                             </g:if>
-                              <g:else>${hit.getSource().name}</g:else>
+                              <g:else>${hit.getSource().name} <a target="_blank" href="#" ><i title="GOKB Link" class="external alternate icon"></i></a></g:else>
                           </td>
                           <td>
                               <g:if test="${tippcount[k]}">
@@ -169,8 +185,8 @@
             <g:else>
               <p><g:message code="default.search.empty" default="No results found"/></p>
             </g:else>
-          </div><!-- .twelve -->
-
-    </div><!-- .grid -->
+          </div>
+    </div>
+  </div>
   </body>
 </html>

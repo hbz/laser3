@@ -214,14 +214,8 @@ class YodaController {
         result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
                 identifier:params.identifier,
                 name:params.name,
-                type:params.type,
-                haveUpTo:null,
-                uri:params.uri,
-                listPrefix:params.listPrefix,
-                fullPrefix:params.fullPrefix,
-                principal:params.principal,
-                credentials:params.credentials,
-                rectype:params.int('rectype'))
+                host:params.uri)
+
         result.newSource.save()
 
         redirect action:'manageGlobalSources'

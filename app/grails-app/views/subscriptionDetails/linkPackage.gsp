@@ -57,13 +57,10 @@
 
         <g:render template="nav" contextPath="." />
 
-
-
-    <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
+    <semui:filter>
+        <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
             <input type="hidden" name="offset" value="${params.offset}"/>
             <input type="hidden" name="id" value="${params.id}"/>
-
-            <div class="ui la-filter segment">
                 <div class="field">
                     <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
                     <input name="q" value="${params.q}"/>
@@ -72,7 +69,8 @@
                     <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.search.label', default:'Search')}</button>
                     <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
                 </div>
-            </div>
+        </g:form>
+    </semui:filter>
 
 
         <div class="ui modal" id="durationAlert">
@@ -151,7 +149,17 @@
         <div class="eight wide column">
           <div>
              <g:if test="${hits}">
-
+                 <div class="paginateButtons" style="text-align:center">
+                     <g:if test="${params.int('offset')}">
+                         ${message(code:'default.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
+                     </g:if>
+                     <g:elseif test="${resultsTotal && resultsTotal > 0}">
+                         ${message(code:'default.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
+                     </g:elseif>
+                     <g:else>
+                         ${message(code:'default.search.no_pagiantion.text', args:[resultsTotal])}
+                     </g:else>
+                 </div>
                 <div id="resultsarea">
                   <table class="ui celled la-table table">
                     <thead>
@@ -248,8 +256,7 @@
           </div>
       </div>
   </div>
-</g:form>
-
+</div>
 
 <!-- ES Query String: ${es_query} -->
 </body>

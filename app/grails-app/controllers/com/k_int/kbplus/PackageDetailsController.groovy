@@ -48,9 +48,13 @@ class PackageDetailsController {
                 params.remove("search")
             }
 
+            def old_q = params.q
+            def old_sort = params.sort
+
             result =  ESSearchService.search(params)
+            result.tippcount = []
             if(params.esgokb) {
-                result.tippcount = []
+
                 result.hits.each {
                     def bais = new ByteArrayInputStream((byte[]) (GlobalRecordInfo.findByIdentifier(it.id).record))
                     def ins = new ObjectInputStream(bais);
@@ -58,6 +62,21 @@ class PackageDetailsController {
                     ins.close()
                     result.tippcount.add(rec_info.tipps.size())
                 }
+            }
+
+            if(result.index == 'gokb')
+            {
+                redirect controller: 'packageDetails', action: 'list', params: params
+                return
+            }
+            //Double-Quoted search strings wont display without this
+            params.q = old_q?.replace("\"","&quot;")
+
+            if(! old_q ) {
+                params.remove('q')
+            }
+            if(! old_sort ) {
+                params.remove('sort')
             }
         }
         result

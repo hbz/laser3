@@ -103,6 +103,7 @@ class ESSearchService{
           def search_hits = search1.hits
           result.hits = search_hits.hits
           result.resultsTotal = search_hits.totalHits
+          result.index = index
 
           // We pre-process the facet response to work around some translation issues in ES
           if (search1.getAggregations()) {
@@ -152,7 +153,7 @@ class ESSearchService{
 
     if(params?.esgokb){
           if(sw.toString()) sw.write(" AND ");
-          sw.write(" componentType ='${params.esgokb}' ")
+          sw.write(" componentType:\"${params.esgokb}\" ")
     }
 
       field_map.each { mapping ->
