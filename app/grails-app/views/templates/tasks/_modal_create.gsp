@@ -61,37 +61,37 @@
             </div>
 
             <div id="licensediv"
-                 class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
+                 class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" default="License"/>
                 </label>
                 <g:select id="license" name="license" from="${validLicenses}" optionKey="id"
-                          value="${ownobj?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+                          value="${ownobj?.id}" class="ui dropdown many-to-one" noSelection="['': '']"/>
             </div>
 
-            <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
+            <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
             <label for="org">
                 <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" default="Org"/>
             </label>
             <g:select id="org" name="org" from="${validOrgs}" optionKey="id" value="${ownobj?.id}"
-                      class="ui dropdown many-to-one" noSelection="['null': '']"/>
+                      class="ui dropdown many-to-one" noSelection="['': '']"/>
         </div>
 
-            <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} ">
+            <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
                 <label for="pkg">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.pkg.label" default="Pkg"/>
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
-                          class="ui dropdown many-to-one" noSelection="['null': '']"/>
+                          class="ui dropdown many-to-one" noSelection="['': '']"/>
             </div>
 
             <div id="subscriptiondiv"
-                 class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
+                 class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
                 </label>
                 <g:select id="subscription" name="subscription" from="${validSubscriptions}" optionKey="id"
-                          value="${ownobj?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+                          value="${ownobj?.id}" class="ui dropdown many-to-one" noSelection="['': '']"/>
             </div>
 
         </g:if>

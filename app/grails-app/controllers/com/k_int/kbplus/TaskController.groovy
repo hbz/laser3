@@ -56,16 +56,16 @@ class TaskController {
 					taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id): contextService.getUser()
 				}
 
-				if (params.linkto == "license") {
+				if (params.linkto == "license" && params.license) {
 					taskInstance.license = License.get(params.license) ?: null
 				}
-				else if (params.linkto == "pkg") {
+				else if (params.linkto == "pkg" && params.pkg) {
 					taskInstance.pkg = Package.get(params.pkg) ?: null
 				}
-				else if (params.linkto == "subscription") {
+				else if (params.linkto == "subscription" && params.subscription) {
 					taskInstance.subscription = Subscription.get(params.subscription) ?: null
 				}
-				else if (params.linkto == "org") {
+				else if (params.linkto == "org" && params.org) {
 					taskInstance.org = Org.get(params.org) ?: null
 				}
 
