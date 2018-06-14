@@ -95,3 +95,7 @@ input#spotlightSearch[type="search"] {
   }
 
 }
+//select2 is not caring about the width of container around
+.ui.form .la-select2-fixed-width {
+  width: 356.938px;
+}

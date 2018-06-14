@@ -21351,6 +21351,10 @@ input#spotlightSearch[type="search"] {
 .ui.form .la-account-currency .field input {
   width: 82%;
 }
+
+.ui.form .la-select2-fixed-width {
+  width: 356.938px;
+}
 /*!
  * # Semantic UI 2.3.1 - Grid
  * http://github.com/semantic-org/semantic-ui/

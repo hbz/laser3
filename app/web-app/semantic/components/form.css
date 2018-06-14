@@ -1148,3 +1148,6 @@ input#spotlightSearch[type="search"] {
 .ui.form .la-account-currency .field input {
   width: 82%;
 }
+.ui.form .la-select2-fixed-width {
+  width: 356.938px;
+}
