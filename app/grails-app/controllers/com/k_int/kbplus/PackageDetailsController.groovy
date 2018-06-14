@@ -64,9 +64,10 @@ class PackageDetailsController {
                 }
             }
 
-            if(result.index == 'gokb')
+            if(result.index != 'gokb')
             {
-                redirect controller: 'packageDetails', action: 'list', params: params
+                params.remove("esgokb")
+                redirect controller: 'packageDetails', action: 'list'
                 return
             }
             //Double-Quoted search strings wont display without this
