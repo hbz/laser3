@@ -235,6 +235,11 @@ r2d2 = {
             ctxSel = 'body'
         }
 
+        // selectable table to avoid button is showing when focus after modal closed
+        $(ctxSel + ' .la-selectable').hover(function() {
+            $( ".button" ).blur();
+        });
+
         // close semui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();

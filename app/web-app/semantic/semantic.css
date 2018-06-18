@@ -5495,6 +5495,22 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
 /*******************************
          Button Overrides
 *******************************/
+
+.ui.la-selectable.table .button {
+  opacity: 0;
+}
+
+.ui.la-selectable.table :hover .button {
+  opacity: 1;
+}
+
+.ui.la-selectable.table .button:focus {
+  opacity: 1;
+}
+
+.la-width-122 {
+  width: 122px;
+}
 /*!
  * # Semantic UI 2.3.1 - Container
  * http://github.com/semantic-org/semantic-ui/
@@ -27929,7 +27945,6 @@ Floated Menu / Item
 }
 
 .ui.table tr td {
-  background-color: white;
   padding: 20px 0;
 }
 
@@ -27959,6 +27974,10 @@ Floated Menu / Item
 .ui.la-table.table {
   border-collapse: separate;
   background-color: #f4f8f9;
+}
+
+.ui.la-table.table tr td {
+  background-color: white;
 }
 
 .metaboxContent .ui.la-table.table {
@@ -28037,6 +28056,36 @@ Floated Menu / Item
 
 .la-column-nowrap {
   white-space: nowrap;
+}
+
+/*--------------
+   la-selectable
+---------------*/
+
+.ui.la-selectable.table {
+  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+  margin: 0;
+}
+
+.ui.la-selectable.table tr td {
+  border-top: none;
+}
+
+.ui.la-selectable.table:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+
+/* la-selectable Cell Link */
+
+.ui.table tbody tr td.la-selectable {
+  padding: 0em;
+}
+
+.ui.table tbody tr td.la-selectable > a:not(.ui) {
+  display: block;
+  color: inherit;
+  padding: 0.78571429em 0.78571429em;
 }
 /*!
  * # Semantic UI 2.3.1 - Ad
@@ -29477,6 +29526,63 @@ a.ui.card:hover,
 
 .ui.card.la-role-yoda {
   border-right: 10px solid #98B500;
+}
+
+/* definition list in cards */
+
+.control-label {
+  color: gray;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding-left: .9rem;
+}
+
+.la-inline-lists dl {
+  display: table-row;
+}
+
+.la-inline-lists dl dt,
+.la-inline-lists dl dd {
+  display: table-cell;
+  vertical-align: top;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.la-inline-lists dl dd {
+  padding-left: 1rem;
+}
+
+.la-inline-lists dl dd {
+  word-wrap: break-word;
+}
+
+.la-inline-lists .la-dl-no-table dl dt,
+.la-inline-lists .la-dl-no-table dl dd {
+  display: inline;
+}
+
+.la-inline-lists .ui.card {
+  width: 100%;
+}
+
+.inline-lists > dl > dt,
+.inline-lists > dl > dd {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.inline-lists > dl > dt {
+  width: 25%;
+}
+
+.inline-lists > dl > dt > label {
+  font-weight: bold;
+}
+
+.inline-lists > dl > dd {
+  width: 70%;
+  word-wrap: break-word;
 }
 /*!
  * # Semantic UI 2.3.1 - Comment

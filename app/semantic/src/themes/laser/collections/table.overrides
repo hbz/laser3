@@ -38,7 +38,7 @@
 
   tr{
     td {
-      background-color: white;
+      //background-color: white;
       padding: 20px 0;
     }
     td, th {
@@ -65,6 +65,11 @@
 .ui.la-table.table{
   border-collapse: separate;
   background-color: @simulateTransparency;
+  tr {
+    td {
+      background-color: white;
+    }
+  }
 }
 .metaboxContent .ui.la-table.table{
   border-collapse: separate;
@@ -137,4 +142,32 @@
 
 .la-column-nowrap {
   white-space: nowrap;
+}
+
+/*--------------
+   la-selectable
+---------------*/
+
+
+.ui.la-selectable.table {
+  border-bottom: @rowBorder;
+  margin: 0;
+
+  tr td {
+    border-top: none;
+  }
+  &:hover {
+    background: @selectableBackground !important;
+    color: @selectableTextColor !important;
+  }
+}
+
+/* la-selectable Cell Link */
+.ui.table tbody tr td.la-selectable {
+  padding: 0em;
+}
+.ui.table tbody tr td.la-selectable > a:not(.ui) {
+  display: block;
+  color: inherit;
+  padding: @cellVerticalPadding @cellHorizontalPadding;
 }

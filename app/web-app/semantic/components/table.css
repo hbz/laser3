@@ -1164,7 +1164,6 @@
   background: rgba(0, 0, 0, 0.05);
 }
 .ui.table tr td {
-  background-color: white;
   padding: 20px 0;
 }
 .ui.table tr td,
@@ -1191,6 +1190,9 @@
 .ui.la-table.table {
   border-collapse: separate;
   background-color: #f4f8f9;
+}
+.ui.la-table.table tr td {
+  background-color: white;
 }
 .metaboxContent .ui.la-table.table {
   border-collapse: separate;
@@ -1262,4 +1264,30 @@
 }
 .la-column-nowrap {
   white-space: nowrap;
+}
+
+/*--------------
+   la-selectable
+---------------*/
+
+.ui.la-selectable.table {
+  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+  margin: 0;
+}
+.ui.la-selectable.table tr td {
+  border-top: none;
+}
+.ui.la-selectable.table:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+
+/* la-selectable Cell Link */
+.ui.table tbody tr td.la-selectable {
+  padding: 0em;
+}
+.ui.table tbody tr td.la-selectable > a:not(.ui) {
+  display: block;
+  color: inherit;
+  padding: 0.78571429em 0.78571429em;
 }

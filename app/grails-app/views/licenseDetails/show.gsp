@@ -87,13 +87,13 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.startDate', default:'Start Date')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
                                 </dl>
                                 <dl>
-                                    <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.endDate', default:'End Date')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
@@ -103,7 +103,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.status',default:'Status')}</dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                                     </dd>
@@ -126,7 +126,7 @@
                                 </dl>
                                 --%>
                                 <dl>
-                                    <dt><label class="control-label" for="licenseeRef">${message(code:'license.linktoLicense', default:'License Template')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.linktoLicense', default:'License Template')}</dt>
                                     <dd>
                                             <g:each in="${license?.incomingLinks}" var="il">
                                                 <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link> -
@@ -211,7 +211,7 @@
                             <dl>
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
 
-                                    <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</dt>
                                     <dd>
                                         <g:if test="${license.onixplLicense}">
                                             <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
@@ -423,6 +423,8 @@
                 });
             });
         </g:else>
+
+
     </r:script>
 
   </body>
