@@ -51,32 +51,4 @@
     </tr>
 </g:each>
 
-<script>
-     $('table[id^=costTable] .x .button:not(.negative)').on('click', function(e) {
-        e.preventDefault()
-
-        $.ajax({
-            url: $(this).attr('href')
-        }).done( function(data) {
-            $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
-            $('#dynamicModalContainer').empty().html(data);
-
-            $('#dynamicModalContainer .ui.modal').modal({
-                onVisible: function () {
-                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
-                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-
-                    ajaxPostFunc()
-                },
-                detachable: true,
-                closable: true,
-                transition: 'scale',
-                onApprove : function() {
-                    $(this).find('.ui.form').submit();
-                    return false;
-                }
-            }).modal('show');
-        })
-    })
-</script>
 <!-- _filter_data.gsp -->

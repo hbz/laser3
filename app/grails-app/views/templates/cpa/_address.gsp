@@ -21,7 +21,7 @@
                 ${address?.country.getI10n('value')}
             </g:if>
 
-            <g:if test="${address?.pob}">
+            <g:if test="${address?.pob || address?.pobZipcode || address?.pobCity}">
                 <br />
                 <g:message code="address.pob.label" default="Pob" />
                 ${address?.pob.encodeAsHTML()}

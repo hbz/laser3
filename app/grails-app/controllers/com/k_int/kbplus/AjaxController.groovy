@@ -509,6 +509,12 @@ class AjaxController {
                 }
             }
         }
+
+        if(result)
+        {
+            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+        }
+
         withFormat {
             html {
                 result
@@ -578,6 +584,10 @@ class AjaxController {
     else {
       log.error("No config for refdata search ${params.id}");
     }
+      if(result)
+      {
+          result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+      }
 
     withFormat {
       html {
@@ -1024,6 +1034,7 @@ class AjaxController {
     def domain_class = grailsApplication.getArtefact('Domain',params.baseClass)
     if ( domain_class ) {
       result.values = domain_class.getClazz().refdataFind(params);
+      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
     }
     else {
       log.error("Unable to locate domain class ${params.baseClass}");
@@ -1045,6 +1056,7 @@ class AjaxController {
     def domain_class = grailsApplication.getArtefact('Domain', params.baseClass)
     if (domain_class) {
       result.values = domain_class.getClazz().refdataFind2(params);
+      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
     }
     else {
       log.error("Unable to locate domain class ${params.baseClass}");
