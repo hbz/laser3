@@ -1,4 +1,17 @@
 
+0.5.1
+
+- added public overview for refdata values and properties
+- minor style and markup changes
+- bugfix: setting default org role target for new persons
+- bugfix: now exporting entire set of subscriptions
+- bugfix: creation and editing of tasks
+- bugfix: removed closed tasks from dashboard
+- bugfix: multiple modals for adding and editing cost items
+- bugfix: finished deletion of cost items
+- bugfix: editing of notes
+- bugfix: improved org selection at profile
+
 0.5
 
 - splitted titles into derived objects: books, databases and journals

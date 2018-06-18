@@ -1,17 +1,15 @@
-# Grails / Groovy
+## Grails / Groovy
 
 - Grails 2.5.6
 - Groovy 2.4.10
 
-# Java component dependencies
+## Java component dependencies
 
-See BuildConfig.groovy for explicit java dependencies
+see BuildConfig.groovy for explicit java dependencies
 
-# Host OS Dependencies
+## Host OS Dependencies
 
-Suggested Minimum Versions For Deployment
-
-The following list is the reccommended minimum components - and is the minimum components k-int expects installed to be able to warrant and support this software product for customers
+suggested minimum versions for deployment
 
 1. Java - Oracle JDK 1.7.0_55-b13+
 2. MySql - Oracle MySQL 5.5.37+
