@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.ContextService
@@ -558,6 +559,50 @@ from Subscription as s where (
             qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
         }
 
+        // property filter
+
+        if (params.filterPropDef) {
+            def pd = genericOIDService.resolveOID(params.filterPropDef)
+
+            if (pd.tenant) {
+                base_qry += " and exists ( select scp from s.privateProperties as scp where scp.type = :propDef "
+            } else {
+                base_qry += " and exists ( select scp from s.customProperties as scp where scp.type = :propDef "
+            }
+            qry_params.put('propDef', pd)
+
+
+            if (params.filterProp) {
+
+                switch (pd.type) {
+                    case RefdataValue.toString():
+                        base_qry += " and scp.refValue= :prop "
+                        def pdValue = genericOIDService.resolveOID(params.filterProp)
+                        qry_params.put('prop', pdValue)
+
+                        break
+                    case Integer.toString():
+                        base_qry += " and scp.intValue = :prop "
+                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        break
+                    case String.toString():
+                        base_qry += " and scp.stringValue = :prop "
+                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        break
+                    case BigDecimal.toString():
+                        base_qry += " and scp.decValue = :prop "
+                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        break
+                    case Date.toString():
+                        base_qry += " and scp.dateValue = :prop "
+                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        break
+                }
+            }
+
+            base_qry += " ) "
+        }
+
         if (date_restriction) {
             base_qry += " and s.startDate <= :date_restr and (s.endDate >= :date_restr or s.endDate is null or s.endDate ='' )"
             qry_params.put('date_restr', date_restriction)
@@ -581,7 +626,6 @@ from Subscription as s where (
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-
             base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
             base_qry += " order by LOWER(s.name) asc"
@@ -593,10 +637,15 @@ from Subscription as s where (
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         result.date_restriction = date_restriction;
 
-        def propFilterList = PropertyDefinition.findAllWhere(descr: PropertyDefinition.SUB_PROP)
-        result.custom_prop_types = propFilterList.collectEntries{
-            [(it.getI10n('name')) : it.type + "&&" + it.refdataCategory]
-        }
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                    descr: PropertyDefinition.SUB_PROP,
+                    tenant: null // public properties
+                ) +
+                PropertyDefinition.findAllWhere(
+                    descr: PropertyDefinition.SUB_PROP,
+                    tenant: contextService.getOrg() // private properties
+                )
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value

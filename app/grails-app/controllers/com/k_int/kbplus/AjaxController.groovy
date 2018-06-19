@@ -463,7 +463,12 @@ class AjaxController {
     }
   }
 
-    def sel2RefdataSearchNew() {
+    /**
+     * Copied legacy sel2RefdataSearch(), but uses OID.
+     *
+     * @return
+     */
+    def refdataSearchByOID() {
         def result = []
         def rdc = genericOIDService.resolveOID(params.oid)
 
@@ -525,6 +530,7 @@ class AjaxController {
         }
     }
 
+    @Deprecated
   def sel2RefdataSearch() {
 
     log.debug("sel2RefdataSearch params: ${params}");

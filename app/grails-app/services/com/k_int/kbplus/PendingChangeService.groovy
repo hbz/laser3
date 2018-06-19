@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.*;
 import grails.converters.*
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
@@ -183,7 +184,7 @@ def performAccept(change,httpRequest) {
               def copyRefdata = RefdataCategory.lookupOrCreate(propertyType.refdataCategory,changeDoc.new)
               newProperty."${changeDoc.prop}" = copyRefdata
             }else{
-              newProperty."${changeDoc.prop}" = newProperty.parseValue("${changeDoc.new}", changeDoc.type)
+              newProperty."${changeDoc.prop}" = AbstractProperty.parseValue("${changeDoc.new}", changeDoc.type)
             }
             newProperty.save()
             log.debug("New CustomProperty ${newProperty.type.name} created for ${target_object}")

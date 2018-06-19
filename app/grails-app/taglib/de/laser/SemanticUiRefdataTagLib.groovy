@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.auth.User
 
 // Semantic UI
 
@@ -80,7 +79,7 @@ class SemanticUiRefdataTagLib {
 
         out << "<script>"
         out << "    \$('#${nameRdc}').on('change', function(e) {"
-        out << "        \$.ajax({ url: \"${g.createLink(controller:"ajax", action:"sel2RefdataSearchNew")}?oid=\" + \$(this).find(':selected').val() + \"&format=json\""
+        out << "        \$.ajax({ url: \"${g.createLink(controller:"ajax", action:"refdataSearchByOID")}?oid=\" + \$(this).find(':selected').val() + \"&format=json\""
         out << "            ,"
         out << "            success: function(data){ "
         out << "                var result = [];"

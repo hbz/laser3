@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
 <!doctype html>
 
 <r:require module="annotations" />
@@ -112,6 +112,9 @@
             </div>
 
            --%>
+
+            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+
         </div>
 
         <div class="two fields">
@@ -358,6 +361,7 @@
         })
     </r:script>
 
+    <%--
     <r:script type="text/javascript">
 
         function availableTypesSelectUpdated(optionSelected) {
@@ -428,6 +432,8 @@
 
         window.onload = setTypeAndSearch()
     </r:script>
+    --%>
+
 
   </body>
 </html>
