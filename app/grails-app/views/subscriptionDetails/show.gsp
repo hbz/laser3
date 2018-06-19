@@ -62,13 +62,13 @@
             <div class="inline-lists">
                 <dl>
                     <g:if test="${subscriptionInstance.globalUID}">
-                        <dt><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
+                        <dt class="control-label"><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
                         <dd>
                             <g:fieldValue bean="${subscriptionInstance}" field="globalUID"/>
                         </dd>
                     </g:if>
 
-                    <dt>
+                    <dt class="control-label">
                         <g:message code="org.ids.label" default="Ids" />
                         (<g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel>)
                     </dt>
@@ -115,11 +115,11 @@
                     <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
-                                <dt>${message(code:'subscription.startDate.label', default:'Start Date')}</dt>
+                                <dt class="control-label">${message(code:'subscription.startDate.label', default:'Start Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
                             </dl>
                             <dl>
-                                <dt>${message(code:'subscription.endDate.label', default:'End Date')}</dt>
+                                <dt class="control-label">${message(code:'subscription.endDate.label', default:'End Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
                             </dl>
                             <% /*
@@ -129,7 +129,7 @@
                             </dl>
                             */ %>
                             <dl>
-                                <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
+                                <dt class="control-label">${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                             </dl>
 
@@ -138,11 +138,11 @@
                     <div class="ui card">
                         <div class="content">
                             <dl>
-                                <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
+                                <dt class="control-label">${message(code:'subscription.details.status', default:'Status')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                             </dl>
                             <dl>
-                                <dt>${message(code:'subscription.details.type', default:'Type')}</dt>
+                                <dt class="control-label">${message(code:'subscription.details.type', default:'Type')}</dt>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
                                     <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
@@ -155,7 +155,7 @@
                             </dl>
                             <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
                                 <dl>
-                                    <dt>${message(code:'subscription.isInstanceOfSub.label')}</dt>
+                                    <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
                                         <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
                                     </dd>
@@ -167,17 +167,25 @@
 
                 <div class="ui card">
                         <div class="content">
-                            <dl>
-                                <dt>${message(code:'subscription.packages.label')}</dt>
-                                <dd>
-                                    <g:each in="${subscriptionInstance.packages}" var="sp">
+                            <g:each in="${subscriptionInstance.packages}" var="sp">
+                            <table class="ui la-selectable table">
+                                <colgroup>
+                                    <col width="130" />
+                                    <col width="300" />
+                                    <col width="430"/>
+                                </colgroup>
+                                <tr>
+                                <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
+                                <td>
+
 
                                         <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
                                         <g:if test="${sp.pkg?.contentProvider}">
                                             (${sp.pkg?.contentProvider?.name})
                                         </g:if>
-
+                                </td>
+                                <td>
                                         <g:if test="${editable}">
 
                                             <div class="ui mini icon buttons">
@@ -187,12 +195,11 @@
                                             </div>
                                             <br />
                                         </g:if>
-
-                                    </g:each>
-                                </dd>
-                            </dl>
+                                </td>
+                            </table>
+                            </g:each>
                             <dl>
-                                <dt>${message(code:'license')}</dt>
+                                <dt class="control-label la-width-122">${message(code:'license')}</dt>
                                 <dd>
 
                                         <g:if test="${subscriptionInstance.owner == null}">
@@ -345,7 +352,7 @@
                     <div class="ui card la-dl-no-table">
                         <div class="content">
                             <dl>
-                                <dt>${message(code:'financials.label', default:'Financials')}</dt>
+                                <dt class="control-label">${message(code:'financials.label', default:'Financials')}</dt>
                                 <dd>
                                     <table class="ui single line  table">
                                         <thead>
@@ -404,12 +411,12 @@
                     <div class="content">
                     <g:if test="${subscriptionInstance.costItems}">
                             <dl>
-                                <dt>${message(code:'subscription.details.costPerUse.header')}</dt>
+                                <dt class="control-label">${message(code:'subscription.details.costPerUse.header')}</dt>
                                 <dd><g:formatNumber number="${totalCostPerUse}" type="currency" currencyCode="${currencyCode}" maxFractionDigits="2" minFractionDigits="2" roundingMode="HALF_UP"/></dd>
                             </dl>
                     </g:if>
                         <dl>
-                            <dt>${message(code:'default.usage.label')}</dt>
+                            <dt class="control-label">${message(code:'default.usage.label')}</dt>
                             <dd>
                                 <table class="ui celled la-table table">
                                     <thead>

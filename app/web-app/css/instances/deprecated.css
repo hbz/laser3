@@ -1250,45 +1250,6 @@ dl > dt {
   font-weight: bold;
 }
 
-.la-inline-lists  dl{
-  display: table-row;
-}
-.la-inline-lists  dl  dt,
-.la-inline-lists dl  dd {
-  display: table-cell;
-  vertical-align: top;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-.la-inline-lists dl  dd {
-  padding-left: 1rem;
-}
-.la-inline-lists  dl  dd {
-  word-wrap: break-word;
-}
-.la-inline-lists .la-dl-no-table dl dt,
-.la-inline-lists .la-dl-no-table dl dd{
-  display: inline;
-}
-.la-inline-lists .ui.card {
-  width: 100%;
-}
-
-.inline-lists > dl > dt,
-.inline-lists > dl > dd {
-  display: inline-block;
-  vertical-align: top;
-}
-.inline-lists > dl > dt {
-  width: 25%;
-}
-.inline-lists > dl > dt > label {
-  font-weight: bold;
-}
-.inline-lists > dl > dd {
-  width: 70%;
-  word-wrap: break-word;
-}
 body.public {
   margin-bottom: 180px;
 }
@@ -1412,9 +1373,7 @@ body.public #Footer .footer-sublinks a:hover {
 /*.container > dl > dt {
     margin-top: 10px;
 }*/
-dt > label {
-    font-weight: bold;
-}
+
 .navbar-fixed-top {
 	background-color: #004678;
 }
