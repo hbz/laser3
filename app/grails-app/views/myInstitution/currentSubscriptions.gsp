@@ -114,7 +114,6 @@
            --%>
 
             <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
-
         </div>
 
         <div class="two fields">
