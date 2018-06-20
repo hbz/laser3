@@ -8,93 +8,100 @@
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
+
             <div>
                 <h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
                 <semui:messages data="${flash}" />
-                    <g:form class="ui form" url="[controller: 'accessPoint', action: 'edit_ip']" id="${accessPointInstance.id}" method="POST" action="edit">
-                            <g:hiddenField name="id" value="${accessPointInstance?.id}" />    
-                        <div class="inline-lists">
-                            <dl>                
-                                <dt><label for="name">
-                                        <g:message code="accessPoint.name" default="Name" />
-                                    </label>
-                                </dt>
-                                <dd> 
-                                    <g:textField name="name" value="${accessPointInstance.name}" />
-                                </dd>
-                                <br /><br />
+                <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIP']" id="${accessPointInstance.id}" method="POST">
+                    <g:hiddenField name="id" value="${accessPointInstance?.id}" />
+                    <div class="inline-lists">
+                        <dl>
+                            <dt><label for="name">
+                                    <g:message code="accessPoint.name" default="Name" id="name"/>
+                                </label>
+                            </dt>
+                            <dd>
+                                ${accessPointInstance.name}
+                            </dd>
+                            <br /><br />
 
-                                <dt>
-                                    <label for="accessMethod">
-                                        <g:message code="accessMethod.label" default="Access Method" />
-                                    </label>
-                                </dt>
-                                <dd>
-                                    <g:textField name="accessMethodId" value="${accessPointInstance.accessMethod.value}" readonly="readonly"/>
-                                    <g:hiddenField name="accessMethod" value="${accessPointInstance.accessMethod.id}"/>
-                                </dd>
-                                <br /><br />
-
-                                <dt>
-                                    <label for="authorizationMethod">
-                                        <g:message code="accessMethod.type" default="Type" />
-                                    </label>
-                                </dt>
-                                <dd>
-                                    <laser:select class="values"
-                                        name="authorizationMethod"
-                                        values=""
-                                        from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('Authorization Method')}"
-                                        optionKey="id"
-                                        optionValue="value" />
-                                </dd>
-                                <br /><br />
-                                <dt>
-                                    <label for="first_name">
-                                        <g:message code="accessMethod.data" default="Data" />
-                                    </label>
-                                </dt>
-                                <dd>
-                                    <div class="two fields">
-                                        <div class="field wide twelve fieldcontain">
-                                            <g:textField name="modeDetails" value="${params.modeDetails}"/>
-                                        </div>
-                                        <div class="field wide five fieldcontain">
-                                            <g:select id="iptype" name='iptype'
-                                        noSelection="${['null':'CIDR']}"
-                                        from="${['CIDR','IP-Range','IP']}"></g:select>
-                                        </div>
+                            <dt>
+                                <label for="accessMethod">
+                                    <g:message code="accessMethod.label" default="Access Method" />
+                                </label>
+                            </dt>
+                            <dd>
+                                ${accessPointInstance.accessMethod}
+                                <g:hiddenField name="accessMethod" value="${accessPointInstance.accessMethod.id}"/>
+                            </dd>
+                            <br /><br />
+                            <dt>
+                                <label>
+                                    <g:message code="accessPoint.ipv4.range" default="IPv4 Range" />
+                                </label>
+                            </dt>
+                            <dd>
+                                <div class="one field">
+                                    <div class="field wide twelve fieldcontain">
+                                        <g:each in="${accessPointInstance.getCidr()}" var="ipv4Range">
+                                            <div >${ipv4Range}</div>
+                                        </g:each>
                                     </div>
-                                </dd>
-                                <br /><br />
-                                <dt>
-                                    <label>
-                                        <g:message code="accessPoint.validityRange" default="Gültigkeit" />
-                                    </label>
-                                </dt>
-                                <dd>
+                                </div>
+                            </dd>
+                            <dt>
+                                <label>
+                                    <g:message code="accessPoint.ipv6.range" default="IPv6 Range" />
+                                </label>
+                            </dt>
+                            <dd>
+                                <div class="one field">
+                                    <div class="field wide twelve fieldcontain">
+                                        <div >TODO</div>
+                                    </div>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
 
-                                    <semui:datepicker label ="Von:" name="validFrom" placeholder ="default.date.label" value ="${params.validFrom}">
-                                    </semui:datepicker>
-                                    <semui:datepicker label ="Bis:" name="validTo" placeholder ="default.date.label" value ="${params.validTo}">
-                                    </semui:datepicker>
-                                </dd>
-                            </dl>
-                        </div>
-                        
-                        <div class="ui segment form-actions">
-                                <button type="submit" class="ui button">
-                                        <i class="icon-ok icon-white"></i>
-                                        <g:message code="default.button.update.label" default="Update" />
-                                </button>
-                                <button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
-                                        <i class="icon-trash icon-white"></i>
-                                        <g:message code="default.button.delete.label" default="Delete" />
-                                </button>
-                        </div>
 
-                    </g:form>
-                
+                    <table class="ui celled striped table">
+                        <thead>
+                        <tr>
+                            <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data', default: 'IP or IP Range')}" />
+                            <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${accessPointDataList}" var="accessPointData">
+                            <tr>
+                                <td>${accessPointData.data}</td>
+                                <td class="center aligned">
+                                    <g:link action="deleteData" controller="accessPoint" id="${accessPointData.id}" class="ui negative icon button">
+                                        <i class="delete icon"></i>
+                                    </g:link>
+                                </td>
+                            </tr>
+                        </g:each>
+
+                        <tr>
+                            <td>
+                                <div class="${hasErrors(bean: accessPoint, field: 'name', 'error')} ui form">
+                                    <g:textField name="ip" value="${ip}"/>
+                                </div>
+                            </td>
+                            <td class="center aligned">
+                                <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.new', default:'Add')}" onClick="this.form.submit()"class="ui button"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </g:form>
+
+                <div class="ui segment form-actions">
+                    <g:link class="ui button" action="accessPoints" controller="organisations" id="${orgId}" >${message(code:'acessPoint.button.back', default:'Back')}</g:link>
+                    <g:link class="ui negative button" action="delete" controller="accessPoint" id="${accessPointInstance.id}" >${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                </div>
 		</div>
 	</body>
 </html>

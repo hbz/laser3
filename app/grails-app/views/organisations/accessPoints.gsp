@@ -14,7 +14,7 @@
     <h1 class="ui header">
         <semui:editableLabel editable="${editable}" />
         ${orgInstance.name}
-    </h1>
+    </h1>asdfasfd
 
     <g:render template="nav" contextPath="." />
 
@@ -45,9 +45,9 @@
                 <thead>
                         <tr>
                             <g:sortableColumn property="AccessPoint" title="${message(code: 'accessPoint.name', default: 'Name')}" />
-                            <g:sortableColumn property="accessMode" title="${message(code: 'accessMethod.label', default: 'Access Method')}" />
+                            <g:sortableColumn property="accessMethod" title="${message(code: 'accessMethod.label', default: 'Access Method')}" />
                             <g:sortableColumn property="rules" title="${message(code: 'accessRule.plural', default: 'Access Rules')}" />
-                            <th>${message(code: 'actions', default: 'Actions')}</th>
+                            <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
                         </tr>
                 </thead>
                 <tbody>
@@ -55,10 +55,18 @@
                         <tr>
                             <td>${accessPoint.name}</td>
                             <td>${accessPoint.accessMethod}</td>
-                            <td>###</td>
                             <td>
-                                <g:link action="edit_${accessPoint.accessMethod.value.toLowerCase()}" controller="accessPoint" id="${accessPoint?.id}" class="ui tiny button">${message(code:'default.button.edit.label', default:'Edit')}</g:link>
-                                <g:link action="delete" controller="accessPoint" id="${accessPoint.id}" class="ui tiny button">${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                                <g:each in="${accessPoint.getCidr()}" var="ipv4Range">
+                                    <div >${ipv4Range}</div>
+                                </g:each>
+                            </td>
+                            <td class="center aligned">
+                                <g:link action="edit_${accessPoint.accessMethod.value.toLowerCase()}" controller="accessPoint" id="${accessPoint?.id}" class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                                <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}" class="ui negative icon button">
+                                    <i class="delete icon"></i>
+                                </g:link>
                             </td>
                         </tr>
                     </g:each>
@@ -72,15 +80,15 @@
                         <td>
                             <laser:select class="ui dropdown values" id="accessMethod"
                                           name="accessMethod"
-                                          from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('Access Method')}"
+                                          from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('Access Point Type')}"
                                           optionKey="id"
                                           optionValue="value"
                             />
                         </td>
                         <td></td>
-                        <td>
+                        <td class="center aligned">
                             <input type="hidden" name="orgId" value="${orgInstance.id}" />
-                            <input type="Submit" class="ui tiny button" value="${message(code:'default.button.new.label', default:'New')}" onClick="this.form.submit()"class="ui button"/>
+                            <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.new', default:'New')}" onClick="this.form.submit()"class="ui button"/>
                         </td>
                     </tr>
                 </tbody>

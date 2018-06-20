@@ -1,0 +1,38 @@
+package com.k_int.kbplus
+
+import de.laser.domain.BaseDomainComponent
+import groovy.util.logging.Log4j
+
+@Log4j
+class PlatformAccessMethod extends BaseDomainComponent {
+
+    //Platform platform
+    Date validFrom
+    Date validTo
+    RefdataValue accessMethod       // RefdataCategory 'Access Method'
+    Platform platf
+    
+    static belongsTo = [
+        platform:Platform,
+    ]
+    
+    static mapping = {
+        globalUID       column:'plat_guid'
+        validFrom       column:'pam_valid_from'
+        validTo         column:'pam_valid_to'
+        accessMethod    column:'pam_access_method_rv_fk'
+        platform        column:'pam_platf_fk'
+    }
+    
+    static constraints = {
+        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        validFrom(nullable: true)
+        validTo(nullable: true)
+  }
+    
+    static getAllRefdataValues(String category) {
+        RefdataCategory.getAllRefdataValues(category)
+    }
+    
+    
+}

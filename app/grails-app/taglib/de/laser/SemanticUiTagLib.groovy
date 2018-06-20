@@ -314,8 +314,8 @@ class SemanticUiTagLib {
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
         def value       = attrs.value ?: ''
         def classes     = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
-        def required     = attrs.required ? 'required="true"' : ''
-
+        def required    = attrs.required ? 'required="true"' : ''
+        def hideLabel   = attrs.hideLabel ? false : true
 
         if (attrs.class) {
             classes += ' ' + attrs.class
@@ -326,7 +326,9 @@ class SemanticUiTagLib {
         }
 
         out << '<div class="' + classes + '">'
-        out <<   '<label for="' + name + '">' + label + '</label>'
+        if (hideLabel) {
+            out <<   '<label for="' + name + '">' + label + '</label>'
+        }
         out <<   '<div class="ui calendar datepicker">'
         out <<      '<div class="ui input left icon">'
         out <<          '<i class="calendar icon"></i>'
@@ -337,4 +339,4 @@ class SemanticUiTagLib {
 
     }
 
-}
+    public SemanticUiTagLib ( ) { } }

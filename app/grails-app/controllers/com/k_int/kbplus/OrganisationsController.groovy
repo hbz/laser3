@@ -371,7 +371,6 @@ class OrganisationsController {
           result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
         }
 
-
         if (!orgInstance) {
           flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
           redirect action: 'list'
@@ -379,31 +378,6 @@ class OrganisationsController {
         }
 
         def orgAccessPointList = OrgAccessPoint.findAllByOrg(orgInstance)
-
-        def outerMap = [:]
-        orgAccessPointList?.each{ oap ->
-            if (outerMap[oap.name] == null) {
-                def innerMap = [:]
-                innerMap['IP'] = [oap, oap]
-                outerMap['campus'] = innerMap
-                outerMap['campus'] += innerMap
-                def map2 = [:]
-                map2['Shibboleth'] = [oap]
-                outerMap['campus'] += ['Shibboleth' : [oap]]
-                outerMap['wlan'] = ['Shibboleth' : [oap]]
-            }
-        }
-
-
-      def tmp1 = [:]
-      orgAccessPointList?.each{ oap ->
-          if (tmp1[oap.name] == null) {
-            tmp1[oap.name] = [oap]
-          } else {
-            tmp1[oap.name] += [oap]
-          }
-      }
-
 
         result.orgAccessPointList = orgAccessPointList
 

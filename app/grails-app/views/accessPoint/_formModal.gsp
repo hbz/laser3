@@ -115,7 +115,7 @@
           //If we are working with RefdataValue, grab the values and create select box
           if(selectedValue.indexOf("RefdataValue") != -1){
             var refdataType = selectedValue.split("&&")[1]
-            refdataType="Access Mode";
+            refdataType="Access Method";
             
             $.ajax({ url:'<g:createLink controller="ajax" action="sel2RefdataSearch"/>'+'/'+refdataType+'?format=json',
                         success: function(data) {
