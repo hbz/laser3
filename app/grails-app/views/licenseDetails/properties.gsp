@@ -5,7 +5,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'license.label', default: 'License')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="license" default="License"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="license" default="License"/></title>
     <r:require module="annotations" />
     <g:javascript src="properties.js"/>
 </head>
@@ -15,7 +15,7 @@
 
     <h1 class="ui header"><semui:headerIcon />
 
-        ${license.licensee?.name}
+        %{--${license.licensee?.name}--}%
         ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
@@ -28,16 +28,16 @@
     <g:each in="${authorizedOrgs}" var="authOrg">
         <h6 class="ui header">@ ${authOrg.name}</h6>
 
-        <div id="custom_props_div_${authOrg.shortcode}">
+        <div id="custom_props_div_${authOrg.id}">
             <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
-                    custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                    custom_props_div: "custom_props_div_${authOrg.id}",
                     tenant: authOrg]}"/>
 
             <r:script language="JavaScript">
                 $(document).ready(function(){
-                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                 });
             </r:script>
         </div>

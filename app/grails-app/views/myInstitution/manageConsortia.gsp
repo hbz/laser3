@@ -50,7 +50,7 @@
 </g:if>
 <g:else>
     <br/>
-    <b><g:message code="consortium.emptyconsortiaMembers"/></b>
+    <b><g:message code="consortium.emptyConsortiaMembers"/></b>
 </g:else>
 
 </body>

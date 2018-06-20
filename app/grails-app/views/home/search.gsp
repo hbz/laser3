@@ -40,7 +40,7 @@
 </head>
 
 <body>
-<div class="content"><div class="row-fluid">
+<div class="content"><div>
     <div class="row well text-center">
         <g:form role="form" action="search" controller="home" method="get" class="ui form">
             <fieldset>

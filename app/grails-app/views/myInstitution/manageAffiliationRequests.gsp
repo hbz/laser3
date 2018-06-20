@@ -23,7 +23,7 @@
             <th>Role</th>
             <th>Status</th>
             <th>${message(code: "profile.membership.date2")}</th>
-            <th>${message(code: "profile.membership.actions")}</th>
+            <th>${message(code: "default.actions")}</th>
         </tr>
         </thead>
         <tbody>

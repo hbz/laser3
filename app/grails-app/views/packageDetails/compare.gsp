@@ -95,8 +95,14 @@
 				</tr>
 			</tbody>
 		</table>
-
-		<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}">
+		<div class="fields">
+                  <div class="field">
+                  <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+                    </div>
+                  <div class="field">
+					<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}">
+				  </div>
+		</div>
 	</g:form>
 
 <g:if test="${pkgInsts?.get(0) && pkgInsts?.get(1)}">
@@ -201,12 +207,12 @@
 		<tr>
 			
 			<td>
-                          <strong><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
+				<semui:listIcon type="${currentTitle[0].type.getI10n('value')}"/><strong><g:link action="show" controller="titleDetails" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
-                          <g:each in="${currentTitle[0].ids}" var="id">
+                          <g:each in="${currentTitle[0].ids.sort{it.identifier.ns.ns}}" var="id">
                             <g:if test="${id.identifier.ns.ns != 'originediturl'}">
-                              <br>${id.identifier.ns.ns}:${id.identifier.value}
+                              <br>${id.identifier.ns.ns}: ${id.identifier.value}
                             </g:if>
                           </g:each>
 			</td>
@@ -237,7 +243,7 @@
 	</tbody>
 </table>
 
- <semui:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" maxsteps="${max}" total="${unionListSize}" />
+ <semui:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" max="${max}" total="${unionListSize}" />
 
 </g:if>
 </div>
@@ -249,8 +255,8 @@
 		<g:set var="currentTitle" value="${pkgATipp?.title ?:pkgBTipp?.title}"/>
 
 		<g:render template="compare_details"
-		 model="[pkgA:pkgATipp,pkgB:pkgBTipp,currentTitle:currentTitle, pkgAName:"${pkgInsts.get(0).name}",
-		 pkgBName:"${pkgInsts.get(1).name}" ]"/>
+		 model="[pkgA:pkgATipp,pkgB:pkgBTipp,currentTitle:currentTitle, pkgAName:pkgInsts.get(0).name,
+		 pkgBName:pkgInsts.get(1).name ]"/>
 </g:each>
 
 <r:script language="JavaScript">
@@ -263,7 +269,7 @@
         placeholder: "${message(code:'package.compare.search.ph', default:'Type package name...')}",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { 
             url: '<g:createLink controller='ajax' action='lookup'/>',

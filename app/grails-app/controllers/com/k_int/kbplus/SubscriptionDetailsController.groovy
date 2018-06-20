@@ -10,6 +10,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.elasticsearch.client.Client
 
 import java.text.NumberFormat
 
@@ -38,6 +39,9 @@ class SubscriptionDetailsController {
     def accessService
     def filterService
     def factService
+    def docstoreService
+    def ESWrapperService
+    def globalSourceSyncService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -544,7 +548,7 @@ class SubscriptionDetailsController {
                         ie.embargo = params.bulk_embargo
                     }
 
-                    if (params.bulk_coreStatus.trim().length() > 0) {
+                    if (params.bulk_coreStatus && params.bulk_coreStatus.trim().length() > 0) {
                         def selected_refdata = genericOIDService.resolveOID(params.bulk_coreStatus.trim())
                         log.debug("Selected core status is ${selected_refdata}");
                         ie.coreStatus = selected_refdata
@@ -664,15 +668,20 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        if (params.showDeleted == 'Y') {
-            result.subscriptionChildren = Subscription.findAllByInstanceOf(result.subscriptionInstance)
-        }
-        else {
-            result.subscriptionChildren = Subscription.executeQuery(
-                    "select sub from Subscription as sub where sub.instanceOf = ? and sub.status.value != 'Deleted'",
-                    [result.subscriptionInstance]
-            )
-        }
+        //if (params.showDeleted == 'Y') {
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(result.subscriptionInstance, com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+            result.validSubChilds = validSubChilds
+
+        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(result.subscriptionInstance, com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        result.deletedSubChilds = deletedSubChilds
+        //}
+        //else {
+        //    result.subscriptionChildren = Subscription.executeQuery(
+        //           "select sub from Subscription as sub where sub.instanceOf = ? and sub.status.value != 'Deleted'",
+        //            [result.subscriptionInstance]
+        //    )
+        //}
         result
     }
 
@@ -716,8 +725,10 @@ class SubscriptionDetailsController {
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
         def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+        def role_provider = RefdataCategory.lookupOrCreate('Organisational Role', 'Provider')
+        def role_agency = RefdataCategory.lookupOrCreate('Organisational Role', 'Agency')
 
-        if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
+        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             if (orgType?.value == 'Consortium') {
                 def cons_members = []
@@ -735,7 +746,7 @@ class SubscriptionDetailsController {
                         def takePackage = params."selectedPackage_${cm.get(0).id}"
                         def takeIE = params."selectedIssueEntitlement_${cm.get(0).id}"
 
-                        log.debug("Moe Package:${takePackage} IE:${takeIE}")
+                        log.debug("Package:${takePackage} IE:${takeIE}")
 
                         def postfix = cm.get(0).shortname ?: cm.get(0).name
                         def cons_sub = new Subscription(
@@ -776,6 +787,18 @@ class SubscriptionDetailsController {
                             }
 
                         if (cons_sub) {
+
+                            def providers = OrgRole.findAllBySubAndRoleType(result.subscriptionInstance, role_provider)
+
+                            providers.each { provider ->
+                                new OrgRole(org: provider.org, sub: cons_sub, roleType: role_provider).save()
+                            }
+
+                            def agencys = OrgRole.findAllBySubAndRoleType(result.subscriptionInstance, role_agency)
+                            agencys.each { agency ->
+                                new OrgRole(org: agency.org, sub: cons_sub, roleType: role_agency).save()
+                            }
+
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_cons).save()
                         }
@@ -991,10 +1014,23 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
+        if (params.deleteId) {
+            def dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    dTask.delete(flush: true)
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+            }
+        }
+
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance)
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
 
         log.debug(result.taskInstanceList)
         result
@@ -1021,14 +1057,7 @@ class SubscriptionDetailsController {
 
         log.debug("deleteDocuments ${params}");
 
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag.')) {
-                def docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete} for delete");
-                def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status', 'Deleted');
-            }
-        }
+        docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'subscriptionDetails', action: params.redirectAction, id: params.instanceId
     }
@@ -1148,34 +1177,88 @@ AND l.status.value != 'Deleted' order by l.reference
         }
 
         if (params.addType && (params.addType != '')) {
-            def pkg_to_link = Package.get(params.addId)
-            def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-            log.debug("Add package ${params.addType} to subscription ${params}");
+            if(params.esgokb)
+            {
+                def gri = GlobalRecordInfo.findByIdentifier(params.addId)
+                def grt = GlobalRecordTracker.findByOwner(gri)
+                if(!grt){
+                    def new_tracker_id = java.util.UUID.randomUUID().toString()
 
-            if (params.addType == 'With') {
-                pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+                    grt = new GlobalRecordTracker(
+                                        owner: gri,
+                                        identifier: new_tracker_id,
+                                        name: gri.name,
+                                        autoAcceptTippAddition: params.autoAcceptTippAddition == 'on' ? true : false,
+                                        autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
+                                        autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
+                                        autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
+                    if ( grt.save() ) {
+                         globalSourceSyncService.initialiseTracker(grt);
+                    }
+                    else {
+                          log.error(grt.errors)
+                    }
+                }
+                def pkg_to_link =Package.findByImpId(grt.owner.identifier)
+                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                log.debug("Add package ${params.addType} to subscription ${params}");
 
-                sub_instances.each {
-                    pkg_to_link.addToSubscription(it, true)
+                if (params.addType == 'With') {
+                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                    sub_instances.each {
+                        pkg_to_link.addToSubscription(it, true)
+                    }
+
+                    redirect action:'index', id:params.id
+                }
+                else if ( params.addType == 'Without' ) {
+                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+                    sub_instances.each {
+                        pkg_to_link.addToSubscription(it, false)
+                    }
+
+                    redirect action: 'addEntitlements', id: params.id
                 }
 
-        redirect action:'index', id:params.id
-      }
-      else if ( params.addType == 'Without' ) {
-        pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+            }else
+            {
+                def pkg_to_link = Package.get(params.addId)
+                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                log.debug("Add package ${params.addType} to subscription ${params}");
 
-                sub_instances.each {
-                    pkg_to_link.addToSubscription(it, false)
+                if (params.addType == 'With') {
+                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                    sub_instances.each {
+                        pkg_to_link.addToSubscription(it, true)
+                    }
+
+                    redirect action:'index', id:params.id
                 }
+                else if ( params.addType == 'Without' ) {
+                     pkg_to_link.addToSubscription(result.subscriptionInstance, false)
 
-                redirect action: 'addEntitlements', id: params.id
+                    sub_instances.each {
+                        pkg_to_link.addToSubscription(it, false)
+                    }
+
+                    redirect action: 'addEntitlements', id: params.id
+                }
             }
         }
 
         if (result.subscriptionInstance.packages) {
             result.pkgs = []
-            result.subscriptionInstance.packages.each { sp ->
-                result.pkgs.add(sp.pkg.id)
+            if(params.esgokb) {
+                result.subscriptionInstance.packages.each { sp ->
+                    result.pkgs.add(sp.pkg.impId)
+                }
+            }else {
+                result.subscriptionInstance.packages.each { sp ->
+                    result.pkgs.add(sp.pkg.id)
+                }
             }
         }
 
@@ -1185,9 +1268,24 @@ AND l.status.value != 'Deleted' order by l.reference
         OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
     }
     log.debug("Going for ES")
-    params.rectype = "Package"
-    result.putAll(ESSearchService.search(params))
+    User user   = springSecurityService.getCurrentUser()
+    params.max = user?.getDefaultPageSize()?:25
 
+    //Change to GOKB ElasticSearch
+    params.esgokb = "Package"
+    params.sort = "name"
+
+    result.putAll(ESSearchService.search(params))
+    if(params.esgokb) {
+            result.tippcount = []
+            result.hits.each {
+                def bais = new ByteArrayInputStream((byte[]) (GlobalRecordInfo.findByIdentifier(it.id).record))
+                def ins = new ObjectInputStream(bais);
+                def rec_info = ins.readObject()
+                ins.close()
+                result.tippcount.add(rec_info.tipps.size())
+            }
+    }
         result
     }
 
@@ -1360,11 +1458,19 @@ AND l.status.value != 'Deleted' order by l.reference
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgRelations = []
         result.subscriptionInstance.orgRelations?.each { or ->
-            if (! (or.org == contextService.getOrg() && or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Agency'])) {
                 result.visibleOrgRelations << or
             }
         }
         result.visibleOrgRelations.sort{it.org.sortname}
+
+        result.visibleOrgAgencyRelations = []
+        result.subscriptionInstance.orgRelations?.each { or ->
+            if (!(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Provider']) && !(or.org == contextService.getOrg())) {
+                result.visibleOrgAgencyRelations << or
+            }
+        }
+        result.visibleOrgAgencyRelations.sort{it.org.sortname}
 
         // -- private properties
 
@@ -1451,6 +1557,7 @@ AND l.status.value != 'Deleted' order by l.reference
             }
           }
         }
+
 
         result
     }

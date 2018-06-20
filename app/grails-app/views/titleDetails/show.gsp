@@ -52,16 +52,16 @@
                     <table class="ui celled la-table la-table-small table ignore-floatThead">
                         <thead>
                         <tr>
-                            <th>${message(code:'title.edit.component_id.label')}</th>
+                            %{--<th>${message(code:'title.edit.component_id.label')}</th>--}%
                             <th>${message(code:'title.edit.namespace.label')}</th>
                             <th>${message(code:'identifier.label')}</th>
                             <th>${message(code:'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${ti.ids}" var="io">
+                        <g:each in="${ti.ids.sort{it.identifier.ns.ns}}" var="io">
                             <tr>
-                                <td>${io.id}</td>
+                                %{--<td>${io.id}</td>--}%
                                 <td>${io.identifier.ns.ns}</td>
                                 <td>${io.identifier.value}</td>
                                 <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ti.class.name}:${ti.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'title.edit.identifier.delete')}</g:link></g:if></td>
@@ -116,7 +116,7 @@
             <table class="ui celled la-table table ">
               <thead>
                 <tr>
-                  <th>${message(code:'title.edit.component_id.label')}</th>
+                  %{--<th>${message(code:'title.edit.component_id.label')}</th>--}%
                   <th>${message(code:'template.orgLinks.name')}</th>
                   <th>${message(code:'template.orgLinks.role')}</th>
                   <th>${message(code:'title.edit.orglink.from')}</th>
@@ -126,7 +126,7 @@
               <tbody>
                 <g:each in="${ti.orgs}" var="org">
                   <tr>
-                    <td>${org.org.id}</td>
+                    %{--<td>${org.org.id}</td>--}%
                     <td><g:link controller="organisations" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>
@@ -191,7 +191,7 @@
                   <tr>
                       <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
                       <th>${message(code:'tipp.endDate')}</th><th>${message(code:'tipp.endVolume')}</th><th>${message(code:'tipp.endIssue')}</th><th>${message(code:'tipp.coverageDepth')}</th>
-                      <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'title.edit.actions.label')}</th>
+                      <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'default.actions')}</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -222,7 +222,7 @@
                       <th>${message(code:'tipp.start')}</th>
                       <th>${message(code:'tipp.end')}</th>
                       <th>${message(code:'tipp.coverageDepth')}</th>
-                      <th>${message(code:'title.edit.actions.label')}</th>
+                      <th>${message(code:'default.actions')}</th>
                     </tr>
                     <tr>
                       <th colspan="6">${message(code:'tipp.coverageNote')}</th>
@@ -322,6 +322,8 @@
               </table>
             </g:form>
 
+            <br><br>
+
   <r:script language="JavaScript">
 
     $(function(){
@@ -331,7 +333,7 @@
         placeholder: "Search for an org...",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
@@ -353,7 +355,7 @@
         placeholder: "Search for an role...",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",

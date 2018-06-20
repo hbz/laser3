@@ -1,7 +1,9 @@
 <!-- _filter.gsp -->
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
+
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 
-<g:if test="${false}"><!-- TMP::IGNOREFILTER -->
+<g:if test="${false}"><!-- TMP::IGNORE LEGACY FILTER -->
 
 %{--AJAX rendered messages--}%
 <g:if test="${info}">
@@ -193,37 +195,147 @@
 
 </semui:filter>
 
-</g:if><!-- TMP::IGNOREFILTER -->
-
-    <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
-
-        <thead>
-            <tr>
-                <th>Preis in EUR</th>
-                <th>Kategorie</th>
-                <th>Komponente</th>
-                <th>Status</th>
-                <th class="three wide">Bezeichnung</th>
-                <th>Datum von</th>
-                <th>Datum bis</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-            %{--Empty result set--}%
-            <g:if test="${cost_item_count==0}">
-                <tr><td colspan="8" style="text-align:center">&nbsp;<br/><g:if test="${msg}">${msg}</g:if><g:else>No Cost Items Found</g:else><br/>&nbsp;</td></tr>
-            </g:if>
-            <g:else>
-            %{--Two rows of data per CostItem, separated for readability--}%
-                <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
-            </g:else>
-        </tbody>
-
-    </table>
+</g:if><!-- TMP::IGNORE LEGACY FILTER -->
 
 
-    <%--
+    <semui:filter>
+        <g:form method="get" class="ui form">
+
+            <div class="three fields">
+                <div class="field">
+                    <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}</label>
+                    <input id="filterCITitle" name="filterCITitle" type="text" value="${params.filterCITitle}"/>
+                </div>
+
+                <div class="field fieldcontain">
+                    <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
+                    <laser:select id="filterCIElement" class="ui dropdown selection"
+                                  name="filterCIElement"
+                                  from="${costItemElement}"
+                                  optionKey="${{it.class.getName() + ":" + it.id}}"
+                                  optionValue="value"
+                                  value="${params.filterCIElement}"
+                                  noSelection="${['':'Alle ..']}"/>
+                </div>
+
+                <div class="field fieldcontain">
+                    <label for="filterCIStatus">${message(code:'financials.costItemStatus')}</label>
+                    <laser:select id="filterCIStatus" class="ui dropdown selection"
+                                  name="filterCIStatus"
+                                  from="${costItemStatus}"
+                                  optionKey="${{it.class.getName() + ":" + it.id}}"
+                                  optionValue="value"
+                                  value="${params.filterCIStatus}"
+                                  noSelection="${['':'Alle ..']}"/>
+                </div>
+            </div><!-- .three -->
+
+            <div class="three fields">
+                <div class="field">
+                    <label for="filterCIBudgetCode">${message(code:'financials.budgetCode')}</label>
+                    <input id="filterCIBudgetCode" name="filterCIBudgetCode" type="text" value="${params.filterCIBudgetCode}"/>
+                </div>
+
+                <div class="field">
+                    <label>${message(code:'financials.invoice_number')}</label>
+                    <input id="filterCIInvoiceNumber" name="filterCIInvoiceNumber" type="text" value="${params.filterCIInvoiceNumber}" />
+                </div>
+
+                <div class="field">
+                    <label>${message(code:'financials.order_number')}</label>
+                    <input type="text" name="filterCIOrderNumber" id="filterCIOrderNumber" value="${params.filterCIOrderNumber}" data-type="select"/>
+                </div>
+            </div><!-- .three -->
+
+            <div class="three fields">
+                <div class="field">
+                    <label>Wildcard-Suche</label>
+                    <input type="checkbox" name="wildcard" value="on" <g:if test="${wildcard != 'off'}"> checked="checked"</g:if> />
+                </div>
+
+                <div class="field">
+                </div>
+
+                <div class="field la-filter-search ">
+                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
+                </div>
+            </div>
+
+            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+        </g:form>
+    </semui:filter>
+
+<g:if test="${costItemSubList.size() > 1}">
+    <div class="ui styled fluid accordion">
+</g:if>
+
+    <g:each in="${costItemSubList}" var="subListItem" status="i">
+
+        <g:if test="${costItemSubList.size() > 1}">
+            <div class="title">
+                <i class="dropdown icon"></i>
+                ${subListItem.key != 'clean' ? subListItem.key : 'Ohne konkrete Zuordnung'}
+                ( ${subListItem.value?.size()} )
+                <span class="sumOfCosts_${i}" style="position:absolute;right:30px"></span>
+            </div>
+
+            <div class="content">
+        </g:if>
+
+            <g:set var="cost_items" value="${subListItem.value}" />
+
+            <table id="costTable_${i}" class="ui celled sortable table table-tworow la-table floatThead">
+
+                <thead>
+                    <tr>
+                        <th>${message(code:'financials.costInLocalCurrency')}</th>
+                        <th class="three wide">${message(code:'financials.newCosts.costTitle')}</th>
+                        <%-- <th>${message(code:'financials.costItemCategory')}</th> --%>
+                        <th>${message(code:'financials.costItemElement')}</th>
+                        <%-- <th>${message(code:'financials.costItemComponent')}</th> --%>
+                        <th>${message(code:'financials.costItemStatus')}</th>
+                        <th>${message(code:'financials.dateFrom')}</th>
+                        <th>${message(code:'financials.dateTo')}</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    %{--Empty result set--}%
+                    <g:if test="${cost_item_count == 0}">
+                        <tr><td colspan="7" style="text-align:center">&nbsp;<br/>
+                            <g:if test="${msg}">${msg}</g:if><g:else>${message(code:'finance.result.filtered.empty')}</g:else><br/>&nbsp;
+                        </td></tr>
+                    </g:if>
+                    <g:else>
+                        <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
+                    </g:else>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>
+                            <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}: <span class="sumOfCosts_${i}"></span></strong>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+
+        <g:if test="${costItemSubList.size() > 1}">
+            </div><!-- .content -->
+        </g:if>
+    </g:each>
+
+    <g:if test="${costItemSubList.size() > 1}">
+        <div class="title">
+            <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}:<span id="totalCost" style="position:absolute;right:30px"></span></strong>
+        </div>
+    </g:if>
+
+<g:if test="${costItemSubList.size() > 1}">
+    </div>
+</g:if>
+
+<%--
         <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
 
             <thead>
@@ -296,6 +408,7 @@
         </table>
  --%>
 
+<%--
 <div id="paginationWrapper" class="pagination">
     <div id="paginateInfo" hidden="true" data-offset="${offset!=null?offset:params.offset}" data-max="${max!=null?max:params.max}"
          data-wildcard="${wildcard!=null?wildcard:params.wildcard}" data-insubmode="${inSubMode}" data-sub="${fixedSubscription?.id}"
@@ -309,4 +422,5 @@
           offset='0'  total="${cost_item_count}"  max="20" pageSizes="[10, 20, 50, 100, 200]" alwaysShowPageSizes="true" controller="finance" action="index"
            params="${params+["filterMode": "${filterMode}", "sort":"${sort}", "order":"${order}", "format":"frag", "inSubMode":"${inSubMode}", "sub":"${fixedSubscription?.id}"]}" />
 </div>
+--%>
 <!-- _filter.gsp -->

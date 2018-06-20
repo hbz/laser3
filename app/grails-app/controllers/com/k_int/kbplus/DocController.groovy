@@ -15,14 +15,12 @@ class DocController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+	@Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+	@Secured(['ROLE_ADMIN'])
     def list() {
       	def result = [:]
       	result.user = User.get(springSecurityService.principal.id)
@@ -112,6 +110,55 @@ class DocController {
 			break
 		}
     }
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	def editNote() {
+		switch (request.method) {
+		/*case 'GET':
+	        def docInstance = Doc.get(params.id)
+	        if (!docInstance) {
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label', default: 'Doc'), params.id])
+	            redirect action: 'list'
+	            return
+	        }
+
+	        [docInstance: docInstance]
+			break*/
+			case 'POST':
+				def docInstance = Doc.get(params.id)
+				if (!docInstance) {
+					flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label', default: 'Note'), params.id])
+					//redirect action: 'list'
+					redirect(url: request.getHeader('referer'))
+					return
+				}
+
+				if (params.version) {
+					def version = params.version.toLong()
+					if (docInstance.version > version) {
+						docInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+								[message(code: 'default.note.label', default: 'Note')] as Object[],
+								"Another user has updated this Doc while you were editing")
+						//render view: 'edit', model: [docInstance: docInstance]
+						redirect(url: request.getHeader('referer'))
+						return
+					}
+				}
+
+				docInstance.properties = params
+
+				if (!docInstance.save(flush: true)) {
+					//render view: 'edit', model: [docInstance: docInstance]
+					redirect(url: request.getHeader('referer'))
+					return
+				}
+
+				flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label', default: 'Note'), docInstance.title])
+				//redirect action: 'show', id: docInstance.id
+				redirect(url: request.getHeader('referer'))
+				break
+		}
+	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })

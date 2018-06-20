@@ -2,13 +2,15 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.label', default:'Subscription')}</title>
 </head>
 <body>
 
     <g:render template="breadcrumb" model="${[ subscriptionInstance:subscription, params:params ]}"/>
 
-    <g:render template="actions" />
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
 
     <h1 class="ui header"><semui:headerIcon />
 

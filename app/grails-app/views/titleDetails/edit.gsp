@@ -54,7 +54,7 @@
                 </tr>
               </thead>
               <tbody>
-                <g:each in="${ti.ids}" var="io">
+                <g:each in="${ti.ids.sort{it.identifier.ns.ns}}" var="io">
                   <tr>
                     <td>${io.id}</td>
                     <td>${io.identifier.ns.ns}</td>
@@ -86,7 +86,7 @@
                     <tr>
                         <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
                         <th>${message(code:'tipp.endDate')}</th><th>${message(code:'tipp.endVolume')}</th><th>${message(code:'tipp.endIssue')}</th><th>${message(code:'tipp.coverageDepth')}</th>
-                        <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'title.edit.actions.label')}</th>
+                        <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th>${message(code:'default.actions')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,7 +120,7 @@
         placeholder: "Search for an org...",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
@@ -142,7 +142,7 @@
         placeholder: "Search for an role...",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",

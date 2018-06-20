@@ -15,8 +15,6 @@
             <semui:crumb message="menu.institutions.tasks" class="active"/>
         </semui:breadcrumbs>
 
-        <semui:messages data="${flash}" />
-
         <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
 
         <semui:filter>
@@ -45,19 +43,33 @@
                                   optionKey="id"
                                   optionValue="value" />
                     </div>
-
-                    <div class="field">
-                        <label>&nbsp;</label>
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
-                    </div>
-
                 </div>
+                    <div class="fields">
+                        <div class="field">
+                            <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                        </div>
+                        <div class="field">
+                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
+                        </div>
+                    </div>
             </form>
         </semui:filter>
+
+        <semui:messages data="${flash}" />
+
+        <h2 class="ui header">Mir zugewiesene Aufgaben</h2>
+
+        <g:if test="${editable}">
+            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+        </g:if>
+
+        <g:render template="/templates/tasks/modal_create" />
 
         <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList]}"/>
+
+
 
   </body>
 </html>

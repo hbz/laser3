@@ -52,8 +52,9 @@ class PlatformController {
       result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(['ROLE_ADMIN'])
     def create() {
     switch (request.method) {
     case 'GET':
@@ -136,8 +137,9 @@ class PlatformController {
 
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(['ROLE_ADMIN'])
     def edit() {
     switch (request.method) {
     case 'GET':
@@ -182,8 +184,9 @@ class PlatformController {
     }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(['ROLE_ADMIN'])
     def delete() {
         def platformInstance = Platform.get(params.id)
         if (!platformInstance) {

@@ -27,7 +27,7 @@
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    ${entry.key}
+                    <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
                     <table class="ui celled la-table la-table-small table">
@@ -46,6 +46,7 @@
                                 <!--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />-->
                                 <tr>
                                     <td>
+                                        <!-- ${pd.id} -->
                                         ${fieldValue(bean: pd, field: "name")}
                                         <g:if test="${pd.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
@@ -81,12 +82,17 @@
                 <div class="fields">
                     <div class="field five wide">
                         <label class="property-label">Context:</label>
-                        <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
+                        <%--<g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" />--%>
+                        <select name="cust_prop_desc" id="cust_prop_desc" class="ui dropdown">
+                            <g:each in="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" var="pd">
+                                <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
+                            </g:each>
+                        </select>
                     </div>
 
                     <div class="field five wide">
                         <label class="property-label">Type</label>
-                        <g:select
+                        <g:select class="ui dropdown"
                             from="${PropertyDefinition.validTypes.entrySet()}"
                             optionKey="value" optionValue="key"
                             name="cust_prop_type"

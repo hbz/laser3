@@ -75,7 +75,7 @@ abstract class AbstractProperty implements Serializable {
         newProp
     }
 
-    def parseValue(value, type){
+    def static parseValue(value, type){
         def result
         
         switch (type){

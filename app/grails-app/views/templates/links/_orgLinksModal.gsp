@@ -1,11 +1,12 @@
-<semui:modal id="osel_add_modal" text="${tmplText}">
+<semui:modal id="${tmplmodalID}" text="${tmplText}">
+    <g:set var="ajaxID" value="${tmplID ?:'allOrgs'}"/>
     <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}"/>
         <input type="hidden" name="property" value="${property}"/>
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
 
         <div class="field">
-            <table id="org_role_tab" class="ui celled la-table la-table-small table">
+            <table id="org_role_tab${tmplmodalID}" class="ui celled la-table la-table-small table">
                 <thead>
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>
@@ -47,10 +48,10 @@
 
         $('#add_org_head_row').empty()
 
-        oOrTable = $('#org_role_tab').dataTable( {
+        oOrTable = $('#org_role_tab${tmplmodalID}').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
-            "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="ContentProvider" params="${[format:'json']}"/>",
+            "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="${ajaxID}" params="${[format:'json']}"/>",
             "bServerSide": true,
             "bProcessing": true,
             "bDestroy":    true,

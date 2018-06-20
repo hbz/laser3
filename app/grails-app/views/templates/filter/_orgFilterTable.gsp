@@ -3,7 +3,7 @@
     <g:set var="rowspan" value="2"/>
 </g:if>
 
-<table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+<table class="ui sortable celled la-table table">
     <thead>
     <tr>
         <g:if test="${tmplShowCheckbox}">
@@ -11,9 +11,8 @@
                 <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
             </th>
         </g:if>
-
         <g:if test="${tmplConfigShow?.contains('name')}">
-            <th rowspan="${rowspan}">${message(code: 'org.name.label', default: 'Name')}</th>
+            <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)" rowspan="${rowspan}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th rowspan="${rowspan}">Identifier</th>
@@ -38,6 +37,9 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th rowspan="${rowspan}">${message(code: 'org.libraryType.label')}</th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('country')}">
+            <th owspan="${rowspan}">${message(code: 'org.country.label')}</th>
         </g:if>
         <g:if test="${tmplConfigOptions?.contains('addMembers')}">
             <th colspan="2">
@@ -71,33 +73,33 @@
             </g:if>
             <td>
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                    <g:if test="${org.shortname}">
-                        ${fieldValue(bean: org, field: "shortname")}
-                    </g:if>
-                    <g:else>
-                        ${fieldValue(bean: org, field: "name")}
-                    </g:else>
+                        ${fieldValue(bean: org, field: "name")} <br>
+                        <g:if test="${org.shortname}">
+                            (${fieldValue(bean: org, field: "shortname")})
+                        </g:if>
                 </g:if>
                 <g:else>
                     <g:link controller="organisations" action="show" id="${org.id}">
+                        ${fieldValue(bean: org, field: "name")} <br>
                         <g:if test="${org.shortname}">
-                            ${fieldValue(bean: org, field: "shortname")}
+                            (${fieldValue(bean: org, field: "shortname")})
                         </g:if>
-                        <g:else>
-                            ${fieldValue(bean: org, field: "name")}
-                        </g:else>
                     </g:link>
                 </g:else>
             </td>
 
             <g:if test="${tmplConfigShow?.contains('identifier')}">
-                <td>TODO</td>
+                <td><g:if test="${org.ids}">
+                    <ul>
+                        <g:each in="${org.ids.sort{it.identifier.ns.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
+                    </ul>
+                </g:if></td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('wib')}">
-                <td>${org.getIdentifierByType('wib')?.value}</td>
+                <td>${org.getIdentifiersByType('wib')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('isil')}">
-                <td>${org.getIdentifierByType('isil')?.value}</td>
+                <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('type')}">
                 <td>${org.orgType?.getI10n('value')}</td>
@@ -113,6 +115,9 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('libraryType')}">
                 <td>${org.libraryType?.getI10n('value')}</td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('country')}">
+                <td>${org.country?.getI10n('value')}</td>
             </g:if>
 
             <g:if test="${tmplConfigOptions?.contains('addMembers')}">

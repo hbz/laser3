@@ -48,7 +48,7 @@ class LicenseDetailsController {
       result.onixplLicense = result.license.onixplLicense;
 
       if (executorWrapperService.hasRunningProcess(result.license)) {
-          log.debug("PEndingChange processing in progress")
+          log.debug("PendingChange processing in progress")
           result.processingpc = true
       } else {
 
@@ -193,7 +193,7 @@ class LicenseDetailsController {
     private def getAvailableSubscriptions(license, user) {
         def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
           orgRole.roleType?.value in ["Licensee", "Licensee_Consortial"]
-        }?.collect{  accessService.checkUserOrgRole(user, it.org, 'INST_ADM') ? it.org : null  }
+        }?.collect{  accessService.checkMinUserOrgRole(user, it.org, 'INST_EDITOR ') ? it.org : null  }
 
     def subscriptions = null
     if(licenseInstitutions){
@@ -228,6 +228,20 @@ from Subscription as s where
 
   }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def unlinkSubscription(){
+        log.debug("unlinkSubscription :: ${params}")
+        if(params.subscription && params.license){
+            def sub = Subscription.get(params.subscription)
+            if (sub.owner == License.get(params.license)) {
+                sub.owner = null
+                sub.save(flush:true)
+            }
+        }
+        redirect controller:'licenseDetails', action:'show', params: [id:params.license]
+    }
+
     @Deprecated
     @Secured(['ROLE_YODA'])
     def consortia() {
@@ -244,7 +258,7 @@ from Subscription as s where
     if (result.user.getAuthorities().contains(Role.findByAuthority('ROLE_ADMIN'))) {
         isAdmin = true;
     }else{
-       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkUserOrgRole(result.user, it.org, 'INST_ADM') }
+       hasAccess = result.license.orgLinks.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkMinUserOrgRole(result.user, it.org, 'INST_ADM') }
     }
     if( !isAdmin && (result.license.licenseType != "Template" || hasAccess == null)) {
       flash.error = message(code:'license.consortia.access.error')
@@ -391,7 +405,20 @@ from Subscription as s where
             response.sendError(401); return
         }
 
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
+        if (params.deleteId) {
+            def dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    dTask.delete(flush: true)
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+            }
+        }
+
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license, params)
         log.debug(result.taskInstanceList)
 
         result
@@ -459,33 +486,10 @@ from Subscription as s where
         //def l = License.get(params.instanceId);
         //userAccessCheck(l,user,'edit')
 
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag.') ) {
-                def docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete} for delete");
-                def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted');
-                docctx.save(flush:true);
-            }
-        }
+        docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId, fragment:'docstab'
+        redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
-
-    /*
-    @Deprecated
-    def userAccessCheck(license, user, role_str) {
-        if ((license == null || user == null ) || (! license?.hasPerm(role_str, user))) {
-            log.debug("return 401....");
-            def this_license = message(code:'license.details.flash.this_license')
-            def this_inst = message(code:'license.details.flash.this_inst')
-            flash.error = message(code:'license.details.flash.error', args:[role_str,(license?.reference?:this_license),(license?.licensee?.name?:this_inst)])
-            response.sendError(401);
-            return false
-        }
-        return true
-    }
-    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })

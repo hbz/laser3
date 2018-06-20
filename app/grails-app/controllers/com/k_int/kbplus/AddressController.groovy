@@ -19,7 +19,7 @@ class AddressController {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def list() {
 		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]

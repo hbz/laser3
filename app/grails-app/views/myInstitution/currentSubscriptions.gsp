@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
 <!doctype html>
 
 <r:require module="annotations" />
@@ -16,6 +16,11 @@
         </semui:breadcrumbs>
 
         <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="currentSubscriptions" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>
             <g:render template="actions" />
         </semui:controlButtons>
 
@@ -26,10 +31,10 @@
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
 
-        <div class="four fields">
+        <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')}</label>
+                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag, Paket, Anbieter, Konsortium, Agentur)</label>
 
                 <div class="ui input">
                     <input type="text" name="q"
@@ -107,6 +112,8 @@
             </div>
 
            --%>
+
+            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
         </div>
 
         <div class="two fields">
@@ -133,6 +140,15 @@
             <div class="field">
                 <div class="two fields">
                     <div class="field">
+
+                        <g:if test="${params.orgRole == 'Subscriber'}">
+                            <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
+                        </g:if>
+                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                            <input id="radioKonsortium" type="hidden" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden">
+                        </g:if>
+
+                        <%--  explicit filter by orgRole removed
                         <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
 
                         <div class="inline fields la-filter-inline">
@@ -154,9 +170,11 @@
                                 </div>
                             </div>
                         </div>
+                        --%>
                     </div>
 
                     <div class="field la-filter-search ">
+                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
                     </div>
                 </div>
@@ -173,17 +191,22 @@
             <th>
                 <g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel>
             </th>
+            <% /*
             <th>
                 ${message(code: 'myinst.currentSubscriptions.subscription_type', default: 'Subscription Type')}
             </th>
+            */ %>
 
             <g:if test="${params.orgRole == 'Subscriber'}">
                 <th>${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
+
+            <th>${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>
+            <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
             </g:if>
-
+            --%>
             <g:sortableColumn params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
             <g:sortableColumn params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
@@ -243,19 +266,34 @@
                         </g:if>
                     <!-- packages -->
                     </td>
+                    <%--
                     <td>
                         ${s.type?.getI10n('value')}
                     </td>
-                    <td>
-                        <g:if test="${params.orgRole == 'Subscriber'}">
+                    --%>
+
+                    <g:if test="${params.orgRole == 'Subscriber'}">
+                        <td>
                             ${s.getConsortia()?.name}
-                        </g:if>
+                        </td>
+                    </g:if>
+                    <td>
+                        <g:each in="${OrgRole.findAllBySubAndRoleType(s, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
+                            <g:link controller="Organisations" action="show" id="${role.org?.id}">${role.org?.name}</g:link><br />
+                        </g:each>
+                        <g:each in="${OrgRole.findAllBySubAndRoleType(s, RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'))}" var="role">
+                            <g:link controller="Organisations" action="show" id="${role.org?.id}">${role.org?.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
+                        </g:each>
+                    </td>
+                    <%--
+                    <td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
                                 <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
                             </g:each>
                         </g:if>
                     </td>
+                    --%>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
 
@@ -266,6 +304,7 @@
                                          module="statistics"
                                          controller="default"
                                          action="select"
+                                         target="_blank"
                                          params="[mode:usageMode,
                                                   packages:s.getCommaSeperatedPackagesIsilList(),
                                                   institutions:statsWibid
@@ -274,6 +313,7 @@
                             <i class="chart bar outline icon"></i>
                           </laser:statsLink>
                         </g:if>
+
                         <g:if test="${editable && ((institution in s.allSubscribers) || s.consortia == institution)}">
                             <g:link controller="myInstitution" action="actionCurrentSubscriptions"
                                     class="ui icon negative button"
@@ -298,6 +338,9 @@
 
     <r:script type="text/javascript">
         $(document).ready(function(){
+              // initialize the form an fields
+              $('.ui.form')
+              .form();
             var val = "${params.dateBeforeFilter}";
             if(val == "null"){
                 $(".dateBefore").addClass("hidden");
@@ -317,6 +360,7 @@
         })
     </r:script>
 
+    <%--
     <r:script type="text/javascript">
 
         function availableTypesSelectUpdated(optionSelected) {
@@ -387,6 +431,8 @@
 
         window.onload = setTypeAndSearch()
     </r:script>
+    --%>
+
 
   </body>
 </html>

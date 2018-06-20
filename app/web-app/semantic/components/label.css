@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.3.0 - Label
+ * # Semantic UI 2.3.1 - Label
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -1298,4 +1298,8 @@ a.ui.basic.label:hover {
 .ui.massive.labels .label,
 .ui.massive.label {
   font-size: 1.71428571rem;
+}
+.finance_index .ui.ribbon.label {
+  left: calc(-2.8rem);
+  top: -22px;
 }

@@ -8,7 +8,7 @@
   </head>
      <g:set var="entityName" value="${message(code: 'propertyDefinition.label', default: 'PropertyDefinition')}"/>
 <body>
-<div class="row-fluid">
+<div>
 
     <div class="span3">
         <div class="well">
@@ -65,7 +65,12 @@
                   </div>
                   <dd>
                       <label class="property-label">Context:</label> 
-                         <g:select name="cust_prop_desc"  from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
+                         <%--<g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" />--%>
+                          <select name="cust_prop_desc" id="cust_prop_desc">
+                              <g:each in="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" var="pd">
+                                  <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
+                              </g:each>
+                          </select>
 
                   </dd>
                   <button type="submit" class="ui positive button">

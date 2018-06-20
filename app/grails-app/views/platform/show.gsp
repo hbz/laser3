@@ -81,7 +81,7 @@
                 <tr>
                   <td style="text-align:left;"><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
                   <td>
-                    <g:each in="${t.title.ids}" var="tid">
+                    <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="tid">
                       <g:if test="${tid.identifier.ns.ns != 'originediturl'}">
                         <div><span>${tid.identifier.ns.ns}</span>: <span>${tid.identifier.value}</span></div>
                       </g:if>

@@ -467,9 +467,9 @@
 
 .ui.menu .item.disabled,
 .ui.menu .item.disabled:hover {
-  cursor: default;
+  cursor: default !important;
   background-color: transparent !important;
-  color: rgba(40, 40, 40, 0.3);
+  color: rgba(40, 40, 40, 0.3) !important;
 }
 
 
@@ -2078,4 +2078,20 @@ Floated Menu / Item
 }
 .ui.menu.la-contextBar .ui.slider.checkbox input:checked ~ label {
   font-weight: 700;
+}
+
+/* only for menu items in role yoda or admin */
+.ui.secondary.pointing.menu .item.la-role-admin {
+  color: #004678;
+  font-style: italic;
+}
+.ui.secondary.pointing.menu .item.la-role-admin.active {
+  border-color: #004678;
+}
+.ui.secondary.pointing.menu .item.la-role-yoda {
+  color: #98B500;
+  font-style: italic;
+}
+.ui.secondary.pointing.menu .item.la-role-yoda.active {
+  border-color: #98B500;
 }

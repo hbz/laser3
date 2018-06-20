@@ -187,6 +187,11 @@ class SemanticUiNavigationTagLib {
         def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
+        if(attrs.newAffiliationRequests)
+        {
+            linkBody = linkBody + "<div class='ui floating red circular label'>${attrs.newAffiliationRequests}</div>";
+        }
+
         if (attrs.affiliation && springSecurityService.getCurrentUser()?.hasAffiliation(attrs.affiliation)) {
             out << g.link(linkBody,
                     controller: attrs.controller,

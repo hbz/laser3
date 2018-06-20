@@ -7,6 +7,9 @@ import javax.persistence.Transient
 
 class RefdataValue extends I10nTranslatableAbstract {
 
+    @Transient
+    def grailsApplication
+
     String value
 
     // N.B. This used to be ICON but in the 2.x series this was changed to be a css class which denotes an icon
@@ -121,7 +124,7 @@ class RefdataValue extends I10nTranslatableAbstract {
 
         null
     }
-
+    
     // still provide OLD mapping for string compares and such stuff
     public String toString() {
         value

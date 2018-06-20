@@ -68,10 +68,10 @@ class ChangeNotificationService {
 
         if ( contextObject ) {
           if ( contextObject.metaClass.respondsTo(contextObject, 'getURL') ) {
-            sw.write("<p>Changes on <a href=\"${contextObject.getURL()}\">${contextObject.toString()}</a> ${new Date().toString()}</p><p><ul>");
+            sw.write("<p>Änderungen an <a href=\"${contextObject.getURL()}\">${contextObject.toString()}</a> ${new Date().toString()}</p><p><ul>");
           }
           else  {
-            sw.write("<p>Changes on ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
+            sw.write("<p>Änderungen an ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
           }
         }
         else {
@@ -102,11 +102,11 @@ class ChangeNotificationService {
               sw.write(tmpl.toString());
               sw.write("</li>");
             }else{
-              sw.write("<li>Component ${parsed_event_info.OID} was deleted!</li>")
+              sw.write("<li>Komponente ${parsed_event_info.OID} wurde gelöscht!</li>")
             }
           }
           else {
-            sw.write("<li>Unable to find template for change event \"ChangeNotification.${parsed_event_info.event}\". Event info follows\n\n${pc.changeDocument}</li>");
+            sw.write("<li>Template für das Ereignis \"ChangeNotification.${parsed_event_info.event}\" kann nicht gefunden werden. Infos zum Ereignis:\n\n${pc.changeDocument}</li>");
           }
           contr++;
 
@@ -133,7 +133,7 @@ class ChangeNotificationService {
                     // log.debug("Send zendesk forum notification for ${ne.remoteid}");
                     zenDeskSyncService.postTopicCommentInForum(announcement_content,
                                                                ne.remoteid.toString(), 
-                                                               "Changes related to ${contextObject.toString()}".toString(),
+                                                               "Änderungen beziehen sich auf ${contextObject.toString()}".toString(),
                                                                'System generated alerts and notifications will appear as comments under this topic');
                   }
                   else {

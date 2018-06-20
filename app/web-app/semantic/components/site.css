@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.3.0 - Site
+ * # Semantic UI 2.3.1 - Site
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -282,8 +282,7 @@ aside.ui.accordion .title:not(.ui) {
   display: none;
 }
 .landingpage .ui.inverted.menu.la-top-menu {
-  height: 70px;
-  margin: 0 !important;
+  height: 50px;
   border-radius: 0 !important;
   border: none !important;
 }
@@ -291,6 +290,7 @@ aside.ui.accordion .title:not(.ui) {
   height: 70px;
 }
 .landingpage .logo {
+  height: 50px;
   width: 144px;
   padding-right: 2rem;
 }
@@ -307,6 +307,7 @@ aside.ui.accordion .title:not(.ui) {
   background-image: url('../images/landingpage/hero.jpg') !important;
   background-repeat: no-repeat !important;
   background-position: top center !important;
+  background-color: #447294;
   border: none !important;
   min-height: 450px;
   padding: 0 0 3rem 0em;
@@ -379,6 +380,7 @@ aside.ui.accordion .title:not(.ui) {
   background-color: #d7c4b2!important;
   color: #544e48!important;
   font-weight: 400!important;
+  width: 100%;
 }
 .ui.la-eye-catcher .la-eye-catcher-header {
   display: -webkit-box!important;
@@ -452,7 +454,10 @@ aside.ui.accordion .title:not(.ui) {
 /* EDITABLE OVERWRITE */
 
 /* Sorry for the !important - overwriting Javascript of the Editable-Javascript */
-.la-time-card .editable-input input[type=text] {
+.ui.two.cards > .card.la-time-card {
+  margin-right: 0.99em;
+}
+.ui.two.cards > .card.la-time-card .editable-input input[type=text] {
   padding-right: 1em!important;
   width: 8rem!important;
 }
@@ -645,4 +650,39 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
   -webkit-transform: rotate(45deg) scale(1) !important;
           transform: rotate(45deg) scale(1) !important;
   opacity: 1;
+}
+.ui.table .editableform .control-group {
+  background-color: #f4f8f9;
+  padding: 10px;
+  -webkit-box-shadow: 1px 1px 2px 1px rgba(20, 20, 20, 0.3);
+          box-shadow: 1px 1px 2px 1px rgba(20, 20, 20, 0.3);
+  position: relative;
+  left: -20px;
+}
+.editableform .control-group select,
+.editableform .control-group input {
+  width: auto!important;
+}
+.editable-clear-x {
+  background: none;
+  height: 1em;
+  color: #767676;
+  display: block;
+  margin: -9px 3px 0 0;
+  font-size: 1.5em;
+  -webkit-transition: color 0.6s ease, -webkit-transform 0.2s ease;
+  transition: color 0.6s ease, -webkit-transform 0.2s ease;
+  transition: color 0.6s ease, transform 0.2s ease;
+  transition: color 0.6s ease, transform 0.2s ease, -webkit-transform 0.2s ease;
+  font-family: Icons;
+  font-style: normal;
+  font-weight: 400;
+  text-decoration: inherit;
+  text-align: center;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  z-index: 80;
+}
+.editable-clear-x:before {
+  content: "\f2ed";
 }

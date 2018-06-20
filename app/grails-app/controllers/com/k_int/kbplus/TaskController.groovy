@@ -4,7 +4,6 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
-
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController {
 
@@ -57,16 +56,16 @@ class TaskController {
 					taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id): contextService.getUser()
 				}
 
-				if (params.linkto == "license") {
+				if (params.linkto == "license" && params.license) {
 					taskInstance.license = License.get(params.license) ?: null
 				}
-				else if (params.linkto == "pkg") {
+				else if (params.linkto == "pkg" && params.pkg) {
 					taskInstance.pkg = Package.get(params.pkg) ?: null
 				}
-				else if (params.linkto == "subscription") {
+				else if (params.linkto == "subscription" && params.subscription) {
 					taskInstance.subscription = Subscription.get(params.subscription) ?: null
 				}
-				else if (params.linkto == "org") {
+				else if (params.linkto == "org" && params.org) {
 					taskInstance.org = Org.get(params.org) ?: null
 				}
 
@@ -178,8 +177,7 @@ class TaskController {
 		}
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
 		def contextOrg = contextService.getOrg()
 		def result     = taskService.getPreconditions(contextOrg)

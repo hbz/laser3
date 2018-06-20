@@ -280,7 +280,7 @@ class SemanticUiTagLib {
 
         out << '<div class="ui modal"' + id + '>'
         out <<   '<div class="header">' + title + '</div>'
-        out <<   '<div class="scrolling content">'
+        out <<   '<div class="content">'
         out <<     body()
         out <<   '</div>'
         out <<   '<div class="actions">'
@@ -289,9 +289,9 @@ class SemanticUiTagLib {
 
         if (attrs.hideSubmitButton == null) {
             if (attrs.formID) {
-                out << '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
+                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
             }else {
-                out << '<input type="submit" class="ui positive button" name="save" value="' + msgSave + '" onclick="$(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
             }
         }
         if (attrs.deletebutton) {

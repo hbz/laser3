@@ -69,97 +69,46 @@ class Person extends BaseDomainComponent {
     
     @Override
     String toString() {
-        (last_name ? last_name + ', ':' ') + (first_name ?: '') + ' ' + (middle_name ?: '') // + ' (' + id + ')'
+        (last_name ?:' ') + (first_name ?', '+first_name: '') + ' ' + (middle_name ?: '') // + ' (' + id + ')'
     }
 
-    static def lookup(firstName, lastName, tenant, isPublic, org, functionType) {
-
-        // TODO middleName
-        // TODO gender
+    static def lookup(firstName, lastName, tenant, isPublic, contactType) {
 
         def person
-        def check = Person.executeQuery(
-            "select p from Person as p, PersonRole as pr where pr.prs = p and p.first_name = ? and p.last_name = ? and p.tenant = ? and p.isPublic = ? and pr.org = ? and pr.functionType = ? order by p.id asc",
-            [firstName, lastName, tenant, isPublic, org, functionType]
+        def prsList = Person.findAllWhere(
+                first_name: firstName,
+                last_name: lastName,
+                contactType: contactType,
+                isPublic: isPublic,
+                tenant: tenant,
         )
-
-        if ( check.size() > 0 ) {
-            person = check.get(0)
+        if ( prsList.size() > 0 ) {
+            person = prsList.get(0)
         }
         person
     }
 
-    // TODO implement responsibilityType
-    static def lookupOrCreateWithPersonRole(firstName, middleName, lastName, gender, tenant, isPublic, org, functionType) {
-        
-        def info = "saving new person: ${firstName} ${middleName} ${lastName}"
-        def resultPerson = null
-        def resultPersonRole = null
- 
-        // TODO: ugly mapping fallback
-        if (middleName=='')
-            middleName = null
-            
-        def check = Person.lookup(firstName, lastName, tenant, isPublic, org, functionType)
+    static def lookup(firstName, lastName, tenant, isPublic, contactType, org, functionType) {
 
-        if (check) {
-            resultPerson = check
-            info += " > ignored/duplicate"
-        }
-        else {
-            resultPerson = new Person(
-                first_name:  firstName,
-                middle_name: middleName,
-                last_name:   lastName,
-                gender:      gender,
-                tenant:      tenant,
-                isPublic:    isPublic
-                )
-                
-            if (! resultPerson.save()) {
-                resultPerson.errors.each{ println it }
-            }
-            else {
-                info += " > ok"
+        def person
+        def prsList = []
+
+        Person.findAllWhere(
+                first_name: firstName,
+                last_name: lastName,
+                contactType: contactType,
+                isPublic: isPublic,
+                tenant: tenant
+        ).each{ p ->
+            if (PersonRole.findWhere(prs: p, functionType: functionType, org: org)) {
+                prsList << p
             }
         }
-        LogFactory.getLog(this).debug(info)
-        
-        if (resultPerson) {
-            info = "saving new personRole: ${resultPerson} - ${functionType} - ${org}"
-            
-            check = PersonRole.lookup(resultPerson, null,  org, null, null, null, null, null, null, functionType)
-                
-            if (check) {
-                resultPersonRole = check
-                info += " > ignored/duplicate"
-            }
-            else {
-                resultPersonRole = new PersonRole(
-                    functionType:   functionType,
-                    prs:        resultPerson,
-                    lic:        null,
-                    org:        org,
-                    cluster:    null,
-                    pkg:        null,
-                    sub:        null,
-                    title:      null,
-                    start_date: null,
-                    end_date:   null
-                    )
-                    
-                if (! resultPersonRole.save()) {
-                    resultPersonRole.errors.each{ println it }
-                }
-                else {
-                    info += " > OK"
-                }
-            }
-            LogFactory.getLog(this).debug(info)
+        if ( prsList.size() > 0 ) {
+            person = prsList.get(0)
         }
-        resultPerson      
+        person
     }
-
 
     static def getPublicByOrgAndFunc(Org org, String func) {
         def result = Person.executeQuery(

@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.help')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.user.help')}</title>
 </head>
 
 <body>
@@ -12,7 +12,7 @@
     <semui:crumb message="menu.institutions.help" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header"><semui:headerIcon />${message(code: 'menu.institutions.help')}</h1>
+<h1 class="ui header"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
 
 <div class="ui styled accordion">
     <div class="active title">
@@ -26,7 +26,7 @@
                 <i class="large internet explorer middle aligned icon"></i>
                 <div class="content">
                     <div class="description">Internet Explorer</div>
-                    <a href="https://support.microsoft.com/de-de/help/508440" class="header" target="_blank">https://support.microsoft.com/de-de/help/508440</a>
+                    <a href="https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history" class="header" target="_blank">https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history</a>
                 </div>
             </div>
             <div class="item">

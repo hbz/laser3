@@ -1,17 +1,17 @@
 <%@ page import="com.k_int.kbplus.Doc" %>
 <semui:card message="license.notes" class="notes" href="#modalCreateNote" editable="${editable}">
 
-        <g:each in="${ownobj.documents}" var="docctx">
+        <g:each in="${ownobj.documents.sort{it.owner?.title}}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
                 <div class="ui small feed content">
                     <!--<div class="event">-->
 
                             <div class="summary">
                                 <g:if test="${docctx.owner.title}">
-                                    <g:link controller="doc" action="show" id="${docctx.owner.id}">${docctx.owner.title}</g:link>
+                                    <a onclick="noteedit(${docctx.owner.id});">${docctx.owner.title}</a>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="doc" action="show" id="${docctx.owner.id}">Ohne Titel</g:link>
+                                    <a onclick="noteedit(${docctx.owner.id});">Ohne Titel</a>
                                 </g:else>
                                 <br/>
 
@@ -43,4 +43,20 @@
         </g:each>
 </semui:card>
 
-<g:render template="/templates/notes/modal" />
+<g:render template="/templates/notes/modal_create" />
+
+<r:script>
+    function noteedit(id) {
+
+        $.ajax({
+            url: '<g:createLink controller="ajax" action="NoteEdit"/>?id='+id,
+            success: function(result){
+                $("#dynamicModalContainer").empty();
+                $("#modalEditNote").remove();
+
+                $("#dynamicModalContainer").html(result);
+                $("#dynamicModalContainer .ui.modal").modal('show');
+            }
+        });
+    }
+</r:script>

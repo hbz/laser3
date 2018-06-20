@@ -10,11 +10,9 @@
 
 <body>
 
-	<ul class="breadcrumb">
-		<li><g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span
-			class="divider">/</span></li>
-		<li>${message(code:'menu.institutions.comp_onix')}</li>
-	</ul>
+<semui:breadcrumbs>
+	<semui:crumb message="menu.institutions.comp_onix" class="active" />
+</semui:breadcrumbs>
 
 	<h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
 
@@ -39,9 +37,14 @@
 							options="${termList}" selected="true" multiple="true" />
 					</div>
 
-					<div>
+				<div class="fields">
+                  	<div class="field">
+                  		<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+                    </div>
+					<div class="field">
 					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
 					</div>
+				</div>
 				</g:form>
 			</div>
 		</div>
@@ -75,7 +78,7 @@
 	        placeholder: "${message(code:'onixplLicense.compare.search.ph', default:'Search for a license...')}",
 	        minimumInputLength: 1,
                 formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
                 },
 	        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
 	          url: "<g:createLink controller='ajax' action='lookup'/>",

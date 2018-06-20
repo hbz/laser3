@@ -123,6 +123,7 @@
         </div><!-- .segment -->
     </div><!-- .column -->
 
+    <%--
     <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
         <div class="column wide eight">
             <div class="ui segment">
@@ -149,8 +150,13 @@
             </div><!-- .segment -->
         </div><!-- .column -->
     </g:if>
+    --%>
 
 </div><!-- .grid -->
+
+<br />
+<br />
+<br />
 
 <div class="ui one column grid">
     <!--<div class="column wide sixteen">
@@ -168,7 +174,7 @@
                 <th>${message(code: 'profile.membership.role', default:'Role')}</th>
                 <th>${message(code: 'profile.membership.status', default:'Status')}</th>
                 <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
-                <th>${message(code: 'profile.membership.actions', default:'Actions')}</th>
+                <th>${message(code: 'default.actions', default:'Actions')}</th>
             </tr>
             </thead>
             <tbody>

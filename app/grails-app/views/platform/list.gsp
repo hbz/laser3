@@ -20,6 +20,10 @@
                             <label>${message(code:'default.search.text', default:'Search text')}</label>
                             <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}" />
                         </div>
+						<div class="field">
+							<label>&nbsp;</label>
+							<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+						</div>
                         <div class="field">
                             <label>&nbsp;</label>
                             <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />

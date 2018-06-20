@@ -15,7 +15,7 @@
 
         <h1 class="ui header"><semui:headerIcon />
 
-            ${license.licensee?.name}
+            %{--${license.licensee?.name}--}%
             ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
             <semui:xEditable owner="${license}" field="reference" id="reference"/>
         </h1>
@@ -33,7 +33,7 @@
 
                     <dt>
                         <g:message code="org.ids.label" default="Ids" />
-                        <g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel>
+                        (<g:annotatedLabel owner="${license}" property="ids">${message(code:'license.identifiers.label')}</g:annotatedLabel>)
                     </dt>
                     <dd>
                         <table class="ui celled la-table la-table-small table ignore-floatThead">
@@ -46,7 +46,7 @@
                             </thead>
                             <tbody>
                             <g:set var="id_label" value="${message(code:'identifier.label', default:'Identifier')}"/>
-                            <g:each in="${license.ids}" var="io">
+                            <g:each in="${license.ids.sort{it.identifier.ns.ns}}" var="io">
                                 <tr>
                                     <td>${io.identifier.ns.ns}</td>
                                     <td>${io.identifier.value}</td>
@@ -87,13 +87,13 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt><label class="control-label" for="startDate">${message(code:'license.startDate', default:'Start Date')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.startDate', default:'Start Date')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
                                 </dl>
                                 <dl>
-                                    <dt><label class="control-label" for="endDate">${message(code:'license.endDate', default:'End Date')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.endDate', default:'End Date')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
@@ -103,12 +103,12 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt><label class="control-label" for="reference">${message(code:'license.status',default:'Status')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.status',default:'Status')}</dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                                     </dd>
                                 </dl>
-                                <!--
+                                <%--
                                 <dl>
 
                                     <dt><label class="control-label" for="licenseCategory">${message(code:'license.licenseCategory', default:'License Category')}</label></dt>
@@ -124,36 +124,58 @@
                                         <semui:xEditableRefData owner="${license}" field="isPublic" config='YN'/>
                                     </dd>
                                 </dl>
-                                -->
+                                --%>
+                                <dl>
+                                    <dt class="control-label">${message(code:'license.linktoLicense', default:'License Template')}</dt>
+                                    <dd>
+                                            <g:each in="${license?.incomingLinks}" var="il">
+                                                <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link> -
+                                                ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                                <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
+
+                                            </g:each>
+                                    </dd>
+                                </dl>
                             </div>
                         </div>
                     </div>
                     <div class="ui card la-time-card">
                         <div class="content">
-                            <dl>
-                                <dt><label class="control-label" for="subscriptions">${message(code:'license.linkedSubscriptions', default:'Linked Subscriptions')}</label></dt>
-                                <dd>
-                                    <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
-                                        <g:each in="${license.subscriptions}" var="sub">
-                                            <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link>
-
+                            <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
+                                <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
+                                    <table class="ui la-selectable table">
+                                        <colgroup>
+                                            <col width="130" />
+                                            <col width="300" />
+                                            <col width="430"/>
+                                        </colgroup>
+                                        <tr>
+                                            <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
+                                            <td>
+                                                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link>
+                                            </td>
+                                            <td>
                                             <g:if test="${editable}">
                                                 <div class="ui mini icon buttons">
-                                                    <g:link class="ui disabled button" controller="todo" action="todo" id="todo" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                    <g:link class="ui button" name="unlinkSubscription"
+                                                            controller="licenseDetails" action="unlinkSubscription"
+                                                            params="['license':license.id, 'subscription':sub.id]"
+                                                            onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
                                                         <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>
                                             </g:if>
-
-                                            <br/>
-                                        </g:each>
-                                    </g:if>
-                                    <g:else>
-                                        ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
-                                    </g:else>
-
-                                    <br />
-
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </g:each>
+                            </g:if>
+                            <g:else>
+                                ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
+                            </g:else>
+                            <dl>
+                                <dt></dt>
+                                <dd>
                                     <g:if test="${editable}">
                                         <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
                                             <br />
@@ -170,13 +192,13 @@
                                     </g:if>
                                 </dd>
                             </dl>
-                            <!--
+                            <%--
                             <dl>
 
                                 <dt><label class="control-label" for="${license.pkgs}">${message(code:'license.linkedPackages', default:'Linked Packages')}</label></dt>
                                 <dd>
                                     <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
-                                        <g:each in="${license.pkgs}" var="pkg">
+                                        <g:each in="${license.pkgs.sort{it.name}}" var="pkg">
                                             <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
                                         </g:each>
                                     </g:if>
@@ -185,11 +207,11 @@
                                     </g:else>
                                 </dd>
                             </dl>
-                            -->
+                            --%>
                             <dl>
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
 
-                                    <dt><label class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</label></dt>
+                                    <dt class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</dt>
                                     <dd>
                                         <g:if test="${license.onixplLicense}">
                                             <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
@@ -204,7 +226,7 @@
                                             </g:if>
                                         </g:if>
                                         <g:else>
-                                            <g:link class="ui negative button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
+                                            <g:link class="ui positive button" controller='licenseImport' action='doImport' params='[license_id: license.id]'>${message(code:'license.importONIX-PLlicense', default:'Import an ONIX-PL license')}</g:link>
                                         </g:else>
                                     </dd>
 
@@ -225,28 +247,16 @@
                         </dl>
                         --%>
 
-                        <%--
-                            <dl>
-                                <dt><label class="control-label" for="licenseeRef">${message(code:'license.incomingLicenseLinks', default:'Incoming License Links')}</label></dt>
-                                <dd>
-                                    <ul>
-                                        <g:each in="${license?.incomingLinks}" var="il">
-                                            <li><g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} (${il.type?.value})</g:link> -
-                                            ${message(code:'license.details.incoming.child', default:'Child')}:
-                                            <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
-                                            </li>
-                                        </g:each>
 
-                                    </ul>
-                                </dd>
-                            </dl>
-                           --%>
+
+
                         <g:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks: visibleOrgLinks,
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
                                             editmode: editable,
-                                            tmplButtonText: 'Lizenzgeber hinzufügen'
+                                            tmplButtonText: 'Lizenzgeber hinzufügen',
+                                            tmplmodalID:'osel_add_modal'
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
@@ -255,7 +265,9 @@
                                             property: 'orgLinks',
                                             recip_prop: 'lic',
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
-                                            tmplText:'Lizenzgeber hinzufügen'
+                                            tmplText:'Lizenzgeber hinzufügen',
+                                            tmplID:'CommercialOrgs',
+                                            tmplmodalID:'osel_add_modal'
                                   ]}" />
 <%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
@@ -314,16 +326,16 @@
                             <g:if test="${authOrg.name == contextOrg?.name}">
                                 <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
 
-                                <div id="custom_props_div_${authOrg.shortcode}">
+                                <div id="custom_props_div_${authOrg.id}">
                                     <g:render template="/templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.LIC_PROP,
                                             ownobj: license,
-                                            custom_props_div: "custom_props_div_${authOrg.shortcode}",
+                                            custom_props_div: "custom_props_div_${authOrg.id}",
                                             tenant: authOrg]}"/>
 
                                     <r:script language="JavaScript">
                                             $(document).ready(function(){
-                                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.shortcode}", ${authOrg.id});
+                                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                                             });
                                     </r:script>
                                 </div>
@@ -411,6 +423,8 @@
                 });
             });
         </g:else>
+
+
     </r:script>
 
   </body>

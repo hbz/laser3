@@ -26,6 +26,17 @@
             </div>
         </semui:card>
 
+<%--<pre>
+${rdvList.join(", ")}
+
+<g:each in="${attrMap}" var="objs">
+    ${objs.key}
+    <g:each in="${objs.value}" var="attrs">    ${attrs}
+    </g:each>
+</g:each>
+</pre>--%>
+
+
         <div class="ui styled fluid accordion">
             <g:each in="${rdCategories}" var="rdc">
                 <g:set var="rdcI10n" value="${I10nTranslation.createI10nOnTheFly(rdc, 'desc')}" />
@@ -66,7 +77,14 @@
                                 <tr>
                                     <td></td>
                                     <td>
-                                        ${rdv.value}
+                                        <g:if test="${rdvList?.contains(rdv.id)}">
+                                            ${rdv.value}
+                                        </g:if>
+                                        <g:else>
+                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})"
+                                                  style="font-style:italic; color:lightsteelblue;">${rdv.value}</span>
+                                        </g:else>
+
                                         <g:if test="${rdv.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                                         </g:if>
@@ -101,7 +119,7 @@
                         from="${rdCategories}"
                         optionKey="id" optionValue="desc"
                         name="refdata_category_id"
-                        id="refdata_modal_select" />
+                        id="refdata_modal_select" class="ui search selection dropdown" />
                 </div>
 
             </g:form>

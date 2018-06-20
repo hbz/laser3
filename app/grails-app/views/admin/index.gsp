@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="row-fluid">
+    <div>
       <p>
         Admin
       </p>

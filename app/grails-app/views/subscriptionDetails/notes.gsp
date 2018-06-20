@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.label', default:'Subscription')}</title>
     </head>
     <body>
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
@@ -19,7 +19,7 @@
 
         <g:render template="/templates/notes/table" model="${[instance: subscriptionInstance, redirect: 'notes']}"/>
 
-        <g:render template="/templates/notes/modal" model="${[doclist: subscriptionInstance.documents, ownobj: subscriptionInstance, owntp: 'subscription']}"/>
+        <g:render template="/templates/notes/modal_create" model="${[doclist: subscriptionInstance.documents, ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     
   </body>
 </html>

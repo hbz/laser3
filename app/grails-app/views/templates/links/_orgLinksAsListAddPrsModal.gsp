@@ -9,7 +9,7 @@
             <tr>
                 <th>Person</th>
                 <th>Funktion</th>
-                <th>${message(code:'title.edit.actions.label')}</th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>

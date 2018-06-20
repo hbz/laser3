@@ -18,8 +18,12 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="ui grid">
-        <div class="twelve wide column">
+    <semui:card>
+        <div class="content ui form">
+            <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
+                   data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
+        </div>
+    </semui:card>
 
             <g:if test="${privatePropertyDefinitions}">
 
@@ -31,22 +35,22 @@
                                 <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
                                 <th>Name (DE)</th>
                                 <th>Name (EN)</th>
-                                <th>Count</th>
-                                <th>${message(code:'default.button.delete.label', default:'Delete')}</th>
+                                <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
+                                <th>${message(code:'default.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <g:each in="${privatePropertyDefinitions}" var="ppd">
                                 <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(ppd, 'name')}" />
                                 <tr>
-                                    <td>${ppd.getI10n('descr')}</td>
+                                    <td><g:message code="propertyDefinition.${ppd.descr}.label" default="${ppd.descr}" /></td>
                                     <td>
-                                        ${ppd.getI10n('name')}
+                                        ${ppd.name}
                                         <g:if test="${ppd.softData}">
                                             <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                                         </g:if>
                                         <g:if test="${ppd.mandatory}">
-                                            <span  class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                                            <span class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
                                         </g:if>
                                         <g:if test="${ppd.multipleOccurrence}">
                                             <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
@@ -57,7 +61,9 @@
                                     <td>${ppd.countUsages()}</td>
                                     <td>
                                         <g:if test="${ppd.countUsages()==0}">
-                                            <g:checkBox name="deleteIds" value="${ppd?.id}" checked="false" />
+                                            <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: ppd?.id]" class="ui icon negative button">
+                                            <i class="trash alternate icon"></i>
+                                            </g:link>
                                         </g:if>
                                     </td>
                                 </tr>
@@ -66,21 +72,8 @@
                     </table>
 
                     <p>${message(code:'propertyDefinition.private.info')}</p>
-
-                    <g:field type="hidden" name="cmd" value="delete" />
-                    <button type="submit" class="ui button">${message(code:'default.button.delete.label', default:'Delete')}</button>
                 </g:form>
             </g:if>
-        </div>
-        <aside class="four wide column">
-            <semui:card>
-                <div class="content">
-                    <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
-                           data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
-                </div>
-            </semui:card>
-        </aside>
-    </div><!-- .grid -->
 
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
@@ -97,12 +90,17 @@
 
                 <div class="field five wide">
                     <label class="property-label">${message(code:'propertyDefinition.descr.label', default:'Description')}</label>
-                    <g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>
+                    <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
+                    <select name="pd_descr" id="pd_descr" class="ui dropdown">
+                        <g:each in="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}" var="pd">
+                            <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
+                        </g:each>
+                    </select>
                 </div>
 
                 <div class="field five wide">
                     <label class="property-label">Type</label>
-                    <g:select
+                    <g:select  class="ui dropdown"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="value" optionValue="key"
                         name="pd_type"
@@ -133,6 +131,8 @@
 
        if( $( "#cust_prop_modal_select option:selected" ).val() == "class com.k_int.kbplus.RefdataValue") {
             $("#cust_prop_ref_data_name").show();
+       }else {
+            $("#cust_prop_ref_data_name").hide();
        }
 
     $('#cust_prop_modal_select').change(function() {

@@ -80,8 +80,7 @@ aside.ui.accordion .title:not(.ui) {
         display: none;
     }
     .ui.inverted.menu.la-top-menu {
-        height: 70px;
-        margin: 0 !important;
+        height: 50px;
         border-radius:0 !important;
         border: none !important;
     }
@@ -89,6 +88,7 @@ aside.ui.accordion .title:not(.ui) {
         height: 70px;
     }
     .logo {
+        height: 50px;
         width: 144px;
         padding-right: 2rem;
 
@@ -105,6 +105,7 @@ aside.ui.accordion .title:not(.ui) {
             background-image: url('../images/landingpage/hero.jpg') !important;
             background-repeat: no-repeat !important;
             background-position: top center !important;
+            background-color: #447294;
             border: none !important;
             min-height: 450px;
             padding: 0 0 3rem 0em;
@@ -183,6 +184,7 @@ aside.ui.accordion .title:not(.ui) {
             background-color:#d7c4b2!important;
             color:#544e48!important;
             font-weight:400!important;
+            width: 100%;
         }
         .la-eye-catcher-header {
             display: flex!important;
@@ -243,8 +245,9 @@ aside.ui.accordion .title:not(.ui) {
 }
 /* EDITABLE OVERWRITE */
 /* Sorry for the !important - overwriting Javascript of the Editable-Javascript */
-
-.la-time-card {
+.ui.two.cards>.card.la-time-card {
+    //fixing rounding bug in IE Edge
+    margin-right:0.99em;
     .editable-input input[type=text]{
         padding-right: 1em!important;
         width: 8rem!important;
@@ -446,4 +449,38 @@ body[class*="organisation"] {
     pointer-events: auto;
     transform: rotate(45deg) scale(1)!important;
     opacity: 1;
+}
+
+//  Overwrites x-editable
+// only in table the select-box appears as 'overlay'
+.ui.table .editableform .control-group{
+    background-color: #f4f8f9;
+    padding: 10px;
+    box-shadow: 1px 1px 2px 1px rgba(20,20,20,.3);
+    position: relative;
+    left: -20px;
+}
+.editableform .control-group {
+    select, input {
+        width: auto!important;
+    }
+}
+.editable-clear-x {
+    background: none;
+    height: 1em;
+    color: @grey;
+    display: block;
+    margin: -9px 3px 0 0;
+    font-size: 1.5em;
+    transition: color 0.6s ease, transform 0.2s ease;
+    font-family: Icons;
+    font-style: normal;
+    font-weight: 400;
+    text-decoration: inherit;
+    text-align: center;
+    backface-visibility: hidden;
+    z-index: 80;
+    &:before {
+        content: "\f2ed";
+    }
 }

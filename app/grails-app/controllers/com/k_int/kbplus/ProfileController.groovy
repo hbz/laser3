@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-
+import com.k_int.properties.PropertyDefinition
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -20,6 +20,13 @@ class ProfileController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.editable = true
+        result
+    }
+
+    @Secured(['ROLE_USER'])
+    def errorReport() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
         result
     }
 
@@ -270,5 +277,55 @@ class ProfileController {
             result.status = false
 
         render result as JSON
+    }
+    @Secured(['ROLE_USER'])
+    def properties() {
+        def propDefs = [:]
+        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            propDefs << ["${it}": itResult]
+        }
+
+
+
+        def attrMap = [:]
+        def rdvList = []
+
+        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+            log.debug(dc)
+
+            //def dcInst = grailsApplication.getArtefact("Domain", dc.fullName)
+            def dcMap = [:]
+
+            dc.clazz.declaredFields
+                    .findAll{ it -> ! it.synthetic}
+                    .findAll{ it -> it.type.name == 'com.k_int.kbplus.RefdataValue'}
+                    .sort()
+                    .each { df ->
+                def query = "SELECT DISTINCT ${df.name} FROM ${dc.name}"
+                log.debug(query)
+
+                def rdvs = SystemAdmin.executeQuery(query)
+
+                dcMap << ["${df.name}": rdvs.collect{ it -> "${it.id}:${it.value}"}.sort()]
+
+                rdvs.each{ it  ->
+                    rdvList << it.id
+                }
+            }
+            if (! dcMap.isEmpty()) {
+                attrMap << ["${dc}": dcMap]
+            }
+        }
+
+
+
+        render view: 'properties', model: [
+                editable    : false,
+                propertyDefinitions: propDefs,
+                rdCategories: RefdataCategory.where{}.sort('desc'),
+                attrMap     : attrMap.sort(),
+                rdvList     : rdvList.sort()
+        ]
     }
 }

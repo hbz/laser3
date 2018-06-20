@@ -70,11 +70,11 @@ r2d2 = {
                     $.each(elasticResponse.results, function(index, item) {
 
                         var category   = item.category || 'Unknown';
-                        var maxResults = 15;
+                        //var maxResults = 15;
 
-                        if (index >= maxResults) {
-                            return false;
-                        }
+                        //if (index >= maxResults) {
+                        //    return false;
+                        //}
                         // create new object category
                         if (response.results[category] === undefined) {
                             response.results[category] = {
@@ -127,7 +127,7 @@ r2d2 = {
                 },
                 detachable: true,
                 closable: true,
-                transition: 'fade up',
+                transition: 'scale',
                 onApprove : function() {
                     $(this).find('.ui.form').submit();
                     return false;
@@ -142,8 +142,13 @@ r2d2 = {
         $.fn.editable.defaults.mode = 'inline'
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
             '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
-        $.fn.editableform.template = '<form class="ui form form-inline editableform"><div class="control-group"><div><div class="editable-input"></div>' +
-            '<div class="editable-buttons"></div></div><div class="editable-error-block"></div></div></form>'
+        $.fn.editableform.template = '<form class="ui form form-inline editableform"><div class="control-group">' +
+            '                               <div>' +
+            '                                   <div class="editable-input"></div>' +
+            '                                   <div class="editable-buttons"></div>' +
+            '                               </div>' +
+            '                               <div class="editable-error-block"></div>' +
+            '                           </div></form>'
 
         // TODO $.fn.datepicker.defaults.language = gspLocale
     },
@@ -156,28 +161,47 @@ r2d2 = {
 
         $(ctxSel + ' .xEditable').editable({
             language: gspLocale,
-            /* datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat
+            format:   gspDateFormat
         });
 
         $(ctxSel + ' .xEditableValue').editable({
             language: gspLocale,
-            /* datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat
+            format:   gspDateFormat,
+            validate: function(value) {
+                if ($(this).attr('data-format') && value) {
+                    if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
+                        return "Ungültiges Format";
+                    }
+                }
+            },
+            success: function(response) {
+                // override newValue with response from backend
+                return {newValue: (response != 'null' ? response : null)}
+            }
+        }).on('save', function(e, params){
+            if ($(this).attr('data-format')) {
+                console.log(params)
+            }
+        }).on('shown', function() {
+            $(".table").trigger('reflow')
+        }).on('hidden', function() {
+            $(".table").trigger('reflow')
         });
 
-        $(ctxSel + ' .xEditableManyToOne').editable();
+        $(ctxSel + ' .xEditableDatepicker').editable({
+        });
+
+        $(ctxSel + ' .xEditableManyToOne').editable({
+            tpl: '<select class="ui dropdown"></select>'
+        }).on('shown', function() {
+            $(".table").trigger('reflow')
+        }).on('hidden', function() {
+            $(".table").trigger('reflow')
+        });
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
             language: gspLocale,
-            /* datepicker: {
-                language: gspLocale
-            }, */
-            format: gspDateFormat,
+            format:   gspDateFormat,
             url: function(params) {
                 var hidden_field_id = $(this).data('hidden-id');
                 $("#" + hidden_field_id).val(params.value);
@@ -211,13 +235,25 @@ r2d2 = {
             ctxSel = 'body'
         }
 
+        // selectable table to avoid button is showing when focus after modal closed
+        $(ctxSel + ' .la-selectable').hover(function() {
+            $( ".button" ).blur();
+        });
+
         // close semui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
         });
 
         // accordions
-        $(ctxSel + ' .ui.accordion').accordion();
+        $(ctxSel + ' .ui.accordion').accordion({
+            onOpening: function() {
+                $(".table").trigger('reflow')
+            },
+            onOpen: function() {
+                $(".table").trigger('reflow')
+            }
+        });
 
         // checkboxes
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
@@ -229,6 +265,9 @@ r2d2 = {
         $(ctxSel + ' .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade'
+        });
+        $(ctxSel + ' .ui.search.dropdown').dropdown({
+            fullTextSearch: 'exact'
         });
 
         // dropdowns escape

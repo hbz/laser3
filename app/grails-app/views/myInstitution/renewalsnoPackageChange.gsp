@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} ${message(code: 'myinst.renewalUpload.label', default: 'Renewals Upload')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} ${message(code: 'myinst.renewals', default: 'Renewal')}</title>
 </head>
 
 <body>
@@ -10,7 +10,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-    <semui:crumb message="menu.institutions.imp_renew" class="active"/>
+    <semui:crumb message="myinst.renewals" class="active"/>
 </semui:breadcrumbs>
 
 <g:if test="${(errors && (errors.size() > 0))}">
@@ -32,11 +32,9 @@
     <div>
         <hr/>
         <g:if test="${entitlements}">
-            ${message(code: 'myinst.renewalUpload.upload.note', args: [institution.name])}<br/>
+            ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution.name])}<br/>
             <table class="ui celled la-table table">
                 <tbody>
-                <input type="hidden" name="subscription.start_date" value="${permissionInfo?.sub_startDate}"/>
-                <input type="hidden" name="subscription.end_date" value="${permissionInfo?.sub_endDate}"/>
                 <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
                 <input type="hidden" name="subscription.name" value="${permissionInfo?.sub_name}"/>
 
@@ -45,20 +43,33 @@
                 <tr>
                     <th><g:checkBox name="subscription.copyStart" value="${true}"/></th>
                     <th>${message(code: 'default.startDate.label', default: 'Start Date')}</th>
-                    <td>${permissionInfo?.sub_startDate}</td>
+                    <td><semui:datepicker class="wide eight" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="true" /></td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyEnd" value="${true}"/></th>
                     <th>${message(code: 'default.endDate.label', default: 'End Date')}</th>
-                    <td>${permissionInfo?.sub_endDate}</td>
+                    <td><semui:datepicker class="wide eight" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyDocs" value="${true}"/></th>
                     <th>${message(code: 'myinst.renewalUpload.copy', default: 'Copy Documents and Notes from Subscription')}</th>
-                    <td>${permissionInfo?.sub_name}</td>
+                    <td>${message(code: 'subscription', default:'Subscription')}: ${permissionInfo?.sub_name}</td>
+                </tr>
+                <tr>
+                    <th><g:checkBox name="subscription.copyLicense" value="${permissionInfo?.sub_license ? true : false}"/></th>
+                    <th>${message(code: 'myinst.renewalUpload.copyLiense', default: 'Copy License from Subscription')}</th>
+                    <td>${message(code: 'license', default:'License')}: ${permissionInfo?.sub_license?:message(code: 'myinst.renewalUpload.noLicensetoSub', default: 'No License in the Subscription!')}</td>
                 </tr>
                 </tbody>
             </table>
+
+            <div class="pull-right">
+                <g:if test="${entitlements}">
+                    <button type="submit"
+                            class="ui button">${message(code: 'myinst.renewalUpload.accept', default: 'Accept and Process')}</button>
+                </g:if>
+            </div>
+            <br><hr/>
             <table class="ui celled la-table table">
                 <thead>
                 <tr>

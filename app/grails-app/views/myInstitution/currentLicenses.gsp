@@ -39,6 +39,7 @@
                     <label>${message(code:'license.search.by_ref', default:'Search by Reference')}</label>
                     <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
                 </div>
+                <%--
                 <div class="field">
                     <label>${message(code:'license.property.search')}</label>
                     <div class="two fields">
@@ -46,6 +47,17 @@
                         <input class="ui dropdown selection" id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value...')}" value="${params.propertyFilter?:''}" />
                         <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
                     </div>
+                </div>
+            </div><!--.fields-->
+            <div class="fields">
+
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                </div> --%>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
                 </div>
                 <div class="field">
                     <label>&nbsp;</label>
@@ -77,7 +89,7 @@
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
-                        <g:each in="${l.subscriptions}" var="sub">
+                        <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
                               <div class="la-flexbox">
                                   <i class="icon folder open outline la-list-icon"></i>
@@ -95,13 +107,15 @@
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
                     <g:if test="${editable}">
-                        <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon positive button">
+                        <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon button">
                             <i class="copy icon"></i>
                         </g:link>
-                        <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
-                            params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
-                            <i class="trash alternate icon"></i>
-                        </g:link>
+                        <g:if test="${! l.subscriptions}">
+                            <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
+                                params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
+                        </g:if>
                     </g:if>
                   </td>
                 </tr>
@@ -112,6 +126,7 @@
 
           <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
 
+  <%--
     <r:script type="text/javascript">
 
         $('.license-results input[type="radio"]').click(function () {
@@ -189,7 +204,7 @@
         })
         window.onload = setTypeAndSearch()
     </r:script>
-
+--%>
 
   </body>
 </html>

@@ -28,9 +28,9 @@
 
                     <dt><g:message code="title.identifiers.label" /></dt>
 
-                    <dd><g:each in="${titleInstanceInstance.ids}" var="i">
+                    <dd><g:each in="${titleInstanceInstance.ids.sort{it.identifier.ns.ns}}" var="i">
                         <g:if test="${i.identifier.ns.ns != 'originediturl'}">
-                            ${i.identifier.ns.ns}:${i.identifier.value}<br/>
+                            ${i.identifier.ns.ns}: ${i.identifier.value}<br/>
                         </g:if>
                         <g:else>
                             GOKb: <a href="${i.identifier.value}">${message(code:'component.originediturl.label')}</a><br/>
@@ -49,7 +49,7 @@
 
         <dl>
           <dt>${message(code:'tipp.show.avStatus', default:'Availability Status')}</dt>
-          <dd><span title="${tipp.availabilityStatusExplanation}">${tipp.availabilityStatus?.value}</span></dd>
+          <dd><span title="${tipp.availabilityStatusExplanation}">${tipp.availabilityStatus?.getI10n("value")}</span></dd>
 
           <dt>${message(code:'tipp.show.accessStart', default:'Access Start Date (Enters Package)')}</dt>
           <dd><semui:xEditable owner="${tipp}" type="date" field="accessStartDate" /></dd>

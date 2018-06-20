@@ -77,13 +77,14 @@ class YodaController {
         result.statsSyncService.completedCount = statsSyncService.completedCount
         result.statsSyncService.newFactCount = statsSyncService.newFactCount
         result.statsSyncService.totalTime = statsSyncService.totalTime
-        result.statsSyncService.threads = statsSyncService.FIXED_THREAD_POOL_SIZE
+        result.statsSyncService.threads = statsSyncService.THREAD_POOL_SIZE
         result.statsSyncService.queryTime = statsSyncService.queryTime
         result.statsSyncService.activityHistogram = statsSyncService.activityHistogram
         result.statsSyncService.syncStartTime = statsSyncService.syncStartTime
         result.statsSyncService.syncElapsed = statsSyncService.syncElapsed
         result.dataloadService.update_running = dataloadService.update_running
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
+        result.esinfos = FTControl.list()
 
         result
     }
@@ -154,7 +155,7 @@ class YodaController {
         if (ftupdate_running == false) {
             try {
                 ftupdate_running = true
-                new EventLog(event:'kbplus.fullReset',message:'Full Reset',tstp:new Date(System.currentTimeMillis())).save(flush:true)
+                new EventLog(event:'kbplus.fullReset',message:'Full Reset ES Start',tstp:new Date(System.currentTimeMillis())).save(flush:true)
                 log.debug("Delete all existing FT Control entries");
                 FTControl.withTransaction {
                     FTControl.executeUpdate("delete FTControl c")
@@ -195,6 +196,29 @@ class YodaController {
         result.sources = GlobalRecordSource.list()
 
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def manageESSources() {
+        def result = [:]
+        log.debug("manageESSources ..")
+        result.sources = ElasticsearchSource.list()
+
+        result
+    }
+    @Secured(['ROLE_YODA'])
+    def newESSource() {
+        def result=[:]
+        log.debug("manageGlobalSources ..")
+
+        /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
+                identifier:params.identifier,
+                name:params.name,
+                host:params.uri)
+
+        result.newSource.save()*/
+
+        redirect action:'manageGlobalSources'
     }
 
     @Secured(['ROLE_YODA'])

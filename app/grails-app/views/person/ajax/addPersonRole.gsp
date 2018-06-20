@@ -41,6 +41,12 @@
 </div>
 
 <script>
+    $(document).ready(function () {
+        $('.ui.search.dropdown').dropdown({
+            fullTextSearch: 'exact'
+        });
+    });
+
     $('.template-element-delete-${timestamp}').click(function(){
         $('.template-element-${timestamp}').remove()
     })

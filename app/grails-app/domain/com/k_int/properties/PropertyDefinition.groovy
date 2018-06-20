@@ -6,6 +6,7 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import de.laser.domain.I10nTranslatableAbstract
 import de.laser.domain.I10nTranslation
 import groovy.util.logging.*
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
@@ -143,7 +144,8 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
         }
 
-        def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
+        //def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
+        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner)
         newProp.setNote("")
 
         if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
@@ -154,7 +156,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         }
 
         newProp.save(flush:true)
-        newProp
+        GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
     static def lookupOrCreate(name, typeClass, descr, multipleOccurence, mandatory, Org tenant) {

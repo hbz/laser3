@@ -18,12 +18,12 @@
 <g:if test="${actionName in ['currentLicenses']}">
     <semui:actionsDropdown>
         <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
-            <semui:actionsDropdownItem controller="myInstitution" action="cleanLicense" message="license.add.blank" />
+            <semui:actionsDropdownItem controller="myInstitution" action="addLicense" message="license.add.blank" />
             <div class="divider"></div>
         </g:if>
 
         <semui:actionsDropdownItem controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
-        <semui:actionsDropdownItem controller="myInstitution" action="addLicense" message="license.copy" />
+        %{--<semui:actionsDropdownItem controller="myInstitution" action="addLicense" message="license.copy" />--}%
     </semui:actionsDropdown>
 </g:if>
 

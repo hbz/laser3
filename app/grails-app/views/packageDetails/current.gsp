@@ -4,7 +4,7 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
-        <title><g:message code="default.edit.label" args="[entityName]" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
     </head>
     <body>
         <semui:breadcrumbs>
@@ -13,6 +13,24 @@
         </semui:breadcrumbs>
 
         <semui:modeSwitch controller="packageDetails" action="show" params="${params}" />
+
+        <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
+                </semui:exportDropdownItem>
+
+                <g:each in="${transforms}" var="transkey,transval">
+                    <semui:exportDropdownItem>
+                        <g:link class="item" action="show" id="${params.id}" params="${[format:'xml', transformId:transkey, mode:params.mode]}"> ${transval.name}</g:link>
+                    </semui:exportDropdownItem>
+                </g:each>
+            </semui:exportDropdown>
+            <g:render template="actions" />
+        </semui:controlButtons>
 
         <h1 class="ui header"><semui:headerIcon />
 
@@ -81,18 +99,18 @@
         </semui:filter>
 
         <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
-
+            <g:if test="${editable}">
           <table class="ui celled la-table table ignore-floatThead la-bulk-header">
 
             <thead>
             <tr>
 
               <th>
-                <g:if test="${editable}"><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
               </th>
 
               <th colspan="7">
-                <g:if test="${editable}">
+
                   <select id="bulkOperationSelect" name="bulkOperation" class="input-xxlarge">
                     <option value="edit">${message(code:'package.show.batch.edit.label', default:'Batch Edit Selected Rows Using the following values')}</option>
                     <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
@@ -126,13 +144,14 @@
                   </table>
                   <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
                   <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
-                </g:if>
+
               </th>
             </tr>
 
             </thead>
                 <tbody></tbody>
           </table>
+            </g:if>
 
             <table class="ui celled la-table table">
                 <thead>
@@ -160,29 +179,29 @@
                    <strong><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
                     <br>
                    <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link><br/>
-                   <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span><br/>
+                   <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.getI10n('value')}</span><br/>
                     <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>
                    <g:if test="${params.mode=='advanced'}">
                      <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
                      <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
-                     <br/> ${message(code:'tipp.accessEndDate', defauKlt:'Access End')}: <semui:xEditable owKner="${t}" type="date" field="accessEndDate" />
+                     <br/> ${message(code:'tipp.accessEndDate', defauKlt:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                    </g:if>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
-                   <g:if test="${t.hostPlatformURL != null}">
-                     <a href="${t.hostPlatformURL}">${t.platform?.name}</a>
+                   <g:if test="${t.hostPlatformURL}">
+                     <a href="${t.hostPlatformURL.contains('http') ?:'http://'+t.hostPlatformURL}" target="_blank">${t.platform?.name}</a>
                    </g:if>
                    <g:else>
                      ${t.platform?.name}
                    </g:else>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
-                  <g:each in="${t.title.ids}" var="id">
+                  <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="id">
                     <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                       ${id.identifier.ns.ns}: <a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a>
                     </g:if>
                     <g:else>
-                      ${id.identifier.ns.ns}:${id.identifier.value}
+                      ${id.identifier.ns.ns}: ${id.identifier.value}
                     </g:else>
                     <br/>
                   </g:each>
@@ -229,7 +248,7 @@
 
             <semui:form>
                 <g:form class="ui form" controller="ajax" action="addToCollection">
-                  <fieldset>
+
                     <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
                     <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
                     <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
@@ -237,15 +256,18 @@
 
                     <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
                     <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
-
-                    <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-                    <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
-                    <span class="help-block"></span>
-                    <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-                    <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
-                    <span class="help-block"></span>
+                      <div class="two fluid fields">
+                          <div class="field">
+                            <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
+                            <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/>
+                          </div>
+                          <div class="field">
+                            <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
+                            <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/>
+                          </div>
+                      </div>
                     <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
-                  </fieldset>
+
                 </g:form>
             </semui:form>
 
@@ -255,7 +277,7 @@
       </div>
 
 
-    <g:render template="enhanced_select" contextPath="../templates" />
+    <%-- <g:render template="enhanced_select" contextPath="../templates" /> --%>
     <g:render template="orgLinksModal" 
               contextPath="../templates" 
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
@@ -266,7 +288,9 @@
         $('.xEditableValue').editable();
       });
       function selectAll() {
-        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+
+        //$('#select-all').is( ':checked' )? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
       }
 
       function confirmSubmit() {

@@ -59,23 +59,23 @@
                 <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
                 <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
 
-                <dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>
+                %{--<dt>${message(code: 'package.show.persistent_id')}</dt>
+                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>--}%
 
                 <dt>${message(code: 'package.show.other_ids')}</dt>
                 <dd>
                     <table class="ui celled la-table la-table-small table ignore-floatThead">
                         <thead>
                         <tr>
-                            <th>${message(code: 'component.id.label')}</th>
+                            %{--<th>${message(code: 'component.id.label')}</th>--}%
                             <th>${message(code: 'identifier.namespace.label')}</th>
                             <th>${message(code: 'identifier.label')}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${packageInstance.ids}" var="io">
+                        <g:each in="${packageInstance.ids.sort{it.identifier.ns.ns}}" var="io">
                             <tr>
-                                <td>${io.id}</td>
+                                %{--<td>${io.id}</td>--}%
                                 <td>${io.identifier.ns.ns}</td>
                                 <g:if test="${io.identifier.value =~ /^http/}">
                                     <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
@@ -193,7 +193,9 @@
                                             roleObject: packageInstance,
                                             roleRespValue: 'Specific package editor',
                                             editmode: editable,
-                                            tmplButtonText: 'Anbieter hinzufügen']}" />
+                                            tmplButtonText: 'Anbieter hinzufügen',
+                                            tmplmodalID:'osel_add_modal'
+                                  ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
                               model="${[linkType:packageInstance?.class?.name,
@@ -201,7 +203,9 @@
                                         property: 'orgs',
                                         recip_prop: 'pkg',
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
-                                        tmplText:'Anbieter hinzufügen'
+                                        tmplText:'Anbieter hinzufügen',
+                                        tmplID:'ContentProvider',
+                                        tmplmodalID:'osel_add_modal'
                               ]}" />
 <%--
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
@@ -243,6 +247,7 @@
                                                      module="statistics"
                                                      controller="default"
                                                      action="select"
+                                                     target="_blank"
                                                      params="[mode:usageMode,
                                                               packages:packageInstance.getIdentifierByType('isil').value,
                                                               institutions:statsWibid
@@ -371,7 +376,7 @@
             <tr class="no-background">
 
               <th>
-                <g:if test="${editable}"><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                <g:if test="${editable}"><input type="checkbox" id="select-all" name="chkall" onClick="javascript:selectAll();"/></g:if>
               </th>
 
               <th colspan="7">
@@ -681,7 +686,7 @@
         $('.xEditableValue').editable();
       });
       function selectAll() {
-          $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+          $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
       function confirmSubmit() {

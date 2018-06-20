@@ -4,7 +4,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}"/>
-    <title><g:message code="default.edit.label" args="[entityName]"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
 </head>
 
 <body>
@@ -28,10 +28,9 @@
                 </semui:exportDropdownItem>
             </g:each>
         </semui:exportDropdown>
+        <g:render template="actions" />
     </semui:controlButtons>
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
-
-    <semui:messages data="${flash}" />
 
     <h1 class="ui header"><semui:headerIcon />
 
@@ -40,7 +39,12 @@
 
     <g:render template="nav"/>
 
+    <semui:messages data="${flash}" />
+
     <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
+
+
+    <g:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 
 </body>
 </html>

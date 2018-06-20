@@ -71,6 +71,12 @@ class DocWidgetController {
     log.debug("upload document....");
 
     def input_file = request.getFile("upload_file")
+    if(input_file.size == 0)
+        {
+            flash.error = message(code: 'template.emptyDocument.file')
+            redirect(url: request.getHeader('referer'))
+            return
+        }
     def input_stream = input_file?.inputStream
     def original_filename = request.getFile("upload_file")?.originalFilename
 
@@ -92,13 +98,13 @@ class DocWidgetController {
                                     filename: original_filename,
                                     mimeType: request.getFile("upload_file")?.contentType,
                                     title: params.upload_title,
-                                    type:RefdataCategory.lookupOrCreate('Document Type',params.doctype))
+                                    type:RefdataCategory.lookupOrCreate('Document Type',params.doctype),
+                                    creator: user)
           doc_content.setBlobData(input_stream, input_file.size)
           doc_content.save()
 
           def doc_context = new DocContext("${params.ownertp}":instance,
                                            owner:doc_content,
-                                           user:user,
                                            doctype:RefdataCategory.lookupOrCreate('Document Type',params.doctype)).save(flush:true);
 
           log.debug("Doc created and new doc context set on ${params.ownertp} for ${params.ownerid}");

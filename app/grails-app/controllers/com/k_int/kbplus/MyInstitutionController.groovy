@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.ContextService
@@ -141,7 +142,7 @@ class MyInstitutionController {
 
         result.tips = results
         result.institution = current_inst
-        result.editable = accessService.checkUserOrgRole(result.user, current_inst, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, current_inst, 'INST_EDITOR')
         result
     }
 
@@ -191,7 +192,8 @@ class MyInstitutionController {
         def result = setResultGenerics()
         result.transforms = grailsApplication.config.licenseTransforms
 
-        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null;
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -245,7 +247,7 @@ class MyInstitutionController {
         }
 
         if (date_restriction) {
-            qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null ) "
+            qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null OR l.startDate >= :date_restr  ) "
             qry_params += [date_restr: date_restriction]
             qry_params += [date_restr: date_restriction]
         }
@@ -360,7 +362,18 @@ class MyInstitutionController {
             return;
         }
 
-        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        def cal = new java.util.GregorianCalendar()
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+        cal.setTimeInMillis(System.currentTimeMillis())
+        cal.set(Calendar.MONTH, Calendar.JANUARY)
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        result.defaultStartYear = sdf.format(cal.getTime())
+        cal.set(Calendar.MONTH, Calendar.DECEMBER)
+        cal.set(Calendar.DAY_OF_MONTH, 31)
+        result.defaultEndYear = sdf.format(cal.getTime())
+
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def qparams = [template_license_type]
@@ -429,7 +442,7 @@ class MyInstitutionController {
                 result.orgList << provider.org
             }
         }
-
+        result.orgList.sort{a, b -> a.name.compareToIgnoreCase b.name}
         result.test = mySubs
         result
     }
@@ -485,12 +498,16 @@ class MyInstitutionController {
         }
         */
 
-        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+
 
         def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
         def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
         def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
         def roleTypes = [role_sub, role_sub_consortia]
+        def role_provider        = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
+        def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':result.institution]
@@ -530,12 +547,64 @@ from Subscription as s where (
         }
 
         if (params.q?.length() > 0) {
-            base_qry += " and ( lower(s.name) like :name_filter or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) ) "
+            base_qry += (
+                    " and ( lower(s.name) like :name_filter " // filter by subscription
+                + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
+                + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
+                + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
+                            + " or lower(orgR.org.shortname) like :name_filter or lower(orgR.org.sortname) like :name_filter) ) " // filter by Anbieter, Konsortium, Agency
+                +  " ) "
+            )
+
             qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
         }
 
+        // property filter
+
+        if (params.filterPropDef) {
+            def pd = genericOIDService.resolveOID(params.filterPropDef)
+
+            if (pd.tenant) {
+                base_qry += " and exists ( select scp from s.privateProperties as scp where scp.type = :propDef "
+            } else {
+                base_qry += " and exists ( select scp from s.customProperties as scp where scp.type = :propDef "
+            }
+            qry_params.put('propDef', pd)
+
+
+            if (params.filterProp) {
+
+                switch (pd.type) {
+                    case RefdataValue.toString():
+                        base_qry += " and scp.refValue= :prop "
+                        def pdValue = genericOIDService.resolveOID(params.filterProp)
+                        qry_params.put('prop', pdValue)
+
+                        break
+                    case Integer.toString():
+                        base_qry += " and scp.intValue = :prop "
+                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        break
+                    case String.toString():
+                        base_qry += " and scp.stringValue = :prop "
+                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        break
+                    case BigDecimal.toString():
+                        base_qry += " and scp.decValue = :prop "
+                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        break
+                    case Date.toString():
+                        base_qry += " and scp.dateValue = :prop "
+                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        break
+                }
+            }
+
+            base_qry += " ) "
+        }
+
         if (date_restriction) {
-            base_qry += " and s.startDate <= :date_restr and s.endDate >= :date_restr "
+            base_qry += " and s.startDate <= :date_restr and (s.endDate >= :date_restr or s.endDate is null or s.endDate ='' )"
             qry_params.put('date_restr', date_restriction)
         }
 
@@ -557,30 +626,151 @@ from Subscription as s where (
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-
             base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
             base_qry += " order by LOWER(s.name) asc"
         }
 
-        //log.debug("query: ${base_qry} && params: ${qry_params}")
+        log.debug("query: ${base_qry} && params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         result.date_restriction = date_restriction;
 
-        def propFilterList = PropertyDefinition.findAllWhere(descr: PropertyDefinition.SUB_PROP)
-        result.custom_prop_types = propFilterList.collectEntries{
-            [(it.getI10n('name')) : it.type + "&&" + it.refdataCategory]
-        }
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                    descr: PropertyDefinition.SUB_PROP,
+                    tenant: null // public properties
+                ) +
+                PropertyDefinition.findAllWhere(
+                    descr: PropertyDefinition.SUB_PROP,
+                    tenant: contextService.getOrg() // private properties
+                )
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
             result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
         }
 
+        if ( params.exportXLS=='yes' ) {
+            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
+            exportcurrentSubscription(subscriptions)
+            return
+        }
+
         withFormat {
-            html result
+            html {
+                result
+            }
+        }
+    }
+
+    private def exportcurrentSubscription(subscriptions) {
+        try {
+            String[] titles = [
+                    'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
+
+            def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
+
+
+            HSSFWorkbook wb = new HSSFWorkbook();
+
+            HSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"));
+
+
+
+            //the following three statements are required only for HSSF
+            sheet.setAutobreaks(true);
+
+
+            //the header row: centered text in 48pt font
+            Row headerRow = sheet.createRow(0);
+            headerRow.setHeightInPoints(16.75f);
+            titles.eachWithIndex { titlesName, index ->
+                Cell cell = headerRow.createCell(index);
+                cell.setCellValue(titlesName);
+
+            }
+
+            //freeze the first row
+            sheet.createFreezePane(0, 1);
+
+            Row row;
+            Cell cell;
+            int rownum = 1;
+
+            subscriptions.sort{it.name}
+            subscriptions.each{  sub ->
+                int cellnum = 0;
+                row = sheet.createRow(rownum);
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.name));
+
+                cell = row.createCell(cellnum++);
+                //sub.owner.sort{it.reference}
+                sub.owner.each{
+                    cell.setCellValue(new HSSFRichTextString(it.reference));
+                }
+                cell = row.createCell(cellnum++);
+                sub.packages.sort{it.pkg.name}
+                def packages =""
+                sub.packages.each{
+                    packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name+', ';
+                }
+                cell.setCellValue(new HSSFRichTextString(packages));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.getConsortia()?.name));
+
+                cell = row.createCell(cellnum++);
+                def providername = ""
+                def provider = OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))
+                       provider.each {
+                       providername += (it == provider.last()) ? it.org.name : it.org.name+", "
+                }
+                cell.setCellValue(new HSSFRichTextString(providername));
+                cell = row.createCell(cellnum++);
+                def agencyname = ""
+                def agency = OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'))
+                agency.each {
+                    agencyname += (it == agency.last()) ? it.org.name : it.org.name+", "
+                }
+                cell.setCellValue(new HSSFRichTextString(agencyname));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sdf.format(sub.startDate)));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sdf.format(sub.endDate)));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.type?.getI10n("value")));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.status?.getI10n("value")));
+
+                rownum++
+            }
+
+            for (int i = 0; i < 22; i++) {
+                sheet.autoSizeColumn(i);
+            }
+            // Write the output to a file
+            String file = g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions")+"_${datetoday}.xls";
+            //if(wb instanceof XSSFWorkbook) file += "x";
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+            // response.contentType = 'application/xls'
+            response.contentType = 'application/vnd.ms-excel'
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+
+        }
+        catch ( Exception e ) {
+            log.error("Problem",e);
+            response.sendError(500)
         }
     }
 
@@ -659,7 +849,7 @@ from Subscription as s where (
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
         
-        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
@@ -691,7 +881,8 @@ from Subscription as s where (
         log.debug(params)
         def result = setResultGenerics()
         result.orgType = RefdataValue.get(params.asOrgType)
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
+        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
         
         def orgRole = null
@@ -708,11 +899,11 @@ from Subscription as s where (
             subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
 
-        if (accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')) {
+        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
             def startDate = sdf.parse(params.valid_from)
-            def endDate = sdf.parse(params.valid_to)
+            def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
 
             def new_sub = new Subscription(
@@ -766,7 +957,7 @@ from Subscription as s where (
                                           
                         new OrgRole(org: cm,
                             sub: cons_sub,
-                            roleType: role_sub).save();
+                            roleType: role_sub_cons).save();
 
                         new OrgRole(org: result.institution,
                             sub: cons_sub,
@@ -775,7 +966,7 @@ from Subscription as s where (
                     else {
                         new OrgRole(org: cm,
                             sub: new_sub,
-                            roleType: role_sub).save();
+                            roleType: role_sub_cons).save();
                     }
                   }
                 }
@@ -852,16 +1043,46 @@ from Subscription as s where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        if (! accessService.checkUserOrgRole(user, org, 'INST_ADM')) {
+        if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
             return;
         }
 
+        def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
+        //Nur wenn von Vorlage ist
+        if(baseLicense) {
+            if (!baseLicense?.hasPerm("view", user)) {
+                log.debug("return 401....");
+                flash.error = message(code: 'myinst.newLicense.error', default: 'You do not have permission to view the selected license. Please request access on the profile page');
+                response.sendError(401)
+
+            } else {
+                def copyLicense = institutionsService.copyLicense(params)
+                if (copyLicense.hasErrors()) {
+                    log.error("Problem saving license ${copyLicense.errors}");
+                    render view: 'editLicense', model: [licenseInstance: copyLicense]
+                } else {
+                    copyLicense.reference = params.licenseName
+                    copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
+                    copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
+
+                    if (!copyLicense.save(flush: true)) {
+                    }
+
+                    flash.message = message(code: 'license.created.message')
+                    redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
+                    return
+                }
+            }
+        }
+
         def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
-        def licenseInstance = new License(type: license_type, status: license_status)
+        def licenseInstance = new License(type: license_type, status: license_status, reference: params.licenseName ?:null,
+                startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
+                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
         if (!licenseInstance.save(flush: true)) {
         } else {
             log.debug("Save ok");
@@ -873,7 +1094,7 @@ from Subscription as s where (
                 log.error("Problem saving org links to license ${org.errors}");
             }
             if(params.sub) {
-                def subInstance = Subscription.get(params.owner)
+                def subInstance = Subscription.get(params.sub)
                 subInstance.owner = licenseInstance
                 subInstance.save(flush: true)
             }
@@ -889,7 +1110,7 @@ from Subscription as s where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        if (! accessService.checkUserOrgRole(user, org, 'INST_ADM')) {
+        if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
             flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -962,16 +1183,9 @@ from Subscription as s where (
 
         log.debug("deleteDocuments ${params}");
 
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag.')) {
-                def docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete}");
-                def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status', 'Deleted');
-            }
-        }
+        docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'licenseDetails', action: 'show', id: params.licid, fragment: 'docstab'
+        redirect controller: 'licenseDetails', action: 'show', id: params.licid /*, fragment: 'docstab' */
     }
 
     @Deprecated
@@ -1058,7 +1272,7 @@ from Subscription as s where (
         }
         
         // Set is_inst_admin
-        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         // Set offset and max
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
@@ -2206,7 +2420,7 @@ AND EXISTS (
             flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
             response.sendError(401)
             return;
-        } else if (!accessService.checkUserOrgRole(result.user, result.institution, "INST_ADM")) {
+        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
             flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2218,11 +2432,35 @@ AND EXISTS (
 
         result.errors = []
 
-        result.permissionInfo = [sub_startDate: sdf.format(subscription.startDate), sub_endDate: sdf.format(subscription.endDate), sub_name: subscription.name, sub_id: subscription.id]
+        result.permissionInfo = [sub_startDate: (subscription.startDate ? sdf.format(subscription.startDate) : null), sub_endDate: (subscription.endDate ? sdf.format(subscription.endDate) : null), sub_name: subscription.name, sub_id: subscription.id, sub_license: subscription?.owner?.reference?:'']
 
         result.entitlements = subscription.issueEntitlements
 
+        result
+    }
 
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def renewalswithoutPackage() {
+        def result = setResultGenerics()
+
+        if (!accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
+            response.sendError(401)
+            return;
+        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
+            flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
+            response.sendError(401)
+            return;
+        }
+
+        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+
+        def subscription = Subscription.get(params.sub_id)
+
+        result.errors = []
+
+        result.permissionInfo = [sub_startDate: (subscription.startDate ? sdf.format(subscription.startDate) : null), sub_endDate: (subscription.endDate ? sdf.format(subscription.endDate) : null), sub_name: subscription.name, sub_id: subscription.id, sub_license: subscription?.owner?.reference?:'']
 
         result
     }
@@ -2236,7 +2474,7 @@ AND EXISTS (
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
             return;
-        } else if (! accessService.checkUserOrgRole(result.user, result.institution, "INST_ADM")) {
+        } else if (! accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
             flash.error = message(code:'myinst.renewalUpload.error.noAdmin', default:'Renewals Upload screen is not available to read-only users.')
             response.sendError(401)
             return;
@@ -2302,7 +2540,8 @@ AND EXISTS (
                     flash.error = message(code:'myinst.processRenewalUpload.error.access')
                 }
             }
-            result.permissionInfo = [sub_startDate:sub_startDate,sub_endDate:sub_endDate,sub_name:original_sub?.name?:'',sub_id:original_sub?.id?:'']
+            result.permissionInfo = [sub_startDate:sub_startDate,sub_endDate:sub_endDate,sub_name:original_sub?.name?:'',sub_id:original_sub?.id?:'', sub_license: original_sub?.owner?.reference?:'']
+
 
             log.debug("Worksheet upload on behalf of ${org_name}, ${org_id}, ${org_shortcode}");
 
@@ -2414,17 +2653,19 @@ AND EXISTS (
         def sub_endDate = params.subscription?.copyEnd ? parseDate(params.subscription?.end_date,possible_date_formats): null
         def copy_documents = params.subscription?.copy_docs && params.subscription.copyDocs
         def old_subOID = params.subscription.copy_docs
-        def old_subname = "${params.subscription.name} ${now.get(Calendar.YEAR)}"
+        def old_subname = "${params.subscription.name} ${now.get(Calendar.YEAR)+1}"
 
         def new_subscription = new Subscription(
                 identifier: java.util.UUID.randomUUID().toString(),
-                status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
+                status: RefdataCategory.lookupOrCreate('Subscription Status', 'Under Consideration'),
                 impId: java.util.UUID.randomUUID().toString(),
                 name: old_subname ?: "Unset: Generated by import",
                 startDate: sub_startDate,
                 endDate: sub_endDate,
                 previousSubscription: old_subOID ?: null,
-                type: params.subscription?.type)
+                type: Subscription.get(old_subOID)?.type ?: null,
+                isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
+                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null)
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
         Date earliest_start_date = null
@@ -2594,8 +2835,8 @@ AND EXISTS (
             return;
         }
 
-        result.is_inst_admin = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.editable = result.user?.hasAffiliation('INST_EDITOR')
+        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
         getTodoForInst(result)
@@ -2686,8 +2927,7 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(['ROLE_YODA'])
     def changeLog() {
         def result = setResultGenerics()
 
@@ -2943,9 +3183,11 @@ AND EXISTS (
 
         if('add' == params.cmd) {
             flash.message = addPrivatePropertyDefinition(params)
+            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
         else if('delete' == params.cmd) {
             flash.message = deletePrivatePropertyDefinition(params)
+            result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
         result
     }
@@ -3049,7 +3291,7 @@ AND EXISTS (
         def result = setResultGenerics()
         result.orgType = result.institution.orgType
 
-        result.editable = accessService.checkUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
             if(result.orgType?.value == 'Consortium') {
@@ -3087,6 +3329,6 @@ AND EXISTS (
         else {
             log.error("FLASH");
         }
-        redirect(action: "index")
+        redirect(action: "manageAffiliationRequests")
     }
 }

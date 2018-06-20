@@ -5,7 +5,7 @@
   <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
 
@@ -24,7 +24,7 @@
         
 			<g:if test="${orgInstance?.addresses}">
 				<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-				<g:each in="${orgInstance?.addresses}" var="a">
+				<g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
 					<g:if test="${a.org}">
 						<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
 					</g:if>
@@ -70,9 +70,9 @@
 
       </g:if>
         
-          <g:if test="${orgInstance?.ids}">
+          <g:if test="${orgInstance?.ids.sort{it.identifier.ns.ns}}">
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-              <g:each in="${orgInstance.ids}" var="i">
+              <g:each in="${orgInstance.ids.sort{it.identifier.ns.ns}}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link></dd>
               </g:each>
           </g:if>
@@ -81,8 +81,8 @@
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
             <g:each in="${orgInstance.outgoingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                (<g:each in="${i.toOrg?.ids}" var="id">
-                  ${id.identifier.ns.ns}:${id.identifier.value} 
+                (<g:each in="${i.toOrg?.ids.sort{it.identifier.ns.ns}}" var="id">
+                  ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)
               </dd>
             </g:each>
@@ -92,8 +92,8 @@
             <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
             <g:each in="${orgInstance.incomingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="org" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
-                (<g:each in="${i.fromOrg?.ids}" var="id">
-                  ${id.identifier.ns.ns}:${id.identifier.value} 
+                (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id">
+                  ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)
               </dd>
 

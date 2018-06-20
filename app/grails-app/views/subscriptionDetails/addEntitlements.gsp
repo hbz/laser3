@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.label', default:'Subscription')}</title>
   </head>
     <body>
         <semui:breadcrumbs>
@@ -59,13 +59,16 @@
 
           <g:form action="processAddEntitlements">
             <input type="hidden" name="siid" value="${subscriptionInstance.id}"/>
+              <div class="paginateButtons" style="text-align:center">
+                  <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="ui button"/>
+              </div>
             <table class="ui celled stripped table">
               <thead>
                 <tr>
                   <th style="vertical-align:middle;">
-                    <g:if test="${editable}"><input type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                    <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
                   </th>
-                  <th>#</th>
+                    <th>${message(code:'sidewide.number')}</th>
                   <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
                   <th>ISSN</th>
                   <th>eISSN</th>
@@ -85,8 +88,8 @@
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
                       <br/>
                       <span class="pull-right">
-                        <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
-                            <a href="${tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a> &nbsp;| &nbsp;</g:if>
+                        <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
+                            <a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a> &nbsp;| &nbsp;</g:if>
                             <g:link action="processAddEntitlements" 
                                     params="${[siid:subscriptionInstance.id,('_bulkflag.'+tipp.id):'Y']}"
                                     class="pull-right">${message(code:'subscription.details.addEntitlements.add_now', default:'Add now')}</g:link>
@@ -132,7 +135,7 @@
       });
 
       function selectAll() {
-        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
+        $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
       $("simpleHiddenRefdata").editable({

@@ -27,7 +27,7 @@ class SemanticUiSubNavTagLib {
         def text      = attrs.text ? attrs.text : ''
         def message   = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (text && message) ? text + " - " + message : text + message
-        def aClass    = (this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item'
+        def aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         if (attrs.controller) {
             out << g.link(linkBody,

@@ -5,7 +5,7 @@
     <title>Grails Twitter Bootstrap Scaffolding</title>
   </head>
   <body>
-    <div class="row-fluid">
+    <div>
       Update...
     </div>
   </body>

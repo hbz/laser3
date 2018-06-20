@@ -15,7 +15,15 @@
 
             <semui:simpleForm controller="titleDetails" action="findTitleMatches" method="get" message="title.findTitleMatches.proposed">
               <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
-              <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui button">
+              <label>&nbsp;</label>
+              <div class="fields">
+                  <div class="field">
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                    </div>
+                  <div class="field">
+                    <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui button">
+                  </div>
+              </div>
             </semui:simpleForm>
 
             <br/>
@@ -35,7 +43,7 @@
                     <g:each in="${titleMatches}" var="titleInstance">
                       <tr>
                         <td>${titleInstance.title} <g:link controller="titleDetails" action="show" id="${titleInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
-                        <td><ul><g:each in="${titleInstance.ids}" var="id"><li>${id.identifier.ns.ns}:${id.identifier.value}</li></g:each></ul></td>
+                        <td><ul><g:each in="${titleInstance.ids.sort{it.identifier.ns.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each></ul></td>
                         <td>
                           <ul>
                             <g:each in="${titleInstance.orgs}" var="org">

@@ -9,7 +9,7 @@
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${titleInstanceInstance?.ids?}" var="i">
+<g:each in="${titleInstanceInstance?.ids?.sort{it.identifier.ns.ns}}" var="i">
     <li><g:link controller="titleSID" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">

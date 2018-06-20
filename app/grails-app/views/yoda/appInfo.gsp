@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} App Info</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : App Info</title>
 </head>
 
 <body>
@@ -35,6 +35,9 @@
     <table class="ui celled la-table table">
         <tr><td>Currently Running</td><td>${dataloadService.update_running}</td></tr>
         <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
+        <g:each in="${esinfos}" var="es">
+            <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
+        </g:each>
     </table>
 
     <h3 class="ui header">Global Data Sync</h3>

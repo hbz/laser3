@@ -10,7 +10,7 @@ class InstitutionsService {
 
         def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
-        def lic_name = params.lic_name?:"Copy of ${baseLicense?.reference}"
+        def lic_name = params.lic_name?:"Kopie von ${baseLicense?.reference}"
         def licenseInstance = new License(reference: lic_name,
                 status: license_status,
                 type: license_type,

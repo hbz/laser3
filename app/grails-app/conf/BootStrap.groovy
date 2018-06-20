@@ -23,7 +23,7 @@ class BootStrap {
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
         def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
-        
+
         log.debug("setupRefdata ..")
         setupRefdata()
 
@@ -241,7 +241,7 @@ class BootStrap {
 
         OrgPermShare.assertPermShare(view_permission, or_licensee_cons_role)
 
-        def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia'])
+        def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia', de:'Konsortium'])
         def or_subscr_role      = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'])
         def or_subscr_cons_role = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'])
 
@@ -281,6 +281,7 @@ class BootStrap {
 
         def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
         def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
+        def orgComRole     = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
@@ -373,19 +374,13 @@ class BootStrap {
     }
 
     def createOrgProperties() {
-
+        /*
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
-
-        def requiredOrgProps = [
-                [name: [en: "Promotionsrecht", de: "Promotionsrecht"],                      descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "EZB-Teilnehmer", de: "EZB-Teilnehmer"],                        descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Nationallizenz-Teilnehmer", de: "Nationallizenz-Teilnehmer"],  descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Discovery-System", de: "Discovery-System"],                    descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Verwendete Discovery-Systeme", de: "Verwendete Discovery-Systeme"],    descr: allOrgDescr, type:String.toString()]
-        ]
+        def requiredOrgProps = []
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
+        */
     }
-    
+
     def createLicenseProperties() {
 
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
@@ -421,7 +416,7 @@ class BootStrap {
                 [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 //[name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
                 [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                
+
                 // New Properties by FAK / Verde Review
                 [name: [en: "General Terms note", de: "Allgemeine Bedingungen"],                    descr:allDescr, type:String.toString()],
                 [name: [en: "User restriction note", de: "Benutzungsbeschränkungen"],               descr:allDescr, type:String.toString()],
@@ -479,7 +474,7 @@ class BootStrap {
                 [name: [en: "Licensor termination notice period", de: "Kündigungsfrist des Lizenzgebers"], descr:allDescr, type:String.toString()],
                 //[name: [en: "Termination right note", de: "Kündigungsrecht Hinweise"], descr:allDescr, type:String.toString()],
                 [name: [en: "Termination requirement note", de: "Kündigungsrecht besondere Anforderung"], descr:allDescr, type:String.toString()]
-            
+
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
@@ -545,8 +540,22 @@ class BootStrap {
 
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
+        // TODO - remove HOTFIX: hardcoded hbz properties
         def requiredOrgProps = [
-                [name: [en: "Note", de: "Anmerkung"], descr: allOrgDescr, type: String.toString()]
+                [name: [en: "Note", de: "Anmerkung"],
+                            tenant: 'hbz', descr: allOrgDescr, type: String.toString()],
+                [name: [en: "promotionsrecht", de: "Promotionsrecht"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "privatrechtlich", de: "Privatrechtlich"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "ezb teilnehmer", de: "EZB-Teilnehmer"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "nationallizenz teilnehmer", de: "Nationallizenz-Teilnehmer"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "discovery system", de: "Discovery-System"],
+                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
+                [name: [en: "verwendete discovery systeme", de: "Verwendete Discovery-Systeme"],
+                            tenant: 'hbz', descr: allOrgDescr, type:String.toString()]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
 
@@ -561,15 +570,47 @@ class BootStrap {
     def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
         requiredProps.each { default_prop ->
-            def prop = PropertyDefinition.findByName(default_prop.name['en'])
+            /* TODO merge_conflict @ 0.4.5 into 0.5
+            def key = default_prop.key ?: default_prop.name['en']
+            def prop = PropertyDefinition.findByName(key)
 
             if (! prop) {
-                log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
-                prop = new PropertyDefinition(name: default_prop.name['en'])
+                log.debug("Unable to locate property definition for ${key} .. creating")
+                prop = new PropertyDefinition(name: key)
 
                 if (default_prop.cat != null) {
                     prop.setRefdataCategory(default_prop.cat)
                 }
+            }
+            */
+            def prop
+            def tenant
+
+            if (default_prop.tenant) {
+                tenant = Org.findByShortname(default_prop.tenant)
+
+                if (tenant) {
+                    prop = PropertyDefinition.findByNameAndTenant(default_prop.name['en'], tenant)
+                } else {
+                    log.debug("Unable to locate tenant: ${default_prop.tenant} .. ignored")
+                    return
+                }
+            } else {
+                prop = PropertyDefinition.findByName(default_prop.name['en'])
+            }
+
+            if (! prop) {
+                if (tenant) {
+                    log.debug("Unable to locate private property definition for ${default_prop.name['en']} for tenant: ${tenant} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'], tenant: tenant)
+                } else {
+                    log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
+                    prop = new PropertyDefinition(name: default_prop.name['en'])
+                }
+            }
+
+            if (default_prop.cat != null) {
+                prop.setRefdataCategory(default_prop.cat)
             }
 
             if (default_prop.multiple) {
@@ -664,7 +705,8 @@ class BootStrap {
                 [[en: 'Subscription Consortia'], sub],
                 [[en: 'Content Provider', de: 'Anbieter'], pkg],
                 [[en: 'Package Consortia'], pkg],
-                [[en: 'Publisher', de: 'Verlag'], null]
+                [[en: 'Publisher', de: 'Verlag'], null],
+                [[en: 'Agency', de: 'Agentur'], sub]
         ]
 
         RefdataCategory.loc('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
@@ -735,6 +777,7 @@ class BootStrap {
         RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'])
         RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'])
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'])
+        RefdataCategory.loc('Number Type',                               [en: 'Number Type', de: 'Zahlen-Typ'])
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'])
@@ -746,7 +789,7 @@ class BootStrap {
         RefdataValue.loc('YNO',  [en: 'Planed', de: 'Geplant'])
         RefdataValue.loc('YNO',  [en: 'Unknown', de: 'Unbekannt'])
         RefdataValue.loc('YNO',  [en: 'Other', de: 'Andere'])
-        
+
         RefdataValue.loc('Permissions',  [en: 'Permitted (explicit)', de: 'Ausdrücklich erlaubt'])
         RefdataValue.loc('Permissions',  [en: 'Permitted (interpreted)', de: 'Vermutlich erlaubt'])
         RefdataValue.loc('Permissions',  [en: 'Prohibited (explicit)', de: 'Ausdrücklich verboten'])
@@ -754,21 +797,21 @@ class BootStrap {
         RefdataValue.loc('Permissions',  [en: 'Silent', de: 'Stillschweigend'])
         RefdataValue.loc('Permissions',  [en: 'Not applicable', de: 'Nicht zutreffend'])
         RefdataValue.loc('Permissions',  [en: 'Unknown', de: 'Unbekannt'])
-        
+
         RefdataValue.loc('Existence',   [en: 'Existent', de: 'Bestehend'])
         RefdataValue.loc('Existence',   [en: 'Nonexistend', de: 'Fehlend'])
-        
+
         RefdataValue.loc('Indemnification',  [en: 'General', de: 'Generell'])
         RefdataValue.loc('Indemnification',  [en: 'Intellectual Property Only', de: 'Nur geistiges Eigentum'])
         RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'])
         RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unbekannt'])
-        
+
         RefdataValue.loc('Confidentiality',  [en: 'All', de: 'Alles'])
         RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'])
         RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'])
         RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'])
         RefdataValue.loc('Confidentiality',  [en: 'Unknown', de: 'Unbekannt'])
-        
+
         RefdataValue.loc('Termination Condition',  [en: 'At will', de: 'Nach Belieben'])
         RefdataValue.loc('Termination Condition',  [en: 'Breach by Licensor/Licensee', de: 'Wegen Verstoß des Vertragspartners'])
         RefdataValue.loc('Termination Condition',  [en: 'Other', de: 'Andere Gründe'])
@@ -778,7 +821,7 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
         RefdataValue.loc('AddressType', [en: 'Library address', de: 'Bibliotheksanschrift'])
-        RefdataValue.loc('AddressType', [en: 'Legal Patron Address', de: 'Anschrift des rechtlichen Trägers'])
+        RefdataValue.loc('AddressType', [en: 'Legal patron address', de: 'Anschrift des rechtlichen Trägers'])
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])
 
@@ -807,6 +850,14 @@ class BootStrap {
         RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'])
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'])
         RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'])
+        RefdataValue.loc('Country',   [en: 'France', de: 'Frankreich'])
+        RefdataValue.loc('Country',   [en: 'Great Britain', de: 'Großbritannien'])
+        RefdataValue.loc('Country',   [en: 'United States of America', de: 'Vereinigte Staaten von Amerika'])
+        RefdataValue.loc('Country',   [en: 'Belgium', de: 'Belgien'])
+        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'])
+        RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'])
+        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'])
+
 
         RefdataValue.loc('FactType', [en: 'STATS:JR1'])
         RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
@@ -871,6 +922,7 @@ class BootStrap {
         RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'])
         RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Verlag'])
+        RefdataValue.loc('OrgType',      [en: 'Provider', de: 'Anbieter'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
 
         RefdataValue.loc('Package Status',      [en: 'Deleted', de: 'Gelöscht'])
@@ -910,7 +962,8 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'])
-		
+        RefdataValue.loc('Subscription Status',      [en: 'Test Access',   de: 'Testzugriff'])
+
 		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'])
 		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'])
 		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'])
@@ -993,6 +1046,11 @@ class BootStrap {
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'CLOCKSS', de: 'CLOCKSS'])
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Portico', de: 'Portico'])
 
+        RefdataValue.loc('Number Type',      [en: 'Students', de: 'Studenten'])
+        RefdataValue.loc('Number Type',      [en: 'Scientific staff', de: 'wissenschaftliches Personal'])
+        RefdataValue.loc('Number Type',      [en: 'User', de: 'Nutzer'])
+        RefdataValue.loc('Number Type',      [en: 'Population', de: 'Einwohner'])
+
         RefdataValue.loc('Access Method',      [en: 'IPv4', de: 'IPv4'])
         RefdataValue.loc('Access Method',      [en: 'IPv6', de: 'IPv6'])
         RefdataValue.loc('Access Method',      [en: 'Proxy', de: 'Proxy'])
@@ -1063,26 +1121,60 @@ class BootStrap {
         RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])
 
-        RefdataValue.loc('CostItemCategory', [en: 'Price', de: 'Preis'])
-        RefdataValue.loc('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'])
-        RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'])
-        RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'])
+        //RefdataValue.loc('CostItemCategory', [en: 'Price', de: 'Preis'])
+        //RefdataValue.loc('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'])
+        //RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'])
+        //RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'])
 
         RefdataCategory.loc('CostItemElement',
                 [en: 'CostItemElement', de: 'CostItemElement'])
 
-        RefdataValue.loc('CostItemElement', [en: 'Admin Fee', de: 'Admin Fee'])
-        RefdataValue.loc('CostItemElement', [en: 'Content', de: 'Content'])
-        RefdataValue.loc('CostItemElement', [en: 'Platform', de: 'Platform'])
-        RefdataValue.loc('CostItemElement', [en: 'Other', de: 'Andere'])
+        //RefdataValue.loc('CostItemElement', [en: 'Admin Fee', de: 'Admin Fee'])
+        //RefdataValue.loc('CostItemElement', [en: 'Content', de: 'Content'])
+        //RefdataValue.loc('CostItemElement', [en: 'Platform', de: 'Platform'])
+        //RefdataValue.loc('CostItemElement', [en: 'Other', de: 'Andere'])
+
+        RefdataValue.loc('CostItemElement', [key: 'price: list price', en: 'price: list price', de: 'Preis: Listenpreis'])
+        RefdataValue.loc('CostItemElement', [key: 'price: provider price', en: 'price: provider price', de: 'Preis: Anbieterpreis'])
+        RefdataValue.loc('CostItemElement', [key: 'price: consortial price', en: 'price: consortial price', de: 'Preis: Konsortialpreis'])
+        RefdataValue.loc('CostItemElement', [key: 'price: final price', en: 'price: final price', de: 'Preis: Endpreis'])
+        RefdataValue.loc('CostItemElement', [key: 'price: other', en: 'price: other', de: 'Preis: Sonstige'])
+
+        RefdataValue.loc('CostItemElement', [key: 'discount: consortial discount', en: 'discount: consortial discount', de: 'Rabatt: Konsortialrabatt'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: alliance licence discount', en: 'discount: alliance licence discount', de: 'Rabatt für Allianzlizenz'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: single payment discount', en: 'discount: single payment discount', de: 'Rabatt für eine Rechnung via Konsortium'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: multiyear discount', en: 'discount: multiyear discount', de: 'Rabatt für Mehrjahresvertrag'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: quantity discount', en: 'discount: quantity discount', de: 'Rabatt: Mengenrabatt'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: early pay discount', en: 'discount: early pay discount', de: 'Rabatt: Frühzahlerrabatt'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: other', en: 'discount: other', de: 'Rabatt: Sonstige'])
+
+        RefdataValue.loc('CostItemElement', [key: 'refund: currency rate', en: 'refund: currency rate', de: 'Erstattung: Kursgutschrift'])
+        RefdataValue.loc('CostItemElement', [key: 'refund: OA', en: 'refund: OA', de: 'Erstattung: Open-Acces-Gutschrift'])
+        RefdataValue.loc('CostItemElement', [key: 'refund: retransfer', en: 'refund: retransfer', de: 'Erstattung: Rücküberweisung'])
+        RefdataValue.loc('CostItemElement', [key: 'refund: system downtime', en: 'refund: system downtime', de: 'Erstattung: Ersatz für Ausfallzeiten'])
+        RefdataValue.loc('CostItemElement', [key: 'refund: other', en: 'refund: other', de: 'Erstattung: Sonstige'])
+
+        RefdataValue.loc('CostItemElement', [key: 'additionalclaim: currency rate', en: 'additionalclaim: currency rate', de: 'Nachforderung aus Kursdifferenz'])
+        RefdataValue.loc('CostItemElement', [key: 'additionalclaim: other', en: 'additionalclaim: other', de: 'Nachforderung: Sonstige'])
+
+        RefdataValue.loc('CostItemElement', [key: 'fee: bank charge', en: 'fee: bank charge', de: 'Gebühr: Bankgebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: invoicing', en: 'fee: invoicing', de: 'Gebühr: Rechnungsstellungsgebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: administration', en: 'fee: administration', de: 'Gebühr: Verwaltungsgebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: technical access', en: 'fee: technical access', de: 'Gebühr: Plattformgebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: setup', en: 'fee: setup', de: 'Gebühr: SetUp-Gebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: other', en: 'fee: other', de: 'Gebühr: Sonstige'])
+
+        RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 19', en: 'tax: purchase tax 19%', de: 'Steuer: Umsatzsteuer 19%'])
+        RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 7', en: 'tax: purchase tax 7%', de: 'Steuer: Umsatzsteuer 7%'])
+        RefdataValue.loc('CostItemElement', [key: 'tax: source tax', en: 'tax:  source tax', de: 'Steuer: Quellensteuer'])
 
         RefdataCategory.loc('CostItemStatus',
                 [en: 'CostItemStatus', de: 'CostItemStatus'])
 
-        RefdataValue.loc('CostItemStatus', [en: 'Estimate', de: 'Schätzung'])
-        RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'Commitment'])
-        RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'Fest'])
-        RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('CostItemStatus', [en: 'Estimate', de: 'geschätzt'])
+        RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'zugesagt'])
+        RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'feststehend'])
+        RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Sonstige'])
 
         // TODO locCategory
         RefdataValue.loc('Document Context Status',
@@ -1092,7 +1184,10 @@ class BootStrap {
                 [en: 'Document Type', de: 'Dokumenttyp'])
 
         RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'])
-        RefdataValue.loc('Document Type', [en: 'License', de: 'Lizenz'])
+        RefdataValue.loc('Document Type', [en: 'Subscription', de: 'Lizenz'])
+        RefdataValue.loc('Document Type', [en: 'License', de: 'Vertrag'])
+        RefdataValue.loc('Document Type', [en: 'General', de: 'Allgemein'])
+        RefdataValue.loc('Document Type', [en: 'Addendum', de: 'Zusatz'])
         RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung'])
         RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'])
 
@@ -1177,6 +1272,7 @@ class BootStrap {
 
         RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'Checked', de: 'Überprüft'])
         RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'In Progress', de: 'In Bearbeitung'])
+        RefdataValue.loc(RefdataCategory.PKG_LIST_STAT,  [en: 'Unknown', de: 'Unbekannt'])
         RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'No', de: 'Nein'])
         RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'Yes', de: 'Ja'])
         RefdataValue.loc(RefdataCategory.PKG_BREAKABLE,  [en: 'Unknown', de: 'Unbekannt'])
@@ -1191,13 +1287,18 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Back File', de: 'Back File'])
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Master File', de: 'Master File'])
         RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Scope Undefined', de: 'Scope Undefined'])
+        RefdataValue.loc(RefdataCategory.PKG_SCOPE,      [en: 'Unknown', de: 'Unbekannt'])
 
         RefdataCategory.loc('TaxType',
                 [en: 'TaxType', de: 'TaxType'])
 
-        RefdataValue.loc('TaxType', [en: 'On Invoice', de: 'Auf Rechnung'])
-        RefdataValue.loc('TaxType', [en: 'Self Declared', de: 'Überweisung'])
-        RefdataValue.loc('TaxType', [en: 'Other', de: 'Andere'])
+        //RefdataValue.loc('TaxType', [en: 'On Invoice', de: 'Auf Rechnung'])
+        //RefdataValue.loc('TaxType', [en: 'Self Declared', de: 'Überweisung'])
+        //RefdataValue.loc('TaxType', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('TaxType', [en: 'taxable', de: 'steuerbar'])
+        RefdataValue.loc('TaxType', [en: 'not taxable', de: 'nicht steuerbar'])
+        RefdataValue.loc('TaxType', [en: 'taxable tax-exempt', de: 'steuerbar steuerbefreit'])
+        RefdataValue.loc('TaxType', [en: 'not applicable', de: 'nicht anwendbar'])
 
         RefdataCategory.loc(RefdataCategory.TI_STATUS,
                 [en: RefdataCategory.TI_STATUS, de: RefdataCategory.TI_STATUS])
@@ -1253,6 +1354,14 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'])
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'])
+
+        RefdataCategory.loc('TIPP Access Status',
+                [en: 'TIPP Access Status', de: 'TIPP Access Status'])
+
+        RefdataValue.loc('TIPP Access Status', [en: 'Current(*)', de: 'Aktuell(*)'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Expected', de: 'Erwartet'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Expired', de: 'Abgelaufen'])
+        RefdataValue.loc('TIPP Access Status', [en: 'Current', de: 'Aktuell'])
 
         // Controlled values from the <UsageType> element.
 

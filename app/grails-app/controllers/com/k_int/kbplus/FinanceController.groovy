@@ -21,7 +21,7 @@ class FinanceController {
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
-    private final def admin_role      = Role.findByAuthority('INST_ADM')
+    private final def user_role        = Role.findByAuthority('INST_USER')
     private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
@@ -38,11 +38,11 @@ class FinanceController {
 
     private boolean isFinanceAuthorised(Org org, User user) {
 
-        accessService.checkUserOrgRole(user, org, admin_role)
+        accessService.checkMinUserOrgRole(user, org, user_role)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
       log.debug("FinanceController::index() ${params}");
 
@@ -66,6 +66,8 @@ class FinanceController {
         result.inSubMode   = params.sub ? true : false
         if (result.inSubMode)
         {
+            params.subscriptionFilter = "${params.sub}"
+
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
             if (!result.fixedSubscription) {
                 log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
@@ -111,20 +113,18 @@ class FinanceController {
      */
     private def setupQueryData(result, params, user) {
         //Setup params
-        result.editable    =  accessService.checkUserOrgRole(user, result.institution, admin_role)
+        result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
+        params.shortcode   =  result.institution.shortcode
+
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
-        result.filterMode  =  params.filterMode?: "OFF"
         result.info        =  [] as List
         params.max         =  params.max && params.int('max') ? Math.min(params.int('max'),200) : (user?.defaultPageSize? maxAllowedVals.min{(it-user.defaultPageSize).abs()} : 10)
         result.max         =  params.max
         result.offset      =  params.int('offset',0)?: 0
-        result.sort        =  ["desc","asc"].contains(params.sort)? params.sort : "desc" //defaults to sort & order of desc id 
-        result.sort        =  params.boolean('opSort')==true? ((result.sort=="asc")? 'desc' : 'asc') : result.sort //opposite
+        result.sort        =  ["desc","asc"].contains(params.sort)? params.sort : "desc" //defaults to sort & order of desc id
         result.isRelation  =  params.orderRelation? params.boolean('orderRelation',false) : false
-        result.wildcard    =  params._wildcard == "off"? false: true //defaulted to on
-        params.shortcode   =  result.institution.shortcode
-        result.advSearch   =  params.boolean('advSearch',false)
-        params.remove('opSort')
+
+        result.wildcard    =  params.wildcard == 'on' ? 'on' : 'off' //defaulted to on
 
         if (params.csvMode && request.getHeader('referer')?.endsWith("${params?.shortcode}/finance")) {
             params.max = -1 //Adjust so all results are returned, in regards to present user screen query
@@ -135,8 +135,8 @@ class FinanceController {
         result.order = gspOrder
         
         //todo Add to query params and HQL query if we are in sub mode e.g. result.inSubMode, result.fixedSubscription
-        def cost_item_qry_params  =  [result.institution]
-        def cost_item_qry         =  (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = ? " :"  where ci.owner = ? "
+        def cost_item_qry_params  =  [owner: result.institution]
+        def cost_item_qry         =  (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
         def orderAndSortBy        =  (join)? "ORDER BY COALESCE(j.${order}, ${Integer.MAX_VALUE}) ${result.sort}, ci.id ASC" : " ORDER BY ci.${order} ${result.sort}"
 
         return [cost_item_qry_params, cost_item_qry, orderAndSortBy]
@@ -151,17 +151,25 @@ class FinanceController {
      *
      * Note - Requests DB requests are cached ONLY if non-hardcoded values are used
      */
-    private def financialData(result,params,user) {
+    private def financialData(result, params, user) {
         //Setup using param data, returning back DB query info
-        def (cost_item_qry_params, cost_item_qry, orderAndSortBy) = setupQueryData(result,params,user)
+        def (cost_item_qry_params, cost_item_qry, orderAndSortBy) = setupQueryData(result, params, user)
 
         //Filter processing...
-        if (result.filterMode == "ON")
-        {
+
             log.debug("FinanceController::index()  -- Performing filtering processing...")
-            def qryOutput = filterQuery(result, params, result.wildcard)
+            def qryOutput = filterQuery(result, params, (result.wildcard == 'on'))
+
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
+
+            cost_item_qry_params   << qryOutput.fqParams
+            result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
+            result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
+            log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
+
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
+            /*
             if (qryOutput.filterCount == 0 || !qryOutput.qry_string) //Nothing found from filtering!
-            {
                 result.info.add([status:message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.mode')]),
                                  msg:message(code: 'finance.result.filtered.empty')])
                 result.filterMode =  "OFF" //SWITCHING BACK!!! ...Since nothing has been found, informed user!
@@ -174,21 +182,19 @@ class FinanceController {
                 result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
                 log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
             }
-            result.info.addAll(qryOutput.failed)
-            result.info.addAll(qryOutput.valid)
-        }
+            */
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
+            //result.info.addAll(qryOutput.failed)
+            //result.info.addAll(qryOutput.valid)
 
-        //Normal browse mode, default behaviour, nothing found from trying to filter, resorts to below
-        if (result.filterMode == "OFF" || params.resetMode == "reset")
-        {
             //'SELECT ci FROM CostItem AS ci LEFT OUTER JOIN ci.order AS o WHERE ci.owner = ? ORDER BY COALESCE(o.orderNumber,?) ASC, ci.id ASC'
-            result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + orderAndSortBy, cost_item_qry_params, params);
-            result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry, cost_item_qry_params).first();
-            log.debug("FinanceController::index()  -- Performing standard non-filtered process ... ${result.cost_item_count} result(s) found")
-        }
+            //result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + orderAndSortBy, cost_item_qry_params, params);
+            //result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry, cost_item_qry_params).first();
+            //log.debug("FinanceController::index()  -- Performing standard non-filtered process ... ${result.cost_item_count} result(s) found")
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
 
@@ -411,66 +417,64 @@ class FinanceController {
      * @param wildcard
      * @return
      */
-    //todo convert to use a property map, too big now with advanced searching options
-    //todo adjust filterQuery to check for being in subscription only mode using result.inSubMode and force HQL filtered query string to use  result.fixedSubscription when searching for other results.
     def private filterQuery(LinkedHashMap result, GrailsParameterMap params, boolean wildcard) {
-        def fqResult        = [:]
-        fqResult.failed     = [] as List
-        fqResult.valid      = [] as List
+        def fqResult = [:]
+
         fqResult.qry_string = ""
-        def countCheck      = ci_count + " where ci.owner = ? "
-        def final count     = ci_count + " where ci.owner = ? "
-        fqResult.fqParams   = [result.institution] as List //HQL list parameters for user data, can't be trusted!
 
-        if (params.orderNumberFilter) {
-            def _count = (wildcard) ? count + "AND ci.order.orderNumber like ? " : count + "AND ci.order.orderNumber = ? "
-            def order =  CostItem.executeQuery(_count, [result.institution, (wildcard) ? "%${params.orderNumberFilter}%" : params.orderNumberFilter])
-            log.debug("Filter Query - No of Orders found:${order} Qry Performed:${_count}")
+        def final count = ci_count + " where ci.owner = :owner "
+        def countCheck  = ci_count + " where ci.owner = :owner "
 
-            if (order && order.first() > 0) {
-                fqResult.valid.add([status: message(code: 'financials.result.filtered.success', args: [message(code: 'financials.field.order')]),
-                                    msg: message(code: 'financials.result.filtered.success.msg1', args: [order.first(), message(code: 'financials.field.order'), params.orderNumberFilter])])
-                if (wildcard) {
-                    fqResult.qry_string = "AND ci.order.orderNumber like ? "
-                    countCheck += " AND ci.order.orderNumber like ?"
-                    fqResult.fqParams.add("%${params.orderNumberFilter}%")
-                } else {
-                    fqResult.qry_string = " AND ci.order.orderNumber = ? "
-                    countCheck += " AND ci.order.orderNumber = ? "
-                    fqResult.fqParams.add(params.orderNumberFilter)
+        fqResult.fqParams = [owner: result.institution]
+
+        def hqlCompare = (wildcard) ? " like " : " = "
+
+        // usage:
+        // filterParam = FORM.FIELD.name
+        // hqlVar = DOMAINCLASS.attribute
+        // opt = refdata | budgetcode | value
+
+        Closure filterBy = { filterParam, hqlVar, opt ->
+
+            if (params.get(filterParam)) {
+                def _query, _param
+
+                if (opt == 'refdata') {
+                    _query = " AND ci.${hqlVar} = :${hqlVar} "
+                    _param = genericOIDService.resolveOID(params.get(filterParam))
                 }
-            } else {
-                def detachedCount = Order.executeQuery("select count(o.id) from Order o where o.owner = ? AND o.orderNumber = ? ",[result.institution,params.orderNumberFilter]) //Items that exist on their own for the org
-                fqResult.failed.add([status: message(code: 'financials.result.filtered.failed', args: [message(code: 'financials.field.order')]),
-                                     msg: message(code: 'financials.result.filtered.failed.msg1', args: [message(code: 'financials.field.order'), (wildcard ? '%' + params.orderNumberFilter + '%' : params.orderNumberFilter), detachedCount.first()])])
-                params.remove('orderNumberFilter')
+                else if (opt == 'budgetCode') {
+                    _query = " AND exists (select cig from CostItemGroup as cig where cig.costItem = ci and cig.budgetCode.value ${hqlCompare} :${hqlVar} ) "
+                    _param = (wildcard) ? "%${params.get(filterParam)}%" : params.get(filterParam)
+                }
+                else {
+                    _query = " AND ci.${hqlVar} ${hqlCompare} :${hqlVar} "
+                    _param = (wildcard) ? "%${params.get(filterParam)}%" : params.get(filterParam)
+                }
+
+                def order = CostItem.executeQuery(count + _query, [owner: result.institution, (hqlVar): _param])
+
+                if (order && order.first() > 0) {
+                    fqResult.qry_string += _query
+                    countCheck          += _query
+
+                    fqResult.fqParams << [(hqlVar): _param]
+                }
+                else {
+                    params.remove(filterParam)
+                }
             }
         }
 
-        if (params.invoiceNumberFilter) {
-            def _count  = (wildcard) ? count + "AND ci.invoice.invoiceNumber like ? " : count + "AND ci.invoice.invoiceNumber = ? "
-            def invoice = CostItem.executeQuery(_count, [result.institution, (wildcard) ? "%${params.invoiceNumberFilter}%" : params.invoiceNumberFilter])
+        filterBy( 'filterCITitle', 'costTitle', 'value' )
+        filterBy( 'filterCIOrderNumber', 'orderNumber', 'value' )
+        filterBy( 'filterCIInvoiceNumber', 'invoiceNumber', 'value' )
 
-            if (invoice && invoice.first() > 0) {
-                fqResult.valid.add([status: message(code: 'financials.result.filtered.success', args: [message(code: 'financials.field.invoice')]),
-                                    msg: message(code: 'financials.result.filtered.success.msg1', args: [invoice.first(), message(code: 'financials.field.invoice'), params.invoiceNumberFilter])])
-                if (wildcard) {
-                    fqResult.qry_string = "AND ci.invoice.invoiceNumber like ? "
-                    countCheck += " AND ci.invoice.invoiceNumber like ?"
-                    fqResult.fqParams.add("%${params.invoiceNumberFilter}%")
-                } else {
-                    fqResult.qry_string = " AND ci.invoice.invoiceNumber = ? "
-                    countCheck += " AND ci.invoice.invoiceNumber  = ? "
-                    fqResult.fqParams.add(params.invoiceNumberFilter)
-                }
-            } else
-            {
-                def detachedCount = Order.executeQuery("select count(i.id) from Invoice i where i.owner = ? AND i.invoiceNumber = ? ",[result.institution,params.invoiceNumberFilter])
-                fqResult.failed.add([status:message(code: 'financials.result.filtered.failed', args: [message(code: 'financials.field.invoice')]),
-                                     msg: "Invalid order number ${wildcard ? '%' + params.invoiceNumberFilter + '%' : params.invoiceNumberFilter} ...No cost items exist with specified invoice number and ${detachedCount.first()} detached invoices"])
-                params.remove('invoiceNumberFilter')
-            }
-        }
+        filterBy( 'filterCIElement', 'costItemElement', 'refdata' )
+        filterBy( 'filterCIStatus', 'costItemStatus', 'refdata' )
+
+        filterBy( 'filterCIBudgetCode', 'budgetCode', 'budgetCode' )
+
 
         if (params?.subscriptionFilter?.startsWith("com.k_int.kbplus.Subscription:")) {
 
@@ -511,97 +515,75 @@ class FinanceController {
             }
         }
 
-        if (result.advSearch)
+        fqResult.filterCount = CostItem.executeQuery(countCheck, fqResult.fqParams).first()
+        if (fqResult.filterCount == 0)
         {
-            log.debug("Advanced Filter search setup...")
-            //todo complete advance searching
-            params.findAll {key, val->
-                println("Key ${key} Val ${val}")
-            }
-        }
+            // WORKAROUND: ACCEPT EMPTY RESULTS
 
-        if (result.offset > 0) //Remove count successes, etc when a user is not on the first page
-            fqResult.valid.clear()
+            //fqResult.failed.add([status: message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.nomatch')]),
+            //                     msg: message(code: 'financials.result.filtered.invalid')])
+            //fqResult.qry_string = ""
+            //fqResult.fqParams.clear()
+            //params.remove('filterCIOrderNumber')
+            //params.remove('filterCIInvoiceNumber')
+            //if (!result.inSubMode)
+            //    params.remove('subscriptionFilter')
+            //params.remove('packageFilter')
 
-        fqResult.filterCount = CostItem.executeQuery(countCheck,fqResult.fqParams).first()
-        if (fqResult.failed.size() > 0 || fqResult.filterCount == 0)
-        {
-            fqResult.failed.add([status: message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.nomatch')]),
-                                 msg: message(code: 'financials.result.filtered.invalid')])
-            fqResult.qry_string = ""
-            fqResult.fqParams.clear()
-            params.remove('orderNumberFilter')
-            params.remove('invoiceNumberFilter')
-            if (!result.inSubMode)
-                params.remove('subscriptionFilter')
-            params.remove('packageFilter')
+            //fqResult.fqParams.remove(0) // NEW ADDED DUE WORKAROUND
+            // WORKAROUND: ACCEPT EMPTY RESULTS
         }
-        else
-            fqResult.fqParams.remove(0) //already have this where necessary in the index method!
+        else {
+            //fqResult.fqParams.remove(0) //already have this where necessary in the index method!
+        }
 
         log.debug("Financials : filterQuery - Wildcard Searching active : ${wildcard} Query output : ${fqResult.qry_string? fqResult.qry_string:'qry failed!'}")
 
         return fqResult
     }
 
-    //todo complete a configurable search which can be extended via external properties if necessary
-    //Not sure if this is the best approach
-    private static qry_conf = [
-            'ci'  : [
-                    selectQry:'select ci from CostItem as ci ',
-                    countQry: 'select count(ci.id) from CostItem as ci '
-             ],
-            'invoice' : [
-                    stdQry: 'AND ci.invoice.invoiceNumber like ? ',
-                    wildQry: 'AND ci.invoice.invoiceNumber like ? ',
-                    countQry:"",
-            ],
-            'adv' : [
-                 'adv_ref' : [
-
-                 ],
-                 'adv_codes':[
-
-                 ],
-                 'adv_start':[
-
-                 ],
-                 'adv_end':[
-
-                 ],
-                 'adv_costItemStatus':[
-
-                 ],
-                 'adv_costItemCategory':[
-
-                 ],
-                 'adv_amount':[
-
-                 ],
-                 'adv_datePaid':[
-
-                 ],
-                 'adv_ie':[
-
-                 ],
-            ]
-    ]
-
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
 
         //TODO: copied from index()
         result.inSubMode = params.sub ? true : false
         if (result.inSubMode) {
-            result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
+            result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
         }
         result.costItem = CostItem.findById(params.id)
 
         render(template: "/finance/ajaxModal", model: result)
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteCostItem() {
+        def result = [:]
+        def user = User.get(springSecurityService.principal.id)
+        def institution = contextService.getOrg()
+        if (!isFinanceAuthorised(institution, user)) {
+            response.sendError(403)
+            return
+        }
+
+        def ci = CostItem.findByIdAndOwner(params.id, institution)
+        if (ci) {
+            def cigs = CostItemGroup.findAllByCostItem(ci)
+
+            cigs.each { item ->
+                item.delete()
+                log.debug("deleting CostItemGroup: " + item)
+            }
+            log.debug("deleting CostItem: " + ci)
+            ci.delete()
+        }
+        redirect(controller: 'myInstitution', action: 'finance')
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItem() {
 
         def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -645,7 +627,9 @@ class FinanceController {
         if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
         {
             try {
-                pkg = SubscriptionPackage.load(params.newPackage.split(":")[1])
+                if (params.newPackage.split(":")[1] != 'null') {
+                    pkg = SubscriptionPackage.load(params.newPackage.split(":")[1])
+                }
             } catch (Exception e) {
                 log.error("Non-valid sub-package sent ${params.newPackage}",e)
             }
@@ -782,6 +766,13 @@ class FinanceController {
                 }
 
                 if (bc != null) {
+                    // WORKAROUND ERMS-337: only support ONE budgetcode per costitem
+                    def existing = CostItemGroup.executeQuery(
+                            "SELECT DISTINCT cig.id FROM CostItemGroup AS cig JOIN cig.costItem AS ci JOIN cig.budgetCode AS bc WHERE ci = ? AND bc.owner = ? AND bc IS NOT ?",
+                            [costItem, budgetOwner, bc] );
+                    existing.each { id ->
+                        CostItemGroup.get(id).delete()
+                    }
                     if (! CostItemGroup.findByCostItemAndBudgetCode(costItem, bc)) {
                         result.add(new CostItemGroup(costItem: costItem, budgetCode: bc).save(flush: true))
                     }
@@ -793,7 +784,8 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getRecentCostItems() {
         def dateTimeFormat     = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def  institution       = contextService.getOrg()
@@ -805,11 +797,13 @@ class FinanceController {
         result.from            = dateTimeFormat.format(result.from)
         result.to              = dateTimeFormat.format(result.to)
         log.debug("FinanceController - getRecentCostItems, rendering template with model: ${result}")
+
         render(template: "/finance/recentlyAddedModal", model: result)
     }
 
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItemsPresent() {
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def institution = contextService.getOrg()
@@ -825,7 +819,8 @@ class FinanceController {
         render(text: builder.toString(), contentType: "text/json", encoding: "UTF-8")
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def delete() {
         log.debug("FinanceController::delete() ${params}");
 
@@ -882,7 +877,7 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_USER'])
     def financialRef() {
         log.debug("Financials :: financialRef - Params: ${params}")
 
@@ -993,7 +988,8 @@ class FinanceController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def removeBC() {
         log.debug("Financials :: remove budget code - Params: ${params}")
         def result      = [:]
@@ -1030,7 +1026,8 @@ class FinanceController {
         render result as JSON
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def createCode() {
         def result      = [:]
         def user        = springSecurityService.currentUser

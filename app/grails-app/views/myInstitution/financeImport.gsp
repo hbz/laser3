@@ -6,16 +6,14 @@
   </head>
 
   <body>
-
-
-      <ul class="breadcrumb">
-        <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="myInstitutions" action="financeImport" params="${[shortcode:params.shortcode]}">${institution.name} Finance Import</g:link> </li>
-      </ul>
+  <semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <semui:crumb message="menu.institutions.financeImport" class="active"/>
+  </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui header"><semui:headerIcon />${institution?.name} - Finance Import</h1>
+    <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.financeImport', default: 'Finance Import')}</h1>
 
         <g:if test="${loaderResult==null}">
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
@@ -56,20 +54,20 @@
 
           <g:form action="financeImport" method="post" enctype="multipart/form-data" params="${[shortcode:params.shortcode]}">
             <dl>
-              <div class="control-group">
+              <div class="field">
                 <dt>${message(code:'myinst.financeImport.upload', default:'Upload TSV File')}</dt>
                 <dd>
                   <input type="file" name="tsvfile" />
                 </dd>
               </div>
-              <div class="control-group">
+              <div class="field">
                 <%-- <dt>Dry Run</dt> --%>
                 <dt>${message(code:'myinst.financeImport.dryrun', default:'Dry Run')}</dt>
                 <dd>
-                  <input type="checkbox" name="dryRun" checked value="Y" />
+                  <input class="ui button" type="checkbox" name="dryRun" checked value="Y" />
                 </dd>
               </div>
-              <button name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload", default:'Upload...')}</button>
+              <button class="ui button" name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload", default:'Upload...')}</button>
             </dl>
           </g:form>
         </g:if>

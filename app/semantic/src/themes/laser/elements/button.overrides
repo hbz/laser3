@@ -1,5 +1,18 @@
 /*******************************
          Button Overrides
 *******************************/
-
-
+// to see the Buttons only if hover or focus
+.ui.la-selectable.table {
+  .button {
+    opacity: 0;
+  }
+  :hover .button {
+    opacity: 1;
+  }
+  .button:focus {
+    opacity: 1;
+  }
+}
+.la-width-122 {
+  width: 122px;
+}

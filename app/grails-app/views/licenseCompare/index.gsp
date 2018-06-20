@@ -35,10 +35,15 @@
 					<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>
 					
 					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicenses" name="selectedLicenses" class="compare-license" from="${[]}" multiple="true" />
-			
-					<div>
+
+				<div class="fields">
+					<div class="field">
+                  		<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+                    </div>
+					<div class="field">
 					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
 					</div>
+				</div>
 				</g:form>
 			</div>
 		</div>
@@ -71,7 +76,7 @@
   	        width: '90%',
 	        placeholder: "${message(code:'onixplLicense.compare.search.ph', default:'Search for a license...')}",
                 formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
                 },
 	        minimumInputLength: 1,
 	        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper

@@ -21,6 +21,6 @@
     </g:if>
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <semui:subNavItem controller="packageDetails" action="history" params="${[id:params.id]}" message="package.show.nav.history" />
+        <semui:subNavItem controller="packageDetails" action="history" params="${[id:params.id]}" class="la-role-admin" message="package.show.nav.history" />
     </sec:ifAnyGranted>
 </semui:subNav>

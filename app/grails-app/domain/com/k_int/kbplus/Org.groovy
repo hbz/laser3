@@ -196,6 +196,17 @@ class Org extends BaseDomainComponent {
     result
   }
 
+    // TODO
+    def getIdentifiersByType(idtype) {
+        def result = []
+        ids.each { id ->
+            if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
+                result << id.identifier;
+            }
+        }
+        result
+    }
+
   static def refdataFind(params) {
     def result = [];
     def ql = null;
@@ -216,27 +227,41 @@ class Org extends BaseDomainComponent {
 
     static def lookup(name, identifiers) {
 
-        def result = null;
+        def result = []
 
-        // See if we can uniquely match on any of the identifiers
-        identifiers.each { k,v ->
-            if ( v != null ) {
-                def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?",[k,v])
-                if ( o.size() > 0 ) {
-                    result = o[0]
+        // SUPPORT MULTIPLE IDENTIFIERS
+        if (identifiers instanceof ArrayList) {
+            identifiers.each { it ->
+                it.each { k, v ->
+                    if (v != null) {
+                        def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?", [k, v])
+
+                        if (o.size() > 0) result << o[0]
+                    }
+                }
+            }
+        }
+        // DEFAULT LOGIC
+        else {
+            // See if we can uniquely match on any of the identifiers
+            identifiers.each { k, v ->
+                if (v != null) {
+                    def o = Org.executeQuery("select o from Org as o join o.ids as io where io.identifier.ns.ns = ? and io.identifier.value = ?", [k, v])
+
+                    if (o.size() > 0) result << o[0]
                 }
             }
         }
 
         // No match by identifier, try and match by name
-        if ( result == null ) {
+        if (result == null) {
             // log.debug("Match by name ${name}");
-            def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?",[name.toLowerCase()])
-            if ( o.size() > 0 ) {
-                result = o[0]
-            }
+            def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?", [name.toLowerCase()])
+
+            if (o.size() > 0) result << o[0]
         }
-        result
+
+        result.isEmpty() ? null : result.get(0)
     }
 
     static def lookupOrCreate(name, sector, consortium, identifiers, iprange) {
@@ -255,9 +280,20 @@ class Org extends BaseDomainComponent {
                            ipRange:iprange,
                            impId:java.util.UUID.randomUUID().toString()).save()
 
-          identifiers.each { k,v ->
-              def io = new IdentifierOccurrence(org:result, identifier:Identifier.lookupOrCreateCanonicalIdentifier(k,v)).save()
-          }
+            // SUPPORT MULTIPLE IDENTIFIERS
+            if (identifiers instanceof ArrayList) {
+                identifiers.each{ it ->
+                    it.each { k, v ->
+                        def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                    }
+                }
+            }
+            // DEFAULT LOGIC
+            else {
+                identifiers.each { k, v ->
+                    def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
+                }
+            }
 
           if ( ( consortium != null ) && ( consortium.length() > 0 ) ) {
             def db_consortium = Org.lookupOrCreate(consortium, null, null, [:], null)

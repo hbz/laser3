@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <div class="row-fluid">
+    <div>
       <div>
         <div class="container" style="text-align:center">
           <g:form action="index" method="get">

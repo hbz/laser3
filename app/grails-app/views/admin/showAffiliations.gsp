@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Show Affiliations</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Show Affiliations</title>
   </head>
 
   <body>

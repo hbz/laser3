@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Manage Global Sorces</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Manage Global Sorces</title>
   </head>
 
   <body>
@@ -28,7 +28,7 @@
             <th>Principal</th>
             <th>Credentials</th>
             <th>RecType</th>
-            <th># Local Copies</th>
+            <th>${message(code:'sidewide.number')} Local Copies</th>
             <th>Actions</th>
           </tr>
         </thead>
