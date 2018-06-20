@@ -44,15 +44,13 @@ class FinanceController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-      log.debug("FinanceController::index() ${params}");
+        log.debug("FinanceController::index() ${params}");
 
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def result = [:]
 
       try {
-
-        //Check nothing strange going on with financial data
-        result.institution =  contextService.getOrg()
+        result.institution = contextService.getOrg()
 
         def user =  User.get(springSecurityService.principal.id)
         if (!isFinanceAuthorised(result.institution, user)) {

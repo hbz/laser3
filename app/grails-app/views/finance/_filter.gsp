@@ -197,9 +197,16 @@
 
 </g:if><!-- TMP::IGNORE LEGACY FILTER -->
 
-
     <semui:filter>
-        <g:form method="get" class="ui form">
+        <%
+            def formUrl = [controller: 'myInstitution', action: 'finance']
+
+            if (fixedSubscription) {
+                formUrl = [mapping: 'subfinance', params: [sub: "${fixedSubscription?.id}"]]
+            }
+        %>
+
+        <g:form url="${formUrl}" method="get" class="ui form">
 
             <div class="three fields">
                 <div class="field">
@@ -262,7 +269,7 @@
                 </div>
             </div>
 
-            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/> %{-- TODO: REMOVE --}%
         </g:form>
     </semui:filter>
 
