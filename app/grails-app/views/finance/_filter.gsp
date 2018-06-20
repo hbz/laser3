@@ -240,23 +240,38 @@
             <div class="three fields">
                 <div class="field">
                     <label for="filterCIBudgetCode">${message(code:'financials.budgetCode')}</label>
-                    <input id="filterCIBudgetCode" name="filterCIBudgetCode" type="text" value="${params.filterCIBudgetCode}"/>
+                    <g:select id="filterCIBudgetCode" class="ui dropdown search selection"
+                              name="filterCIBudgetCode"
+                              from="${allCIBudgetCodes}"
+                              value="${params.filterCIBudgetCode}"
+                              noSelection="${['':'Alle ..']}"
+                        />
                 </div>
 
                 <div class="field">
                     <label>${message(code:'financials.invoice_number')}</label>
-                    <input id="filterCIInvoiceNumber" name="filterCIInvoiceNumber" type="text" value="${params.filterCIInvoiceNumber}" />
+                    <g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
+                              name="filterCIInvoiceNumber"
+                              from="${allCIInvoiceNumbers}"
+                              value="${params.filterCIInvoiceNumber}"
+                              noSelection="${['':'Alle ..']}"
+                        />
                 </div>
 
                 <div class="field">
                     <label>${message(code:'financials.order_number')}</label>
-                    <input type="text" name="filterCIOrderNumber" id="filterCIOrderNumber" value="${params.filterCIOrderNumber}" data-type="select"/>
+                    <g:select id="filterCIOrderNumber" class="ui dropdown search selection"
+                              name="filterCIOrderNumber"
+                              from="${allCIOrderNumbers}"
+                              value="${params.filterCIOrderNumber}"
+                              noSelection="${['':'Alle ..']}"
+                        />
                 </div>
             </div><!-- .three -->
 
             <div class="three fields">
                 <div class="field">
-                    <label>Wildcard-Suche</label>
+                    <label>Unscharfe Suche zulassen (im Feld Bezeichnung)</label>
                     <input type="checkbox" name="wildcard" value="on" <g:if test="${wildcard != 'off'}"> checked="checked"</g:if> />
                 </div>
 
